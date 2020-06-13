@@ -137,7 +137,7 @@
             <url>https://ci.ender.zone/plugin/repository/everything/</url>
         </repository>
 
-        <!-- Towny -->
+        <!-- Towny, VaultAPI -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -227,6 +227,14 @@
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Vault for permissions / groups -->
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

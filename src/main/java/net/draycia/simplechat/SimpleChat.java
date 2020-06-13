@@ -8,6 +8,7 @@ import net.draycia.simplechat.commands.ChannelCommand;
 import net.draycia.simplechat.commands.ToggleCommand;
 import net.draycia.simplechat.listeners.PlayerChatListener;
 import net.kyori.text.format.TextColor;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,8 +24,12 @@ public final class SimpleChat extends JavaPlugin {
     private HashMap<UUID, ChatChannel> userChannels = new HashMap<>();
     private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>();
 
+    private Permission permission;
+
     @Override
     public void onEnable() {
+        permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
+
         saveDefaultConfig();
 
         BukkitCommandManager manager = new BukkitCommandManager(this);
@@ -68,12 +73,16 @@ public final class SimpleChat extends JavaPlugin {
                 builder.setId(section.getLong("id"));
             }
 
-            if (section.contains("format")) {
-                builder.setFormat(section.getString("format"));
-            }
+            if (section.contains("formats")) {
+                HashMap<String, String> formats = new HashMap<>();
 
-            if (section.contains("format-staff")) {
-                builder.setStaffFormat(section.getString("format-staff"));
+                ConfigurationSection formatSection = section.getConfigurationSection("formats");
+
+                for (String group : formatSection.getKeys(false)) {
+                    formats.put(group, formatSection.getString(group));
+                }
+
+                builder.setFormats(formats);
             }
 
             if (section.contains("webhook")) {
@@ -188,4 +197,7 @@ public final class SimpleChat extends JavaPlugin {
         return null;
     }
 
+    public Permission getPermission() {
+        return permission;
+    }
 }

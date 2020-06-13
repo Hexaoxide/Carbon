@@ -16,14 +16,9 @@ public abstract class ChatChannel {
     public abstract long getChannelId();
 
     /**
-     * @return The MiniMessage styled format used by non staff in this channel.
+     * @return The MiniMessage styled format for the player in this channel.
      */
-    public abstract String getFormat();
-
-    /**
-     * @return The MiniMessage styled format used by staff in this channel.
-     */
-    public abstract String getStaffFormat();
+    public abstract String getFormat(Player player);
 
     /**
      * @return The url of the webhook used to send messages to discord for chat bridging.

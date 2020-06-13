@@ -22,12 +22,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SimpleChatChannel extends ChatChannel {
 
     private TextColor color;
     private long id;
-    private String format;
-    private String staffFormat;
+    private Map<String, String> formats;
     private String webhook;
     private boolean isDefault;
     private boolean ignorable;
@@ -47,11 +49,10 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    private SimpleChatChannel(TextColor color, long id, String format, String staffFormat, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, boolean isTownChat, boolean isNationChat, boolean isAllianceChat, boolean isPartyChat, SimpleChat simpleChat) {
+    private SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, boolean isTownChat, boolean isNationChat, boolean isAllianceChat, boolean isPartyChat, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
-        this.format = format;
-        this.staffFormat = staffFormat;
+        this.formats = formats;
         this.webhook = webhook;
         this.isDefault = isDefault;
         this.ignorable = ignorable;
@@ -81,13 +82,7 @@ public class SimpleChatChannel extends ChatChannel {
     public void sendMessage(Player player, String message) {
         message = MiniMessageParser.escapeTokens(message);
 
-        String messageFormat;
-
-        if (player.hasPermission("simplechat.staff")) {
-            messageFormat = getStaffFormat();
-        } else {
-            messageFormat = getFormat();
-        }
+        String messageFormat = getFormat(player);
 
         ChannelChatEvent event = new ChannelChatEvent(player, this, messageFormat, message);
 
@@ -250,17 +245,10 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public String getFormat() {
-        return format;
-    }
+    public String getFormat(Player player) {
+        String group = simpleChat.getPermission().getPrimaryGroup(player);
 
-    @Override
-    public String getStaffFormat() {
-        if (staffFormat == null) {
-            return format;
-        }
-
-        return staffFormat;
+        return formats.getOrDefault(group, formats.getOrDefault("default", "<white><%player_displayname%<white>> <message>"));
     }
 
     @Override
@@ -331,8 +319,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         private TextColor color = TextColor.WHITE;
         private long id = -1;
-        private String format = "<<white><%player_displayname%<white>>";
-        private String staffFormat = null;
+        private Map<String, String> formats = new HashMap<>();
         private String webhook = null;
         private boolean isDefault = false;
         private boolean ignorable = true;
@@ -353,7 +340,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, format, staffFormat, webhook, isDefault, ignorable, name, distance, switchMessage, isTownChat, isNationChat, isAllianceChat, isPartyChat, simpleChat);
+            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, isTownChat, isNationChat, isAllianceChat, isPartyChat, simpleChat);
         }
 
         public Builder setColor(TextColor color) {
@@ -368,14 +355,8 @@ public class SimpleChatChannel extends ChatChannel {
             return this;
         }
 
-        public Builder setFormat(String format) {
-            this.format = format;
-
-            return this;
-        }
-
-        public Builder setStaffFormat(String staffFormat) {
-            this.staffFormat = staffFormat;
+        public Builder setFormats(Map<String, String> formats) {
+            this.formats = formats;
 
             return this;
         }
