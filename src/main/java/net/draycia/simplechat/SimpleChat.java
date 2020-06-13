@@ -89,6 +89,18 @@ public final class SimpleChat extends JavaPlugin {
                 builder.setWebhook(section.getString("webhook"));
             }
 
+            if (section.contains("switch-message")) {
+                builder.setSwitchMessage(section.getString("switch-message"));
+            }
+
+            if (section.contains("distance")) {
+                builder.setDistance(section.getDouble("distance"));
+            }
+
+            if (section.contains("name")) {
+                builder.setName(section.getString("name"));
+            }
+
             if (section.contains("color")) {
                 builder.setColor(TextColor.valueOf(section.getString("color").toUpperCase()));
             }
@@ -115,6 +127,14 @@ public final class SimpleChat extends JavaPlugin {
 
             if (section.contains("default")) {
                 builder.setIsDefault(section.getBoolean("default"));
+            }
+
+            if (section.contains("toggle-on-message")) {
+                builder.setToggleOnMessage(section.getString("toggle-on-message"));
+            }
+
+            if (section.contains("toggle-off-message")) {
+                builder.setToggleOffMessage(section.getString("toggle-off-message"));
             }
 
             ChatChannel channel = builder.build(this);

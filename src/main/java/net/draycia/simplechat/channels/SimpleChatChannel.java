@@ -2,7 +2,6 @@ package net.draycia.simplechat.channels;
 
 import com.earth2me.essentials.Essentials;
 import com.gmail.nossr50.api.PartyAPI;
-import com.gmail.nossr50.mcMMO;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -14,7 +13,6 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.TextUtilsKt;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.format.TextColor;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
@@ -49,7 +47,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    private SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, boolean isTownChat, boolean isNationChat, boolean isAllianceChat, boolean isPartyChat, SimpleChat simpleChat) {
+    private SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean isTownChat, boolean isNationChat, boolean isAllianceChat, boolean isPartyChat, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -59,6 +57,8 @@ public class SimpleChatChannel extends ChatChannel {
         this.name = name;
         this.distance = distance;
         this.switchMessage = switchMessage;
+        this.toggleOffMessage = toggleOffMessage;
+        this.toggleOnMessage = toggleOnMessage;
 
         this.isTownChat = isTownChat;
         this.isNationChat = isNationChat;
@@ -340,7 +340,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, isTownChat, isNationChat, isAllianceChat, isPartyChat, simpleChat);
+            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, isTownChat, isNationChat, isAllianceChat, isPartyChat, simpleChat);
         }
 
         public Builder setColor(TextColor color) {
@@ -368,7 +368,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         public Builder setIsDefault(boolean aDefault) {
-            isDefault = aDefault;
+            this.isDefault = aDefault;
 
             return this;
         }
