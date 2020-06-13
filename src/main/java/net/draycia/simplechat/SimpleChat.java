@@ -110,7 +110,7 @@ public final class SimpleChat extends JavaPlugin {
             }
 
             if (section.contains("is-party-chat")) {
-                builder.setIsAllianceChat(section.getBoolean("is-party-chat"));
+                builder.setIsPartyChat(section.getBoolean("is-party-chat"));
             }
 
             if (section.contains("default")) {
