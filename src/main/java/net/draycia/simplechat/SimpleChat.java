@@ -5,6 +5,7 @@ import co.aikar.commands.ConditionFailedException;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.channels.SimpleChatChannel;
 import net.draycia.simplechat.commands.ChannelCommand;
+import net.draycia.simplechat.commands.ToggleCommand;
 import net.draycia.simplechat.listeners.PlayerChatListener;
 import net.kyori.text.format.TextColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -135,6 +136,7 @@ public final class SimpleChat extends JavaPlugin {
         }
 
         manager.registerCommand(new ChannelCommand(this));
+        manager.registerCommand(new ToggleCommand(this));
 
         setupListeners();
     }

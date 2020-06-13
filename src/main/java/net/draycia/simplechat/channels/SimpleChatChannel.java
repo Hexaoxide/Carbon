@@ -34,6 +34,8 @@ public class SimpleChatChannel extends ChatChannel {
     private String name;
     private double distance;
     private String switchMessage;
+    private String toggleOffMessage;
+    private String toggleOnMessage;
 
     // Plugin hooks
     private boolean isTownChat;
@@ -229,9 +231,9 @@ public class SimpleChatChannel extends ChatChannel {
                 return false;
             }
 
-            // if (!simpleChat.hasToggledOn(player, this)) {
-            //
-            // }
+            if (simpleChat.playerHasChannelMuted(target, this)) {
+                return false;
+            }
         }
 
         return true;
@@ -292,6 +294,16 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
+    public String getToggleOffMessage() {
+        return toggleOffMessage;
+    }
+
+    @Override
+    public String getToggleOnMessage() {
+        return toggleOnMessage;
+    }
+
+    @Override
     public boolean isTownChat() {
         return isTownChat;
     }
@@ -327,6 +339,8 @@ public class SimpleChatChannel extends ChatChannel {
         private String name;
         private double distance = 0;
         private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
+        private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
+        private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
         private boolean isTownChat = false;
         private boolean isNationChat = false;
         private boolean isAllianceChat = false;
@@ -398,6 +412,18 @@ public class SimpleChatChannel extends ChatChannel {
 
         public Builder setSwitchMessage(String switchMessage) {
             this.switchMessage = switchMessage;
+
+            return this;
+        }
+
+        public Builder setToggleOffMessage(String toggleOffMessage) {
+            this.toggleOffMessage = toggleOffMessage;
+
+            return this;
+        }
+
+        public Builder setToggleOnMessage(String toggleOnMessage) {
+            this.toggleOnMessage = toggleOnMessage;
 
             return this;
         }

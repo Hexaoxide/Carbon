@@ -56,6 +56,18 @@ public abstract class ChatChannel {
     public abstract String getSwitchMessage();
 
     /**
+     * @return The message to be send to the player when toggling this channel off.
+     */
+
+    public abstract String getToggleOffMessage();
+
+    /**
+     * @return The message to be send to the player when toggling this channel on.
+     */
+
+    public abstract String getToggleOnMessage();
+
+    /**
      * @return If this channel is Towny's town chat.
      */
     public abstract boolean isTownChat();
