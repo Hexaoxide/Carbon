@@ -1,0 +1,11 @@
+channels:
+  global:
+    id: 0 # Set to 0, comment out, or remove to disable channel bridge
+    switch-message: '<gray>You are now in <color><channel> <gray>chat!'
+    format: '<gray>[%deluxetags_tag%<gray>] %player_displayname%<gray>: <white><message>'
+    format-staff: '<gray>{[%deluxetags_tag%<gray>]} %player_displayname% <gray>» <white><message>'
+    webhook: 'URL_HERE' # Comment out / remove to disable webhook
+    color: WHITE
+    default: true
+    ignorable: true
+    distance: 0

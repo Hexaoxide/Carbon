@@ -1,0 +1,5 @@
+name: SimpleChat
+version: ${project.version}
+main: net.draycia.simplechat.SimpleChat
+api-version: 1.13
+softdepend: [Essentials, PlaceholderAPI, Towny, mcMMO]
