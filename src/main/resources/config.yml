@@ -1,6 +1,6 @@
 channels:
   global:
-    id: 0 # Set to 0, comment out, or remove to disable channel bridge
+    id: -1 # Set to -1, comment out, or remove to disable channel bridge
     switch-message: '<gray>You are now in <color><channel> <gray>chat!'
     toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
     toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
@@ -11,4 +11,4 @@ channels:
     color: WHITE
     default: true
     ignorable: true
-    distance: 0
+    distance: -1 # Set to -1, comment out, or remove to disable distance checking

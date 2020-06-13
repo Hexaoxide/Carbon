@@ -324,7 +324,7 @@ public class SimpleChatChannel extends ChatChannel {
         private boolean isDefault = false;
         private boolean ignorable = true;
         private String name;
-        private double distance = 0;
+        private double distance = -1;
         private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
         private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
         private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
