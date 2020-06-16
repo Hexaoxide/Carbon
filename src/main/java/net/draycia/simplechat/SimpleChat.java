@@ -10,6 +10,7 @@ import net.draycia.simplechat.listeners.PlayerChatListener;
 import net.kyori.text.format.TextColor;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,8 +25,9 @@ public final class SimpleChat extends JavaPlugin {
 
     private ArrayList<ChatChannel> channels = new ArrayList<>();
 
-    private HashMap<UUID, ChatChannel> userChannels = new HashMap<>();
-    private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>();
+    private HashMap<UUID, ChatChannel> userChannels = new HashMap<>(); // TODO: persistence
+    private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>(); // TODO: persistence
+    private HashMap<UUID, ArrayList<UUID>> userIgnores = new HashMap<>(); // TODO: persistence
 
     private Permission permission;
 
@@ -200,6 +202,28 @@ public final class SimpleChat extends JavaPlugin {
 
     private void setupListeners() {
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
+    }
+
+    public boolean playerHasPlayerIgnored(Player player, OfflinePlayer target) {
+        ArrayList<UUID> ignores = userIgnores.get(player.getUniqueId());
+
+        if (ignores == null) {
+            return false;
+        }
+
+        return ignores.contains(target.getUniqueId());
+    }
+
+    public boolean togglePlayerIgnoringPlayer(Player player, OfflinePlayer target) {
+        ArrayList<UUID> ignores = userIgnores.computeIfAbsent(player.getUniqueId(), (uuid) -> new ArrayList<>());
+
+        if (ignores.contains(target.getUniqueId())) {
+            ignores.remove(target.getUniqueId());
+            return false;
+        } else {
+            ignores.add(target.getUniqueId());
+            return true;
+        }
     }
 
     public boolean playerHasChannelMuted(Player player, ChatChannel chatChannel) {

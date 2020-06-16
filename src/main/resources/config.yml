@@ -15,3 +15,7 @@ channels:
     distance: -1 # Set to -1, comment out, or remove to disable distance checking
 
 bot-token: -1
+
+language:
+  ignoring-user: '<green>You are now ignoring <gold><player><green>!'
+  not-ignoring-user: '<greey>You are no longer ignoring <gold><player><green>!'

@@ -1,6 +1,5 @@
 package net.draycia.simplechat.channels;
 
-import com.earth2me.essentials.Essentials;
 import com.gmail.nossr50.api.PartyAPI;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -17,7 +16,6 @@ import net.kyori.text.format.TextColor;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.permission.Role;
@@ -237,18 +235,6 @@ public class SimpleChatChannel extends ChatChannel {
         System.out.println(LegacyComponentSerializer.INSTANCE.serialize(formattedMessage));
     }
 
-    private boolean isUserIgnoringUser(Player user, Player target) {
-        Plugin essentials = Bukkit.getServer().getPluginManager().getPlugin("Essentials");
-
-        if (essentials != null) {
-            Essentials essx = (Essentials)essentials;
-
-            return essx.getUser(user).isIgnoredPlayer(essx.getUser(target));
-        }
-
-        return false;
-    }
-
     public boolean canUserSeeMessage(Player sender, Player target) {
         if (!target.hasPermission("simplechat.see." + getName().toLowerCase())) {
             return false;
@@ -259,7 +245,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         if (isIgnorable()) {
-            if (isUserIgnoringUser(sender, target)) {
+            if (simpleChat.playerHasPlayerIgnored(sender, target)) {
                 return false;
             }
 
