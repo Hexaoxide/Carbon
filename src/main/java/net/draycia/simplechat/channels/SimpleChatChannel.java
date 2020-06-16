@@ -143,11 +143,11 @@ public class SimpleChatChannel extends ChatChannel {
 
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         if (!town.hasResident(onlinePlayer.getName())) {
-                            return;
+                            continue;
                         }
 
                         if (!canUserSeeMessage(player, onlinePlayer)) {
-                            return;
+                            continue;
                         }
 
                         TextAdapter.sendMessage(onlinePlayer, formattedMessage);
@@ -169,11 +169,11 @@ public class SimpleChatChannel extends ChatChannel {
 
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         if (!nation.hasResident(onlinePlayer.getName())) {
-                            return;
+                            continue;
                         }
 
                         if (!canUserSeeMessage(player, onlinePlayer)) {
-                            return;
+                            continue;
                         }
 
                         TextAdapter.sendMessage(onlinePlayer, formattedMessage);
@@ -194,11 +194,11 @@ public class SimpleChatChannel extends ChatChannel {
                     Resident target = TownyAPI.getInstance().getDataSource().getResident(onlinePlayer.getName());
 
                     if (!resident.isAlliedWith(target)) {
-                        return;
+                        continue;
                     }
 
                     if (!canUserSeeMessage(player, onlinePlayer)) {
-                        return;
+                        continue;
                     }
 
                     TextAdapter.sendMessage(onlinePlayer, formattedMessage);
@@ -211,11 +211,11 @@ public class SimpleChatChannel extends ChatChannel {
             if (PartyAPI.inParty(player)) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     if (!PartyAPI.inSameParty(player, onlinePlayer)) {
-                        return;
+                        continue;
                     }
 
                     if (!canUserSeeMessage(player, onlinePlayer)) {
-                        return;
+                        continue;
                     }
 
                     TextAdapter.sendMessage(onlinePlayer, formattedMessage);
@@ -227,7 +227,7 @@ public class SimpleChatChannel extends ChatChannel {
         } else {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (!canUserSeeMessage(player, onlinePlayer)) {
-                    return;
+                    continue;
                 }
 
                 TextAdapter.sendMessage(onlinePlayer, formattedMessage);
