@@ -5,6 +5,7 @@ channels:
     toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
     toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
     formats:
+      discord-to-mc: '<gray>[<blue>Discord<gray>] <username>: <white><message>' # Placeholders: username, displayname, channel, server, message, primaryrole
       staff: '<gray>{[%deluxetags_tag%<gray>]} %player_displayname% <gray>» <white><message>'
       default: '<gray>[%deluxetags_tag%<gray>] %player_displayname%<gray>: <white><message>'
     webhook: 'URL_HERE' # Comment out / remove to disable webhook
@@ -12,3 +13,5 @@ channels:
     default: true
     ignorable: true
     distance: -1 # Set to -1, comment out, or remove to disable distance checking
+
+bot-token: -1

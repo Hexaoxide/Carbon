@@ -10,7 +10,6 @@ import com.palmergames.bukkit.towny.object.Town;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.TextUtilsKt;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.kyori.text.Component;
 import net.kyori.text.adapter.bukkit.TextAdapter;
@@ -19,8 +18,13 @@ import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.javacord.api.entity.channel.ServerTextChannel;
+import org.javacord.api.entity.message.MessageAuthor;
+import org.javacord.api.entity.permission.Role;
+import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SimpleChatChannel extends ChatChannel {
@@ -66,16 +70,48 @@ public class SimpleChatChannel extends ChatChannel {
         this.isPartyChat = isPartyChat;
 
         this.simpleChat = simpleChat;
+
+        if (getChannelId() > 0 && simpleChat.getDiscordAPI() != null) {
+            simpleChat.getDiscordAPI().addMessageCreateListener(this::processDiscordMessage);
+        }
+
+        // TODO: webhooks
+    }
+
+    private String getDiscordFormatting() {
+        return formats.getOrDefault("discord-to-mc", "<gray>[<blue>Discord<gray>] <username>: <white><message>");
     }
 
     @Override
     public boolean canPlayerUse(Player player) {
-        if (player.hasPermission("simplechat.channels." + getName())) {
-            return true;
+        return player.hasPermission("simplechat.channels." + getName());
+        // TODO: other use conditions
+    }
+
+    @Override
+    public void processDiscordMessage(MessageCreateEvent event) {
+        if (event.getChannel().getId() != getChannelId() || event.getMessageAuthor().isBotUser()) {
+            return;
         }
 
-        // TODO: other use conditions
-        return false;
+        String message = MiniMessageParser.escapeTokens(event.getMessageContent()).replace("~", "\\~")
+                .replace("_", "\\_").replace("*", "\\*").replace("\n", "");
+
+        MessageAuthor author = event.getMessageAuthor();
+        ServerTextChannel channel = (ServerTextChannel)event.getChannel();
+
+        List<Role> roles = author.asUser().get().getRoles(event.getServer().get());
+
+        String role = roles.get(roles.size() - 1).getName();
+
+        // Placeholders: username, displayname, channel, server, message, primaryrole
+        Component component = MiniMessageParser.parseFormat(getDiscordFormatting(), "message", message,
+                "username", author.getName(), "displayname", author.getDisplayName(), "channel", channel.getName(),
+                "server", event.getServer().get().getName(), "primaryrole", role);
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            TextAdapter.sendMessage(player, component);
+        }
     }
 
     @Override
@@ -96,7 +132,7 @@ public class SimpleChatChannel extends ChatChannel {
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + color.toString() + ">");
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
-        Component formattedMessage = TextUtilsKt.removeEscape(MiniMessageParser.parseFormat(messageFormat), '\\');
+        Component formattedMessage = /*TextUtilsKt.removeEscape(*/MiniMessageParser.parseFormat(messageFormat)/*, '\\')*/;
 
         if (isTownChat()) {
             try {
@@ -190,16 +226,13 @@ public class SimpleChatChannel extends ChatChannel {
             }
         } else {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.hasPermission("simplechat.see." + getName().toLowerCase())) {
-                    if (!canUserSeeMessage(player, onlinePlayer)) {
-                        return;
-                    }
-
-                    TextAdapter.sendMessage(onlinePlayer, formattedMessage);
+                if (!canUserSeeMessage(player, onlinePlayer)) {
+                    return;
                 }
+
+                TextAdapter.sendMessage(onlinePlayer, formattedMessage);
             }
         }
-
 
         System.out.println(LegacyComponentSerializer.INSTANCE.serialize(formattedMessage));
     }
@@ -217,6 +250,10 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     public boolean canUserSeeMessage(Player sender, Player target) {
+        if (!target.hasPermission("simplechat.see." + getName().toLowerCase())) {
+            return false;
+        }
+
         if (getDistance() > 0 && target.getLocation().distance(sender.getLocation()) > getDistance()) {
             return false;
         }

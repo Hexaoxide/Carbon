@@ -9,9 +9,12 @@ import net.draycia.simplechat.commands.ToggleCommand;
 import net.draycia.simplechat.listeners.PlayerChatListener;
 import net.kyori.text.format.TextColor;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.DiscordApiBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,11 +29,17 @@ public final class SimpleChat extends JavaPlugin {
 
     private Permission permission;
 
+    private DiscordApi discordAPI = null;
+
     @Override
     public void onEnable() {
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
 
         saveDefaultConfig();
+
+        if (getConfig().contains("bot-token")) {
+            discordAPI = new DiscordApiBuilder().setToken(getConfig().getString("bot-token")).login().join();
+        }
 
         BukkitCommandManager manager = new BukkitCommandManager(this);
 
@@ -139,6 +148,20 @@ public final class SimpleChat extends JavaPlugin {
 
             ChatChannel channel = builder.build(this);
 
+            if (channel.isTownChat() || channel.isNationChat() || channel.isAllianceChat()) {
+                if (!Bukkit.getPluginManager().isPluginEnabled("Towny")) {
+                    getLogger().warning("Towny related channel with name [" + channel.getName() + "] found, but Towny isn't installed. Skipping channel.");
+                    continue;
+                }
+            }
+
+            if (channel.isPartyChat()) {
+                if (!Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
+                    getLogger().warning("mcMMO related channel with name [" + channel.getName() + "] found, but mcMMO isn't installed. Skipping channel.");
+                    continue;
+                }
+            }
+
             // TODO: register command for each channel
             channels.add(channel);
         }
@@ -219,5 +242,9 @@ public final class SimpleChat extends JavaPlugin {
 
     public Permission getPermission() {
         return permission;
+    }
+
+    public DiscordApi getDiscordAPI() {
+        return discordAPI;
     }
 }

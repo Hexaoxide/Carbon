@@ -2,6 +2,7 @@ package net.draycia.simplechat.channels;
 
 import net.kyori.text.format.TextColor;
 import org.bukkit.entity.Player;
+import org.javacord.api.event.message.MessageCreateEvent;
 
 public abstract class ChatChannel {
 
@@ -93,5 +94,9 @@ public abstract class ChatChannel {
      * @param message The message to be sent.
      */
     public abstract void sendMessage(Player player, String message);
+
+    public abstract void processDiscordMessage(MessageCreateEvent event);
+
+    //public abstract void sendMessageToMinecraft(String message);
 
 }
