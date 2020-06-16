@@ -207,6 +207,7 @@
             <groupId>com.github.TownyAdvanced</groupId>
             <artifactId>Towny</artifactId>
             <version>0.96.1.11</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- mcMMO - no repository, add to maven local -->
@@ -214,6 +215,7 @@
             <groupId>com.gmail.nossr50.mcMMO</groupId>
             <artifactId>mcMMO</artifactId>
             <version>2.1.115-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Vault for permissions / groups -->
