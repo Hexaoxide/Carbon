@@ -5,6 +5,7 @@ import co.aikar.commands.ConditionFailedException;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.channels.SimpleChatChannel;
 import net.draycia.simplechat.commands.ChannelCommand;
+import net.draycia.simplechat.commands.IgnoreCommand;
 import net.draycia.simplechat.commands.ToggleCommand;
 import net.draycia.simplechat.listeners.PlayerChatListener;
 import net.kyori.text.format.TextColor;
@@ -189,15 +190,19 @@ public final class SimpleChat extends JavaPlugin {
             getLogger().info("mcMMO installed but no Party channel is setup!");
         }
 
-        manager.registerCommand(new ChannelCommand(this));
-        manager.registerCommand(new ToggleCommand(this));
-
         setupListeners();
+        setupCommands(manager);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    private void setupCommands(BukkitCommandManager manager) {
+        manager.registerCommand(new ToggleCommand(this));
+        manager.registerCommand(new ChannelCommand(this));
+        manager.registerCommand(new IgnoreCommand(this));
     }
 
     private void setupListeners() {
