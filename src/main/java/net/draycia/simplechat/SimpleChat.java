@@ -3,7 +3,7 @@ package net.draycia.simplechat;
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.ConditionFailedException;
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.channels.SimpleChatChannel;
+import net.draycia.simplechat.channels.impls.*;
 import net.draycia.simplechat.commands.ChannelCommand;
 import net.draycia.simplechat.commands.IgnoreCommand;
 import net.draycia.simplechat.commands.ToggleCommand;
@@ -40,8 +40,13 @@ public final class SimpleChat extends JavaPlugin {
 
         saveDefaultConfig();
 
-        if (getConfig().contains("bot-token")) {
-            discordAPI = new DiscordApiBuilder().setToken(getConfig().getString("bot-token")).login().join();
+        if (getConfig().contains("bot-token") && !getConfig().getString("bot-token").isEmpty()) {
+            try {
+                discordAPI = new DiscordApiBuilder().setToken(getConfig().getString("bot-token")).login().join();
+            } catch (IllegalStateException exception) {
+                getLogger().warning("Unable to start bot. Reason: " + exception.getMessage());
+                getLogger().warning("If you're getting \"Websocket closed\", check that your bot token is valid!");
+            }
         }
 
         BukkitCommandManager manager = new BukkitCommandManager(this);
@@ -76,10 +81,31 @@ public final class SimpleChat extends JavaPlugin {
             }
         });
 
+        boolean hasTownChat = false;
+        boolean hasNationChat = false;
+        boolean hasAllianceChat = false;
+        boolean hasPartyChat = false;
+
         for (String key : getConfig().getConfigurationSection("channels").getKeys(false)) {
-            SimpleChatChannel.Builder builder = SimpleChatChannel.builder(key);
+            ChatChannel.Builder builder;
 
             ConfigurationSection section = getConfig().getConfigurationSection("channels").getConfigurationSection(key);
+
+            if (section.contains("is-town-chat")) {
+                builder = TownChatChannel.builder(key);
+                hasTownChat = true;
+            } else if (section.contains("is-nation-chat")) {
+                builder = NationChatChannel.builder(key);
+                hasNationChat = true;
+            } else if (section.contains("is-alliance-chat")) {
+                builder = AllianceChatChannel.builder(key);
+                hasAllianceChat = true;
+            } else if (section.contains("is-party-chat")) {
+                builder = PartyChatChannel.builder(key);
+                hasPartyChat = true;
+            } else {
+                builder = SimpleChatChannel.builder(key);
+            }
 
             if (section.contains("id")) {
                 builder.setId(section.getLong("id"));
@@ -121,22 +147,6 @@ public final class SimpleChat extends JavaPlugin {
                 builder.setIgnorable(section.getBoolean("ignorable"));
             }
 
-            if (section.contains("is-town-chat")) {
-                builder.setIsTownChat(section.getBoolean("is-town-chat"));
-            }
-
-            if (section.contains("is-nation-chat")) {
-                builder.setIsNationChat(section.getBoolean("is-nation-chat"));
-            }
-
-            if (section.contains("is-alliance-chat")) {
-                builder.setIsAllianceChat(section.getBoolean("is-alliance-chat"));
-            }
-
-            if (section.contains("is-party-chat")) {
-                builder.setIsPartyChat(section.getBoolean("is-party-chat"));
-            }
-
             if (section.contains("default")) {
                 builder.setIsDefault(section.getBoolean("default"));
             }
@@ -168,11 +178,6 @@ public final class SimpleChat extends JavaPlugin {
             // TODO: register command for each channel
             channels.add(channel);
         }
-
-        boolean hasTownChat = channels.stream().anyMatch(ChatChannel::isTownChat);
-        boolean hasNationChat = channels.stream().anyMatch(ChatChannel::isNationChat);
-        boolean hasAllianceChat = channels.stream().anyMatch(ChatChannel::isAllianceChat);
-        boolean hasPartyChat = channels.stream().anyMatch(ChatChannel::isPartyChat);
 
         if (!hasTownChat) {
             getLogger().info("Towny installed but no Town channel is setup!");

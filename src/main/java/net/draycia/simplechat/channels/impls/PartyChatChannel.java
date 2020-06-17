@@ -1,14 +1,15 @@
-package net.draycia.simplechat.channels;
+package net.draycia.simplechat.channels.impls;
 
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import com.gmail.nossr50.api.PartyAPI;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.kyori.text.Component;
 import net.kyori.text.adapter.bukkit.TextAdapter;
@@ -25,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleChatChannel extends ChatChannel {
+public class PartyChatChannel extends ChatChannel {
 
     private TextColor color;
     private long id;
@@ -39,17 +40,13 @@ public class SimpleChatChannel extends ChatChannel {
     private String toggleOffMessage;
     private String toggleOnMessage;
 
-    // Plugin hooks
-    private boolean isTownChat;
-    private boolean isNationChat;
-    private boolean isAllianceChat;
-    private boolean isPartyChat;
+    private WebhookClient webhookClient = null;
 
     private SimpleChat simpleChat;
 
-    private SimpleChatChannel() { }
+    private PartyChatChannel() { }
 
-    private SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean isTownChat, boolean isNationChat, boolean isAllianceChat, boolean isPartyChat, SimpleChat simpleChat) {
+    private PartyChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -62,18 +59,15 @@ public class SimpleChatChannel extends ChatChannel {
         this.toggleOffMessage = toggleOffMessage;
         this.toggleOnMessage = toggleOnMessage;
 
-        this.isTownChat = isTownChat;
-        this.isNationChat = isNationChat;
-        this.isAllianceChat = isAllianceChat;
-        this.isPartyChat = isPartyChat;
-
         this.simpleChat = simpleChat;
 
         if (getChannelId() > 0 && simpleChat.getDiscordAPI() != null) {
             simpleChat.getDiscordAPI().addMessageCreateListener(this::processDiscordMessage);
         }
 
-        // TODO: webhooks
+        if (getWebhook() != null) {
+            webhookClient = WebhookClient.withUrl(getWebhook());
+        }
     }
 
     private String getDiscordFormatting() {
@@ -88,7 +82,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public void processDiscordMessage(MessageCreateEvent event) {
-        if (event.getChannel().getId() != getChannelId() || event.getMessageAuthor().isBotUser()) {
+        if (event.getChannel().getId() != getChannelId() || !event.getMessageAuthor().isRegularUser()) {
             return;
         }
 
@@ -98,9 +92,15 @@ public class SimpleChatChannel extends ChatChannel {
         MessageAuthor author = event.getMessageAuthor();
         ServerTextChannel channel = (ServerTextChannel)event.getChannel();
 
-        List<Role> roles = author.asUser().get().getRoles(event.getServer().get());
+        String role = "";
 
-        String role = roles.get(roles.size() - 1).getName();
+        if (author.asUser().isPresent() && event.getServer().isPresent()) {
+            List<Role> roles = author.asUser().get().getRoles(event.getServer().get());
+
+            if (!roles.isEmpty()) {
+                role = roles.get(roles.size() - 1).getName();
+            }
+        }
 
         // Placeholders: username, displayname, channel, server, message, primaryrole
         Component component = MiniMessageParser.parseFormat(getDiscordFormatting(), "message", message,
@@ -132,107 +132,40 @@ public class SimpleChatChannel extends ChatChannel {
 
         Component formattedMessage = /*TextUtilsKt.removeEscape(*/MiniMessageParser.parseFormat(messageFormat)/*, '\\')*/;
 
-        if (isTownChat()) {
-            try {
-                Resident resident = TownyAPI.getInstance().getDataSource().getResident(player.getName());
-
-                if (resident.hasTown()) {
-                    Town town = resident.getTown();
-
-                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                        if (!town.hasResident(onlinePlayer.getName())) {
-                            continue;
-                        }
-
-                        if (!canUserSeeMessage(player, onlinePlayer)) {
-                            continue;
-                        }
-
-                        TextAdapter.sendMessage(onlinePlayer, formattedMessage);
-                    }
-                } else {
-                    // TODO: send "you don't belong to a town" message
-                    return;
-                }
-            } catch (NotRegisteredException e) {
-                e.printStackTrace();
-                return;
-            }
-        } else if (isNationChat()) {
-            try {
-                Resident resident = TownyAPI.getInstance().getDataSource().getResident(player.getName());
-
-                if (resident.hasNation()) {
-                    Nation nation = resident.getTown().getNation();
-
-                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                        if (!nation.hasResident(onlinePlayer.getName())) {
-                            continue;
-                        }
-
-                        if (!canUserSeeMessage(player, onlinePlayer)) {
-                            continue;
-                        }
-
-                        TextAdapter.sendMessage(onlinePlayer, formattedMessage);
-                    }
-                } else {
-                    // TODO: send "you don't belong to a nation" message
-                    return;
-                }
-            } catch (NotRegisteredException e) {
-                e.printStackTrace();
-                return;
-            }
-        } else if (isAllianceChat()) {
-            try {
-                Resident resident = TownyAPI.getInstance().getDataSource().getResident(player.getName());
-
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    Resident target = TownyAPI.getInstance().getDataSource().getResident(onlinePlayer.getName());
-
-                    if (!resident.isAlliedWith(target)) {
-                        continue;
-                    }
-
-                    if (!canUserSeeMessage(player, onlinePlayer)) {
-                        continue;
-                    }
-
-                    TextAdapter.sendMessage(onlinePlayer, formattedMessage);
-                }
-            } catch (NotRegisteredException e) {
-                e.printStackTrace();
-                return;
-            }
-        } else if (isPartyChat()) {
-            if (PartyAPI.inParty(player)) {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if (!PartyAPI.inSameParty(player, onlinePlayer)) {
-                        continue;
-                    }
-
-                    if (!canUserSeeMessage(player, onlinePlayer)) {
-                        continue;
-                    }
-
-                    TextAdapter.sendMessage(onlinePlayer, formattedMessage);
-                }
-            } else {
-                // TODO: send "you don't belong to a party" message
-                return;
-            }
-        } else {
+        if (PartyAPI.inParty(player)) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (!PartyAPI.inSameParty(player, onlinePlayer)) {
+                    continue;
+                }
+
                 if (!canUserSeeMessage(player, onlinePlayer)) {
                     continue;
                 }
 
                 TextAdapter.sendMessage(onlinePlayer, formattedMessage);
             }
+        } else {
+            // TODO: send "you don't belong to a party" message
+            return;
         }
 
         System.out.println(LegacyComponentSerializer.INSTANCE.serialize(formattedMessage));
+
+        sendMessageToDiscord(player, message);
+    }
+
+    public void sendMessageToDiscord(Player player, String message) {
+        if (webhookClient == null) {
+            return;
+        }
+
+        WebhookMessageBuilder builder = new WebhookMessageBuilder();
+
+        builder.setUsername(player.getName());
+        builder.setContent(message.replace("@", "@\u200B"));
+        builder.setAvatarUrl("https://minotar.net/helm/" + player.getUniqueId().toString() + "/100.png");
+
+        webhookClient.send(builder.build());
     }
 
     public boolean canUserSeeMessage(Player sender, Player target) {
@@ -315,30 +248,15 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public boolean isTownChat() {
-        return isTownChat;
-    }
-
-    @Override
-    public boolean isNationChat() {
-        return isNationChat;
-    }
-
-    @Override
-    public boolean isAllianceChat() {
-        return isAllianceChat;
-    }
-
-    @Override
     public boolean isPartyChat() {
-        return isPartyChat;
+        return true;
     }
 
-    public static SimpleChatChannel.Builder builder(String name) {
-        return new SimpleChatChannel.Builder(name);
+    public static PartyChatChannel.Builder builder(String name) {
+        return new PartyChatChannel.Builder(name);
     }
 
-    public static class Builder {
+    public static class Builder extends ChatChannel.Builder {
 
         private TextColor color = TextColor.WHITE;
         private long id = -1;
@@ -351,10 +269,6 @@ public class SimpleChatChannel extends ChatChannel {
         private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
         private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
         private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
-        private boolean isTownChat = false;
-        private boolean isNationChat = false;
-        private boolean isAllianceChat = false;
-        private boolean isPartyChat = false;
 
         private Builder() { }
 
@@ -362,96 +276,84 @@ public class SimpleChatChannel extends ChatChannel {
             this.name = name.toLowerCase();
         }
 
-        public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, isTownChat, isNationChat, isAllianceChat, isPartyChat, simpleChat);
+        @Override
+        public PartyChatChannel build(SimpleChat simpleChat) {
+            return new PartyChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, simpleChat);
         }
 
+        @Override
         public Builder setColor(TextColor color) {
             this.color = color;
 
             return this;
         }
 
+        @Override
         public Builder setId(long id) {
             this.id = id;
 
             return this;
         }
 
+        @Override
         public Builder setFormats(Map<String, String> formats) {
             this.formats = formats;
 
             return this;
         }
 
+        @Override
         public Builder setWebhook(String webhook) {
             this.webhook = webhook;
 
             return this;
         }
 
+        @Override
         public Builder setIsDefault(boolean aDefault) {
             this.isDefault = aDefault;
 
             return this;
         }
 
+        @Override
         public Builder setIgnorable(boolean ignorable) {
             this.ignorable = ignorable;
 
             return this;
         }
 
+        @Override
         public Builder setName(String name) {
             this.name = name;
 
             return this;
         }
 
+        @Override
         public Builder setDistance(double distance) {
             this.distance = distance;
 
             return this;
         }
 
+        @Override
         public Builder setSwitchMessage(String switchMessage) {
             this.switchMessage = switchMessage;
 
             return this;
         }
 
+        @Override
         public Builder setToggleOffMessage(String toggleOffMessage) {
             this.toggleOffMessage = toggleOffMessage;
 
             return this;
         }
 
+        @Override
         public Builder setToggleOnMessage(String toggleOnMessage) {
             this.toggleOnMessage = toggleOnMessage;
-
-            return this;
-        }
-
-        public Builder setIsTownChat(boolean isTownChat) {
-            this.isTownChat = isTownChat;
-
-            return this;
-        }
-
-        public Builder setIsNationChat(boolean isNationChat) {
-            this.isNationChat = isNationChat;
-
-            return this;
-        }
-
-        public Builder setIsAllianceChat(boolean isAllianceChat) {
-            this.isAllianceChat = isAllianceChat;
-
-            return this;
-        }
-
-        public Builder setIsPartyChat(boolean isPartyChat) {
-            this.isPartyChat = isPartyChat;
 
             return this;
         }

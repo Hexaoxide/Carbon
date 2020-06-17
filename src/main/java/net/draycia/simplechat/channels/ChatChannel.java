@@ -1,8 +1,13 @@
 package net.draycia.simplechat.channels;
 
+import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.channels.impls.TownChatChannel;
 import net.kyori.text.format.TextColor;
 import org.bukkit.entity.Player;
 import org.javacord.api.event.message.MessageCreateEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ChatChannel {
 
@@ -66,22 +71,30 @@ public abstract class ChatChannel {
     /**
      * @return If this channel is Towny's town chat.
      */
-    public abstract boolean isTownChat();
+    public boolean isTownChat() {
+        return false;
+    }
 
     /**
      * @return If this channel is Towny's nation chat.
      */
-    public abstract boolean isNationChat();
+    public boolean isNationChat() {
+        return false;
+    }
 
     /**
      * @return If this channel is a Towny alliance chat.
      */
-    public abstract boolean isAllianceChat();
+    public boolean isAllianceChat() {
+        return false;
+    }
 
     /**
      * @return If this channel is mcMMO's party chat.
      */
-    public abstract boolean isPartyChat();
+    public boolean isPartyChat() {
+        return false;
+    }
 
     /**
      * @return If the player can use this channel.
@@ -98,5 +111,20 @@ public abstract class ChatChannel {
     public abstract void processDiscordMessage(MessageCreateEvent event);
 
     //public abstract void sendMessageToMinecraft(String message);
+
+    public static abstract class Builder {
+        public abstract ChatChannel build(SimpleChat simpleChat);
+        public abstract ChatChannel.Builder setColor(TextColor color);
+        public abstract ChatChannel.Builder setId(long id);
+        public abstract ChatChannel.Builder setFormats(Map<String, String> formats);
+        public abstract ChatChannel.Builder setWebhook(String webhook);
+        public abstract ChatChannel.Builder setIsDefault(boolean aDefault);
+        public abstract ChatChannel.Builder setIgnorable(boolean ignorable);
+        public abstract ChatChannel.Builder setName(String name);
+        public abstract ChatChannel.Builder setDistance(double distance);
+        public abstract ChatChannel.Builder setSwitchMessage(String switchMessage);
+        public abstract ChatChannel.Builder setToggleOffMessage(String toggleOffMessage);
+        public abstract ChatChannel.Builder setToggleOnMessage(String toggleOnMessage);
+    }
 
 }
