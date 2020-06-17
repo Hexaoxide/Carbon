@@ -47,7 +47,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    private SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, SimpleChat simpleChat) {
+    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -183,6 +183,10 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         return true;
+    }
+
+    public Map<String, String> getFormats() {
+        return formats;
     }
 
     @Override

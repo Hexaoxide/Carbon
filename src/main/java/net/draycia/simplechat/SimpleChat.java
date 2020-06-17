@@ -92,16 +92,16 @@ public final class SimpleChat extends JavaPlugin {
             ConfigurationSection section = getConfig().getConfigurationSection("channels").getConfigurationSection(key);
 
             if (section.contains("is-town-chat")) {
-                builder = TownChatChannel.builder(key);
+                builder = TownChatChannel.townBuilder(key);
                 hasTownChat = true;
             } else if (section.contains("is-nation-chat")) {
-                builder = NationChatChannel.builder(key);
+                builder = NationChatChannel.nationBuilder(key);
                 hasNationChat = true;
             } else if (section.contains("is-alliance-chat")) {
-                builder = AllianceChatChannel.builder(key);
+                builder = AllianceChatChannel.allianceBuilder(key);
                 hasAllianceChat = true;
             } else if (section.contains("is-party-chat")) {
-                builder = PartyChatChannel.builder(key);
+                builder = PartyChatChannel.partyBuilder(key);
                 hasPartyChat = true;
             } else {
                 builder = SimpleChatChannel.builder(key);
