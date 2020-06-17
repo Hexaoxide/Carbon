@@ -73,7 +73,7 @@ public class TownChatChannel extends ChatChannel {
     }
 
     private String getDiscordFormatting() {
-        return formats.getOrDefault("discord-to-mc", "<gray>[<blue>Discord<gray>] <username>: <white><message>");
+        return formats.getOrDefault("discord-to-mc", "<gray>[<blue>Discord<gray>] <username><white>: <message>");
     }
 
     @Override

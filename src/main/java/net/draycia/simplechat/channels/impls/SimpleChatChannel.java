@@ -72,7 +72,7 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     private String getDiscordFormatting() {
-        return formats.getOrDefault("discord-to-mc", "<gray>[<blue>Discord<gray>] <username>: <white><message>");
+        return formats.getOrDefault("discord-to-mc", "<gray>[<blue>Discord<gray>] <username><white>: <message>");
     }
 
     @Override
@@ -133,6 +133,7 @@ public class SimpleChatChannel extends ChatChannel {
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + color.toString() + ">");
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
+        // TODO: unfuck this
         Component formattedMessage = /*TextUtilsKt.removeEscape(*/MiniMessageParser.parseFormat(messageFormat)/*, '\\')*/;
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
