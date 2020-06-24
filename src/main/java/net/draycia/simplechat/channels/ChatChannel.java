@@ -3,6 +3,7 @@ package net.draycia.simplechat.channels;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.impls.TownChatChannel;
 import net.kyori.text.format.TextColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.javacord.api.event.message.MessageCreateEvent;
 
@@ -22,9 +23,9 @@ public abstract class ChatChannel {
     public abstract long getChannelId();
 
     /**
-     * @return The MiniMessage styled format for the player in this channel.
+     * @return The MiniMessage styled format for the group in this channel.
      */
-    public abstract String getFormat(Player player);
+    public abstract String getFormat(String group);
 
     /**
      * @return The url of the webhook used to send messages to discord for chat bridging.
@@ -106,15 +107,14 @@ public abstract class ChatChannel {
      * @param player The player who is saying the message.
      * @param message The message to be sent.
      */
-    public abstract void sendMessage(Player player, String message);
+    public abstract void sendMessage(OfflinePlayer player, String message);
 
     public abstract void processDiscordMessage(MessageCreateEvent event);
-
-    //public abstract void sendMessageToMinecraft(String message);
 
     public static abstract class Builder {
         public abstract ChatChannel build(SimpleChat simpleChat);
         public abstract ChatChannel.Builder setColor(TextColor color);
+        public abstract ChatChannel.Builder setColor(String color);
         public abstract ChatChannel.Builder setId(long id);
         public abstract ChatChannel.Builder setFormats(Map<String, String> formats);
         public abstract ChatChannel.Builder setWebhook(String webhook);

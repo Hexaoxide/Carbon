@@ -1,25 +1,29 @@
 package net.draycia.simplechat;
 
-import co.aikar.commands.BukkitCommandManager;
-import co.aikar.commands.ConditionFailedException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.channels.impls.*;
-import net.draycia.simplechat.commands.ChannelCommand;
-import net.draycia.simplechat.commands.IgnoreCommand;
-import net.draycia.simplechat.commands.ToggleCommand;
 import net.draycia.simplechat.listeners.PlayerChatListener;
-import net.kyori.text.format.TextColor;
+import net.draycia.simplechat.managers.ChannelManager;
+import net.draycia.simplechat.managers.CommandManager;
+import net.draycia.simplechat.managers.DiscordManager;
+import net.draycia.simplechat.managers.PluginMessageManager;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.javacord.api.DiscordApi;
-import org.javacord.api.DiscordApiBuilder;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public final class SimpleChat extends JavaPlugin {
@@ -32,189 +36,168 @@ public final class SimpleChat extends JavaPlugin {
 
     private Permission permission;
 
-    private DiscordApi discordAPI = null;
+    private PluginMessageManager pluginMessageManager;
+    private DiscordManager discordManager;
+    private CommandManager commandManager;
+    private ChannelManager channelManager;
+
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public void onEnable() {
+        // Setup vault and permissions
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
 
+        // Ensure config is present to be modified by the user
         saveDefaultConfig();
 
-        if (getConfig().contains("bot-token") && !getConfig().getString("bot-token").isEmpty()) {
-            try {
-                discordAPI = new DiscordApiBuilder().setToken(getConfig().getString("bot-token")).login().join();
-            } catch (IllegalStateException exception) {
-                getLogger().warning("Unable to start bot. Reason: " + exception.getMessage());
-                getLogger().warning("If you're getting \"Websocket closed\", check that your bot token is valid!");
-            }
-        }
+        // Initialize managers
+        pluginMessageManager = new PluginMessageManager(this);
+        discordManager = new DiscordManager(this);
+        commandManager = new CommandManager(this);
+        channelManager = new ChannelManager(this);
 
-        BukkitCommandManager manager = new BukkitCommandManager(this);
-
-        manager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
-            ArrayList<String> completions = new ArrayList<>();
-
-            for (ChatChannel chatChannel : channels) {
-                if (chatChannel.canPlayerUse(context.getPlayer())) {
-                    completions.add(chatChannel.getName());
-                }
-            }
-
-            return completions;
-        });
-
-        manager.getCommandContexts().registerContext(ChatChannel.class, (context) -> {
-            String name = context.popFirstArg();
-
-            for (ChatChannel chatChannel : channels) {
-                if (chatChannel.getName().equalsIgnoreCase(name)) {
-                    return chatChannel;
-                }
-            }
-
-            return null;
-        });
-
-        manager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
-            if (!value.canPlayerUse(context.getIssuer().getPlayer())) {
-                throw new ConditionFailedException("You cannot use that channel!");
-            }
-        });
-
-        boolean hasTownChat = false;
-        boolean hasNationChat = false;
-        boolean hasAllianceChat = false;
-        boolean hasPartyChat = false;
-
-        for (String key : getConfig().getConfigurationSection("channels").getKeys(false)) {
-            ChatChannel.Builder builder;
-
-            ConfigurationSection section = getConfig().getConfigurationSection("channels").getConfigurationSection(key);
-
-            if (section.contains("is-town-chat")) {
-                builder = TownChatChannel.townBuilder(key);
-                hasTownChat = true;
-            } else if (section.contains("is-nation-chat")) {
-                builder = NationChatChannel.nationBuilder(key);
-                hasNationChat = true;
-            } else if (section.contains("is-alliance-chat")) {
-                builder = AllianceChatChannel.allianceBuilder(key);
-                hasAllianceChat = true;
-            } else if (section.contains("is-party-chat")) {
-                builder = PartyChatChannel.partyBuilder(key);
-                hasPartyChat = true;
-            } else {
-                builder = SimpleChatChannel.builder(key);
-            }
-
-            if (section.contains("id")) {
-                builder.setId(section.getLong("id"));
-            }
-
-            if (section.contains("formats")) {
-                HashMap<String, String> formats = new HashMap<>();
-
-                ConfigurationSection formatSection = section.getConfigurationSection("formats");
-
-                for (String group : formatSection.getKeys(false)) {
-                    formats.put(group, formatSection.getString(group));
-                }
-
-                builder.setFormats(formats);
-            }
-
-            if (section.contains("webhook")) {
-                builder.setWebhook(section.getString("webhook"));
-            }
-
-            if (section.contains("switch-message")) {
-                builder.setSwitchMessage(section.getString("switch-message"));
-            }
-
-            if (section.contains("distance")) {
-                builder.setDistance(section.getDouble("distance"));
-            }
-
-            if (section.contains("name")) {
-                builder.setName(section.getString("name"));
-            }
-
-            if (section.contains("color")) {
-                builder.setColor(TextColor.valueOf(section.getString("color").toUpperCase()));
-            }
-
-            if (section.contains("ignorable")) {
-                builder.setIgnorable(section.getBoolean("ignorable"));
-            }
-
-            if (section.contains("default")) {
-                builder.setIsDefault(section.getBoolean("default"));
-            }
-
-            if (section.contains("toggle-on-message")) {
-                builder.setToggleOnMessage(section.getString("toggle-on-message"));
-            }
-
-            if (section.contains("toggle-off-message")) {
-                builder.setToggleOffMessage(section.getString("toggle-off-message"));
-            }
-
-            ChatChannel channel = builder.build(this);
-
-            if (channel.isTownChat() || channel.isNationChat() || channel.isAllianceChat()) {
-                if (!Bukkit.getPluginManager().isPluginEnabled("Towny")) {
-                    getLogger().warning("Towny related channel with name [" + channel.getName() + "] found, but Towny isn't installed. Skipping channel.");
-                    continue;
-                }
-            }
-
-            if (channel.isPartyChat()) {
-                if (!Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
-                    getLogger().warning("mcMMO related channel with name [" + channel.getName() + "] found, but mcMMO isn't installed. Skipping channel.");
-                    continue;
-                }
-            }
-
-            // TODO: register command for each channel
-            channels.add(channel);
-        }
-
-        if (!hasTownChat) {
-            getLogger().info("Towny installed but no Town channel is setup!");
-        }
-
-        if (!hasNationChat) {
-            getLogger().info("Towny installed but no Nation channel is setup!");
-        }
-
-        if (!hasAllianceChat) {
-            getLogger().info("Towny installed but no Alliance channel is setup!");
-        }
-
-        if (!hasPartyChat) {
-            getLogger().info("mcMMO installed but no Party channel is setup!");
-        }
-
+        // Setup listeners
         setupListeners();
-        setupCommands(manager);
+
+        // Load userChannels
+        File userChannelsFile = new File(getDataFolder(), "userchannels.json");
+
+        try {
+            if (!userChannelsFile.exists()) {
+                userChannelsFile.getParentFile().mkdirs();
+                userChannelsFile.createNewFile();
+            } else {
+                try (JsonReader reader = new JsonReader(new FileReader(userChannelsFile))) {
+                    Type type = new TypeToken<HashMap<UUID, String>>(){}.getType();
+                    HashMap<UUID, String> userChannelsBuffer = gson.fromJson(reader, type);
+
+                    if (userChannelsBuffer != null) {
+                        for (Map.Entry<UUID, String> entry : userChannelsBuffer.entrySet()) {
+                            ChatChannel channel = getChannel(entry.getValue());
+
+                            if (channel == null) {
+                                continue;
+                            }
+
+                            userChannels.put(entry.getKey(), channel);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Load userToggles
+        File userTogglesFile = new File(getDataFolder(), "usertoggles.json");
+
+        try {
+            if (!userTogglesFile.exists()) {
+                userTogglesFile.getParentFile().mkdirs();
+                userTogglesFile.createNewFile();
+            } else {
+                try (JsonReader reader = new JsonReader(new FileReader(userTogglesFile))) {
+                    Type type = new TypeToken<HashMap<UUID, ArrayList<String>>>(){}.getType();
+                    HashMap<UUID, ArrayList<String>> userTogglesBuffer = gson.fromJson(reader, type);
+
+                    if (userTogglesBuffer != null) {
+                        userToggles = userTogglesBuffer;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Load userIgnores
+        File userIgnoresFile = new File(getDataFolder(), "userignores.json");
+
+        try {
+            if (!userIgnoresFile.exists()) {
+                userIgnoresFile.getParentFile().mkdirs();
+                userIgnoresFile.createNewFile();
+            } else {
+                try (JsonReader reader = new JsonReader(new FileReader(userIgnoresFile))) {
+                    Type type = new TypeToken<HashMap<UUID, ArrayList<UUID>>>(){}.getType();
+                    HashMap<UUID, ArrayList<UUID>> userIgnoresBuffer = gson.fromJson(reader, type);
+
+                    if (userIgnoresBuffer != null) {
+                        userIgnores = userIgnoresBuffer;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-    }
+        // Save userChannels
+        File userChannelsFile = new File(getDataFolder(), "userchannels.json");
 
-    private void setupCommands(BukkitCommandManager manager) {
-        manager.registerCommand(new ToggleCommand(this));
-        manager.registerCommand(new ChannelCommand(this));
-        manager.registerCommand(new IgnoreCommand(this));
+        try {
+            if (!userChannelsFile.exists()) {
+                userChannelsFile.getParentFile().mkdirs();
+                userChannelsFile.createNewFile();
+            }
+
+            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(userChannelsFile))) {
+                Type type = new TypeToken<HashMap<UUID, String>>(){}.getType();
+
+                HashMap<UUID, String> userChannelsBuffer = new HashMap<>();
+
+                for (Map.Entry<UUID, ChatChannel> entry : userChannels.entrySet()) {
+                    userChannelsBuffer.put(entry.getKey(), entry.getValue().getName());
+                }
+
+                gson.toJson(userChannelsBuffer, type, writer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Save userToggles
+        File userTogglesFile = new File(getDataFolder(), "usertoggles.json");
+
+        try {
+            if (!userTogglesFile.exists()) {
+                userTogglesFile.getParentFile().mkdirs();
+                userTogglesFile.createNewFile();
+            }
+
+            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(userTogglesFile))) {
+                Type type = new TypeToken<HashMap<UUID, ArrayList<String>>>(){}.getType();
+                gson.toJson(userToggles, type, writer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Save userIgnores
+        File userIgnoresFile = new File(getDataFolder(), "userignores.json");
+
+        try {
+            if (!userIgnoresFile.exists()) {
+                userIgnoresFile.getParentFile().mkdirs();
+                userIgnoresFile.createNewFile();
+            }
+
+            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(userIgnoresFile))) {
+                Type type = new TypeToken<HashMap<UUID, ArrayList<UUID>>>(){}.getType();
+                gson.toJson(userIgnores, type, writer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupListeners() {
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
     }
 
-    public boolean playerHasPlayerIgnored(Player player, OfflinePlayer target) {
+    public boolean playerHasPlayerIgnored(OfflinePlayer player, OfflinePlayer target) {
         ArrayList<UUID> ignores = userIgnores.get(player.getUniqueId());
 
         if (ignores == null) {
@@ -274,11 +257,37 @@ public final class SimpleChat extends JavaPlugin {
         return null;
     }
 
+    public ChatChannel getChannel(String name) {
+        for (ChatChannel chatChannel : channels) {
+            if (chatChannel.getName().equalsIgnoreCase(name)) {
+                return chatChannel;
+            }
+        }
+
+        return null;
+    }
+
+    public ArrayList<ChatChannel> getChannels() {
+        return channels;
+    }
+
     public Permission getPermission() {
         return permission;
     }
 
-    public DiscordApi getDiscordAPI() {
-        return discordAPI;
+    public DiscordManager getDiscordManager() {
+        return discordManager;
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
+
+    public ChannelManager getChannelManager() {
+        return channelManager;
+    }
+
+    public PluginMessageManager getPluginMessageManager() {
+        return pluginMessageManager;
     }
 }

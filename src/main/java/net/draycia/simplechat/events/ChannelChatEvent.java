@@ -1,6 +1,7 @@
 package net.draycia.simplechat.events;
 
 import net.draycia.simplechat.channels.ChatChannel;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -11,12 +12,12 @@ public class ChannelChatEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private boolean isCancelled = false;
 
-    private Player player;
+    private OfflinePlayer player;
     private ChatChannel chatChannel;
     private String format;
     private String message;
 
-    public ChannelChatEvent(Player player, ChatChannel chatChannel, String format, String message) {
+    public ChannelChatEvent(OfflinePlayer player, ChatChannel chatChannel, String format, String message) {
         super(true);
 
         this.player = player;
@@ -44,7 +45,7 @@ public class ChannelChatEvent extends Event implements Cancellable {
         return HANDLERS_LIST;
     }
 
-    public Player getPlayer() {
+    public OfflinePlayer getPlayer() {
         return player;
     }
 

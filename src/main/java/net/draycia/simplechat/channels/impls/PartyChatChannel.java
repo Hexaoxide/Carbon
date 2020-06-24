@@ -4,16 +4,15 @@ import com.gmail.nossr50.api.PartyAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.kyori.text.Component;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.format.TextColor;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class PartyChatChannel extends SimpleChatChannel {
@@ -23,10 +22,18 @@ public class PartyChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public void sendMessage(Player player, String message) {
+    public void sendMessage(OfflinePlayer player, String message) {
         message = MiniMessageParser.escapeTokens(message);
 
-        String messageFormat = getFormat(player);
+        String group;
+
+        if (player.isOnline()) {
+            group = getSimpleChat().getPermission().getPrimaryGroup(player.getPlayer());
+        } else {
+            return;
+        }
+
+        String messageFormat = getFormat(group);
 
         ChannelChatEvent event = new ChannelChatEvent(player, this, messageFormat, message);
 
@@ -42,9 +49,9 @@ public class PartyChatChannel extends SimpleChatChannel {
 
         Component formattedMessage = /*TextUtilsKt.removeEscape(*/MiniMessageParser.parseFormat(messageFormat)/*, '\\')*/;
 
-        if (PartyAPI.inParty(player)) {
+        if (PartyAPI.inParty((Player)player)) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (!PartyAPI.inSameParty(player, onlinePlayer)) {
+                if (!PartyAPI.inSameParty((Player)player, onlinePlayer)) {
                     continue;
                 }
 
@@ -68,106 +75,9 @@ public class PartyChatChannel extends SimpleChatChannel {
         return new PartyChatChannel.Builder(name);
     }
 
-    public static class Builder extends ChatChannel.Builder {
-
-        private TextColor color = TextColor.WHITE;
-        private long id = -1;
-        private Map<String, String> formats = new HashMap<>();
-        private String webhook = null;
-        private boolean isDefault = false;
-        private boolean ignorable = true;
-        private String name;
-        private double distance = -1;
-        private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
-        private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
-        private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
-
-        private Builder() { }
-
+    public static class Builder extends SimpleChatChannel.Builder {
         private Builder(String name) {
-            this.name = name.toLowerCase();
-        }
-
-        @Override
-        public PartyChatChannel build(SimpleChat simpleChat) {
-            return new PartyChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, simpleChat);
-        }
-
-        @Override
-        public Builder setColor(TextColor color) {
-            this.color = color;
-
-            return this;
-        }
-
-        @Override
-        public Builder setId(long id) {
-            this.id = id;
-
-            return this;
-        }
-
-        @Override
-        public Builder setFormats(Map<String, String> formats) {
-            this.formats = formats;
-
-            return this;
-        }
-
-        @Override
-        public Builder setWebhook(String webhook) {
-            this.webhook = webhook;
-
-            return this;
-        }
-
-        @Override
-        public Builder setIsDefault(boolean aDefault) {
-            this.isDefault = aDefault;
-
-            return this;
-        }
-
-        @Override
-        public Builder setIgnorable(boolean ignorable) {
-            this.ignorable = ignorable;
-
-            return this;
-        }
-
-        @Override
-        public Builder setName(String name) {
-            this.name = name;
-
-            return this;
-        }
-
-        @Override
-        public Builder setDistance(double distance) {
-            this.distance = distance;
-
-            return this;
-        }
-
-        @Override
-        public Builder setSwitchMessage(String switchMessage) {
-            this.switchMessage = switchMessage;
-
-            return this;
-        }
-
-        @Override
-        public Builder setToggleOffMessage(String toggleOffMessage) {
-            this.toggleOffMessage = toggleOffMessage;
-
-            return this;
-        }
-
-        @Override
-        public Builder setToggleOnMessage(String toggleOnMessage) {
-            this.toggleOnMessage = toggleOnMessage;
-
-            return this;
+            super(name);
         }
     }
 

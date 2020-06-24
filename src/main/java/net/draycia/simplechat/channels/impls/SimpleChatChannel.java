@@ -1,28 +1,24 @@
 package net.draycia.simplechat.channels.impls;
 
-import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import com.gmail.nossr50.api.PartyAPI;
-import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Resident;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
+import net.draycia.simplechat.util.DiscordWebhook;
 import net.kyori.text.Component;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.format.TextColor;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +37,7 @@ public class SimpleChatChannel extends ChatChannel {
     private String toggleOffMessage;
     private String toggleOnMessage;
 
-    private WebhookClient webhookClient = null;
+    private DiscordWebhook discordWebhook = null;
 
     private SimpleChat simpleChat;
 
@@ -62,13 +58,17 @@ public class SimpleChatChannel extends ChatChannel {
 
         this.simpleChat = simpleChat;
 
-        if (getChannelId() > 0 && simpleChat.getDiscordAPI() != null) {
-            simpleChat.getDiscordAPI().addMessageCreateListener(this::processDiscordMessage);
+        if (getChannelId() > 0 && simpleChat.getDiscordManager().getDiscordAPI() != null) {
+            simpleChat.getDiscordManager().getDiscordAPI().addMessageCreateListener(this::processDiscordMessage);
         }
 
         if (getWebhook() != null) {
-            webhookClient = WebhookClient.withUrl(getWebhook());
+            discordWebhook = new DiscordWebhook(getWebhook());
         }
+    }
+
+    SimpleChat getSimpleChat() {
+        return simpleChat;
     }
 
     private String getDiscordFormatting() {
@@ -83,7 +83,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public void processDiscordMessage(MessageCreateEvent event) {
-        if (event.getChannel().getId() != getChannelId() || !event.getMessageAuthor().isRegularUser()) {
+        if (event.getChannel().getId() != getChannelId() || event.getMessageAuthor().isRegularUser()) {
             return;
         }
 
@@ -114,12 +114,18 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public void sendMessage(Player player, String message) {
+    public void sendMessage(OfflinePlayer player, String message) {
         message = MiniMessageParser.escapeTokens(message);
 
-        String messageFormat = getFormat(player);
+        String group;
 
-        System.out.println(messageFormat);
+        if (player.isOnline()) {
+            group = simpleChat.getPermission().getPrimaryGroup(player.getPlayer());
+        } else {
+            group = simpleChat.getPermission().getPrimaryGroup(null, player);
+        }
+
+        String messageFormat = getFormat(group);
 
         ChannelChatEvent event = new ChannelChatEvent(player, this, messageFormat, message);
 
@@ -146,30 +152,39 @@ public class SimpleChatChannel extends ChatChannel {
 
         System.out.println(LegacyComponentSerializer.INSTANCE.serialize(formattedMessage));
 
+        sendMessageToBungee(player, message);
         sendMessageToDiscord(player, message);
     }
 
-    public void sendMessageToDiscord(Player player, String message) {
-        if (webhookClient == null) {
+    public void sendMessageToDiscord(OfflinePlayer player, String message) {
+        if (discordWebhook == null) {
             return;
         }
 
-        WebhookMessageBuilder builder = new WebhookMessageBuilder();
+        discordWebhook.setUsername(player.getName());
+        discordWebhook.setContent(message.replace("@", "@\u200B"));
+        discordWebhook.setAvatarUrl("https://minotar.net/helm/" + player.getUniqueId().toString() + "/100.png");
 
-        builder.setUsername(player.getName());
-        builder.setContent(message.replace("@", "@\u200B"));
-        builder.setAvatarUrl("https://minotar.net/helm/" + player.getUniqueId().toString() + "/100.png");
-
-        webhookClient.send(builder.build());
+        try {
+            discordWebhook.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public boolean canUserSeeMessage(Player sender, Player target) {
+    public void sendMessageToBungee(OfflinePlayer player, String message) {
+        simpleChat.getPluginMessageManager().sendMessage(this, player, message);
+    }
+
+    public boolean canUserSeeMessage(OfflinePlayer sender, Player target) {
         if (!target.hasPermission("simplechat.see." + getName().toLowerCase())) {
             return false;
         }
 
-        if (getDistance() > 0 && target.getLocation().distance(sender.getLocation()) > getDistance()) {
-            return false;
+        if (sender instanceof Player) {
+            if (getDistance() > 0 && target.getLocation().distance(((Player)sender).getLocation()) > getDistance()) {
+                return false;
+            }
         }
 
         if (isIgnorable()) {
@@ -200,9 +215,7 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public String getFormat(Player player) {
-        String group = simpleChat.getPermission().getPrimaryGroup(player);
-
+    public String getFormat(String group) {
         return formats.getOrDefault(group, formats.getOrDefault("default", "<white><%player_displayname%<white>> <message>"));
     }
 
@@ -266,7 +279,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         private Builder() { }
 
-        private Builder(String name) {
+        Builder(String name) {
             this.name = name.toLowerCase();
         }
 
@@ -280,6 +293,11 @@ public class SimpleChatChannel extends ChatChannel {
             this.color = color;
 
             return this;
+        }
+
+        @Override
+        public Builder setColor(String color) {
+            return setColor(TextColor.valueOf(color.toUpperCase()));
         }
 
         @Override
