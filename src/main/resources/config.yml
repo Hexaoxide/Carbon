@@ -20,4 +20,4 @@ bot-token: -1
 
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
-  not-ignoring-user: '<greey>You are no longer ignoring <gold><player><green>!'
+  not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
