@@ -8,10 +8,9 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.events.ChannelChatEvent;
-import net.kyori.text.Component;
-import net.kyori.text.adapter.bukkit.TextAdapter;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -67,7 +66,7 @@ public class TownChatChannel extends SimpleChatChannel {
                         continue;
                     }
 
-                    TextAdapter.sendMessage(onlinePlayer, formattedMessage);
+                    getSimpleChat().getPlatform().player(onlinePlayer).sendMessage(formattedMessage);
                 }
             } else {
                 // TODO: send "you don't belong to a town" message
@@ -78,7 +77,7 @@ public class TownChatChannel extends SimpleChatChannel {
             return;
         }
 
-        System.out.println(LegacyComponentSerializer.INSTANCE.serialize(formattedMessage));
+        System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
 
         sendMessageToBungee(player, message);
         sendMessageToDiscord(player, message);

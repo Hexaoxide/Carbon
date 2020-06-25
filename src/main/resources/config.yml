@@ -1,3 +1,5 @@
+# https://github.com/MiniDigger/MiniMessage/blob/feature/adventure/DOCS.md
+
 channels:
   global:
     id: -1 # Set to -1, comment out, or remove to disable channel bridge

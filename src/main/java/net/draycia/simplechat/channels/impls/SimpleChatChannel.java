@@ -6,10 +6,9 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.draycia.simplechat.util.DiscordWebhook;
-import net.kyori.text.Component;
-import net.kyori.text.adapter.bukkit.TextAdapter;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -109,14 +108,12 @@ public class SimpleChatChannel extends ChatChannel {
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            TextAdapter.sendMessage(player, component);
+            simpleChat.getPlatform().player(player).sendMessage(component);
         }
     }
 
     @Override
     public void sendMessage(OfflinePlayer player, String message) {
-        message = MiniMessageParser.escapeTokens(message);
-
         String group;
 
         if (player.isOnline()) {
@@ -136,21 +133,21 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         messageFormat = PlaceholderAPI.setPlaceholders(player, event.getFormat());
-        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + color.toString() + ">");
+        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + color.toString() + ">", "phase", Long.toString(System.currentTimeMillis() % 25));
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
         // TODO: unfuck this
-        Component formattedMessage = /*TextUtilsKt.removeEscape(*/MiniMessageParser.parseFormat(messageFormat)/*, '\\')*/;
+        Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (!canUserSeeMessage(player, onlinePlayer)) {
                 continue;
             }
 
-            TextAdapter.sendMessage(onlinePlayer, formattedMessage);
+            simpleChat.getPlatform().player(onlinePlayer).sendMessage(formattedMessage);
         }
 
-        System.out.println(LegacyComponentSerializer.INSTANCE.serialize(formattedMessage));
+        System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
 
         sendMessageToBungee(player, message);
         sendMessageToDiscord(player, message);
@@ -265,7 +262,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     public static class Builder extends ChatChannel.Builder {
 
-        private TextColor color = TextColor.WHITE;
+        private TextColor color = TextColor.of(255, 255, 255);
         private long id = -1;
         private Map<String, String> formats = new HashMap<>();
         private String webhook = null;
@@ -297,7 +294,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         @Override
         public Builder setColor(String color) {
-            return setColor(TextColor.valueOf(color.toUpperCase()));
+            return setColor(TextColor.fromHexString(color));
         }
 
         @Override

@@ -11,6 +11,7 @@ import net.draycia.simplechat.managers.ChannelManager;
 import net.draycia.simplechat.managers.CommandManager;
 import net.draycia.simplechat.managers.DiscordManager;
 import net.draycia.simplechat.managers.PluginMessageManager;
+import net.kyori.adventure.platform.bukkit.BukkitPlatform;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -41,10 +42,14 @@ public final class SimpleChat extends JavaPlugin {
     private CommandManager commandManager;
     private ChannelManager channelManager;
 
+    private BukkitPlatform platform;
+
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public void onEnable() {
+        platform = BukkitPlatform.of(this);
+
         // Setup vault and permissions
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
 
@@ -289,5 +294,9 @@ public final class SimpleChat extends JavaPlugin {
 
     public PluginMessageManager getPluginMessageManager() {
         return pluginMessageManager;
+    }
+
+    public BukkitPlatform getPlatform() {
+        return platform;
     }
 }

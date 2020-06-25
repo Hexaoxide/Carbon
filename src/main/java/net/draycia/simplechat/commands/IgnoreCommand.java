@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
-import net.kyori.text.adapter.bukkit.TextAdapter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -32,7 +31,7 @@ public class IgnoreCommand extends BaseCommand {
             message = simpleChat.getConfig().getString("language.not-ignoring-user");
         }
 
-        TextAdapter.sendMessage(player, MiniMessageParser.parseFormat(message));
+        simpleChat.getPlatform().player(player).sendMessage(MiniMessageParser.parseFormat(message));
     }
 
 }

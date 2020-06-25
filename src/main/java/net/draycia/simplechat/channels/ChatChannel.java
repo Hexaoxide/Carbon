@@ -1,13 +1,11 @@
 package net.draycia.simplechat.channels;
 
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.channels.impls.TownChatChannel;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.javacord.api.event.message.MessageCreateEvent;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class ChatChannel {
