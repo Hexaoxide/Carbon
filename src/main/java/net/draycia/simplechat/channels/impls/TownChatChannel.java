@@ -78,9 +78,6 @@ public class TownChatChannel extends SimpleChatChannel {
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
-
-        sendMessageToBungee(player, message);
-        sendMessageToDiscord(player, message);
     }
 
     public static TownChatChannel.Builder townBuilder(String name) {

@@ -82,7 +82,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public void processDiscordMessage(MessageCreateEvent event) {
-        if (event.getChannel().getId() != getChannelId() || event.getMessageAuthor().isRegularUser()) {
+        if (event.getChannel().getId() != getChannelId() || !event.getMessageAuthor().isRegularUser()) {
             return;
         }
 
@@ -124,6 +124,11 @@ public class SimpleChatChannel extends ChatChannel {
 
         String messageFormat = getFormat(group);
 
+        if (!player.isOnline()) {
+            messageFormat = messageFormat.replace("%player_displayname%", "%player_name%");
+        }
+
+
         ChannelChatEvent event = new ChannelChatEvent(player, this, messageFormat, message);
 
         Bukkit.getPluginManager().callEvent(event);
@@ -136,7 +141,6 @@ public class SimpleChatChannel extends ChatChannel {
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + color.toString() + ">", "phase", Long.toString(System.currentTimeMillis() % 25));
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
-        // TODO: unfuck this
         Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -149,8 +153,10 @@ public class SimpleChatChannel extends ChatChannel {
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
 
-        sendMessageToBungee(player, message);
-        sendMessageToDiscord(player, message);
+        if (player.isOnline()) {
+            sendMessageToBungee(player.getPlayer(), message);
+            sendMessageToDiscord(player, message);
+        }
     }
 
     public void sendMessageToDiscord(OfflinePlayer player, String message) {
@@ -169,7 +175,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
     }
 
-    public void sendMessageToBungee(OfflinePlayer player, String message) {
+    public void sendMessageToBungee(Player player, String message) {
         simpleChat.getPluginMessageManager().sendMessage(this, player, message);
     }
 

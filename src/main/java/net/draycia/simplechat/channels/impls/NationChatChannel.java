@@ -78,9 +78,6 @@ public class NationChatChannel extends SimpleChatChannel {
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
-
-        sendMessageToBungee(player, message);
-        sendMessageToDiscord(player, message);
     }
 
     public static NationChatChannel.Builder nationBuilder(String name) {

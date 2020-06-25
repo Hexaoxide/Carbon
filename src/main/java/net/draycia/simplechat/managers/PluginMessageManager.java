@@ -19,22 +19,17 @@ public class PluginMessageManager implements PluginMessageListener {
     public PluginMessageManager(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;
 
-        simpleChat.getServer().getMessenger().registerIncomingPluginChannel(simpleChat, "BungeeCord", this);
-        simpleChat.getServer().getMessenger().registerOutgoingPluginChannel(simpleChat, "BungeeCord");
+        simpleChat.getServer().getMessenger().registerOutgoingPluginChannel(simpleChat, "simplechat:message");
+        simpleChat.getServer().getMessenger().registerIncomingPluginChannel(simpleChat, "simplechat:message", this);
     }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals("BungeeCord")) {
+        if (!channel.equals("simplechat:message")) {
             return;
         }
 
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
-        String messageSubChannel = in.readUTF();
-
-        if (!messageSubChannel.equalsIgnoreCase("simplechat-message")) {
-            return;
-        }
 
         String chatChannelName = in.readUTF();
 
@@ -57,15 +52,18 @@ public class PluginMessageManager implements PluginMessageListener {
 
         String chatMessage = in.readUTF();
 
-        chatChannel.sendMessage(messageAuthor, chatMessage);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
+            chatChannel.sendMessage(messageAuthor, chatMessage);
+        });
     }
 
-    public void sendMessage(ChatChannel chatChannel, OfflinePlayer player, String message) {
+    public void sendMessage(ChatChannel chatChannel, Player player, String message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        out.writeUTF("simplechat-message");
         out.writeUTF(chatChannel.getName());
         out.writeUTF(player.getUniqueId().toString());
         out.writeUTF(message);
+
+        player.sendPluginMessage(simpleChat, "simplechat:message", out.toByteArray());
     }
 }

@@ -72,9 +72,6 @@ public class AllianceChatChannel extends SimpleChatChannel {
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
-
-        sendMessageToDiscord(player, message);
-        sendMessageToBungee(player, message);
     }
 
     @Override

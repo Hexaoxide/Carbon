@@ -48,6 +48,7 @@ public final class SimpleChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Setup Adventure
         platform = BukkitPlatform.of(this);
 
         // Setup vault and permissions

@@ -66,8 +66,6 @@ public class PartyChatChannel extends SimpleChatChannel {
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
-
-        sendMessageToDiscord(player, message);
     }
 
     public static PartyChatChannel.Builder partyBuilder(String name) {
