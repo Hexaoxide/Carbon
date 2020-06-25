@@ -185,7 +185,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         if (isIgnorable()) {
-            if (simpleChat.playerHasPlayerIgnored(sender, target)) {
+            if (simpleChat.playerHasPlayerIgnored(sender, target) && !target.hasPermission("simplechat.ignoreexempt")) {
                 return false;
             }
 
