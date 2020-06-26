@@ -114,7 +114,7 @@ public class PluginMessageManager implements PluginMessageListener {
         out.writeShort(msg.toByteArray().length);
         out.write(msg.toByteArray());
 
-        player.sendPluginMessage(simpleChat, "simplechat:message", out.toByteArray());
+        player.sendPluginMessage(simpleChat, "BungeeCord", out.toByteArray());
     }
 
     public void sendComponent(ChatChannel chatChannel, Player player, Component component) {
@@ -133,6 +133,6 @@ public class PluginMessageManager implements PluginMessageListener {
         out.writeShort(msg.toByteArray().length);
         out.write(msg.toByteArray());
 
-        player.sendPluginMessage(simpleChat, "simplechat:component", out.toByteArray());
+        player.sendPluginMessage(simpleChat, "BungeeCord", out.toByteArray());
     }
 }
