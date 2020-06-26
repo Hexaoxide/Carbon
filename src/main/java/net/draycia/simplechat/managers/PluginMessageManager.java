@@ -28,6 +28,10 @@ public class PluginMessageManager implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (!channel.equals("BungeeCord")) {
+            return;
+        }
+
         ByteArrayDataInput input = ByteStreams.newDataInput(message);
 
         String subchannel = input.readUTF();
