@@ -22,22 +22,29 @@ public class PluginMessageManager implements PluginMessageListener {
     public PluginMessageManager(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;
 
-        simpleChat.getServer().getMessenger().registerOutgoingPluginChannel(simpleChat, "simplechat:message");
-        simpleChat.getServer().getMessenger().registerIncomingPluginChannel(simpleChat, "simplechat:message", this);
+        simpleChat.getServer().getMessenger().registerOutgoingPluginChannel(simpleChat, "BungeeCord");
+        simpleChat.getServer().getMessenger().registerIncomingPluginChannel(simpleChat, "BungeeCord", this);
     }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (channel.equals("simplechat:message")) {
-            onMessageReceived(channel, player, message);
-        } else if (channel.equals("simplechat:component")) {
-            onComponentReceived(channel, player, message);
+        ByteArrayDataInput input = ByteStreams.newDataInput(message);
+
+        String subchannel = input.readUTF();
+        short length = input.readShort();
+        byte[] msgbytes = new byte[length];
+        input.readFully(msgbytes);
+
+        ByteArrayDataInput msg = ByteStreams.newDataInput(msgbytes);
+
+        if (subchannel.equals("simplechat:message")) {
+            onMessageReceived(msg);
+        } else if (subchannel.equals("simplechat:component")) {
+            onComponentReceived(msg);
         }
     }
 
-    private void onMessageReceived(String channel, Player player, byte[] message) {
-        ByteArrayDataInput in = ByteStreams.newDataInput(message);
-
+    private void onMessageReceived(ByteArrayDataInput in) {
         String chatChannelName = in.readUTF();
 
         ChatChannel chatChannel = simpleChat.getChannel(chatChannelName);
@@ -64,9 +71,7 @@ public class PluginMessageManager implements PluginMessageListener {
         });
     }
 
-    public void onComponentReceived(String channel, Player player, byte[] message) {
-        ByteArrayDataInput in = ByteStreams.newDataInput(message);
-
+    public void onComponentReceived(ByteArrayDataInput in) {
         String chatChannelName = in.readUTF();
 
         ChatChannel chatChannel = simpleChat.getChannel(chatChannelName);
@@ -96,9 +101,18 @@ public class PluginMessageManager implements PluginMessageListener {
     public void sendMessage(ChatChannel chatChannel, Player player, String message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        out.writeUTF(chatChannel.getName());
-        out.writeUTF(player.getUniqueId().toString());
-        out.writeUTF(message);
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("simplechat:message");
+
+        ByteArrayDataOutput msg = ByteStreams.newDataOutput();
+
+        msg.writeUTF(chatChannel.getName());
+        msg.writeUTF(player.getUniqueId().toString());
+        msg.writeUTF(message);
+
+        out.writeShort(msg.toByteArray().length);
+        out.write(msg.toByteArray());
 
         player.sendPluginMessage(simpleChat, "simplechat:message", out.toByteArray());
     }
@@ -106,9 +120,18 @@ public class PluginMessageManager implements PluginMessageListener {
     public void sendComponent(ChatChannel chatChannel, Player player, Component component) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        out.writeUTF(chatChannel.getName());
-        out.writeUTF(player.getUniqueId().toString());
-        out.writeUTF(MiniMessageSerializer.serialize(component));
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("simplechat:component");
+
+        ByteArrayDataOutput msg = ByteStreams.newDataOutput();
+
+        msg.writeUTF(chatChannel.getName());
+        msg.writeUTF(player.getUniqueId().toString());
+        msg.writeUTF(MiniMessageSerializer.serialize(component));
+
+        out.writeShort(msg.toByteArray().length);
+        out.write(msg.toByteArray());
 
         player.sendPluginMessage(simpleChat, "simplechat:component", out.toByteArray());
     }
