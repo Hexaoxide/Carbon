@@ -93,6 +93,10 @@ public class ChannelManager {
                 builder.setToggleOffMessage(section.getString("toggle-off-message"));
             }
 
+            if (section.contains("forward-format")) {
+                builder.setShouldForwardFormatting(section.getBoolean("forward-format"));
+            }
+
             ChatChannel channel = builder.build(simpleChat);
 
             if (channel.isTownChat() || channel.isNationChat() || channel.isAllianceChat()) {
