@@ -51,8 +51,11 @@ public class AllianceChatChannel extends SimpleChatChannel {
         Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
         messageFormat = MiniMessageSerializer.serialize(component);
 
-        // Continue parsing the format
-        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + getColor().toString() + ">");
+        // First pass for placeholders, to support placeholders in placeholders
+        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + getColor().toString() + ">",
+                "phase", Long.toString(System.currentTimeMillis() % 25), "server", getSimpleChat().getConfig().getString("server-name", "Server"));
+
+        // Finally, parse remaining placeholders and parse format
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
         Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);

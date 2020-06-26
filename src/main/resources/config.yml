@@ -1,4 +1,7 @@
 # https://github.com/MiniDigger/MiniMessage/blob/feature/adventure/DOCS.md
+# IMPORTANT: Use the <pre> tag around ALL user inputs.
+# All <message> placeholders should be prefixed with <pre> and suffixed with </pre>
+# Failure to do so may and likely will result in users being able to inject formatting in messages.
 
 channels:
   global:
@@ -7,17 +10,20 @@ channels:
     toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
     toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
     formats:
-      discord-to-mc: '<gray>[<blue>Discord<gray>] <username><white>: <message>' # Placeholders: username, displayname, channel, server, message, primaryrole
-      staff: '<gray>{[%deluxetags_tag%<gray>]} %player_displayname% <gray>» <white><message>'
-      default: '<gray>[%deluxetags_tag%<gray>] %player_displayname%<gray>: <white><message>'
+      discord-to-mc: '<gray>[<blue>Discord<gray>] <username><white>: <pre><message>' # Placeholders: username, displayname, channel, server, message, primaryrole
+      staff: '<gray>{[%deluxetags_tag%<gray>]} %player_displayname% <gray>» <white><pre><message>'
+      default: '<gray>[%deluxetags_tag%<gray>] %player_displayname%<gray>: <white><pre><message>'
     webhook: 'URL_HERE' # Comment out / remove to disable webhook
     color: WHITE # Removing this option defaults to 'WHITE'
     default: true # Removing this option defaults to 'false'
     ignorable: true # Removing this option defaults to 'true'
     distance: -1 # Set to -1, comment out, or remove to disable distance checking
+    forward-format: true # Removing this option defaults to 'true'. Forces all other servers to use this server's formatting for this channel.
 
 bot-token: -1
 
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
+
+server-name: 'Server'
