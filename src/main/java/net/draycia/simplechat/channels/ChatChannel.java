@@ -1,6 +1,7 @@
 package net.draycia.simplechat.channels;
 
 import net.draycia.simplechat.SimpleChat;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -101,11 +102,20 @@ public abstract class ChatChannel {
     public abstract boolean canPlayerUse(Player player);
 
     /**
+     * @return If the channel should forward its formatting / formatted message to other servers
+     */
+    public boolean shouldForwardFormatting() {
+        return true;
+    }
+
+    /**
      * Parses the specified message, calls a {@link net.draycia.simplechat.events.ChannelChatEvent}, and sends the message to everyone who can view this channel.
      * @param player The player who is saying the message.
      * @param message The message to be sent.
      */
     public abstract void sendMessage(OfflinePlayer player, String message);
+
+    public abstract void sendComponent(OfflinePlayer player, Component component);
 
     public abstract void processDiscordMessage(MessageCreateEvent event);
 
@@ -123,6 +133,7 @@ public abstract class ChatChannel {
         public abstract ChatChannel.Builder setSwitchMessage(String switchMessage);
         public abstract ChatChannel.Builder setToggleOffMessage(String toggleOffMessage);
         public abstract ChatChannel.Builder setToggleOnMessage(String toggleOnMessage);
+        public abstract ChatChannel.Builder setShouldForwardFormatting(boolean forwardFormatting);
     }
 
 }

@@ -36,6 +36,7 @@ public class SimpleChatChannel extends ChatChannel {
     private String switchMessage;
     private String toggleOffMessage;
     private String toggleOnMessage;
+    private boolean forwardFormatting;
 
     private DiscordWebhook discordWebhook = null;
 
@@ -43,7 +44,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, SimpleChat simpleChat) {
+    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -55,6 +56,7 @@ public class SimpleChatChannel extends ChatChannel {
         this.switchMessage = switchMessage;
         this.toggleOffMessage = toggleOffMessage;
         this.toggleOnMessage = toggleOnMessage;
+        this.forwardFormatting = forwardFormatting;
 
         this.simpleChat = simpleChat;
 
@@ -164,9 +166,27 @@ public class SimpleChatChannel extends ChatChannel {
         System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
 
         if (player.isOnline()) {
-            sendMessageToBungee(player.getPlayer(), message);
+            if (shouldForwardFormatting()) {
+                sendMessageToBungee(player.getPlayer(), component);
+            } else {
+                sendMessageToBungee(player.getPlayer(), message);
+            }
+
             sendMessageToDiscord(player, message);
         }
+    }
+
+    @Override
+    public void sendComponent(OfflinePlayer player, Component component) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (!canUserSeeMessage(player, onlinePlayer)) {
+                continue;
+            }
+
+            simpleChat.getPlatform().player(onlinePlayer).sendMessage(component);
+        }
+
+        System.out.println(LegacyComponentSerializer.legacy().serialize(component));
     }
 
     public void sendMessageToDiscord(OfflinePlayer player, String message) {
@@ -183,6 +203,10 @@ public class SimpleChatChannel extends ChatChannel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessageToBungee(Player player, Component component) {
+        simpleChat.getPluginMessageManager().sendComponent(this, player, component);
     }
 
     public void sendMessageToBungee(Player player, String message) {
@@ -272,6 +296,11 @@ public class SimpleChatChannel extends ChatChannel {
         return toggleOnMessage;
     }
 
+    @Override
+    public boolean shouldForwardFormatting() {
+        return forwardFormatting;
+    }
+
     public static SimpleChatChannel.Builder builder(String name) {
         return new SimpleChatChannel.Builder(name);
     }
@@ -289,6 +318,7 @@ public class SimpleChatChannel extends ChatChannel {
         private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
         private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
         private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
+        private boolean forwardFormatting = true;
 
         private Builder() { }
 
@@ -298,7 +328,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         @Override
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, simpleChat);
+            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, simpleChat);
         }
 
         @Override
@@ -379,6 +409,13 @@ public class SimpleChatChannel extends ChatChannel {
         @Override
         public Builder setToggleOnMessage(String toggleOnMessage) {
             this.toggleOnMessage = toggleOnMessage;
+
+            return this;
+        }
+
+        @Override
+        public Builder setShouldForwardFormatting(boolean forwardFormatting) {
+            this.forwardFormatting = forwardFormatting;
 
             return this;
         }
