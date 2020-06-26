@@ -3,6 +3,7 @@ package net.draycia.simplechat.channels.impls;
 import com.gmail.nossr50.api.PartyAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.minidigger.minimessage.text.MiniMessageParser;
+import me.minidigger.minimessage.text.MiniMessageSerializer;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.kyori.adventure.text.Component;
@@ -43,10 +44,16 @@ public class PartyChatChannel extends SimpleChatChannel {
         }
 
         messageFormat = PlaceholderAPI.setPlaceholders(player, event.getFormat());
+
+        // Convert legacy color codes to Mini color codes
+        Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
+        messageFormat = MiniMessageSerializer.serialize(component);
+
+        // Continue parsing the format
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + getColor().toString() + ">");
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
-        Component formattedMessage = /*TextUtilsKt.removeEscape(*/MiniMessageParser.parseFormat(messageFormat)/*, '\\')*/;
+        Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
         if (PartyAPI.inParty((Player)player)) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {

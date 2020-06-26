@@ -5,6 +5,7 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.minidigger.minimessage.text.MiniMessageParser;
+import me.minidigger.minimessage.text.MiniMessageSerializer;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.kyori.adventure.text.Component;
@@ -45,10 +46,16 @@ public class AllianceChatChannel extends SimpleChatChannel {
         }
 
         messageFormat = PlaceholderAPI.setPlaceholders(player, event.getFormat());
+
+        // Convert legacy color codes to Mini color codes
+        Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
+        messageFormat = MiniMessageSerializer.serialize(component);
+
+        // Continue parsing the format
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + getColor().toString() + ">");
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
-        Component formattedMessage = /*TextUtilsKt.removeEscape(*/MiniMessageParser.parseFormat(messageFormat)/*, '\\')*/;
+        Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
         try {
             Resident resident = TownyAPI.getInstance().getDataSource().getResident(player.getName());
