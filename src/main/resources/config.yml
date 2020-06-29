@@ -19,6 +19,7 @@ channels:
     ignorable: true # Removing this option defaults to 'true'
     distance: -1 # Set to -1, comment out, or remove to disable distance checking
     forward-format: true # Removing this option defaults to 'true'. Forces all other servers to use this server's formatting for this channel.
+    should-bungee: true # Removing this option defaults to 'false'. Enables/disables cross server chat for this channel.
 
 bot-token: -1
 

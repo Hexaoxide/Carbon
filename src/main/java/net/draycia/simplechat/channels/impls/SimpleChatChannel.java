@@ -39,6 +39,7 @@ public class SimpleChatChannel extends ChatChannel {
     private String toggleOffMessage;
     private String toggleOnMessage;
     private boolean forwardFormatting;
+    private boolean shouldBungee;
 
     private DiscordWebhook discordWebhook = null;
 
@@ -46,7 +47,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, SimpleChat simpleChat) {
+    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -59,6 +60,7 @@ public class SimpleChatChannel extends ChatChannel {
         this.toggleOffMessage = toggleOffMessage;
         this.toggleOnMessage = toggleOnMessage;
         this.forwardFormatting = forwardFormatting;
+        this.shouldBungee = shouldBungee;
 
         this.simpleChat = simpleChat;
 
@@ -278,6 +280,11 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
+    public boolean shouldBungee() {
+        return shouldBungee;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -325,6 +332,7 @@ public class SimpleChatChannel extends ChatChannel {
         private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
         private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
         private boolean forwardFormatting = true;
+        private boolean shouldBungee = false;
 
         private Builder() { }
 
@@ -334,7 +342,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         @Override
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, simpleChat);
+            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, simpleChat);
         }
 
         @Override
@@ -422,6 +430,13 @@ public class SimpleChatChannel extends ChatChannel {
         @Override
         public Builder setShouldForwardFormatting(boolean forwardFormatting) {
             this.forwardFormatting = forwardFormatting;
+
+            return this;
+        }
+
+        @Override
+        public Builder setShouldBungee(boolean shouldBungee) {
+            this.shouldBungee = shouldBungee;
 
             return this;
         }

@@ -42,6 +42,8 @@ public abstract class ChatChannel {
      */
     public abstract boolean isIgnorable();
 
+    public abstract boolean shouldBungee();
+
     /**
      * @return The name of this channel.
      */
@@ -139,6 +141,7 @@ public abstract class ChatChannel {
         public abstract ChatChannel.Builder setToggleOffMessage(String toggleOffMessage);
         public abstract ChatChannel.Builder setToggleOnMessage(String toggleOnMessage);
         public abstract ChatChannel.Builder setShouldForwardFormatting(boolean forwardFormatting);
+        public abstract ChatChannel.Builder setShouldBungee(boolean shouldBungee);
     }
 
 }

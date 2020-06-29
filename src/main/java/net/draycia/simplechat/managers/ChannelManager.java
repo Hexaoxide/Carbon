@@ -97,6 +97,10 @@ public class ChannelManager {
                 builder.setShouldForwardFormatting(section.getBoolean("forward-format"));
             }
 
+            if (section.contains("should-bungee")) {
+                builder.setShouldBungee(section.getBoolean("should-bungee"));
+            }
+
             ChatChannel channel = builder.build(simpleChat);
 
             if (channel.isTownChat() || channel.isNationChat() || channel.isAllianceChat()) {
