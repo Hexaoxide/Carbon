@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.javacord.api.event.message.MessageCreateEvent;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class ChatChannel {
@@ -100,6 +101,10 @@ public abstract class ChatChannel {
      * @return If the player can use this channel.
      */
     public abstract boolean canPlayerUse(Player player);
+
+    public abstract boolean canPlayerSee(OfflinePlayer offlinePlayer, Player player);
+
+    public abstract List<Player> getAudience(OfflinePlayer offlinePlayer);
 
     /**
      * @return If the channel should forward its formatting / formatted message to other servers

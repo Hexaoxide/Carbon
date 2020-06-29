@@ -1,15 +1,8 @@
 package net.draycia.simplechat.channels.impls;
 
 import com.gmail.nossr50.api.PartyAPI;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.minidigger.minimessage.text.MiniMessageParser;
-import me.minidigger.minimessage.text.MiniMessageSerializer;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.events.ChannelChatEvent;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -22,60 +15,12 @@ public class PartyChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public void sendMessage(OfflinePlayer player, String message) {
-        message = MiniMessageParser.escapeTokens(message);
-
-        String group;
-
-        if (player.isOnline()) {
-            group = getSimpleChat().getPermission().getPrimaryGroup(player.getPlayer());
-        } else {
-            return;
+    public boolean canPlayerSee(OfflinePlayer offlinePlayer, Player player) {
+        if (super.canPlayerSee(offlinePlayer, player) && offlinePlayer != null) {
+            return PartyAPI.inSameParty((Player)offlinePlayer, player);
         }
 
-        String messageFormat = getFormat(group);
-
-        ChannelChatEvent event = new ChannelChatEvent(player, this, messageFormat, message);
-
-        Bukkit.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return;
-        }
-
-        messageFormat = PlaceholderAPI.setPlaceholders(player, event.getFormat());
-
-        // Convert legacy color codes to Mini color codes
-        Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
-        messageFormat = MiniMessageSerializer.serialize(component);
-
-        // First pass for placeholders, to support placeholders in placeholders
-        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + getColor().toString() + ">",
-                "phase", Long.toString(System.currentTimeMillis() % 25), "server", getSimpleChat().getConfig().getString("server-name", "Server"));
-
-        // Finally, parse remaining placeholders and parse format
-        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
-
-        Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
-
-        if (PartyAPI.inParty((Player)player)) {
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (!PartyAPI.inSameParty((Player)player, onlinePlayer)) {
-                    continue;
-                }
-
-                if (!canUserSeeMessage(player, onlinePlayer)) {
-                    continue;
-                }
-
-                getSimpleChat().getPlatform().player(onlinePlayer).sendMessage(formattedMessage);
-            }
-        } else {
-            // TODO: send "you don't belong to a party" message
-            return;
-        }
-
-        System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
+        return false;
     }
 
     public static PartyChatChannel.Builder partyBuilder(String name) {

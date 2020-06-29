@@ -18,7 +18,9 @@ import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
 
+import javax.annotation.CheckForNull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +81,20 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public boolean canPlayerUse(Player player) {
-        return player.hasPermission("simplechat.channels." + getName());
-        // TODO: other use conditions
+        return player.hasPermission("simplechat.channels." + getName() + ".use");
+    }
+
+    @Override
+    public List<Player> getAudience(OfflinePlayer offlinePlayer) {
+        List<Player> audience = new ArrayList<>();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (canPlayerSee(offlinePlayer, player)) {
+                audience.add(player);
+            }
+        }
+
+        return audience;
     }
 
     @Override
@@ -110,7 +124,7 @@ public class SimpleChatChannel extends ChatChannel {
                 "username", author.getName(), "displayname", author.getDisplayName(), "channel", channel.getName(),
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : getAudience(null)) {
             simpleChat.getPlatform().player(player).sendMessage(component);
         }
     }
@@ -155,11 +169,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (!canUserSeeMessage(player, onlinePlayer)) {
-                continue;
-            }
-
+        for (Player onlinePlayer : getAudience(player)) {
             simpleChat.getPlatform().player(onlinePlayer).sendMessage(formattedMessage);
         }
 
@@ -178,11 +188,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public void sendComponent(OfflinePlayer player, Component component) {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (!canUserSeeMessage(player, onlinePlayer)) {
-                continue;
-            }
-
+        for (Player onlinePlayer : getAudience(player)) {
             simpleChat.getPlatform().player(onlinePlayer).sendMessage(component);
         }
 
@@ -213,8 +219,8 @@ public class SimpleChatChannel extends ChatChannel {
         simpleChat.getPluginMessageManager().sendMessage(this, player, message);
     }
 
-    public boolean canUserSeeMessage(OfflinePlayer sender, Player target) {
-        if (!target.hasPermission("simplechat.see." + getName().toLowerCase())) {
+    public boolean canPlayerSee(@CheckForNull OfflinePlayer sender, Player target) {
+        if (!target.hasPermission("simplechat." + getName().toLowerCase() + ".see")) {
             return false;
         }
 
@@ -224,7 +230,7 @@ public class SimpleChatChannel extends ChatChannel {
             }
         }
 
-        if (isIgnorable()) {
+        if (isIgnorable() && sender != null) {
             if (simpleChat.playerHasPlayerIgnored(sender, target) && !target.hasPermission("simplechat.ignoreexempt")) {
                 return false;
             }
@@ -253,7 +259,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public String getFormat(String group) {
-        return formats.getOrDefault(group, formats.getOrDefault("default", "<white><%player_displayname%<white>> <message>"));
+        return getFormats().getOrDefault(group, getFormats().getOrDefault("default", "<white><%player_displayname%<white>> <message>"));
     }
 
     @Override
