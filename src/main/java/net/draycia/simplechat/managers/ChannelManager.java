@@ -24,6 +24,7 @@ public class ChannelManager {
             ChatChannel.Builder builder;
 
             ConfigurationSection section = simpleChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
+            ConfigurationSection defaults = simpleChat.getConfig().getConfigurationSection("default");
 
             if (section.contains("is-town-chat")) {
                 builder = TownChatChannel.townBuilder(key);
@@ -55,6 +56,16 @@ public class ChannelManager {
                 }
 
                 builder.setFormats(formats);
+            } else if (defaults != null && defaults.contains("formats")) {
+                HashMap<String, String> formats = new HashMap<>();
+
+                ConfigurationSection formatSection = defaults.getConfigurationSection("formats");
+
+                for (String group : formatSection.getKeys(false)) {
+                    formats.put(group, formatSection.getString(group));
+                }
+
+                builder.setFormats(formats);
             }
 
             if (section.contains("webhook")) {
@@ -63,10 +74,14 @@ public class ChannelManager {
 
             if (section.contains("switch-message")) {
                 builder.setSwitchMessage(section.getString("switch-message"));
+            } else if (defaults != null && defaults.contains("switch-message")) {
+                builder.setSwitchMessage(defaults.getString("switch-message"));
             }
 
             if (section.contains("distance")) {
                 builder.setDistance(section.getDouble("distance"));
+            } else if (defaults != null && defaults.contains("distance")) {
+                builder.setDistance(defaults.getDouble("distance"));
             }
 
             if (section.contains("name")) {
@@ -75,10 +90,14 @@ public class ChannelManager {
 
             if (section.contains("color")) {
                 builder.setColor(section.getString("color"));
+            } else if (defaults != null && defaults.contains("color")) {
+                builder.setColor(defaults.getString("color"));
             }
 
             if (section.contains("ignorable")) {
                 builder.setIgnorable(section.getBoolean("ignorable"));
+            } else if (defaults != null && defaults.contains("ignorable")) {
+                builder.setIgnorable(defaults.getBoolean("ignorable"));
             }
 
             if (section.contains("default")) {
@@ -87,18 +106,26 @@ public class ChannelManager {
 
             if (section.contains("toggle-on-message")) {
                 builder.setToggleOnMessage(section.getString("toggle-on-message"));
+            } else if (defaults != null && defaults.contains("toggle-on-message")) {
+                builder.setToggleOnMessage(defaults.getString("toggle-on-message"));
             }
 
             if (section.contains("toggle-off-message")) {
                 builder.setToggleOffMessage(section.getString("toggle-off-message"));
+            } else if (defaults != null && defaults.contains("toggle-off-message")) {
+                builder.setToggleOffMessage(defaults.getString("toggle-off-message"));
             }
 
             if (section.contains("forward-format")) {
                 builder.setShouldForwardFormatting(section.getBoolean("forward-format"));
+            } else if (defaults != null && defaults.contains("forward-format")) {
+                builder.setShouldForwardFormatting(defaults.getBoolean("forward-format"));
             }
 
             if (section.contains("should-bungee")) {
                 builder.setShouldBungee(section.getBoolean("should-bungee"));
+            } else if (defaults != null && defaults.contains("should-bungee")) {
+                builder.setShouldBungee(defaults.getBoolean("should-bungee"));
             }
 
             ChatChannel channel = builder.build(simpleChat);

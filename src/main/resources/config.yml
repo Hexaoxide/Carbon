@@ -3,23 +3,34 @@
 # All <message> placeholders should be prefixed with <pre> and suffixed with </pre>
 # Failure to do so may and likely will result in users being able to inject formatting in messages.
 
+# All of the settings under this 'default' section can be applied to each channel individually to override these.
+# These are provided as a way to configure default channel settings.
+default:
+  switch-message: '<gray>You are now in <color><channel> <gray>chat!'
+  toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
+  toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
+  formats:
+    discord-to-mc: '<gray>[<blue>Discord<gray>] <username><white>: <pre><message>' # Placeholders: username, displayname, channel, server, message, primaryrole
+    staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <white><pre><message>'
+    default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <white><pre><message>'
+  color: '#FFFFFF' # Removing this option defaults to '#FFFFFF'
+  ignorable: true # Removing this option defaults to 'true'
+  distance: -1 # Set to -1, comment out, or remove to disable distance checking
+  forward-format: true # Removing this option defaults to 'true'. Forces all other servers to use this server's formatting for this channel.
+  should-bungee: true # Removing this option defaults to 'false'. Enables/disables cross server chat for this channel.
+
 channels:
   global:
+    name: 'Global'
     id: -1 # Set to -1, comment out, or remove to disable channel bridge
-    switch-message: '<gray>You are now in <color><channel> <gray>chat!'
-    toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
-    toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
-    formats:
-      discord-to-mc: '<gray>[<blue>Discord<gray>] <username><white>: <pre><message>' # Placeholders: username, displayname, channel, server, message, primaryrole
-      staff: '<gray>{[%deluxetags_tag%<gray>]} %player_displayname% <gray>» <white><pre><message>'
-      default: '<gray>[%deluxetags_tag%<gray>] %player_displayname%<gray>: <white><pre><message>'
     webhook: 'URL_HERE' # Comment out / remove to disable webhook
-    color: '#FFFFFF' # Removing this option defaults to '#FFFFFF'
     default: true # Removing this option defaults to 'false'
-    ignorable: true # Removing this option defaults to 'true'
-    distance: -1 # Set to -1, comment out, or remove to disable distance checking
-    forward-format: true # Removing this option defaults to 'true'. Forces all other servers to use this server's formatting for this channel.
-    should-bungee: true # Removing this option defaults to 'false'. Enables/disables cross server chat for this channel.
+  announcements:
+    name: 'Announcements'
+    formats:
+      default: '<gold>Broadcast: <yellow><pre><message></pre>'
+    ignorable: false
+    should-bungee: false
 
 bot-token: -1
 
