@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageAuthor;
@@ -40,6 +41,7 @@ public class SimpleChatChannel extends ChatChannel {
     private String toggleOnMessage;
     private boolean forwardFormatting;
     private boolean shouldBungee;
+    private boolean filterEnabled;
 
     private DiscordWebhook discordWebhook = null;
 
@@ -47,7 +49,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, SimpleChat simpleChat) {
+    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -61,6 +63,7 @@ public class SimpleChatChannel extends ChatChannel {
         this.toggleOnMessage = toggleOnMessage;
         this.forwardFormatting = forwardFormatting;
         this.shouldBungee = shouldBungee;
+        this.filterEnabled = filterEnabled;
 
         this.simpleChat = simpleChat;
 
@@ -133,6 +136,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public void sendMessage(OfflinePlayer player, String message) {
+        // Get player's formatting
         String group;
 
         if (player.isOnline()) {
@@ -143,11 +147,28 @@ public class SimpleChatChannel extends ChatChannel {
 
         String messageFormat = getFormat(group);
 
+        // If the player isn't online (cross server message), use their normal name
         if (!player.isOnline()) {
             messageFormat = messageFormat.replace("%player_displayname%", "%player_name%");
         }
 
+        // Chat filter
+        if (filterEnabled() && simpleChat.getConfig().contains("filters")) {
+            for (String entry : simpleChat.getConfig().getStringList("filters")) {
+                message = message.replaceAll(entry, simpleChat.getConfig().getString("filter-text", "****"));
+            }
+        }
 
+        // Chat placeholders
+        ConfigurationSection replacements = simpleChat.getConfig().getConfigurationSection("replacements");
+
+        if (replacements != null) {
+            for (String key : replacements.getKeys(false)) {
+                message = message.replace(key, replacements.getString(key));
+            }
+        }
+
+        // Call custom chat event
         ChannelChatEvent event = new ChannelChatEvent(player, this, messageFormat, message);
 
         Bukkit.getPluginManager().callEvent(event);
@@ -156,6 +177,7 @@ public class SimpleChatChannel extends ChatChannel {
             return;
         }
 
+        // Parse placeholders
         messageFormat = PlaceholderAPI.setPlaceholders(player, event.getFormat());
 
         // Convert legacy color codes to Mini color codes
@@ -169,18 +191,23 @@ public class SimpleChatChannel extends ChatChannel {
         // Finally, parse remaining placeholders and parse format
         messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
 
+        // Send message to players who can see it
         Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
         for (Player onlinePlayer : getAudience(player)) {
             simpleChat.getPlatform().player(onlinePlayer).sendMessage(formattedMessage);
         }
 
+        // Log message to console
         System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
 
-        if (player.isOnline()) {
-            if (shouldForwardFormatting()) {
+        // Route message to bungee / discord (if message originates from this server)
+        // Use instanceof and not isOnline, if this message originates from another then the instanceof will
+        // fail, but isOnline may succeed if the player is online on both servers (somehow).
+        if (player instanceof Player) {
+            if (shouldForwardFormatting() && shouldBungee()) {
                 sendMessageToBungee(player.getPlayer(), component);
-            } else {
+            } else if (shouldBungee()) {
                 sendMessageToBungee(player.getPlayer(), message);
             }
 
@@ -314,6 +341,11 @@ public class SimpleChatChannel extends ChatChannel {
         return forwardFormatting;
     }
 
+    @Override
+    public boolean filterEnabled() {
+        return filterEnabled;
+    }
+
     public static SimpleChatChannel.Builder builder(String name) {
         return new SimpleChatChannel.Builder(name);
     }
@@ -333,6 +365,7 @@ public class SimpleChatChannel extends ChatChannel {
         private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
         private boolean forwardFormatting = true;
         private boolean shouldBungee = false;
+        private boolean filterEnabled = true;
 
         private Builder() { }
 
@@ -342,7 +375,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         @Override
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, simpleChat);
+            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, simpleChat);
         }
 
         @Override
@@ -437,6 +470,13 @@ public class SimpleChatChannel extends ChatChannel {
         @Override
         public Builder setShouldBungee(boolean shouldBungee) {
             this.shouldBungee = shouldBungee;
+
+            return this;
+        }
+
+        @Override
+        public Builder setFilterEnabled(boolean filterEnabled) {
+            this.filterEnabled = filterEnabled;
 
             return this;
         }

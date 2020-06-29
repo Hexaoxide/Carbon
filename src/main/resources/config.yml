@@ -32,6 +32,15 @@ channels:
     ignorable: false
     should-bungee: false
 
+filters:
+  - 'lag'
+  - 'la[g]+'
+
+filter-text: '****'
+
+replacements:
+  '%shrug%': '¯\_(ツ)_/¯'
+
 bot-token: -1
 
 language:

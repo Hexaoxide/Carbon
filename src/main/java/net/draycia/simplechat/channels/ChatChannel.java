@@ -71,6 +71,8 @@ public abstract class ChatChannel {
 
     public abstract String getToggleOnMessage();
 
+    public abstract boolean filterEnabled();
+
     /**
      * @return If this channel is Towny's town chat.
      */
@@ -142,6 +144,7 @@ public abstract class ChatChannel {
         public abstract ChatChannel.Builder setToggleOnMessage(String toggleOnMessage);
         public abstract ChatChannel.Builder setShouldForwardFormatting(boolean forwardFormatting);
         public abstract ChatChannel.Builder setShouldBungee(boolean shouldBungee);
+        public abstract ChatChannel.Builder setFilterEnabled(boolean filterEnabled);
     }
 
 }
