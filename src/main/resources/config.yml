@@ -14,7 +14,7 @@ channels:
       staff: '<gray>{[%deluxetags_tag%<gray>]} %player_displayname% <gray>» <white><pre><message>'
       default: '<gray>[%deluxetags_tag%<gray>] %player_displayname%<gray>: <white><pre><message>'
     webhook: 'URL_HERE' # Comment out / remove to disable webhook
-    color: WHITE # Removing this option defaults to 'WHITE'
+    color: '#FFFFFF' # Removing this option defaults to '#FFFFFF'
     default: true # Removing this option defaults to 'false'
     ignorable: true # Removing this option defaults to 'true'
     distance: -1 # Set to -1, comment out, or remove to disable distance checking
