@@ -54,17 +54,13 @@ public final class ItemStackUtils {
         if (player instanceof Player) {
             final ItemStack itemStack = ((Player)player).getInventory().getItemInMainHand();
 
-            if (itemStack.getType() == Material.AIR) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
                 return TextComponent.empty();
             }
 
             try {
                 final Object cbItemStack = this.asNMSCopyMethod.invoke(null, itemStack);
                 final Object mojangComponent = this.cMethod.invoke(cbItemStack);
-
-                if (mojangComponent == null) {
-                    return TextComponent.empty();
-                }
 
                 return MinecraftComponentSerializer.INSTANCE.deserialize(mojangComponent);
             } catch (final IllegalAccessException | InvocationTargetException e) {
