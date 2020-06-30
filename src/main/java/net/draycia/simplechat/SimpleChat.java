@@ -51,9 +51,7 @@ public final class SimpleChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         // Setup Adventure
-
         audiences = BukkitAudiences.create(this);
 
         try {

@@ -200,7 +200,7 @@ public class SimpleChatChannel extends ChatChannel {
         Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
         if (formattedMessage instanceof TextComponent && player.isOnline()) {
-            ((TextComponent) formattedMessage).replace(itemPattern, (input) -> {
+            formattedMessage = ((TextComponent) formattedMessage).replace(itemPattern, (input) -> {
                return simpleChat.getItemStackUtils().createComponent(player.getPlayer()).toBuilder();
             });
         }
