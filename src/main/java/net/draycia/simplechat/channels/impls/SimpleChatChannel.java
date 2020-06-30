@@ -217,6 +217,16 @@ public class SimpleChatChannel extends ChatChannel {
         } else {
             for (Player onlinePlayer : getAudience(player)) {
                 simpleChat.getAudiences().player(onlinePlayer).sendMessage(formattedMessage);
+
+                if (simpleChat.getConfig().getBoolean("pings.enabled")) {
+                    if (message.toLowerCase().contains(onlinePlayer.getName().toLowerCase())) {
+                        String sound = simpleChat.getConfig().getString("pings.sound", "ENTITY_EXPERIENCE_ORB_PICKUP");
+                        float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
+                        float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
+
+                        onlinePlayer.playSound(onlinePlayer.getLocation(), sound, volume, pitch);
+                    }
+                }
             }
         }
 

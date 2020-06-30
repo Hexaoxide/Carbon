@@ -58,4 +58,8 @@ item-link-placeholders:
   - '\[item\]'
   - '%item%'
 
-ping-sound:
+pings:
+  enabled: true
+  sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  volume: 10.0
+  pitch: 1.0

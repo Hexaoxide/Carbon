@@ -35,7 +35,7 @@ public final class SimpleChat extends JavaPlugin {
     private HashMap<UUID, ChatChannel> userChannels = new HashMap<>();
     private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>();
     private HashMap<UUID, ArrayList<UUID>> userIgnores = new HashMap<>();
-    private ArrayList<UUID> shadowMutes = new ArrayList<>(); // TODO: persistence
+    private ArrayList<UUID> shadowMutes = new ArrayList<>();
 
     private Permission permission;
 
