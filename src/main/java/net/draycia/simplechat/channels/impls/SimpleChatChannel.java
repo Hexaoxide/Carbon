@@ -7,6 +7,8 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.draycia.simplechat.util.DiscordWebhook;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class SimpleChatChannel extends ChatChannel {
 
@@ -46,6 +49,8 @@ public class SimpleChatChannel extends ChatChannel {
     private DiscordWebhook discordWebhook = null;
 
     private SimpleChat simpleChat;
+
+    private Pattern itemPattern = Pattern.compile("[item]");
 
     private SimpleChatChannel() { }
 
@@ -193,6 +198,12 @@ public class SimpleChatChannel extends ChatChannel {
 
         // Send message to players who can see it
         Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
+
+        if (formattedMessage instanceof TextComponent && player.isOnline()) {
+            ((TextComponent) formattedMessage).replace(itemPattern, (input) -> {
+               return simpleChat.getItemStackUtils().createComponent(player.getPlayer()).toBuilder();
+            });
+        }
 
         for (Player onlinePlayer : getAudience(player)) {
             simpleChat.getPlatform().player(onlinePlayer).sendMessage(formattedMessage);

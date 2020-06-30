@@ -11,6 +11,7 @@ import net.draycia.simplechat.managers.ChannelManager;
 import net.draycia.simplechat.managers.CommandManager;
 import net.draycia.simplechat.managers.DiscordManager;
 import net.draycia.simplechat.managers.PluginMessageManager;
+import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.platform.bukkit.BukkitPlatform;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.OfflinePlayer;
@@ -42,6 +43,8 @@ public final class SimpleChat extends JavaPlugin {
     private CommandManager commandManager;
     private ChannelManager channelManager;
 
+    private ItemStackUtils itemStackUtils;
+
     private BukkitPlatform platform;
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -50,6 +53,12 @@ public final class SimpleChat extends JavaPlugin {
     public void onEnable() {
         // Setup Adventure
         platform = BukkitPlatform.of(this);
+
+        try {
+            itemStackUtils = new ItemStackUtils();
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
 
         // Setup vault and permissions
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
@@ -299,5 +308,9 @@ public final class SimpleChat extends JavaPlugin {
 
     public BukkitPlatform getPlatform() {
         return platform;
+    }
+
+    public ItemStackUtils getItemStackUtils() {
+        return itemStackUtils;
     }
 }
