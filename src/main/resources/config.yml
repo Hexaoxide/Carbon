@@ -46,8 +46,16 @@ bot-token: -1
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
+  is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
+  no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
 
 server-name: 'Server'
 
 clear-chat-message: ""
 clear-chat-amount: 100
+
+item-link-placeholders:
+  - '\[item\]'
+  - '%item%'
+
+ping-sound:

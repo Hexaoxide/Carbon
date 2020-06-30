@@ -32,9 +32,10 @@ public final class SimpleChat extends JavaPlugin {
 
     private ArrayList<ChatChannel> channels = new ArrayList<>();
 
-    private HashMap<UUID, ChatChannel> userChannels = new HashMap<>(); // TODO: persistence
-    private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>(); // TODO: persistence
-    private HashMap<UUID, ArrayList<UUID>> userIgnores = new HashMap<>(); // TODO: persistence
+    private HashMap<UUID, ChatChannel> userChannels = new HashMap<>();
+    private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>();
+    private HashMap<UUID, ArrayList<UUID>> userIgnores = new HashMap<>();
+    private ArrayList<UUID> shadowMutes = new ArrayList<>(); // TODO: persistence
 
     private Permission permission;
 
@@ -145,6 +146,27 @@ public final class SimpleChat extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Load shadowMutes
+        File shadowMutesFile = new File(getDataFolder(), "shadowmutes.json");
+
+        try {
+            if (!shadowMutesFile.exists()) {
+                shadowMutesFile.getParentFile().mkdirs();
+                shadowMutesFile.createNewFile();
+            } else {
+                try (JsonReader reader = new JsonReader(new FileReader(shadowMutesFile))) {
+                    Type type = new TypeToken<ArrayList<UUID>>(){}.getType();
+                    ArrayList<UUID> shadowMutesBuffer = gson.fromJson(reader, type);
+
+                    if (shadowMutesBuffer != null) {
+                        shadowMutes = shadowMutesBuffer;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -206,6 +228,23 @@ public final class SimpleChat extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Save shadowMutes
+        File shadowMutesFile = new File(getDataFolder(), "shadowmutes.json");
+
+        try {
+            if (!shadowMutesFile.exists()) {
+                shadowMutesFile.getParentFile().mkdirs();
+                shadowMutesFile.createNewFile();
+            }
+
+            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(shadowMutesFile))) {
+                Type type = new TypeToken<ArrayList<UUID>>(){}.getType();
+                gson.toJson(shadowMutes, type, writer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupListeners() {
@@ -252,6 +291,24 @@ public final class SimpleChat extends JavaPlugin {
 
     public ArrayList<String> getUserChannelMutes(Player player) {
         return userToggles.computeIfAbsent(player.getUniqueId(), (uuid) -> new ArrayList<>());
+    }
+
+    public ArrayList<UUID> getShadowMutes() {
+        return shadowMutes;
+    }
+
+    public boolean toggleShadowMute(OfflinePlayer player) {
+        if (isUserShadowMuted(player)) {
+            shadowMutes.remove(player.getUniqueId());
+            return false;
+        }
+
+        shadowMutes.add(player.getUniqueId());
+        return true;
+    }
+
+    public boolean isUserShadowMuted(OfflinePlayer player) {
+        return shadowMutes.contains(player.getUniqueId());
     }
 
     public ChatChannel getPlayerChannel(Player player) {

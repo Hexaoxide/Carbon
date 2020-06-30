@@ -8,7 +8,6 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.draycia.simplechat.util.DiscordWebhook;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -50,7 +49,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChat simpleChat;
 
-    private Pattern itemPattern = Pattern.compile(Pattern.quote("[item]"));
+    private ArrayList<Pattern> itemPatterns;
 
     private SimpleChatChannel() { }
 
@@ -78,6 +77,10 @@ public class SimpleChatChannel extends ChatChannel {
 
         if (getWebhook() != null) {
             discordWebhook = new DiscordWebhook(getWebhook());
+        }
+
+        for (String entry : simpleChat.getConfig().getStringList("item-link-placeholders")) {
+            itemPatterns.add(Pattern.compile(entry));
         }
     }
 
@@ -200,13 +203,21 @@ public class SimpleChatChannel extends ChatChannel {
         Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
 
         if (formattedMessage instanceof TextComponent && player.isOnline()) {
-            formattedMessage = ((TextComponent) formattedMessage).replace(itemPattern, (input) -> {
-                return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(player.getPlayer()));
-            });
+            for (Pattern pattern : itemPatterns) {
+                formattedMessage = ((TextComponent) formattedMessage).replace(pattern, (input) -> {
+                    return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(player.getPlayer()));
+                });
+            }
         }
 
-        for (Player onlinePlayer : getAudience(player)) {
-            simpleChat.getAudiences().player(onlinePlayer).sendMessage(formattedMessage);
+        if (simpleChat.isUserShadowMuted(player)) {
+            if (player.isOnline()) {
+                simpleChat.getAudiences().player(player.getPlayer()).sendMessage(formattedMessage);
+            }
+        } else {
+            for (Player onlinePlayer : getAudience(player)) {
+                simpleChat.getAudiences().player(onlinePlayer).sendMessage(formattedMessage);
+            }
         }
 
         // Log message to console
