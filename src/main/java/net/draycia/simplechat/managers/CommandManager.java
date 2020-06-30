@@ -5,6 +5,7 @@ import co.aikar.commands.ConditionFailedException;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.commands.ChannelCommand;
+import net.draycia.simplechat.commands.CommandClearChat;
 import net.draycia.simplechat.commands.IgnoreCommand;
 import net.draycia.simplechat.commands.ToggleCommand;
 
@@ -56,6 +57,7 @@ public class CommandManager {
         manager.registerCommand(new ToggleCommand(simpleChat));
         manager.registerCommand(new ChannelCommand(simpleChat));
         manager.registerCommand(new IgnoreCommand(simpleChat));
+        manager.registerCommand(new CommandClearChat(simpleChat));
     }
 
 }

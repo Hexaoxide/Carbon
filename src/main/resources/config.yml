@@ -48,3 +48,6 @@ language:
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
 
 server-name: 'Server'
+
+clear-chat-message: ""
+clear-chat-amount: 100
