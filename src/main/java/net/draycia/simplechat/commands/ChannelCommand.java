@@ -27,7 +27,7 @@ public class ChannelCommand extends BaseCommand {
             String switchMessage = MiniMessageParser.handlePlaceholders(channel.getSwitchMessage(),
                     "color", "<" + channel.getColor().toString() + ">", "channel", channel.getName());
 
-            simpleChat.getPlatform().player(player).sendMessage(MiniMessageParser.parseFormat(switchMessage));
+            simpleChat.getAudiences().player(player).sendMessage(MiniMessageParser.parseFormat(switchMessage));
         } else {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
                 channel.sendMessage(player, String.join(" ", args));

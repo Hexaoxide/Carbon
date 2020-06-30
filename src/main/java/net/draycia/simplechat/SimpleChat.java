@@ -12,7 +12,7 @@ import net.draycia.simplechat.managers.CommandManager;
 import net.draycia.simplechat.managers.DiscordManager;
 import net.draycia.simplechat.managers.PluginMessageManager;
 import net.draycia.simplechat.util.ItemStackUtils;
-import net.kyori.adventure.platform.bukkit.BukkitPlatform;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -45,14 +45,16 @@ public final class SimpleChat extends JavaPlugin {
 
     private ItemStackUtils itemStackUtils;
 
-    private BukkitPlatform platform;
+    private BukkitAudiences audiences;
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public void onEnable() {
+
         // Setup Adventure
-        platform = BukkitPlatform.of(this);
+
+        audiences = BukkitAudiences.create(this);
 
         try {
             itemStackUtils = new ItemStackUtils();
@@ -306,8 +308,8 @@ public final class SimpleChat extends JavaPlugin {
         return pluginMessageManager;
     }
 
-    public BukkitPlatform getPlatform() {
-        return platform;
+    public BukkitAudiences getAudiences() {
+        return audiences;
     }
 
     public ItemStackUtils getItemStackUtils() {

@@ -29,7 +29,7 @@ public class ToggleCommand extends BaseCommand {
 
         message = MiniMessageParser.handlePlaceholders(message, "color", channel.getColor().toString());
 
-        simpleChat.getPlatform().player(player).sendMessage(MiniMessageParser.parseFormat(message, "channel", channel.getName()));
+        simpleChat.getAudiences().player(player).sendMessage(MiniMessageParser.parseFormat(message, "channel", channel.getName()));
     }
 
 }

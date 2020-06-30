@@ -32,7 +32,7 @@ public class CommandClearChat extends BaseCommand {
                 continue;
             }
 
-            Audience audience = simpleChat.getPlatform().player(player);
+            Audience audience = simpleChat.getAudiences().player(player);
 
             for (int i = 0; i < simpleChat.getConfig().getInt("clear-chat-amount", 100); i++) {
                 audience.sendMessage(component);

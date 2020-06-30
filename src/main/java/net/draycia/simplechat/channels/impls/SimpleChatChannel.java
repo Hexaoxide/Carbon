@@ -50,7 +50,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChat simpleChat;
 
-    private Pattern itemPattern = Pattern.compile("[item]");
+    private Pattern itemPattern = Pattern.compile(Pattern.quote("[item]"));
 
     private SimpleChatChannel() { }
 
@@ -135,7 +135,7 @@ public class SimpleChatChannel extends ChatChannel {
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
         for (Player player : getAudience(null)) {
-            simpleChat.getPlatform().player(player).sendMessage(component);
+            simpleChat.getAudiences().player(player).sendMessage(component);
         }
     }
 
@@ -206,7 +206,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         for (Player onlinePlayer : getAudience(player)) {
-            simpleChat.getPlatform().player(onlinePlayer).sendMessage(formattedMessage);
+            simpleChat.getAudiences().player(onlinePlayer).sendMessage(formattedMessage);
         }
 
         // Log message to console
@@ -229,7 +229,7 @@ public class SimpleChatChannel extends ChatChannel {
     @Override
     public void sendComponent(OfflinePlayer player, Component component) {
         for (Player onlinePlayer : getAudience(player)) {
-            simpleChat.getPlatform().player(onlinePlayer).sendMessage(component);
+            simpleChat.getAudiences().player(onlinePlayer).sendMessage(component);
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(component));
