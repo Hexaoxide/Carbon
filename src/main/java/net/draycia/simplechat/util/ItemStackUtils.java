@@ -60,9 +60,13 @@ public final class ItemStackUtils {
 
             try {
                 final Object cbItemStack = this.asNMSCopyMethod.invoke(null, itemStack);
-                final Object nbtTag = this.cMethod.invoke(cbItemStack);
+                final Object mojangComponent = this.cMethod.invoke(cbItemStack);
 
-                return MinecraftComponentSerializer.INSTANCE.deserialize(nbtTag);
+                if (mojangComponent == null) {
+                    return TextComponent.empty();
+                }
+
+                return MinecraftComponentSerializer.INSTANCE.deserialize(mojangComponent);
             } catch (final IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
                 return TextComponent.empty();
