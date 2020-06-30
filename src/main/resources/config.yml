@@ -60,6 +60,7 @@ item-link-placeholders:
 
 pings:
   enabled: true
-  sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  source: 'PLAYER'
+  sound: 'minecraft:entity.experience_orb.pickup'
   volume: 10.0
   pitch: 1.0

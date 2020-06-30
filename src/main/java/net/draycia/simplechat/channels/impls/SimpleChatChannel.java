@@ -7,6 +7,9 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
 import net.draycia.simplechat.util.DiscordWebhook;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
@@ -216,15 +219,18 @@ public class SimpleChatChannel extends ChatChannel {
             }
         } else {
             for (Player onlinePlayer : getAudience(player)) {
-                simpleChat.getAudiences().player(onlinePlayer).sendMessage(formattedMessage);
+                Audience audience = simpleChat.getAudiences().player(onlinePlayer);
+
+                audience.sendMessage(formattedMessage);
 
                 if (simpleChat.getConfig().getBoolean("pings.enabled")) {
                     if (message.toLowerCase().contains(onlinePlayer.getName().toLowerCase())) {
-                        String sound = simpleChat.getConfig().getString("pings.sound", "ENTITY_EXPERIENCE_ORB_PICKUP");
+                        Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
+                        Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));
                         float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
                         float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
 
-                        onlinePlayer.playSound(onlinePlayer.getLocation(), sound, volume, pitch);
+                        audience.playSound(Sound.of(key, source, volume, pitch));
                     }
                 }
             }
