@@ -201,7 +201,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         if (formattedMessage instanceof TextComponent && player.isOnline()) {
             formattedMessage = ((TextComponent) formattedMessage).replace(itemPattern, (input) -> {
-               return simpleChat.getItemStackUtils().createComponent(player.getPlayer()).toBuilder();
+                return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(player.getPlayer()));
             });
         }
 
