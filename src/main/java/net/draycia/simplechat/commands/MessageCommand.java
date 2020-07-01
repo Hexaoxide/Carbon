@@ -25,6 +25,10 @@ public class MessageCommand extends BaseCommand {
     public void baseCommand(Player player, String target, String... args) {
         OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(target);
 
+        if (targetPlayer == null) {
+            return;
+        }
+
         if (simpleChat.playerHasPlayerIgnored(targetPlayer, player)) {
             return;
         }
