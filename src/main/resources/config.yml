@@ -54,6 +54,7 @@ language:
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
   message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
+  no-reply-target: '<red>You have no one to reply to!'
   # The following messages are not MiniMessage compatible
   player-left: '%player_displayname% has left <server>!'
   player-joined: '%player_displayname% has joined <server>!'

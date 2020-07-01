@@ -29,28 +29,7 @@ public class MessageCommand extends BaseCommand {
             return;
         }
 
-        if (simpleChat.playerHasPlayerIgnored(targetPlayer, player)) {
-            return;
-        }
-
-        String message = String.join(" ", args);
-
-        String toPlayerFormat = simpleChat.getConfig().getString("language.message-to-other");
-        String fromPlayerFormat = simpleChat.getConfig().getString("language.message-from-other");
-
-        Component toPlayerComponent = MiniMessage.instance().parse(toPlayerFormat, "message", message,
-                "target", targetPlayer.getName());
-
-        Component fromPlayerComponent = MiniMessage.instance().parse(fromPlayerFormat, "message", message,
-                "sender", player.getName());
-
-        simpleChat.getAudiences().player(player).sendMessage(toPlayerComponent);
-
-        if (targetPlayer.isOnline()) {
-            simpleChat.getAudiences().player(targetPlayer.getPlayer()).sendMessage(fromPlayerComponent);
-        } else {
-            // TODO: cross server msg support, don't forget to include /ignore support
-        }
+        simpleChat.sendPlayerPrivateMessage(player, targetPlayer, String.join(" ", args));
     }
 
 }

@@ -14,11 +14,14 @@ import net.draycia.simplechat.managers.DiscordManager;
 import net.draycia.simplechat.managers.PluginMessageManager;
 import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.CheckForNull;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -37,6 +40,8 @@ public final class SimpleChat extends JavaPlugin {
     private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>();
     private HashMap<UUID, ArrayList<UUID>> userIgnores = new HashMap<>();
     private ArrayList<UUID> shadowMutes = new ArrayList<>();
+
+    private HashMap<UUID, UUID> replies = new HashMap<>();
 
     private Permission permission;
 
@@ -314,6 +319,43 @@ public final class SimpleChat extends JavaPlugin {
 
     public boolean isUserShadowMuted(OfflinePlayer player) {
         return shadowMutes.contains(player.getUniqueId());
+    }
+
+    public @CheckForNull UUID getPlayerReply(UUID player) {
+        return replies.get(player);
+    }
+
+    public void setPlayerReply(UUID player, UUID target) {
+        replies.put(player, target);
+    }
+
+    public void sendPlayerPrivateMessage(Player sender, OfflinePlayer target, String message) {
+        if (playerHasPlayerIgnored(target, sender)) {
+            return;
+        }
+
+        String toPlayerFormat = getConfig().getString("language.message-to-other");
+        String fromPlayerFormat = getConfig().getString("language.message-from-other");
+
+        Component toPlayerComponent = MiniMessage.instance().parse(toPlayerFormat, "message", message,
+                "target", target.getName());
+
+        Component fromPlayerComponent = MiniMessage.instance().parse(fromPlayerFormat, "message", message,
+                "sender", sender.getName());
+
+        getAudiences().player(sender).sendMessage(toPlayerComponent);
+
+        if (isUserShadowMuted(sender)) {
+            return;
+        }
+
+        if (target.isOnline()) {
+            getAudiences().player(target.getPlayer()).sendMessage(fromPlayerComponent);
+
+            setPlayerReply(target.getUniqueId(), sender.getUniqueId());
+        } else {
+            // TODO: cross server msg support, don't forget to include /ignore support
+        }
     }
 
     public ChatChannel getPlayerChannel(Player player) {

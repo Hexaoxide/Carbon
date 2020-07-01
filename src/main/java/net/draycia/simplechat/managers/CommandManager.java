@@ -59,6 +59,7 @@ public class CommandManager {
         manager.registerCommand(new ChatReloadCommand(simpleChat));
         manager.registerCommand(new MeCommand(simpleChat));
         manager.registerCommand(new MessageCommand(simpleChat));
+        manager.registerCommand(new ReplyCommand(simpleChat));
     }
 
 }
