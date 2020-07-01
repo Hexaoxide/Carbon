@@ -48,8 +48,9 @@ language:
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
   is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
   no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
-  player-left: '%player_displayname% has left <server>!'
-  player-joined: '%player_displayname% has joined <server>!'
+  player-left: '%player_displayname% has left <server>!' # Not MiniMessage compatible
+  player-joined: '%player_displayname% has joined <server>!' # Not MiniMessage compatible
+  vote-received: '<name> has voted on <service>!' # Not MiniMessage compatible
 
 server-name: 'Server'
 
@@ -72,4 +73,4 @@ listeners:
   join: true # sends join messages in discord
   leave: true # sends leave messages in discord
   death: true # sends death messages in discord
-  # TODO: NuVofitier support
+  vote: false # sends vote messages in discord

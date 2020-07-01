@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.PlayerListener;
+import net.draycia.simplechat.listeners.VoteListener;
 import net.draycia.simplechat.managers.ChannelManager;
 import net.draycia.simplechat.managers.CommandManager;
 import net.draycia.simplechat.managers.DiscordManager;
@@ -249,6 +250,10 @@ public final class SimpleChat extends JavaPlugin {
 
     private void setupListeners() {
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+
+        if (getServer().getPluginManager().isPluginEnabled("Votifier")) {
+            getServer().getPluginManager().registerEvents(new VoteListener(this), this);
+        }
     }
 
     public boolean playerHasPlayerIgnored(OfflinePlayer player, OfflinePlayer target) {

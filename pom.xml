@@ -100,6 +100,12 @@
             <url>https://repo.aikar.co/content/groups/aikar/</url>
         </repository>
 
+        <!-- NuVotifier -->
+        <repository>
+            <id>bintray-repo</id>
+            <url>https://dl.bintray.com/ichbinjoe/public/</url>
+        </repository>
+
         <!-- mcMMO and MiniMessage must be compiled locally -->
 
     </repositories>
@@ -179,6 +185,14 @@
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- NuVotifier for vote messages in discord bridge -->
+        <dependency>
+            <groupId>com.vexsoftware</groupId>
+            <artifactId>nuvotifier-universal</artifactId>
+            <version>2.6.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
