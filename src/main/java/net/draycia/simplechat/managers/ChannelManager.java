@@ -1,8 +1,10 @@
 package net.draycia.simplechat.managers;
 
+import co.aikar.commands.CommandManager;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.channels.impls.*;
+import net.draycia.simplechat.commands.AliasedChannelCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -142,6 +144,11 @@ public class ChannelManager {
 
             // TODO: register command for each channel
             simpleChat.getChannels().add(channel);
+
+            CommandManager commandManager = simpleChat.getCommandManager().getCommandManager();
+
+            commandManager.getCommandReplacements().addReplacement("commandAlias", channel.getName().toLowerCase());
+            commandManager.registerCommand(new AliasedChannelCommand(simpleChat, channel));
         }
 
         if (!hasTownChat) {

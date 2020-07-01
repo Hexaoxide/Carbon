@@ -1,23 +1,25 @@
 package net.draycia.simplechat.managers;
 
-import co.aikar.commands.BukkitCommandManager;
-import co.aikar.commands.ConditionFailedException;
+import co.aikar.commands.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.commands.*;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 
 public class CommandManager {
 
     private SimpleChat simpleChat;
+    private BukkitCommandManager commandManager;
 
     public CommandManager(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;
 
-        BukkitCommandManager manager = new BukkitCommandManager(simpleChat);
+        commandManager = new BukkitCommandManager(simpleChat);
 
-        manager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
+        commandManager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
             ArrayList<String> completions = new ArrayList<>();
 
             for (ChatChannel chatChannel : simpleChat.getChannels()) {
@@ -29,7 +31,7 @@ public class CommandManager {
             return completions;
         });
 
-        manager.getCommandContexts().registerContext(ChatChannel.class, (context) -> {
+        commandManager.getCommandContexts().registerContext(ChatChannel.class, (context) -> {
             String name = context.popFirstArg();
 
             for (ChatChannel chatChannel : simpleChat.getChannels()) {
@@ -41,13 +43,13 @@ public class CommandManager {
             return null;
         });
 
-        manager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
+        commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
             if (!value.canPlayerUse(context.getIssuer().getPlayer())) {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
             }
         });
 
-        setupCommands(manager);
+        setupCommands(commandManager);
     }
 
     private void setupCommands(BukkitCommandManager manager) {
@@ -60,6 +62,10 @@ public class CommandManager {
         manager.registerCommand(new MeCommand(simpleChat));
         manager.registerCommand(new MessageCommand(simpleChat));
         manager.registerCommand(new ReplyCommand(simpleChat));
+    }
+
+    public co.aikar.commands.CommandManager getCommandManager() {
+        return commandManager;
     }
 
 }

@@ -25,7 +25,7 @@ channels:
   global:
     name: 'Global'
     id: -1 # Set to -1, comment out, or remove to disable channel bridge
-    webhook: 'URL_HERE' # Comment out / remove to disable webhook
+    webhook: '' # Comment out / remove to disable webhook
     default: true # Removing this option defaults to 'false'
   announcements:
     name: 'Announcements'
@@ -43,7 +43,7 @@ filter-text: '****'
 replacements:
   '%shrug%': '¯\_(ツ)_/¯'
 
-bot-token: -1
+bot-token: ""
 
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'

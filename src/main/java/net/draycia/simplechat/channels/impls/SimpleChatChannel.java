@@ -77,7 +77,7 @@ public class SimpleChatChannel extends ChatChannel {
             simpleChat.getDiscordManager().getDiscordAPI().addMessageCreateListener(this::processDiscordMessage);
         }
 
-        if (getWebhook() != null) {
+        if (getWebhook() != null && !getWebhook().isEmpty()) {
             discordWebhook = new DiscordWebhook(getWebhook());
         }
 
