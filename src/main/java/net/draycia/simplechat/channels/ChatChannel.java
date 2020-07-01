@@ -5,7 +5,6 @@ import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.entity.Player;
 import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.List;
@@ -109,7 +108,7 @@ public abstract class ChatChannel {
 
     public abstract boolean canPlayerSee(ChatUser sender, ChatUser target);
 
-    public abstract List<Player> getAudience(ChatUser user);
+    public abstract List<ChatUser> getAudience(ChatUser user);
 
     /**
      * @return If the channel should forward its formatting / formatted message to other servers

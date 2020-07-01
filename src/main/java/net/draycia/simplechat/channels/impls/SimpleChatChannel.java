@@ -3,6 +3,7 @@ package net.draycia.simplechat.channels.impls;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.events.ChatComponentEvent;
 import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.DiscordWebhook;
@@ -99,12 +100,12 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public List<Player> getAudience(ChatUser user) {
-        List<Player> audience = new ArrayList<>();
+    public List<ChatUser> getAudience(ChatUser user) {
+        List<ChatUser> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (canPlayerSee(user, simpleChat.getUserService().wrap(player))) {
-                audience.add(player);
+                audience.add(simpleChat.getUserService().wrap(player));
             }
         }
 
@@ -138,8 +139,8 @@ public class SimpleChatChannel extends ChatChannel {
                 "username", author.getName(), "displayname", author.getDisplayName(), "channel", channel.getName(),
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
-        for (Player player : getAudience(null)) {
-            simpleChat.getAudiences().player(player).sendMessage(component);
+        for (ChatUser user : getAudience(null)) {
+            user.asAudience().sendMessage(component);
         }
     }
 
@@ -193,45 +194,52 @@ public class SimpleChatChannel extends ChatChannel {
         Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
         messageFormat = MiniMessage.instance().serialize(component);
 
-        // Send message to players who can see it
-        Component formattedMessage = MiniMessage.instance().parse(messageFormat, "color", "<" + color.toString() + ">",
+        // Get formatted message
+        TextComponent formattedMessage = (TextComponent)MiniMessage.instance().parse(messageFormat, "color", "<" + color.toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25), "server",
                 simpleChat.getConfig().getString("server-name", "Server"),
                 "message", formatEvent.getMessage());
 
         // Handle item linking placeholders
-        if (formattedMessage instanceof TextComponent && user.isOnline()) {
+        if (user.isOnline()) {
+            // TODO: move this into a ChatComponentEvent listener
             for (Pattern pattern : itemPatterns) {
-                formattedMessage = ((TextComponent) formattedMessage).replace(pattern, (input) -> {
+                formattedMessage = (formattedMessage).replace(pattern, (input) -> {
                     return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(user.asPlayer()));
                 });
             }
         }
 
+        // Call custom chat event
+        ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage, getAudience(user));
+
+        Bukkit.getPluginManager().callEvent(componentEvent);
+
+        if (componentEvent.isCancelled()) {
+            return;
+        }
+
         // Handle shadow mutes
         if (user.isShadowMuted()) {
+            // TODO: move this into a ChatComponentEvent listener
             if (user.isOnline()) {
-                user.asAudience().sendMessage(formattedMessage);
+                user.asAudience().sendMessage(componentEvent.getComponent());
             }
         } else {
             // Send message as normal
-            List<Player> receivers = getAudience(user);
-
-            for (Player onlinePlayer : receivers) {
-                Audience audience = simpleChat.getAudiences().player(onlinePlayer);
-
-                if (message.contains(onlinePlayer.getName())) {
+            for (ChatUser chatUser : componentEvent.getRecipients()) {
+                if (message.contains(chatUser.asPlayer().getName())) {
                     if (simpleChat.getConfig().getBoolean("pings.enabled")) {
                         Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
                         Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));
                         float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
                         float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
 
-                        audience.playSound(Sound.of(key, source, volume, pitch));
+                        chatUser.asAudience().playSound(Sound.of(key, source, volume, pitch));
                     }
                 }
 
-                audience.sendMessage(formattedMessage);
+                chatUser.asAudience().sendMessage(componentEvent.getComponent());
             }
         }
 
@@ -255,8 +263,8 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public void sendComponent(ChatUser player, Component component) {
-        for (Player onlinePlayer : getAudience(player)) {
-            simpleChat.getAudiences().player(onlinePlayer).sendMessage(component);
+        for (ChatUser user : getAudience(player)) {
+            user.asAudience().sendMessage(component);
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(component));
