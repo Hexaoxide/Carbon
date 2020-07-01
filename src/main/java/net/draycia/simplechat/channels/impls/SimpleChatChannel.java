@@ -237,7 +237,8 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Log message to console
-        System.out.println(LegacyComponentSerializer.legacy().serialize(formattedMessage));
+        String sm = simpleChat.isUserShadowMuted(player) ? "[SM] " : "";
+        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(formattedMessage));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
