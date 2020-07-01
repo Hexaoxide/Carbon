@@ -1,8 +1,6 @@
 package net.draycia.simplechat.channels.impls;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.minidigger.minimessage.text.MiniMessageParser;
-import me.minidigger.minimessage.text.MiniMessageSerializer;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
@@ -13,6 +11,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -52,7 +51,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChat simpleChat;
 
-    private ArrayList<Pattern> itemPatterns;
+    private ArrayList<Pattern> itemPatterns = new ArrayList<>();
 
     private SimpleChatChannel() { }
 
@@ -83,7 +82,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         for (String entry : simpleChat.getConfig().getStringList("item-link-placeholders")) {
-            itemPatterns.add(Pattern.compile(entry));
+            itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
         }
     }
 
@@ -119,7 +118,7 @@ public class SimpleChatChannel extends ChatChannel {
             return;
         }
 
-        String message = MiniMessageParser.escapeTokens(event.getMessageContent()).replace("~", "\\~")
+        String message = MiniMessage.instance().escapeTokens(event.getMessageContent()).replace("~", "\\~")
                 .replace("_", "\\_").replace("*", "\\*").replace("\n", "");
 
         MessageAuthor author = event.getMessageAuthor();
@@ -136,7 +135,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Placeholders: username, displayname, channel, server, message, primaryrole
-        Component component = MiniMessageParser.parseFormat(getDiscordFormatting(), "message", message,
+        Component component = MiniMessage.instance().parse(getDiscordFormatting(), "message", message,
                 "username", author.getName(), "displayname", author.getDisplayName(), "channel", channel.getName(),
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
@@ -193,18 +192,15 @@ public class SimpleChatChannel extends ChatChannel {
 
         // Convert legacy color codes to Mini color codes
         Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
-        messageFormat = MiniMessageSerializer.serialize(component);
-
-        // First pass for placeholders, to support placeholders in placeholders
-        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "color", "<" + color.toString() + ">",
-                "phase", Long.toString(System.currentTimeMillis() % 25), "server", simpleChat.getConfig().getString("server-name", "Server"));
-
-        // Finally, parse remaining placeholders and parse format
-        messageFormat = MiniMessageParser.handlePlaceholders(messageFormat, "message", event.getMessage());
+        messageFormat = MiniMessage.instance().serialize(component);
 
         // Send message to players who can see it
-        Component formattedMessage = MiniMessageParser.parseFormat(messageFormat);
+        Component formattedMessage = MiniMessage.instance().parse(messageFormat, "color", "<" + color.toString() + ">",
+                "phase", Long.toString(System.currentTimeMillis() % 25), "server",
+                simpleChat.getConfig().getString("server-name", "Server"),
+                "message", event.getMessage());
 
+        // Handle item linking placeholders
         if (formattedMessage instanceof TextComponent && player.isOnline()) {
             for (Pattern pattern : itemPatterns) {
                 formattedMessage = ((TextComponent) formattedMessage).replace(pattern, (input) -> {
@@ -213,18 +209,18 @@ public class SimpleChatChannel extends ChatChannel {
             }
         }
 
+        // Handle shadow mutes
         if (simpleChat.isUserShadowMuted(player)) {
             if (player.isOnline()) {
                 simpleChat.getAudiences().player(player.getPlayer()).sendMessage(formattedMessage);
             }
         } else {
+            // Send message as normal
             for (Player onlinePlayer : getAudience(player)) {
                 Audience audience = simpleChat.getAudiences().player(onlinePlayer);
 
-                audience.sendMessage(formattedMessage);
-
-                if (simpleChat.getConfig().getBoolean("pings.enabled")) {
-                    if (message.toLowerCase().contains(onlinePlayer.getName().toLowerCase())) {
+                if (message.contains(onlinePlayer.getName())) {
+                    if (simpleChat.getConfig().getBoolean("pings.enabled")) {
                         Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
                         Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));
                         float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
@@ -233,6 +229,8 @@ public class SimpleChatChannel extends ChatChannel {
                         audience.playSound(Sound.of(key, source, volume, pitch));
                     }
                 }
+
+                audience.sendMessage(formattedMessage);
             }
         }
 

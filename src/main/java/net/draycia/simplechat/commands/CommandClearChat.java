@@ -5,10 +5,10 @@ import co.aikar.commands.CommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -25,7 +25,7 @@ public class CommandClearChat extends BaseCommand {
     @Default
     public void baseCommand(CommandIssuer issuer) {
         String format = simpleChat.getConfig().getString("clear-chat-message", "");
-        Component component = MiniMessageParser.parseFormat(format);
+        Component component = MiniMessage.instance().parse(format);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission("simplechat.clear.exempt")) {

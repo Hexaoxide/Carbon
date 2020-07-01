@@ -4,9 +4,9 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -32,7 +32,7 @@ public class ShadowMuteCommand extends BaseCommand {
             format = simpleChat.getConfig().getString("language.no-longer-shadow-muted");
         }
 
-        Component message = MiniMessageParser.parseFormat(format, "user", target.getName());
+        Component message = MiniMessage.instance().parse(format, "user", target.getName());
 
         simpleChat.getAudiences().audience(sender).sendMessage(message);
     }

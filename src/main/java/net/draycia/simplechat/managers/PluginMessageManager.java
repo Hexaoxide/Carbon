@@ -3,11 +3,10 @@ package net.draycia.simplechat.managers;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import me.minidigger.minimessage.text.MiniMessageParser;
-import me.minidigger.minimessage.text.MiniMessageSerializer;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -98,7 +97,7 @@ public class PluginMessageManager implements PluginMessageListener {
         String chatMessage = in.readUTF();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-            chatChannel.sendComponent(messageAuthor, MiniMessageParser.parseFormat(chatMessage));
+            chatChannel.sendComponent(messageAuthor, MiniMessage.instance().parse(chatMessage));
         });
     }
 
@@ -132,7 +131,7 @@ public class PluginMessageManager implements PluginMessageListener {
 
         msg.writeUTF(chatChannel.getName());
         msg.writeUTF(player.getUniqueId().toString());
-        msg.writeUTF(MiniMessageSerializer.serialize(component));
+        msg.writeUTF(MiniMessage.instance().serialize(component));
 
         out.writeShort(msg.toByteArray().length);
         out.write(msg.toByteArray());

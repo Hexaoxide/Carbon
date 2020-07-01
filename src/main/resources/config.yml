@@ -55,7 +55,7 @@ clear-chat-message: ""
 clear-chat-amount: 100
 
 item-link-placeholders:
-  - '\[item\]'
+  - '[item]' # cursed placeholder do not use
   - '%item%'
 
 pings:
@@ -64,3 +64,4 @@ pings:
   sound: 'minecraft:entity.experience_orb.pickup'
   volume: 10.0
   pitch: 1.0
+  highlight: true # Independent of the "enabled" option!

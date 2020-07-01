@@ -2,9 +2,9 @@ package net.draycia.simplechat.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
-import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 @CommandAlias("tch|togglec|togglechannel|toggle")
@@ -27,9 +27,8 @@ public class ToggleCommand extends BaseCommand {
             message = channel.getToggleOffMessage();
         }
 
-        message = MiniMessageParser.handlePlaceholders(message, "color", channel.getColor().toString());
-
-        simpleChat.getAudiences().player(player).sendMessage(MiniMessageParser.parseFormat(message, "channel", channel.getName()));
+        simpleChat.getAudiences().player(player).sendMessage(MiniMessage.instance().parse(message,
+                "color", channel.getColor().toString(), "channel", channel.getName()));
     }
 
 }

@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.listeners.PlayerChatListener;
+import net.draycia.simplechat.listeners.PlayerListener;
 import net.draycia.simplechat.managers.ChannelManager;
 import net.draycia.simplechat.managers.CommandManager;
 import net.draycia.simplechat.managers.DiscordManager;
@@ -248,7 +248,7 @@ public final class SimpleChat extends JavaPlugin {
     }
 
     private void setupListeners() {
-        getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     }
 
     public boolean playerHasPlayerIgnored(OfflinePlayer player, OfflinePlayer target) {
