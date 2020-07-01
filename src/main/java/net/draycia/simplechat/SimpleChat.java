@@ -29,10 +29,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class SimpleChat extends JavaPlugin {
 
@@ -264,7 +261,7 @@ public final class SimpleChat extends JavaPlugin {
     }
 
     public boolean playerHasPlayerIgnored(OfflinePlayer player, OfflinePlayer target) {
-        ArrayList<UUID> ignores = userIgnores.get(player.getUniqueId());
+        List<UUID> ignores = userIgnores.get(player.getUniqueId());
 
         if (ignores == null) {
             return false;
@@ -274,7 +271,7 @@ public final class SimpleChat extends JavaPlugin {
     }
 
     public boolean togglePlayerIgnoringPlayer(Player player, OfflinePlayer target) {
-        ArrayList<UUID> ignores = userIgnores.computeIfAbsent(player.getUniqueId(), (uuid) -> new ArrayList<>());
+        List<UUID> ignores = userIgnores.computeIfAbsent(player.getUniqueId(), (uuid) -> new ArrayList<>());
 
         if (ignores.contains(target.getUniqueId())) {
             ignores.remove(target.getUniqueId());
@@ -290,7 +287,7 @@ public final class SimpleChat extends JavaPlugin {
     }
 
     public boolean togglePlayerChannelMute(Player player, ChatChannel chatChannel) {
-        ArrayList<String> toggles = getUserChannelMutes(player);
+        List<String> toggles = getUserChannelMutes(player);
 
         if (toggles.contains(chatChannel.getName())) {
             toggles.remove(chatChannel.getName());
@@ -301,11 +298,11 @@ public final class SimpleChat extends JavaPlugin {
         }
     }
 
-    public ArrayList<String> getUserChannelMutes(Player player) {
+    public List<String> getUserChannelMutes(Player player) {
         return userToggles.computeIfAbsent(player.getUniqueId(), (uuid) -> new ArrayList<>());
     }
 
-    public ArrayList<UUID> getShadowMutes() {
+    public List<UUID> getShadowMutes() {
         return shadowMutes;
     }
 
@@ -397,7 +394,7 @@ public final class SimpleChat extends JavaPlugin {
         return null;
     }
 
-    public ArrayList<ChatChannel> getChannels() {
+    public List<ChatChannel> getChannels() {
         return channels;
     }
 
