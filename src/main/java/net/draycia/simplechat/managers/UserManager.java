@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public class UserManager {
 
+    // TODO: delegate caching to the storage impl
     private static List<ChatUser> users = new ArrayList<>();
 
     public static ChatUser wrap(Player player) {
