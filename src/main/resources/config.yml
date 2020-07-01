@@ -24,6 +24,7 @@ default:
 channels:
   global:
     name: 'Global'
+    aliases: 'global|g'
     id: -1 # Set to -1, comment out, or remove to disable channel bridge
     webhook: '' # Comment out / remove to disable webhook
     default: true # Removing this option defaults to 'false'
