@@ -27,12 +27,16 @@ public class MeCommand extends BaseCommand {
         String format = PlaceholderAPI.setPlaceholders(player, simpleChat.getConfig().getString("language.me"));
         Component component = MiniMessage.instance().parse(format, "message", message);
 
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (simpleChat.playerHasPlayerIgnored(onlinePlayer, player)) {
-                continue;
-            }
+        if (simpleChat.isUserShadowMuted(player)) {
+            simpleChat.getAudiences().player(player).sendMessage(component);
+        } else {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (simpleChat.playerHasPlayerIgnored(onlinePlayer, player)) {
+                    continue;
+                }
 
-            simpleChat.getAudiences().player(onlinePlayer).sendMessage(component);
+                simpleChat.getAudiences().player(onlinePlayer).sendMessage(component);
+            }
         }
     }
 
