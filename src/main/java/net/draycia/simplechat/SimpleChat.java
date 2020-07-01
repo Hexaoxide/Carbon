@@ -105,14 +105,14 @@ public final class SimpleChat extends JavaPlugin {
         Component fromPlayerComponent = MiniMessage.instance().parse(fromPlayerFormat, "message", message,
                 "sender", sender.getName());
 
-        getAudiences().player(sender).sendMessage(toPlayerComponent);
+        user.asAudience().sendMessage(toPlayerComponent);
 
         if (user.isShadowMuted()) {
             return;
         }
 
         if (target.isOnline()) {
-            getAudiences().player(target.getPlayer()).sendMessage(fromPlayerComponent);
+            targetUser.asAudience().sendMessage(fromPlayerComponent);
 
             user.setReplyTarget(targetUser.getUUID());
             targetUser.setReplyTarget(user.getUUID());
@@ -123,7 +123,7 @@ public final class SimpleChat extends JavaPlugin {
                 float volume = (float)getConfig().getDouble("pings.volume");
                 float pitch = (float)getConfig().getDouble("pings.pitch");
 
-                getAudiences().player(target.getPlayer()).playSound(Sound.of(key, source, volume, pitch));
+                targetUser.asAudience().playSound(Sound.of(key, source, volume, pitch));
             }
         } else {
             // TODO: cross server msg support, don't forget to include /ignore support
