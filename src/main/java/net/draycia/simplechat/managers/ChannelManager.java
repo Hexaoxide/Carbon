@@ -147,7 +147,7 @@ public class ChannelManager {
 
             CommandManager commandManager = simpleChat.getCommandManager().getCommandManager();
 
-            commandManager.getCommandReplacements().addReplacement("commandAlias", channel.getName().toLowerCase());
+            commandManager.getCommandReplacements().addReplacement("channelName", channel.getName().toLowerCase());
             commandManager.registerCommand(new AliasedChannelCommand(simpleChat, channel));
         }
 
