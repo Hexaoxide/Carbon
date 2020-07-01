@@ -1,4 +1,6 @@
 # https://github.com/MiniDigger/MiniMessage/blob/feature/adventure/DOCS.md
+# ^^^^ is outdated :(
+
 # IMPORTANT: Use the <pre> tag around ALL user inputs.
 # All <message> placeholders should be prefixed with <pre> and suffixed with </pre>
 # Failure to do so may and likely will result in users being able to inject formatting in messages.
@@ -49,7 +51,7 @@ language:
   is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
   no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
   reloaded: '<yellow>Chat config has been reloaded! Note that this does not reload channel configs!'
-  me: '<italics><dark_purple> *%player_displayname% <pre><message></pre></dark_purple></italics>'
+  me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   # The following messages are not MiniMessage compatible
   player-left: '%player_displayname% has left <server>!'
   player-joined: '%player_displayname% has joined <server>!'
