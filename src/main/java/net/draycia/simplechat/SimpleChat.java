@@ -13,7 +13,9 @@ import net.draycia.simplechat.managers.CommandManager;
 import net.draycia.simplechat.managers.DiscordManager;
 import net.draycia.simplechat.managers.PluginMessageManager;
 import net.draycia.simplechat.util.ItemStackUtils;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
@@ -353,6 +355,15 @@ public final class SimpleChat extends JavaPlugin {
             getAudiences().player(target.getPlayer()).sendMessage(fromPlayerComponent);
 
             setPlayerReply(target.getUniqueId(), sender.getUniqueId());
+
+            if (getConfig().getBoolean("pings.on-whisper")) {
+                Key key = Key.of(getConfig().getString("pings.sound"));
+                Sound.Source source = Sound.Source.valueOf(getConfig().getString("pings.source"));
+                float volume = (float)getConfig().getDouble("pings.volume");
+                float pitch = (float)getConfig().getDouble("pings.pitch");
+
+                getAudiences().player(target.getPlayer()).playSound(Sound.of(key, source, volume, pitch));
+            }
         } else {
             // TODO: cross server msg support, don't forget to include /ignore support
         }

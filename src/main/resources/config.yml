@@ -76,7 +76,8 @@ pings:
   sound: 'minecraft:entity.experience_orb.pickup'
   volume: 10.0
   pitch: 1.0
-  highlight: true # Independent of the "enabled" option!
+  highlight: true # independent of the "enabled" option!
+  on-whisper: true # independent of the "enabled" option!
 
 listeners:
   join: true # sends join messages in discord
