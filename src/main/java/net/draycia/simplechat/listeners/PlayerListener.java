@@ -8,8 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.awt.*;
 import java.util.regex.Pattern;
@@ -37,17 +39,17 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // bug hunting
-        String format = "[Test] Test [format] btw.";
-        TextComponent component = TextComponent.of(format).color(TextColor.fromHexString("#00FF00"));
+        // TODO: join messages (placeholderapi support)
+    }
 
-        HoverEvent hoverEvent = HoverEvent.showText(TextComponent.of("kittens"));
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        // TODO: leave messages (placeholderapi support)
+    }
 
-        component = component.replace(Pattern.compile(Pattern.quote("[format]")), (builder) -> {
-           return TextComponent.builder().append("[message]", TextColor.fromHexString("#FF00FF")).hoverEvent(hoverEvent);
-        });
-
-        simpleChat.getAudiences().audience(event.getPlayer()).sendMessage(component);
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        // TODO: death messages (placeholderapi support)
     }
 
 }
