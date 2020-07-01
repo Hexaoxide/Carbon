@@ -4,6 +4,7 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -17,13 +18,13 @@ public class AllianceChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public boolean canPlayerSee(OfflinePlayer offlinePlayer, Player player) {
-        if (super.canPlayerSee(offlinePlayer, player) && offlinePlayer != null) {
+    public boolean canPlayerSee(ChatUser sender, ChatUser target) {
+        if (super.canPlayerSee(sender, target) && sender != null) {
             try {
-                Resident resident = TownyAPI.getInstance().getDataSource().getResident(player.getName());
-                Resident target = TownyAPI.getInstance().getDataSource().getResident(offlinePlayer.getName());
+                Resident resident = TownyAPI.getInstance().getDataSource().getResident(target.asPlayer().getName());
+                Resident targetResident = TownyAPI.getInstance().getDataSource().getResident(sender.asPlayer().getName());
 
-                if (resident.isAlliedWith(target)) {
+                if (resident.isAlliedWith(targetResident)) {
                     return true;
                 }
             } catch (NotRegisteredException e) {
@@ -35,10 +36,10 @@ public class AllianceChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public boolean canPlayerUse(Player player) {
-        if (super.canPlayerUse(player)) {
+    public boolean canPlayerUse(ChatUser user) {
+        if (super.canPlayerUse(user)) {
             try {
-                return TownyAPI.getInstance().getDataSource().getResident(player.getName()).hasTown();
+                return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
             } catch (NotRegisteredException e) {
                 e.printStackTrace();
             }

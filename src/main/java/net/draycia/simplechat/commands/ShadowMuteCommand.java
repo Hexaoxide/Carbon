@@ -6,6 +6,8 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.managers.UserManager;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.OfflinePlayer;
@@ -24,14 +26,16 @@ public class ShadowMuteCommand extends BaseCommand {
     @Default
     @CommandCompletion("@players")
     public void baseCommand(CommandSender sender, OfflinePlayer target) {
-        boolean isNowMuted = simpleChat.toggleShadowMute(target);
+        ChatUser targetUser = UserManager.wrap(target.getUniqueId());
 
         String format;
 
-        if (isNowMuted) {
-            format = simpleChat.getConfig().getString("language.is-now-shadow-muted");
-        } else {
+        if (targetUser.isShadowMuted()) {
+            targetUser.setShadowMuted(true);
             format = simpleChat.getConfig().getString("language.no-longer-shadow-muted");
+        } else {
+            targetUser.setShadowMuted(false);
+            format = simpleChat.getConfig().getString("language.is-now-shadow-muted");
         }
 
         Component message = MiniMessage.instance().parse(format, "user", target.getName());

@@ -3,6 +3,8 @@ package net.draycia.simplechat.listeners;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.managers.UserManager;
+import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,11 +29,13 @@ public class PlayerListener implements Listener {
     public void onPlayerchat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
 
+        ChatUser user = UserManager.wrap(event.getPlayer());
+
         if (event.isAsynchronous()) {
-            simpleChat.getPlayerChannel(event.getPlayer()).sendMessage(event.getPlayer(), event.getMessage());
+            user.getSelectedChannel().sendMessage(user, event.getMessage(), false);
         } else {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-                simpleChat.getPlayerChannel(event.getPlayer()).sendMessage(event.getPlayer(), event.getMessage());
+                user.getSelectedChannel().sendMessage(user, event.getMessage(), false);
             });
         }
     }

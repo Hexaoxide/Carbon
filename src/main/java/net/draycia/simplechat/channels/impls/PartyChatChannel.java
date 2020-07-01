@@ -2,9 +2,8 @@ package net.draycia.simplechat.channels.impls;
 
 import com.gmail.nossr50.api.PartyAPI;
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
 
@@ -15,18 +14,18 @@ public class PartyChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public boolean canPlayerSee(OfflinePlayer offlinePlayer, Player player) {
-        if (super.canPlayerSee(offlinePlayer, player) && offlinePlayer != null) {
-            return PartyAPI.inSameParty((Player)offlinePlayer, player);
+    public boolean canPlayerSee(ChatUser sender, ChatUser target) {
+        if (super.canPlayerSee(sender, target) && sender != null) {
+            return PartyAPI.inSameParty(sender.asPlayer(), target.asPlayer());
         }
 
         return false;
     }
 
     @Override
-    public boolean canPlayerUse(Player player) {
-        if (super.canPlayerUse(player)) {
-            return PartyAPI.inParty(player);
+    public boolean canPlayerUse(ChatUser user) {
+        if (super.canPlayerUse(user)) {
+            return PartyAPI.inParty(user.asPlayer());
         }
 
         return false;

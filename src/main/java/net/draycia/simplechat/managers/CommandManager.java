@@ -4,6 +4,7 @@ import co.aikar.commands.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.commands.*;
+import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -20,10 +21,12 @@ public class CommandManager {
         commandManager = new BukkitCommandManager(simpleChat);
 
         commandManager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
+            ChatUser user = UserManager.wrap(context.getPlayer());
+
             ArrayList<String> completions = new ArrayList<>();
 
             for (ChatChannel chatChannel : simpleChat.getChannels()) {
-                if (chatChannel.canPlayerUse(context.getPlayer())) {
+                if (chatChannel.canPlayerUse(user)) {
                     completions.add(chatChannel.getName());
                 }
             }
@@ -44,7 +47,9 @@ public class CommandManager {
         });
 
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
-            if (!value.canPlayerUse(context.getIssuer().getPlayer())) {
+            ChatUser user = UserManager.wrap(context.getIssuer().getPlayer());
+
+            if (!value.canPlayerUse(user)) {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
             }
         });

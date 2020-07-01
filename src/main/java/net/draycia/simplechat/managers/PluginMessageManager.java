@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -65,12 +66,12 @@ public class PluginMessageManager implements PluginMessageListener {
             return;
         }
 
-        OfflinePlayer messageAuthor = Bukkit.getOfflinePlayer(playerUUID);
+        ChatUser user = UserManager.wrap(playerUUID);
 
         String chatMessage = in.readUTF();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-            chatChannel.sendMessage(messageAuthor, chatMessage);
+            chatChannel.sendMessage(user, chatMessage, true);
         });
     }
 
@@ -92,12 +93,12 @@ public class PluginMessageManager implements PluginMessageListener {
             return;
         }
 
-        OfflinePlayer messageAuthor = Bukkit.getOfflinePlayer(playerUUID);
+        ChatUser user = UserManager.wrap(playerUUID);
 
         String chatMessage = in.readUTF();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-            chatChannel.sendComponent(messageAuthor, MiniMessage.instance().parse(chatMessage));
+            chatChannel.sendComponent(user, MiniMessage.instance().parse(chatMessage));
         });
     }
 

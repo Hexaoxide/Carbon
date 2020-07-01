@@ -8,10 +8,8 @@ import com.google.gson.stream.JsonWriter;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.PlayerListener;
 import net.draycia.simplechat.listeners.VoteListener;
-import net.draycia.simplechat.managers.ChannelManager;
-import net.draycia.simplechat.managers.CommandManager;
-import net.draycia.simplechat.managers.DiscordManager;
-import net.draycia.simplechat.managers.PluginMessageManager;
+import net.draycia.simplechat.managers.*;
+import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -34,13 +32,6 @@ import java.util.*;
 public final class SimpleChat extends JavaPlugin {
 
     private ArrayList<ChatChannel> channels = new ArrayList<>();
-
-    private HashMap<UUID, ChatChannel> userChannels = new HashMap<>();
-    private HashMap<UUID, ArrayList<String>> userToggles = new HashMap<>();
-    private HashMap<UUID, ArrayList<UUID>> userIgnores = new HashMap<>();
-    private ArrayList<UUID> shadowMutes = new ArrayList<>();
-
-    private HashMap<UUID, UUID> replies = new HashMap<>();
 
     private Permission permission;
 
@@ -81,175 +72,12 @@ public final class SimpleChat extends JavaPlugin {
         // Setup listeners
         setupListeners();
 
-        // Load userChannels
-        File userChannelsFile = new File(getDataFolder(), "userchannels.json");
-
-        try {
-            if (!userChannelsFile.exists()) {
-                userChannelsFile.getParentFile().mkdirs();
-                userChannelsFile.createNewFile();
-            } else {
-                try (JsonReader reader = new JsonReader(new FileReader(userChannelsFile))) {
-                    Type type = new TypeToken<HashMap<UUID, String>>(){}.getType();
-                    HashMap<UUID, String> userChannelsBuffer = gson.fromJson(reader, type);
-
-                    if (userChannelsBuffer != null) {
-                        for (Map.Entry<UUID, String> entry : userChannelsBuffer.entrySet()) {
-                            ChatChannel channel = getChannel(entry.getValue());
-
-                            if (channel == null) {
-                                continue;
-                            }
-
-                            userChannels.put(entry.getKey(), channel);
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Load userToggles
-        File userTogglesFile = new File(getDataFolder(), "usertoggles.json");
-
-        try {
-            if (!userTogglesFile.exists()) {
-                userTogglesFile.getParentFile().mkdirs();
-                userTogglesFile.createNewFile();
-            } else {
-                try (JsonReader reader = new JsonReader(new FileReader(userTogglesFile))) {
-                    Type type = new TypeToken<HashMap<UUID, ArrayList<String>>>(){}.getType();
-                    HashMap<UUID, ArrayList<String>> userTogglesBuffer = gson.fromJson(reader, type);
-
-                    if (userTogglesBuffer != null) {
-                        userToggles = userTogglesBuffer;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Load userIgnores
-        File userIgnoresFile = new File(getDataFolder(), "userignores.json");
-
-        try {
-            if (!userIgnoresFile.exists()) {
-                userIgnoresFile.getParentFile().mkdirs();
-                userIgnoresFile.createNewFile();
-            } else {
-                try (JsonReader reader = new JsonReader(new FileReader(userIgnoresFile))) {
-                    Type type = new TypeToken<HashMap<UUID, ArrayList<UUID>>>(){}.getType();
-                    HashMap<UUID, ArrayList<UUID>> userIgnoresBuffer = gson.fromJson(reader, type);
-
-                    if (userIgnoresBuffer != null) {
-                        userIgnores = userIgnoresBuffer;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Load shadowMutes
-        File shadowMutesFile = new File(getDataFolder(), "shadowmutes.json");
-
-        try {
-            if (!shadowMutesFile.exists()) {
-                shadowMutesFile.getParentFile().mkdirs();
-                shadowMutesFile.createNewFile();
-            } else {
-                try (JsonReader reader = new JsonReader(new FileReader(shadowMutesFile))) {
-                    Type type = new TypeToken<ArrayList<UUID>>(){}.getType();
-                    ArrayList<UUID> shadowMutesBuffer = gson.fromJson(reader, type);
-
-                    if (shadowMutesBuffer != null) {
-                        shadowMutes = shadowMutesBuffer;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // TODO: initialize user data handlers
     }
 
     @Override
     public void onDisable() {
-        // Save userChannels
-        File userChannelsFile = new File(getDataFolder(), "userchannels.json");
-
-        try {
-            if (!userChannelsFile.exists()) {
-                userChannelsFile.getParentFile().mkdirs();
-                userChannelsFile.createNewFile();
-            }
-
-            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(userChannelsFile))) {
-                Type type = new TypeToken<HashMap<UUID, String>>(){}.getType();
-
-                HashMap<UUID, String> userChannelsBuffer = new HashMap<>();
-
-                for (Map.Entry<UUID, ChatChannel> entry : userChannels.entrySet()) {
-                    userChannelsBuffer.put(entry.getKey(), entry.getValue().getName());
-                }
-
-                gson.toJson(userChannelsBuffer, type, writer);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Save userToggles
-        File userTogglesFile = new File(getDataFolder(), "usertoggles.json");
-
-        try {
-            if (!userTogglesFile.exists()) {
-                userTogglesFile.getParentFile().mkdirs();
-                userTogglesFile.createNewFile();
-            }
-
-            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(userTogglesFile))) {
-                Type type = new TypeToken<HashMap<UUID, ArrayList<String>>>(){}.getType();
-                gson.toJson(userToggles, type, writer);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Save userIgnores
-        File userIgnoresFile = new File(getDataFolder(), "userignores.json");
-
-        try {
-            if (!userIgnoresFile.exists()) {
-                userIgnoresFile.getParentFile().mkdirs();
-                userIgnoresFile.createNewFile();
-            }
-
-            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(userIgnoresFile))) {
-                Type type = new TypeToken<HashMap<UUID, ArrayList<UUID>>>(){}.getType();
-                gson.toJson(userIgnores, type, writer);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Save shadowMutes
-        File shadowMutesFile = new File(getDataFolder(), "shadowmutes.json");
-
-        try {
-            if (!shadowMutesFile.exists()) {
-                shadowMutesFile.getParentFile().mkdirs();
-                shadowMutesFile.createNewFile();
-            }
-
-            try (JsonWriter writer = gson.newJsonWriter(new FileWriter(shadowMutesFile))) {
-                Type type = new TypeToken<ArrayList<UUID>>(){}.getType();
-                gson.toJson(shadowMutes, type, writer);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // TODO: save user data
     }
 
     private void setupListeners() {
@@ -260,76 +88,11 @@ public final class SimpleChat extends JavaPlugin {
         }
     }
 
-    public boolean playerHasPlayerIgnored(OfflinePlayer player, OfflinePlayer target) {
-        List<UUID> ignores = userIgnores.get(player.getUniqueId());
-
-        if (ignores == null) {
-            return false;
-        }
-
-        return ignores.contains(target.getUniqueId());
-    }
-
-    public boolean togglePlayerIgnoringPlayer(Player player, OfflinePlayer target) {
-        List<UUID> ignores = userIgnores.computeIfAbsent(player.getUniqueId(), (uuid) -> new ArrayList<>());
-
-        if (ignores.contains(target.getUniqueId())) {
-            ignores.remove(target.getUniqueId());
-            return false;
-        } else {
-            ignores.add(target.getUniqueId());
-            return true;
-        }
-    }
-
-    public boolean playerHasChannelMuted(Player player, ChatChannel chatChannel) {
-        return getUserChannelMutes(player).contains(chatChannel.getName());
-    }
-
-    public boolean togglePlayerChannelMute(Player player, ChatChannel chatChannel) {
-        List<String> toggles = getUserChannelMutes(player);
-
-        if (toggles.contains(chatChannel.getName())) {
-            toggles.remove(chatChannel.getName());
-            return false;
-        } else {
-            toggles.add(chatChannel.getName());
-            return true;
-        }
-    }
-
-    public List<String> getUserChannelMutes(Player player) {
-        return userToggles.computeIfAbsent(player.getUniqueId(), (uuid) -> new ArrayList<>());
-    }
-
-    public List<UUID> getShadowMutes() {
-        return shadowMutes;
-    }
-
-    public boolean toggleShadowMute(OfflinePlayer player) {
-        if (isUserShadowMuted(player)) {
-            shadowMutes.remove(player.getUniqueId());
-            return false;
-        }
-
-        shadowMutes.add(player.getUniqueId());
-        return true;
-    }
-
-    public boolean isUserShadowMuted(OfflinePlayer player) {
-        return shadowMutes.contains(player.getUniqueId());
-    }
-
-    public @CheckForNull UUID getPlayerReply(UUID player) {
-        return replies.get(player);
-    }
-
-    public void setPlayerReply(UUID player, UUID target) {
-        replies.put(player, target);
-    }
-
     public void sendPlayerPrivateMessage(Player sender, OfflinePlayer target, String message) {
-        if (playerHasPlayerIgnored(target, sender)) {
+        ChatUser user = UserManager.wrap(sender);
+        ChatUser targetUser = UserManager.wrap(target.getUniqueId());
+
+        if (user.isIgnoringUser(target.getUniqueId())) {
             return;
         }
 
@@ -344,14 +107,15 @@ public final class SimpleChat extends JavaPlugin {
 
         getAudiences().player(sender).sendMessage(toPlayerComponent);
 
-        if (isUserShadowMuted(sender)) {
+        if (user.isShadowMuted()) {
             return;
         }
 
         if (target.isOnline()) {
             getAudiences().player(target.getPlayer()).sendMessage(fromPlayerComponent);
 
-            setPlayerReply(target.getUniqueId(), sender.getUniqueId());
+            user.setReplyTarget(targetUser.getUUID());
+            targetUser.setReplyTarget(user.getUUID());
 
             if (getConfig().getBoolean("pings.on-whisper")) {
                 Key key = Key.of(getConfig().getString("pings.sound"));
@@ -364,14 +128,6 @@ public final class SimpleChat extends JavaPlugin {
         } else {
             // TODO: cross server msg support, don't forget to include /ignore support
         }
-    }
-
-    public ChatChannel getPlayerChannel(Player player) {
-        return userChannels.computeIfAbsent(player.getUniqueId(), (uuid) -> getDefaultChannel());
-    }
-
-    public void setPlayerChannel(Player player, ChatChannel chatChannel) {
-        userChannels.put(player.getUniqueId(), chatChannel);
     }
 
     public ChatChannel getDefaultChannel() {

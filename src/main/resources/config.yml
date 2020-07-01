@@ -85,3 +85,11 @@ listeners:
   leave: true # sends leave messages in discord
   death: true # sends death messages in discord
   vote: false # sends vote messages in discord
+
+storage:
+  type: JSON # JSON, MySQL
+  host: 'localhost'
+  port: 3306
+  database: 'SimpleChatData'
+  username: 'root'
+  password: 'password'
