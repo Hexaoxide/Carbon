@@ -23,7 +23,7 @@ public class MeCommand extends BaseCommand {
 
     @Default
     public void baseCommand(Player player, String... args) {
-        String message = String.join(" ", args);
+        String message = String.join(" ", args).replace("</pre>", "");
         String format = PlaceholderAPI.setPlaceholders(player, simpleChat.getConfig().getString("language.me"));
         Component component = MiniMessage.instance().parse(format, "message", message);
 
