@@ -35,6 +35,19 @@ public class AllianceChatChannel extends SimpleChatChannel {
     }
 
     @Override
+    public boolean canPlayerUse(Player player) {
+        if (super.canPlayerUse(player)) {
+            try {
+                return TownyAPI.getInstance().getDataSource().getResident(player.getName()).hasTown();
+            } catch (NotRegisteredException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean isAllianceChat() {
         return true;
     }

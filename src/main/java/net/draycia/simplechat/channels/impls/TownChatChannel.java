@@ -33,6 +33,19 @@ public class TownChatChannel extends SimpleChatChannel {
         return false;
     }
 
+    @Override
+    public boolean canPlayerUse(Player player) {
+        if (super.canPlayerUse(player)) {
+            try {
+                return TownyAPI.getInstance().getDataSource().getResident(player.getName()).hasTown();
+            } catch (NotRegisteredException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
     public static TownChatChannel.Builder townBuilder(String name) {
         return new TownChatChannel.Builder(name);
     }

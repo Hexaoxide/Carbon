@@ -23,6 +23,15 @@ public class PartyChatChannel extends SimpleChatChannel {
         return false;
     }
 
+    @Override
+    public boolean canPlayerUse(Player player) {
+        if (super.canPlayerUse(player)) {
+            return PartyAPI.inParty(player);
+        }
+
+        return false;
+    }
+
     public static PartyChatChannel.Builder partyBuilder(String name) {
         return new PartyChatChannel.Builder(name);
     }

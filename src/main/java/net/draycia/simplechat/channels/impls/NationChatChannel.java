@@ -38,6 +38,19 @@ public class NationChatChannel extends SimpleChatChannel {
         return false;
     }
 
+    @Override
+    public boolean canPlayerUse(Player player) {
+        if (super.canPlayerUse(player)) {
+            try {
+                return TownyAPI.getInstance().getDataSource().getResident(player.getName()).hasNation();
+            } catch (NotRegisteredException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
     public static NationChatChannel.Builder nationBuilder(String name) {
         return new NationChatChannel.Builder(name);
     }

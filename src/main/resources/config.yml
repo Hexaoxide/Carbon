@@ -48,9 +48,11 @@ language:
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
   is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
   no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
-  player-left: '%player_displayname% has left <server>!' # Not MiniMessage compatible
-  player-joined: '%player_displayname% has joined <server>!' # Not MiniMessage compatible
-  vote-received: '<name> has voted on <service>!' # Not MiniMessage compatible
+  # The following messages are not MiniMessage compatible
+  player-left: '%player_displayname% has left <server>!'
+  player-joined: '%player_displayname% has joined <server>!'
+  vote-received: '<name> has voted on <service>!'
+  cannot-use-channel: "You cannot use that channel!"
 
 server-name: 'Server'
 

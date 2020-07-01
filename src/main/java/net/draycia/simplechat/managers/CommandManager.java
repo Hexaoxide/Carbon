@@ -43,7 +43,7 @@ public class CommandManager {
 
         manager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
             if (!value.canPlayerUse(context.getIssuer().getPlayer())) {
-                throw new ConditionFailedException("You cannot use that channel!");
+                throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
             }
         });
 

@@ -216,7 +216,9 @@ public class SimpleChatChannel extends ChatChannel {
             }
         } else {
             // Send message as normal
-            for (Player onlinePlayer : getAudience(player)) {
+            List<Player> receivers = getAudience(player);
+
+            for (Player onlinePlayer : receivers) {
                 Audience audience = simpleChat.getAudiences().player(onlinePlayer);
 
                 if (message.contains(onlinePlayer.getName())) {

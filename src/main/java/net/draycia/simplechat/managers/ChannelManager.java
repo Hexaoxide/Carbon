@@ -10,11 +10,7 @@ import java.util.HashMap;
 
 public class ChannelManager {
 
-    private SimpleChat simpleChat;
-
     public ChannelManager(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
-
         boolean hasTownChat = false;
         boolean hasNationChat = false;
         boolean hasAllianceChat = false;
