@@ -1,6 +1,7 @@
 package net.draycia.simplechat.channels;
 
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -118,7 +119,7 @@ public abstract class ChatChannel {
     }
 
     /**
-     * Parses the specified message, calls a {@link net.draycia.simplechat.events.ChannelChatEvent}, and sends the message to everyone who can view this channel.
+     * Parses the specified message, calls a {@link ChatFormatEvent}, and sends the message to everyone who can view this channel.
      * @param user The player who is saying the message.
      * @param message The message to be sent.
      */

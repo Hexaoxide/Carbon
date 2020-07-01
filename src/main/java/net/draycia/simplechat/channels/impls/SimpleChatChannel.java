@@ -3,7 +3,7 @@ package net.draycia.simplechat.channels.impls;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.events.ChannelChatEvent;
+import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.DiscordWebhook;
 import net.kyori.adventure.audience.Audience;
@@ -178,16 +178,16 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Call custom chat event
-        ChannelChatEvent event = new ChannelChatEvent(user, this, messageFormat, message);
+        ChatFormatEvent formatEvent = new ChatFormatEvent(user, this, messageFormat, message);
 
-        Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(formatEvent);
 
-        if (event.isCancelled()) {
+        if (formatEvent.isCancelled()) {
             return;
         }
 
         // Parse placeholders
-        messageFormat = PlaceholderAPI.setPlaceholders(user.asOfflinePlayer(), event.getFormat());
+        messageFormat = PlaceholderAPI.setPlaceholders(user.asOfflinePlayer(), formatEvent.getFormat());
 
         // Convert legacy color codes to Mini color codes
         Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
@@ -197,7 +197,7 @@ public class SimpleChatChannel extends ChatChannel {
         Component formattedMessage = MiniMessage.instance().parse(messageFormat, "color", "<" + color.toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25), "server",
                 simpleChat.getConfig().getString("server-name", "Server"),
-                "message", event.getMessage());
+                "message", formatEvent.getMessage());
 
         // Handle item linking placeholders
         if (formattedMessage instanceof TextComponent && user.isOnline()) {

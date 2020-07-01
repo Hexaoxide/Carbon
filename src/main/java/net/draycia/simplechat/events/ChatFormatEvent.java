@@ -7,7 +7,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class ChannelChatEvent extends Event implements Cancellable {
+public class ChatFormatEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private boolean isCancelled = false;
@@ -17,7 +17,7 @@ public class ChannelChatEvent extends Event implements Cancellable {
     private String format;
     private String message;
 
-    public ChannelChatEvent(ChatUser user, ChatChannel chatChannel, String format, String message) {
+    public ChatFormatEvent(ChatUser user, ChatChannel chatChannel, String format, String message) {
         super(true);
 
         this.user = user;
@@ -73,4 +73,5 @@ public class ChannelChatEvent extends Event implements Cancellable {
     public void setMessage(String message) {
         this.message = message;
     }
+
 }
