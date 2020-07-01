@@ -8,6 +8,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 @CommandAlias("tch|togglec|togglechannel|toggle")
+@CommandPermission("simplechat.toggle")
 public class ToggleCommand extends BaseCommand {
 
     private SimpleChat simpleChat;

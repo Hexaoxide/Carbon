@@ -13,7 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("clearchat|cc")
-@CommandPermission("simplechat.clear.use")
+@CommandPermission("simplechat.clearchat")
 public class CommandClearChat extends BaseCommand {
 
     private SimpleChat simpleChat;
