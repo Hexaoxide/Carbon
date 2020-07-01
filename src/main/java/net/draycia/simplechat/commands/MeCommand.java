@@ -28,6 +28,10 @@ public class MeCommand extends BaseCommand {
         Component component = MiniMessage.instance().parse(format, "message", message);
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (simpleChat.playerHasPlayerIgnored(onlinePlayer, player)) {
+                continue;
+            }
+
             simpleChat.getAudiences().player(onlinePlayer).sendMessage(component);
         }
     }
