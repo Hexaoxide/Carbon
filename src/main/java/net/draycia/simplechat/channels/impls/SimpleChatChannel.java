@@ -261,7 +261,7 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     public void sendMessageToDiscord(OfflinePlayer player, String message) {
-        if (discordWebhook == null) {
+        if (getWebhook() == null || discordWebhook == null) {
             return;
         }
 
