@@ -66,7 +66,7 @@ public class PluginMessageManager implements PluginMessageListener {
             return;
         }
 
-        ChatUser user = UserManager.wrap(playerUUID);
+        ChatUser user = simpleChat.getUserService().wrap(playerUUID);
 
         String chatMessage = in.readUTF();
 
@@ -93,7 +93,7 @@ public class PluginMessageManager implements PluginMessageListener {
             return;
         }
 
-        ChatUser user = UserManager.wrap(playerUUID);
+        ChatUser user = simpleChat.getUserService().wrap(playerUUID);
 
         String chatMessage = in.readUTF();
 

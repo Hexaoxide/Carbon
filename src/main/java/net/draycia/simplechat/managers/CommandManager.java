@@ -19,7 +19,7 @@ public class CommandManager {
         commandManager = new BukkitCommandManager(simpleChat);
 
         commandManager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
-            ChatUser user = UserManager.wrap(context.getPlayer());
+            ChatUser user = simpleChat.getUserService().wrap(context.getPlayer());
 
             ArrayList<String> completions = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public class CommandManager {
         });
 
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
-            ChatUser user = UserManager.wrap(context.getIssuer().getPlayer());
+            ChatUser user = simpleChat.getUserService().wrap(context.getIssuer().getPlayer());
 
             if (!value.canPlayerUse(user)) {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));

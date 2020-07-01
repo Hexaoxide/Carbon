@@ -4,7 +4,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelChatEvent;
-import net.draycia.simplechat.managers.UserManager;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.DiscordWebhook;
 import net.kyori.adventure.audience.Audience;
@@ -104,7 +103,7 @@ public class SimpleChatChannel extends ChatChannel {
         List<Player> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (canPlayerSee(user, UserManager.wrap(player))) {
+            if (canPlayerSee(user, simpleChat.getUserService().wrap(player))) {
                 audience.add(player);
             }
         }

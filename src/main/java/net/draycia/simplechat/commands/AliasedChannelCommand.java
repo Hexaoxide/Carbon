@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.managers.UserManager;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -25,7 +24,7 @@ public class AliasedChannelCommand extends BaseCommand {
     @Default
     //@CommandAlias("channel %channelName")
     public void baseCommand(Player player, @Optional String[] args) {
-        ChatUser user = UserManager.wrap(player);
+        ChatUser user = simpleChat.getUserService().wrap(player);
 
         if (args == null || args.length == 0) {
             user.setSelectedChannel(getChatChannel());

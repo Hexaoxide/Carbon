@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.managers.UserManager;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -29,13 +28,13 @@ public class MeCommand extends BaseCommand {
         String format = PlaceholderAPI.setPlaceholders(player, simpleChat.getConfig().getString("language.me"));
         Component component = MiniMessage.instance().parse(format, "message", message);
 
-        ChatUser user = UserManager.wrap(player);
+        ChatUser user = simpleChat.getUserService().wrap(player);
 
         if (user.isShadowMuted()) {
             user.asAudience().sendMessage(component);
         } else {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (UserManager.wrap(onlinePlayer).isIgnoringUser(user)) {
+                if (simpleChat.getUserService().wrap(onlinePlayer).isIgnoringUser(user)) {
                     continue;
                 }
 

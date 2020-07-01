@@ -5,11 +5,9 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.managers.UserManager;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("reply|r")
@@ -24,7 +22,8 @@ public class ReplyCommand extends BaseCommand {
 
     @Default
     public void baseCommand(Player player, String... args) {
-        ChatUser user = UserManager.wrap(player);
+        ChatUser user = simpleChat.getUserService().wrap(player);
+        ChatUser targetUser = simpleChat.getUserService().wrap(user.getReplyTarget());
 
         if (user.getReplyTarget() == null) {
             String message = simpleChat.getConfig().getString("language.no-reply-target");
@@ -34,7 +33,7 @@ public class ReplyCommand extends BaseCommand {
             return;
         }
 
-        simpleChat.sendPlayerPrivateMessage(player, Bukkit.getOfflinePlayer(user.getReplyTarget()), String.join(" ", args));
+        targetUser.sendMessage(user, String.join(" ", args));
     }
 
 }

@@ -4,16 +4,10 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.PlayerListener;
 import net.draycia.simplechat.listeners.VoteListener;
 import net.draycia.simplechat.managers.*;
-import net.draycia.simplechat.storage.ChatUser;
+import net.draycia.simplechat.storage.UserService;
 import net.draycia.simplechat.util.ItemStackUtils;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -28,6 +22,8 @@ public final class SimpleChat extends JavaPlugin {
     private DiscordManager discordManager;
     private CommandManager commandManager;
     private ChannelManager channelManager;
+
+    private UserService userService;
 
     private ItemStackUtils itemStackUtils;
 
@@ -56,10 +52,10 @@ public final class SimpleChat extends JavaPlugin {
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
 
+        // TODO: initialize UserService
+
         // Setup listeners
         setupListeners();
-
-        // TODO: initialize user data handlers
     }
 
     @Override
@@ -72,48 +68,6 @@ public final class SimpleChat extends JavaPlugin {
 
         if (getServer().getPluginManager().isPluginEnabled("Votifier")) {
             getServer().getPluginManager().registerEvents(new VoteListener(this), this);
-        }
-    }
-
-    public void sendPlayerPrivateMessage(Player sender, OfflinePlayer target, String message) {
-        ChatUser user = UserManager.wrap(sender);
-        ChatUser targetUser = UserManager.wrap(target.getUniqueId());
-
-        if (user.isIgnoringUser(target.getUniqueId())) {
-            return;
-        }
-
-        String toPlayerFormat = getConfig().getString("language.message-to-other");
-        String fromPlayerFormat = getConfig().getString("language.message-from-other");
-
-        Component toPlayerComponent = MiniMessage.instance().parse(toPlayerFormat, "message", message,
-                "target", target.getName());
-
-        Component fromPlayerComponent = MiniMessage.instance().parse(fromPlayerFormat, "message", message,
-                "sender", sender.getName());
-
-        user.asAudience().sendMessage(toPlayerComponent);
-
-        if (user.isShadowMuted()) {
-            return;
-        }
-
-        if (target.isOnline()) {
-            targetUser.asAudience().sendMessage(fromPlayerComponent);
-
-            user.setReplyTarget(targetUser.getUUID());
-            targetUser.setReplyTarget(user.getUUID());
-
-            if (getConfig().getBoolean("pings.on-whisper")) {
-                Key key = Key.of(getConfig().getString("pings.sound"));
-                Sound.Source source = Sound.Source.valueOf(getConfig().getString("pings.source"));
-                float volume = (float)getConfig().getDouble("pings.volume");
-                float pitch = (float)getConfig().getDouble("pings.pitch");
-
-                targetUser.asAudience().playSound(Sound.of(key, source, volume, pitch));
-            }
-        } else {
-            // TODO: cross server msg support, don't forget to include /ignore support
         }
     }
 
@@ -159,6 +113,10 @@ public final class SimpleChat extends JavaPlugin {
 
     public PluginMessageManager getPluginMessageManager() {
         return pluginMessageManager;
+    }
+
+    public UserService getUserService() {
+        return userService;
     }
 
     public BukkitAudiences getAudiences() {

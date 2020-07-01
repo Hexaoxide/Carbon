@@ -39,4 +39,6 @@ public interface ChatUser {
     void setIgnoringUser(UUID uuid, boolean ignoring);
     void setIgnoringUser(ChatUser user, boolean ignoring);
 
+    void sendMessage(ChatUser sender, String message);
+
 }
