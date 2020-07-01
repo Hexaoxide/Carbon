@@ -28,7 +28,7 @@ public class CommandClearChat extends BaseCommand {
         Component component = MiniMessage.instance().parse(format);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("simplechat.clear.exempt")) {
+            if (player.hasPermission("simplechat.clearchat.exempt")) {
                 continue;
             }
 
