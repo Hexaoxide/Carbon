@@ -52,6 +52,8 @@ language:
   no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
   reloaded: '<yellow>Chat config has been reloaded! Note that this does not reload channel configs!'
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
+  message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
+  message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
   # The following messages are not MiniMessage compatible
   player-left: '%player_displayname% has left <server>!'
   player-joined: '%player_displayname% has joined <server>!'

@@ -58,6 +58,7 @@ public class CommandManager {
         manager.registerCommand(new ShadowMuteCommand(simpleChat));
         manager.registerCommand(new ChatReloadCommand(simpleChat));
         manager.registerCommand(new MeCommand(simpleChat));
+        manager.registerCommand(new MessageCommand(simpleChat));
     }
 
 }
