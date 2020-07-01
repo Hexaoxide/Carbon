@@ -40,9 +40,9 @@ public final class ItemStackUtils {
         final String version = Bukkit.getServer().getClass().getPackage().getName()
                 .substring("org.bukkit.craftbukkit.".length());
 
-        this.craftItemStackClass = cbClass(version, "inventory.CraftItemStack");
+        this.craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
         this.asNMSCopyMethod = this.craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
-        this.itemStackClass = nmsClass(version, "ItemStack");
+        this.itemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
         this.cMethod = this.itemStackClass.getMethod("C");
     }
 
@@ -66,14 +66,6 @@ public final class ItemStackUtils {
         } else {
             return TextComponent.empty();
         }
-    }
-
-    private static Class<?> cbClass(final String version, final String name) throws ClassNotFoundException {
-        return Class.forName("org.bukkit.craftbukkit." + version + "." + name);
-    }
-
-    private static Class<?> nmsClass(final String version, final String name) throws ClassNotFoundException {
-        return Class.forName("net.minecraft.server." + version + "." + name);
     }
 
 }

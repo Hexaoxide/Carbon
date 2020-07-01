@@ -248,7 +248,7 @@ public class DiscordWebhook {
             return this;
         }
 
-        private class Footer {
+        private static class Footer {
             private String text;
             private String iconUrl;
 
@@ -266,7 +266,7 @@ public class DiscordWebhook {
             }
         }
 
-        private class Thumbnail {
+        private static class Thumbnail {
             private String url;
 
             private Thumbnail(String url) {
@@ -278,7 +278,7 @@ public class DiscordWebhook {
             }
         }
 
-        private class Image {
+        private static class Image {
             private String url;
 
             private Image(String url) {
@@ -290,7 +290,7 @@ public class DiscordWebhook {
             }
         }
 
-        private class Author {
+        private static class Author {
             private String name;
             private String url;
             private String iconUrl;
@@ -314,7 +314,7 @@ public class DiscordWebhook {
             }
         }
 
-        private class Field {
+        private static class Field {
             private String name;
             private String value;
             private boolean inline;
@@ -339,7 +339,7 @@ public class DiscordWebhook {
         }
     }
 
-    private class JSONObject {
+    private static class JSONObject {
 
         private final HashMap<String, Object> map = new HashMap<>();
 

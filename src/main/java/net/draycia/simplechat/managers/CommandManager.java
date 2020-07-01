@@ -5,8 +5,6 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.commands.*;
 import net.draycia.simplechat.storage.ChatUser;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 

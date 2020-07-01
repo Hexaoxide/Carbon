@@ -7,8 +7,6 @@ import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
 

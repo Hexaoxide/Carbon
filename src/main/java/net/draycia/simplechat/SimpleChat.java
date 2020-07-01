@@ -1,10 +1,5 @@
 package net.draycia.simplechat;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.PlayerListener;
 import net.draycia.simplechat.listeners.VoteListener;
@@ -21,12 +16,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.annotation.CheckForNull;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.*;
 
 public final class SimpleChat extends JavaPlugin {
@@ -43,8 +32,6 @@ public final class SimpleChat extends JavaPlugin {
     private ItemStackUtils itemStackUtils;
 
     private BukkitAudiences audiences;
-
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public void onEnable() {
