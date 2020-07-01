@@ -1,9 +1,8 @@
 package net.draycia.simplechat.listeners;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextColor;
+import net.draycia.simplechat.channels.ChatChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,9 +11,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.javacord.api.DiscordApi;
 
-import java.awt.*;
-import java.util.regex.Pattern;
 
 public class PlayerListener implements Listener {
 
@@ -24,6 +22,7 @@ public class PlayerListener implements Listener {
         this.simpleChat = simpleChat;
     }
 
+    // Chat messages
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerchat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
@@ -37,19 +36,60 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler
+    // Player joins
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // TODO: join messages (placeholderapi support)
+        if (!simpleChat.getConfig().getBoolean("listeners.join")) {
+            return;
+        }
+
+        ChatChannel chatChannel = simpleChat.getDefaultChannel();
+
+        if (chatChannel != null && chatChannel.getChannelId() > -1) {
+            DiscordApi api = simpleChat.getDiscordManager().getDiscordAPI();
+            String message = simpleChat.getConfig().getString("language.player-joined");
+
+            api.getServerTextChannelById(chatChannel.getChannelId()).ifPresent(channel -> {
+                channel.sendMessage(PlaceholderAPI.setPlaceholders(event.getPlayer(), message));
+            });
+        }
     }
 
-    @EventHandler
+    // Player quits
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLeave(PlayerQuitEvent event) {
-        // TODO: leave messages (placeholderapi support)
+        if (!simpleChat.getConfig().getBoolean("listeners.leave")) {
+            return;
+        }
+
+        ChatChannel chatChannel = simpleChat.getDefaultChannel();
+
+        if (chatChannel != null && chatChannel.getChannelId() > -1) {
+            DiscordApi api = simpleChat.getDiscordManager().getDiscordAPI();
+            String message = simpleChat.getConfig().getString("language.player-left");
+
+            api.getServerTextChannelById(chatChannel.getChannelId()).ifPresent(channel -> {
+                channel.sendMessage(PlaceholderAPI.setPlaceholders(event.getPlayer(), message));
+            });
+        }
     }
 
-    @EventHandler
+    // Player deaths
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        // TODO: death messages (placeholderapi support)
+        if (!simpleChat.getConfig().getBoolean("listeners.death")) {
+            return;
+        }
+
+        ChatChannel chatChannel = simpleChat.getDefaultChannel();
+
+        if (chatChannel != null && chatChannel.getChannelId() > -1) {
+            DiscordApi api = simpleChat.getDiscordManager().getDiscordAPI();
+
+            api.getServerTextChannelById(chatChannel.getChannelId()).ifPresent(channel -> {
+                channel.sendMessage(event.getDeathMessage());
+            });
+        }
     }
 
 }
