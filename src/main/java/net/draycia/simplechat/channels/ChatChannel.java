@@ -102,6 +102,8 @@ public abstract class ChatChannel {
         return false;
     }
 
+    public abstract boolean firstMatchingGroup();
+
     /**
      * @return If the player can use this channel.
      */
@@ -148,6 +150,7 @@ public abstract class ChatChannel {
         public abstract ChatChannel.Builder setShouldForwardFormatting(boolean forwardFormatting);
         public abstract ChatChannel.Builder setShouldBungee(boolean shouldBungee);
         public abstract ChatChannel.Builder setFilterEnabled(boolean filterEnabled);
+        public abstract ChatChannel.Builder setFirstMatchingGroup(boolean firstMatchingGroup);
     }
 
 }

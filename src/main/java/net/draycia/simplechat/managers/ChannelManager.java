@@ -126,6 +126,18 @@ public class ChannelManager {
                 builder.setShouldBungee(defaults.getBoolean("should-bungee"));
             }
 
+            if (section.contains("filter-enabled")) {
+                builder.setFilterEnabled(section.getBoolean("filter-enabled"));
+            } else if (defaults != null && defaults.contains("filter-enabled")) {
+                builder.setFilterEnabled(defaults.getBoolean("filter-enabled"));
+            }
+
+            if (section.contains("first-matching-group")) {
+                builder.setFirstMatchingGroup(section.getBoolean("first-matching-group"));
+            } else if (defaults != null && defaults.contains("first-matching-group")) {
+                builder.setFirstMatchingGroup(defaults.getBoolean("first-matching-group"));
+            }
+
             ChatChannel channel = builder.build(simpleChat);
 
             if (channel.isTownChat() || channel.isNationChat() || channel.isAllianceChat()) {
@@ -172,6 +184,5 @@ public class ChannelManager {
             simpleChat.getLogger().info("mcMMO installed but no Party channel is setup!");
         }
     }
-
 
 }

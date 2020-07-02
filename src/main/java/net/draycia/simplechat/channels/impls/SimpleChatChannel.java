@@ -41,6 +41,7 @@ public class SimpleChatChannel extends ChatChannel {
     private boolean forwardFormatting;
     private boolean shouldBungee;
     private boolean filterEnabled;
+    private boolean firstMatchingGroup;
 
     private DiscordWebhook discordWebhook = null;
 
@@ -50,7 +51,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, SimpleChat simpleChat) {
+    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -65,6 +66,7 @@ public class SimpleChatChannel extends ChatChannel {
         this.forwardFormatting = forwardFormatting;
         this.shouldBungee = shouldBungee;
         this.filterEnabled = filterEnabled;
+        this.firstMatchingGroup = firstMatchingGroup;
 
         this.simpleChat = simpleChat;
 
@@ -142,7 +144,7 @@ public class SimpleChatChannel extends ChatChannel {
     @Override
     public void sendMessage(ChatUser user, String message, boolean fromBungee) {
         // Get player's formatting
-        String messageFormat = getFormat(getGroup(user));
+        String messageFormat = getFormat(user);
 
         // Call custom chat event
         ChatFormatEvent formatEvent = new ChatFormatEvent(user, this, messageFormat, message);
@@ -220,18 +222,39 @@ public class SimpleChatChannel extends ChatChannel {
         simpleChat.getPluginMessageManager().sendMessage(this, player, message);
     }
 
-    private String getGroup(ChatUser user) {
-        if (user.isOnline()) {
-            return simpleChat.getPermission().getPrimaryGroup(user.asPlayer());
+    private String getFormat(ChatUser user) {
+        String group = "default";
+
+        if (!firstMatchingGroup()) {
+            if (user.isOnline()) {
+                group = simpleChat.getPermission().getPrimaryGroup(user.asPlayer());
+            } else {
+                group = simpleChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
+            }
         } else {
-            return simpleChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
+            String[] groups;
+
+            if (user.isOnline()) {
+                groups = simpleChat.getPermission().getPlayerGroups(user.asPlayer());
+            } else {
+                groups = simpleChat.getPermission().getPlayerGroups(null, user.asOfflinePlayer());
+            }
+
+            for (String entry : groups) {
+                if (formats.containsKey(entry.toLowerCase())) {
+                    group = entry;
+                    break;
+                }
+            }
         }
+
+        return getFormat(group);
     }
 
     public boolean canPlayerSee(ChatUser sender, ChatUser target) {
         Player targetPlayer = target.asPlayer();
 
-        if (!targetPlayer.hasPermission("simplechat." + getName().toLowerCase() + ".see")) {
+        if (!targetPlayer.hasPermission("simplechat.channels." + getName() + ".see")) {
             return false;
         }
 
@@ -329,6 +352,11 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
+    public boolean firstMatchingGroup() {
+        return firstMatchingGroup;
+    }
+
+    @Override
     public List<Pattern> getItemLinkPatterns() {
         return itemPatterns;
     }
@@ -353,6 +381,7 @@ public class SimpleChatChannel extends ChatChannel {
         private boolean forwardFormatting = true;
         private boolean shouldBungee = false;
         private boolean filterEnabled = true;
+        private boolean firstMatchingGroup = false;
 
         private Builder() { }
 
@@ -362,7 +391,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         @Override
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, simpleChat);
+            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
         }
 
         @Override
@@ -464,6 +493,13 @@ public class SimpleChatChannel extends ChatChannel {
         @Override
         public Builder setFilterEnabled(boolean filterEnabled) {
             this.filterEnabled = filterEnabled;
+
+            return this;
+        }
+
+        @Override
+        public Builder setFirstMatchingGroup(boolean firstMatchingGroup) {
+            this.firstMatchingGroup = firstMatchingGroup;
 
             return this;
         }
