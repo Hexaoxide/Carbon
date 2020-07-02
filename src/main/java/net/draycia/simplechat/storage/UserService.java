@@ -9,4 +9,6 @@ public abstract class UserService {
     public abstract ChatUser wrap(OfflinePlayer player);
     public abstract ChatUser wrap(UUID uuid);
 
+    public abstract void cleanUp();
+
 }

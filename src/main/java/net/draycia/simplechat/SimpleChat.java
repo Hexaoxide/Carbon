@@ -6,6 +6,7 @@ import net.draycia.simplechat.listeners.VoteListener;
 import net.draycia.simplechat.listeners.chat.*;
 import net.draycia.simplechat.managers.*;
 import net.draycia.simplechat.storage.UserService;
+import net.draycia.simplechat.storage.impl.JSONUserService;
 import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.milkbowl.vault.permission.Permission;
@@ -54,7 +55,7 @@ public final class SimpleChat extends JavaPlugin {
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
 
-        // TODO: initialize UserService
+        userService = new JSONUserService(this); // TODO: SQLUserService
 
         // Setup listeners
         setupListeners();
@@ -62,7 +63,7 @@ public final class SimpleChat extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // TODO: save user data
+        userService.cleanUp();
     }
 
     private void setupListeners() {

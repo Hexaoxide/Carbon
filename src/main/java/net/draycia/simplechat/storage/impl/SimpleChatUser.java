@@ -20,27 +20,30 @@ import java.util.UUID;
 
 public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
-    private SimpleChat simpleChat;
+    private transient SimpleChat simpleChat;
+
     private UUID uuid;
 
-    private ChatChannel selectedChannel;
-    private List<ChatChannel> ignoredChannels = new ArrayList<>();
+    private String selectedChannel = null;
+    private List<String> ignoredChannels = new ArrayList<>();
     private List<UUID> ignoredUsers = new ArrayList<>();
-    private boolean muted;
-    private boolean shadowMuted;
-    private UUID replyTarget = null;
+    private boolean muted = false;
+    private boolean shadowMuted = false;
 
-    private Audience audience;
+    private transient UUID replyTarget = null;
 
-    public SimpleChatUser(SimpleChat simpleChat, UUID uuid) {
-        this.simpleChat = simpleChat;
+    public SimpleChatUser() {
+        this.simpleChat = (SimpleChat)Bukkit.getPluginManager().getPlugin("SimpleChat");
+    }
+
+    public SimpleChatUser(UUID uuid) {
+        this.simpleChat = (SimpleChat)Bukkit.getPluginManager().getPlugin("SimpleChat");
         this.uuid = uuid;
-        this.audience = simpleChat.getAudiences().player(uuid);
     }
 
     @Override
     public Audience audience() {
-        return audience;
+        return simpleChat.getAudiences().player(uuid);
     }
 
     @Override
@@ -65,25 +68,25 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public ChatChannel getSelectedChannel() {
-        return selectedChannel;
+        return selectedChannel == null ? simpleChat.getDefaultChannel() : simpleChat.getChannel(selectedChannel);
     }
 
     @Override
     public void setSelectedChannel(ChatChannel chatChannel) {
-        this.selectedChannel = chatChannel;
+        this.selectedChannel = chatChannel.getName();
     }
 
     @Override
     public boolean ignoringChannel(ChatChannel chatChannel) {
-        return ignoredChannels.contains(chatChannel);
+        return ignoredChannels.contains(chatChannel.getName());
     }
 
     @Override
     public void setIgnoringChannel(ChatChannel chatChannel, boolean ignoring) {
         if (ignoring) {
-            ignoredChannels.add(chatChannel);
+            ignoredChannels.add(chatChannel.getName());
         } else {
-            ignoredChannels.remove(chatChannel);
+            ignoredChannels.remove(chatChannel.getName());
         }
     }
 
