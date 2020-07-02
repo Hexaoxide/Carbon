@@ -9,6 +9,7 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public abstract class ChatChannel {
 
@@ -116,6 +117,8 @@ public abstract class ChatChannel {
     public boolean shouldForwardFormatting() {
         return true;
     }
+
+    public abstract List<Pattern> getItemLinkPatterns();
 
     /**
      * Parses the specified message, calls a {@link ChatFormatEvent}, and sends the message to everyone who can view this channel.

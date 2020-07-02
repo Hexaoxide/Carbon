@@ -1,13 +1,16 @@
 package net.draycia.simplechat;
 
+import com.sun.org.apache.xerces.internal.xs.XSImplementation;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.PlayerListener;
 import net.draycia.simplechat.listeners.VoteListener;
+import net.draycia.simplechat.listeners.chat.*;
 import net.draycia.simplechat.managers.*;
 import net.draycia.simplechat.storage.UserService;
 import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -64,11 +67,22 @@ public final class SimpleChat extends JavaPlugin {
     }
 
     private void setupListeners() {
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        PluginManager pluginManager = getServer().getPluginManager();
 
-        if (getServer().getPluginManager().isPluginEnabled("Votifier")) {
-            getServer().getPluginManager().registerEvents(new VoteListener(this), this);
+        pluginManager.registerEvents(new PlayerListener(this), this);
+
+        if (pluginManager.isPluginEnabled("Votifier")) {
+            pluginManager.registerEvents(new VoteListener(this), this);
         }
+
+        // Register chat listeners
+        pluginManager.registerEvents(new FilterHandler(this), this);
+        pluginManager.registerEvents(new ItemLinkHandler(this), this);
+        pluginManager.registerEvents(new LegacyFormatHandler(), this);
+        pluginManager.registerEvents(new OfflineNameHandler(), this);
+        pluginManager.registerEvents(new PingHandler(this), this);
+        pluginManager.registerEvents(new PlaceholderHandler(this), this);
+        pluginManager.registerEvents(new ShadowMuteHandler(), this);
     }
 
     public ChatChannel getDefaultChannel() {

@@ -1,22 +1,17 @@
 package net.draycia.simplechat.channels.impls;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChatComponentEvent;
 import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.DiscordWebhook;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageAuthor;
@@ -147,36 +142,7 @@ public class SimpleChatChannel extends ChatChannel {
     @Override
     public void sendMessage(ChatUser user, String message, boolean fromBungee) {
         // Get player's formatting
-        String group;
-
-        if (user.isOnline()) {
-            group = simpleChat.getPermission().getPrimaryGroup(user.asPlayer());
-        } else {
-            group = simpleChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
-        }
-
-        String messageFormat = getFormat(group);
-
-        // If the player isn't online (cross server message), use their normal name
-        if (!user.isOnline()) {
-            messageFormat = messageFormat.replace("%player_displayname%", "%player_name%");
-        }
-
-        // Chat filter
-        if (filterEnabled() && simpleChat.getConfig().contains("filters")) {
-            for (String entry : simpleChat.getConfig().getStringList("filters")) {
-                message = message.replaceAll(entry, simpleChat.getConfig().getString("filter-text", "****"));
-            }
-        }
-
-        // Chat placeholders
-        ConfigurationSection replacements = simpleChat.getConfig().getConfigurationSection("replacements");
-
-        if (replacements != null) {
-            for (String key : replacements.getKeys(false)) {
-                message = message.replace(key, replacements.getString(key));
-            }
-        }
+        String messageFormat = getFormat(getGroup(user));
 
         // Call custom chat event
         ChatFormatEvent formatEvent = new ChatFormatEvent(user, this, messageFormat, message);
@@ -187,72 +153,32 @@ public class SimpleChatChannel extends ChatChannel {
             return;
         }
 
-        // Parse placeholders
-        messageFormat = PlaceholderAPI.setPlaceholders(user.asOfflinePlayer(), formatEvent.getFormat());
-
-        // Convert legacy color codes to Mini color codes
-        Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
-        messageFormat = MiniMessage.instance().serialize(component);
-
         // Get formatted message
-        TextComponent formattedMessage = (TextComponent)MiniMessage.instance().parse(messageFormat, "color", "<" + color.toString() + ">",
+        TextComponent formattedMessage = (TextComponent)MiniMessage.instance().parse(formatEvent.getFormat(), "color", "<" + color.toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25), "server",
                 simpleChat.getConfig().getString("server-name", "Server"),
                 "message", formatEvent.getMessage());
-
-        // Handle item linking placeholders
-        if (user.isOnline()) {
-            // TODO: move this into a ChatComponentEvent listener
-            for (Pattern pattern : itemPatterns) {
-                formattedMessage = (formattedMessage).replace(pattern, (input) -> {
-                    return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(user.asPlayer()));
-                });
-            }
-        }
 
         // Call custom chat event
         ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage, getAudience(user));
 
         Bukkit.getPluginManager().callEvent(componentEvent);
 
-        if (componentEvent.isCancelled()) {
-            return;
-        }
-
-        // Handle shadow mutes
-        if (user.isShadowMuted()) {
-            // TODO: move this into a ChatComponentEvent listener
-            if (user.isOnline()) {
-                user.sendMessage(componentEvent.getComponent());
-            }
-        } else {
-            // Send message as normal
-            for (ChatUser chatUser : componentEvent.getRecipients()) {
-                if (message.contains(chatUser.asPlayer().getName())) {
-                    if (simpleChat.getConfig().getBoolean("pings.enabled")) {
-                        Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
-                        Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));
-                        float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
-                        float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
-
-                        chatUser.playSound(Sound.of(key, source, volume, pitch));
-                    }
-                }
-
-                chatUser.sendMessage(componentEvent.getComponent());
-            }
+        // Send message as normal
+        for (ChatUser chatUser : componentEvent.getRecipients()) {
+            chatUser.sendMessage(componentEvent.getComponent());
         }
 
         // Log message to console
         String sm = user.isShadowMuted() ? "[SM] " : "";
-        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(formattedMessage));
+        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(componentEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
         if (user.isOnline() && fromBungee) {
             if (shouldForwardFormatting() && shouldBungee()) {
-                sendMessageToBungee(user.asPlayer(), component);
+                sendMessageToBungee(user.asPlayer(), componentEvent.getComponent());
             } else if (shouldBungee()) {
                 sendMessageToBungee(user.asPlayer(), message);
             }
@@ -292,6 +218,14 @@ public class SimpleChatChannel extends ChatChannel {
 
     public void sendMessageToBungee(Player player, String message) {
         simpleChat.getPluginMessageManager().sendMessage(this, player, message);
+    }
+
+    private String getGroup(ChatUser user) {
+        if (user.isOnline()) {
+            return simpleChat.getPermission().getPrimaryGroup(user.asPlayer());
+        } else {
+            return simpleChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
+        }
     }
 
     public boolean canPlayerSee(ChatUser sender, ChatUser target) {
@@ -392,6 +326,11 @@ public class SimpleChatChannel extends ChatChannel {
     @Override
     public boolean filterEnabled() {
         return filterEnabled;
+    }
+
+    @Override
+    public List<Pattern> getItemLinkPatterns() {
+        return itemPatterns;
     }
 
     public static SimpleChatChannel.Builder builder(String name) {
