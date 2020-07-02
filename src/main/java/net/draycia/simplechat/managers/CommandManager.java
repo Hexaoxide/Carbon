@@ -65,6 +65,7 @@ public class CommandManager {
         manager.registerCommand(new MeCommand(simpleChat));
         manager.registerCommand(new MessageCommand(simpleChat));
         manager.registerCommand(new ReplyCommand(simpleChat));
+        manager.registerCommand(new MuteCommand(simpleChat));
     }
 
     public co.aikar.commands.CommandManager getCommandManager() {

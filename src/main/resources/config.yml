@@ -51,6 +51,8 @@ language:
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
   is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
   no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
+  is-now-muted: '<yellow>User <user> is now muted!'
+  no-longer-muted: '<yellow>User <user> is no longer muted!'
   reloaded: '<yellow>Chat config has been reloaded! Note that this does not reload channel configs!'
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
