@@ -31,7 +31,7 @@ public class MeCommand extends BaseCommand {
         ChatUser user = simpleChat.getUserService().wrap(player);
 
         if (user.isShadowMuted()) {
-            user.asAudience().sendMessage(component);
+            user.sendMessage(component);
         } else {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (simpleChat.getUserService().wrap(onlinePlayer).isIgnoringUser(user)) {

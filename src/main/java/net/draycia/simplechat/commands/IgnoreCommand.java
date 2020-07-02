@@ -37,7 +37,7 @@ public class IgnoreCommand extends BaseCommand {
             message = simpleChat.getConfig().getString("language.ignoring-user");
         }
 
-        user.asAudience().sendMessage(MiniMessage.instance().parse(message));
+        user.sendMessage(MiniMessage.instance().parse(message));
     }
 
 }

@@ -4,6 +4,7 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SimpleChatUser implements ChatUser {
+public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
     private SimpleChat simpleChat;
     private UUID uuid;
@@ -29,14 +30,17 @@ public class SimpleChatUser implements ChatUser {
     private boolean shadowMuted;
     private UUID replyTarget = null;
 
+    private Audience audience;
+
     public SimpleChatUser(SimpleChat simpleChat, UUID uuid) {
         this.simpleChat = simpleChat;
         this.uuid = uuid;
+        this.audience = simpleChat.getAudiences().player(uuid);
     }
 
     @Override
-    public Audience asAudience() {
-        return simpleChat.getAudiences().player(uuid);
+    public Audience audience() {
+        return audience;
     }
 
     @Override
@@ -161,14 +165,14 @@ public class SimpleChatUser implements ChatUser {
         Component fromPlayerComponent = MiniMessage.instance().parse(fromPlayerFormat, "message", message,
                 "sender", sender.asOfflinePlayer().getName());
 
-        sender.asAudience().sendMessage(toPlayerComponent);
+        sender.sendMessage(toPlayerComponent);
 
         if (sender.isShadowMuted()) {
             return;
         }
 
         if (this.isOnline()) {
-            this.asAudience().sendMessage(fromPlayerComponent);
+            this.sendMessage(fromPlayerComponent);
 
             sender.setReplyTarget(this.getUUID());
             this.setReplyTarget(sender.getUUID());
@@ -179,7 +183,7 @@ public class SimpleChatUser implements ChatUser {
                 float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
                 float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
 
-                this.asAudience().playSound(Sound.of(key, source, volume, pitch));
+                this.playSound(Sound.of(key, source, volume, pitch));
             }
         } else {
             // TODO: cross server msg support, don't forget to include /ignore support

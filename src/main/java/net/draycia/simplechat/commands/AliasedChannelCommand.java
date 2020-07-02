@@ -29,7 +29,7 @@ public class AliasedChannelCommand extends BaseCommand {
         if (args == null || args.length == 0) {
             user.setSelectedChannel(getChatChannel());
 
-            user.asAudience().sendMessage(MiniMessage.instance().parse(
+            user.sendMessage(MiniMessage.instance().parse(
                     getChatChannel().getSwitchMessage(), "color", "<" + getChatChannel().getColor().toString() + ">",
                     "channel", getChatChannel().getName()));
         } else {

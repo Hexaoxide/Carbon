@@ -8,9 +8,8 @@ import org.bukkit.entity.Player;
 import javax.annotation.CheckForNull;
 import java.util.UUID;
 
-public interface ChatUser {
+public interface ChatUser extends Audience {
 
-    Audience asAudience();
     Player asPlayer();
     OfflinePlayer asOfflinePlayer();
     UUID getUUID();

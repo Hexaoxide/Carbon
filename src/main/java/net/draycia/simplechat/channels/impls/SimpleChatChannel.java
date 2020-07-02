@@ -140,7 +140,7 @@ public class SimpleChatChannel extends ChatChannel {
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
         for (ChatUser user : getAudience(null)) {
-            user.asAudience().sendMessage(component);
+            user.sendMessage(component);
         }
     }
 
@@ -223,7 +223,7 @@ public class SimpleChatChannel extends ChatChannel {
         if (user.isShadowMuted()) {
             // TODO: move this into a ChatComponentEvent listener
             if (user.isOnline()) {
-                user.asAudience().sendMessage(componentEvent.getComponent());
+                user.sendMessage(componentEvent.getComponent());
             }
         } else {
             // Send message as normal
@@ -235,11 +235,11 @@ public class SimpleChatChannel extends ChatChannel {
                         float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
                         float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
 
-                        chatUser.asAudience().playSound(Sound.of(key, source, volume, pitch));
+                        chatUser.playSound(Sound.of(key, source, volume, pitch));
                     }
                 }
 
-                chatUser.asAudience().sendMessage(componentEvent.getComponent());
+                chatUser.sendMessage(componentEvent.getComponent());
             }
         }
 
@@ -264,7 +264,7 @@ public class SimpleChatChannel extends ChatChannel {
     @Override
     public void sendComponent(ChatUser player, Component component) {
         for (ChatUser user : getAudience(player)) {
-            user.asAudience().sendMessage(component);
+            user.sendMessage(component);
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(component));
