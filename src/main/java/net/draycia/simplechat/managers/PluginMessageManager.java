@@ -5,12 +5,13 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class PluginMessageManager implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+    public void onPluginMessageReceived(String channel, @NotNull Player player, @NotNull byte[] message) {
         if (!channel.equals("BungeeCord")) {
             return;
         }
@@ -65,12 +66,12 @@ public class PluginMessageManager implements PluginMessageListener {
             return;
         }
 
-        OfflinePlayer messageAuthor = Bukkit.getOfflinePlayer(playerUUID);
+        ChatUser user = simpleChat.getUserService().wrap(playerUUID);
 
         String chatMessage = in.readUTF();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-            chatChannel.sendMessage(messageAuthor, chatMessage);
+            chatChannel.sendMessage(user, chatMessage, true);
         });
     }
 
@@ -92,12 +93,12 @@ public class PluginMessageManager implements PluginMessageListener {
             return;
         }
 
-        OfflinePlayer messageAuthor = Bukkit.getOfflinePlayer(playerUUID);
+        ChatUser user = simpleChat.getUserService().wrap(playerUUID);
 
         String chatMessage = in.readUTF();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-            chatChannel.sendComponent(messageAuthor, MiniMessage.instance().parse(chatMessage));
+            chatChannel.sendComponent(user, MiniMessage.instance().parse(chatMessage));
         });
     }
 

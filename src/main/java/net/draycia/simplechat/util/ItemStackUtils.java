@@ -22,7 +22,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,40 +39,28 @@ public final class ItemStackUtils {
         final String version = Bukkit.getServer().getClass().getPackage().getName()
                 .substring("org.bukkit.craftbukkit.".length());
 
-        this.craftItemStackClass = cbClass(version, "inventory.CraftItemStack");
+        this.craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
         this.asNMSCopyMethod = this.craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
-        this.itemStackClass = nmsClass(version, "ItemStack");
+        this.itemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
         this.cMethod = this.itemStackClass.getMethod("C");
     }
 
-    public Component createComponent(final CommandSender player) {
-        if (player instanceof Player) {
-            final ItemStack itemStack = ((Player)player).getInventory().getItemInMainHand();
+    public Component createComponent(final Player player) {
+        final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                return TextComponent.empty();
-            }
-
-            try {
-                final Object cbItemStack = this.asNMSCopyMethod.invoke(null, itemStack);
-                final Object mojangComponent = this.cMethod.invoke(cbItemStack);
-
-                return MinecraftComponentSerializer.INSTANCE.deserialize(mojangComponent);
-            } catch (final IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-                return TextComponent.empty();
-            }
-        } else {
+        if (itemStack == null || itemStack.getType() == Material.AIR) {
             return TextComponent.empty();
         }
-    }
 
-    private static Class<?> cbClass(final String version, final String name) throws ClassNotFoundException {
-        return Class.forName("org.bukkit.craftbukkit." + version + "." + name);
-    }
+        try {
+            final Object cbItemStack = this.asNMSCopyMethod.invoke(null, itemStack);
+            final Object mojangComponent = this.cMethod.invoke(cbItemStack);
 
-    private static Class<?> nmsClass(final String version, final String name) throws ClassNotFoundException {
-        return Class.forName("net.minecraft.server." + version + "." + name);
+            return MinecraftComponentSerializer.INSTANCE.deserialize(mojangComponent);
+        } catch (final IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            return TextComponent.empty();
+        }
     }
 
 }

@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,17 +22,23 @@ public class AliasedChannelCommand extends BaseCommand {
     }
 
     @Default
-    //@CommandAlias("channel %channelName")
     public void baseCommand(Player player, @Optional String[] args) {
-        if (args == null || args.length == 0) {
-            simpleChat.setPlayerChannel(player, getChatChannel());
+        ChatUser user = simpleChat.getUserService().wrap(player);
 
-            simpleChat.getAudiences().player(player).sendMessage(MiniMessage.instance().parse(
+        if (!chatChannel.canPlayerUse(user)) {
+            // TODO: send message
+            return;
+        }
+
+        if (args == null || args.length == 0) {
+            user.setSelectedChannel(getChatChannel());
+
+            user.sendMessage(MiniMessage.instance().parse(
                     getChatChannel().getSwitchMessage(), "color", "<" + getChatChannel().getColor().toString() + ">",
                     "channel", getChatChannel().getName()));
         } else {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-                getChatChannel().sendMessage(player, String.join(" ", args));
+                getChatChannel().sendMessage(user, String.join(" ", args), false);
             });
         }
     }

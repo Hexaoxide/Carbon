@@ -1,28 +1,23 @@
 package net.draycia.simplechat.channels.impls;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.events.ChannelChatEvent;
+import net.draycia.simplechat.events.ChatComponentEvent;
+import net.draycia.simplechat.events.ChatFormatEvent;
+import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.DiscordWebhook;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
 
-import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +41,7 @@ public class SimpleChatChannel extends ChatChannel {
     private boolean forwardFormatting;
     private boolean shouldBungee;
     private boolean filterEnabled;
+    private boolean firstMatchingGroup;
 
     private DiscordWebhook discordWebhook = null;
 
@@ -55,7 +51,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private SimpleChatChannel() { }
 
-    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, SimpleChat simpleChat) {
+    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
         this.color = color;
         this.id = id;
         this.formats = formats;
@@ -70,6 +66,7 @@ public class SimpleChatChannel extends ChatChannel {
         this.forwardFormatting = forwardFormatting;
         this.shouldBungee = shouldBungee;
         this.filterEnabled = filterEnabled;
+        this.firstMatchingGroup = firstMatchingGroup;
 
         this.simpleChat = simpleChat;
 
@@ -95,17 +92,17 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public boolean canPlayerUse(Player player) {
-        return player.hasPermission("simplechat.channels." + getName() + ".use");
+    public boolean canPlayerUse(ChatUser user) {
+        return user.asPlayer().hasPermission("simplechat.channels." + getName() + ".use");
     }
 
     @Override
-    public List<Player> getAudience(OfflinePlayer offlinePlayer) {
-        List<Player> audience = new ArrayList<>();
+    public List<ChatUser> getAudience(ChatUser user) {
+        List<ChatUser> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (canPlayerSee(offlinePlayer, player)) {
-                audience.add(player);
+            if (canPlayerSee(user, simpleChat.getUserService().wrap(player))) {
+                audience.add(simpleChat.getUserService().wrap(player));
             }
         }
 
@@ -139,138 +136,76 @@ public class SimpleChatChannel extends ChatChannel {
                 "username", author.getName(), "displayname", author.getDisplayName(), "channel", channel.getName(),
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
-        for (Player player : getAudience(null)) {
-            simpleChat.getAudiences().player(player).sendMessage(component);
+        for (ChatUser user : getAudience(null)) {
+            user.sendMessage(component);
         }
     }
 
     @Override
-    public void sendMessage(OfflinePlayer player, String message) {
+    public void sendMessage(ChatUser user, String message, boolean fromBungee) {
         // Get player's formatting
-        String group;
-
-        if (player.isOnline()) {
-            group = simpleChat.getPermission().getPrimaryGroup(player.getPlayer());
-        } else {
-            group = simpleChat.getPermission().getPrimaryGroup(null, player);
-        }
-
-        String messageFormat = getFormat(group);
-
-        // If the player isn't online (cross server message), use their normal name
-        if (!player.isOnline()) {
-            messageFormat = messageFormat.replace("%player_displayname%", "%player_name%");
-        }
-
-        // Chat filter
-        if (filterEnabled() && simpleChat.getConfig().contains("filters")) {
-            for (String entry : simpleChat.getConfig().getStringList("filters")) {
-                message = message.replaceAll(entry, simpleChat.getConfig().getString("filter-text", "****"));
-            }
-        }
-
-        // Chat placeholders
-        ConfigurationSection replacements = simpleChat.getConfig().getConfigurationSection("replacements");
-
-        if (replacements != null) {
-            for (String key : replacements.getKeys(false)) {
-                message = message.replace(key, replacements.getString(key));
-            }
-        }
+        String messageFormat = getFormat(user);
 
         // Call custom chat event
-        ChannelChatEvent event = new ChannelChatEvent(player, this, messageFormat, message);
+        ChatFormatEvent formatEvent = new ChatFormatEvent(user, this, messageFormat, message);
 
-        Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(formatEvent);
 
-        if (event.isCancelled()) {
+        if (formatEvent.isCancelled()) {
             return;
         }
 
-        // Parse placeholders
-        messageFormat = PlaceholderAPI.setPlaceholders(player, event.getFormat());
-
-        // Convert legacy color codes to Mini color codes
-        Component component = LegacyComponentSerializer.legacy('&').deserialize(messageFormat);
-        messageFormat = MiniMessage.instance().serialize(component);
-
-        // Send message to players who can see it
-        Component formattedMessage = MiniMessage.instance().parse(messageFormat, "color", "<" + color.toString() + ">",
+        // Get formatted message
+        TextComponent formattedMessage = (TextComponent)MiniMessage.instance().parse(formatEvent.getFormat(), "color", "<" + color.toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25), "server",
                 simpleChat.getConfig().getString("server-name", "Server"),
-                "message", event.getMessage());
+                "message", formatEvent.getMessage());
 
-        // Handle item linking placeholders
-        if (formattedMessage instanceof TextComponent && player.isOnline()) {
-            for (Pattern pattern : itemPatterns) {
-                formattedMessage = ((TextComponent) formattedMessage).replace(pattern, (input) -> {
-                    return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(player.getPlayer()));
-                });
-            }
-        }
+        // Call custom chat event
+        ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage, getAudience(user));
 
-        // Handle shadow mutes
-        if (simpleChat.isUserShadowMuted(player)) {
-            if (player.isOnline()) {
-                simpleChat.getAudiences().player(player.getPlayer()).sendMessage(formattedMessage);
-            }
-        } else {
-            // Send message as normal
-            List<Player> receivers = getAudience(player);
+        Bukkit.getPluginManager().callEvent(componentEvent);
 
-            for (Player onlinePlayer : receivers) {
-                Audience audience = simpleChat.getAudiences().player(onlinePlayer);
-
-                if (message.contains(onlinePlayer.getName())) {
-                    if (simpleChat.getConfig().getBoolean("pings.enabled")) {
-                        Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
-                        Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));
-                        float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
-                        float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
-
-                        audience.playSound(Sound.of(key, source, volume, pitch));
-                    }
-                }
-
-                audience.sendMessage(formattedMessage);
-            }
+        // Send message as normal
+        for (ChatUser chatUser : componentEvent.getRecipients()) {
+            chatUser.sendMessage(componentEvent.getComponent());
         }
 
         // Log message to console
-        String sm = simpleChat.isUserShadowMuted(player) ? "[SM] " : "";
-        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(formattedMessage));
+        String sm = user.isShadowMuted() ? "[SM] " : "";
+        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(componentEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
-        if (player instanceof Player) {
+        if (user.isOnline() && fromBungee) {
             if (shouldForwardFormatting() && shouldBungee()) {
-                sendMessageToBungee(player.getPlayer(), component);
+                sendMessageToBungee(user.asPlayer(), componentEvent.getComponent());
             } else if (shouldBungee()) {
-                sendMessageToBungee(player.getPlayer(), message);
+                sendMessageToBungee(user.asPlayer(), message);
             }
 
-            sendMessageToDiscord(player, message);
+            sendMessageToDiscord(user, message);
         }
     }
 
     @Override
-    public void sendComponent(OfflinePlayer player, Component component) {
-        for (Player onlinePlayer : getAudience(player)) {
-            simpleChat.getAudiences().player(onlinePlayer).sendMessage(component);
+    public void sendComponent(ChatUser player, Component component) {
+        for (ChatUser user : getAudience(player)) {
+            user.sendMessage(component);
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(component));
     }
 
-    public void sendMessageToDiscord(OfflinePlayer player, String message) {
+    public void sendMessageToDiscord(ChatUser user, String message) {
         if (getWebhook() == null || discordWebhook == null) {
             return;
         }
 
-        discordWebhook.setUsername(player.getName());
+        discordWebhook.setUsername(user.asOfflinePlayer().getName());
         discordWebhook.setContent(message.replace("@", "@\u200B"));
-        discordWebhook.setAvatarUrl("https://minotar.net/helm/" + player.getUniqueId().toString() + "/100.png");
+        discordWebhook.setAvatarUrl("https://minotar.net/helm/" + user.getUUID().toString() + "/100.png");
 
         try {
             discordWebhook.execute();
@@ -287,23 +222,54 @@ public class SimpleChatChannel extends ChatChannel {
         simpleChat.getPluginMessageManager().sendMessage(this, player, message);
     }
 
-    public boolean canPlayerSee(@CheckForNull OfflinePlayer sender, Player target) {
-        if (!target.hasPermission("simplechat." + getName().toLowerCase() + ".see")) {
+    private String getFormat(ChatUser user) {
+        String group = "default";
+
+        if (!firstMatchingGroup()) {
+            if (user.isOnline()) {
+                group = simpleChat.getPermission().getPrimaryGroup(user.asPlayer());
+            } else {
+                group = simpleChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
+            }
+        } else {
+            String[] groups;
+
+            if (user.isOnline()) {
+                groups = simpleChat.getPermission().getPlayerGroups(user.asPlayer());
+            } else {
+                groups = simpleChat.getPermission().getPlayerGroups(null, user.asOfflinePlayer());
+            }
+
+            for (String entry : groups) {
+                if (formats.containsKey(entry.toLowerCase())) {
+                    group = entry;
+                    break;
+                }
+            }
+        }
+
+        return getFormat(group);
+    }
+
+    public boolean canPlayerSee(ChatUser sender, ChatUser target) {
+        Player targetPlayer = target.asPlayer();
+
+        if (!targetPlayer.hasPermission("simplechat.channels." + getName() + ".see")) {
             return false;
         }
 
-        if (sender instanceof Player) {
-            if (getDistance() > 0 && target.getLocation().distance(((Player)sender).getLocation()) > getDistance()) {
+        if (sender.isOnline()) {
+            if (getDistance() > 0 && targetPlayer.getLocation().distance(sender.asPlayer().getLocation()) > getDistance()) {
                 return false;
             }
         }
 
-        if (isIgnorable() && sender != null) {
-            if (simpleChat.playerHasPlayerIgnored(sender, target) && !target.hasPermission("simplechat.ignoreexempt")) {
+        if (isIgnorable()) {
+            if (target.isIgnoringUser(sender) && !targetPlayer.hasPermission("simplechat.ignoreexempt")) {
                 return false;
             }
 
-            if (simpleChat.playerHasChannelMuted(target, this)) {
+            if (target.ignoringChannel(this)) {
                 return false;
             }
         }
@@ -385,6 +351,16 @@ public class SimpleChatChannel extends ChatChannel {
         return filterEnabled;
     }
 
+    @Override
+    public boolean firstMatchingGroup() {
+        return firstMatchingGroup;
+    }
+
+    @Override
+    public List<Pattern> getItemLinkPatterns() {
+        return itemPatterns;
+    }
+
     public static SimpleChatChannel.Builder builder(String name) {
         return new SimpleChatChannel.Builder(name);
     }
@@ -405,6 +381,7 @@ public class SimpleChatChannel extends ChatChannel {
         private boolean forwardFormatting = true;
         private boolean shouldBungee = false;
         private boolean filterEnabled = true;
+        private boolean firstMatchingGroup = false;
 
         private Builder() { }
 
@@ -414,7 +391,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         @Override
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, simpleChat);
+            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
         }
 
         @Override
@@ -516,6 +493,13 @@ public class SimpleChatChannel extends ChatChannel {
         @Override
         public Builder setFilterEnabled(boolean filterEnabled) {
             this.filterEnabled = filterEnabled;
+
+            return this;
+        }
+
+        @Override
+        public Builder setFirstMatchingGroup(boolean firstMatchingGroup) {
+            this.firstMatchingGroup = firstMatchingGroup;
 
             return this;
         }

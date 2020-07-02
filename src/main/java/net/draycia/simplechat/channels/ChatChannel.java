@@ -1,14 +1,15 @@
 package net.draycia.simplechat.channels;
 
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.events.ChatFormatEvent;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public abstract class ChatChannel {
 
@@ -101,14 +102,16 @@ public abstract class ChatChannel {
         return false;
     }
 
+    public abstract boolean firstMatchingGroup();
+
     /**
      * @return If the player can use this channel.
      */
-    public abstract boolean canPlayerUse(Player player);
+    public abstract boolean canPlayerUse(ChatUser user);
 
-    public abstract boolean canPlayerSee(OfflinePlayer offlinePlayer, Player player);
+    public abstract boolean canPlayerSee(ChatUser sender, ChatUser target);
 
-    public abstract List<Player> getAudience(OfflinePlayer offlinePlayer);
+    public abstract List<ChatUser> getAudience(ChatUser user);
 
     /**
      * @return If the channel should forward its formatting / formatted message to other servers
@@ -117,14 +120,16 @@ public abstract class ChatChannel {
         return true;
     }
 
+    public abstract List<Pattern> getItemLinkPatterns();
+
     /**
-     * Parses the specified message, calls a {@link net.draycia.simplechat.events.ChannelChatEvent}, and sends the message to everyone who can view this channel.
-     * @param player The player who is saying the message.
+     * Parses the specified message, calls a {@link ChatFormatEvent}, and sends the message to everyone who can view this channel.
+     * @param user The player who is saying the message.
      * @param message The message to be sent.
      */
-    public abstract void sendMessage(OfflinePlayer player, String message);
+    public abstract void sendMessage(ChatUser user, String message, boolean fromBungee);
 
-    public abstract void sendComponent(OfflinePlayer player, Component component);
+    public abstract void sendComponent(ChatUser user, Component component);
 
     public abstract void processDiscordMessage(MessageCreateEvent event);
 
@@ -145,6 +150,7 @@ public abstract class ChatChannel {
         public abstract ChatChannel.Builder setShouldForwardFormatting(boolean forwardFormatting);
         public abstract ChatChannel.Builder setShouldBungee(boolean shouldBungee);
         public abstract ChatChannel.Builder setFilterEnabled(boolean filterEnabled);
+        public abstract ChatChannel.Builder setFirstMatchingGroup(boolean firstMatchingGroup);
     }
 
 }

@@ -12,22 +12,35 @@ default:
   toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
   toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
   formats:
-    discord-to-mc: '<gray>[<blue>Discord<gray>] <username><white>: <pre><message>' # Placeholders: username, displayname, channel, server, message, primaryrole
+    # Placeholders: username, displayname, channel, server, message, primaryrole
+    # Also supports PlaceholderAPI
+    discord-to-mc: '<gray>[<blue>Discord<gray>] <username><white>: <pre><message>'
     staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <white><pre><message>'
     default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <white><pre><message>'
-  color: '#FFFFFF' # Removing this option defaults to '#FFFFFF'
-  ignorable: true # Removing this option defaults to 'true'
-  distance: -1 # Set to -1, comment out, or remove to disable distance checking
-  forward-format: true # Removing this option defaults to 'true'. Forces all other servers to use this server's formatting for this channel.
-  should-bungee: true # Removing this option defaults to 'false'. Enables/disables cross server chat for this channel.
+  color: '#FFFFFF'
+  # Can players /toggle this channel and hide its messages?
+  ignorable: true
+  # Set to -1, comment out, or remove to disable distance checking
+  distance: -1
+  # Forces all other servers to use this server's formatting for this channel
+  forward-format: true
+  # Enables/disables cross server chat for this channel
+  should-bungee: true
+  # Determines if this channel should use the highest matching vault group found for formatting
+  first-matching-group: false
+  # Determines if the chat filter is enabled for this channel
+  filter-enabled: true
 
 channels:
   global:
     name: 'Global'
     aliases: 'global|g'
-    id: -1 # Set to -1, comment out, or remove to disable channel bridge
-    webhook: '' # Comment out / remove to disable webhook
-    default: true # Removing this option defaults to 'false'
+    # Discord channel ID for bridging
+    id: -1
+    # Webhook URL for bridging
+    webhook: ''
+    # If this channel is the default channel
+    default: true
   announcements:
     name: 'Announcements'
     formats:
@@ -51,6 +64,8 @@ language:
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
   is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
   no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
+  is-now-muted: '<yellow>User <user> is now muted!'
+  no-longer-muted: '<yellow>User <user> is no longer muted!'
   reloaded: '<yellow>Chat config has been reloaded! Note that this does not reload channel configs!'
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
@@ -85,3 +100,11 @@ listeners:
   leave: true # sends leave messages in discord
   death: true # sends death messages in discord
   vote: false # sends vote messages in discord
+
+storage:
+  type: JSON # JSON, MySQL
+  host: 'localhost'
+  port: 3306
+  database: 'SimpleChatData'
+  username: 'root'
+  password: 'password'

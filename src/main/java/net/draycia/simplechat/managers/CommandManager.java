@@ -4,8 +4,8 @@ import co.aikar.commands.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.commands.*;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 
@@ -20,10 +20,12 @@ public class CommandManager {
         commandManager = new BukkitCommandManager(simpleChat);
 
         commandManager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
+            ChatUser user = simpleChat.getUserService().wrap(context.getPlayer());
+
             ArrayList<String> completions = new ArrayList<>();
 
             for (ChatChannel chatChannel : simpleChat.getChannels()) {
-                if (chatChannel.canPlayerUse(context.getPlayer())) {
+                if (chatChannel.canPlayerUse(user)) {
                     completions.add(chatChannel.getName());
                 }
             }
@@ -43,8 +45,14 @@ public class CommandManager {
             return null;
         });
 
+        commandManager.getCommandContexts().registerContext(ChatUser.class, (context) -> {
+            return simpleChat.getUserService().wrap(Bukkit.getOfflinePlayer(context.popFirstArg()));
+        });
+
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
-            if (!value.canPlayerUse(context.getIssuer().getPlayer())) {
+            ChatUser user = simpleChat.getUserService().wrap(context.getIssuer().getPlayer());
+
+            if (!value.canPlayerUse(user)) {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
             }
         });
@@ -62,6 +70,7 @@ public class CommandManager {
         manager.registerCommand(new MeCommand(simpleChat));
         manager.registerCommand(new MessageCommand(simpleChat));
         manager.registerCommand(new ReplyCommand(simpleChat));
+        manager.registerCommand(new MuteCommand(simpleChat));
     }
 
     public co.aikar.commands.CommandManager getCommandManager() {

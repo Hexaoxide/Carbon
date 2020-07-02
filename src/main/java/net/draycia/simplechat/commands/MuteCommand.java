@@ -11,13 +11,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 
-@CommandAlias("shadowmute|sm|smute")
-@CommandPermission("simplechat.shadowmute")
-public class ShadowMuteCommand extends BaseCommand {
+@CommandAlias("mute")
+@CommandPermission("simplechat.mute")
+public class MuteCommand extends BaseCommand {
 
     private SimpleChat simpleChat;
 
-    public ShadowMuteCommand(SimpleChat simpleChat) {
+    public MuteCommand(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;
     }
 
@@ -26,12 +26,12 @@ public class ShadowMuteCommand extends BaseCommand {
     public void baseCommand(CommandSender sender, ChatUser targetUser) {
         String format;
 
-        if (targetUser.isShadowMuted()) {
-            targetUser.setShadowMuted(true);
-            format = simpleChat.getConfig().getString("language.no-longer-shadow-muted");
+        if (targetUser.isMuted()) {
+            targetUser.setMuted(true);
+            format = simpleChat.getConfig().getString("language.no-longer-muted");
         } else {
-            targetUser.setShadowMuted(false);
-            format = simpleChat.getConfig().getString("language.is-now-shadow-muted");
+            targetUser.setMuted(false);
+            format = simpleChat.getConfig().getString("language.is-now-muted");
         }
 
         Component message = MiniMessage.instance().parse(format, "user", targetUser.asOfflinePlayer().getName());

@@ -126,6 +126,18 @@ public class ChannelManager {
                 builder.setShouldBungee(defaults.getBoolean("should-bungee"));
             }
 
+            if (section.contains("filter-enabled")) {
+                builder.setFilterEnabled(section.getBoolean("filter-enabled"));
+            } else if (defaults != null && defaults.contains("filter-enabled")) {
+                builder.setFilterEnabled(defaults.getBoolean("filter-enabled"));
+            }
+
+            if (section.contains("first-matching-group")) {
+                builder.setFirstMatchingGroup(section.getBoolean("first-matching-group"));
+            } else if (defaults != null && defaults.contains("first-matching-group")) {
+                builder.setFirstMatchingGroup(defaults.getBoolean("first-matching-group"));
+            }
+
             ChatChannel channel = builder.build(simpleChat);
 
             if (channel.isTownChat() || channel.isNationChat() || channel.isAllianceChat()) {
@@ -142,7 +154,6 @@ public class ChannelManager {
                 }
             }
 
-            // TODO: register command for each channel
             simpleChat.getChannels().add(channel);
 
             CommandManager commandManager = simpleChat.getCommandManager().getCommandManager();
@@ -153,22 +164,24 @@ public class ChannelManager {
             commandManager.registerCommand(new AliasedChannelCommand(simpleChat, channel));
         }
 
-        if (!hasTownChat) {
+        boolean townyInstalled = Bukkit.getPluginManager().isPluginEnabled("Towny");
+        boolean mcmmoInstalled = Bukkit.getPluginManager().isPluginEnabled("mcMMO");
+
+        if (!hasTownChat && townyInstalled) {
             simpleChat.getLogger().info("Towny installed but no Town channel is setup!");
         }
 
-        if (!hasNationChat) {
+        if (!hasNationChat && townyInstalled) {
             simpleChat.getLogger().info("Towny installed but no Nation channel is setup!");
         }
 
-        if (!hasAllianceChat) {
+        if (!hasAllianceChat && townyInstalled) {
             simpleChat.getLogger().info("Towny installed but no Alliance channel is setup!");
         }
 
-        if (!hasPartyChat) {
+        if (!hasPartyChat && mcmmoInstalled) {
             simpleChat.getLogger().info("mcMMO installed but no Party channel is setup!");
         }
     }
-
 
 }

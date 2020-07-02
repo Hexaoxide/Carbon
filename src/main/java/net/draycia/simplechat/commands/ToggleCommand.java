@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
@@ -20,15 +21,19 @@ public class ToggleCommand extends BaseCommand {
     @Default
     @CommandCompletion("@chatchannel")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel) {
+        ChatUser user = simpleChat.getUserService().wrap(player);
+
         String message;
 
-        if (simpleChat.togglePlayerChannelMute(player, channel)) {
-            message = channel.getToggleOnMessage();
-        } else {
+        if (user.ignoringChannel(channel)) {
+            user.setIgnoringChannel(channel, true);
             message = channel.getToggleOffMessage();
+        } else {
+            user.setIgnoringChannel(channel, false);
+            message = channel.getToggleOnMessage();
         }
 
-        simpleChat.getAudiences().player(player).sendMessage(MiniMessage.instance().parse(message,
+        user.sendMessage(MiniMessage.instance().parse(message,
                 "color", channel.getColor().toString(), "channel", channel.getName()));
     }
 
