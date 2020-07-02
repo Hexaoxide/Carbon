@@ -153,19 +153,22 @@ public class ChannelManager {
             commandManager.registerCommand(new AliasedChannelCommand(simpleChat, channel));
         }
 
-        if (!hasTownChat) {
+        boolean townyInstalled = Bukkit.getPluginManager().isPluginEnabled("Towny");
+        boolean mcmmoInstalled = Bukkit.getPluginManager().isPluginEnabled("mcMMO");
+
+        if (!hasTownChat && townyInstalled) {
             simpleChat.getLogger().info("Towny installed but no Town channel is setup!");
         }
 
-        if (!hasNationChat) {
+        if (!hasNationChat && townyInstalled) {
             simpleChat.getLogger().info("Towny installed but no Nation channel is setup!");
         }
 
-        if (!hasAllianceChat) {
+        if (!hasAllianceChat && townyInstalled) {
             simpleChat.getLogger().info("Towny installed but no Alliance channel is setup!");
         }
 
-        if (!hasPartyChat) {
+        if (!hasPartyChat && mcmmoInstalled) {
             simpleChat.getLogger().info("mcMMO installed but no Party channel is setup!");
         }
     }
