@@ -1,6 +1,5 @@
 package net.draycia.simplechat;
 
-import com.sun.org.apache.xerces.internal.xs.XSImplementation;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.PlayerListener;
 import net.draycia.simplechat.listeners.VoteListener;
