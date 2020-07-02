@@ -177,8 +177,8 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         if (this.isOnline()) {
             this.sendMessage(fromPlayerComponent);
 
-            sender.setReplyTarget(this.getUUID());
-            this.setReplyTarget(sender.getUUID());
+            sender.setReplyTarget(this);
+            this.setReplyTarget(sender);
 
             if (simpleChat.getConfig().getBoolean("pings.on-whisper")) {
                 Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));

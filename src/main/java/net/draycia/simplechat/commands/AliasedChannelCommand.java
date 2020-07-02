@@ -22,9 +22,13 @@ public class AliasedChannelCommand extends BaseCommand {
     }
 
     @Default
-    //@CommandAlias("channel %channelName")
     public void baseCommand(Player player, @Optional String[] args) {
         ChatUser user = simpleChat.getUserService().wrap(player);
+
+        if (!chatChannel.canPlayerUse(user)) {
+            // TODO: send message
+            return;
+        }
 
         if (args == null || args.length == 0) {
             user.setSelectedChannel(getChatChannel());

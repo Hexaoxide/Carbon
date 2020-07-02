@@ -21,7 +21,6 @@ public class ItemLinkHandler implements Listener {
     public void onItemLink(ChatComponentEvent event) {
         // Handle item linking placeholders
         if (event.getUser().isOnline()) {
-            // TODO: move this into a ChatComponentEvent listener
             for (Pattern pattern : event.getChatChannel().getItemLinkPatterns()) {
                 TextComponent component = event.getComponent().replace(pattern, (input) -> {
                     return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(event.getUser().asPlayer()));

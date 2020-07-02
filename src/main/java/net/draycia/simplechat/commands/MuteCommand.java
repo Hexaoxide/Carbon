@@ -9,7 +9,6 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("mute")
@@ -24,9 +23,7 @@ public class MuteCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@players")
-    public void baseCommand(CommandSender sender, OfflinePlayer target) { // TODO: ChatUser support in ACF
-        ChatUser targetUser = simpleChat.getUserService().wrap(target.getUniqueId());
-
+    public void baseCommand(CommandSender sender, ChatUser targetUser) {
         String format;
 
         if (targetUser.isMuted()) {
@@ -37,7 +34,7 @@ public class MuteCommand extends BaseCommand {
             format = simpleChat.getConfig().getString("language.is-now-muted");
         }
 
-        Component message = MiniMessage.instance().parse(format, "user", target.getName());
+        Component message = MiniMessage.instance().parse(format, "user", targetUser.asOfflinePlayer().getName());
 
         simpleChat.getAudiences().audience(sender).sendMessage(message);
     }

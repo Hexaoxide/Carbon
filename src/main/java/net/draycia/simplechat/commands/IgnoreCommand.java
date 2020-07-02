@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 @CommandAlias("ignore")
@@ -23,9 +22,8 @@ public class IgnoreCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@players")
-    public void baseCommand(Player player, OfflinePlayer target) {
+    public void baseCommand(Player player, ChatUser targetUser) {
         ChatUser user = simpleChat.getUserService().wrap(player);
-        ChatUser targetUser = simpleChat.getUserService().wrap(target.getUniqueId());
 
         String message;
 

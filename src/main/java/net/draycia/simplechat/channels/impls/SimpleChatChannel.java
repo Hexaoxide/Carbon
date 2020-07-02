@@ -258,14 +258,14 @@ public class SimpleChatChannel extends ChatChannel {
             return false;
         }
 
-        if (sender instanceof Player) {
-            if (getDistance() > 0 && targetPlayer.getLocation().distance(((Player)sender).getLocation()) > getDistance()) {
+        if (sender.isOnline()) {
+            if (getDistance() > 0 && targetPlayer.getLocation().distance(sender.asPlayer().getLocation()) > getDistance()) {
                 return false;
             }
         }
 
-        if (isIgnorable() && sender != null) {
-            if (target.isIgnoringUser(sender.getUUID()) && !targetPlayer.hasPermission("simplechat.ignoreexempt")) {
+        if (isIgnorable()) {
+            if (target.isIgnoringUser(sender) && !targetPlayer.hasPermission("simplechat.ignoreexempt")) {
                 return false;
             }
 

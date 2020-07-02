@@ -22,7 +22,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -46,24 +45,20 @@ public final class ItemStackUtils {
         this.cMethod = this.itemStackClass.getMethod("C");
     }
 
-    public Component createComponent(final CommandSender player) {
-        if (player instanceof Player) {
-            final ItemStack itemStack = ((Player)player).getInventory().getItemInMainHand();
+    public Component createComponent(final Player player) {
+        final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                return TextComponent.empty();
-            }
+        if (itemStack == null || itemStack.getType() == Material.AIR) {
+            return TextComponent.empty();
+        }
 
-            try {
-                final Object cbItemStack = this.asNMSCopyMethod.invoke(null, itemStack);
-                final Object mojangComponent = this.cMethod.invoke(cbItemStack);
+        try {
+            final Object cbItemStack = this.asNMSCopyMethod.invoke(null, itemStack);
+            final Object mojangComponent = this.cMethod.invoke(cbItemStack);
 
-                return MinecraftComponentSerializer.INSTANCE.deserialize(mojangComponent);
-            } catch (final IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-                return TextComponent.empty();
-            }
-        } else {
+            return MinecraftComponentSerializer.INSTANCE.deserialize(mojangComponent);
+        } catch (final IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
             return TextComponent.empty();
         }
     }

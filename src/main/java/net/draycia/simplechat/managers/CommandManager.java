@@ -5,6 +5,7 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.commands.*;
 import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 
@@ -42,6 +43,10 @@ public class CommandManager {
             }
 
             return null;
+        });
+
+        commandManager.getCommandContexts().registerContext(ChatUser.class, (context) -> {
+            return simpleChat.getUserService().wrap(Bukkit.getOfflinePlayer(context.popFirstArg()));
         });
 
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {

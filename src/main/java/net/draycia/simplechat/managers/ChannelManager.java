@@ -154,7 +154,6 @@ public class ChannelManager {
                 }
             }
 
-            // TODO: register command for each channel
             simpleChat.getChannels().add(channel);
 
             CommandManager commandManager = simpleChat.getCommandManager().getCommandManager();

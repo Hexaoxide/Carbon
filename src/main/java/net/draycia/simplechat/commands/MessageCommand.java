@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("msg|whisper|message|w")
@@ -22,10 +21,8 @@ public class MessageCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@players")
-    public void baseCommand(Player player, String target, String... args) {
+    public void baseCommand(Player player, ChatUser targetUser, String... args) {
         ChatUser sender = simpleChat.getUserService().wrap(player);
-        ChatUser targetUser = simpleChat.getUserService().wrap(Bukkit.getOfflinePlayer(target));
-
         targetUser.sendMessage(sender, String.join(" ", args));
     }
 
