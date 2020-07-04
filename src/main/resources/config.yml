@@ -102,7 +102,7 @@ listeners:
   vote: false # sends vote messages in discord
 
 storage:
-  type: JSON # JSON, Redis
+  type: JSON # JSON, MySQL
   username: 'username'
   password: 'password'
   database: 'database'
