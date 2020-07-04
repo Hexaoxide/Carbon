@@ -33,7 +33,6 @@ public class JSONUserService extends UserService {
             .build(CacheLoader.from(this::loadUser));
 
     private Gson gson;
-
     private Type userType = new TypeToken<SimpleChatUser>() {}.getType();
 
     public JSONUserService(SimpleChat simpleChat) {
@@ -41,9 +40,7 @@ public class JSONUserService extends UserService {
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(simpleChat, userCache::cleanUp, 0L, 20 * 60 * 10);
 
-        GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
-        builder.registerTypeAdapter(new TypeToken<ChatChannel>() {}.getType(), new ChatChannelAdapter(simpleChat));
-        gson = builder.create();
+        gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
     @Override

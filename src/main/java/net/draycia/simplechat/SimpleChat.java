@@ -7,6 +7,7 @@ import net.draycia.simplechat.listeners.chat.*;
 import net.draycia.simplechat.managers.*;
 import net.draycia.simplechat.storage.UserService;
 import net.draycia.simplechat.storage.impl.JSONUserService;
+import net.draycia.simplechat.storage.impl.MySQLUserService;
 import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.milkbowl.vault.permission.Permission;
@@ -55,7 +56,16 @@ public final class SimpleChat extends JavaPlugin {
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
 
-        userService = new JSONUserService(this); // TODO: SQLUserService
+        String storageType = getConfig().getString("storage.type");
+
+        if (storageType.equalsIgnoreCase("mysql")) {
+            userService = new MySQLUserService(this);
+        } else if (storageType.equalsIgnoreCase("json")) {
+            userService = new JSONUserService(this);
+        } else {
+            getLogger().warning("Invalid storage type selected! Falling back to JSON.");
+            userService = new JSONUserService(this);
+        }
 
         // Setup listeners
         setupListeners();
@@ -97,13 +107,17 @@ public final class SimpleChat extends JavaPlugin {
     }
 
     public ChatChannel getChannel(String name) {
+        if (name == null) {
+            return getDefaultChannel();
+        }
+
         for (ChatChannel chatChannel : channels) {
             if (chatChannel.getName().equalsIgnoreCase(name)) {
                 return chatChannel;
             }
         }
 
-        return null;
+        return getDefaultChannel();
     }
 
     public List<ChatChannel> getChannels() {
