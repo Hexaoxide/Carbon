@@ -18,14 +18,16 @@ public class ChatComponentEvent extends Event implements Cancellable {
     private ChatUser user;
     private ChatChannel chatChannel;
     private TextComponent component;
+    private String originalMessage;
     private List<ChatUser> recipients;
 
-    public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, List<ChatUser> recipients) {
+    public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, String originalMessage, List<ChatUser> recipients) {
         super(true);
 
         this.user = user;
         this.chatChannel = chatChannel;
         this.component = component;
+        this.originalMessage = originalMessage;
         this.recipients = recipients;
     }
 
@@ -71,5 +73,9 @@ public class ChatComponentEvent extends Event implements Cancellable {
 
     public List<ChatUser> getRecipients() {
         return recipients;
+    }
+
+    public String getOriginalMessage() {
+        return originalMessage;
     }
 }

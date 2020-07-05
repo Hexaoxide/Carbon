@@ -5,7 +5,6 @@ import net.draycia.simplechat.events.ChatComponentEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,10 +19,12 @@ public class PingHandler implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPing(ChatComponentEvent event) {
-        String message = LegacyComponentSerializer.legacy().serialize(event.getComponent());
-
         for (ChatUser user : event.getRecipients()) {
-            if (message.contains(user.asPlayer().getName())) {
+            if (user.getUUID().equals(event.getUser().getUUID())) {
+                continue;
+            }
+
+            if (event.getOriginalMessage().contains(user.asPlayer().getName())) {
                 if (simpleChat.getConfig().getBoolean("pings.enabled")) {
                     Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
                     Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));

@@ -162,7 +162,7 @@ public class SimpleChatChannel extends ChatChannel {
                 "message", formatEvent.getMessage());
 
         // Call custom chat event
-        ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage, getAudience(user));
+        ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage, formatEvent.getMessage(), getAudience(user));
 
         Bukkit.getPluginManager().callEvent(componentEvent);
 
