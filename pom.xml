@@ -35,6 +35,10 @@
                             <shadedPattern>net.draycia.simplechat.libs.locales</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>co.aikar.idb</pattern>
+                            <shadedPattern>net.draycia.simplechat.libs.idb</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>net.kyori</pattern>
                             <shadedPattern>net.draycia.simplechat.libs.kyori</shadedPattern>
                         </relocation>

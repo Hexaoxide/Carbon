@@ -107,4 +107,4 @@ storage:
   password: 'password'
   database: 'database'
   hostname: 'localhost'
-  port: 6379
+  port: 3306

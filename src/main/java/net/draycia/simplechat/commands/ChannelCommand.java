@@ -27,7 +27,7 @@ public class ChannelCommand extends BaseCommand {
         if (args == null || args.length == 0) {
             user.setSelectedChannel(channel);
 
-            user.sendMessage(MiniMessage.instance().parse(
+            user.sendMessage(MiniMessage.get().parse(
                     channel.getSwitchMessage(), "color", "<" + channel.getColor().toString() + ">",
                     "channel", channel.getName()));
         } else {

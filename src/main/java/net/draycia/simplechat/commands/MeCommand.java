@@ -26,7 +26,7 @@ public class MeCommand extends BaseCommand {
     public void baseCommand(Player player, String... args) {
         String message = String.join(" ", args).replace("</pre>", "");
         String format = PlaceholderAPI.setPlaceholders(player, simpleChat.getConfig().getString("language.me"));
-        Component component = MiniMessage.instance().parse(format, "message", message);
+        Component component = MiniMessage.get().parse(format, "message", message);
 
         ChatUser user = simpleChat.getUserService().wrap(player);
 

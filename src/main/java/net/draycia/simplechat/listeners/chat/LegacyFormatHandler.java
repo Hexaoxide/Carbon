@@ -13,7 +13,7 @@ public class LegacyFormatHandler implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLegacyFormat(ChatFormatEvent event) {
         Component component = LegacyComponentSerializer.legacy('&').deserialize(event.getFormat());
-        event.setFormat(MiniMessage.instance().serialize(component));
+        event.setFormat(MiniMessage.get().serialize(component));
     }
 
 }
