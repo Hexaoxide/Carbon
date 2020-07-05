@@ -103,8 +103,8 @@ listeners:
 
 storage:
   type: JSON # JSON, MySQL
-  host: 'localhost'
-  port: 3306
-  database: 'SimpleChatData'
-  username: 'root'
+  username: 'username'
   password: 'password'
+  database: 'database'
+  hostname: 'localhost'
+  port: 3306

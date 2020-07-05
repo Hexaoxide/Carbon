@@ -35,6 +35,10 @@
                             <shadedPattern>net.draycia.simplechat.libs.locales</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>co.aikar.idb</pattern>
+                            <shadedPattern>net.draycia.simplechat.libs.idb</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>net.kyori</pattern>
                             <shadedPattern>net.draycia.simplechat.libs.kyori</shadedPattern>
                         </relocation>
@@ -246,6 +250,17 @@
             <artifactId>nuvotifier-universal</artifactId>
             <version>2.6.0</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>co.aikar</groupId>
+            <artifactId>idb-bukkit</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.4.1</version>
         </dependency>
     </dependencies>
 </project>

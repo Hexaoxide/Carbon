@@ -33,7 +33,7 @@ public class ToggleCommand extends BaseCommand {
             message = channel.getToggleOnMessage();
         }
 
-        user.sendMessage(MiniMessage.instance().parse(message,
+        user.sendMessage(MiniMessage.get().parse(message,
                 "color", channel.getColor().toString(), "channel", channel.getName()));
     }
 

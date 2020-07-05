@@ -12,9 +12,11 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.CheckForNull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,8 +44,8 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public Audience audience() {
-        return simpleChat.getAudiences().player(uuid);
+    public @NonNull Iterable<? extends Audience> audiences() {
+        return Collections.singleton(simpleChat.getAudiences().player(uuid));
     }
 
     @Override
@@ -162,10 +164,10 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         String toPlayerFormat = simpleChat.getConfig().getString("language.message-to-other");
         String fromPlayerFormat = simpleChat.getConfig().getString("language.message-from-other");
 
-        Component toPlayerComponent = MiniMessage.instance().parse(toPlayerFormat, "message", message,
+        Component toPlayerComponent = MiniMessage.get().parse(toPlayerFormat, "message", message,
                 "target", this.asOfflinePlayer().getName());
 
-        Component fromPlayerComponent = MiniMessage.instance().parse(fromPlayerFormat, "message", message,
+        Component fromPlayerComponent = MiniMessage.get().parse(fromPlayerFormat, "message", message,
                 "sender", sender.asOfflinePlayer().getName());
 
         sender.sendMessage(toPlayerComponent);

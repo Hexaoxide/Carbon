@@ -27,7 +27,7 @@ public class ReplyCommand extends BaseCommand {
 
         if (user.getReplyTarget() == null) {
             String message = simpleChat.getConfig().getString("language.no-reply-target");
-            Component component = MiniMessage.instance().parse(message);
+            Component component = MiniMessage.get().parse(message);
             user.sendMessage(component);
 
             return;

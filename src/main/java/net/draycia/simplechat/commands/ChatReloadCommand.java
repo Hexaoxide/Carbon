@@ -23,7 +23,7 @@ public class ChatReloadCommand extends BaseCommand {
     public void baseCommand(CommandSender sender) {
         simpleChat.reloadConfig();
 
-        Component message = MiniMessage.instance().parse(simpleChat.getConfig().getString("language.reloaded"));
+        Component message = MiniMessage.get().parse(simpleChat.getConfig().getString("language.reloaded"));
         simpleChat.getAudiences().audience(sender).sendMessage(message);
     }
 

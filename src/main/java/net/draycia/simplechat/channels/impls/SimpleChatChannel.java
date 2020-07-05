@@ -115,7 +115,7 @@ public class SimpleChatChannel extends ChatChannel {
             return;
         }
 
-        String message = MiniMessage.instance().escapeTokens(event.getMessageContent()).replace("~", "\\~")
+        String message = MiniMessage.get().escapeTokens(event.getMessageContent()).replace("~", "\\~")
                 .replace("_", "\\_").replace("*", "\\*").replace("\n", "");
 
         MessageAuthor author = event.getMessageAuthor();
@@ -132,7 +132,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Placeholders: username, displayname, channel, server, message, primaryrole
-        Component component = MiniMessage.instance().parse(getDiscordFormatting(), "message", message,
+        Component component = MiniMessage.get().parse(getDiscordFormatting(), "message", message,
                 "username", author.getName(), "displayname", author.getDisplayName(), "channel", channel.getName(),
                 "server", event.getServer().get().getName(), "primaryrole", role);
 
@@ -156,13 +156,13 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Get formatted message
-        TextComponent formattedMessage = (TextComponent)MiniMessage.instance().parse(formatEvent.getFormat(), "color", "<" + color.toString() + ">",
+        TextComponent formattedMessage = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(), "color", "<" + color.toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25), "server",
                 simpleChat.getConfig().getString("server-name", "Server"),
                 "message", formatEvent.getMessage());
 
         // Call custom chat event
-        ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage, getAudience(user));
+        ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage, formatEvent.getMessage(), getAudience(user));
 
         Bukkit.getPluginManager().callEvent(componentEvent);
 
