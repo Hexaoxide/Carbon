@@ -1,9 +1,6 @@
 package net.draycia.simplechat.storage.impl;
 
-import co.aikar.idb.BukkitDB;
-import co.aikar.idb.Database;
-import co.aikar.idb.DbRow;
-import co.aikar.idb.DbStatement;
+import co.aikar.idb.*;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -41,9 +38,9 @@ public class MySQLUserService extends UserService {
         String username = section.getString("username");
         String password = section.getString("password");
         String dbname = section.getString("database");
-        String hostandport = section.getString("host") + ":" + section.getString("port");
+        String hostandport = section.getString("hostname") + ":" + section.getString("port");
 
-        database = BukkitDB.createHikariDatabase(simpleChat, username, password, dbname, hostandport);
+        database = new HikariPooledDatabase(BukkitDB.getRecommendedOptions(simpleChat, username, password, dbname, hostandport));
 
         try {
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
@@ -78,6 +75,7 @@ public class MySQLUserService extends UserService {
     public void cleanUp() {
         userCache.invalidateAll();
         userCache.cleanUp();
+        database.close();
     }
 
     private SimpleChatUser loadUser(UUID uuid) {
@@ -118,9 +116,9 @@ public class MySQLUserService extends UserService {
         SimpleChatUser user = notification.getValue();
 
         try {
-            database.executeUpdate("SET @uuid = ?, @channel = ?, @muted = ?, @shadowmuted = ? " +
-                    "INSERT INTO db_users (uuid, channel, muted, shadowmuted) VALUES (@uuid, @channel, @muted, @shadowmuted) " +
-                    "ON DUPLICATE KEY UPDATE uuid = @uuid, channel = @channel, muted = @muted, shadowmuted = @shadowmuted;",
+            database.executeUpdate("INSERT INTO sc_users (uuid, channel, muted, shadowmuted) VALUES (?, ?, ?, ?) " +
+                    "ON DUPLICATE KEY UPDATE uuid = ?, channel = ?, muted = ?, shadowmuted = ?",
+                    user.getUUID().toString(), user.getSelectedChannel().getName(), user.isMuted(), user.isShadowMuted(),
                     user.getUUID().toString(), user.getSelectedChannel().getName(), user.isMuted(), user.isShadowMuted());
         } catch (SQLException e) {
             e.printStackTrace();
