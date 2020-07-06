@@ -22,6 +22,10 @@ public class ReplyCommand extends BaseCommand {
 
     @Default
     public void baseCommand(Player player, String... args) {
+        if (args.length == 0) {
+            return;
+        }
+
         ChatUser user = simpleChat.getUserService().wrap(player);
         ChatUser targetUser = simpleChat.getUserService().wrap(user.getReplyTarget());
 

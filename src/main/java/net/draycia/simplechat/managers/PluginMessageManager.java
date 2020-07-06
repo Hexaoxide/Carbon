@@ -144,16 +144,22 @@ public class PluginMessageManager implements PluginMessageListener {
         api.forward("ALL", "simplechat:component", msg.toByteArray());
     }
 
-    public void sendComponentToPlayer(Player sender, ChatUser target, Component component) {
+    public void sendComponentToPlayer(ChatUser sender, ChatUser target, Component toComponent, Component fromComponent) {
         api.getPlayerList("ALL").whenComplete((result, error) -> {
             if (!result.contains(target.asOfflinePlayer().getName())) {
+                return;
+            }
+
+            sender.sendMessage(toComponent);
+
+            if (sender.isShadowMuted()) {
                 return;
             }
 
             ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
             msg.writeUTF(target.getUUID().toString());
-            msg.writeUTF(MiniMessage.get().serialize(component));
+            msg.writeUTF(MiniMessage.get().serialize(fromComponent));
 
             api.forward("ALL", "simplechat:whisper", msg.toByteArray());
         });

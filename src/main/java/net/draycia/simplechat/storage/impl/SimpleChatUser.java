@@ -171,28 +171,30 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         Component fromPlayerComponent = MiniMessage.get().parse(fromPlayerFormat, "message", message,
                 "sender", sender.asOfflinePlayer().getName());
 
-        sender.sendMessage(toPlayerComponent);
-
-        if (sender.isShadowMuted()) {
-            return;
-        }
-
         if (this.isOnline()) {
-            this.sendMessage(fromPlayerComponent);
+            if (sender.isOnline()) {
+                sender.sendMessage(toPlayerComponent);
 
-            sender.setReplyTarget(this);
-            this.setReplyTarget(sender);
+                if (sender.isShadowMuted()) {
+                    return;
+                }
 
-            if (simpleChat.getConfig().getBoolean("pings.on-whisper")) {
-                Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
-                Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));
-                float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
-                float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
+                this.sendMessage(fromPlayerComponent);
 
-                this.playSound(Sound.of(key, source, volume, pitch));
+                sender.setReplyTarget(this);
+                this.setReplyTarget(sender);
+
+                if (simpleChat.getConfig().getBoolean("pings.on-whisper")) {
+                    Key key = Key.of(simpleChat.getConfig().getString("pings.sound"));
+                    Sound.Source source = Sound.Source.valueOf(simpleChat.getConfig().getString("pings.source"));
+                    float volume = (float)simpleChat.getConfig().getDouble("pings.volume");
+                    float pitch = (float)simpleChat.getConfig().getDouble("pings.pitch");
+
+                    this.playSound(Sound.of(key, source, volume, pitch));
+                }
             }
         } else if (sender.isOnline()) {
-            simpleChat.getPluginMessageManager().sendComponentToPlayer(sender.asPlayer(), this, fromPlayerComponent);
+            simpleChat.getPluginMessageManager().sendComponentToPlayer(sender, this, toPlayerComponent, fromPlayerComponent);
         }
     }
 

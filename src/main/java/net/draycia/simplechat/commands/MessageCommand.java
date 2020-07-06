@@ -22,6 +22,10 @@ public class MessageCommand extends BaseCommand {
     @Default
     @CommandCompletion("@players")
     public void baseCommand(Player player, ChatUser targetUser, String... args) {
+        if (args.length == 0) {
+            return;
+        }
+
         ChatUser sender = simpleChat.getUserService().wrap(player);
         targetUser.sendMessage(sender, String.join(" ", args));
     }
