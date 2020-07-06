@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
+import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
@@ -25,11 +26,13 @@ public class ToggleCommand extends BaseCommand {
 
         String message;
 
-        if (user.ignoringChannel(channel)) {
-            user.setIgnoringChannel(channel, true);
+        UserChannelSettings settings = user.getChannelSettings(channel);
+
+        if (settings.isIgnored()) {
+            settings.setIgnoring(true);
             message = channel.getToggleOffMessage();
         } else {
-            user.setIgnoringChannel(channel, false);
+            settings.setIgnoring(false);
             message = channel.getToggleOnMessage();
         }
 

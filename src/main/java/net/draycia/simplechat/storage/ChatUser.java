@@ -4,8 +4,8 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.CheckForNull;
 import java.util.UUID;
 
 public interface ChatUser extends Audience {
@@ -19,8 +19,7 @@ public interface ChatUser extends Audience {
     ChatChannel getSelectedChannel();
     void setSelectedChannel(ChatChannel channel);
 
-    boolean ignoringChannel(ChatChannel chatChannel);
-    void setIgnoringChannel(ChatChannel chatChannel, boolean ignoring);
+    UserChannelSettings getChannelSettings(ChatChannel channel);
 
     void setMuted(boolean muted);
     boolean isMuted();
@@ -28,10 +27,9 @@ public interface ChatUser extends Audience {
     void setShadowMuted(boolean shadowMuted);
     boolean isShadowMuted();
 
-    @CheckForNull
-    UUID getReplyTarget();
-    void setReplyTarget(UUID target);
-    void setReplyTarget(ChatUser user);
+    @Nullable UUID getReplyTarget();
+    void setReplyTarget(@Nullable UUID target);
+    void setReplyTarget(@Nullable ChatUser user);
 
     boolean isIgnoringUser(UUID uuid);
     boolean isIgnoringUser(ChatUser user);

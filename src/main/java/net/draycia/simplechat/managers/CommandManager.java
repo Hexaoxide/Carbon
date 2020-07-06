@@ -19,6 +19,8 @@ public class CommandManager {
 
         commandManager = new BukkitCommandManager(simpleChat);
 
+        commandManager.enableUnstableAPI("help");
+
         commandManager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
             ChatUser user = simpleChat.getUserService().wrap(context.getPlayer());
 
@@ -71,6 +73,7 @@ public class CommandManager {
         manager.registerCommand(new MessageCommand(simpleChat));
         manager.registerCommand(new ReplyCommand(simpleChat));
         manager.registerCommand(new MuteCommand(simpleChat));
+        manager.registerCommand(new ChannelColorCommand(simpleChat));
     }
 
     public co.aikar.commands.CommandManager getCommandManager() {

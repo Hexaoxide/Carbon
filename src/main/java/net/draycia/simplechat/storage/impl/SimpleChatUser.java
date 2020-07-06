@@ -3,23 +3,20 @@ package net.draycia.simplechat.storage.impl;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
+import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.annotation.CheckForNull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
@@ -28,7 +25,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     private UUID uuid;
 
     private String selectedChannel = null;
-    private List<String> ignoredChannels = new ArrayList<>();
+    private Map<String, UserChannelSettings> channelSettings = new HashMap<>();
     private List<UUID> ignoredUsers = new ArrayList<>();
     private boolean muted = false;
     private boolean shadowMuted = false;
@@ -80,20 +77,6 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public boolean ignoringChannel(ChatChannel chatChannel) {
-        return ignoredChannels.contains(chatChannel.getName());
-    }
-
-    @Override
-    public void setIgnoringChannel(ChatChannel chatChannel, boolean ignoring) {
-        if (ignoring) {
-            ignoredChannels.add(chatChannel.getName());
-        } else {
-            ignoredChannels.remove(chatChannel.getName());
-        }
-    }
-
-    @Override
     public boolean isIgnoringUser(UUID uuid) {
         return ignoredUsers.contains(uuid);
     }
@@ -119,6 +102,10 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         } else {
             ignoredUsers.remove(user.getUUID());
         }
+    }
+
+    public List<UUID> getIgnoredUsers() {
+        return ignoredUsers;
     }
 
     @Override
@@ -155,6 +142,15 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setReplyTarget(ChatUser user) {
         this.replyTarget = user.getUUID();
+    }
+
+    @Override
+    public UserChannelSettings getChannelSettings(ChatChannel channel) {
+        return channelSettings.computeIfAbsent(channel.getName(), (name) -> new SimpleUserChannelSettings());
+    }
+
+    public Map<String, UserChannelSettings> getChannelSettings() {
+        return channelSettings;
     }
 
     public void sendMessage(ChatUser sender, String message) {

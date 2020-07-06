@@ -156,9 +156,10 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Get formatted message
-        TextComponent formattedMessage = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(), "color", "<" + color.toString() + ">",
-                "phase", Long.toString(System.currentTimeMillis() % 25), "server",
-                simpleChat.getConfig().getString("server-name", "Server"),
+        TextComponent formattedMessage = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(),
+                "color", "<" + color.toString() + ">",
+                "phase", Long.toString(System.currentTimeMillis() % 25),
+                "server", simpleChat.getConfig().getString("server-name", "Server"),
                 "message", formatEvent.getMessage());
 
         // Call custom chat event
@@ -168,7 +169,19 @@ public class SimpleChatChannel extends ChatChannel {
 
         // Send message as normal
         for (ChatUser chatUser : componentEvent.getRecipients()) {
-            chatUser.sendMessage(componentEvent.getComponent());
+            TextColor userColor = chatUser.getChannelSettings(this).getColor();
+
+            if (userColor == null) {
+                chatUser.sendMessage(componentEvent.getComponent());
+            } else {
+                TextComponent newFormat = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(),
+                        "color", "<" + userColor.toString() + ">",
+                        "phase", Long.toString(System.currentTimeMillis() % 25),
+                        "server", simpleChat.getConfig().getString("server-name", "Server"),
+                        "message", formatEvent.getMessage());
+
+                chatUser.sendMessage(newFormat);
+            }
         }
 
         // Log message to console
@@ -269,7 +282,7 @@ public class SimpleChatChannel extends ChatChannel {
                 return false;
             }
 
-            if (target.ignoringChannel(this)) {
+            if (target.getChannelSettings(this).isIgnored()) {
                 return false;
             }
         }
