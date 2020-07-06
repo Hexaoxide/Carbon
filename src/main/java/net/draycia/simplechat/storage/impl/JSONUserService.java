@@ -7,10 +7,8 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.storage.UserService;
-import net.draycia.simplechat.util.ChatChannelAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
