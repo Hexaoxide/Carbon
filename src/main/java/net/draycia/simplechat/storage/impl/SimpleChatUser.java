@@ -9,6 +9,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -190,8 +191,8 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
                 this.playSound(Sound.of(key, source, volume, pitch));
             }
-        } else {
-            // TODO: cross server msg support, don't forget to include /ignore support
+        } else if (sender.isOnline()) {
+            simpleChat.getPluginMessageManager().sendComponentToPlayer(sender.asPlayer(), this, fromPlayerComponent);
         }
     }
 
