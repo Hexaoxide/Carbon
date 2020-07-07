@@ -9,6 +9,7 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.entity.Player;
 
 @CommandAlias("chcolor|channelcolor")
 @CommandPermission("simplechat.setcolor")
@@ -22,7 +23,9 @@ public class ChannelColorCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@chatchannel @chatcolors")
-    public void baseCommand(ChatUser user, ChatChannel chatChannel, String color) {
+    public void baseCommand(Player player, ChatChannel chatChannel, String color) {
+        ChatUser user = simpleChat.getUserService().wrap(player);
+
         user.getChannelSettings(chatChannel).setColor(TextColor.fromHexString(color));
     }
 

@@ -76,6 +76,7 @@ language:
   player-joined: '%player_displayname% has joined <server>!'
   vote-received: '<name> has voted on <service>!'
   cannot-use-channel: "You cannot use that channel!"
+  channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
 
 server-name: 'Server'
 

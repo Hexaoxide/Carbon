@@ -32,6 +32,10 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
 
     @Override
     public @Nullable TextColor getColor() {
+        if (color == null) {
+            return null;
+        }
+
         return TextColor.fromHexString(color);
     }
 

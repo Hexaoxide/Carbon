@@ -46,13 +46,15 @@ public class MySQLUserService extends UserService {
 
         database = new HikariPooledDatabase(BukkitDB.getRecommendedOptions(simpleChat, username, password, dbname, hostandport));
 
+        DB.setGlobalDatabase(database);
+
         try {
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
-                    "channel TINYTEXT , muted BOOLEAN, shadowmuted BOOLEAN)");
+                    "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN)");
 
-            database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel TINYTEXT, spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
+            database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel CHAR(16), spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
 
-            database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_ignored_users (uuid CHAR(36), user CHAR(36), PRIMARY KEY (uuid, user)");
+            database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_ignored_users (uuid CHAR(36), user CHAR(36), PRIMARY KEY (uuid, user))");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -124,29 +126,49 @@ public class MySQLUserService extends UserService {
     private void saveUser(RemovalNotification<UUID, SimpleChatUser> notification) {
         SimpleChatUser user = notification.getValue();
 
+        if (user == null) {
+            System.out.println("null");
+            return;
+        }
+
         database.createTransaction(stm -> {
             // Save user general data
-            stm.executeUpdate("INSERT INTO sc_users (uuid, channel, muted, shadowmuted) VALUES (?, ?, ?, ?) " +
-                            "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?",
-                    user.getUUID().toString(), user.getSelectedChannel().getName(), user.isMuted(), user.isShadowMuted(),
-                    user.getSelectedChannel().getName(), user.isMuted(), user.isShadowMuted());
+            String selectedName = null;
 
+            if (user.getSelectedChannel() != null) {
+                selectedName = user.getSelectedChannel().getName();
+            }
+
+            simpleChat.getLogger().info("Saving user data!");
+            stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted) VALUES (?, ?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?",
+                    user.getUUID().toString(), selectedName, user.isMuted(), user.isShadowMuted(),
+                    selectedName, user.isMuted(), user.isShadowMuted());
+
+            simpleChat.getLogger().info("Saving user channel settings!");
             // Save user channel settings
             for (Map.Entry<String, UserChannelSettings> entry : user.getChannelSettings().entrySet()) {
                 UserChannelSettings value = entry.getValue();
 
-                stm.executeUpdate("INSERT INTO sc_channel_settings (uuid, channel, spying, ignored, color) VALUES (?, ?, ?, ?, ?) " +
+                String colorString = null;
+
+                if (value.getColor() != null) {
+                    colorString = value.getColor().asHexString();
+                }
+
+                stm.executeUpdateQuery("INSERT INTO sc_channel_settings (uuid, channel, spying, ignored, color) VALUES (?, ?, ?, ?, ?) " +
                                 "ON DUPLICATE KEY UPDATE spying = ?, ignored = ?, color = ?",
-                        user.getUUID().toString(), entry.getKey(), value.isSpying(), value.isIgnored(), value.getColor().asHexString(),
-                        value.isSpying(), value.isIgnored(), value.getColor().asHexString());
+                        user.getUUID().toString(), entry.getKey(), value.isSpying(), value.isIgnored(), colorString,
+                        value.isSpying(), value.isIgnored(), colorString);
             }
 
+            simpleChat.getLogger().info("Saving user ignores!");
             // Save user ignore list (remove old entries then add new ones)
             // TODO: keep DB up to date with settings as settings are mutated
-            stm.executeUpdate("DELETE FROM sc_ignored_users WHERE uuid = ?", user.getUUID().toString());
+            stm.executeUpdateQuery("DELETE FROM sc_ignored_users WHERE uuid = ?", user.getUUID().toString());
 
             for (UUID entry : user.getIgnoredUsers()) {
-                stm.executeUpdate("INSERT INTO sc_ignored_users (uuid, user) VALUES (?, ?)",
+                stm.executeUpdateQuery("INSERT INTO sc_ignored_users (uuid, user) VALUES (?, ?)",
                         user.getUUID().toString(), entry.toString());
             }
 

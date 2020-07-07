@@ -24,6 +24,8 @@ public class ChannelManager {
             ConfigurationSection section = simpleChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
             ConfigurationSection defaults = simpleChat.getConfig().getConfigurationSection("default");
 
+            String name = key;
+
             if (section.contains("is-town-chat")) {
                 builder = TownChatChannel.townBuilder(key);
                 hasTownChat = true;
@@ -83,7 +85,8 @@ public class ChannelManager {
             }
 
             if (section.contains("name")) {
-                builder.setName(section.getString("name"));
+                name = section.getString("name");
+                //builder.setName(section.getString("name"));
             }
 
             if (section.contains("color")) {
@@ -136,6 +139,11 @@ public class ChannelManager {
                 builder.setFirstMatchingGroup(section.getBoolean("first-matching-group"));
             } else if (defaults != null && defaults.contains("first-matching-group")) {
                 builder.setFirstMatchingGroup(defaults.getBoolean("first-matching-group"));
+            }
+
+            if (name.length() > 16) {
+                simpleChat.getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
+                simpleChat.getLogger().warning("Skipping channel, please check your settings!");
             }
 
             ChatChannel channel = builder.build(simpleChat);

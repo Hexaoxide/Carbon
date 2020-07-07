@@ -14,11 +14,11 @@ import org.bukkit.entity.Player;
 
 @CommandAlias("clearchat|cc")
 @CommandPermission("simplechat.clearchat")
-public class CommandClearChat extends BaseCommand {
+public class ClearChatCommand extends BaseCommand {
 
     private SimpleChat simpleChat;
 
-    public CommandClearChat(SimpleChat simpleChat) {
+    public ClearChatCommand(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;
     }
 
