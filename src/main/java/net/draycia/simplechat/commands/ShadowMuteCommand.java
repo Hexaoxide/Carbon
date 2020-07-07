@@ -27,10 +27,10 @@ public class ShadowMuteCommand extends BaseCommand {
         String format;
 
         if (targetUser.isShadowMuted()) {
-            targetUser.setShadowMuted(true);
+            targetUser.setShadowMuted(false);
             format = simpleChat.getConfig().getString("language.no-longer-shadow-muted");
         } else {
-            targetUser.setShadowMuted(false);
+            targetUser.setShadowMuted(true);
             format = simpleChat.getConfig().getString("language.is-now-shadow-muted");
         }
 

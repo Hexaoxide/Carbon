@@ -29,15 +29,15 @@ public class ToggleCommand extends BaseCommand {
         UserChannelSettings settings = user.getChannelSettings(channel);
 
         if (settings.isIgnored()) {
-            settings.setIgnoring(true);
+            settings.setIgnoring(false);
             message = channel.getToggleOffMessage();
         } else {
-            settings.setIgnoring(false);
+            settings.setIgnoring(true);
             message = channel.getToggleOnMessage();
         }
 
         user.sendMessage(MiniMessage.get().parse(message,
-                "color", channel.getColor().toString(), "channel", channel.getName()));
+                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
 }
