@@ -52,6 +52,10 @@ public class CommandManager {
         });
 
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
+            if (value == null) {
+                throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
+            }
+
             ChatUser user = simpleChat.getUserService().wrap(context.getIssuer().getPlayer());
 
             if (!value.canPlayerUse(user)) {
@@ -66,7 +70,7 @@ public class CommandManager {
         manager.registerCommand(new ToggleCommand(simpleChat));
         manager.registerCommand(new ChannelCommand(simpleChat));
         manager.registerCommand(new IgnoreCommand(simpleChat));
-        manager.registerCommand(new CommandClearChat(simpleChat));
+        manager.registerCommand(new ClearChatCommand(simpleChat));
         manager.registerCommand(new ShadowMuteCommand(simpleChat));
         manager.registerCommand(new ChatReloadCommand(simpleChat));
         manager.registerCommand(new MeCommand(simpleChat));
@@ -74,6 +78,7 @@ public class CommandManager {
         manager.registerCommand(new ReplyCommand(simpleChat));
         manager.registerCommand(new MuteCommand(simpleChat));
         manager.registerCommand(new ChannelColorCommand(simpleChat));
+        manager.registerCommand(new SetColorCommand(simpleChat));
     }
 
     public co.aikar.commands.CommandManager getCommandManager() {
