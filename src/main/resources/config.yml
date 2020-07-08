@@ -71,12 +71,14 @@ language:
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
   message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
   no-reply-target: '<red>You have no one to reply to!'
+  channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
+  spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
+  spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
   # The following messages are not MiniMessage compatible
   player-left: '%player_displayname% has left <server>!'
   player-joined: '%player_displayname% has joined <server>!'
   vote-received: '<name> has voted on <service>!'
   cannot-use-channel: "You cannot use that channel!"
-  channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
 
 server-name: 'Server'
 
@@ -86,6 +88,11 @@ clear-chat-amount: 100
 item-link-placeholders:
   - '[item]' # cursed placeholder do not use
   - '%item%'
+
+spy-prefix: '<color>[SPY] '
+spy-prefix-nation: '<color>[SPY <nation>] '
+spy-prefix-town: '<color>[SPY <town>] '
+spy-prefix-mcmmo: '<color>[SPY <party>] '
 
 pings:
   enabled: true

@@ -99,7 +99,7 @@ public class SimpleChatChannel extends ChatChannel {
         List<ChatUser> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (canPlayerSee(user, simpleChat.getUserService().wrap(player))) {
+            if (canPlayerSee(user, simpleChat.getUserService().wrap(player), false)) {
                 audience.add(simpleChat.getUserService().wrap(player));
             }
         }
@@ -166,17 +166,48 @@ public class SimpleChatChannel extends ChatChannel {
         Bukkit.getPluginManager().callEvent(componentEvent);
 
         // Send message as normal
-        for (ChatUser chatUser : componentEvent.getRecipients()) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            ChatUser chatUser = simpleChat.getUserService().wrap(onlinePlayer);
+
             TextColor userColor = chatUser.getChannelSettings(this).getColor();
 
-            if (userColor == null) {
-                chatUser.sendMessage(componentEvent.getComponent());
+            String prefix;
+
+            if (isNationChat()) {
+                prefix = simpleChat.getConfig().getString("spy-prefix-nation");
+            } else if (isTownChat()) {
+                prefix = simpleChat.getConfig().getString("spy-prefix-town");
+            } else if (isPartyChat()) {
+                prefix = simpleChat.getConfig().getString("spy-prefix-mcmmo");
             } else {
-                TextComponent newFormat = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(),
+                prefix = simpleChat.getConfig().getString("spy-prefix");
+            }
+
+            prefix = processPlaceholders(user, prefix);
+
+            if (userColor == null) {
+                if (isUserSpying(user, chatUser)) {
+                    prefix = prefix.replace("<color>", "<color:" + getColor() + ">");
+
+                    chatUser.sendMessage(MiniMessage.get().parse(prefix).append(componentEvent.getComponent()));
+                } else if (componentEvent.getRecipients().contains(chatUser)) {
+                    chatUser.sendMessage(componentEvent.getComponent());
+                }
+            } else {
+                prefix = prefix.replace("<color>", "<color:" + chatUser.getChannelSettings(this).getColor().asHexString() + ">");
+                String format = formatEvent.getFormat();
+
+                TextComponent newFormat = (TextComponent)MiniMessage.get().parse(format,
                         "color", "<color:" + userColor.toString() + ">",
                         "phase", Long.toString(System.currentTimeMillis() % 25),
                         "server", simpleChat.getConfig().getString("server-name", "Server"),
                         "message", formatEvent.getMessage());
+
+                if (isUserSpying(user, chatUser)) {
+                    newFormat = (TextComponent)MiniMessage.get().parse(prefix).append(newFormat);
+                } else if (!componentEvent.getRecipients().contains(chatUser)) {
+                    return;
+                }
 
                 ChatComponentEvent newEvent = new ChatComponentEvent(user, this, newFormat, formatEvent.getMessage(), Collections.singletonList(chatUser));
 
@@ -187,10 +218,8 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Log message to console
-        //String sm = user.isShadowMuted() ? "[SM] " : "";
-        //System.out.println(sm + LegacyComponentSerializer.legacy().serialize(componentEvent.getComponent()));
-
-        //System.out.println(GsonComponentSerializer.gson().serialize(componentEvent.getComponent()));
+        String sm = user.isShadowMuted() ? "[SM] " : "";
+        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(componentEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
@@ -204,6 +233,16 @@ public class SimpleChatChannel extends ChatChannel {
 
             sendMessageToDiscord(user, message);
         }
+    }
+
+    private boolean isUserSpying(ChatUser sender, ChatUser target) {
+        if (!canPlayerSee(sender, target, false)) {
+            if (target.getChannelSettings(this).isSpying()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -268,8 +307,14 @@ public class SimpleChatChannel extends ChatChannel {
         return getFormat(group);
     }
 
-    public boolean canPlayerSee(ChatUser sender, ChatUser target) {
+    public boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
+
+        if (checkSpying && targetPlayer.hasPermission("simplechat.spy." + getName())) {
+            if (target.getChannelSettings(this).isSpying()) {
+                return true;
+            }
+        }
 
         if (!targetPlayer.hasPermission("simplechat.channels." + getName() + ".see")) {
             return false;

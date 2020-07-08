@@ -19,8 +19,33 @@ public class NationChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public boolean canPlayerSee(ChatUser sender, ChatUser target) {
-        if (super.canPlayerSee(sender, target) && sender != null) {
+    public String processPlaceholders(ChatUser user, String input) {
+        return input.replace("<nation>", getNation(user));
+    }
+
+    private String getNation(ChatUser user) {
+        try {
+            Resident resident = TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName());
+
+            if (resident.hasNation()) {
+                return resident.getTown().getNation().getFormattedName();
+            }
+        } catch (NotRegisteredException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+    @Override
+    public boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
+        if (checkSpying && target.asPlayer().hasPermission("simplechat.spy." + getName())) {
+            if (target.getChannelSettings(this).isSpying()) {
+                return true;
+            }
+        }
+
+        if (super.canPlayerSee(sender, target, false) && sender != null) {
             try {
                 Resident resident = TownyAPI.getInstance().getDataSource().getResident(sender.asPlayer().getName());
 
@@ -50,6 +75,11 @@ public class NationChatChannel extends SimpleChatChannel {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isNationChat() {
+        return true;
     }
 
     public static NationChatChannel.Builder nationBuilder(String name) {

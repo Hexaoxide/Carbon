@@ -109,7 +109,7 @@ public abstract class ChatChannel {
      */
     public abstract boolean canPlayerUse(ChatUser user);
 
-    public abstract boolean canPlayerSee(ChatUser sender, ChatUser target);
+    public abstract boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
 
     public abstract List<ChatUser> getAudience(ChatUser user);
 
@@ -132,6 +132,8 @@ public abstract class ChatChannel {
     public abstract void sendComponent(ChatUser user, Component component);
 
     public abstract void processDiscordMessage(MessageCreateEvent event);
+
+    public String processPlaceholders(ChatUser user, String input) { return input; }
 
     public static abstract class Builder {
         public abstract ChatChannel build(SimpleChat simpleChat);
