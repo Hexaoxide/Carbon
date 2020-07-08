@@ -17,8 +17,6 @@ public class PartyChatChannel extends SimpleChatChannel {
 
     @Override
     public String processPlaceholders(ChatUser user, String input) {
-        System.out.println("??????");
-
         String partyName = PartyAPI.getPartyName(user.asPlayer());
 
         if (partyName == null) {
