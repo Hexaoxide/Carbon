@@ -161,11 +161,27 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         String toPlayerFormat = simpleChat.getConfig().getString("language.message-to-other");
         String fromPlayerFormat = simpleChat.getConfig().getString("language.message-from-other");
 
+        String senderName = sender.asOfflinePlayer().getName();
+        String senderOfflineName = senderName;
+
+        String targetName = this.asOfflinePlayer().getName();
+        String targetOfflineName = targetName;
+
+        if (sender.isOnline()) {
+            senderName = sender.asPlayer().getDisplayName();
+        }
+
+        if (this.isOnline()) {
+            targetName = this.asPlayer().getDisplayName();
+        }
+
         Component toPlayerComponent = MiniMessage.get().parse(toPlayerFormat, "message", message,
-                "target", this.asOfflinePlayer().getName());
+                "targetname", targetOfflineName, "sendername", senderOfflineName,
+                "target", targetName, "sender", senderName);
 
         Component fromPlayerComponent = MiniMessage.get().parse(fromPlayerFormat, "message", message,
-                "sender", sender.asOfflinePlayer().getName());
+                "targetname", targetOfflineName, "sendername", senderOfflineName,
+                "target", targetName, "sender", senderName);
 
         if (this.isOnline()) {
             if (sender.isOnline()) {
