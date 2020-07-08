@@ -147,7 +147,7 @@ public class MySQLUserService extends UserService {
 
             simpleChat.getLogger().info("Saving user channel settings!");
             // Save user channel settings
-            for (Map.Entry<String, UserChannelSettings> entry : user.getChannelSettings().entrySet()) {
+            for (Map.Entry<String, ? extends UserChannelSettings> entry : user.getChannelSettings().entrySet()) {
                 UserChannelSettings value = entry.getValue();
 
                 String colorString = null;

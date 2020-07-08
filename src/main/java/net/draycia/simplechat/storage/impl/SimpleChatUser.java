@@ -25,7 +25,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     private UUID uuid;
 
     private String selectedChannel = null;
-    private Map<String, UserChannelSettings> channelSettings = new HashMap<>();
+    private Map<String, SimpleUserChannelSettings> channelSettings = new HashMap<>();
     private List<UUID> ignoredUsers = new ArrayList<>();
     private boolean muted = false;
     private boolean shadowMuted = false;
@@ -149,7 +149,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         return channelSettings.computeIfAbsent(channel.getName(), (name) -> new SimpleUserChannelSettings());
     }
 
-    public Map<String, UserChannelSettings> getChannelSettings() {
+    public Map<String, ? extends UserChannelSettings> getChannelSettings() {
         return channelSettings;
     }
 

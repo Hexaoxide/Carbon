@@ -6,6 +6,7 @@ import net.kyori.adventure.text.TextComponent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.util.regex.Pattern;
 
@@ -22,11 +23,16 @@ public class ItemLinkHandler implements Listener {
         // Handle item linking placeholders
         if (event.getUser().isOnline()) {
             for (Pattern pattern : event.getChatChannel().getItemLinkPatterns()) {
-                TextComponent component = event.getComponent().replace(pattern, (input) -> {
-                    return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(event.getUser().asPlayer()));
-                });
+                String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
 
-                event.setComponent(component);
+                if (event.getOriginalMessage().contains(patternContent)) {
+                    TextComponent component = event.getComponent().replace(pattern, (input) -> {
+                        return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(event.getUser().asPlayer()));
+                    });
+
+                    event.setComponent(component);
+                    break;
+                }
             }
         }
     }

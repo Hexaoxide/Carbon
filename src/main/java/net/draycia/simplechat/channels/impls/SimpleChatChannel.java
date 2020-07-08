@@ -10,6 +10,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,10 +20,7 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class SimpleChatChannel extends ChatChannel {
@@ -180,13 +178,19 @@ public class SimpleChatChannel extends ChatChannel {
                         "server", simpleChat.getConfig().getString("server-name", "Server"),
                         "message", formatEvent.getMessage());
 
-                chatUser.sendMessage(newFormat);
+                ChatComponentEvent newEvent = new ChatComponentEvent(user, this, newFormat, formatEvent.getMessage(), Collections.singletonList(chatUser));
+
+                Bukkit.getPluginManager().callEvent(newEvent);
+
+                chatUser.sendMessage(newEvent.getComponent());
             }
         }
 
         // Log message to console
-        String sm = user.isShadowMuted() ? "[SM] " : "";
-        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(componentEvent.getComponent()));
+        //String sm = user.isShadowMuted() ? "[SM] " : "";
+        //System.out.println(sm + LegacyComponentSerializer.legacy().serialize(componentEvent.getComponent()));
+
+        //System.out.println(GsonComponentSerializer.gson().serialize(componentEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will

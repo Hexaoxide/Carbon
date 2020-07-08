@@ -23,6 +23,8 @@ public class ChatReloadCommand extends BaseCommand {
     public void baseCommand(CommandSender sender) {
         simpleChat.reloadConfig();
 
+        // TODO: clear item patterns in SimpleChatChannel
+
         Component message = MiniMessage.get().parse(simpleChat.getConfig().getString("language.reloaded"));
         simpleChat.getAudiences().audience(sender).sendMessage(message);
     }
