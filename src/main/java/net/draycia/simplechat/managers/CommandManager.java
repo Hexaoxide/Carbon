@@ -35,6 +35,16 @@ public class CommandManager {
             return completions;
         });
 
+        commandManager.getCommandCompletions().registerCompletion("channel", (context) -> {
+            ArrayList<String> completions = new ArrayList<>();
+
+            for (ChatChannel chatChannel : simpleChat.getChannels()) {
+                    completions.add(chatChannel.getName());
+            }
+
+            return completions;
+        });
+
         commandManager.getCommandContexts().registerContext(ChatChannel.class, (context) -> {
             String name = context.popFirstArg();
 
@@ -63,6 +73,12 @@ public class CommandManager {
             }
         });
 
+        commandManager.getCommandConditions().addCondition(ChatChannel.class,"exists", (context, execution, value) -> {
+            if (value == null) {
+                throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
+            }
+        });
+
         setupCommands(commandManager);
     }
 
@@ -79,6 +95,7 @@ public class CommandManager {
         manager.registerCommand(new MuteCommand(simpleChat));
         manager.registerCommand(new ChannelColorCommand(simpleChat));
         manager.registerCommand(new SetColorCommand(simpleChat));
+        manager.registerCommand(new SpyChannelCommand(simpleChat));
     }
 
     public co.aikar.commands.CommandManager getCommandManager() {

@@ -16,8 +16,27 @@ public class PartyChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public boolean canPlayerSee(ChatUser sender, ChatUser target) {
-        if (super.canPlayerSee(sender, target) && sender != null) {
+    public String processPlaceholders(ChatUser user, String input) {
+        System.out.println("??????");
+
+        String partyName = PartyAPI.getPartyName(user.asPlayer());
+
+        if (partyName == null) {
+            partyName = "NotLoaded";
+        }
+
+        return input.replace("<party>", partyName);
+    }
+
+    @Override
+    public boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
+        if (checkSpying && target.asPlayer().hasPermission("simplechat.spy." + getName())) {
+            if (target.getChannelSettings(this).isSpying()) {
+                return true;
+            }
+        }
+
+        if (super.canPlayerSee(sender, target, false) && sender != null) {
             return PartyAPI.inSameParty(sender.asPlayer(), target.asPlayer());
         }
 
@@ -31,6 +50,11 @@ public class PartyChatChannel extends SimpleChatChannel {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isPartyChat() {
+        return true;
     }
 
     public static PartyChatChannel.Builder partyBuilder(String name) {

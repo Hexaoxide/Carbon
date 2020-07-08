@@ -18,8 +18,14 @@ public class AllianceChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public boolean canPlayerSee(ChatUser sender, ChatUser target) {
-        if (super.canPlayerSee(sender, target) && sender != null) {
+    public boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
+        if (checkSpying && target.asPlayer().hasPermission("simplechat.spy." + getName())) {
+            if (target.getChannelSettings(this).isSpying()) {
+                return true;
+            }
+        }
+
+        if (super.canPlayerSee(sender, target, false) && sender != null) {
             try {
                 Resident resident = TownyAPI.getInstance().getDataSource().getResident(target.asPlayer().getName());
                 Resident targetResident = TownyAPI.getInstance().getDataSource().getResident(sender.asPlayer().getName());

@@ -97,20 +97,25 @@ public class MySQLUserService extends UserService {
                 return user;
             }
 
-            List<DbRow> ignoredChannels = database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
+            List<DbRow> channelSettings = database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
             List<DbRow> ignoredUsers = database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
 
             user.setSelectedChannel(simpleChat.getChannel(users.getString("channel")));
             user.setMuted(users.<Boolean>get("muted"));
             user.setShadowMuted(users.<Boolean>get("shadowmuted"));
 
-            for (DbRow ignoredChannel : ignoredChannels) {
-                ChatChannel chatChannel = simpleChat.getChannel(ignoredChannel.getString("channel"));
+            for (DbRow channelSetting : channelSettings) {
+                ChatChannel chatChannel = simpleChat.getChannel(channelSetting.getString("channel"));
                 UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
-                settings.setSpying(ignoredChannel.<Boolean>get("spying"));
-                settings.setIgnoring(ignoredChannel.<Boolean>get("ignored"));
-                settings.setColor(TextColor.fromHexString(ignoredChannel.getString("color")));
+                settings.setSpying(channelSetting.<Boolean>get("spying"));
+                settings.setIgnoring(channelSetting.<Boolean>get("ignored"));
+
+                String color = channelSetting.getString("color");
+
+                if (color != null) {
+                    settings.setColor(TextColor.fromHexString(color));
+                }
             }
 
             for (DbRow ignoredUser : ignoredUsers) {
@@ -127,7 +132,6 @@ public class MySQLUserService extends UserService {
         SimpleChatUser user = notification.getValue();
 
         if (user == null) {
-            System.out.println("null");
             return;
         }
 
