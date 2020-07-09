@@ -5,30 +5,21 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChatComponentEvent;
 import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
-import net.draycia.simplechat.util.DiscordWebhook;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.javacord.api.entity.channel.ServerTextChannel;
-import org.javacord.api.entity.message.MessageAuthor;
-import org.javacord.api.entity.permission.Role;
-import org.javacord.api.event.message.MessageCreateEvent;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class SimpleChatChannel extends ChatChannel {
 
     private TextColor color;
-    private long id;
     private Map<String, String> formats;
-    private String webhook;
     private boolean isDefault;
     private boolean ignorable;
     private String name;
@@ -41,19 +32,15 @@ public class SimpleChatChannel extends ChatChannel {
     private boolean filterEnabled;
     private boolean firstMatchingGroup;
 
-    private DiscordWebhook discordWebhook = null;
-
     private SimpleChat simpleChat;
 
     private ArrayList<Pattern> itemPatterns = new ArrayList<>();
 
     private SimpleChatChannel() { }
 
-    SimpleChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
+    SimpleChatChannel(TextColor color, Map<String, String> formats, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
         this.color = color;
-        this.id = id;
         this.formats = formats;
-        this.webhook = webhook;
         this.isDefault = isDefault;
         this.ignorable = ignorable;
         this.name = name;
@@ -67,14 +54,6 @@ public class SimpleChatChannel extends ChatChannel {
         this.firstMatchingGroup = firstMatchingGroup;
 
         this.simpleChat = simpleChat;
-
-        if (getChannelId() > 0 && simpleChat.getDiscordManager().getDiscordAPI() != null) {
-            simpleChat.getDiscordManager().getDiscordAPI().addMessageCreateListener(this::processDiscordMessage);
-        }
-
-        if (getWebhook() != null && !getWebhook().isEmpty()) {
-            discordWebhook = new DiscordWebhook(getWebhook());
-        }
 
         for (String entry : simpleChat.getConfig().getStringList("item-link-placeholders")) {
             itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
@@ -105,38 +84,6 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         return audience;
-    }
-
-    @Override
-    public void processDiscordMessage(MessageCreateEvent event) {
-        if (event.getChannel().getId() != getChannelId() || !event.getMessageAuthor().isRegularUser()) {
-            return;
-        }
-
-        String message = MiniMessage.get().escapeTokens(event.getMessageContent()).replace("~", "\\~")
-                .replace("_", "\\_").replace("*", "\\*").replace("\n", "");
-
-        MessageAuthor author = event.getMessageAuthor();
-        ServerTextChannel channel = (ServerTextChannel)event.getChannel();
-
-        String role = "";
-
-        if (author.asUser().isPresent() && event.getServer().isPresent()) {
-            List<Role> roles = author.asUser().get().getRoles(event.getServer().get());
-
-            if (!roles.isEmpty()) {
-                role = roles.get(roles.size() - 1).getName();
-            }
-        }
-
-        // Placeholders: username, displayname, channel, server, message, primaryrole
-        Component component = MiniMessage.get().parse(getDiscordFormatting(), "message", message,
-                "username", author.getName(), "displayname", author.getDisplayName(), "channel", channel.getName(),
-                "server", event.getServer().get().getName(), "primaryrole", role);
-
-        for (ChatUser user : getAudience(null)) {
-            user.sendMessage(component);
-        }
     }
 
     @Override
@@ -230,8 +177,6 @@ public class SimpleChatChannel extends ChatChannel {
             } else if (shouldBungee()) {
                 sendMessageToBungee(user.asPlayer(), message);
             }
-
-            sendMessageToDiscord(user, message);
         }
     }
 
@@ -252,22 +197,6 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         System.out.println(LegacyComponentSerializer.legacy().serialize(component));
-    }
-
-    public void sendMessageToDiscord(ChatUser user, String message) {
-        if (getWebhook() == null || discordWebhook == null) {
-            return;
-        }
-
-        discordWebhook.setUsername(user.asOfflinePlayer().getName());
-        discordWebhook.setContent(message.replace("@", "@\u200B"));
-        discordWebhook.setAvatarUrl("https://minotar.net/helm/" + user.getUUID().toString() + "/100.png");
-
-        try {
-            discordWebhook.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void sendMessageToBungee(Player player, Component component) {
@@ -349,18 +278,8 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public long getChannelId() {
-        return id;
-    }
-
-    @Override
     public String getFormat(String group) {
         return getFormats().getOrDefault(group, getFormats().getOrDefault("default", "<white><%player_displayname%<white>> <message>"));
-    }
-
-    @Override
-    public String getWebhook() {
-        return webhook;
     }
 
     @Override
@@ -430,9 +349,7 @@ public class SimpleChatChannel extends ChatChannel {
     public static class Builder extends ChatChannel.Builder {
 
         private TextColor color = TextColor.of(255, 255, 255);
-        private long id = -1;
         private Map<String, String> formats = new HashMap<>();
-        private String webhook = null;
         private boolean isDefault = false;
         private boolean ignorable = true;
         private String name;
@@ -453,7 +370,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         @Override
         public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+            return new SimpleChatChannel(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
         }
 
         @Override
@@ -469,22 +386,8 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         @Override
-        public Builder setId(long id) {
-            this.id = id;
-
-            return this;
-        }
-
-        @Override
         public Builder setFormats(Map<String, String> formats) {
             this.formats = formats;
-
-            return this;
-        }
-
-        @Override
-        public Builder setWebhook(String webhook) {
-            this.webhook = webhook;
 
             return this;
         }

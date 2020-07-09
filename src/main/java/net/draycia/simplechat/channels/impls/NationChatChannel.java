@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class NationChatChannel extends SimpleChatChannel {
 
-    NationChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
-        super(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+    NationChatChannel(TextColor color, Map<String, String> formats, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
+        super(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
     }
 
     @Override
@@ -89,9 +89,7 @@ public class NationChatChannel extends SimpleChatChannel {
     public static class Builder extends ChatChannel.Builder {
 
         private TextColor color = TextColor.of(255, 255, 255);
-        private long id = -1;
         private Map<String, String> formats = new HashMap<>();
-        private String webhook = null;
         private boolean isDefault = false;
         private boolean ignorable = true;
         private String name;
@@ -110,7 +108,7 @@ public class NationChatChannel extends SimpleChatChannel {
 
         @Override
         public NationChatChannel build(SimpleChat simpleChat) {
-            return new NationChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+            return new NationChatChannel(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
         }
 
         @Override
@@ -126,22 +124,8 @@ public class NationChatChannel extends SimpleChatChannel {
         }
 
         @Override
-        public NationChatChannel.Builder setId(long id) {
-            this.id = id;
-
-            return this;
-        }
-
-        @Override
         public NationChatChannel.Builder setFormats(Map<String, String> formats) {
             this.formats = formats;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setWebhook(String webhook) {
-            this.webhook = webhook;
 
             return this;
         }

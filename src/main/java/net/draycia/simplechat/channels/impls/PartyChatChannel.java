@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class PartyChatChannel extends SimpleChatChannel {
 
-    PartyChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
-        super(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+    PartyChatChannel(TextColor color, Map<String, String> formats, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
+        super(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
     }
 
     @Override
@@ -62,9 +62,7 @@ public class PartyChatChannel extends SimpleChatChannel {
     public static class Builder extends ChatChannel.Builder {
 
         private TextColor color = TextColor.of(255, 255, 255);
-        private long id = -1;
         private Map<String, String> formats = new HashMap<>();
-        private String webhook = null;
         private boolean isDefault = false;
         private boolean ignorable = true;
         private String name;
@@ -83,7 +81,7 @@ public class PartyChatChannel extends SimpleChatChannel {
 
         @Override
         public PartyChatChannel build(SimpleChat simpleChat) {
-            return new PartyChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+            return new PartyChatChannel(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
         }
 
         @Override
@@ -99,22 +97,8 @@ public class PartyChatChannel extends SimpleChatChannel {
         }
 
         @Override
-        public PartyChatChannel.Builder setId(long id) {
-            this.id = id;
-
-            return this;
-        }
-
-        @Override
         public PartyChatChannel.Builder setFormats(Map<String, String> formats) {
             this.formats = formats;
-
-            return this;
-        }
-
-        @Override
-        public PartyChatChannel.Builder setWebhook(String webhook) {
-            this.webhook = webhook;
 
             return this;
         }

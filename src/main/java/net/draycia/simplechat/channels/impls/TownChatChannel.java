@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class TownChatChannel extends SimpleChatChannel {
 
-    TownChatChannel(TextColor color, long id, Map<String, String> formats, String webhook, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
-        super(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+    TownChatChannel(TextColor color, Map<String, String> formats, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
+        super(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class TownChatChannel extends SimpleChatChannel {
 
         @Override
         public TownChatChannel build(SimpleChat simpleChat) {
-            return new TownChatChannel(color, id, formats, webhook, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+            return new TownChatChannel(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
         }
 
         @Override
@@ -121,22 +121,8 @@ public class TownChatChannel extends SimpleChatChannel {
         }
 
         @Override
-        public TownChatChannel.Builder setId(long id) {
-            this.id = id;
-
-            return this;
-        }
-
-        @Override
         public TownChatChannel.Builder setFormats(Map<String, String> formats) {
             this.formats = formats;
-
-            return this;
-        }
-
-        @Override
-        public TownChatChannel.Builder setWebhook(String webhook) {
-            this.webhook = webhook;
 
             return this;
         }

@@ -35,10 +35,6 @@ channels:
   global:
     name: 'Global'
     aliases: 'global|g'
-    # Discord channel ID for bridging
-    id: -1
-    # Webhook URL for bridging
-    webhook: ''
     # If this channel is the default channel
     default: true
   announcements:
@@ -56,8 +52,6 @@ filter-text: '****'
 
 replacements:
   '%shrug%': '¯\_(ツ)_/¯'
-
-bot-token: ""
 
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
