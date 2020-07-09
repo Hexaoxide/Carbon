@@ -42,10 +42,6 @@ public class ChannelManager {
                 builder = SimpleChatChannel.builder(key);
             }
 
-            if (section.contains("id")) {
-                builder.setId(section.getLong("id"));
-            }
-
             if (section.contains("formats")) {
                 HashMap<String, String> formats = new HashMap<>();
 
@@ -66,10 +62,6 @@ public class ChannelManager {
                 }
 
                 builder.setFormats(formats);
-            }
-
-            if (section.contains("webhook")) {
-                builder.setWebhook(section.getString("webhook"));
             }
 
             if (section.contains("switch-message")) {

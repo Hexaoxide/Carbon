@@ -1,9 +1,7 @@
 package net.draycia.simplechat;
 
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.listeners.PlayerListener;
-import net.draycia.simplechat.listeners.VoteListener;
-import net.draycia.simplechat.listeners.chat.*;
+import net.draycia.simplechat.listeners.*;
 import net.draycia.simplechat.managers.*;
 import net.draycia.simplechat.storage.UserService;
 import net.draycia.simplechat.storage.impl.JSONUserService;
@@ -23,7 +21,6 @@ public final class SimpleChat extends JavaPlugin {
     private Permission permission;
 
     private PluginMessageManager pluginMessageManager;
-    private DiscordManager discordManager;
     private CommandManager commandManager;
     private ChannelManager channelManager;
 
@@ -52,7 +49,6 @@ public final class SimpleChat extends JavaPlugin {
 
         // Initialize managers
         pluginMessageManager = new PluginMessageManager(this);
-        discordManager = new DiscordManager(this);
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
 
@@ -78,12 +74,6 @@ public final class SimpleChat extends JavaPlugin {
 
     private void setupListeners() {
         PluginManager pluginManager = getServer().getPluginManager();
-
-        pluginManager.registerEvents(new PlayerListener(this), this);
-
-        if (pluginManager.isPluginEnabled("Votifier")) {
-            pluginManager.registerEvents(new VoteListener(this), this);
-        }
 
         // Register chat listeners
         pluginManager.registerEvents(new FilterHandler(this), this);
@@ -126,10 +116,6 @@ public final class SimpleChat extends JavaPlugin {
 
     public Permission getPermission() {
         return permission;
-    }
-
-    public DiscordManager getDiscordManager() {
-        return discordManager;
     }
 
     public CommandManager getCommandManager() {

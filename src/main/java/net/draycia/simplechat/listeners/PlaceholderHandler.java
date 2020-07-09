@@ -1,4 +1,4 @@
-package net.draycia.simplechat.listeners.chat;
+package net.draycia.simplechat.listeners;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;

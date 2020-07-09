@@ -19,19 +19,9 @@ public abstract class ChatChannel {
     public abstract TextColor getColor();
 
     /**
-     * @return The ID of the discord channel to read messages from for chat bridging.
-     */
-    public abstract long getChannelId();
-
-    /**
      * @return The MiniMessage styled format for the group in this channel.
      */
     public abstract String getFormat(String group);
-
-    /**
-     * @return The url of the webhook used to send messages to discord for chat bridging.
-     */
-    public abstract String getWebhook();
 
     /**
      * @return If this is the default (typically Global) channel players use when they're in no other channel.
@@ -131,17 +121,13 @@ public abstract class ChatChannel {
 
     public abstract void sendComponent(ChatUser user, Component component);
 
-    public abstract void processDiscordMessage(MessageCreateEvent event);
-
     public String processPlaceholders(ChatUser user, String input) { return input; }
 
     public static abstract class Builder {
         public abstract ChatChannel build(SimpleChat simpleChat);
         public abstract ChatChannel.Builder setColor(TextColor color);
         public abstract ChatChannel.Builder setColor(String color);
-        public abstract ChatChannel.Builder setId(long id);
         public abstract ChatChannel.Builder setFormats(Map<String, String> formats);
-        public abstract ChatChannel.Builder setWebhook(String webhook);
         public abstract ChatChannel.Builder setIsDefault(boolean aDefault);
         public abstract ChatChannel.Builder setIgnorable(boolean ignorable);
         public abstract ChatChannel.Builder setName(String name);
