@@ -47,10 +47,6 @@
                             <shadedPattern>net.draycia.simplechat.libs.paperlib</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>org.javacord</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.javacord</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>com.fasterxml</pattern>
                             <shadedPattern>net.draycia.simplechat.libs.fasterxml</shadedPattern>
                         </relocation>
@@ -210,14 +206,6 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
             <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-
-        <!-- Discord bot -->
-        <dependency>
-            <groupId>org.javacord</groupId>
-            <artifactId>javacord</artifactId>
-            <version>3.0.6</version>
-            <type>pom</type>
         </dependency>
 
         <!-- Placeholders -->

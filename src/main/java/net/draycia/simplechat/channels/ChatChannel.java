@@ -5,7 +5,6 @@ import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.List;
 import java.util.Map;
