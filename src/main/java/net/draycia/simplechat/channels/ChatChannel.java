@@ -61,6 +61,10 @@ public abstract class ChatChannel {
 
     public abstract String getToggleOnMessage();
 
+    public abstract String getToggleOtherOnMessage();
+
+    public abstract String getToggleOtherOffMessage();
+
     public abstract boolean filterEnabled();
 
     /**

@@ -323,6 +323,17 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
+    public String getToggleOtherOnMessage() {
+        return (String) getSetting("toggle-other-on");
+
+    }
+
+    @Override
+    public String getToggleOtherOffMessage() {
+        return (String) getSetting("toggle-other-off");
+    }
+
+    @Override
     public boolean shouldForwardFormatting() {
         return (Boolean) getSetting("forward-format");
     }

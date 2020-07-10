@@ -20,7 +20,7 @@ public class ToggleCommand extends BaseCommand {
     }
 
     @Default
-    @CommandCompletion("@chatchannel")
+    @CommandCompletion("@chatchannel @players")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel) {
         ChatUser user = simpleChat.getUserService().wrap(player);
 
@@ -40,4 +40,29 @@ public class ToggleCommand extends BaseCommand {
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
+    @CommandPermission("simplechat.toggle.others")
+    @CommandCompletion("@chatchannel @players")
+    public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, ChatUser user) {
+        String message;
+        String otherMessage;
+
+        UserChannelSettings settings = user.getChannelSettings(channel);
+
+        if (settings.isIgnored()) {
+            settings.setIgnoring(false);
+            message = channel.getToggleOffMessage();
+            otherMessage = channel.getToggleOtherOffMessage();
+        } else {
+            settings.setIgnoring(true);
+            message = channel.getToggleOnMessage();
+            otherMessage = channel.getToggleOtherOnMessage();
+        }
+
+        user.sendMessage(MiniMessage.get().parse(message, "br", "\n",
+                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
+
+        simpleChat.getUserService().wrap(player).sendMessage(MiniMessage.get().parse(otherMessage,
+                "br", "\n", "color", "<color:" + channel.getColor().toString() + ">",
+                "channel", channel.getName()));
+    }
 }
