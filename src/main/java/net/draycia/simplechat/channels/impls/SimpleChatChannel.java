@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -153,7 +154,8 @@ public class SimpleChatChannel extends ChatChannel {
                         "message", formatEvent.getMessage());
 
                 if (isUserSpying(user, chatUser)) {
-                    newFormat = (TextComponent)MiniMessage.get().parse(prefix).append(newFormat);
+                    newFormat = (TextComponent)MiniMessage.get().parse(prefix, "br", "\n")
+                            .append(newFormat);
                 } else if (!componentEvent.getRecipients().contains(chatUser)) {
                     return;
                 }
@@ -252,8 +254,21 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         if (sender.isOnline()) {
-            if (getDistance() > 0 && targetPlayer.getLocation().distance(sender.asPlayer().getLocation()) > getDistance()) {
-                return false;
+            if (getDistance() == 0) {
+                if (!targetPlayer.getWorld().equals(sender.asPlayer().getWorld())) {
+                    return false;
+                }
+            } else if (getDistance() > 0) {
+                Location one = targetPlayer.getLocation();
+                Location two = sender.asPlayer().getLocation();
+
+                if (!one.getWorld().equals(two.getWorld())) {
+                    return false;
+                }
+
+                if (one.distance(two) > getDistance()) {
+                    return false;
+                }
             }
         }
 
