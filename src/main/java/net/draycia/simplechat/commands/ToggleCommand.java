@@ -41,6 +41,7 @@ public class ToggleCommand extends BaseCommand {
     }
 
     @CommandPermission("simplechat.toggle.others")
+    @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, ChatUser user) {
         String message;
@@ -63,6 +64,6 @@ public class ToggleCommand extends BaseCommand {
 
         simpleChat.getUserService().wrap(player).sendMessage(MiniMessage.get().parse(otherMessage,
                 "br", "\n", "color", "<color:" + channel.getColor().toString() + ">",
-                "channel", channel.getName()));
+                "channel", channel.getName(), "player", user.asOfflinePlayer().getName()));
     }
 }

@@ -20,14 +20,14 @@ import java.util.regex.Pattern;
 
 public class SimpleChatChannel extends ChatChannel {
 
-    private String name;
+    private String key;
 
     private SimpleChat simpleChat;
 
     private SimpleChatChannel() { }
 
-    public SimpleChatChannel(String name, SimpleChat simpleChat) {
-        this.name = name;
+    public SimpleChatChannel(String key, SimpleChat simpleChat) {
+        this.key = key;
         this.simpleChat = simpleChat;
     }
 
@@ -258,7 +258,7 @@ public class SimpleChatChannel extends ChatChannel {
     public Map<String, String> getFormats() {
         HashMap<String, String> formats = new HashMap<>();
 
-        ConfigurationSection section = simpleChat.getConfig().getConfigurationSection(getName());
+        ConfigurationSection section = simpleChat.getConfig().getConfigurationSection("channels").getConfigurationSection(getKey());
         ConfigurationSection formatSection = section.getConfigurationSection("formats");
 
         if (formatSection == null) {
@@ -299,7 +299,8 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public String getName() {
-        return name;
+        String name = (String) getSetting("name");
+        return name == null ? key : name;
     }
 
     @Override
@@ -360,7 +361,7 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     private Object getSetting(String key) {
-        ConfigurationSection section = simpleChat.getConfig().getConfigurationSection(getName());
+        ConfigurationSection section = simpleChat.getConfig().getConfigurationSection("channels").getConfigurationSection(getKey());
 
         if (section.contains(key)) {
             return section.get(key);
@@ -374,4 +375,9 @@ public class SimpleChatChannel extends ChatChannel {
 
         return false;
     }
+
+    private String getKey() {
+        return key;
+    }
+
 }

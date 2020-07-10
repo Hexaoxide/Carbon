@@ -21,9 +21,9 @@ public class ChannelManager {
 
             ConfigurationSection section = simpleChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
 
-            String name = section.contains("name") ? section.getString("name") : key;
+            String name = section.getString("name");
 
-            if (name.length() > 16) {
+            if (name != null && name.length() > 16) {
                 simpleChat.getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
                 simpleChat.getLogger().warning("Skipping channel, please check your settings!");
                 continue;
@@ -37,23 +37,23 @@ public class ChannelManager {
 
             switch (type.toLowerCase()) {
                 case "towny":
-                    channel = new TownChatChannel(name, simpleChat);
+                    channel = new TownChatChannel(key, simpleChat);
                     hasTownChat = true;
                     break;
                 case "nation":
-                    channel = new NationChatChannel(name, simpleChat);
+                    channel = new NationChatChannel(key, simpleChat);
                     hasNationChat = true;
                     break;
                 case "alliance":
-                    channel = new AllianceChatChannel(name, simpleChat);
+                    channel = new AllianceChatChannel(key, simpleChat);
                     hasAllianceChat = true;
                     break;
                 case "party":
-                    channel = new PartyChatChannel(name, simpleChat);
+                    channel = new PartyChatChannel(key, simpleChat);
                     hasPartyChat = true;
                     break;
                 case "normal":
-                    channel = new SimpleChatChannel(name, simpleChat);
+                    channel = new SimpleChatChannel(key, simpleChat);
                     break;
                 default:
                     simpleChat.getLogger().warning("Invalid channel type for channel [" + key + "]. Skipping channel.");
@@ -62,14 +62,14 @@ public class ChannelManager {
 
             if (channel.isTownChat() || channel.isNationChat() || channel.isAllianceChat()) {
                 if (!Bukkit.getPluginManager().isPluginEnabled("Towny")) {
-                    simpleChat.getLogger().warning("Towny related channel with name [" + channel.getName() + "] found, but Towny isn't installed. Skipping channel.");
+                    simpleChat.getLogger().warning("Towny related channel with key [" + key + "] found, but Towny isn't installed. Skipping channel.");
                     continue;
                 }
             }
 
             if (channel.isPartyChat()) {
                 if (!Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
-                    simpleChat.getLogger().warning("mcMMO related channel with name [" + channel.getName() + "] found, but mcMMO isn't installed. Skipping channel.");
+                    simpleChat.getLogger().warning("mcMMO related channel with key [" + key + "] found, but mcMMO isn't installed. Skipping channel.");
                     continue;
                 }
             }
@@ -78,7 +78,7 @@ public class ChannelManager {
 
             CommandManager commandManager = simpleChat.getCommandManager().getCommandManager();
 
-            String commandName = section.contains("aliases") ? section.getString("aliases") : channel.getName();
+            String commandName = section.contains("aliases") ? section.getString("aliases") : key;
 
             commandManager.getCommandReplacements().addReplacement("channelName", commandName);
             commandManager.registerCommand(new AliasedChannelCommand(simpleChat, channel));
