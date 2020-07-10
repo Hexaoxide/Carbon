@@ -78,11 +78,11 @@ public class CommandManager {
                 } else if (value.isNationChat() && !((NationChatChannel)value).isInNation(user)) {
                     throw new ConditionFailedException(simpleChat.getConfig().getString("language.nation-cannot-use"));
                 } else if (value.isAllianceChat() && !((AllianceChatChannel)value).isInTown(user)) {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("alliance-cannot-use"));
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.alliance-cannot-use"));
                 } else if (value.isPartyChat() && !((PartyChatChannel)value).isInParty(user)) {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("party-cannot-use"));
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.party-cannot-use"));
                 } else {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("cannot-use-channel"));
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
                 }
             }
         });
