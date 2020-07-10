@@ -102,6 +102,7 @@ public class SimpleChatChannel extends ChatChannel {
 
         // Get formatted message
         TextComponent formattedMessage = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(),
+                "br", "\n",
                 "color", "<color:" + color.toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", simpleChat.getConfig().getString("server-name", "Server"),
@@ -145,6 +146,7 @@ public class SimpleChatChannel extends ChatChannel {
                 String format = formatEvent.getFormat();
 
                 TextComponent newFormat = (TextComponent)MiniMessage.get().parse(format,
+                        "br", "\n",
                         "color", "<color:" + userColor.toString() + ">",
                         "phase", Long.toString(System.currentTimeMillis() % 25),
                         "server", simpleChat.getConfig().getString("server-name", "Server"),
