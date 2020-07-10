@@ -13,7 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("clearchat|cc")
-@CommandPermission("simplechat.clearchat")
+@CommandPermission("simplechat.clearchat.clear")
 public class ClearChatCommand extends BaseCommand {
 
     private SimpleChat simpleChat;
@@ -36,6 +36,18 @@ public class ClearChatCommand extends BaseCommand {
 
             for (int i = 0; i < simpleChat.getConfig().getInt("clear-chat-amount", 100); i++) {
                 audience.sendMessage(component);
+            }
+
+            String name = issuer.isPlayer() ? ((Player)issuer).getName() : "Console";
+
+            if (player.hasPermission("simplechat.clearchat.notify")) {
+                String message = simpleChat.getConfig().getString("language.clear-notify");
+                audience.sendMessage(MiniMessage.get().parse(message, "player", name));
+            }
+
+            if (player.hasPermission("simplechat.clearchat.exempt")) {
+                String message = simpleChat.getConfig().getString("language.clear-exempt");
+                audience.sendMessage(MiniMessage.get().parse(message, "player", name));
             }
         }
     }

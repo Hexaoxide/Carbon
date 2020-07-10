@@ -70,6 +70,8 @@ language:
   channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
   spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
   spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
+  clear-notify: '<yellow>Chat has been cleared by <player>.'
+  clear-exempt: '<yellow>You were exempt from the clear due to your permissions!'
   # The following messages are not MiniMessage compatible
   player-left: '%player_displayname% has left <server>!'
   player-joined: '%player_displayname% has joined <server>!'
