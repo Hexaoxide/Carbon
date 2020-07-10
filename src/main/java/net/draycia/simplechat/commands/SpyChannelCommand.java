@@ -38,7 +38,7 @@ public class SpyChannelCommand extends BaseCommand {
             message = simpleChat.getConfig().getString("language.spy-toggled-on");
         }
 
-        user.sendMessage(MiniMessage.get().parse(message,
+        user.sendMessage(MiniMessage.get().parse(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 

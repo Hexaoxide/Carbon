@@ -34,7 +34,8 @@ public class MuteCommand extends BaseCommand {
             format = simpleChat.getConfig().getString("language.is-now-muted");
         }
 
-        Component message = MiniMessage.get().parse(format, "user", targetUser.asOfflinePlayer().getName());
+        Component message = MiniMessage.get().parse(format,  "br", "\n",
+                "user", targetUser.asOfflinePlayer().getName());
 
         simpleChat.getAudiences().audience(sender).sendMessage(message);
     }

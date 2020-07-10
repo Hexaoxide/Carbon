@@ -180,11 +180,13 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
             targetName = this.asPlayer().getDisplayName();
         }
 
-        Component toPlayerComponent = MiniMessage.get().parse(toPlayerFormat, "message", message,
+        Component toPlayerComponent = MiniMessage.get().parse(toPlayerFormat,  "br", "\n",
+                "message", message,
                 "targetname", targetOfflineName, "sendername", senderOfflineName,
                 "target", targetName, "sender", senderName);
 
-        Component fromPlayerComponent = MiniMessage.get().parse(fromPlayerFormat, "message", message,
+        Component fromPlayerComponent = MiniMessage.get().parse(fromPlayerFormat,  "br", "\n",
+                "message", message,
                 "targetname", targetOfflineName, "sendername", senderOfflineName,
                 "target", targetName, "sender", senderName);
 

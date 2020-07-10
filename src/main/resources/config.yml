@@ -20,7 +20,7 @@ default:
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true
-  # Set to -1, comment out, or remove to disable distance checking
+  # -1 = disabled, 0 = world chat, greater than 0 = enabled
   distance: -1
   # Forces all other servers to use this server's formatting for this channel
   forward-format: true

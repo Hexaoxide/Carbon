@@ -27,8 +27,9 @@ public class ChannelCommand extends BaseCommand {
         if (args == null || args.length == 0) {
             user.setSelectedChannel(channel);
 
-            user.sendMessage(MiniMessage.get().parse(
-                    channel.getSwitchMessage(), "color", "<" + channel.getColor().toString() + ">",
+            user.sendMessage(MiniMessage.get().parse(channel.getSwitchMessage(),
+                    "br", "\n",
+                    "color", "<" + channel.getColor().toString() + ">",
                     "channel", channel.getName()));
         } else {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {

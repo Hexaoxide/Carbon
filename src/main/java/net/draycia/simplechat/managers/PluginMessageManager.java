@@ -104,7 +104,7 @@ public class PluginMessageManager implements PluginMessageListener {
         String chatMessage = in.readUTF();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
-            chatChannel.sendComponent(user, MiniMessage.get().parse(chatMessage));
+            chatChannel.sendComponent(user, MiniMessage.get().parse(chatMessage, "br", "\n"));
         });
     }
 
@@ -121,7 +121,7 @@ public class PluginMessageManager implements PluginMessageListener {
         String chatMessage = in.readUTF();
 
         ChatUser target = simpleChat.getUserService().wrap(targetUUID);
-        target.sendMessage(MiniMessage.get().parse(chatMessage));
+        target.sendMessage(MiniMessage.get().parse(chatMessage, "br", "\n"));
     }
 
     public void sendMessage(ChatChannel chatChannel, Player player, String message) {

@@ -25,7 +25,7 @@ public class ClearChatCommand extends BaseCommand {
     @Default
     public void baseCommand(CommandIssuer issuer) {
         String format = simpleChat.getConfig().getString("clear-chat-message", "");
-        Component component = MiniMessage.get().parse(format);
+        Component component = MiniMessage.get().parse(format, "br", "\n");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission("simplechat.clearchat.exempt")) {
