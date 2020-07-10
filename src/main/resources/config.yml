@@ -77,6 +77,10 @@ language:
   player-joined: '%player_displayname% has joined <server>!'
   vote-received: '<name> has voted on <service>!'
   cannot-use-channel: "You cannot use that channel!"
+  town-cannot-use: 'You are not in a town!'
+  nation-cannot-use: 'You are not in a nation!'
+  alliance-cannot-use: 'You do not have any alliances!'
+  party-cannot-use: 'You are not in a party!'
 
 server-name: 'Server'
 

@@ -2,12 +2,7 @@ package net.draycia.simplechat.channels.impls;
 
 import com.gmail.nossr50.api.PartyAPI;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
-import net.kyori.adventure.text.format.TextColor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class PartyChatChannel extends SimpleChatChannel {
 
@@ -48,6 +43,10 @@ public class PartyChatChannel extends SimpleChatChannel {
         }
 
         return false;
+    }
+
+    public boolean isInParty(ChatUser user) {
+        return PartyAPI.inParty(user.asPlayer());
     }
 
     @Override

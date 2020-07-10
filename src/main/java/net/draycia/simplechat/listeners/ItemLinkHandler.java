@@ -6,7 +6,6 @@ import net.kyori.adventure.text.TextComponent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.util.regex.Pattern;
 

@@ -3,6 +3,10 @@ package net.draycia.simplechat.managers;
 import co.aikar.commands.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.channels.impls.AllianceChatChannel;
+import net.draycia.simplechat.channels.impls.NationChatChannel;
+import net.draycia.simplechat.channels.impls.PartyChatChannel;
+import net.draycia.simplechat.channels.impls.TownChatChannel;
 import net.draycia.simplechat.commands.*;
 import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
@@ -69,7 +73,17 @@ public class CommandManager {
             ChatUser user = simpleChat.getUserService().wrap(context.getIssuer().getPlayer());
 
             if (!value.canPlayerUse(user)) {
-                throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
+                if (value.isTownChat() && !((TownChatChannel)value).isInTown(user)) {
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.town-cannot-use"));
+                } else if (value.isNationChat() && !((NationChatChannel)value).isInNation(user)) {
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.nation-cannot-use"));
+                } else if (value.isAllianceChat() && !((AllianceChatChannel)value).isInTown(user)) {
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("alliance-cannot-use"));
+                } else if (value.isPartyChat() && !((PartyChatChannel)value).isInParty(user)) {
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("party-cannot-use"));
+                } else {
+                    throw new ConditionFailedException(simpleChat.getConfig().getString("cannot-use-channel"));
+                }
             }
         });
 

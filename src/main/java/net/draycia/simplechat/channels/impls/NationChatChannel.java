@@ -5,12 +5,7 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
-import net.kyori.adventure.text.format.TextColor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class NationChatChannel extends SimpleChatChannel {
 
@@ -72,6 +67,16 @@ public class NationChatChannel extends SimpleChatChannel {
             } catch (NotRegisteredException e) {
                 e.printStackTrace();
             }
+        }
+
+        return false;
+    }
+
+    public boolean isInNation(ChatUser user) {
+        try {
+            return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasNation();
+        } catch (NotRegisteredException e) {
+            e.printStackTrace();
         }
 
         return false;

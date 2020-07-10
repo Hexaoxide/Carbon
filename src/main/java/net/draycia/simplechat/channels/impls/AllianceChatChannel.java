@@ -4,12 +4,7 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
-import net.kyori.adventure.text.format.TextColor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class AllianceChatChannel extends SimpleChatChannel {
 
@@ -49,6 +44,16 @@ public class AllianceChatChannel extends SimpleChatChannel {
             } catch (NotRegisteredException e) {
                 e.printStackTrace();
             }
+        }
+
+        return false;
+    }
+
+    public boolean isInTown(ChatUser user) {
+        try {
+            return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
+        } catch (NotRegisteredException e) {
+            e.printStackTrace();
         }
 
         return false;
