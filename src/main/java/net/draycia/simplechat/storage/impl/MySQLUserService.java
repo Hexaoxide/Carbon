@@ -84,7 +84,20 @@ public class MySQLUserService extends UserService {
         database.close();
     }
 
+    @Override
+    public void refreshUser(UUID uuid) {
+        userCache.invalidate(uuid);
+    }
+
     private SimpleChatUser loadUser(UUID uuid) {
+        if (simpleChat.getRedisManager() != null) {
+            SimpleChatUser user = simpleChat.getRedisManager().getUser(uuid);
+
+            if (user != null) {
+                return user;
+            }
+        }
+
         SimpleChatUser user = new SimpleChatUser(uuid);
 
 

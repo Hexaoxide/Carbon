@@ -23,6 +23,7 @@ public final class SimpleChat extends JavaPlugin {
     private PluginMessageManager pluginMessageManager;
     private CommandManager commandManager;
     private ChannelManager channelManager;
+    private RedisManager redisManager = null;
 
     private UserService userService;
 
@@ -52,6 +53,10 @@ public final class SimpleChat extends JavaPlugin {
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
 
+        if (getConfig().getBoolean("redis.enabled")) {
+            redisManager = new RedisManager(this);
+        }
+
         String storageType = getConfig().getString("storage.type");
 
         if (storageType.equalsIgnoreCase("mysql")) {
@@ -76,6 +81,7 @@ public final class SimpleChat extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
 
         // Register chat listeners
+        pluginManager.registerEvents(new BukkitChatListener(this), this);
         pluginManager.registerEvents(new FilterHandler(this), this);
         pluginManager.registerEvents(new ItemLinkHandler(this), this);
         pluginManager.registerEvents(new LegacyFormatHandler(), this);
@@ -140,5 +146,9 @@ public final class SimpleChat extends JavaPlugin {
 
     public ItemStackUtils getItemStackUtils() {
         return itemStackUtils;
+    }
+
+    public RedisManager getRedisManager() {
+        return redisManager;
     }
 }

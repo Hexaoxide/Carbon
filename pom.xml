@@ -259,10 +259,18 @@
             <version>2.4.1</version>
         </dependency>
 
+        <!-- Easier bungee handling -->
         <dependency>
             <groupId>io.github.leonardosnt</groupId>
             <artifactId>bungeechannelapi</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Redis -->
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>6.0.0.M1</version>
         </dependency>
     </dependencies>
 </project>

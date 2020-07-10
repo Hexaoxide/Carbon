@@ -110,3 +110,9 @@ storage:
   database: 'database'
   hostname: 'localhost'
   port: 3306
+
+redis:
+  enabled: false
+  host: 'localhost'
+  port: 6379
+  database: 0

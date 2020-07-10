@@ -74,6 +74,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setSelectedChannel(ChatChannel chatChannel) {
         this.selectedChannel = chatChannel.getName();
+        syncToRedis();
     }
 
     @Override
@@ -93,15 +94,13 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         } else {
             ignoredUsers.remove(uuid);
         }
+
+        syncToRedis();
     }
 
     @Override
     public void setIgnoringUser(ChatUser user, boolean ignoring) {
-        if (ignoring) {
-            ignoredUsers.add(user.getUUID());
-        } else {
-            ignoredUsers.remove(user.getUUID());
-        }
+        setIgnoringUser(user.getUUID(), ignoring);
     }
 
     public List<UUID> getIgnoredUsers() {
@@ -111,6 +110,8 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setMuted(boolean muted) {
         this.muted = muted;
+
+        syncToRedis();
     }
 
     @Override
@@ -121,6 +122,8 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setShadowMuted(boolean shadowMuted) {
         this.shadowMuted = shadowMuted;
+
+        syncToRedis();
     }
 
     @Override
@@ -137,11 +140,13 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setReplyTarget(UUID target) {
         this.replyTarget = target;
+
+        syncToRedis();
     }
 
     @Override
     public void setReplyTarget(ChatUser user) {
-        this.replyTarget = user.getUUID();
+        setReplyTarget(user.getUUID());
     }
 
     @Override
@@ -207,6 +212,12 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
             }
         } else if (sender.isOnline()) {
             simpleChat.getPluginMessageManager().sendComponentToPlayer(sender, this, toPlayerComponent, fromPlayerComponent);
+        }
+    }
+
+    private void syncToRedis() {
+        if (simpleChat.getRedisManager() != null) {
+            simpleChat.getRedisManager().publishUser(this);
         }
     }
 

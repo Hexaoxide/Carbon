@@ -30,15 +30,13 @@ public class JSONUserService extends UserService {
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
-    private Gson gson;
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private Type userType = new TypeToken<SimpleChatUser>() {}.getType();
 
     public JSONUserService(SimpleChat simpleChat) {
         this.simpleChat =simpleChat;
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(simpleChat, userCache::cleanUp, 0L, 20 * 60 * 10);
-
-        gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
     @Override
@@ -57,12 +55,25 @@ public class JSONUserService extends UserService {
     }
 
     @Override
+    public void refreshUser(UUID uuid) {
+        userCache.invalidate(uuid);
+    }
+
+    @Override
     public void cleanUp() {
         userCache.invalidateAll();
         userCache.cleanUp();
     }
 
     private SimpleChatUser loadUser(UUID uuid) {
+        if (simpleChat.getRedisManager() != null) {
+            SimpleChatUser user = simpleChat.getRedisManager().getUser(uuid);
+
+            if (user != null) {
+                return user;
+            }
+        }
+
         File userFile = new File(simpleChat.getDataFolder(), "users/" + uuid.toString() + ".json");
         ensureFileExists(userFile);
 
