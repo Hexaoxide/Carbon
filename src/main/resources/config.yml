@@ -30,6 +30,8 @@ default:
   first-matching-group: false
   # Determines if the chat filter is enabled for this channel
   filter-enabled: true
+  # Towny, Nation, Alliance, Party, Normal
+  type: 'normal'
 
 channels:
   global:

@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class NationChatChannel extends SimpleChatChannel {
 
-    NationChatChannel(TextColor color, Map<String, String> formats, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
-        super(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
+    public NationChatChannel(String name, SimpleChat simpleChat) {
+        super(name, simpleChat);
     }
 
     @Override
@@ -80,132 +80,6 @@ public class NationChatChannel extends SimpleChatChannel {
     @Override
     public boolean isNationChat() {
         return true;
-    }
-
-    public static NationChatChannel.Builder nationBuilder(String name) {
-        return new NationChatChannel.Builder(name);
-    }
-
-    public static class Builder extends ChatChannel.Builder {
-
-        private TextColor color = TextColor.of(255, 255, 255);
-        private Map<String, String> formats = new HashMap<>();
-        private boolean isDefault = false;
-        private boolean ignorable = true;
-        private String name;
-        private double distance = -1;
-        private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
-        private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
-        private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
-        private boolean forwardFormatting = true;
-        private boolean shouldBungee = false;
-        private boolean filterEnabled = true;
-        private boolean firstMatchingGroup = false;
-
-        Builder(String name) {
-            this.name = name.toLowerCase();
-        }
-
-        @Override
-        public NationChatChannel build(SimpleChat simpleChat) {
-            return new NationChatChannel(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
-        }
-
-        @Override
-        public NationChatChannel.Builder setColor(TextColor color) {
-            this.color = color;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setColor(String color) {
-            return setColor(TextColor.fromHexString(color));
-        }
-
-        @Override
-        public NationChatChannel.Builder setFormats(Map<String, String> formats) {
-            this.formats = formats;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setIsDefault(boolean aDefault) {
-            this.isDefault = aDefault;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setIgnorable(boolean ignorable) {
-            this.ignorable = ignorable;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setName(String name) {
-            this.name = name;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setDistance(double distance) {
-            this.distance = distance;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setSwitchMessage(String switchMessage) {
-            this.switchMessage = switchMessage;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setToggleOffMessage(String toggleOffMessage) {
-            this.toggleOffMessage = toggleOffMessage;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setToggleOnMessage(String toggleOnMessage) {
-            this.toggleOnMessage = toggleOnMessage;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setShouldForwardFormatting(boolean forwardFormatting) {
-            this.forwardFormatting = forwardFormatting;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setShouldBungee(boolean shouldBungee) {
-            this.shouldBungee = shouldBungee;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setFilterEnabled(boolean filterEnabled) {
-            this.filterEnabled = filterEnabled;
-
-            return this;
-        }
-
-        @Override
-        public NationChatChannel.Builder setFirstMatchingGroup(boolean firstMatchingGroup) {
-            this.firstMatchingGroup = firstMatchingGroup;
-
-            return this;
-        }
     }
 
 }

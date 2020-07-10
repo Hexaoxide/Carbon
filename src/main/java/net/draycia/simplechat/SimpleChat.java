@@ -13,10 +13,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public final class SimpleChat extends JavaPlugin {
 
     private ArrayList<ChatChannel> channels = new ArrayList<>();
+    private ArrayList<Pattern> itemPatterns = new ArrayList<>();
 
     private Permission permission;
 
@@ -70,6 +72,7 @@ public final class SimpleChat extends JavaPlugin {
 
         // Setup listeners
         setupListeners();
+        reloadPatterns();
     }
 
     @Override
@@ -90,6 +93,14 @@ public final class SimpleChat extends JavaPlugin {
         pluginManager.registerEvents(new PingHandler(this), this);
         pluginManager.registerEvents(new PlaceholderHandler(this), this);
         pluginManager.registerEvents(new ShadowMuteHandler(), this);
+    }
+
+    public void reloadPatterns() {
+        itemPatterns.clear();
+
+        for (String entry : getConfig().getStringList("item-link-placeholders")) {
+            itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
+        }
     }
 
     public ChatChannel getDefaultChannel() {

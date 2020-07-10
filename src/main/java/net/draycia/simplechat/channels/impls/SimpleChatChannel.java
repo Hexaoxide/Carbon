@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -19,46 +20,15 @@ import java.util.regex.Pattern;
 
 public class SimpleChatChannel extends ChatChannel {
 
-    private TextColor color;
-    private Map<String, String> formats;
-    private boolean isDefault;
-    private boolean ignorable;
     private String name;
-    private double distance;
-    private String switchMessage;
-    private String toggleOffMessage;
-    private String toggleOnMessage;
-    private boolean forwardFormatting;
-    private boolean shouldBungee;
-    private boolean filterEnabled;
-    private boolean firstMatchingGroup;
 
     private SimpleChat simpleChat;
 
-    private ArrayList<Pattern> itemPatterns = new ArrayList<>();
-
     private SimpleChatChannel() { }
 
-    SimpleChatChannel(TextColor color, Map<String, String> formats, boolean isDefault, boolean ignorable, String name, double distance, String switchMessage, String toggleOffMessage, String toggleOnMessage, boolean forwardFormatting, boolean shouldBungee, boolean filterEnabled, boolean firstMatchingGroup, SimpleChat simpleChat) {
-        this.color = color;
-        this.formats = formats;
-        this.isDefault = isDefault;
-        this.ignorable = ignorable;
+    public SimpleChatChannel(String name, SimpleChat simpleChat) {
         this.name = name;
-        this.distance = distance;
-        this.switchMessage = switchMessage;
-        this.toggleOffMessage = toggleOffMessage;
-        this.toggleOnMessage = toggleOnMessage;
-        this.forwardFormatting = forwardFormatting;
-        this.shouldBungee = shouldBungee;
-        this.filterEnabled = filterEnabled;
-        this.firstMatchingGroup = firstMatchingGroup;
-
         this.simpleChat = simpleChat;
-
-        for (String entry : simpleChat.getConfig().getStringList("item-link-placeholders")) {
-            itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
-        }
     }
 
     SimpleChat getSimpleChat() {
@@ -66,7 +36,7 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     private String getDiscordFormatting() {
-        return formats.getOrDefault("discord-to-mc", "<gray>[<blue>Discord<gray>] <username><white>: <message>");
+        return getFormats().getOrDefault("discord-to-mc", "<gray>[<blue>Discord<gray>] <username><white>: <message>");
     }
 
     @Override
@@ -104,7 +74,7 @@ public class SimpleChatChannel extends ChatChannel {
         // Get formatted message
         TextComponent formattedMessage = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(),
                 "br", "\n",
-                "color", "<color:" + color.toString() + ">",
+                "color", "<color:" + getColor().toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", simpleChat.getConfig().getString("server-name", "Server"),
                 "message", formatEvent.getMessage());
@@ -230,7 +200,7 @@ public class SimpleChatChannel extends ChatChannel {
             }
 
             for (String entry : groups) {
-                if (formats.containsKey(entry.toLowerCase())) {
+                if (getFormats().containsKey(entry.toLowerCase())) {
                     group = entry;
                     break;
                 }
@@ -286,12 +256,25 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     public Map<String, String> getFormats() {
+        HashMap<String, String> formats = new HashMap<>();
+
+        ConfigurationSection section = simpleChat.getConfig().getConfigurationSection(getName());
+        ConfigurationSection formatSection = section.getConfigurationSection("formats");
+
+        if (formatSection == null) {
+            formatSection = simpleChat.getConfig().getConfigurationSection("default").getConfigurationSection("formats");
+        }
+
+        for (String key : formatSection.getKeys(false)) {
+            formats.put(key, formatSection.getString(key));
+        }
+
         return formats;
     }
 
     @Override
     public TextColor getColor() {
-        return color;
+        return TextColor.fromHexString((String) getSetting("color"));
     }
 
     @Override
@@ -301,17 +284,17 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public boolean isDefault() {
-        return isDefault;
+        return (Boolean) getSetting("default");
     }
 
     @Override
     public boolean isIgnorable() {
-        return ignorable;
+        return (Boolean)getSetting("ignorable");
     }
 
     @Override
     public boolean shouldBungee() {
-        return shouldBungee;
+        return (Boolean) getSetting("should-bungee");
     }
 
     @Override
@@ -321,170 +304,63 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public double getDistance() {
-        return distance;
+        return (Integer) getSetting("distance");
     }
 
     @Override
     public String getSwitchMessage() {
-        return switchMessage;
+        return (String) getSetting("switch-message");
     }
 
     @Override
     public String getToggleOffMessage() {
-        return toggleOffMessage;
+        return (String) getSetting("toggle-off-message");
     }
 
     @Override
     public String getToggleOnMessage() {
-        return toggleOnMessage;
+        return (String) getSetting("toggle-on-message");
     }
 
     @Override
     public boolean shouldForwardFormatting() {
-        return forwardFormatting;
+        return (Boolean) getSetting("forward-format");
     }
 
     @Override
     public boolean filterEnabled() {
-        return filterEnabled;
+        return (Boolean) getSetting("filter-enabled");
     }
 
     @Override
     public boolean firstMatchingGroup() {
-        return firstMatchingGroup;
+        return (Boolean) getSetting("first-matching-group");
     }
 
     @Override
     public List<Pattern> getItemLinkPatterns() {
+        ArrayList<Pattern> itemPatterns = new ArrayList<>();
+
+        for (String entry : simpleChat.getConfig().getStringList("item-link-placeholders")) {
+            itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
+        }
+
         return itemPatterns;
     }
 
-    public static SimpleChatChannel.Builder builder(String name) {
-        return new SimpleChatChannel.Builder(name);
+    private Object getSetting(String key) {
+        ConfigurationSection section = simpleChat.getConfig().getConfigurationSection(getName());
+
+        if (section.contains(key)) {
+            return section.get(key);
+        }
+
+        ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");
+
+        if (defaultSection.contains(key)) {
+            return defaultSection.get(key);
+        }
+
+        return false;
     }
-
-    public static class Builder extends ChatChannel.Builder {
-
-        private TextColor color = TextColor.of(255, 255, 255);
-        private Map<String, String> formats = new HashMap<>();
-        private boolean isDefault = false;
-        private boolean ignorable = true;
-        private String name;
-        private double distance = -1;
-        private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
-        private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
-        private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
-        private boolean forwardFormatting = true;
-        private boolean shouldBungee = false;
-        private boolean filterEnabled = true;
-        private boolean firstMatchingGroup = false;
-
-        private Builder() { }
-
-        Builder(String name) {
-            this.name = name.toLowerCase();
-        }
-
-        @Override
-        public SimpleChatChannel build(SimpleChat simpleChat) {
-            return new SimpleChatChannel(color, formats, isDefault, ignorable, name, distance, switchMessage, toggleOffMessage, toggleOnMessage, forwardFormatting, shouldBungee, filterEnabled, firstMatchingGroup, simpleChat);
-        }
-
-        @Override
-        public Builder setColor(TextColor color) {
-            this.color = color;
-
-            return this;
-        }
-
-        @Override
-        public Builder setColor(String color) {
-            return setColor(TextColor.fromHexString(color));
-        }
-
-        @Override
-        public Builder setFormats(Map<String, String> formats) {
-            this.formats = formats;
-
-            return this;
-        }
-
-        @Override
-        public Builder setIsDefault(boolean aDefault) {
-            this.isDefault = aDefault;
-
-            return this;
-        }
-
-        @Override
-        public Builder setIgnorable(boolean ignorable) {
-            this.ignorable = ignorable;
-
-            return this;
-        }
-
-        @Override
-        public Builder setName(String name) {
-            this.name = name;
-
-            return this;
-        }
-
-        @Override
-        public Builder setDistance(double distance) {
-            this.distance = distance;
-
-            return this;
-        }
-
-        @Override
-        public Builder setSwitchMessage(String switchMessage) {
-            this.switchMessage = switchMessage;
-
-            return this;
-        }
-
-        @Override
-        public Builder setToggleOffMessage(String toggleOffMessage) {
-            this.toggleOffMessage = toggleOffMessage;
-
-            return this;
-        }
-
-        @Override
-        public Builder setToggleOnMessage(String toggleOnMessage) {
-            this.toggleOnMessage = toggleOnMessage;
-
-            return this;
-        }
-
-        @Override
-        public Builder setShouldForwardFormatting(boolean forwardFormatting) {
-            this.forwardFormatting = forwardFormatting;
-
-            return this;
-        }
-
-        @Override
-        public Builder setShouldBungee(boolean shouldBungee) {
-            this.shouldBungee = shouldBungee;
-
-            return this;
-        }
-
-        @Override
-        public Builder setFilterEnabled(boolean filterEnabled) {
-            this.filterEnabled = filterEnabled;
-
-            return this;
-        }
-
-        @Override
-        public Builder setFirstMatchingGroup(boolean firstMatchingGroup) {
-            this.firstMatchingGroup = firstMatchingGroup;
-
-            return this;
-        }
-    }
-
 }
