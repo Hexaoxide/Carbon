@@ -11,9 +11,10 @@ import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class NationChatChannel extends SimpleChatChannel {
+public class NationChatChannel extends SimpleChatChannel implements Listener {
 
     public NationChatChannel(String name, SimpleChat simpleChat) {
         super(name, simpleChat);

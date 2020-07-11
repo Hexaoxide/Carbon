@@ -10,9 +10,10 @@ import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class AllianceChatChannel extends NationChatChannel {
+public class AllianceChatChannel extends NationChatChannel implements Listener {
 
     public AllianceChatChannel(String name, SimpleChat simpleChat) {
         super(name, simpleChat);
