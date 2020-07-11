@@ -19,6 +19,8 @@ public interface ChatUser extends Audience {
     ChatChannel getSelectedChannel();
     void setSelectedChannel(ChatChannel channel);
 
+    void clearSelectedChannel();
+
     UserChannelSettings getChannelSettings(ChatChannel channel);
 
     void setMuted(boolean muted);

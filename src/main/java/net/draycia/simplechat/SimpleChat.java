@@ -110,7 +110,7 @@ public final class SimpleChat extends JavaPlugin {
             }
         }
 
-        return null;
+        return channels.get(0);
     }
 
     public ChatChannel getChannel(String name) {

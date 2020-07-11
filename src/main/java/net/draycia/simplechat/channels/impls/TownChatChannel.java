@@ -1,10 +1,15 @@
 package net.draycia.simplechat.channels.impls;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.event.TownAddResidentEvent;
+import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 public class TownChatChannel extends SimpleChatChannel {
 
@@ -75,6 +80,25 @@ public class TownChatChannel extends SimpleChatChannel {
         }
 
         return false;
+    }
+
+    @EventHandler
+    public void onResidentRemove(TownRemoveResidentEvent event) {
+        String name = event.getResident().getName();
+        ChatUser user = getSimpleChat().getUserService().wrap(Bukkit.getOfflinePlayer(name));
+
+        if (user.getSelectedChannel().isTownChat()) {
+            user.clearSelectedChannel();
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        ChatUser user = getSimpleChat().getUserService().wrap(event.getPlayer());
+
+        if (user.getSelectedChannel().isTownChat() && !isInTown(user)) {
+            user.clearSelectedChannel();
+        }
     }
 
     @Override

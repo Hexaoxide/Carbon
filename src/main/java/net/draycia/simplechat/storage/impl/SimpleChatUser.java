@@ -78,6 +78,11 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
+    public void clearSelectedChannel() {
+        setSelectedChannel(simpleChat.getDefaultChannel());
+    }
+
+    @Override
     public boolean isIgnoringUser(UUID uuid) {
         return ignoredUsers.contains(uuid);
     }

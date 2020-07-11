@@ -60,8 +60,8 @@ public class PartyChatChannel extends SimpleChatChannel implements Listener {
 
         ChatUser user = getSimpleChat().getUserService().wrap(event.getPlayer());
 
-        if (user.getSelectedChannel().isPartyChat() && !isInParty(user)) {
-            switchPlayerToDefault(user);
+        if (user.getSelectedChannel().isPartyChat()) {
+            user.clearSelectedChannel();
         }
     }
 
@@ -70,12 +70,8 @@ public class PartyChatChannel extends SimpleChatChannel implements Listener {
         ChatUser user = getSimpleChat().getUserService().wrap(event.getPlayer());
 
         if (user.getSelectedChannel().isPartyChat() && !isInParty(user)) {
-            switchPlayerToDefault(user);
+            user.clearSelectedChannel();
         }
-    }
-
-    private void switchPlayerToDefault(ChatUser user) {
-        user.setSelectedChannel(getSimpleChat().getDefaultChannel());
     }
 
     public boolean isInParty(ChatUser user) {

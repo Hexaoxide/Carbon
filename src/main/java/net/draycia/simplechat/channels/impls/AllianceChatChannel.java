@@ -1,12 +1,18 @@
 package net.draycia.simplechat.channels.impls;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.event.NationRemoveTownEvent;
+import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-public class AllianceChatChannel extends SimpleChatChannel {
+public class AllianceChatChannel extends NationChatChannel {
 
     public AllianceChatChannel(String name, SimpleChat simpleChat) {
         super(name, simpleChat);
@@ -37,31 +43,13 @@ public class AllianceChatChannel extends SimpleChatChannel {
     }
 
     @Override
-    public boolean canPlayerUse(ChatUser user) {
-        if (super.canPlayerUse(user)) {
-            try {
-                return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
-            } catch (NotRegisteredException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return false;
-    }
-
-    public boolean isInTown(ChatUser user) {
-        try {
-            return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
-        } catch (NotRegisteredException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+    public boolean isAllianceChat() {
+        return true;
     }
 
     @Override
-    public boolean isAllianceChat() {
-        return true;
+    public boolean isNationChat() {
+        return false;
     }
 
 }

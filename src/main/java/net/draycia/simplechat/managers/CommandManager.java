@@ -77,7 +77,7 @@ public class CommandManager {
                     throw new ConditionFailedException(simpleChat.getConfig().getString("language.town-cannot-use"));
                 } else if (value.isNationChat() && !((NationChatChannel)value).isInNation(user)) {
                     throw new ConditionFailedException(simpleChat.getConfig().getString("language.nation-cannot-use"));
-                } else if (value.isAllianceChat() && !((AllianceChatChannel)value).isInTown(user)) {
+                } else if (value.isAllianceChat() && !((AllianceChatChannel)value).isInNation(user)) {
                     throw new ConditionFailedException(simpleChat.getConfig().getString("language.alliance-cannot-use"));
                 } else if (value.isPartyChat() && !((PartyChatChannel)value).isInParty(user)) {
                     throw new ConditionFailedException(simpleChat.getConfig().getString("language.party-cannot-use"));
@@ -107,7 +107,6 @@ public class CommandManager {
         manager.registerCommand(new MessageCommand(simpleChat));
         manager.registerCommand(new ReplyCommand(simpleChat));
         manager.registerCommand(new MuteCommand(simpleChat));
-        manager.registerCommand(new ChannelColorCommand(simpleChat));
         manager.registerCommand(new SetColorCommand(simpleChat));
         manager.registerCommand(new SpyChannelCommand(simpleChat));
     }
