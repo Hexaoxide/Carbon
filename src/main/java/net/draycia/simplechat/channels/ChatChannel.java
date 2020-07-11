@@ -49,6 +49,8 @@ public abstract class ChatChannel {
      */
     public abstract String getSwitchMessage();
 
+    public abstract String getSwitchOtherMessage();
+
     /**
      * @return The message to be send to the player when toggling this channel off.
      */
@@ -125,23 +127,5 @@ public abstract class ChatChannel {
     public abstract void sendComponent(ChatUser user, Component component);
 
     public String processPlaceholders(ChatUser user, String input) { return input; }
-
-    public static abstract class Builder {
-        public abstract ChatChannel build(SimpleChat simpleChat);
-        public abstract ChatChannel.Builder setColor(TextColor color);
-        public abstract ChatChannel.Builder setColor(String color);
-        public abstract ChatChannel.Builder setFormats(Map<String, String> formats);
-        public abstract ChatChannel.Builder setIsDefault(boolean aDefault);
-        public abstract ChatChannel.Builder setIgnorable(boolean ignorable);
-        public abstract ChatChannel.Builder setName(String name);
-        public abstract ChatChannel.Builder setDistance(double distance);
-        public abstract ChatChannel.Builder setSwitchMessage(String switchMessage);
-        public abstract ChatChannel.Builder setToggleOffMessage(String toggleOffMessage);
-        public abstract ChatChannel.Builder setToggleOnMessage(String toggleOnMessage);
-        public abstract ChatChannel.Builder setShouldForwardFormatting(boolean forwardFormatting);
-        public abstract ChatChannel.Builder setShouldBungee(boolean shouldBungee);
-        public abstract ChatChannel.Builder setFilterEnabled(boolean filterEnabled);
-        public abstract ChatChannel.Builder setFirstMatchingGroup(boolean firstMatchingGroup);
-    }
 
 }

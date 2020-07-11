@@ -314,6 +314,11 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
+    public String getSwitchOtherMessage() {
+        return (String) getSetting("switch-other-message");
+    }
+
+    @Override
     public String getToggleOffMessage() {
         return (String) getSetting("toggle-off-message");
     }

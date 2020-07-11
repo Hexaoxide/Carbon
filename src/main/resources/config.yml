@@ -9,6 +9,7 @@
 # These are provided as a way to configure default channel settings.
 default:
   switch-message: '<gray>You are now in <color><channel> <gray>chat!'
+  switch-other-message: '<gray><player> is now in <color><channel> <gray>chat!'
   toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
   toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
   toggle-other-on: '<gray><player> can now see <color><channel> <gray>chat!'
