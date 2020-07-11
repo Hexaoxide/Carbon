@@ -1,10 +1,14 @@
 package net.draycia.simplechat.channels.impls;
 
 import com.gmail.nossr50.api.PartyAPI;
+import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PartyChatChannel extends SimpleChatChannel {
+public class PartyChatChannel extends SimpleChatChannel implements Listener {
 
     public PartyChatChannel(String name, SimpleChat simpleChat) {
         super(name, simpleChat);
@@ -43,6 +47,35 @@ public class PartyChatChannel extends SimpleChatChannel {
         }
 
         return false;
+    }
+
+    private McMMOPartyChangeEvent.EventReason LEFT = McMMOPartyChangeEvent.EventReason.LEFT_PARTY;
+    private McMMOPartyChangeEvent.EventReason KICKED = McMMOPartyChangeEvent.EventReason.KICKED_FROM_PARTY;
+
+    @EventHandler
+    public void onPartyLeave(McMMOPartyChangeEvent event) {
+        if (event.getReason() != LEFT && event.getReason() != KICKED) {
+            return;
+        }
+
+        ChatUser user = getSimpleChat().getUserService().wrap(event.getPlayer());
+
+        if (user.getSelectedChannel().isPartyChat() && !isInParty(user)) {
+            switchPlayerToDefault(user);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        ChatUser user = getSimpleChat().getUserService().wrap(event.getPlayer());
+
+        if (user.getSelectedChannel().isPartyChat() && !isInParty(user)) {
+            switchPlayerToDefault(user);
+        }
+    }
+
+    private void switchPlayerToDefault(ChatUser user) {
+        user.setSelectedChannel(getSimpleChat().getDefaultChannel());
     }
 
     public boolean isInParty(ChatUser user) {

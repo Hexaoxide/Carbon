@@ -7,6 +7,7 @@ import net.draycia.simplechat.channels.impls.*;
 import net.draycia.simplechat.commands.AliasedChannelCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.Listener;
 
 public class ChannelManager {
 
@@ -82,6 +83,10 @@ public class ChannelManager {
 
             commandManager.getCommandReplacements().addReplacement("channelName", commandName);
             commandManager.registerCommand(new AliasedChannelCommand(simpleChat, channel));
+
+            if (channel instanceof Listener) {
+                Bukkit.getPluginManager().registerEvents((Listener)channel, simpleChat);
+            }
         }
 
         boolean townyInstalled = Bukkit.getPluginManager().isPluginEnabled("Towny");
