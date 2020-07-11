@@ -35,7 +35,7 @@ public class AliasedChannelCommand extends BaseCommand {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("language.town-cannot-use"));
             } else if (chatChannel.isNationChat() && !((NationChatChannel)chatChannel).isInNation(user)) {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("language.nation-cannot-use"));
-            } else if (chatChannel.isAllianceChat() && !((AllianceChatChannel)chatChannel).isInTown(user)) {
+            } else if (chatChannel.isAllianceChat() && !((AllianceChatChannel)chatChannel).isInNation(user)) {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("alliance-cannot-use"));
             } else if (chatChannel.isPartyChat() && !((PartyChatChannel)chatChannel).isInParty(user)) {
                 throw new ConditionFailedException(simpleChat.getConfig().getString("party-cannot-use"));
