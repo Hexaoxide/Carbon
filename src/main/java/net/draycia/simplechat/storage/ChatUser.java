@@ -23,6 +23,9 @@ public interface ChatUser extends Audience {
 
     UserChannelSettings getChannelSettings(ChatChannel channel);
 
+    void setSpyingWhispers(boolean spyingWhispers);
+    boolean isSpyingWhispers();
+
     void setMuted(boolean muted);
     boolean isMuted();
 

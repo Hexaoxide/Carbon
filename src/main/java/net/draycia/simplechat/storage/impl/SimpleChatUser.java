@@ -29,6 +29,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     private List<UUID> ignoredUsers = new ArrayList<>();
     private boolean muted = false;
     private boolean shadowMuted = false;
+    private boolean spyingWhispers = false;
 
     private transient UUID replyTarget = null;
 
@@ -163,6 +164,16 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
         return channelSettings;
     }
 
+    @Override
+    public void setSpyingWhispers(boolean spyingWhispers) {
+        this.spyingWhispers = spyingWhispers;
+    }
+
+    @Override
+    public boolean isSpyingWhispers() {
+        return spyingWhispers;
+    }
+
     public void sendMessage(ChatUser sender, String message) {
         if (isIgnoringUser(sender) || sender.isIgnoringUser(this)) {
             return;
@@ -219,6 +230,19 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
             }
         } else if (sender.isOnline()) {
             simpleChat.getPluginMessageManager().sendComponentToPlayer(sender, this, toPlayerComponent, fromPlayerComponent);
+        }
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            ChatUser user = simpleChat.getUserService().wrap(player);
+
+            if (user.getUUID().equals(sender.getUUID()) || user.getUUID().equals(getUUID())) {
+                continue;
+            }
+
+            user.sendMessage(MiniMessage.get().parse(simpleChat.getConfig().getString("language.spy-whispers"),  "br", "\n",
+                    "message", message,
+                    "targetname", targetOfflineName, "sendername", senderOfflineName,
+                    "target", targetName, "sender", senderName));
         }
     }
 

@@ -50,7 +50,7 @@ public class MySQLUserService extends UserService {
 
         try {
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
-                    "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN)");
+                    "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN, spyingwhispers BOOLEAN)");
 
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel CHAR(16), spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
 
@@ -116,6 +116,7 @@ public class MySQLUserService extends UserService {
             user.setSelectedChannel(simpleChat.getChannel(users.getString("channel")));
             user.setMuted(users.<Boolean>get("muted"));
             user.setShadowMuted(users.<Boolean>get("shadowmuted"));
+            user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"));
 
             for (DbRow channelSetting : channelSettings) {
                 ChatChannel chatChannel = simpleChat.getChannel(channelSetting.getString("channel"));
@@ -157,10 +158,10 @@ public class MySQLUserService extends UserService {
             }
 
             simpleChat.getLogger().info("Saving user data!");
-            stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted) VALUES (?, ?, ?, ?) " +
-                            "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?",
-                    user.getUUID().toString(), selectedName, user.isMuted(), user.isShadowMuted(),
-                    selectedName, user.isMuted(), user.isShadowMuted());
+            stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers) VALUES (?, ?, ?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?",
+                    user.getUUID().toString(), selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(),
+                    selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers());
 
             simpleChat.getLogger().info("Saving user channel settings!");
             // Save user channel settings

@@ -40,4 +40,21 @@ public class SpyChannelCommand extends BaseCommand {
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
+    @Subcommand("whispers")
+    public void whispersCommand(Player player) {
+        ChatUser user = simpleChat.getUserService().wrap(player);
+
+        String message;
+
+        if (user.isSpyingWhispers()) {
+            user.setSpyingWhispers(false);
+            message = simpleChat.getConfig().getString("language.spy-whispers-off");
+        } else {
+            user.setSpyingWhispers(true);
+            message = simpleChat.getConfig().getString("language.spy-whispers-on");
+        }
+
+        user.sendMessage(MiniMessage.get().parse(message, "br", "\n"));
+    }
+
 }

@@ -69,6 +69,9 @@ language:
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
   message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
+  spy-whispers: '<yellow>Spy [<gray><sender> <gold>-> <gray><target><yellow>] <message>'
+  spy-whispers-on: '<gray>You are now spying on whispers!'
+  spy-whispers-off: '<gray>You are no longer spying on whispers!'
   no-reply-target: '<red>You have no one to reply to!'
   channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
   spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
