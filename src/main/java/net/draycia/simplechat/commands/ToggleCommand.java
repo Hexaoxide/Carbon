@@ -7,6 +7,7 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandAlias("tch|togglec|togglechannel|toggle")
@@ -43,7 +44,7 @@ public class ToggleCommand extends BaseCommand {
     @CommandPermission("simplechat.toggle.others")
     @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
-    public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, ChatUser user) {
+    public void baseCommand(CommandSender sender, @Conditions("canuse:true") ChatChannel channel, ChatUser user) {
         String message;
         String otherMessage;
 
@@ -62,7 +63,7 @@ public class ToggleCommand extends BaseCommand {
         user.sendMessage(MiniMessage.get().parse(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
 
-        simpleChat.getUserService().wrap(player).sendMessage(MiniMessage.get().parse(otherMessage,
+        simpleChat.getAudiences().audience(sender).sendMessage(MiniMessage.get().parse(otherMessage,
                 "br", "\n", "color", "<color:" + channel.getColor().toString() + ">",
                 "channel", channel.getName(), "player", user.asOfflinePlayer().getName()));
     }
