@@ -8,6 +8,7 @@ import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandAlias("ch|channel|switch")
@@ -42,7 +43,7 @@ public class ChannelCommand extends BaseCommand {
     @CommandPermission("simplechat.switch.others")
     @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
-    public void baseCommand(Player player, ChatChannel channel, ChatUser user) {
+    public void baseCommand(CommandSender sender, ChatChannel channel, ChatUser user) {
         user.setSelectedChannel(channel);
 
         String message = channel.getSwitchMessage();
@@ -51,7 +52,7 @@ public class ChannelCommand extends BaseCommand {
         user.sendMessage(MiniMessage.get().parse(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
 
-        simpleChat.getUserService().wrap(player).sendMessage(MiniMessage.get().parse(otherMessage, "br", "\n",
+        simpleChat.getAudiences().audience(sender).sendMessage(MiniMessage.get().parse(otherMessage, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName(),
                 "player", user.asOfflinePlayer().getName()));
     }
