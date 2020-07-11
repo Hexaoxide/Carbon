@@ -42,11 +42,7 @@ public class PartyChatChannel extends SimpleChatChannel implements Listener {
 
     @Override
     public boolean canPlayerUse(ChatUser user) {
-        if (super.canPlayerUse(user)) {
-            return PartyAPI.inParty(user.asPlayer());
-        }
-
-        return false;
+        return super.canPlayerUse(user) && isInParty(user);
     }
 
     private McMMOPartyChangeEvent.EventReason LEFT = McMMOPartyChangeEvent.EventReason.LEFT_PARTY;
