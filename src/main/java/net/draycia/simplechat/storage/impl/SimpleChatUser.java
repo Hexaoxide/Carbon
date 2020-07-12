@@ -2,6 +2,7 @@ package net.draycia.simplechat.storage.impl;
 
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.events.ChannelSwitchEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.audience.Audience;
@@ -76,6 +77,8 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
     public void setSelectedChannel(ChatChannel chatChannel) {
         this.selectedChannel = chatChannel.getName();
         syncToRedis();
+
+        Bukkit.getPluginManager().callEvent(new ChannelSwitchEvent(chatChannel, this));
     }
 
     @Override
