@@ -50,10 +50,6 @@ channels:
 replacements:
   '%shrug%': '¯\_(ツ)_/¯'
 
-# Determines if we should enable MiniMessage's Markdown addon
-# https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#markdown
-use-markdown: false
-
 # Options:
 # 'MiniMessage': https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#the-components
 # 'MiniMessage-Markdown': https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#markdown
