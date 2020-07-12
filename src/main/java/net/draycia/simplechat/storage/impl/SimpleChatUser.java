@@ -3,6 +3,7 @@ package net.draycia.simplechat.storage.impl;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChannelSwitchEvent;
+import net.draycia.simplechat.events.PrivateMessageEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.audience.Audience;
@@ -247,6 +248,8 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
                     "targetname", targetOfflineName, "sendername", senderOfflineName,
                     "target", targetName, "sender", senderName));
         }
+
+        Bukkit.getPluginManager().callEvent(new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message));
     }
 
     private void syncToRedis() {
