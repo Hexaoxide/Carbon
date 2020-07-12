@@ -87,11 +87,9 @@ public final class SimpleChat extends JavaPlugin {
         pluginManager.registerEvents(new BukkitChatListener(this), this);
         pluginManager.registerEvents(new ItemLinkHandler(this), this);
         pluginManager.registerEvents(new LegacyFormatHandler(), this);
-        pluginManager.registerEvents(new MuteHandler(), this);
         pluginManager.registerEvents(new OfflineNameHandler(), this);
         pluginManager.registerEvents(new PingHandler(this), this);
         pluginManager.registerEvents(new PlaceholderHandler(this), this);
-        pluginManager.registerEvents(new ShadowMuteHandler(), this);
         pluginManager.registerEvents(new EmptyChatHandler(this), this);
     }
 
