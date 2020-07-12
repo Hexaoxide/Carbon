@@ -98,6 +98,12 @@ item-link-placeholders:
   - '[item]' # cursed placeholder do not use
   - '%item%'
 
+caps-protection:
+  enabled: true
+  minimum-length: 10
+  percent-caps: 80
+  block-message: false
+
 spy-prefix: '<color>[SPY] '
 spy-prefix-nation: '<color>[SPY <nation>] '
 spy-prefix-town: '<color>[SPY <town>] '
