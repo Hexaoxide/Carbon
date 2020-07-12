@@ -1,5 +1,4 @@
-# https://github.com/MiniDigger/MiniMessage/blob/feature/adventure/DOCS.md
-# ^^^^ is outdated :(
+# https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#the-components
 
 # IMPORTANT: Use the <pre> tag around ALL user inputs.
 # All <message> placeholders should be prefixed with <pre> and suffixed with </pre>
