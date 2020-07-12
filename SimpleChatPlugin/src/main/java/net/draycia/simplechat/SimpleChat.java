@@ -1,5 +1,6 @@
 package net.draycia.simplechat;
 
+import de.themoep.minedown.MineDown;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.*;
 import net.draycia.simplechat.managers.*;
@@ -10,6 +11,7 @@ import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -104,11 +106,19 @@ public final class SimpleChat extends JavaPlugin {
     }
 
     public Component processMessage(String input, String... placeholders) {
-        if (getConfig().getBoolean("use-markdown")) {
-            return MiniMessage.markdown().parse(input, placeholders);
-        } else {
-            return MiniMessage.get().parse(input, placeholders);
+        switch (getConfig().getString("formatting.type", "minimessage").toLowerCase()) {
+            case "minedown":
+                return processMineDown(input, placeholders);
+            case "minimessage-markdown":
+                return MiniMessage.markdown().parse(input, placeholders);
+            case "minimessage":
+            default:
+                return MiniMessage.get().parse(input, placeholders);
         }
+    }
+
+    private Component processMineDown(String input, String... placeholders) {
+        return BungeeCordComponentSerializer.get().deserialize(MineDown.parse(input, placeholders));
     }
 
     public ChatChannel getDefaultChannel() {
