@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.entity.Player;
 
 @CommandAlias("ignore")
@@ -31,8 +32,14 @@ public class IgnoreCommand extends BaseCommand {
             user.setIgnoringUser(targetUser, false);
             message = simpleChat.getConfig().getString("language.not-ignoring-user");
         } else {
-            user.setIgnoringUser(targetUser, true);
-            message = simpleChat.getConfig().getString("language.ignoring-user");
+            Permission permission = simpleChat.getPermission();
+
+            if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.ignore.exempt")) {
+                message = simpleChat.getConfig().getString("language.ignore-exempt");
+            } else {
+                user.setIgnoringUser(targetUser, true);
+                message = simpleChat.getConfig().getString("language.ignoring-user");
+            }
         }
 
         user.sendMessage(MiniMessage.get().parse(message, "br", "\n"));

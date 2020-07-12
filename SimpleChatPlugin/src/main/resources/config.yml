@@ -56,6 +56,7 @@ replacements:
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
+  ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'
   reloaded: '<yellow>Chat config has been reloaded!'
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
