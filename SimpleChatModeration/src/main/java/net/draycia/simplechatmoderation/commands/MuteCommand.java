@@ -5,11 +5,11 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechatmoderation.SimpleChatModeration;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("mute")
@@ -28,11 +28,17 @@ public class MuteCommand extends BaseCommand {
         String format;
 
         if (targetUser.isMuted()) {
-            targetUser.setMuted(true);
+            targetUser.setMuted(false);
             format = moderation.getConfig().getString("language.no-longer-muted");
         } else {
-            targetUser.setMuted(false);
-            format = moderation.getConfig().getString("language.is-now-muted");
+            Permission permission = moderation.getSimpleChat().getPermission();
+
+            if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.mute.exempt")) {
+                format = moderation.getConfig().getString("language.mute-exempt");
+            } else {
+                targetUser.setMuted(true);
+                format = moderation.getConfig().getString("language.is-now-muted");
+            }
         }
 
         Component message = MiniMessage.get().parse(format,  "br", "\n",

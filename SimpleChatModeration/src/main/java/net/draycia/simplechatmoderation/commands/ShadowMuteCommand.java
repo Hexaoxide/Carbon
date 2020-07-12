@@ -9,6 +9,7 @@ import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechatmoderation.SimpleChatModeration;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("shadowmute|sm|smute")
@@ -30,8 +31,14 @@ public class ShadowMuteCommand extends BaseCommand {
             targetUser.setShadowMuted(false);
             format = moderation.getConfig().getString("language.no-longer-shadow-muted");
         } else {
-            targetUser.setShadowMuted(true);
-            format = moderation.getConfig().getString("language.is-now-shadow-muted");
+            Permission permission = moderation.getSimpleChat().getPermission();
+
+            if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.shadowmute.exempt")) {
+                format = moderation.getConfig().getString("language.shadow-mute-exempt");
+            } else {
+                targetUser.setShadowMuted(true);
+                format = moderation.getConfig().getString("language.is-now-shadow-muted");
+            }
         }
 
         Component message = MiniMessage.get().parse(format, "br", "\n",

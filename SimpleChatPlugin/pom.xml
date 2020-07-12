@@ -7,7 +7,7 @@
     <parent>
         <artifactId>SimpleChatParent</artifactId>
         <groupId>net.draycia</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
 
     <artifactId>SimpleChat</artifactId>
@@ -23,50 +23,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                    <relocations>
-                        <relocation>
-                            <pattern>co.aikar.commands</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.acf</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>co.aikar.locales</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.locales</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>co.aikar.idb</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.idb</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>net.kyori</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.kyori</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>io.papermc.lib</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.paperlib</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.fasterxml</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.fasterxml</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.neovisionaries</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.neovisionaries</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>okio</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.okio</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>okhttp3</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.okhttp3</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.checkerframework</pattern>
-                            <shadedPattern>net.draycia.simplechat.libs.checkerframework</shadedPattern>
-                        </relocation>
-                    </relocations>
                 </configuration>
                 <executions>
                     <execution>

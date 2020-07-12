@@ -30,19 +30,17 @@ import java.lang.reflect.Method;
 
 public final class ItemStackUtils {
 
-    private final Class<?> craftItemStackClass;
     private final Method asNMSCopyMethod;
-    private final Class<?> itemStackClass;
     private final Method cMethod;
 
     public ItemStackUtils() throws NoSuchMethodException, ClassNotFoundException {
         final String version = Bukkit.getServer().getClass().getPackage().getName()
                 .substring("org.bukkit.craftbukkit.".length());
 
-        this.craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-        this.asNMSCopyMethod = this.craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
-        this.itemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
-        this.cMethod = this.itemStackClass.getMethod("C");
+        Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+        this.asNMSCopyMethod = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
+        Class<?> itemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
+        this.cMethod = itemStackClass.getMethod("C");
     }
 
     public Component createComponent(final Player player) {

@@ -5,7 +5,6 @@ import co.aikar.commands.CommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechatmoderation.SimpleChatModeration;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;

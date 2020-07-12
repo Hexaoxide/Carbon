@@ -1,4 +1,4 @@
-package net.draycia.simplechat.listeners;
+package net.draycia.simplechatmoderation.listeners;
 
 import net.draycia.simplechat.events.ChatFormatEvent;
 import org.bukkit.event.EventHandler;

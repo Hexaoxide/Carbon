@@ -5,7 +5,6 @@ import co.aikar.commands.annotation.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
-import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

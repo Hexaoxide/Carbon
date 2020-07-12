@@ -1,13 +1,11 @@
 package net.draycia.simplechat.channels;
 
-import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public abstract class ChatChannel {
