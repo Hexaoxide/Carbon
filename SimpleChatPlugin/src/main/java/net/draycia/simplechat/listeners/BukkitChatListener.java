@@ -19,7 +19,7 @@ public class BukkitChatListener implements Listener {
     // Chat messages
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerchat(AsyncPlayerChatEvent event) {
-        event.setCancelled(true);
+        event.getRecipients().clear();
 
         ChatUser user = simpleChat.getUserService().wrap(event.getPlayer());
 
