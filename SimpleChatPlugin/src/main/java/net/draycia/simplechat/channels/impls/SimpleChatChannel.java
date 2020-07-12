@@ -345,11 +345,6 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public boolean filterEnabled() {
-        return (Boolean) getSetting("filter-enabled");
-    }
-
-    @Override
     public boolean firstMatchingGroup() {
         return (Boolean) getSetting("first-matching-group");
     }
@@ -381,7 +376,8 @@ public class SimpleChatChannel extends ChatChannel {
         return false;
     }
 
-    private String getKey() {
+    @Override
+    public String getKey() {
         return key;
     }
 

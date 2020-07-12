@@ -34,8 +34,6 @@ default:
   should-bungee: true
   # Determines if this channel should use the highest matching vault group found for formatting
   first-matching-group: false
-  # Determines if the chat filter is enabled for this channel
-  filter-enabled: true
   # Towny, Nation, Alliance, Party, Normal
   type: 'normal'
 
@@ -52,23 +50,13 @@ channels:
     ignorable: false
     should-bungee: false
 
-filters:
-  - 'lag'
-  - 'la[g]+'
-
-filter-text: '****'
-
 replacements:
   '%shrug%': '¯\_(ツ)_/¯'
 
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
-  is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
-  no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
-  is-now-muted: '<yellow>User <user> is now muted!'
-  no-longer-muted: '<yellow>User <user> is no longer muted!'
-  reloaded: '<yellow>Chat config has been reloaded! Note that this does not reload channel configs!'
+  reloaded: '<yellow>Chat config has been reloaded!'
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
   message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
@@ -79,33 +67,20 @@ language:
   channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
   spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
   spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
-  clear-notify: '<yellow>Chat has been cleared by <player>.'
-  clear-exempt: '<yellow>You were exempt from the clear due to your permissions!'
   empty-channel: '<green>Nobody is around to hear you!' #<channel>
   # The following messages are not MiniMessage compatible
-  player-left: '%player_displayname% has left <server>!'
-  player-joined: '%player_displayname% has joined <server>!'
-  vote-received: '<name> has voted on <service>!'
   cannot-use-channel: "You cannot use that channel!"
   town-cannot-use: 'You are not in a town!'
   nation-cannot-use: 'You are not in a nation!'
   alliance-cannot-use: 'You do not have any alliances!'
   party-cannot-use: 'You are not in a party!'
 
+# Used for <server> placeholder in channel formats
 server-name: 'Server'
-
-clear-chat-message: ""
-clear-chat-amount: 100
 
 item-link-placeholders:
   - '[item]' # cursed placeholder do not use
   - '%item%'
-
-caps-protection:
-  enabled: true
-  minimum-length: 10
-  percent-caps: 80
-  block-message: false
 
 spy-prefix: '<color>[SPY] '
 spy-prefix-nation: '<color>[SPY <nation>] '
@@ -120,12 +95,6 @@ pings:
   pitch: 1.0
   highlight: true # independent of the "enabled" option!
   on-whisper: true # independent of the "enabled" option!
-
-listeners:
-  join: true # sends join messages in discord
-  leave: true # sends leave messages in discord
-  death: true # sends death messages in discord
-  vote: false # sends vote messages in discord
 
 storage:
   type: JSON # JSON, MySQL

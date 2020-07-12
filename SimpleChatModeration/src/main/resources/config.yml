@@ -1,0 +1,29 @@
+caps-protection:
+  enabled: true
+  minimum-length: 10
+  percent-caps: 80
+  block-message: false
+
+filters:
+  enabled: true
+  filter-text: '****'
+  filtered-words:
+    - 'lag'
+    - 'la[g]+'
+  channels:
+    - '*' # Use '*' to mean all channels
+
+clear-chat:
+  # The message sent to clear chat, you probably want to leave this blank
+  message: ""
+  # How many messages will be sent in order to clear chat
+  message-count: 100
+
+language:
+  is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
+  no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
+  is-now-muted: '<yellow>User <user> is now muted!'
+  no-longer-muted: '<yellow>User <user> is no longer muted!'
+  reloaded: '<yellow>ChatModeration config has been reloaded!'
+  clear-notify: '<yellow>Chat has been cleared by <player>.'
+  clear-exempt: '<yellow>You were exempt from the clear due to your permissions!'

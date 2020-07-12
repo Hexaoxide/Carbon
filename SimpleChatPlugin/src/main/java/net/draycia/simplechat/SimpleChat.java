@@ -85,7 +85,6 @@ public final class SimpleChat extends JavaPlugin {
 
         // Register chat listeners
         pluginManager.registerEvents(new BukkitChatListener(this), this);
-        pluginManager.registerEvents(new FilterHandler(this), this);
         pluginManager.registerEvents(new ItemLinkHandler(this), this);
         pluginManager.registerEvents(new LegacyFormatHandler(), this);
         pluginManager.registerEvents(new MuteHandler(), this);
@@ -94,7 +93,6 @@ public final class SimpleChat extends JavaPlugin {
         pluginManager.registerEvents(new PlaceholderHandler(this), this);
         pluginManager.registerEvents(new ShadowMuteHandler(), this);
         pluginManager.registerEvents(new EmptyChatHandler(this), this);
-        pluginManager.registerEvents(new CapsHandler(this), this);
     }
 
     public void reloadPatterns() {

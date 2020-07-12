@@ -39,6 +39,8 @@ public abstract class ChatChannel {
      */
     public abstract String getName();
 
+    public abstract String getKey();
+
     /**
      * @return The distance other players must be within to the sender to see messages in this channel.
      */
@@ -66,8 +68,6 @@ public abstract class ChatChannel {
     public abstract String getToggleOtherOnMessage();
 
     public abstract String getToggleOtherOffMessage();
-
-    public abstract boolean filterEnabled();
 
     /**
      * @return If this channel is Towny's town chat.

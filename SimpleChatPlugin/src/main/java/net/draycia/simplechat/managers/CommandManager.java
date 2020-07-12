@@ -100,13 +100,10 @@ public class CommandManager {
         manager.registerCommand(new ToggleCommand(simpleChat));
         manager.registerCommand(new ChannelCommand(simpleChat));
         manager.registerCommand(new IgnoreCommand(simpleChat));
-        manager.registerCommand(new ClearChatCommand(simpleChat));
-        manager.registerCommand(new ShadowMuteCommand(simpleChat));
         manager.registerCommand(new ChatReloadCommand(simpleChat));
         manager.registerCommand(new MeCommand(simpleChat));
         manager.registerCommand(new MessageCommand(simpleChat));
         manager.registerCommand(new ReplyCommand(simpleChat));
-        manager.registerCommand(new MuteCommand(simpleChat));
         manager.registerCommand(new SetColorCommand(simpleChat));
         manager.registerCommand(new SpyChannelCommand(simpleChat));
     }
