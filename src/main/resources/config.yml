@@ -1,4 +1,8 @@
+# MiniMessage Docs:
 # https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#the-components
+
+# SimpleChat Docs:
+# https://github.com/Draycia/Chat/wiki
 
 # IMPORTANT: Use the <pre> tag around ALL user inputs.
 # All <message> placeholders should be prefixed with <pre> and suffixed with </pre>
