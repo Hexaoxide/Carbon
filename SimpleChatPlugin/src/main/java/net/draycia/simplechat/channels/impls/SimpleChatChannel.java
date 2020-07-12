@@ -129,7 +129,7 @@ public class SimpleChatChannel extends ChatChannel {
                     return;
                 }
 
-                ChatComponentEvent newEvent = new ChatComponentEvent(user, this, newFormat, formatEvent.getMessage(), Collections.singletonList(chatUser));
+                ChatComponentEvent newEvent = new ChatComponentEvent(user, this, newFormat, formatEvent.getMessage(), Collections.singletonList(chatUser), true);
 
                 Bukkit.getPluginManager().callEvent(newEvent);
 

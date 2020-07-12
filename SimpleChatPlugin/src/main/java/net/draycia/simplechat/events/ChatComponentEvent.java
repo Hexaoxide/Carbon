@@ -20,8 +20,13 @@ public class ChatComponentEvent extends Event implements Cancellable {
     private TextComponent component;
     private String originalMessage;
     private List<ChatUser> recipients;
+    private boolean customPlayerFormat;
 
     public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, String originalMessage, List<ChatUser> recipients) {
+        this(user, chatChannel, component, originalMessage, recipients, false);
+    }
+
+    public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, String originalMessage, List<ChatUser> recipients, boolean customPlayerFormat) {
         super(true);
 
         this.user = user;
@@ -29,6 +34,7 @@ public class ChatComponentEvent extends Event implements Cancellable {
         this.component = component;
         this.originalMessage = originalMessage;
         this.recipients = recipients;
+        this.customPlayerFormat = customPlayerFormat;
     }
 
     @Override
@@ -77,5 +83,9 @@ public class ChatComponentEvent extends Event implements Cancellable {
 
     public String getOriginalMessage() {
         return originalMessage;
+    }
+
+    public boolean isCustomPlayerFormat() {
+        return customPlayerFormat;
     }
 }
