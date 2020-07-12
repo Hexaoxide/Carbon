@@ -53,6 +53,10 @@ channels:
 replacements:
   '%shrug%': '¯\_(ツ)_/¯'
 
+# Determines if we should enable MiniMessage's Markdown addon
+# https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#markdown
+use-markdown: false
+
 language:
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'

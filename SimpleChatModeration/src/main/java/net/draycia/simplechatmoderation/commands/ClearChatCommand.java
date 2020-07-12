@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.Default;
 import net.draycia.simplechatmoderation.SimpleChatModeration;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -25,7 +24,7 @@ public class ClearChatCommand extends BaseCommand {
     @Default
     public void baseCommand(CommandIssuer issuer) {
         String format = moderation.getConfig().getString("clear-chat.message", "");
-        Component component = MiniMessage.get().parse(format, "br", "\n");
+        Component component = moderation.getSimpleChat().processMessage(format, "br", "\n");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission("simplechat.clearchat.exempt")) {
@@ -42,12 +41,12 @@ public class ClearChatCommand extends BaseCommand {
 
             if (player.hasPermission("simplechat.clearchat.notify")) {
                 String message = moderation.getConfig().getString("language.clear-notify");
-                audience.sendMessage(MiniMessage.get().parse(message, "player", name));
+                audience.sendMessage(moderation.getSimpleChat().processMessage(message, "player", name));
             }
 
             if (player.hasPermission("simplechat.clearchat.exempt")) {
                 String message = moderation.getConfig().getString("language.clear-exempt");
-                audience.sendMessage(MiniMessage.get().parse(message, "player", name));
+                audience.sendMessage(moderation.getSimpleChat().processMessage(message, "player", name));
             }
         }
     }

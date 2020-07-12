@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("chatreload|creload")
@@ -25,7 +24,7 @@ public class ChatReloadCommand extends BaseCommand {
         simpleChat.getChannelManager().reloadChannels();
         simpleChat.reloadPatterns();
 
-        Component message = MiniMessage.get().parse(simpleChat.getConfig().getString("language.reloaded"),
+        Component message = simpleChat.processMessage(simpleChat.getConfig().getString("language.reloaded"),
                 "br", "\n");
 
         simpleChat.getAudiences().audience(sender).sendMessage(message);

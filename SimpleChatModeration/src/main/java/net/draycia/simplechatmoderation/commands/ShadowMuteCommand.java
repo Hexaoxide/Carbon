@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechatmoderation.SimpleChatModeration;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.command.CommandSender;
 
@@ -41,8 +40,8 @@ public class ShadowMuteCommand extends BaseCommand {
             }
         }
 
-        Component message = MiniMessage.get().parse(format, "br", "\n",
-                "user", targetUser.asOfflinePlayer().getName());
+        Component message = moderation.getSimpleChat().processMessage(format, "br", "\n",
+                "player", targetUser.asOfflinePlayer().getName());
 
         moderation.getSimpleChat().getAudiences().audience(sender).sendMessage(message);
     }

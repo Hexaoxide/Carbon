@@ -100,7 +100,6 @@ public class MySQLUserService extends UserService {
 
         SimpleChatUser user = new SimpleChatUser(uuid);
 
-
         try (DbStatement statement = database.query("SELECT * from sc_users WHERE uuid = ?;")) {
             statement.execute(uuid.toString());
 

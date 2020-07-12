@@ -10,7 +10,6 @@ import net.draycia.simplechat.channels.impls.NationChatChannel;
 import net.draycia.simplechat.channels.impls.PartyChatChannel;
 import net.draycia.simplechat.channels.impls.TownChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -47,8 +46,8 @@ public class AliasedChannelCommand extends BaseCommand {
         if (args == null || args.length == 0) {
             user.setSelectedChannel(getChatChannel());
 
-            user.sendMessage(MiniMessage.get().parse(
-                    getChatChannel().getSwitchMessage(), "color", "<" + getChatChannel().getColor().toString() + ">",
+            user.sendMessage(simpleChat.processMessage(getChatChannel().getSwitchMessage(),
+                    "color", "<" + getChatChannel().getColor().toString() + ">",
                     "channel", getChatChannel().getName()));
         } else {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {

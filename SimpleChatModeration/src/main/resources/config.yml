@@ -20,12 +20,12 @@ clear-chat:
   message-count: 100
 
 language:
-  is-now-shadow-muted: '<yellow>User <user> is now shadow muted!'
-  no-longer-shadow-muted: '<yellow>User <user> is no longer shadow muted!'
-  shadow-mute-exempt: '<red>User <user> is exempt from being shadow muted!'
-  is-now-muted: '<yellow>User <user> is now muted!'
-  no-longer-muted: '<yellow>User <user> is no longer muted!'
-  mute-exempt: '<red>User <user> is exempt from being muted!'
+  is-now-shadow-muted: '<yellow>Player <player> is now shadow muted!'
+  no-longer-shadow-muted: '<yellow>Player <player> is no longer shadow muted!'
+  shadow-mute-exempt: '<red>Player <player> is exempt from being shadow muted!'
+  is-now-muted: '<yellow>Player <player> is now muted!'
+  no-longer-muted: '<yellow>Player <player> is no longer muted!'
+  mute-exempt: '<red>Player <player> is exempt from being muted!'
   reloaded: '<yellow>ChatModeration config has been reloaded!'
   clear-notify: '<yellow>Chat has been cleared by <player>.'
   clear-exempt: '<yellow>You were exempt from the clear due to your permissions!'

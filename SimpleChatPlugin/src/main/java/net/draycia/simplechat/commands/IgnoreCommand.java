@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.entity.Player;
 
@@ -42,7 +41,7 @@ public class IgnoreCommand extends BaseCommand {
             }
         }
 
-        user.sendMessage(MiniMessage.get().parse(message, "br", "\n"));
+        user.sendMessage(simpleChat.processMessage(message, "br", "\n"));
     }
 
 }

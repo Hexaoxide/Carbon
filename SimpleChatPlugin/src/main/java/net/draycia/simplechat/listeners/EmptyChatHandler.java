@@ -2,7 +2,6 @@ package net.draycia.simplechat.listeners;
 
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.events.ChatComponentEvent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,7 +23,7 @@ public class EmptyChatHandler implements Listener {
                 return;
             }
 
-            event.getUser().sendMessage(MiniMessage.get().parse(message));
+            event.getUser().sendMessage(simpleChat.processMessage(message));
         }
     }
 

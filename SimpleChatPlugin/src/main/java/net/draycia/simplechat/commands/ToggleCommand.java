@@ -6,7 +6,6 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.storage.UserChannelSettings;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -37,7 +36,7 @@ public class ToggleCommand extends BaseCommand {
             message = channel.getToggleOnMessage();
         }
 
-        user.sendMessage(MiniMessage.get().parse(message, "br", "\n",
+        user.sendMessage(simpleChat.processMessage(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
@@ -60,10 +59,10 @@ public class ToggleCommand extends BaseCommand {
             otherMessage = channel.getToggleOtherOnMessage();
         }
 
-        user.sendMessage(MiniMessage.get().parse(message, "br", "\n",
+        user.sendMessage(simpleChat.processMessage(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
 
-        simpleChat.getAudiences().audience(sender).sendMessage(MiniMessage.get().parse(otherMessage,
+        simpleChat.getAudiences().audience(sender).sendMessage(simpleChat.processMessage(otherMessage,
                 "br", "\n", "color", "<color:" + channel.getColor().toString() + ">",
                 "channel", channel.getName(), "player", user.asOfflinePlayer().getName()));
     }

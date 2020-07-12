@@ -8,7 +8,6 @@ import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -72,7 +71,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Get formatted message
-        TextComponent formattedMessage = (TextComponent)MiniMessage.get().parse(formatEvent.getFormat(),
+        TextComponent formattedMessage = (TextComponent)simpleChat.processMessage(formatEvent.getFormat(),
                 "br", "\n",
                 "color", "<color:" + getColor().toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
@@ -108,7 +107,7 @@ public class SimpleChatChannel extends ChatChannel {
                 if (isUserSpying(user, chatUser)) {
                     prefix = prefix.replace("<color>", "<color:" + getColor() + ">");
 
-                    chatUser.sendMessage(MiniMessage.get().parse(prefix).append(componentEvent.getComponent()));
+                    chatUser.sendMessage(simpleChat.processMessage(prefix).append(componentEvent.getComponent()));
                 } else if (componentEvent.getRecipients().contains(chatUser)) {
                     chatUser.sendMessage(componentEvent.getComponent());
                 }
@@ -116,7 +115,7 @@ public class SimpleChatChannel extends ChatChannel {
                 prefix = prefix.replace("<color>", "<color:" + chatUser.getChannelSettings(this).getColor().asHexString() + ">");
                 String format = formatEvent.getFormat();
 
-                TextComponent newFormat = (TextComponent)MiniMessage.get().parse(format,
+                TextComponent newFormat = (TextComponent)simpleChat.processMessage(format,
                         "br", "\n",
                         "color", "<color:" + userColor.toString() + ">",
                         "phase", Long.toString(System.currentTimeMillis() % 25),
@@ -124,7 +123,7 @@ public class SimpleChatChannel extends ChatChannel {
                         "message", formatEvent.getMessage());
 
                 if (isUserSpying(user, chatUser)) {
-                    newFormat = (TextComponent)MiniMessage.get().parse(prefix, "br", "\n")
+                    newFormat = (TextComponent)simpleChat.processMessage(prefix, "br", "\n")
                             .append(newFormat);
                 } else if (!componentEvent.getRecipients().contains(chatUser)) {
                     return;

@@ -8,7 +8,6 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.storage.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 @CommandAlias("setcolor")
@@ -40,7 +39,7 @@ public class SetColorCommand extends BaseCommand {
 
         settings.setColor(TextColor.fromHexString(color));
 
-        user.sendMessage(MiniMessage.get().parse(simpleChat.getConfig().getString("language.channel-color-set"),
+        user.sendMessage(simpleChat.processMessage(simpleChat.getConfig().getString("language.channel-color-set"),
                 "br", "\n", "color", "<color:" + color + ">", "channel", channel.getName(), "hex", color));
     }
 

@@ -5,7 +5,6 @@ import co.aikar.commands.annotation.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +27,7 @@ public class ChannelCommand extends BaseCommand {
         if (args == null || args.length == 0) {
             user.setSelectedChannel(channel);
 
-            user.sendMessage(MiniMessage.get().parse(channel.getSwitchMessage(),
+            user.sendMessage(simpleChat.processMessage(channel.getSwitchMessage(),
                     "br", "\n",
                     "color", "<" + channel.getColor().toString() + ">",
                     "channel", channel.getName()));
@@ -48,10 +47,10 @@ public class ChannelCommand extends BaseCommand {
         String message = channel.getSwitchMessage();
         String otherMessage = channel.getSwitchOtherMessage();
 
-        user.sendMessage(MiniMessage.get().parse(message, "br", "\n",
+        user.sendMessage(simpleChat.processMessage(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
 
-        simpleChat.getAudiences().audience(sender).sendMessage(MiniMessage.get().parse(otherMessage, "br", "\n",
+        simpleChat.getAudiences().audience(sender).sendMessage(simpleChat.processMessage(otherMessage, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName(),
                 "player", user.asOfflinePlayer().getName()));
     }

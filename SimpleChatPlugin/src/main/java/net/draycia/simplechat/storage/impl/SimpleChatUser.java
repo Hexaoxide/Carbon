@@ -11,7 +11,6 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -200,12 +199,12 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
             targetName = this.asPlayer().getDisplayName();
         }
 
-        Component toPlayerComponent = MiniMessage.get().parse(toPlayerFormat,  "br", "\n",
+        Component toPlayerComponent = simpleChat.processMessage(toPlayerFormat,  "br", "\n",
                 "message", message,
                 "targetname", targetOfflineName, "sendername", senderOfflineName,
                 "target", targetName, "sender", senderName);
 
-        Component fromPlayerComponent = MiniMessage.get().parse(fromPlayerFormat,  "br", "\n",
+        Component fromPlayerComponent = simpleChat.processMessage(fromPlayerFormat,  "br", "\n",
                 "message", message,
                 "targetname", targetOfflineName, "sendername", senderOfflineName,
                 "target", targetName, "sender", senderName);
@@ -243,7 +242,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
                 continue;
             }
 
-            user.sendMessage(MiniMessage.get().parse(simpleChat.getConfig().getString("language.spy-whispers"),  "br", "\n",
+            user.sendMessage(simpleChat.processMessage(simpleChat.getConfig().getString("language.spy-whispers"),  "br", "\n",
                     "message", message,
                     "targetname", targetOfflineName, "sendername", senderOfflineName,
                     "target", targetName, "sender", senderName));

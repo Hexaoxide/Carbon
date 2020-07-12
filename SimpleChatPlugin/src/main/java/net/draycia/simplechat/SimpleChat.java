@@ -8,6 +8,8 @@ import net.draycia.simplechat.storage.impl.JSONUserService;
 import net.draycia.simplechat.storage.impl.MySQLUserService;
 import net.draycia.simplechat.util.ItemStackUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -98,6 +100,14 @@ public final class SimpleChat extends JavaPlugin {
 
         for (String entry : getConfig().getStringList("item-link-placeholders")) {
             itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
+        }
+    }
+
+    public Component processMessage(String input, String... placeholders) {
+        if (getConfig().getBoolean("use-markdown")) {
+            return MiniMessage.markdown().parse(input, placeholders);
+        } else {
+            return MiniMessage.get().parse(input, placeholders);
         }
     }
 

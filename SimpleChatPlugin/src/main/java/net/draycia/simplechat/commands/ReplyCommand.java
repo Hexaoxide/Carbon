@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.Default;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 @CommandAlias("reply|r")
@@ -31,7 +30,7 @@ public class ReplyCommand extends BaseCommand {
 
         if (user.getReplyTarget() == null) {
             String message = simpleChat.getConfig().getString("language.no-reply-target");
-            Component component = MiniMessage.get().parse(message, "br", "\n");
+            Component component = simpleChat.processMessage(message, "br", "\n");
             user.sendMessage(component);
 
             return;
