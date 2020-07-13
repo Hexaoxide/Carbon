@@ -16,10 +16,10 @@ default:
   toggle-other-on: '<gray><player> can now see <color><channel> <gray>chat!'
   toggle-other-off: '<gray><player> can no longer see <color><channel> <gray>chat!'
   formats:
-    # Placeholders: username, displayname, channel, server, message, primaryrole
+    # Placeholders: <username>, <displayname>, <channel>, <server>, <message>, <primaryrole>, <color>
     # Also supports PlaceholderAPI
-    staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <white><pre><message>'
-    default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <white><pre><message>'
+    staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <color><pre><message>'
+    default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <color><pre><message>'
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true
