@@ -89,19 +89,7 @@ public class SimpleChatChannel extends ChatChannel {
 
             TextColor userColor = chatUser.getChannelSettings(this).getColor();
 
-            String prefix;
-
-            if (isNationChat()) {
-                prefix = simpleChat.getConfig().getString("spy-prefix-nation");
-            } else if (isTownChat()) {
-                prefix = simpleChat.getConfig().getString("spy-prefix-town");
-            } else if (isPartyChat()) {
-                prefix = simpleChat.getConfig().getString("spy-prefix-mcmmo");
-            } else {
-                prefix = simpleChat.getConfig().getString("spy-prefix");
-            }
-
-            prefix = processPlaceholders(user, prefix);
+            String prefix = processPlaceholders(user, simpleChat.getConfig().getString("spy-prefix"));
 
             if (userColor == null) {
                 if (isUserSpying(user, chatUser)) {
@@ -339,6 +327,11 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
+    public String getCannotUseMessage() {
+        return (String) getSetting("cannot-use-channel");
+    }
+
+    @Override
     public boolean shouldForwardFormatting() {
         return (Boolean) getSetting("forward-format");
     }
@@ -378,6 +371,17 @@ public class SimpleChatChannel extends ChatChannel {
     @Override
     public String getKey() {
         return key;
+    }
+
+    @Override
+    public String getAliases() {
+        String aliases = (String)getSetting("aliases");
+
+        if (aliases == null) {
+            return getKey();
+        }
+
+        return aliases;
     }
 
 }

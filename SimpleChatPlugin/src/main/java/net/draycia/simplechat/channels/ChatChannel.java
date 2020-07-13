@@ -39,6 +39,8 @@ public abstract class ChatChannel {
 
     public abstract String getKey();
 
+    public abstract String getAliases();
+
     /**
      * @return The distance other players must be within to the sender to see messages in this channel.
      */
@@ -67,33 +69,7 @@ public abstract class ChatChannel {
 
     public abstract String getToggleOtherOffMessage();
 
-    /**
-     * @return If this channel is Towny's town chat.
-     */
-    public boolean isTownChat() {
-        return false;
-    }
-
-    /**
-     * @return If this channel is Towny's nation chat.
-     */
-    public boolean isNationChat() {
-        return false;
-    }
-
-    /**
-     * @return If this channel is a Towny alliance chat.
-     */
-    public boolean isAllianceChat() {
-        return false;
-    }
-
-    /**
-     * @return If this channel is mcMMO's party chat.
-     */
-    public boolean isPartyChat() {
-        return false;
-    }
+    public abstract String getCannotUseMessage();
 
     public abstract boolean firstMatchingGroup();
 

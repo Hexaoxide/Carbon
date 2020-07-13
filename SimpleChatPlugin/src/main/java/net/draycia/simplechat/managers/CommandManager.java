@@ -3,10 +3,6 @@ package net.draycia.simplechat.managers;
 import co.aikar.commands.*;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.channels.impls.AllianceChatChannel;
-import net.draycia.simplechat.channels.impls.NationChatChannel;
-import net.draycia.simplechat.channels.impls.PartyChatChannel;
-import net.draycia.simplechat.channels.impls.TownChatChannel;
 import net.draycia.simplechat.commands.*;
 import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
@@ -30,7 +26,7 @@ public class CommandManager {
 
             ArrayList<String> completions = new ArrayList<>();
 
-            for (ChatChannel chatChannel : simpleChat.getChannels()) {
+            for (ChatChannel chatChannel : simpleChat.getChannelManager().getRegistry().values()) {
                 if (chatChannel.canPlayerUse(user)) {
                     completions.add(chatChannel.getName());
                 }
@@ -42,7 +38,7 @@ public class CommandManager {
         commandManager.getCommandCompletions().registerCompletion("channel", (context) -> {
             ArrayList<String> completions = new ArrayList<>();
 
-            for (ChatChannel chatChannel : simpleChat.getChannels()) {
+            for (ChatChannel chatChannel : simpleChat.getChannelManager().getRegistry().values()) {
                     completions.add(chatChannel.getName());
             }
 
@@ -52,7 +48,7 @@ public class CommandManager {
         commandManager.getCommandContexts().registerContext(ChatChannel.class, (context) -> {
             String name = context.popFirstArg();
 
-            for (ChatChannel chatChannel : simpleChat.getChannels()) {
+            for (ChatChannel chatChannel : simpleChat.getChannelManager().getRegistry().values()) {
                 if (chatChannel.getName().equalsIgnoreCase(name)) {
                     return chatChannel;
                 }
@@ -73,17 +69,7 @@ public class CommandManager {
             ChatUser user = simpleChat.getUserService().wrap(context.getIssuer().getPlayer());
 
             if (!value.canPlayerUse(user)) {
-                if (value.isTownChat() && !((TownChatChannel)value).isInTown(user)) {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.town-cannot-use"));
-                } else if (value.isNationChat() && !((NationChatChannel)value).isInNation(user)) {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.nation-cannot-use"));
-                } else if (value.isAllianceChat() && !((AllianceChatChannel)value).isInNation(user)) {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.alliance-cannot-use"));
-                } else if (value.isPartyChat() && !((PartyChatChannel)value).isInParty(user)) {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.party-cannot-use"));
-                } else {
-                    throw new ConditionFailedException(simpleChat.getConfig().getString("language.cannot-use-channel"));
-                }
+                throw new ConditionFailedException(value.getCannotUseMessage());
             }
         });
 

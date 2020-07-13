@@ -70,7 +70,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public ChatChannel getSelectedChannel() {
-        return selectedChannel == null ? simpleChat.getDefaultChannel() : simpleChat.getChannel(selectedChannel);
+        return simpleChat.getChannelManager().getChannelOrDefault(selectedChannel);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public void clearSelectedChannel() {
-        setSelectedChannel(simpleChat.getDefaultChannel());
+        setSelectedChannel(simpleChat.getChannelManager().getDefaultChannel());
     }
 
     @Override

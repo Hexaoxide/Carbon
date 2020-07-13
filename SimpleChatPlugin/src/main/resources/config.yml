@@ -15,6 +15,7 @@ default:
   toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
   toggle-other-on: '<gray><player> can now see <color><channel> <gray>chat!'
   toggle-other-off: '<gray><player> can no longer see <color><channel> <gray>chat!'
+  cannot-use-channel: "You cannot use that channel!"
   formats:
     # Placeholders: <username>, <displayname>, <channel>, <server>, <message>, <primaryrole>, <color>
     # Also supports PlaceholderAPI
@@ -31,8 +32,6 @@ default:
   should-bungee: true
   # Determines if this channel should use the highest matching vault group found for formatting
   first-matching-group: false
-  # Towny, Nation, Alliance, Party, Normal
-  type: 'normal'
 
 channels:
   global:
@@ -77,13 +76,6 @@ language:
   spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
   spy-whispers-on: '<gray>You are now spying on whispers!'
   spy-whispers-off: '<gray>You are no longer spying on whispers!'
-
-  # The following messages are not MiniMessage or PAPI compatible
-  cannot-use-channel: "You cannot use that channel!"
-  town-cannot-use: 'You are not in a town!'
-  nation-cannot-use: 'You are not in a nation!'
-  alliance-cannot-use: 'You do not have any alliances!'
-  party-cannot-use: 'You are not in a party!'
 
 # Used for <server> placeholder in channel formats
 server-name: 'Server'

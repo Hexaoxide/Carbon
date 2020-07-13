@@ -118,13 +118,13 @@ public class MySQLUserService extends UserService {
             List<DbRow> channelSettings = database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
             List<DbRow> ignoredUsers = database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
 
-            user.setSelectedChannel(simpleChat.getChannel(users.getString("channel")));
+            user.setSelectedChannel(simpleChat.getChannelManager().getRegistry().get(users.getString("channel")));
             user.setMuted(users.<Boolean>get("muted"));
             user.setShadowMuted(users.<Boolean>get("shadowmuted"));
             user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"));
 
             for (DbRow channelSetting : channelSettings) {
-                ChatChannel chatChannel = simpleChat.getChannel(channelSetting.getString("channel"));
+                ChatChannel chatChannel = simpleChat.getChannelManager().getRegistry().get(channelSetting.getString("channel"));
                 UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
                 settings.setSpying(channelSetting.<Boolean>get("spying"));

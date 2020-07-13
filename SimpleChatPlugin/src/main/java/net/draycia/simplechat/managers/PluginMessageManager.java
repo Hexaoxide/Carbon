@@ -57,7 +57,7 @@ public class PluginMessageManager implements PluginMessageListener {
     private void onMessageReceived(ByteArrayDataInput in) {
         String chatChannelName = in.readUTF();
 
-        ChatChannel chatChannel = simpleChat.getChannel(chatChannelName);
+        ChatChannel chatChannel = simpleChat.getChannelManager().getRegistry().get(chatChannelName);
 
         if (chatChannel == null) {
             return;
@@ -84,7 +84,7 @@ public class PluginMessageManager implements PluginMessageListener {
     public void onComponentReceived(ByteArrayDataInput in) {
         String chatChannelName = in.readUTF();
 
-        ChatChannel chatChannel = simpleChat.getChannel(chatChannelName);
+        ChatChannel chatChannel = simpleChat.getChannelManager().getRegistry().get(chatChannelName);
 
         if (chatChannel == null) {
             return;

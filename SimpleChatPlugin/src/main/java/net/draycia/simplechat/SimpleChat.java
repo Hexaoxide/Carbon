@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 public final class SimpleChat extends JavaPlugin {
 
-    private ArrayList<ChatChannel> channels = new ArrayList<>();
     private ArrayList<Pattern> itemPatterns = new ArrayList<>();
 
     private Permission permission;
@@ -126,34 +125,6 @@ public final class SimpleChat extends JavaPlugin {
 
     private Component processMineDown(String input, String... placeholders) {
         return BungeeCordComponentSerializer.get().deserialize(MineDown.parse(input, placeholders));
-    }
-
-    public ChatChannel getDefaultChannel() {
-        for (ChatChannel channel : channels) {
-            if (channel.isDefault()) {
-                return channel;
-            }
-        }
-
-        return channels.get(0);
-    }
-
-    public ChatChannel getChannel(String name) {
-        if (name == null) {
-            return getDefaultChannel();
-        }
-
-        for (ChatChannel chatChannel : channels) {
-            if (chatChannel.getName().equalsIgnoreCase(name)) {
-                return chatChannel;
-            }
-        }
-
-        return getDefaultChannel();
-    }
-
-    public List<ChatChannel> getChannels() {
-        return channels;
     }
 
     public Permission getPermission() {

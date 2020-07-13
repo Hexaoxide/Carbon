@@ -1,6 +1,9 @@
 /*
     Simple channel based chat plugin for Spigot
     Copyright (C) 2020 Alexander Söderberg
+    Copyright (C) 2020 Josua Parks (Draycia)
+
+    Modifications made to work with Kyori/Adventure
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
