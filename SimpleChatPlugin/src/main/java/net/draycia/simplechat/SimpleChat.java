@@ -95,6 +95,7 @@ public final class SimpleChat extends JavaPlugin {
         pluginManager.registerEvents(new PingHandler(this), this);
         pluginManager.registerEvents(new PlaceholderHandler(this), this);
         pluginManager.registerEvents(new EmptyChatHandler(this), this);
+        pluginManager.registerEvents(new UserFormattingListener(), this);
     }
 
     public void reloadPatterns() {
