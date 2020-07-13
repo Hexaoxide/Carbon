@@ -67,7 +67,7 @@ language:
   no-reply-target: '<red>You have no one to reply to!'
   empty-channel: '<green>Nobody is around to hear you!' #<channel>
 
-  # The following messages are compatible with PlaceholderAPI
+  # The following messages are compatible with PlaceholderAPI and MiniMessage
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
