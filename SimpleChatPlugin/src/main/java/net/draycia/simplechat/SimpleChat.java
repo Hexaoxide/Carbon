@@ -1,6 +1,7 @@
 package net.draycia.simplechat;
 
 import de.themoep.minedown.MineDown;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.*;
 import net.draycia.simplechat.managers.*;
@@ -13,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -104,6 +106,10 @@ public final class SimpleChat extends JavaPlugin {
         for (String entry : getConfig().getStringList("item-link-placeholders")) {
             itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
         }
+    }
+
+    public Component processMessageWithPapi(Player player, String input, String... placeholders) {
+        return processMessage(PlaceholderAPI.setPlaceholders(player, input));
     }
 
     public Component processMessage(String input, String... placeholders) {

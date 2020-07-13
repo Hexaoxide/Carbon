@@ -8,6 +8,7 @@
 # All of the settings under this 'default' section can be applied to each channel individually to override these.
 # These are provided as a way to configure default channel settings.
 default:
+  # switch-message, toggle-off-message and toggle-on-message support PlaceholderAPI
   switch-message: '<gray>You are now in <color><channel> <gray>chat!'
   switch-other-message: '<gray><player> is now in <color><channel> <gray>chat!'
   toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
@@ -17,7 +18,6 @@ default:
   formats:
     # Placeholders: username, displayname, channel, server, message, primaryrole
     # Also supports PlaceholderAPI
-    discord-to-mc: '<gray>[<blue>Discord<gray>] <username><white>: <pre><message>'
     staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <white><pre><message>'
     default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <white><pre><message>'
   color: '#FFFFFF'
@@ -59,22 +59,26 @@ formatting:
   type: 'MiniMessage'
 
 language:
-  ignoring-user: '<green>You are now ignoring <gold><player><green>!'
-  not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
-  ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'
+  # The following messages are only compatible with MiniMessage
   reloaded: '<yellow>Chat config has been reloaded!'
-  me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
   message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
   spy-whispers: '<yellow>Spy [<gray><sender> <gold>-> <gray><target><yellow>] <message>'
-  spy-whispers-on: '<gray>You are now spying on whispers!'
-  spy-whispers-off: '<gray>You are no longer spying on whispers!'
   no-reply-target: '<red>You have no one to reply to!'
+  empty-channel: '<green>Nobody is around to hear you!' #<channel>
+
+  # The following messages are compatible with PlaceholderAPI
+  me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
+  ignoring-user: '<green>You are now ignoring <gold><player><green>!'
+  not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
+  ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'
   channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
   spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
   spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
-  empty-channel: '<green>Nobody is around to hear you!' #<channel>
-  # The following messages are not MiniMessage compatible
+  spy-whispers-on: '<gray>You are now spying on whispers!'
+  spy-whispers-off: '<gray>You are no longer spying on whispers!'
+
+  # The following messages are not MiniMessage or PAPI compatible
   cannot-use-channel: "You cannot use that channel!"
   town-cannot-use: 'You are not in a town!'
   nation-cannot-use: 'You are not in a nation!'

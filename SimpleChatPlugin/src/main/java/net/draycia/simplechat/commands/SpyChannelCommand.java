@@ -35,7 +35,7 @@ public class SpyChannelCommand extends BaseCommand {
             message = simpleChat.getConfig().getString("language.spy-toggled-on");
         }
 
-        user.sendMessage(simpleChat.processMessage(message, "br", "\n",
+        user.sendMessage(simpleChat.processMessageWithPapi(player, message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
@@ -53,7 +53,7 @@ public class SpyChannelCommand extends BaseCommand {
             message = simpleChat.getConfig().getString("language.spy-whispers-on");
         }
 
-        user.sendMessage(simpleChat.processMessage(message, "br", "\n"));
+        user.sendMessage(simpleChat.processMessageWithPapi(player, message, "br", "\n"));
     }
 
 }

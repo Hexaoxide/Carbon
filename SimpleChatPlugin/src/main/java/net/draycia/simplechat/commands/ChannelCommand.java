@@ -27,7 +27,7 @@ public class ChannelCommand extends BaseCommand {
         if (args == null || args.length == 0) {
             user.setSelectedChannel(channel);
 
-            user.sendMessage(simpleChat.processMessage(channel.getSwitchMessage(),
+            user.sendMessage(simpleChat.processMessageWithPapi(player, channel.getSwitchMessage(),
                     "br", "\n",
                     "color", "<" + channel.getColor().toString() + ">",
                     "channel", channel.getName()));

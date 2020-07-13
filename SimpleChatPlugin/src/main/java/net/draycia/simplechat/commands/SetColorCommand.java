@@ -39,7 +39,7 @@ public class SetColorCommand extends BaseCommand {
 
         settings.setColor(TextColor.fromHexString(color));
 
-        user.sendMessage(simpleChat.processMessage(simpleChat.getConfig().getString("language.channel-color-set"),
+        user.sendMessage(simpleChat.processMessageWithPapi(player, simpleChat.getConfig().getString("language.channel-color-set"),
                 "br", "\n", "color", "<color:" + color + ">", "channel", channel.getName(), "hex", color));
     }
 

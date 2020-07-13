@@ -36,7 +36,7 @@ public class ToggleCommand extends BaseCommand {
             message = channel.getToggleOnMessage();
         }
 
-        user.sendMessage(simpleChat.processMessage(message, "br", "\n",
+        user.sendMessage(simpleChat.processMessageWithPapi(player, message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
