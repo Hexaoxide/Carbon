@@ -118,22 +118,30 @@ public class MySQLUserService extends UserService {
             List<DbRow> channelSettings = database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
             List<DbRow> ignoredUsers = database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
 
-            user.setSelectedChannel(simpleChat.getChannelManager().getRegistry().get(users.getString("channel")));
+            ChatChannel channel = simpleChat.getChannelManager().getChannelOrDefault(users.getString("channel"));
+
+            if (channel != null) {
+                user.setSelectedChannel(channel);
+            }
+
             user.setMuted(users.<Boolean>get("muted"));
             user.setShadowMuted(users.<Boolean>get("shadowmuted"));
             user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"));
 
             for (DbRow channelSetting : channelSettings) {
                 ChatChannel chatChannel = simpleChat.getChannelManager().getRegistry().get(channelSetting.getString("channel"));
-                UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
-                settings.setSpying(channelSetting.<Boolean>get("spying"));
-                settings.setIgnoring(channelSetting.<Boolean>get("ignored"));
+                if (chatChannel != null) {
+                    UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
-                String color = channelSetting.getString("color");
+                    settings.setSpying(channelSetting.<Boolean>get("spying"));
+                    settings.setIgnoring(channelSetting.<Boolean>get("ignored"));
 
-                if (color != null) {
-                    settings.setColor(TextColor.fromHexString(color));
+                    String color = channelSetting.getString("color");
+
+                    if (color != null) {
+                        settings.setColor(TextColor.fromHexString(color));
+                    }
                 }
             }
 

@@ -37,9 +37,15 @@ public class ChannelManager {
             channels.add(channel);
 
             if (channel.isDefault()) {
+                simpleChat.getLogger().info("Default channel found: " + channel.getName());
                 defaultChannelKey = channel.getKey();
             }
 
+        }
+
+        for (ChatChannel channel : channels) {
+            simpleChat.getLogger().info("Registering channel: " + channel.getName());
+            getRegistry().register(channel.getKey(), channel);
         }
 
         Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(channels, getRegistry()));

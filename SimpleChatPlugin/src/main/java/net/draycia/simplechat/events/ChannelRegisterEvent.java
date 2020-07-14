@@ -3,6 +3,7 @@ package net.draycia.simplechat.events;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.Registry;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -27,6 +28,8 @@ public class ChannelRegisterEvent extends Event {
     private Registry<ChatChannel> registry;
 
     public ChannelRegisterEvent(List<ChatChannel> registeredChannels, Registry<ChatChannel> registry) {
+        super(Bukkit.isPrimaryThread());
+
         this.registeredChannels = registeredChannels;
         this.registry = registry;
     }

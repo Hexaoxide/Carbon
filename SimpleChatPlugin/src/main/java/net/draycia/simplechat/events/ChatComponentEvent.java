@@ -3,6 +3,7 @@ package net.draycia.simplechat.events;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -27,7 +28,7 @@ public class ChatComponentEvent extends Event implements Cancellable {
     }
 
     public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, String originalMessage, List<ChatUser> recipients, boolean customPlayerFormat) {
-        super(true);
+        super(Bukkit.isPrimaryThread());
 
         this.user = user;
         this.chatChannel = chatChannel;

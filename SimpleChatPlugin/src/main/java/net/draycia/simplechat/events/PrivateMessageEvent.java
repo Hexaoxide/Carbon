@@ -2,6 +2,7 @@ package net.draycia.simplechat.events;
 
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -27,6 +28,8 @@ public class PrivateMessageEvent extends Event {
     private final String message;
 
     public PrivateMessageEvent(ChatUser sender, ChatUser target, Component senderComponent, Component targetComponent, String message) {
+        super(Bukkit.isPrimaryThread());
+
         this.sender = sender;
         this.target = target;
         this.senderComponent = senderComponent;

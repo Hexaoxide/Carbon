@@ -2,10 +2,8 @@ package net.draycia.simplechat;
 
 import de.themoep.minedown.MineDown;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.listeners.*;
 import net.draycia.simplechat.managers.*;
-import net.draycia.simplechat.managers.luckperms.LuckPermsHookManager;
 import net.draycia.simplechat.storage.UserService;
 import net.draycia.simplechat.storage.impl.JSONUserService;
 import net.draycia.simplechat.storage.impl.MySQLUserService;
@@ -15,7 +13,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,7 +29,6 @@ public final class SimpleChat extends JavaPlugin {
     private PluginMessageManager pluginMessageManager;
     private CommandManager commandManager;
     private ChannelManager channelManager;
-    private LuckPermsHookManager luckPermsHookManager = null;
     private RedisManager redisManager = null;
 
     private UserService userService;
@@ -62,10 +58,6 @@ public final class SimpleChat extends JavaPlugin {
         pluginMessageManager = new PluginMessageManager(this);
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
-
-        if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
-            luckPermsHookManager = new LuckPermsHookManager(this);
-        }
 
         if (getConfig().getBoolean("redis.enabled")) {
             redisManager = new RedisManager(this);
@@ -148,10 +140,6 @@ public final class SimpleChat extends JavaPlugin {
 
     public PluginMessageManager getPluginMessageManager() {
         return pluginMessageManager;
-    }
-
-    public LuckPermsHookManager getLuckPermsHookManager() {
-        return luckPermsHookManager;
     }
 
     public RedisManager getRedisManager() {

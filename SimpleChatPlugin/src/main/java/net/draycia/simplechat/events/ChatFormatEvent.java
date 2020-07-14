@@ -2,6 +2,7 @@ package net.draycia.simplechat.events;
 
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -18,7 +19,7 @@ public class ChatFormatEvent extends Event implements Cancellable {
     private String message;
 
     public ChatFormatEvent(ChatUser user, ChatChannel chatChannel, String format, String message) {
-        super(true);
+        super(Bukkit.isPrimaryThread());
 
         this.user = user;
         this.chatChannel = chatChannel;

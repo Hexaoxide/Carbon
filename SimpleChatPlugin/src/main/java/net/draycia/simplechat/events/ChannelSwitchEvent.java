@@ -2,6 +2,7 @@ package net.draycia.simplechat.events;
 
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -24,6 +25,8 @@ public class ChannelSwitchEvent extends Event {
     private ChatUser user;
 
     public ChannelSwitchEvent(ChatChannel channel, ChatUser user) {
+        super(Bukkit.isPrimaryThread());
+
         this.channel = channel;
         this.user = user;
     }

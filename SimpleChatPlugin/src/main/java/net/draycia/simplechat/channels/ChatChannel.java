@@ -23,14 +23,14 @@ public abstract class ChatChannel {
     /**
      * @return If this is the default (typically Global) channel players use when they're in no other channel.
      */
-    public abstract boolean isDefault();
+    public abstract Boolean isDefault();
 
     /**
      * @return If this channel can be toggled off and if players can ignore player messages in this channel.
      */
-    public abstract boolean isIgnorable();
+    public abstract Boolean isIgnorable();
 
-    public abstract boolean shouldBungee();
+    public abstract Boolean shouldBungee();
 
     /**
      * @return The name of this channel.
@@ -44,7 +44,7 @@ public abstract class ChatChannel {
     /**
      * @return The distance other players must be within to the sender to see messages in this channel.
      */
-    public abstract double getDistance();
+    public abstract Double getDistance();
 
     /**
      * @return The message to be sent to the player when switching to this channel.
@@ -71,21 +71,21 @@ public abstract class ChatChannel {
 
     public abstract String getCannotUseMessage();
 
-    public abstract boolean firstMatchingGroup();
+    public abstract Boolean firstMatchingGroup();
 
     /**
      * @return If the player can use this channel.
      */
-    public abstract boolean canPlayerUse(ChatUser user);
+    public abstract Boolean canPlayerUse(ChatUser user);
 
-    public abstract boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
+    public abstract Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
 
     public abstract List<ChatUser> getAudience(ChatUser user);
 
     /**
      * @return If the channel should forward its formatting / formatted message to other servers
      */
-    public boolean shouldForwardFormatting() {
+    public Boolean shouldForwardFormatting() {
         return true;
     }
 
