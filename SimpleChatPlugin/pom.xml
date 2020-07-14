@@ -243,5 +243,12 @@
             <version>2.6.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- LuckPerms for custom contexts -->
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.1</version>
+        </dependency>
     </dependencies>
 </project>
