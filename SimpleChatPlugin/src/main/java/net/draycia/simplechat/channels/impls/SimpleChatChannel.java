@@ -5,6 +5,7 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChatComponentEvent;
 import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
@@ -97,9 +98,9 @@ public class SimpleChatChannel extends ChatChannel {
                 if (isUserSpying(user, chatUser)) {
                     prefix = prefix.replace("<color>", "<color:" + getColor() + ">");
 
-                    chatUser.sendMessage(simpleChat.processMessage(prefix).append(componentEvent.getComponent()));
+                    chatUser.sendMessage(simpleChat.processMessage(prefix).append(componentEvent.getComponent()), MessageType.CHAT);
                 } else if (componentEvent.getRecipients().contains(chatUser)) {
-                    chatUser.sendMessage(componentEvent.getComponent());
+                    chatUser.sendMessage(componentEvent.getComponent(), MessageType.CHAT);
                 }
             } else {
                 prefix = prefix.replace("<color>", "<color:" +
@@ -125,7 +126,7 @@ public class SimpleChatChannel extends ChatChannel {
 
                 Bukkit.getPluginManager().callEvent(newEvent);
 
-                chatUser.sendMessage(newEvent.getComponent());
+                chatUser.sendMessage(newEvent.getComponent(), MessageType.CHAT);
             }
         }
 
@@ -266,7 +267,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public TextColor getColor() {
-        return TextColor.fromHexString(getSetting("color"));
+        return TextColor.fromHexString(getString("color"));
     }
 
     @Override
@@ -277,73 +278,73 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public Boolean isDefault() {
-        return getSetting("default") == null ? false : getSetting("default");
+        return getBoolean("default");
     }
 
     @Override
     public Boolean isIgnorable() {
-        return getSetting("ignorable");
+        return getBoolean("ignorable");
     }
 
     @Override
     public Boolean shouldBungee() {
-        return getSetting("should-bungee");
+        return getBoolean("should-bungee");
     }
 
     @Override
     public String getName() {
-        String name = getSetting("name");
+        String name = getString("name");
         return name == null ? key : name;
     }
 
     @Override
     public Double getDistance() {
-        return this.getSetting("distance");
+        return getDouble("distance");
     }
 
     @Override
     public String getSwitchMessage() {
-        return getSetting("switch-message");
+        return getString("switch-message");
     }
 
     @Override
     public String getSwitchOtherMessage() {
-        return getSetting("switch-other-message");
+        return getString("switch-other-message");
     }
 
     @Override
     public String getToggleOffMessage() {
-        return getSetting("toggle-off-message");
+        return getString("toggle-off-message");
     }
 
     @Override
     public String getToggleOnMessage() {
-        return getSetting("toggle-on-message");
+        return getString("toggle-on-message");
     }
 
     @Override
     public String getToggleOtherOnMessage() {
-        return getSetting("toggle-other-on");
+        return getString("toggle-other-on");
     }
 
     @Override
     public String getToggleOtherOffMessage() {
-        return getSetting("toggle-other-off");
+        return getString("toggle-other-off");
     }
 
     @Override
     public String getCannotUseMessage() {
-        return getSetting("cannot-use-channel");
+        return getString("cannot-use-channel");
     }
 
     @Override
     public Boolean shouldForwardFormatting() {
-        return getSetting("forward-format");
+        return getBoolean("forward-format");
     }
 
     @Override
     public Boolean firstMatchingGroup() {
-        return getSetting("first-matching-group");
+        return getBoolean("first-matching-group");
     }
 
     @Override
@@ -357,38 +358,55 @@ public class SimpleChatChannel extends ChatChannel {
         return itemPatterns;
     }
 
-    private <T> T getSetting(String key) {
+    private String getString(String key) {
         ConfigurationSection channelsSection = simpleChat.getConfig().getConfigurationSection("channels");
         ConfigurationSection section = channelsSection.getConfigurationSection(getKey());
 
         if (section != null && section.contains(key)) {
-            return (T)section.get(key);
+            return section.getString(key);
         }
 
         ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");
 
         if (defaultSection != null && defaultSection.contains(key)) {
-            return (T)defaultSection.get(key);
+            return defaultSection.getString(key);
         }
 
         return null;
     }
 
-    private <T> T getSetting(String key, T def) {
+    private boolean getBoolean(String key) {
         ConfigurationSection channelsSection = simpleChat.getConfig().getConfigurationSection("channels");
         ConfigurationSection section = channelsSection.getConfigurationSection(getKey());
 
         if (section != null && section.contains(key)) {
-            return (T)section.get(key, def);
+            return section.getBoolean(key);
         }
 
         ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");
 
         if (defaultSection != null && defaultSection.contains(key)) {
-            return (T)defaultSection.get(key, def);
+            return defaultSection.getBoolean(key);
         }
 
-        return null;
+        return false;
+    }
+
+    private double getDouble(String key) {
+        ConfigurationSection channelsSection = simpleChat.getConfig().getConfigurationSection("channels");
+        ConfigurationSection section = channelsSection.getConfigurationSection(getKey());
+
+        if (section != null && section.contains(key)) {
+            return section.getDouble(key);
+        }
+
+        ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");
+
+        if (defaultSection != null && defaultSection.contains(key)) {
+            return defaultSection.getDouble(key);
+        }
+
+        return 0;
     }
 
     @Override
@@ -398,7 +416,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     @Override
     public String getAliases() {
-        String aliases = getSetting("aliases");
+        String aliases = getString("aliases");
 
         if (aliases == null) {
             return getKey();

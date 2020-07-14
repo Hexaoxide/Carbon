@@ -25,7 +25,7 @@ public class ChannelSwitchEvent extends Event {
     private ChatUser user;
 
     public ChannelSwitchEvent(ChatChannel channel, ChatUser user) {
-        super(Bukkit.isPrimaryThread());
+        super(!Bukkit.isPrimaryThread());
 
         this.channel = channel;
         this.user = user;

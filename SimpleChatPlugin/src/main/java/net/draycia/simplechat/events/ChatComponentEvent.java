@@ -28,7 +28,7 @@ public class ChatComponentEvent extends Event implements Cancellable {
     }
 
     public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, String originalMessage, List<ChatUser> recipients, boolean customPlayerFormat) {
-        super(Bukkit.isPrimaryThread());
+        super(!Bukkit.isPrimaryThread());
 
         this.user = user;
         this.chatChannel = chatChannel;

@@ -75,7 +75,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public void setSelectedChannel(ChatChannel chatChannel) {
-        this.selectedChannel = chatChannel.getName();
+        this.selectedChannel = chatChannel.getKey();
         syncToRedis();
 
         Bukkit.getPluginManager().callEvent(new ChannelSwitchEvent(chatChannel, this));

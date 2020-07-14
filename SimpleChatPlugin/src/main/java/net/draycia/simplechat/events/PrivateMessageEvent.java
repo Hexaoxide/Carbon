@@ -28,7 +28,7 @@ public class PrivateMessageEvent extends Event {
     private final String message;
 
     public PrivateMessageEvent(ChatUser sender, ChatUser target, Component senderComponent, Component targetComponent, String message) {
-        super(Bukkit.isPrimaryThread());
+        super(!Bukkit.isPrimaryThread());
 
         this.sender = sender;
         this.target = target;

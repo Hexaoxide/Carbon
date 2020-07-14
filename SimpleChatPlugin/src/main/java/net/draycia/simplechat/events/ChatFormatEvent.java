@@ -19,7 +19,7 @@ public class ChatFormatEvent extends Event implements Cancellable {
     private String message;
 
     public ChatFormatEvent(ChatUser user, ChatChannel chatChannel, String format, String message) {
-        super(Bukkit.isPrimaryThread());
+        super(!Bukkit.isPrimaryThread());
 
         this.user = user;
         this.chatChannel = chatChannel;

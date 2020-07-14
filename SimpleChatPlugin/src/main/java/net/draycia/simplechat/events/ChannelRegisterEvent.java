@@ -28,7 +28,7 @@ public class ChannelRegisterEvent extends Event {
     private Registry<ChatChannel> registry;
 
     public ChannelRegisterEvent(List<ChatChannel> registeredChannels, Registry<ChatChannel> registry) {
-        super(Bukkit.isPrimaryThread());
+        super(!Bukkit.isPrimaryThread());
 
         this.registeredChannels = registeredChannels;
         this.registry = registry;
@@ -38,4 +38,7 @@ public class ChannelRegisterEvent extends Event {
         registry.register(chatChannel.getKey(), chatChannel);
     }
 
+    public List<ChatChannel> getRegisteredChannels() {
+        return registeredChannels;
+    }
 }
