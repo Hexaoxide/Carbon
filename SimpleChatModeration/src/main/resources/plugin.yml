@@ -1,0 +1,5 @@
+name: SimpleChatModeration
+version: ${project.version}
+main: net.draycia.simplechatmoderation.SimpleChatModeration
+api-version: 1.16
+depend: [SimpleChat]

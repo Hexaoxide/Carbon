@@ -1,6 +1,0 @@
-name: SimpleChat
-version: ${project.version}
-main: net.draycia.simplechat.SimpleChat
-api-version: 1.13
-depend: [PlaceholderAPI, Vault]
-softdepend: [Towny, mcMMO, Votifier]
