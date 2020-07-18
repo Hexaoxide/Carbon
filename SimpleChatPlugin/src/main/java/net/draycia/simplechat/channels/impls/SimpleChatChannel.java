@@ -22,12 +22,14 @@ public class SimpleChatChannel extends ChatChannel {
     private String key;
 
     private SimpleChat simpleChat;
+    private ConfigurationSection config;
 
     private SimpleChatChannel() { }
 
-    public SimpleChatChannel(String key, SimpleChat simpleChat) {
+    public SimpleChatChannel(String key, SimpleChat simpleChat, ConfigurationSection config) {
         this.key = key;
         this.simpleChat = simpleChat;
+        this.config = config;
     }
 
     public SimpleChat getSimpleChat() {
@@ -244,9 +246,7 @@ public class SimpleChatChannel extends ChatChannel {
     public Map<String, String> getFormats() {
         HashMap<String, String> formats = new HashMap<>();
 
-        ConfigurationSection channelsSection = simpleChat.getConfig().getConfigurationSection("channels");
-        ConfigurationSection section = channelsSection.getConfigurationSection(getKey());
-        ConfigurationSection formatSection = section.getConfigurationSection("formats");
+        ConfigurationSection formatSection = config.getConfigurationSection("formats");
 
         if (formatSection == null) {
             formatSection = simpleChat.getConfig().getConfigurationSection("default").getConfigurationSection("formats");
@@ -353,11 +353,8 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     private String getString(String key) {
-        ConfigurationSection channelsSection = simpleChat.getConfig().getConfigurationSection("channels");
-        ConfigurationSection section = channelsSection.getConfigurationSection(getKey());
-
-        if (section != null && section.contains(key)) {
-            return section.getString(key);
+        if (config != null && config.contains(key)) {
+            return config.getString(key);
         }
 
         ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");
@@ -370,11 +367,8 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     private boolean getBoolean(String key) {
-        ConfigurationSection channelsSection = simpleChat.getConfig().getConfigurationSection("channels");
-        ConfigurationSection section = channelsSection.getConfigurationSection(getKey());
-
-        if (section != null && section.contains(key)) {
-            return section.getBoolean(key);
+        if (config != null && config.contains(key)) {
+            return config.getBoolean(key);
         }
 
         ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");
@@ -387,11 +381,8 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     private double getDouble(String key) {
-        ConfigurationSection channelsSection = simpleChat.getConfig().getConfigurationSection("channels");
-        ConfigurationSection section = channelsSection.getConfigurationSection(getKey());
-
-        if (section != null && section.contains(key)) {
-            return section.getDouble(key);
+        if (config != null && config.contains(key)) {
+            return config.getDouble(key);
         }
 
         ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");

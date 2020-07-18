@@ -9,46 +9,58 @@ import net.draycia.simplechat.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 public class ChannelManager {
 
     private ChannelRegistry registry;
     private String defaultChannelKey = null;
+    private SimpleChat simpleChat;
 
     public ChannelManager(SimpleChat simpleChat) {
-        registry = new ChannelRegistry(simpleChat);
-        List<ChatChannel> channels = new ArrayList<>();
+        this.simpleChat = simpleChat;
+        this.registry = new ChannelRegistry(simpleChat);
 
         for (String key : simpleChat.getConfig().getConfigurationSection("channels").getKeys(false)) {
-            ChatChannel channel = new SimpleChatChannel(key, simpleChat);
-
             ConfigurationSection section = simpleChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
 
-            String name = section.getString("name");
+            ChatChannel channel = loadChannel(key, section);
 
-            if (name != null && name.length() > 16) {
-                simpleChat.getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
-                simpleChat.getLogger().warning("Skipping channel, please check your settings!");
-                continue;
+            if (channel != null) {
+                if (registerChannel(channel)) {
+                    simpleChat.getLogger().info("Registering channel: " + channel.getName());
+                }
             }
+        }
+    }
 
-            channels.add(channel);
+    public ChatChannel loadChannel(String key, ConfigurationSection section) {
+        ChatChannel channel = new SimpleChatChannel(key, simpleChat, section);
 
-            if (channel.isDefault()) {
-                simpleChat.getLogger().info("Default channel found: " + channel.getName());
-                defaultChannelKey = channel.getKey();
-            }
+        String name = section.getString("name");
 
+        if (name != null && name.length() > 16) {
+            simpleChat.getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
+            simpleChat.getLogger().warning("Skipping channel, please check your settings!");
+            return null;
         }
 
-        for (ChatChannel channel : channels) {
-            simpleChat.getLogger().info("Registering channel: " + channel.getName());
-            getRegistry().register(channel.getKey(), channel);
-        }
+        return channel;
+    }
 
-        Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(channels, getRegistry()));
+    public boolean registerChannel(ChatChannel channel) {
+         boolean success = getRegistry().register(channel.getKey(), channel);
+
+         if (success) {
+             if (channel.isDefault() && defaultChannelKey == null) {
+                 simpleChat.getLogger().info("Default channel registered: " + channel.getName());
+                 defaultChannelKey = channel.getKey();
+             }
+
+             Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(Collections.singletonList(channel), getRegistry()));
+         }
+
+         return success;
     }
 
     public Registry<ChatChannel> getRegistry() {

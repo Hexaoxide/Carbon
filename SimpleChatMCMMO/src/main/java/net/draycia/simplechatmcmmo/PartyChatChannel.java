@@ -5,14 +5,15 @@ import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.impls.SimpleChatChannel;
 import net.draycia.simplechat.storage.ChatUser;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PartyChatChannel extends SimpleChatChannel implements Listener {
 
-    public PartyChatChannel(String name, SimpleChat simpleChat) {
-        super(name, simpleChat);
+    public PartyChatChannel(String name, SimpleChat simpleChat, ConfigurationSection config) {
+        super(name, simpleChat, config);
     }
 
     @Override
