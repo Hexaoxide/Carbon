@@ -1,19 +1,12 @@
 package net.draycia.simplechat;
 
-import de.themoep.minedown.MineDown;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.listeners.*;
 import net.draycia.simplechat.managers.*;
 import net.draycia.simplechat.storage.UserService;
 import net.draycia.simplechat.storage.impl.JSONUserService;
 import net.draycia.simplechat.storage.impl.MySQLUserService;
 import net.draycia.simplechat.util.ItemStackUtils;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,17 +23,16 @@ public final class SimpleChat extends JavaPlugin {
     private CommandManager commandManager;
     private ChannelManager channelManager;
     private RedisManager redisManager = null;
+    private AdventureManager adventureManager;
 
     private UserService userService;
 
     private ItemStackUtils itemStackUtils;
 
-    private BukkitAudiences audiences;
-
     @Override
     public void onEnable() {
         // Setup Adventure
-        audiences = BukkitAudiences.create(this);
+        adventureManager = new AdventureManager(this);
 
         try {
             itemStackUtils = new ItemStackUtils();
@@ -106,26 +98,6 @@ public final class SimpleChat extends JavaPlugin {
         }
     }
 
-    public Component processMessageWithPapi(Player player, String input, String... placeholders) {
-        return processMessage(PlaceholderAPI.setPlaceholders(player, input), placeholders);
-    }
-
-    public Component processMessage(String input, String... placeholders) {
-        switch (getConfig().getString("formatting.type", "minimessage").toLowerCase()) {
-            case "minedown":
-                return processMineDown(input, placeholders);
-            case "minimessage-markdown":
-                return MiniMessage.markdown().parse(input, placeholders);
-            case "minimessage":
-            default:
-                return MiniMessage.get().parse(input, placeholders);
-        }
-    }
-
-    private Component processMineDown(String input, String... placeholders) {
-        return BungeeCordComponentSerializer.get().deserialize(MineDown.parse(input, placeholders));
-    }
-
     public Permission getPermission() {
         return permission;
     }
@@ -150,11 +122,11 @@ public final class SimpleChat extends JavaPlugin {
         return userService;
     }
 
-    public BukkitAudiences getAudiences() {
-        return audiences;
-    }
-
     public ItemStackUtils getItemStackUtils() {
         return itemStackUtils;
+    }
+
+    public AdventureManager getAdventureManager() {
+        return adventureManager;
     }
 }

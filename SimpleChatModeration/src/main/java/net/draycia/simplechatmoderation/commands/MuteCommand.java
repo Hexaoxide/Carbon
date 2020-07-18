@@ -40,10 +40,10 @@ public class MuteCommand extends BaseCommand {
             }
         }
 
-        Component message = moderation.getSimpleChat().processMessage(format,  "br", "\n",
+        Component message = moderation.getSimpleChat().getAdventureManager().processMessage(format,  "br", "\n",
                 "player", targetUser.asOfflinePlayer().getName());
 
-        moderation.getSimpleChat().getAudiences().audience(sender).sendMessage(message);
+        moderation.getSimpleChat().getAdventureManager().getAudiences().audience(sender).sendMessage(message);
     }
 
 }

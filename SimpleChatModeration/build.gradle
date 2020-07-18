@@ -1,0 +1,26 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "me.bristermitten:pdm-gradle:0.0.1"
+    }
+}
+
+apply plugin: 'me.bristermitten.pdm'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    pdm 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72' //This will be added to the dependencies.json
+
+    providedCompile project(':SimpleChat')
+}
+
+jar.dependsOn project.tasks.getByName('pdm') // Always run the pdm task when we build
+
+description = 'SimpleChatModeration'

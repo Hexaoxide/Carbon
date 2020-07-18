@@ -24,14 +24,14 @@ public class ClearChatCommand extends BaseCommand {
     @Default
     public void baseCommand(CommandIssuer issuer) {
         String format = moderation.getConfig().getString("clear-chat.message", "");
-        Component component = moderation.getSimpleChat().processMessage(format, "br", "\n");
+        Component component = moderation.getSimpleChat().getAdventureManager().processMessage(format, "br", "\n");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission("simplechat.clearchat.exempt")) {
                 continue;
             }
 
-            Audience audience = moderation.getSimpleChat().getAudiences().player(player);
+            Audience audience = moderation.getSimpleChat().getAdventureManager().getAudiences().player(player);
 
             for (int i = 0; i < moderation.getConfig().getInt("clear-chat.message-count", 100); i++) {
                 audience.sendMessage(component);
@@ -41,12 +41,12 @@ public class ClearChatCommand extends BaseCommand {
 
             if (player.hasPermission("simplechat.clearchat.notify")) {
                 String message = moderation.getConfig().getString("language.clear-notify");
-                audience.sendMessage(moderation.getSimpleChat().processMessage(message, "player", name));
+                audience.sendMessage(moderation.getSimpleChat().getAdventureManager().processMessage(message, "player", name));
             }
 
             if (player.hasPermission("simplechat.clearchat.exempt")) {
                 String message = moderation.getConfig().getString("language.clear-exempt");
-                audience.sendMessage(moderation.getSimpleChat().processMessage(message, "player", name));
+                audience.sendMessage(moderation.getSimpleChat().getAdventureManager().processMessage(message, "player", name));
             }
         }
     }

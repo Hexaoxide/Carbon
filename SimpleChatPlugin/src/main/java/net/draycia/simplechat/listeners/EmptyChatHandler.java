@@ -27,7 +27,7 @@ public class EmptyChatHandler implements Listener {
                 return;
             }
 
-            event.getUser().sendMessage(simpleChat.processMessage(message));
+            event.getUser().sendMessage(simpleChat.getAdventureManager().processMessage(message));
         }
     }
 

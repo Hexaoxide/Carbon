@@ -23,10 +23,10 @@ public class ChatReloadCommand extends BaseCommand {
         simpleChat.reloadConfig();
         simpleChat.reloadPatterns();
 
-        Component message = simpleChat.processMessage(simpleChat.getConfig().getString("language.reloaded"),
+        Component message = simpleChat.getAdventureManager().processMessage(simpleChat.getConfig().getString("language.reloaded"),
                 "br", "\n");
 
-        simpleChat.getAudiences().audience(sender).sendMessage(message);
+        simpleChat.getAdventureManager().getAudiences().audience(sender).sendMessage(message);
     }
 
 }

@@ -30,7 +30,7 @@ public class ReplyCommand extends BaseCommand {
 
         if (user.getReplyTarget() == null) {
             String message = simpleChat.getConfig().getString("language.no-reply-target");
-            Component component = simpleChat.processMessage(message, "br", "\n");
+            Component component = simpleChat.getAdventureManager().processMessage(message, "br", "\n");
             user.sendMessage(component);
 
             return;

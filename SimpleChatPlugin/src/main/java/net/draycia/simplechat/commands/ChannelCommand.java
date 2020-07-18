@@ -27,7 +27,7 @@ public class ChannelCommand extends BaseCommand {
         if (args == null || args.length == 0) {
             user.setSelectedChannel(channel);
 
-            user.sendMessage(simpleChat.processMessageWithPapi(player, channel.getSwitchMessage(),
+            user.sendMessage(simpleChat.getAdventureManager().processMessageWithPapi(player, channel.getSwitchMessage(),
                     "br", "\n",
                     "color", "<" + channel.getColor().toString() + ">",
                     "channel", channel.getName()));
@@ -47,10 +47,10 @@ public class ChannelCommand extends BaseCommand {
         String message = channel.getSwitchMessage();
         String otherMessage = channel.getSwitchOtherMessage();
 
-        user.sendMessage(simpleChat.processMessage(message, "br", "\n",
+        user.sendMessage(simpleChat.getAdventureManager().processMessage(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
 
-        simpleChat.getAudiences().audience(sender).sendMessage(simpleChat.processMessage(otherMessage, "br", "\n",
+        simpleChat.getAdventureManager().getAudiences().audience(sender).sendMessage(simpleChat.getAdventureManager().processMessage(otherMessage, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName(),
                 "player", user.asOfflinePlayer().getName()));
     }

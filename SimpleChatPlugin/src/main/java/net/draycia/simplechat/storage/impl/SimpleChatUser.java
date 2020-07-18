@@ -45,7 +45,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public @NonNull Iterable<? extends Audience> audiences() {
-        return Collections.singleton(simpleChat.getAudiences().player(uuid));
+        return Collections.singleton(simpleChat.getAdventureManager().getAudiences().player(uuid));
     }
 
     @Override
@@ -199,12 +199,12 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
             targetName = this.asPlayer().getDisplayName();
         }
 
-        Component toPlayerComponent = simpleChat.processMessage(toPlayerFormat,  "br", "\n",
+        Component toPlayerComponent = simpleChat.getAdventureManager().processMessage(toPlayerFormat,  "br", "\n",
                 "message", message,
                 "targetname", targetOfflineName, "sendername", senderOfflineName,
                 "target", targetName, "sender", senderName);
 
-        Component fromPlayerComponent = simpleChat.processMessage(fromPlayerFormat,  "br", "\n",
+        Component fromPlayerComponent = simpleChat.getAdventureManager().processMessage(fromPlayerFormat,  "br", "\n",
                 "message", message,
                 "targetname", targetOfflineName, "sendername", senderOfflineName,
                 "target", targetName, "sender", senderName);
@@ -242,7 +242,7 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
                 continue;
             }
 
-            user.sendMessage(simpleChat.processMessage(simpleChat.getConfig().getString("language.spy-whispers"),  "br", "\n",
+            user.sendMessage(simpleChat.getAdventureManager().processMessage(simpleChat.getConfig().getString("language.spy-whispers"),  "br", "\n",
                     "message", message,
                     "targetname", targetOfflineName, "sendername", senderOfflineName,
                     "target", targetName, "sender", senderName));

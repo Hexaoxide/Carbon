@@ -25,7 +25,7 @@ public class MeCommand extends BaseCommand {
     public void baseCommand(Player player, String... args) {
         String message = String.join(" ", args).replace("</pre>", "");
         String format = PlaceholderAPI.setPlaceholders(player, simpleChat.getConfig().getString("language.me"));
-        Component component = simpleChat.processMessage(format,  "br", "\n", "message", message);
+        Component component = simpleChat.getAdventureManager().processMessage(format,  "br", "\n", "message", message);
 
         ChatUser user = simpleChat.getUserService().wrap(player);
 
@@ -37,7 +37,7 @@ public class MeCommand extends BaseCommand {
                     continue;
                 }
 
-                simpleChat.getAudiences().player(onlinePlayer).sendMessage(component);
+                simpleChat.getAdventureManager().getAudiences().player(onlinePlayer).sendMessage(component);
             }
         }
     }

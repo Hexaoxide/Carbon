@@ -36,7 +36,7 @@ public class ToggleCommand extends BaseCommand {
             message = channel.getToggleOnMessage();
         }
 
-        user.sendMessage(simpleChat.processMessageWithPapi(player, message, "br", "\n",
+        user.sendMessage(simpleChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
@@ -59,10 +59,10 @@ public class ToggleCommand extends BaseCommand {
             otherMessage = channel.getToggleOtherOnMessage();
         }
 
-        user.sendMessage(simpleChat.processMessage(message, "br", "\n",
+        user.sendMessage(simpleChat.getAdventureManager().processMessage(message, "br", "\n",
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
 
-        simpleChat.getAudiences().audience(sender).sendMessage(simpleChat.processMessage(otherMessage,
+        simpleChat.getAdventureManager().getAudiences().audience(sender).sendMessage(simpleChat.getAdventureManager().processMessage(otherMessage,
                 "br", "\n", "color", "<color:" + channel.getColor().toString() + ">",
                 "channel", channel.getName(), "player", user.asOfflinePlayer().getName()));
     }

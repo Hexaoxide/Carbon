@@ -5,7 +5,6 @@ import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChatComponentEvent;
 import net.draycia.simplechat.events.ChatFormatEvent;
 import net.draycia.simplechat.storage.ChatUser;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
@@ -31,13 +30,8 @@ public class SimpleChatChannel extends ChatChannel {
         this.simpleChat = simpleChat;
     }
 
-    SimpleChat getSimpleChat() {
+    public SimpleChat getSimpleChat() {
         return simpleChat;
-    }
-
-    private String getDiscordFormatting() {
-        return getFormats().getOrDefault("discord-to-mc",
-                "<gray>[<blue>Discord<gray>] <username><white>: <message>");
     }
 
     @Override
@@ -73,7 +67,7 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         // Get formatted message
-        TextComponent formattedMessage = (TextComponent)simpleChat.processMessage(formatEvent.getFormat(),
+        TextComponent formattedMessage = (TextComponent)simpleChat.getAdventureManager().processMessage(formatEvent.getFormat(),
                 "br", "\n",
                 "color", "<color:" + getColor().toString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
@@ -98,16 +92,16 @@ public class SimpleChatChannel extends ChatChannel {
                 if (isUserSpying(user, chatUser)) {
                     prefix = prefix.replace("<color>", "<color:" + getColor() + ">");
 
-                    chatUser.sendMessage(simpleChat.processMessage(prefix).append(componentEvent.getComponent()), MessageType.CHAT);
+                    chatUser.sendMessage(simpleChat.getAdventureManager().processMessage(prefix).append(componentEvent.getComponent()));
                 } else if (componentEvent.getRecipients().contains(chatUser)) {
-                    chatUser.sendMessage(componentEvent.getComponent(), MessageType.CHAT);
+                    chatUser.sendMessage(componentEvent.getComponent());
                 }
             } else {
                 prefix = prefix.replace("<color>", "<color:" +
                         chatUser.getChannelSettings(this).getColor().asHexString() + ">");
                 String format = formatEvent.getFormat();
 
-                TextComponent newFormat = (TextComponent)simpleChat.processMessage(format,
+                TextComponent newFormat = (TextComponent)simpleChat.getAdventureManager().processMessage(format,
                         "br", "\n",
                         "color", "<color:" + userColor.toString() + ">",
                         "phase", Long.toString(System.currentTimeMillis() % 25),
@@ -115,7 +109,7 @@ public class SimpleChatChannel extends ChatChannel {
                         "message", formatEvent.getMessage());
 
                 if (isUserSpying(user, chatUser)) {
-                    newFormat = (TextComponent)simpleChat.processMessage(prefix, "br", "\n")
+                    newFormat = (TextComponent)simpleChat.getAdventureManager().processMessage(prefix, "br", "\n")
                             .append(newFormat);
                 } else if (!componentEvent.getRecipients().contains(chatUser)) {
                     return;
@@ -126,7 +120,7 @@ public class SimpleChatChannel extends ChatChannel {
 
                 Bukkit.getPluginManager().callEvent(newEvent);
 
-                chatUser.sendMessage(newEvent.getComponent(), MessageType.CHAT);
+                chatUser.sendMessage(newEvent.getComponent());
             }
         }
 

@@ -41,7 +41,7 @@ public class IgnoreCommand extends BaseCommand {
             }
         }
 
-        user.sendMessage(simpleChat.processMessageWithPapi(player, message, "br", "\n"));
+        user.sendMessage(simpleChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
     }
 
 }
