@@ -10,7 +10,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class BukkitChatListener implements Listener {
 
-    private SimpleChat simpleChat;
+    private final SimpleChat simpleChat;
 
     public BukkitChatListener(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

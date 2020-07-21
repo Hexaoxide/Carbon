@@ -45,7 +45,6 @@ public class PrivateMessageEvent extends Event {
         return target;
     }
 
-
     public Component getSenderComponent() {
         return senderComponent;
     }

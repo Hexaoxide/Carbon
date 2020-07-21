@@ -18,8 +18,8 @@ import java.util.UUID;
 
 public class PluginMessageManager implements PluginMessageListener {
 
-    private SimpleChat simpleChat;
-    private BungeeChannelApi api;
+    private final SimpleChat simpleChat;
+    private final BungeeChannelApi api;
 
     public PluginMessageManager(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

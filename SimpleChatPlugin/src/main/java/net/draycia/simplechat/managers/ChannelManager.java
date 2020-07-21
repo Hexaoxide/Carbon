@@ -13,9 +13,9 @@ import java.util.Collections;
 
 public class ChannelManager {
 
-    private ChannelRegistry registry;
+    private final SimpleChat simpleChat;
+    private final ChannelRegistry registry;
     private String defaultChannelKey = null;
-    private SimpleChat simpleChat;
 
     public ChannelManager(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

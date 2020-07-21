@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 
 public class EmptyChatHandler implements Listener {
 
-    private SimpleChat simpleChat;
+    private final SimpleChat simpleChat;
 
     public EmptyChatHandler(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

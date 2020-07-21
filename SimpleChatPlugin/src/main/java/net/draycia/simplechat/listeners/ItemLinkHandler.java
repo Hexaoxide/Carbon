@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class ItemLinkHandler implements Listener {
 
-    private SimpleChat simpleChat;
+    private final SimpleChat simpleChat;
 
     public ItemLinkHandler(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

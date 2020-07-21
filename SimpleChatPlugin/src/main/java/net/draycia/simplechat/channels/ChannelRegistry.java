@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class ChannelRegistry implements Registry<ChatChannel> {
 
-    private Map<String, ChatChannel> registry = new HashMap<>();
-    private SimpleChat simpleChat;
+    private final Map<String, ChatChannel> registry = new HashMap<>();
+    private final SimpleChat simpleChat;
 
     public ChannelRegistry(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;
@@ -30,7 +30,7 @@ public class ChannelRegistry implements Registry<ChatChannel> {
             CommandManager commandManager = simpleChat.getCommandManager().getCommandManager();
 
             commandManager.getCommandReplacements().addReplacement("channelName", value.getAliases());
-            commandManager.registerCommand(new AliasedChannelCommand(simpleChat, value));
+            commandManager.registerCommand(new AliasedChannelCommand(value));
 
             if (value instanceof Listener) {
                 Bukkit.getPluginManager().registerEvents((Listener)value, simpleChat);

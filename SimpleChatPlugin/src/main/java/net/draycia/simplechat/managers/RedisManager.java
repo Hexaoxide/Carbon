@@ -16,17 +16,14 @@ import java.util.UUID;
 
 public class RedisManager {
 
-    private SimpleChat simpleChat;
+    private final RedisClient client;
+    private final StatefulRedisPubSubConnection<String, String> connection;
+    private final RedisPubSubCommands<String, String> sync;
 
-    private RedisClient client;
-    private StatefulRedisPubSubConnection<String, String> connection;
-    private RedisPubSubCommands<String, String> sync;
-
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private Type userType = new TypeToken<SimpleChatUser>() {}.getType();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Type userType = new TypeToken<SimpleChatUser>() {}.getType();
 
     public RedisManager(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
 
         String host = simpleChat.getConfig().getString("redis.host");
         int port = simpleChat.getConfig().getInt("redis.port");

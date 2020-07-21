@@ -30,8 +30,8 @@ public class JSONUserService extends UserService {
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private Type userType = new TypeToken<SimpleChatUser>() {}.getType();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Type userType = new TypeToken<SimpleChatUser>() {}.getType();
 
     public JSONUserService(SimpleChat simpleChat) {
         this.simpleChat =simpleChat;
