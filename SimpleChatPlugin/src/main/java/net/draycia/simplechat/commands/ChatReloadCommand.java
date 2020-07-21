@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Dependency;
 import net.draycia.simplechat.SimpleChat;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -12,11 +13,8 @@ import org.bukkit.command.CommandSender;
 @CommandPermission("simplechat.reload")
 public class ChatReloadCommand extends BaseCommand {
 
+    @Dependency
     private SimpleChat simpleChat;
-
-    public ChatReloadCommand(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
-    }
 
     @Default
     public void baseCommand(CommandSender sender) {

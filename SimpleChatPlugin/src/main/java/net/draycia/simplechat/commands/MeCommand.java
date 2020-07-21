@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Dependency;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.storage.ChatUser;
@@ -15,11 +16,8 @@ import org.bukkit.entity.Player;
 @CommandPermission("simplechat.me")
 public class MeCommand extends BaseCommand {
 
+    @Dependency
     private SimpleChat simpleChat;
-
-    public MeCommand(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
-    }
 
     @Default
     public void baseCommand(Player player, String... args) {
