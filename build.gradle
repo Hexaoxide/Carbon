@@ -7,6 +7,8 @@ allprojects {
     version = '1.0'
 }
 
+apply plugin: 'base'
+
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'java'
@@ -61,4 +63,8 @@ subprojects {
     tasks.withType(Jar) {
         getDestinationDirectory().set(file("$rootDir/build/bundled"))
     }
+}
+
+clean.doFirst {
+    delete "$rootDir/build/bundled"
 }
