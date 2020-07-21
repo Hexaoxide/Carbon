@@ -32,7 +32,7 @@ public class ChannelCommand extends BaseCommand {
                     "color", "<" + channel.getColor().toString() + ">",
                     "channel", channel.getName()));
         } else {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(simpleChat, () -> {
                 channel.sendMessage(user, String.join(" ", args), false);
             });
         }
