@@ -30,10 +30,8 @@ public class MySQLUserService extends UserService {
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
-    private SimpleChat simpleChat;
-    private Database database;
-
-    private MySQLUserService() { }
+    private final SimpleChat simpleChat;
+    private final Database database;
 
     public MySQLUserService(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

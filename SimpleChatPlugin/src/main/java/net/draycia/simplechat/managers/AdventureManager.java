@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 
 public class AdventureManager {
 
-    private SimpleChat simpleChat;
-    private BukkitAudiences audiences;
+    private final SimpleChat simpleChat;
+    private final BukkitAudiences audiences;
 
     public AdventureManager(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

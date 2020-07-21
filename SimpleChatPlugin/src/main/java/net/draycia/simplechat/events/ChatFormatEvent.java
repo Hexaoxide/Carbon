@@ -13,7 +13,7 @@ public class ChatFormatEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private boolean isCancelled = false;
 
-    private ChatUser user;
+    private final ChatUser user;
     private ChatChannel chatChannel;
     private String format;
     private String message;

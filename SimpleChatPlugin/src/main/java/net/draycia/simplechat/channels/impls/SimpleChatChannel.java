@@ -19,12 +19,10 @@ import java.util.regex.Pattern;
 
 public class SimpleChatChannel extends ChatChannel {
 
-    private String key;
+    private final String key;
 
-    private SimpleChat simpleChat;
-    private ConfigurationSection config;
-
-    private SimpleChatChannel() { }
+    private final SimpleChat simpleChat;
+    private final ConfigurationSection config;
 
     public SimpleChatChannel(String key, SimpleChat simpleChat, ConfigurationSection config) {
         this.key = key;

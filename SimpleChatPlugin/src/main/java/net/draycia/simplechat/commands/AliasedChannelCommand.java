@@ -16,8 +16,9 @@ public class AliasedChannelCommand extends BaseCommand {
     private SimpleChat simpleChat;
     private ChatChannel chatChannel;
 
-    public AliasedChannelCommand(SimpleChat simpleChat, ChatChannel chatChannel) {
-        this.simpleChat = simpleChat;
+    private final ChatChannel chatChannel;
+
+    public AliasedChannelCommand(ChatChannel chatChannel) {
         this.chatChannel = chatChannel;
     }
 

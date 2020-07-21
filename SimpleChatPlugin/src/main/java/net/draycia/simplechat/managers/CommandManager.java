@@ -12,11 +12,9 @@ import java.util.List;
 
 public class CommandManager {
 
-    private SimpleChat simpleChat;
-    private BukkitCommandManager commandManager;
+    private final BukkitCommandManager commandManager;
 
     public CommandManager(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
 
         commandManager = new BukkitCommandManager(simpleChat);
 

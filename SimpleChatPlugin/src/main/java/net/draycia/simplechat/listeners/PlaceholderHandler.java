@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 
 public class PlaceholderHandler implements Listener {
 
-    private SimpleChat simpleChat;
+    private final SimpleChat simpleChat;
 
     public PlaceholderHandler(SimpleChat simpleChat) {
         this.simpleChat = simpleChat;

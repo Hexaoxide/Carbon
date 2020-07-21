@@ -21,13 +21,13 @@ import java.util.*;
 
 public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
-    private transient SimpleChat simpleChat;
+    private final transient SimpleChat simpleChat;
 
     private UUID uuid;
 
     private String selectedChannel = null;
-    private Map<String, SimpleUserChannelSettings> channelSettings = new HashMap<>();
-    private List<UUID> ignoredUsers = new ArrayList<>();
+    private final Map<String, SimpleUserChannelSettings> channelSettings = new HashMap<>();
+    private final List<UUID> ignoredUsers = new ArrayList<>();
     private boolean muted = false;
     private boolean shadowMuted = false;
     private boolean spyingWhispers = false;
