@@ -8,6 +8,7 @@ import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CommandManager {
 
@@ -24,7 +25,7 @@ public class CommandManager {
         commandManager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
             ChatUser user = simpleChat.getUserService().wrap(context.getPlayer());
 
-            ArrayList<String> completions = new ArrayList<>();
+            List<String> completions = new ArrayList<>();
 
             for (ChatChannel chatChannel : simpleChat.getChannelManager().getRegistry().values()) {
                 if (chatChannel.canPlayerUse(user)) {
@@ -36,7 +37,7 @@ public class CommandManager {
         });
 
         commandManager.getCommandCompletions().registerCompletion("channel", (context) -> {
-            ArrayList<String> completions = new ArrayList<>();
+            List<String> completions = new ArrayList<>();
 
             for (ChatChannel chatChannel : simpleChat.getChannelManager().getRegistry().values()) {
                     completions.add(chatChannel.getName());
