@@ -14,11 +14,8 @@ import org.bukkit.entity.Player;
 @CommandPermission("simplechat.setcolor")
 public class SetColorCommand extends BaseCommand {
 
+    @Dependency
     private SimpleChat simpleChat;
-
-    public SetColorCommand(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
-    }
 
     @Default
     @CommandCompletion("@chatchannel")

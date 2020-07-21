@@ -12,11 +12,8 @@ import org.bukkit.entity.Player;
 @CommandPermission("simplechat.spy")
 public class SpyChannelCommand extends BaseCommand {
 
+    @Dependency
     private SimpleChat simpleChat;
-
-    public SpyChannelCommand(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
-    }
 
     @Default
     @CommandCompletion("@channel")

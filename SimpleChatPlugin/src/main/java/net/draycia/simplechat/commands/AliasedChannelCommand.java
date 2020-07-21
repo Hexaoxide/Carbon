@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 @CommandPermission("simplechat.switch")
 public class AliasedChannelCommand extends BaseCommand {
 
+    @Dependency
     private SimpleChat simpleChat;
-    private ChatChannel chatChannel;
 
     private final ChatChannel chatChannel;
 

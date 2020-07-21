@@ -82,15 +82,15 @@ public class CommandManager {
     }
 
     private void setupCommands(BukkitCommandManager manager) {
-        manager.registerCommand(new ToggleCommand(simpleChat));
-        manager.registerCommand(new ChannelCommand(simpleChat));
-        manager.registerCommand(new IgnoreCommand(simpleChat));
-        manager.registerCommand(new ChatReloadCommand(simpleChat));
-        manager.registerCommand(new MeCommand(simpleChat));
-        manager.registerCommand(new MessageCommand(simpleChat));
-        manager.registerCommand(new ReplyCommand(simpleChat));
-        manager.registerCommand(new SetColorCommand(simpleChat));
-        manager.registerCommand(new SpyChannelCommand(simpleChat));
+        manager.registerCommand(new ToggleCommand());
+        manager.registerCommand(new ChannelCommand());
+        manager.registerCommand(new IgnoreCommand());
+        manager.registerCommand(new ChatReloadCommand());
+        manager.registerCommand(new MeCommand());
+        manager.registerCommand(new MessageCommand());
+        manager.registerCommand(new ReplyCommand());
+        manager.registerCommand(new SetColorCommand());
+        manager.registerCommand(new SpyChannelCommand());
     }
 
     public co.aikar.commands.CommandManager getCommandManager() {

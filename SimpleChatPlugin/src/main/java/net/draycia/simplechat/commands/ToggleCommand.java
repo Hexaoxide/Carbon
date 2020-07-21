@@ -13,11 +13,8 @@ import org.bukkit.entity.Player;
 @CommandPermission("simplechat.toggle")
 public class ToggleCommand extends BaseCommand {
 
+    @Dependency
     private SimpleChat simpleChat;
-
-    public ToggleCommand(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
-    }
 
     @Default
     @CommandCompletion("@chatchannel @players")

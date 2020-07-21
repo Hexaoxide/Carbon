@@ -13,11 +13,8 @@ import org.bukkit.entity.Player;
 @CommandPermission("simplechat.switch")
 public class ChannelCommand extends BaseCommand {
 
+    @Dependency
     private SimpleChat simpleChat;
-
-    public ChannelCommand(SimpleChat simpleChat) {
-        this.simpleChat = simpleChat;
-    }
 
     @Default
     @CommandCompletion("@chatchannel")
