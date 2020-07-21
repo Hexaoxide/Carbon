@@ -4,7 +4,7 @@ repositories {
 }
 
 dependencies {
-    providedCompile project(':SimpleChat')
+    api project(':SimpleChat')
 }
 
 description = 'SimpleChatModeration'

@@ -8,7 +8,7 @@ dependencies {
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.130'
 
-    providedCompile project(':SimpleChat')
+    api project(':SimpleChat')
 }
 
 description = 'SimpleChatMCMMO'

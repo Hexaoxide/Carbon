@@ -8,9 +8,10 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'java-library'
     apply plugin: 'java'
     apply plugin: 'maven-publish'
-    apply plugin: 'war'
+    apply plugin: 'maven'
 
     repositories {
         mavenLocal()
