@@ -37,7 +37,7 @@ public class AliasedChannelCommand extends BaseCommand {
                     "color", "<" + getChatChannel().getColor().toString() + ">",
                     "channel", getChatChannel().getName()));
         } else {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(simpleChat, () -> {
                 getChatChannel().sendMessage(user, String.join(" ", args), false);
             });
         }
