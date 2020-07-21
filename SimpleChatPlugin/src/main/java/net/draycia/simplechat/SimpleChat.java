@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public final class SimpleChat extends JavaPlugin {
 
-    private ArrayList<Pattern> itemPatterns = new ArrayList<>();
+    private List<Pattern> itemPatterns = new ArrayList<>();
 
     private Permission permission;
 
