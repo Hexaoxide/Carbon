@@ -76,7 +76,7 @@ public class PluginMessageManager implements PluginMessageListener {
 
         String chatMessage = in.readUTF();
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(simpleChat, () -> {
             chatChannel.sendMessage(user, chatMessage, true);
         });
     }
