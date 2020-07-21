@@ -26,7 +26,7 @@ public class BukkitChatListener implements Listener {
         if (event.isAsynchronous()) {
             user.getSelectedChannel().sendMessage(user, event.getMessage(), false);
         } else {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(simpleChat, () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(simpleChat, () -> {
                 user.getSelectedChannel().sendMessage(user, event.getMessage(), false);
             });
         }
