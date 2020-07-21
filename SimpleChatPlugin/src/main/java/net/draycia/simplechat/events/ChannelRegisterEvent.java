@@ -1,7 +1,6 @@
 package net.draycia.simplechat.events;
 
 import net.draycia.simplechat.channels.ChatChannel;
-import net.draycia.simplechat.storage.ChatUser;
 import net.draycia.simplechat.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
