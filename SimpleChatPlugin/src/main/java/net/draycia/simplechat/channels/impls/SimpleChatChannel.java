@@ -142,9 +142,7 @@ public class SimpleChatChannel extends ChatChannel {
 
     private boolean isUserSpying(ChatUser sender, ChatUser target) {
         if (!canPlayerSee(sender, target, false)) {
-            if (target.getChannelSettings(this).isSpying()) {
-                return true;
-            }
+            return target.getChannelSettings(this).isSpying();
         }
 
         return false;
