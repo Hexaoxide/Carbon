@@ -30,6 +30,7 @@ public class MuteCommand extends BaseCommand {
             targetUser.setMuted(false);
             format = moderation.getConfig().getString("language.no-longer-muted");
         } else {
+            // TODO: do this in an async task
             Permission permission = moderation.getSimpleChat().getPermission();
 
             if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.mute.exempt")) {

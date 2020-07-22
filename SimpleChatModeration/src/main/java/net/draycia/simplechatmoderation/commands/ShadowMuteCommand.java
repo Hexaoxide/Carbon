@@ -30,6 +30,7 @@ public class ShadowMuteCommand extends BaseCommand {
             targetUser.setShadowMuted(false);
             format = moderation.getConfig().getString("language.no-longer-shadow-muted");
         } else {
+            // TODO: do this in an async task
             Permission permission = moderation.getSimpleChat().getPermission();
 
             if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.shadowmute.exempt")) {

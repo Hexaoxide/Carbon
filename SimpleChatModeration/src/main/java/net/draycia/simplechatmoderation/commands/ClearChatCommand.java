@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import net.draycia.simplechatmoderation.SimpleChatModeration;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -34,17 +35,17 @@ public class ClearChatCommand extends BaseCommand {
             Audience audience = moderation.getSimpleChat().getAdventureManager().getAudiences().player(player);
 
             for (int i = 0; i < moderation.getConfig().getInt("clear-chat.message-count", 100); i++) {
-                audience.sendMessage(component);
+                audience.sendMessage(component, MessageType.SYSTEM);
             }
 
             if (player.hasPermission("simplechat.clearchat.notify")) {
                 String message = moderation.getConfig().getString("language.clear-notify");
-                audience.sendMessage(moderation.getSimpleChat().getAdventureManager().processMessage(message, "player", issuer.getName()));
+                audience.sendMessage(moderation.getSimpleChat().getAdventureManager().processMessage(message, "player", issuer.getName()), MessageType.SYSTEM);
             }
 
             if (player.hasPermission("simplechat.clearchat.exempt")) {
                 String message = moderation.getConfig().getString("language.clear-exempt");
-                audience.sendMessage(moderation.getSimpleChat().getAdventureManager().processMessage(message, "player", issuer.getName()));
+                audience.sendMessage(moderation.getSimpleChat().getAdventureManager().processMessage(message, "player", issuer.getName()), MessageType.SYSTEM);
             }
         }
     }
