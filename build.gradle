@@ -19,15 +19,15 @@ subprojects {
         mavenLocal()
         mavenCentral()
 
-        maven {url = 'http://repo.maven.apache.org/maven2'}
+        maven {url = 'https://repo.maven.apache.org/maven2'}
         maven {url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
         maven {url = 'https://oss.sonatype.org/content/groups/public/'}
-        maven {url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'}
+        maven {url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'}
         maven {url = 'https://jitpack.io'}
         maven {url = 'https://repo.aikar.co/content/groups/aikar/'}
         maven {url = 'https://dl.bintray.com/ichbinjoe/public/'}
         maven {url = 'https://repo.codemc.org/repository/maven-public/'}
-        maven {url = 'http://repo.minebench.de/'}
+        maven {url = 'https://repo.minebench.de/'}
     }
 
     dependencies {
@@ -39,7 +39,7 @@ subprojects {
         compileOnly 'net.kyori:adventure-nbt:4.0.0-SNAPSHOT'
         compileOnly 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
         compileOnly 'net.kyori:adventure-text-minimessage:3.0.0-SNAPSHOT'
-        compileOnly 'de.themoep:minedown:1.6.1-SNAPSHOT'
+        compileOnly 'de.themoep:minedown-adventure:1.6.1-SNAPSHOT'
         compileOnly 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'
         compileOnly 'com.zaxxer:HikariCP:2.4.1'
         compileOnly 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'

@@ -13,7 +13,7 @@ dependencies {
     compile 'net.kyori:adventure-nbt:4.0.0-SNAPSHOT'
     compile 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
     compile 'net.kyori:adventure-text-minimessage:3.0.0-SNAPSHOT'
-    compile 'de.themoep:minedown:1.6.1-SNAPSHOT'
+    compile 'de.themoep:minedown-adventure:1.6.1-SNAPSHOT'
     compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'
     compile 'com.zaxxer:HikariCP:2.4.1'
     compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'

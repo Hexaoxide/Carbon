@@ -1,12 +1,11 @@
 package net.draycia.simplechat.managers;
 
-import de.themoep.minedown.MineDown;
+import de.themoep.minedown.adventure.MineDown;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.simplechat.SimpleChat;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import org.bukkit.entity.Player;
 
 public class AdventureManager {
@@ -36,7 +35,7 @@ public class AdventureManager {
     }
 
     private Component processMineDown(String input, String... placeholders) {
-        return BungeeCordComponentSerializer.get().deserialize(MineDown.parse(input, placeholders));
+        return MineDown.parse(input, placeholders);
     }
 
     public BukkitAudiences getAudiences() {
