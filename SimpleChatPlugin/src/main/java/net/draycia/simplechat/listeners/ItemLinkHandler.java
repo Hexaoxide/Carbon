@@ -25,7 +25,7 @@ public class ItemLinkHandler implements Listener {
                 String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
 
                 if (event.getOriginalMessage().contains(patternContent)) {
-                    TextComponent component = event.getComponent().replace(pattern, (input) -> {
+                    TextComponent component = event.getComponent().replaceFirst(pattern, (input) -> {
                         return TextComponent.builder().append(simpleChat.getItemStackUtils().createComponent(event.getUser().asPlayer()));
                     });
 
