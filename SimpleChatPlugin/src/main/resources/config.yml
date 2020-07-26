@@ -58,15 +58,15 @@ formatting:
   type: 'MiniMessage'
 
 language:
-  # The following messages are only compatible with MiniMessage
+  # The following messages are only compatible with MiniMessage/MineDown
   reloaded: '<yellow>Chat config has been reloaded!'
   message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
   message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
   spy-whispers: '<yellow>Spy [<gray><sender> <gold>-> <gray><target><yellow>] <message>'
   no-reply-target: '<red>You have no one to reply to!'
-  empty-channel: '<green>Nobody is around to hear you!' #<channel>
+  empty-channel: 'NONE' #<channel>, set to "NONE" to disable
 
-  # The following messages are compatible with PlaceholderAPI and MiniMessage
+  # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
   ignoring-user: '<green>You are now ignoring <gold><player><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
@@ -81,7 +81,7 @@ language:
 server-name: 'Server'
 
 item-link-placeholders:
-  - '[item]' # cursed placeholder do not use
+  - '[item]'
   - '%item%'
 
 spy-prefix: '<color>[SPY] '

@@ -23,7 +23,7 @@ public class EmptyChatHandler implements Listener {
         if (event.getRecipients().size() == 1 && event.getUser().equals(event.getRecipients().get(0))) {
             String message = simpleChat.getConfig().getString("language.empty-channel");
 
-            if (message == null || message.isEmpty()) {
+            if (message == null || message.isEmpty() || message.equalsIgnoreCase("NONE")) {
                 return;
             }
 
