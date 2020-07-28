@@ -33,7 +33,7 @@ subprojects {
         compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
         compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
 
-        compileOnly 'ai.broccol:celery:1.0.0'
+        compileOnly 'co.aikar:acf-bukkit:0.5.0-SNAPSHOT'
         compileOnly 'net.kyori:adventure-api:4.0.0-SNAPSHOT'
         compileOnly 'net.kyori:adventure-nbt:4.0.0-SNAPSHOT'
         compileOnly 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'

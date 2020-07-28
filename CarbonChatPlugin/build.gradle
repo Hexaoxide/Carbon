@@ -30,3 +30,7 @@ dependencies {
 description = 'CarbonChatPlugin'
 
 tasks.build.dependsOn tasks.shadowJar
+
+shadowJar {
+    minimize()
+}
