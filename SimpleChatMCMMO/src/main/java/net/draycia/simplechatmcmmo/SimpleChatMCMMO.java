@@ -3,6 +3,7 @@ package net.draycia.simplechatmcmmo;
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.events.ChannelSwitchEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -15,6 +16,8 @@ public final class SimpleChatMCMMO extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
         simpleChat = (SimpleChat) Bukkit.getPluginManager().getPlugin("SimpleChat");
 
         simpleChat.getContextManager().register("mcmmo-party", (context) -> {
@@ -24,6 +27,18 @@ public final class SimpleChatMCMMO extends JavaPlugin {
 
             return true;
         });
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChannelSwitch(ChannelSwitchEvent event) {
+        Object party = event.getChannel().getContext("mcmmo-party");
+
+        if ((party instanceof Boolean) && ((Boolean) party)) {
+            if (!isInParty(event.getUser())) {
+                event.setCancelled(true);
+                event.setFailureMessage(getConfig().getString("cancellation-message"));
+            }
+        }
     }
 
     private final McMMOPartyChangeEvent.EventReason LEFT = McMMOPartyChangeEvent.EventReason.LEFT_PARTY;

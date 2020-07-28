@@ -5,6 +5,7 @@ import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.simplechat.SimpleChat;
+import net.draycia.simplechat.events.ChannelSwitchEvent;
 import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -14,9 +15,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class SimpleChatTowny extends JavaPlugin {
 
     private SimpleChat simpleChat;
+    private static final String KEY = "towny-town";
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
         simpleChat = (SimpleChat) Bukkit.getPluginManager().getPlugin("SimpleChat");
 
         simpleChat.getContextManager().register("towny-town", (context) -> {
@@ -28,11 +32,23 @@ public final class SimpleChatTowny extends JavaPlugin {
         });
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onChannelSwitch(ChannelSwitchEvent event) {
+        Object town = event.getChannel().getContext(KEY);
+
+        if ((town instanceof Boolean) && ((Boolean) town)) {
+            if (!isInTown(event.getUser())) {
+                event.setCancelled(true);
+                event.setFailureMessage(getConfig().getString("cancellation-message"));
+            }
+        }
+    }
+
     @EventHandler
     public void onResidentRemove(TownRemoveResidentEvent event) {
         String name = event.getResident().getName();
         ChatUser user = simpleChat.getUserService().wrap(Bukkit.getOfflinePlayer(name));
-        Object town = user.getSelectedChannel().getContext("towny-town");
+        Object town = user.getSelectedChannel().getContext(KEY);
 
         if ((town instanceof Boolean) && ((Boolean) town)) {
             user.clearSelectedChannel();
@@ -42,7 +58,7 @@ public final class SimpleChatTowny extends JavaPlugin {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         ChatUser user = simpleChat.getUserService().wrap(event.getPlayer());
-        Object town = user.getSelectedChannel().getContext("towny-town");
+        Object town = user.getSelectedChannel().getContext(KEY);
 
         if ((town instanceof Boolean) && ((Boolean) town) && !isInTown(user)) {
             user.clearSelectedChannel();

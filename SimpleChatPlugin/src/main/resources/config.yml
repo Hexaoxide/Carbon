@@ -74,6 +74,7 @@ language:
   spy-whispers: '<yellow>Spy [<gray><sender> <gold>-> <gray><target><yellow>] <message>'
   no-reply-target: '<red>You have no one to reply to!'
   empty-channel: 'NONE' #<channel>, set to "NONE" to disable
+  channel-switch-failure: '<red>You cannot use channel <channel>!'
 
   # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
   me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'

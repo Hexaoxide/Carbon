@@ -75,10 +75,20 @@ public class SimpleChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public void setSelectedChannel(ChatChannel chatChannel) {
+        String failureMessage = simpleChat.getConfig().getString("language.channel-switch-failure");
+        ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
+
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            sendMessage(simpleChat.getAdventureManager().processMessage(event.getFailureMessage(),
+                    "channel", chatChannel.getName()));
+
+            return;
+        }
+
         this.selectedChannel = chatChannel.getKey();
         syncToRedis();
-
-        Bukkit.getPluginManager().callEvent(new ChannelSwitchEvent(chatChannel, this));
     }
 
     @Override
