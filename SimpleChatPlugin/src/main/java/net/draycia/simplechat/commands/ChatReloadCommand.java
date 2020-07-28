@@ -19,7 +19,6 @@ public class ChatReloadCommand extends BaseCommand {
     @Default
     public void baseCommand(CommandSender sender) {
         simpleChat.reloadConfig();
-        simpleChat.reloadPatterns();
 
         Component message = simpleChat.getAdventureManager().processMessage(simpleChat.getConfig().getString("language.reloaded"),
                 "br", "\n");

@@ -181,6 +181,7 @@ public class SimpleChatChannel extends ChatChannel {
         } else {
             String[] groups;
 
+            // TODO: this can't be done on main thread :(
             if (user.isOnline()) {
                 groups = simpleChat.getPermission().getPlayerGroups(user.asPlayer());
             } else {
