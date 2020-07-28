@@ -1,13 +1,15 @@
 repositories {
     mavenLocal()
     mavenCentral()
+
+    maven { url = "https://maven.enginehub.org/repo/" }
 }
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
-    compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.130'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT'
 
     api project(':SimpleChat')
 }
 
-description = 'SimpleChatMCMMO'
+description = 'SimpleChatWorldGuard'

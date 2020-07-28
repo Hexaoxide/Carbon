@@ -18,7 +18,11 @@ public final class SimpleChatMCMMO extends JavaPlugin {
         simpleChat = (SimpleChat) Bukkit.getPluginManager().getPlugin("SimpleChat");
 
         simpleChat.getContextManager().register("mcmmo-party", (context) -> {
-            return isInSameParty(context.getSender(), context.getTarget());
+            if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
+                return isInSameParty(context.getSender(), context.getTarget());
+            }
+
+            return true;
         });
     }
 

@@ -9,5 +9,6 @@ include(':SimpleChat')
 include(':SimpleChatModeration')
 include(':SimpleChatMCMMO')
 include(':SimpleChatTowny')
+include(':SimpleChatWorldGuard')
 
 project(':SimpleChat').projectDir = file('SimpleChatPlugin')

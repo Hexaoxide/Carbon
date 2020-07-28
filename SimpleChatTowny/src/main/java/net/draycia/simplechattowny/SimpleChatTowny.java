@@ -20,7 +20,11 @@ public final class SimpleChatTowny extends JavaPlugin {
         simpleChat = (SimpleChat) Bukkit.getPluginManager().getPlugin("SimpleChat");
 
         simpleChat.getContextManager().register("towny-town", (context) -> {
-            return isInSameTown(context.getSender(), context.getTarget());
+            if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
+                return isInSameTown(context.getSender(), context.getTarget());
+            }
+
+            return true;
         });
     }
 
