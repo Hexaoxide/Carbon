@@ -20,14 +20,12 @@ public class SetColorCommand extends BaseCommand {
     @Default
     @CommandCompletion("@chatchannel")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, String color) {
-        // TODO: condition for ChatChannel existing
         if (channel == null || color == null) {
             throw new ConditionFailedException("Channel or Color not supplied!");
         }
 
         ChatUser user = simpleChat.getUserService().wrap(player);
 
-        // TODO: move into conditions
         if (!player.hasPermission("simplechat.setcolor." + channel.getName())) {
             throw new ConditionFailedException("You can't set colors for this channel!");
         }

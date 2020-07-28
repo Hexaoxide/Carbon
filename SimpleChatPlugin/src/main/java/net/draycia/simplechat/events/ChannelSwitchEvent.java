@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 public class ChannelSwitchEvent extends Event implements Cancellable {
 
@@ -14,7 +15,7 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
     private boolean cancelled = false;
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 

@@ -45,12 +45,16 @@ public class PluginMessageManager implements PluginMessageListener {
 
         ByteArrayDataInput msg = ByteStreams.newDataInput(msgbytes);
 
-        if (subchannel.equals("simplechat:message")) {
-            onMessageReceived(msg);
-        } else if (subchannel.equals("simplechat:component")) {
-            onComponentReceived(msg);
-        } else if (subchannel.equals("simplechat:whisper")) {
-            onWhisperReceived(msg);
+        switch (subchannel) {
+            case "simplechat:message":
+                onMessageReceived(msg);
+                break;
+            case "simplechat:component":
+                onComponentReceived(msg);
+                break;
+            case "simplechat:whisper":
+                onWhisperReceived(msg);
+                break;
         }
     }
 

@@ -11,12 +11,7 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
-import java.util.regex.Pattern;
-
 public final class SimpleChat extends JavaPlugin {
-
-    private final List<Pattern> itemPatterns = new ArrayList<>();
 
     private Permission permission;
 
@@ -71,7 +66,6 @@ public final class SimpleChat extends JavaPlugin {
 
         // Setup listeners
         setupListeners();
-        reloadPatterns();
         registerContexts();
     }
 
@@ -92,14 +86,6 @@ public final class SimpleChat extends JavaPlugin {
         pluginManager.registerEvents(new PlaceholderHandler(this), this);
         pluginManager.registerEvents(new EmptyChatHandler(this), this);
         pluginManager.registerEvents(new UserFormattingListener(), this);
-    }
-
-    public void reloadPatterns() {
-        itemPatterns.clear();
-
-        for (String entry : getConfig().getStringList("item-link-placeholders")) {
-            itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
-        }
     }
 
     private void registerContexts() {

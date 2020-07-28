@@ -5,6 +5,7 @@ import net.draycia.simplechat.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class ChannelRegisterEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 
