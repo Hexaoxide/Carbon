@@ -1,5 +1,0 @@
-name: SimpleChatTowny
-version: ${project.version}
-main: net.draycia.simplechatmcmmo.SimpleChatTowny
-api-version: 1.16
-depend: [SimpleChat, Towny]

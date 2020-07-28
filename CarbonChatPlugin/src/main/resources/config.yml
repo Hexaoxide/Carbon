@@ -1,0 +1,123 @@
+# CarbonChat Docs:
+# https://github.com/Draycia/Chat/wiki
+
+# IMPORTANT: Use the <pre> tag around ALL user inputs.
+# All <message> placeholders should be prefixed with <pre> and suffixed with </pre>
+# Failure to do so may and likely will result in users being able to inject formatting in messages.
+
+# All of the settings under this 'default' section can be applied to each channel individually to override these.
+# These are provided as a way to configure default channel settings.
+default:
+  # switch-message, toggle-off-message and toggle-on-message support PlaceholderAPI
+  switch-message: '<gray>You are now in <color><channel> <gray>chat!'
+  switch-other-message: '<gray><player> is now in <color><channel> <gray>chat!'
+  toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
+  toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
+  toggle-other-on: '<gray><player> can now see <color><channel> <gray>chat!'
+  toggle-other-off: '<gray><player> can no longer see <color><channel> <gray>chat!'
+  cannot-use-channel: "You cannot use that channel!"
+  formats:
+    # Placeholders: <username>, <displayname>, <channel>, <server>, <message>, <primaryrole>, <color>
+    # Also supports PlaceholderAPI
+    staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <color><pre><message>'
+    default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <color><pre><message>'
+  contexts:
+    distance: -1 # -1 to disable, 0 to set to world, 1+ to fully enable
+    # mcmmo-party only works when the CarbonChatMCMMO addon is installed.
+    # Requires both players to be in the same party to see the message.
+    mcmmo-party: false
+    # worldguard-region only works when the CarbonChatWorldGuard addon is installed.
+    # Requires both players to be in the same region to see the message.
+    worldguard-region: false
+    # towny-town only works when the CarbonChatTowny addon is installed.
+    # Requires both players to be in the same town to see the message.
+    towny-town: false
+  color: '#FFFFFF'
+  # Can players /toggle this channel and hide its messages?
+  ignorable: true
+  # -1 = disabled, 0 = world chat, greater than 0 = enabled
+  forward-format: true
+  # Enables/disables cross server chat for this channel
+  should-bungee: true
+  # Determines if this channel should use the highest matching vault group found for formatting
+  first-matching-group: false
+
+channels:
+  global:
+    name: 'Global'
+    aliases: 'global|g'
+    # If this channel is the default channel
+    default: true
+  announcements:
+    name: 'Announcements'
+    formats:
+      default: '<gold>Broadcast: <yellow><pre><message></pre>'
+    ignorable: false
+    should-bungee: false
+
+replacements:
+  '%shrug%': '¯\_(ツ)_/¯'
+
+# Options:
+# 'MiniMessage': https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#the-components
+# 'MiniMessage-Markdown': https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#markdown
+# 'MineDown': https://github.com/Phoenix616/MineDown#syntax
+# Note that the messages provided in the default config utilise MiniMessage, and need to be changed if you're using MineDown
+formatting:
+  type: 'MiniMessage'
+
+language:
+  # The following messages are only compatible with MiniMessage/MineDown
+  reloaded: '<yellow>Chat config has been reloaded!'
+  message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
+  message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
+  spy-whispers: '<yellow>Spy [<gray><sender> <gold>-> <gray><target><yellow>] <message>'
+  no-reply-target: '<red>You have no one to reply to!'
+  empty-channel: 'NONE' #<channel>, set to "NONE" to disable
+  channel-switch-failure: '<red>You cannot use channel <channel>!'
+
+  # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
+  me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
+  ignoring-user: '<green>You are now ignoring <gold><player><green>!'
+  not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
+  ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'
+  channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
+  spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
+  spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
+  spy-whispers-on: '<gray>You are now spying on whispers!'
+  spy-whispers-off: '<gray>You are no longer spying on whispers!'
+
+# Used for <server> placeholder in channel formats
+server-name: 'Server'
+
+item-link-placeholders:
+  - '[item]'
+  - '%item%'
+
+spy-prefix: '<color>[SPY] '
+spy-prefix-nation: '<color>[SPY <nation>] '
+spy-prefix-town: '<color>[SPY <town>] '
+spy-prefix-mcmmo: '<color>[SPY <party>] '
+
+pings:
+  enabled: true
+  source: 'PLAYER'
+  sound: 'minecraft:entity.experience_orb.pickup'
+  volume: 10.0
+  pitch: 1.0
+  highlight: true # independent of the "enabled" option!
+  on-whisper: true # independent of the "enabled" option!
+
+storage:
+  type: JSON # JSON, MySQL
+  username: 'username'
+  password: 'password'
+  database: 'database'
+  hostname: 'localhost'
+  port: 3306
+
+redis:
+  enabled: false
+  host: 'localhost'
+  port: 6379
+  database: 0

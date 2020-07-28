@@ -1,0 +1,6 @@
+name: CarbonChat
+version: ${project.version}
+main: net.draycia.carbon.CarbonChat
+api-version: 1.16
+depend: [PlaceholderAPI, Vault]
+softdepend: [LuckPerms]

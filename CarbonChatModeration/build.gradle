@@ -1,0 +1,10 @@
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    api project(':CarbonChatPlugin')
+}
+
+description = 'CarbonChatModeration'

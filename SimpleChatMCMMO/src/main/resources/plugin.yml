@@ -1,5 +1,0 @@
-name: SimpleChatMCMMO
-version: ${project.version}
-main: net.draycia.simplechatmcmmo.SimpleChatMCMMO
-api-version: 1.16
-depend: [SimpleChat, mcMMO]

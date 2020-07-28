@@ -1,0 +1,55 @@
+package net.draycia.carbon.commands;
+
+import co.aikar.commands.BaseCommand;
+import co.aikar.commands.annotation.*;
+import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.channels.ChatChannel;
+import net.draycia.carbon.storage.ChatUser;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+@CommandAlias("ch|channel|switch")
+@CommandPermission("simplechat.switch")
+public class ChannelCommand extends BaseCommand {
+
+    @Dependency
+    private CarbonChat carbonChat;
+
+    @Default
+    @CommandCompletion("@chatchannel")
+    public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, @Optional String[] args) {
+        ChatUser user = carbonChat.getUserService().wrap(player);
+
+        if (args == null || args.length == 0) {
+            user.setSelectedChannel(channel);
+
+            user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, channel.getSwitchMessage(),
+                    "br", "\n",
+                    "color", "<" + channel.getColor().toString() + ">",
+                    "channel", channel.getName()));
+        } else {
+            Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
+                channel.sendMessage(user, String.join(" ", args), false);
+            });
+        }
+    }
+
+    @CommandPermission("simplechat.switch.others")
+    @Subcommand("other")
+    @CommandCompletion("@chatchannel @players")
+    public void baseCommand(CommandSender sender, ChatChannel channel, ChatUser user) {
+        user.setSelectedChannel(channel);
+
+        String message = channel.getSwitchMessage();
+        String otherMessage = channel.getSwitchOtherMessage();
+
+        user.sendMessage(carbonChat.getAdventureManager().processMessage(message, "br", "\n",
+                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
+
+        carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage, "br", "\n",
+                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName(),
+                "player", user.asOfflinePlayer().getName()));
+    }
+
+}

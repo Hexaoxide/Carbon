@@ -1,5 +1,0 @@
-name: SimpleChatWorldGuard
-version: ${project.version}
-main: net.draycia.simplechatmcmmo.SimpleChatWorldGuard
-api-version: 1.16
-depend: [SimpleChat, WorldGuard]
