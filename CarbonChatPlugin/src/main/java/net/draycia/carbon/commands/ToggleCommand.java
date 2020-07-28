@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandAlias("tch|togglec|togglechannel|toggle")
-@CommandPermission("simplechat.toggle")
+@CommandPermission("carbonchat.toggle")
 public class ToggleCommand extends BaseCommand {
 
     @Dependency
@@ -37,7 +37,7 @@ public class ToggleCommand extends BaseCommand {
                 "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
     }
 
-    @CommandPermission("simplechat.toggle.others")
+    @CommandPermission("carbonchat.toggle.others")
     @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
     public void baseCommand(CommandSender sender, @Conditions("canuse:true") ChatChannel channel, ChatUser user) {

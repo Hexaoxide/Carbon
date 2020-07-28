@@ -14,7 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("shadowmute|sm|smute")
-@CommandPermission("simplechat.shadowmute")
+@CommandPermission("carbonchat.shadowmute")
 public class ShadowMuteCommand extends BaseCommand {
 
     private CarbonChatModeration moderation;
@@ -41,7 +41,7 @@ public class ShadowMuteCommand extends BaseCommand {
                 Permission permission = moderation.getCarbonChat().getPermission();
                 String format;
 
-                if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.shadowmute.exempt")) {
+                if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.shadowmute.exempt")) {
                     format = moderation.getConfig().getString("language.shadow-mute-exempt");
                 } else {
                     targetUser.setShadowMuted(true);

@@ -11,7 +11,7 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
 
 @CommandAlias("setcolor")
-@CommandPermission("simplechat.setcolor")
+@CommandPermission("carbonchat.setcolor")
 public class SetColorCommand extends BaseCommand {
 
     @Dependency
@@ -26,7 +26,7 @@ public class SetColorCommand extends BaseCommand {
 
         ChatUser user = carbonChat.getUserService().wrap(player);
 
-        if (!player.hasPermission("simplechat.setcolor." + channel.getName())) {
+        if (!player.hasPermission("carbonchat.setcolor." + channel.getName())) {
             throw new ConditionFailedException("You can't set colors for this channel!");
         }
 

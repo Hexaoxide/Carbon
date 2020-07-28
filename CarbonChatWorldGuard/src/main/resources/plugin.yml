@@ -1,5 +1,5 @@
 name: CarbonChatWorldGuard
 version: ${project.version}
-main: net.draycia.simplechatmcmmo.CarbonChatWorldGuard
+main: net.draycia.carbonworldguard.CarbonChatWorldGuard
 api-version: 1.16
 depend: [CarbonChat, WorldGuard]

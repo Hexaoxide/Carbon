@@ -11,7 +11,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 @CommandAlias("reply|r")
-@CommandPermission("simplechat.reply")
+@CommandPermission("carbonchat.reply")
 public class ReplyCommand extends BaseCommand {
 
     @Dependency

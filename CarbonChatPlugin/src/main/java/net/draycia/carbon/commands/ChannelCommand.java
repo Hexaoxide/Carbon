@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandAlias("ch|channel|switch")
-@CommandPermission("simplechat.switch")
+@CommandPermission("carbonchat.switch")
 public class ChannelCommand extends BaseCommand {
 
     @Dependency
@@ -35,7 +35,7 @@ public class ChannelCommand extends BaseCommand {
         }
     }
 
-    @CommandPermission("simplechat.switch.others")
+    @CommandPermission("carbonchat.switch.others")
     @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
     public void baseCommand(CommandSender sender, ChatChannel channel, ChatUser user) {

@@ -14,7 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("mute")
-@CommandPermission("simplechat.mute")
+@CommandPermission("carbonchat.mute")
 public class MuteCommand extends BaseCommand {
 
     private CarbonChatModeration moderation;
@@ -41,7 +41,7 @@ public class MuteCommand extends BaseCommand {
                 Permission permission = moderation.getCarbonChat().getPermission();
                 String format;
 
-                if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.mute.exempt")) {
+                if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.mute.exempt")) {
                     format = moderation.getConfig().getString("language.mute-exempt");
                 } else {
                     targetUser.setMuted(true);

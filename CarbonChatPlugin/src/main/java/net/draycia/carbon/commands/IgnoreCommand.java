@@ -14,7 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("ignore")
-@CommandPermission("simplechat.ignore")
+@CommandPermission("carbonchat.ignore")
 public class IgnoreCommand extends BaseCommand {
 
     @Dependency
@@ -32,7 +32,7 @@ public class IgnoreCommand extends BaseCommand {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
                 Permission permission = carbonChat.getPermission();
 
-                if (permission.playerHas(null, targetUser.asOfflinePlayer(), "simplechat.ignore.exempt")) {
+                if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.ignore.exempt")) {
                     user.sendMessage(processMessage(player, carbonChat.getConfig().getString("language.ignore-exempt")));
                 } else {
                     user.setIgnoringUser(targetUser, true);

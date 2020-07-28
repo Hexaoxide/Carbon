@@ -10,7 +10,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("chatreload|creload")
-@CommandPermission("simplechat.reload")
+@CommandPermission("carbonchat.reload")
 public class ChatReloadCommand extends BaseCommand {
 
     @Dependency

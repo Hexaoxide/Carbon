@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("%channelName")
-@CommandPermission("simplechat.switch")
+@CommandPermission("carbonchat.switch")
 public class AliasedChannelCommand extends BaseCommand {
 
     @Dependency

@@ -11,7 +11,7 @@ import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.entity.Player;
 
 @CommandAlias("msg|whisper|message|w")
-@CommandPermission("simplechat.message")
+@CommandPermission("carbonchat.message")
 public class MessageCommand extends BaseCommand {
 
     @Dependency

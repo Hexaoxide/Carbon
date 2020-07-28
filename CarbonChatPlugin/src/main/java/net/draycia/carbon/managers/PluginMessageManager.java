@@ -46,13 +46,13 @@ public class PluginMessageManager implements PluginMessageListener {
         ByteArrayDataInput msg = ByteStreams.newDataInput(msgbytes);
 
         switch (subchannel) {
-            case "simplechat:message":
+            case "carbonchat:message":
                 onMessageReceived(msg);
                 break;
-            case "simplechat:component":
+            case "carbonchat:component":
                 onComponentReceived(msg);
                 break;
-            case "simplechat:whisper":
+            case "carbonchat:whisper":
                 onWhisperReceived(msg);
                 break;
         }
@@ -135,7 +135,7 @@ public class PluginMessageManager implements PluginMessageListener {
         msg.writeUTF(player.getUniqueId().toString());
         msg.writeUTF(message);
 
-        api.forward("ALL", "simplechat:message", msg.toByteArray());
+        api.forward("ALL", "carbonchat:message", msg.toByteArray());
     }
 
     public void sendComponent(ChatChannel chatChannel, Player player, Component component) {
@@ -145,7 +145,7 @@ public class PluginMessageManager implements PluginMessageListener {
         msg.writeUTF(player.getUniqueId().toString());
         msg.writeUTF(MiniMessage.get().serialize(component));
 
-        api.forward("ALL", "simplechat:component", msg.toByteArray());
+        api.forward("ALL", "carbonchat:component", msg.toByteArray());
     }
 
     public void sendComponentToPlayer(ChatUser sender, ChatUser target, Component toComponent, Component fromComponent) {
@@ -165,7 +165,7 @@ public class PluginMessageManager implements PluginMessageListener {
             msg.writeUTF(target.getUUID().toString());
             msg.writeUTF(MiniMessage.get().serialize(fromComponent));
 
-            api.forward("ALL", "simplechat:whisper", msg.toByteArray());
+            api.forward("ALL", "carbonchat:whisper", msg.toByteArray());
         });
     }
 }

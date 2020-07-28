@@ -40,7 +40,7 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public Boolean canPlayerUse(ChatUser user) {
-        return user.asPlayer().hasPermission("simplechat.channels." + getName() + ".use");
+        return user.asPlayer().hasPermission("carbonchat.channels." + getName() + ".use");
     }
 
     @Override
@@ -202,18 +202,18 @@ public class CarbonChatChannel extends ChatChannel {
     public Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 
-        if (checkSpying && targetPlayer.hasPermission("simplechat.spy." + getName())) {
+        if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + getName())) {
             if (target.getChannelSettings(this).isSpying()) {
                 return true;
             }
         }
 
-        if (!targetPlayer.hasPermission("simplechat.channels." + getName() + ".see")) {
+        if (!targetPlayer.hasPermission("carbonchat.channels." + getName() + ".see")) {
             return false;
         }
 
         if (isIgnorable()) {
-            if (target.isIgnoringUser(sender) && !targetPlayer.hasPermission("simplechat.ignore.exempt")) {
+            if (target.isIgnoringUser(sender) && !targetPlayer.hasPermission("carbonchat.ignore.exempt")) {
                 return false;
             }
 

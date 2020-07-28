@@ -13,7 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("me|rp")
-@CommandPermission("simplechat.me")
+@CommandPermission("carbonchat.me")
 public class MeCommand extends BaseCommand {
 
     @Dependency

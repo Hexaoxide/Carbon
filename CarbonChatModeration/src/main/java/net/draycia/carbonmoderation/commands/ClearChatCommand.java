@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandAlias("clearchat|cc")
-@CommandPermission("simplechat.clearchat.clear")
+@CommandPermission("carbonchat.clearchat.clear")
 public class ClearChatCommand extends BaseCommand {
 
     private CarbonChatModeration moderation;
@@ -28,7 +28,7 @@ public class ClearChatCommand extends BaseCommand {
         Component component = moderation.getCarbonChat().getAdventureManager().processMessage(format, "br", "\n");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("simplechat.clearchat.exempt")) {
+            if (player.hasPermission("carbonchat.clearchat.exempt")) {
                 continue;
             }
 
@@ -38,12 +38,12 @@ public class ClearChatCommand extends BaseCommand {
                 audience.sendMessage(component, MessageType.SYSTEM);
             }
 
-            if (player.hasPermission("simplechat.clearchat.notify")) {
+            if (player.hasPermission("carbonchat.clearchat.notify")) {
                 String message = moderation.getConfig().getString("language.clear-notify");
                 audience.sendMessage(moderation.getCarbonChat().getAdventureManager().processMessage(message, "player", issuer.getName()), MessageType.SYSTEM);
             }
 
-            if (player.hasPermission("simplechat.clearchat.exempt")) {
+            if (player.hasPermission("carbonchat.clearchat.exempt")) {
                 String message = moderation.getConfig().getString("language.clear-exempt");
                 audience.sendMessage(moderation.getCarbonChat().getAdventureManager().processMessage(message, "player", issuer.getName()), MessageType.SYSTEM);
             }

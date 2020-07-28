@@ -9,7 +9,7 @@ import net.draycia.carbon.storage.UserChannelSettings;
 import org.bukkit.entity.Player;
 
 @CommandAlias("spych|spychannel|spy")
-@CommandPermission("simplechat.spy")
+@CommandPermission("carbonchat.spy")
 public class SpyChannelCommand extends BaseCommand {
 
     @Dependency
