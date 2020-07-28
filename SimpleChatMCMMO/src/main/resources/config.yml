@@ -1,7 +1,0 @@
-channels:
-  party:
-    name: 'Party'
-    aliases: 'partychat|pc'
-    color: '#00FF00'
-    formats:
-      default: '<color>[<white>%player_displayname%<color>] <color><pre><message>'

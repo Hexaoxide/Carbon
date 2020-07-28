@@ -1,5 +1,6 @@
 package net.draycia.simplechat;
 
+import net.draycia.simplechat.channels.contexts.impl.DistanceContext;
 import net.draycia.simplechat.listeners.*;
 import net.draycia.simplechat.managers.*;
 import net.draycia.simplechat.storage.UserService;
@@ -24,6 +25,7 @@ public final class SimpleChat extends JavaPlugin {
     private ChannelManager channelManager;
     private RedisManager redisManager = null;
     private AdventureManager adventureManager;
+    private ContextManager contextManager;
 
     private UserService userService;
 
@@ -50,6 +52,7 @@ public final class SimpleChat extends JavaPlugin {
         pluginMessageManager = new PluginMessageManager(this);
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
+        contextManager = new ContextManager();
 
         if (getConfig().getBoolean("redis.enabled")) {
             redisManager = new RedisManager(this);
@@ -69,6 +72,7 @@ public final class SimpleChat extends JavaPlugin {
         // Setup listeners
         setupListeners();
         reloadPatterns();
+        registerContexts();
     }
 
     @Override
@@ -96,6 +100,10 @@ public final class SimpleChat extends JavaPlugin {
         for (String entry : getConfig().getStringList("item-link-placeholders")) {
             itemPatterns.add(Pattern.compile(Pattern.quote(entry)));
         }
+    }
+
+    private void registerContexts() {
+        getContextManager().register("distance", new DistanceContext());
     }
 
     public Permission getPermission() {
@@ -128,5 +136,9 @@ public final class SimpleChat extends JavaPlugin {
 
     public AdventureManager getAdventureManager() {
         return adventureManager;
+    }
+
+    public ContextManager getContextManager() {
+        return contextManager;
     }
 }

@@ -4,6 +4,7 @@ import net.draycia.simplechat.SimpleChat;
 import net.draycia.simplechat.channels.ChatChannel;
 import net.draycia.simplechat.events.ChatComponentEvent;
 import net.draycia.simplechat.events.ChatFormatEvent;
+import net.draycia.simplechat.managers.ContextManager;
 import net.draycia.simplechat.storage.ChatUser;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -32,6 +33,11 @@ public class SimpleChatChannel extends ChatChannel {
 
     public SimpleChat getSimpleChat() {
         return simpleChat;
+    }
+
+    @Override
+    public boolean testContext(ChatUser sender, ChatUser target) {
+        return simpleChat.getContextManager().testContext(sender, target, this);
     }
 
     @Override
@@ -207,25 +213,6 @@ public class SimpleChatChannel extends ChatChannel {
             return false;
         }
 
-        if (sender.isOnline()) {
-            if (getDistance() == 0) {
-                if (!targetPlayer.getWorld().equals(sender.asPlayer().getWorld())) {
-                    return false;
-                }
-            } else if (getDistance() > 0) {
-                Location one = targetPlayer.getLocation();
-                Location two = sender.asPlayer().getLocation();
-
-                if (!one.getWorld().equals(two.getWorld())) {
-                    return false;
-                }
-
-                if (one.distance(two) > getDistance()) {
-                    return false;
-                }
-            }
-        }
-
         if (isIgnorable()) {
             if (target.isIgnoringUser(sender) && !targetPlayer.hasPermission("simplechat.ignore.exempt")) {
                 return false;
@@ -288,11 +275,6 @@ public class SimpleChatChannel extends ChatChannel {
     }
 
     @Override
-    public Double getDistance() {
-        return getDouble("distance");
-    }
-
-    @Override
     public String getSwitchMessage() {
         return getString("switch-message");
     }
@@ -346,6 +328,29 @@ public class SimpleChatChannel extends ChatChannel {
         }
 
         return itemPatterns;
+    }
+
+    @Override
+    public Object getContext(String key) {
+        ConfigurationSection section = config.getConfigurationSection("contexts");
+
+        if (section == null) {
+            ConfigurationSection defaultSection = simpleChat.getConfig().getConfigurationSection("default");
+
+            if (defaultSection == null) {
+                return null;
+            }
+
+            ConfigurationSection defaultContexts = defaultSection.getConfigurationSection("contexts");
+
+            if (defaultContexts == null) {
+                return null;
+            }
+
+            return defaultContexts.get(key);
+        }
+
+        return section.get(key);
     }
 
     private String getString(String key) {

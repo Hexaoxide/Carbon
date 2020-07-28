@@ -3,7 +3,11 @@
  */
 
 rootProject.name = 'SimpleChatParent'
+
 include(':SimpleChat')
+
 include(':SimpleChatModeration')
 include(':SimpleChatMCMMO')
+include(':SimpleChatTowny')
+
 project(':SimpleChat').projectDir = file('SimpleChatPlugin')

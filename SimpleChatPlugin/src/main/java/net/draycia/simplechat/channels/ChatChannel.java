@@ -42,11 +42,6 @@ public abstract class ChatChannel {
     public abstract String getAliases();
 
     /**
-     * @return The distance other players must be within to the sender to see messages in this channel.
-     */
-    public abstract Double getDistance();
-
-    /**
      * @return The message to be sent to the player when switching to this channel.
      */
     public abstract String getSwitchMessage();
@@ -72,6 +67,10 @@ public abstract class ChatChannel {
     public abstract String getCannotUseMessage();
 
     public abstract Boolean firstMatchingGroup();
+
+    public abstract boolean testContext(ChatUser sender, ChatUser target);
+
+    public abstract Object getContext(String key);
 
     /**
      * @return If the player can use this channel.

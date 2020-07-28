@@ -1,9 +1,12 @@
 package net.draycia.simplechatmcmmo;
 
+import com.gmail.nossr50.api.PartyAPI;
+import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.simplechat.SimpleChat;
-import net.draycia.simplechat.channels.ChatChannel;
+import net.draycia.simplechat.storage.ChatUser;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SimpleChatMCMMO extends JavaPlugin {
@@ -14,31 +17,48 @@ public final class SimpleChatMCMMO extends JavaPlugin {
     public void onEnable() {
         simpleChat = (SimpleChat) Bukkit.getPluginManager().getPlugin("SimpleChat");
 
-        for (String key : getConfig().getConfigurationSection("channels").getKeys(false)) {
-            ConfigurationSection section = getConfig().getConfigurationSection("channels").getConfigurationSection(key);
+        simpleChat.getContextManager().register("mcmmo-party", (context) -> {
+            return isInSameParty(context.getSender(), context.getTarget());
+        });
+    }
 
-            ChatChannel channel = loadChannel(key, section);
+    private final McMMOPartyChangeEvent.EventReason LEFT = McMMOPartyChangeEvent.EventReason.LEFT_PARTY;
+    private final McMMOPartyChangeEvent.EventReason KICKED = McMMOPartyChangeEvent.EventReason.KICKED_FROM_PARTY;
 
-            if (channel != null) {
-                if (simpleChat.getChannelManager().registerChannel(channel)) {
-                    getLogger().info("Registering channel: " + channel.getName());
-                }
-            }
+    @EventHandler
+    public void onPartyLeave(McMMOPartyChangeEvent event) {
+        if (event.getReason() != LEFT && event.getReason() != KICKED) {
+            return;
+        }
+
+        ChatUser user = simpleChat.getUserService().wrap(event.getPlayer());
+        Object party = user.getSelectedChannel().getContext("mcmmo-party");
+
+        if ((party instanceof Boolean) && ((Boolean) party)) {
+            user.clearSelectedChannel();
         }
     }
 
-    public ChatChannel loadChannel(String key, ConfigurationSection section) {
-        ChatChannel channel = new PartyChatChannel(key, simpleChat, section);
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        ChatUser user = simpleChat.getUserService().wrap(event.getPlayer());
+        Object party = user.getSelectedChannel().getContext("mcmmo-party");
 
-        String name = section.getString("name");
+        if ((party instanceof Boolean) && ((Boolean) party) && !isInParty(user)) {
+            user.clearSelectedChannel();
+        }
+    }
 
-        if (name != null && name.length() > 16) {
-            getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
-            getLogger().warning("Skipping channel, please check your settings!");
-            return null;
+    public boolean isInParty(ChatUser user) {
+        return PartyAPI.inParty(user.asPlayer());
+    }
+
+    public boolean isInSameParty(ChatUser user1, ChatUser user2) {
+        if (!user1.isOnline() || !user2.isOnline()) {
+            return false;
         }
 
-        return channel;
+        return PartyAPI.inSameParty(user1.asPlayer(), user2.asPlayer());
     }
 
 }

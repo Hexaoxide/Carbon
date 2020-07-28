@@ -21,12 +21,15 @@ default:
     # Also supports PlaceholderAPI
     staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <color><pre><message>'
     default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <color><pre><message>'
+  contexts:
+    distance: -1 # -1 to disable, 0 to set to world, 1+ to fully enable
+    # mcmmo-party only works when the SiumpleChatMCMMO addon is installed.
+    # Requires both players to be in the same party to see the message.
+    mcmmo-party: false
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true
   # -1 = disabled, 0 = world chat, greater than 0 = enabled
-  distance: -1
-  # Forces all other servers to use this server's formatting for this channel
   forward-format: true
   # Enables/disables cross server chat for this channel
   should-bungee: true
