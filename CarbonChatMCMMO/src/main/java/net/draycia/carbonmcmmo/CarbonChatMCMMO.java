@@ -1,4 +1,4 @@
-package net.draycia.carbonchatmcmmo;
+package net.draycia.carbonmcmmo;
 
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
