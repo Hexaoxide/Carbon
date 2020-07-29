@@ -35,7 +35,8 @@ default:
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true
-  # -1 = disabled, 0 = world chat, greater than 0 = enabled
+  # Setting this to false causes all other servers to re-format the message locally.
+  # Unadvised unless you have notably different formatting on each server.
   forward-format: true
   # Enables/disables cross server chat for this channel
   should-bungee: true
