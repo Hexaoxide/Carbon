@@ -2,9 +2,9 @@ package net.draycia.carbonworldguard;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
@@ -12,6 +12,8 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 public final class CarbonChatWorldGuard extends JavaPlugin {
 
@@ -24,11 +26,25 @@ public final class CarbonChatWorldGuard extends JavaPlugin {
                 return isInSameRegion(context.getSender(), context.getTarget());
             }
 
+            boolean user1InRegion = false;
+            boolean user2InRegion = false;
+
             if (context.getValue() instanceof String) {
-                return isInSameRegion((String) context.getValue(), context.getSender(), context.getTarget());
+                user1InRegion = isInRegion((String)context.getValue(), context.getSender());
+                user2InRegion = isInRegion((String)context.getValue(), context.getTarget());
+            } else if (context.getValue() instanceof List) {
+                for (String item : (List<String>) context.getValue()) {
+                    if (!user1InRegion) {
+                        user1InRegion = isInRegion(item, context.getSender());
+                    }
+
+                    if (!user2InRegion) {
+                        user2InRegion = isInRegion(item, context.getTarget());
+                    }
+                }
             }
 
-            return true;
+            return user1InRegion && user2InRegion;
         });
     }
 
@@ -55,29 +71,12 @@ public final class CarbonChatWorldGuard extends JavaPlugin {
         return false;
     }
 
-    public boolean isInSameRegion(String region, ChatUser user1, ChatUser user2) {
-        if (!user1.isOnline() || !user2.isOnline()) {
-            return false;
-        }
-
+    public boolean isInRegion(String region, ChatUser user) {
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionManager regionManager = container.get(BukkitAdapter.adapt(user1.asPlayer().getWorld()));
+        World world = BukkitAdapter.adapt(user.asPlayer().getWorld());
+        ProtectedRegion protection = container.get(world).getRegion(region);
 
-        if (regionManager == null) {
-            return false;
-        }
-
-        ProtectedRegion protection = regionManager.getRegion(region);
-
-        if (protection == null) {
-            return false;
-        }
-
-        if (!isInRegion(protection, user1)) {
-            return false;
-        }
-
-        return isInRegion(protection, user2);
+        return isInRegion(protection, user);
     }
 
     public boolean isInRegion(ProtectedRegion region, ChatUser user) {
