@@ -1,10 +1,23 @@
+plugins {
+    id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    api project(':CarbonChatPlugin')
+    api project(':CarbonChat')
 }
 
 description = 'CarbonChatModeration'
+
+bukkit {
+    name = description
+    version = project.version
+    main = 'net.draycia.carbonmoderation.CarbonChatModeration'
+    apiVersion = '1.13'
+    author = 'Draycia'
+    depend = ['CarbonChat']
+}

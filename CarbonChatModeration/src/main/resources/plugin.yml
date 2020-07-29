@@ -1,5 +1,0 @@
-name: CarbonChatModeration
-version: ${project.version}
-main: net.draycia.carbonmoderation.CarbonChatModeration
-api-version: 1.16
-depend: [CarbonChat]

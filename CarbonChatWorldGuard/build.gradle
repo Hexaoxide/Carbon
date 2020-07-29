@@ -1,15 +1,26 @@
+plugins {
+    id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
-
     maven { url = "https://maven.enginehub.org/repo/" }
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT'
 
-    api project(':CarbonChatPlugin')
+    api project(':CarbonChat')
 }
 
 description = 'CarbonChatWorldGuard'
+
+bukkit {
+    name = description
+    version = project.version
+    main = 'net.draycia.carbonworldguard.CarbonChatWorldGuard'
+    apiVersion = '1.13'
+    author = 'Draycia'
+    depend = ['CarbonChat', 'WorldGuard']
+}

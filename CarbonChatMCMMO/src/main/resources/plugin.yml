@@ -1,5 +1,0 @@
-name: CarbonChatMCMMO
-version: ${project.version}
-main: net.draycia.carbonmcmmo.CarbonChatMCMMO
-api-version: 1.16
-depend: [CarbonChat, mcMMO]

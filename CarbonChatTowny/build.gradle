@@ -1,15 +1,26 @@
+plugins {
+    id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
-
     maven { url = "https://jitpack.io" }
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
     compileOnly 'com.github.TownyAdvanced:Towny:0.96.2.0'
 
-    api project(':CarbonChatPlugin')
+    api project(':CarbonChat')
 }
 
 description = 'CarbonChatTowny'
+
+bukkit {
+    name = description
+    version = project.version
+    main = 'net.draycia.carbontowny.CarbonChatTowny'
+    apiVersion = '1.13'
+    author = 'Draycia'
+    depend = ['CarbonChat', 'Towny']
+}

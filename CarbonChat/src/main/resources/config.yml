@@ -54,6 +54,7 @@ channels:
     name: 'Announcements'
     formats:
       default: '<gold>Broadcast: <yellow><pre><message></pre>'
+      staff: '<gold>Broadcast: <yellow><pre><message></pre>'
     ignorable: false
     should-bungee: false
 

@@ -1,5 +1,6 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '6.0.0'
+    id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
 }
 
 repositories {
@@ -27,12 +28,23 @@ dependencies {
     compileOnly 'org.jetbrains:annotations:16.0.1'
 }
 
-description = 'CarbonChatPlugin'
+description = 'CarbonChat'
+
+bukkit {
+    name = description
+    version = project.version
+    main = 'net.draycia.carbon.CarbonChat'
+    apiVersion = '1.13'
+    author = 'Draycia'
+    depend = ['PlaceholderAPI', 'Vault']
+    softDepend = ['LuckPerms']
+}
 
 tasks.build.dependsOn tasks.shadowJar
 
 shadowJar {
     minimize()
+    archiveClassifier = null
 }
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation

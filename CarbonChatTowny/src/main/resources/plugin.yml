@@ -1,5 +1,0 @@
-name: CarbonChatTowny
-version: ${project.version}
-main: net.draycia.carbontowny.CarbonChatTowny
-api-version: 1.16
-depend: [CarbonChat, Towny]
