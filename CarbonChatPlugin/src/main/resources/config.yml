@@ -22,7 +22,8 @@ default:
     staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <color><pre><message>'
     default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <color><pre><message>'
   contexts:
-    distance: -1 # -1 to disable, 0 to set to world, 1+ to fully enable
+    # -1 to disable, 0 to set to world, 1+ to fully enable
+    distance: -1
     # mcmmo-party only works when the CarbonChatMCMMO addon is installed.
     # Requires both players to be in the same party to see the message.
     mcmmo-party: false
