@@ -6,6 +6,7 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChannelSwitchEvent;
+import net.draycia.carbon.events.ChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,18 @@ public final class CarbonChatTowny extends JavaPlugin {
             if (!isInTown(event.getUser())) {
                 event.setCancelled(true);
                 event.setFailureMessage(getConfig().getString("cancellation-message"));
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChannelMessage(ChatFormatEvent event) {
+        // TODO: event.setFailureMessage
+        Object town = event.getChannel().getContext(KEY);
+
+        if ((town instanceof Boolean) && ((Boolean) town)) {
+            if (!isInTown(event.getUser())) {
+                event.setCancelled(true);
             }
         }
     }

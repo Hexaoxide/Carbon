@@ -25,7 +25,7 @@ public class FilterHandler implements Listener {
 
         String filterText = moderation.getConfig().getString("filters.filter-text", "****");
 
-        if (channelUsesFilter(event.getChatChannel())) {
+        if (channelUsesFilter(event.getChannel())) {
             for (String entry : moderation.getConfig().getStringList("filters.filtered-words")) {
                 event.setMessage(event.getMessage().replaceAll(entry, filterText));
             }

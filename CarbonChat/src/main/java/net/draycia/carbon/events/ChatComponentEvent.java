@@ -62,11 +62,11 @@ public class ChatComponentEvent extends Event implements Cancellable {
         return user;
     }
 
-    public ChatChannel getChatChannel() {
+    public ChatChannel getChannel() {
         return chatChannel;
     }
 
-    public void setChatChannel(ChatChannel chatChannel) {
+    public void setChannel(ChatChannel chatChannel) {
         this.chatChannel = chatChannel;
     }
 

@@ -9,19 +9,25 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.events.ChannelSwitchEvent;
+import net.draycia.carbon.events.ChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
 public final class CarbonChatWorldGuard extends JavaPlugin {
 
+    private static final String KEY = "worldguard-region";
+
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
-        carbonChat.getContextManager().register("worldguard-region", (context) -> {
+        carbonChat.getContextManager().register(KEY, (context) -> {
             if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
                 return isInSameRegion(context.getSender(), context.getTarget());
             }
@@ -46,6 +52,42 @@ public final class CarbonChatWorldGuard extends JavaPlugin {
 
             return user1InRegion && user2InRegion;
         });
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChannelSwitch(ChannelSwitchEvent event) {
+        Object value = event.getChannel().getContext(KEY);
+
+        if (!isInRegionOrRegions(value, event.getUser())) {
+            event.setCancelled(true);
+            // TODO: placeholders (regions, etc)
+            event.setFailureMessage(getConfig().getString("cancellation-message"));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChannelMessage(ChatFormatEvent event) {
+        Object value = event.getChannel().getContext(KEY);
+
+        if (!isInRegionOrRegions(value, event.getUser())) {
+                event.setCancelled(true);
+        }
+    }
+
+    private boolean isInRegionOrRegions(Object value, ChatUser user) {
+        if ((value instanceof String)) {
+            return isInRegion((String) value, user);
+        }
+
+        if (value instanceof List) {
+            for (String region : ((List<String>) value)) {
+                if (isInRegion(region, user)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public boolean isInSameRegion(ChatUser user1, ChatUser user2) {

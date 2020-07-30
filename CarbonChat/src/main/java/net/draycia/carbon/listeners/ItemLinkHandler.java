@@ -21,7 +21,7 @@ public class ItemLinkHandler implements Listener {
     public void onItemLink(ChatComponentEvent event) {
         // Handle item linking placeholders
         if (event.getUser().isOnline()) {
-            for (Pattern pattern : event.getChatChannel().getItemLinkPatterns()) {
+            for (Pattern pattern : event.getChannel().getItemLinkPatterns()) {
                 String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
 
                 if (event.getOriginalMessage().contains(patternContent)) {
