@@ -44,7 +44,11 @@ tasks.build.dependsOn tasks.shadowJar
 
 shadowJar {
     minimize()
-    archiveClassifier = null
+    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
+}
+
+jar {
+    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
 }
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation

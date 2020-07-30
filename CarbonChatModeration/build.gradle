@@ -26,6 +26,10 @@ bukkit {
 tasks.build.dependsOn tasks.shadowJar
 
 shadowJar {
-    archiveClassifier = null
     relocate "co.aikar.commands", "net.draycia.carbon.libs.co.aikar.commands"
+    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
+}
+
+jar {
+    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
 }

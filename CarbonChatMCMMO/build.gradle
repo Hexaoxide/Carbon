@@ -27,5 +27,9 @@ bukkit {
 tasks.build.dependsOn tasks.shadowJar
 
 shadowJar {
-    archiveClassifier = null
+    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
+}
+
+jar {
+    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
 }
