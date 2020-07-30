@@ -130,7 +130,7 @@ public class CarbonChatChannel extends ChatChannel {
 
         // Log message to console
         String sm = user.isShadowMuted() ? "[SM] " : "";
-        System.out.println(sm + LegacyComponentSerializer.legacy().serialize(componentEvent.getComponent()));
+        System.out.println(sm + LegacyComponentSerializer.legacySection().serialize(componentEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
@@ -158,7 +158,7 @@ public class CarbonChatChannel extends ChatChannel {
             user.sendMessage(component);
         }
 
-        System.out.println(LegacyComponentSerializer.legacy().serialize(component));
+        System.out.println(LegacyComponentSerializer.legacySection().serialize(component));
     }
 
     public void sendMessageToBungee(Player player, Component component) {
