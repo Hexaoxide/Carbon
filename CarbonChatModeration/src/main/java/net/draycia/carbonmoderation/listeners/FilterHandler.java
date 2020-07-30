@@ -30,6 +30,12 @@ public class FilterHandler implements Listener {
                 event.setMessage(event.getMessage().replaceAll(entry, filterText));
             }
         }
+
+        if (channelUsesFilter(event.getChannel())) {
+            for (String entry : moderation.getConfig().getStringList("filters.blocked-words")) {
+                event.setMessage(event.getMessage().replaceAll(entry, ""));
+            }
+        }
     }
 
     private boolean channelUsesFilter(ChatChannel chatChannel) {

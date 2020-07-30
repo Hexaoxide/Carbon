@@ -10,6 +10,8 @@ filters:
   filtered-words:
     - 'lag'
     - 'la[g]+'
+  blocked-words:
+    - 'broccoli sucks'
   channels:
     - '*' # Use '*' to mean all channels
 
