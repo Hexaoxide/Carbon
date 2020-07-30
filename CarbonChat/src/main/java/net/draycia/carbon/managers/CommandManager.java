@@ -88,6 +88,7 @@ public class CommandManager {
         manager.registerCommand(new ChatReloadCommand());
         manager.registerCommand(new MeCommand());
         manager.registerCommand(new MessageCommand());
+        manager.registerCommand(new NicknameCommand());
         manager.registerCommand(new ReplyCommand());
         manager.registerCommand(new SetColorCommand());
         manager.registerCommand(new SpyChannelCommand());

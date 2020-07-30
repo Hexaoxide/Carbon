@@ -16,6 +16,9 @@ public interface ChatUser extends Audience {
 
     boolean isOnline();
 
+    String getNickname();
+    void setNickname(String nickname);
+
     ChatChannel getSelectedChannel();
     void setSelectedChannel(ChatChannel channel);
 

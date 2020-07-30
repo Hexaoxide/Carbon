@@ -49,11 +49,13 @@ public class MySQLUserService extends UserService {
 
         try {
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
-                    "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN, spyingwhispers BOOLEAN)");
+                    "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN, spyingwhispers BOOLEAN," +
+                    "nickname VARCHAR)");
 
             // Ignore the exception, it's just saying the column already exists
             try {
                 database.executeUpdate("ALTER TABLE sc_users ADD COLUMN spyingwhispers BOOLEAN DEFAULT false");
+                database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR DEFAULT false");
             } catch (SQLSyntaxErrorException syntaxErrorException) {}
 
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel CHAR(16), spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
@@ -122,6 +124,12 @@ public class MySQLUserService extends UserService {
                 user.setSelectedChannel(channel);
             }
 
+            String nickname = users.getString("nickname");
+
+            if (nickname != null) {
+                user.setNickname(nickname);
+            }
+
             user.setMuted(users.<Boolean>get("muted"));
             user.setShadowMuted(users.<Boolean>get("shadowmuted"));
             user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"));
@@ -169,10 +177,10 @@ public class MySQLUserService extends UserService {
             }
 
             carbonChat.getLogger().info("Saving user data!");
-            stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers) VALUES (?, ?, ?, ?, ?) " +
-                            "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?",
-                    user.getUUID().toString(), selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(),
-                    selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers());
+            stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname) VALUES (?, ?, ?, ?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname =?",
+                    user.getUUID().toString(), selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.getNickname(),
+                    selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.getNickname());
 
             carbonChat.getLogger().info("Saving user channel settings!");
             // Save user channel settings

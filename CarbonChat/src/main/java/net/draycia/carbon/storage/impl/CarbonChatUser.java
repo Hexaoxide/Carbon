@@ -32,6 +32,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     private boolean shadowMuted = false;
     private boolean spyingWhispers = false;
 
+    private String nickname;
+
     private transient UUID replyTarget = null;
 
     public CarbonChatUser() {
@@ -267,4 +269,12 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         }
     }
 
+    @Override
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
