@@ -6,12 +6,12 @@ caps-protection:
 
 filters:
   enabled: true
-  filter-text: '****'
-  filtered-words:
-    - 'lag'
-    - 'la[g]+'
-  blocked-words:
-    - 'broccoli sucks'
+  filters:
+    "****":
+      - "lag"
+      - "la[g]+"
+    "":
+      - "broccoli sucks"
   channels:
     - '*' # Use '*' to mean all channels
 

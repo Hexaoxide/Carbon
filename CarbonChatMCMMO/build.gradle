@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
 }
 
@@ -7,9 +8,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.mcMMO-Dev:mcMMO:-SNAPSHOT'
+    compileOnly 'com.github.mcMMO-Dev:mcMMO:-SNAPSHOT'
 
-    api project(':CarbonChat')
+    compileOnly project(':CarbonChat')
 }
 
 description = 'CarbonChatMCMMO'
@@ -21,4 +22,10 @@ bukkit {
     apiVersion = '1.13'
     author = 'Draycia'
     depend = ['CarbonChat', 'mcMMO']
+}
+
+tasks.build.dependsOn tasks.shadowJar
+
+shadowJar {
+    archiveClassifier = null
 }

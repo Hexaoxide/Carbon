@@ -3,6 +3,8 @@ package net.draycia.carbonmoderation.listeners;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.ChatFormatEvent;
 import net.draycia.carbonmoderation.CarbonChatModeration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,17 +25,18 @@ public class FilterHandler implements Listener {
             return;
         }
 
-        String filterText = moderation.getConfig().getString("filters.filter-text", "****");
-
-        if (channelUsesFilter(event.getChannel())) {
-            for (String entry : moderation.getConfig().getStringList("filters.filtered-words")) {
-                event.setMessage(event.getMessage().replaceAll(entry, filterText));
-            }
+        if (!channelUsesFilter(event.getChannel())) {
+            return;
         }
 
-        if (channelUsesFilter(event.getChannel())) {
-            for (String entry : moderation.getConfig().getStringList("filters.blocked-words")) {
-                event.setMessage(event.getMessage().replaceAll(entry, ""));
+        FileConfiguration config = moderation.getConfig();
+        ConfigurationSection filters = config.getConfigurationSection("filters.filters");
+
+        for (String replacement : filters.getKeys(false)) {
+            List<String> filteredWords = filters.getStringList(replacement);
+
+            for (String word : filteredWords) {
+                event.setMessage(event.getMessage().replaceAll(word, replacement));
             }
         }
     }

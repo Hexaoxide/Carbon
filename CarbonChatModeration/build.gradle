@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
 }
 
@@ -8,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    api project(':CarbonChat')
+    compileOnly project(':CarbonChat')
 }
 
 description = 'CarbonChatModeration'
@@ -20,4 +21,11 @@ bukkit {
     apiVersion = '1.13'
     author = 'Draycia'
     depend = ['CarbonChat']
+}
+
+tasks.build.dependsOn tasks.shadowJar
+
+shadowJar {
+    archiveClassifier = null
+    relocate "co.aikar.commands", "net.draycia.carbon.libs.co.aikar.commands"
 }
