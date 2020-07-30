@@ -3,12 +3,11 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.130'
+    implementation 'com.github.mcMMO-Dev:mcMMO:-SNAPSHOT'
 
     api project(':CarbonChat')
 }
