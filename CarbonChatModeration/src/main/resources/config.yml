@@ -18,8 +18,6 @@ filters:
   # Anything in blocked-words will prevent the message from being sent at all.
   blocked-words:
     - "pineapple doesn't belong on pizza"
-  channels:
-    - '*' # Use '*' to mean all channels
 
 clear-chat:
   # The message sent to clear chat, you probably want to leave this blank

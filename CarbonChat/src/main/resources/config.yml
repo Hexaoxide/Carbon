@@ -33,6 +33,9 @@ default:
     # towny-town only works when the CarbonChatTowny addon is installed.
     # Requires both players to be in the same town to see the message.
     towny-town: false
+    # filter only works when CarbonChatModeration is installed.
+    # Modifies / prevents messages depending on how filters are setup.
+    filter: true
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true

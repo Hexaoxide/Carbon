@@ -50,9 +50,9 @@ public class FilterHandler implements Listener {
     }
 
     private boolean channelUsesFilter(ChatChannel chatChannel) {
-        List<String> channels = moderation.getConfig().getStringList("filters.channels");
+        Object filter = chatChannel.getContext("filter");
 
-        return channels.contains("*") || channels.contains(chatChannel.getKey());
+        return filter instanceof Boolean && ((Boolean) filter);
     }
 
 }
