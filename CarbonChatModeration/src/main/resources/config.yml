@@ -6,12 +6,18 @@ caps-protection:
 
 filters:
   enabled: true
+  # The keys ("****" for example) are what the text is replaced with
+  # The strings in the lists ("lag" etc) are what's replaced
   filters:
+    # In this example, any instance of "lag" or "laggggg" will be replaced with "****"
     "****":
       - "lag"
       - "la[g]+"
     "":
       - "broccoli sucks"
+  # Anything in blocked-words will prevent the message from being sent at all.
+  blocked-words:
+    - "pineapple doesn't belong on pizza"
   channels:
     - '*' # Use '*' to mean all channels
 

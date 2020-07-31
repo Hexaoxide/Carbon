@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class FilterHandler implements Listener {
 
@@ -37,6 +38,13 @@ public class FilterHandler implements Listener {
 
             for (String word : filteredWords) {
                 event.setMessage(event.getMessage().replaceAll(word, replacement));
+            }
+        }
+
+        for (String blockedWord : config.getStringList("filters.blocked-words")) {
+            if (Pattern.compile(blockedWord).matcher(event.getMessage()).find()) {
+                event.setCancelled(true);
+                break;
             }
         }
     }
