@@ -50,12 +50,12 @@ public class MySQLUserService extends UserService {
         try {
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
                     "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN, spyingwhispers BOOLEAN," +
-                    "nickname VARCHAR)");
+                    "nickname VARCHAR(512))");
 
             // Ignore the exception, it's just saying the column already exists
             try {
                 database.executeUpdate("ALTER TABLE sc_users ADD COLUMN spyingwhispers BOOLEAN DEFAULT false");
-                database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR DEFAULT false");
+                database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR(512) DEFAULT false");
             } catch (SQLSyntaxErrorException syntaxErrorException) {}
 
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel CHAR(16), spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
