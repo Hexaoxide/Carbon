@@ -38,7 +38,7 @@ public class ChannelCommand extends BaseCommand {
     @CommandPermission("carbonchat.switch.others")
     @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
-    public void baseCommand(CommandSender sender, ChatChannel channel, ChatUser user) {
+    public void baseCommand(CommandSender sender, @Conditions("exists:true") ChatChannel channel, ChatUser user) {
         user.setSelectedChannel(channel);
 
         String message = channel.getSwitchMessage();

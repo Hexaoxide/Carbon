@@ -11,9 +11,10 @@ filters:
   filters:
     # In this example, any instance of "lag" or "laggggg" will be replaced with "****"
     "****":
-      - "lag"
       - "la[g]+"
-    "":
+      - "lag"
+    # Underscore = blank, empty. The text will basically be removed.
+    "_":
       - "broccoli sucks"
   # Anything in blocked-words will prevent the message from being sent at all.
   blocked-words:

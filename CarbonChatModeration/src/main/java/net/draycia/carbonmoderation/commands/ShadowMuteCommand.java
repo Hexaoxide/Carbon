@@ -1,14 +1,14 @@
 package net.draycia.carbonmoderation.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
+import net.draycia.carbon.libs.co.aikar.commands.BaseCommand;
+import net.draycia.carbon.libs.co.aikar.commands.annotation.CommandAlias;
+import net.draycia.carbon.libs.co.aikar.commands.annotation.CommandCompletion;
+import net.draycia.carbon.libs.co.aikar.commands.annotation.CommandPermission;
+import net.draycia.carbon.libs.co.aikar.commands.annotation.Default;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbonmoderation.CarbonChatModeration;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
+import net.draycia.carbon.libs.net.kyori.adventure.audience.Audience;
+import net.draycia.carbon.libs.net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

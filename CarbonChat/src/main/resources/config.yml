@@ -1,26 +1,22 @@
 # CarbonChat Docs:
 # https://github.com/Draycia/Chat/wiki
 
-# IMPORTANT: Use the <pre> tag around ALL user inputs.
-# All <message> placeholders should be prefixed with <pre> and suffixed with </pre>
-# Failure to do so may and likely will result in users being able to inject formatting in messages.
-
 # All of the settings under this 'default' section can be applied to each channel individually to override these.
 # These are provided as a way to configure default channel settings.
 default:
   # switch-message, toggle-off-message and toggle-on-message support PlaceholderAPI
   switch-message: '<gray>You are now in <color><channel> <gray>chat!'
-  switch-other-message: '<gray><player> is now in <color><channel> <gray>chat!'
+  switch-other-message: '<gray><player> </rainbow><gray>is now in <color><channel> <gray>chat!'
   toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
   toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
-  toggle-other-on: '<gray><player> can now see <color><channel> <gray>chat!'
-  toggle-other-off: '<gray><player> can no longer see <color><channel> <gray>chat!'
+  toggle-other-on: '<gray><player> </rainbow><gray>can now see <color><channel> <gray>chat!'
+  toggle-other-off: '<gray><player> </rainbow><gray>can no longer see <color><channel> <gray>chat!'
   cannot-use-channel: "You cannot use that channel!"
   formats:
     # Placeholders: <username>, <displayname>, <channel>, <server>, <message>, <primaryrole>, <color>
     # Also supports PlaceholderAPI
-    staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <gray>» <color><pre><message>'
-    default: '<gray>[%vault_prefix%<gray>] %player_displayname%<gray>: <color><pre><message>'
+    staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% </rainbow><gray>» <color><message>'
+    default: '<gray>[%vault_prefix%<gray>] %player_displayname%</rainbow><gray>: <color><message>'
   contexts:
     # -1 to disable, 0 to set to world, 1+ to fully enable
     distance: -1
@@ -59,8 +55,8 @@ channels:
   announcements:
     name: 'Announcements'
     formats:
-      default: '<gold>Broadcast: <yellow><pre><message></pre>'
-      staff: '<gold>Broadcast: <yellow><pre><message></pre>'
+      default: '<gold>Broadcast: <yellow><message>'
+      staff: '<gold>Broadcast: <yellow><message>'
     ignorable: false
     should-bungee: false
 
@@ -75,25 +71,25 @@ formatting:
 language:
   # The following messages are only compatible with MiniMessage/MineDown
   reloaded: '<yellow>Chat config has been reloaded!'
-  message-to-other: '<green>[<gray>Me <gold>-> <gray><target><green>] <message>'
-  message-from-other: '<green>[<gray><sender> <gold>-> <gray>Me<green>] <message>'
-  spy-whispers: '<yellow>Spy [<gray><sender> <gold>-> <gray><target><yellow>] <message>'
+  message-to-other: '<green>[<gray>Me <gold>-> <gray><target></rainbow><green>] <message>'
+  message-from-other: '<green>[<gray><sender></rainbow> <gold>-> <gray>Me<green>] <message>'
+  spy-whispers: '<yellow>Spy [<gray><sender></rainbow> <gold>-> <gray><target></rainbow><yellow>] <message>'
   no-reply-target: '<red>You have no one to reply to!'
   empty-channel: 'NONE' #<channel>, set to "NONE" to disable
   channel-switch-failure: '<red>You cannot use channel <channel>!'
-  other-nickname-set: '<green><user>''s nickname was set to <nickname><green>!'
+  other-nickname-set: '<green><user></rainbow>''s nickname was set to <nickname><green>!'
 
   # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
-  me: '<italic><dark_purple>*%player_displayname% <pre><message></pre>*</dark_purple></italic>'
-  ignoring-user: '<green>You are now ignoring <gold><player><green>!'
-  not-ignoring-user: '<green>You are no longer ignoring <gold><player><green>!'
+  me: '<italic><dark_purple>*%player_displayname% </rainbow><pre><message></pre>*</dark_purple></italic>'
+  ignoring-user: '<green>You are now ignoring <gold><player></rainbow><green>!'
+  not-ignoring-user: '<green>You are no longer ignoring <gold><player></rainbow><green>!'
   ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'
   channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
   spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
   spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
   spy-whispers-on: '<gray>You are now spying on whispers!'
   spy-whispers-off: '<gray>You are no longer spying on whispers!'
-  nickname-set: '<green>Your nickname was set to <nickname><green>!'
+  nickname-set: '<green>Your nickname was set to <nickname></rainbow><green>!'
 
 # Used for <server> placeholder in channel formats
 server-name: 'Server'

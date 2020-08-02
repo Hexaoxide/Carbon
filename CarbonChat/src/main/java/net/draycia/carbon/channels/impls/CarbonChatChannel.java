@@ -58,6 +58,10 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public void sendMessage(ChatUser user, String message, boolean fromBungee) {
+        if (user.isOnline()) {
+            user.asPlayer().setDisplayName(user.getNickname());
+        }
+
         // Get player's formatting
         String messageFormat = getFormat(user);
 
@@ -66,7 +70,7 @@ public class CarbonChatChannel extends ChatChannel {
 
         Bukkit.getPluginManager().callEvent(formatEvent);
 
-        if (formatEvent.isCancelled()) {
+        if (formatEvent.isCancelled() || formatEvent.getMessage().isEmpty()) {
             return;
         }
 

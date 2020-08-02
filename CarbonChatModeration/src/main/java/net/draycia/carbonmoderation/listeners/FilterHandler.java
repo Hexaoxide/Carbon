@@ -37,7 +37,11 @@ public class FilterHandler implements Listener {
             List<String> filteredWords = filters.getStringList(replacement);
 
             for (String word : filteredWords) {
-                event.setMessage(event.getMessage().replaceAll(word, replacement));
+                if (replacement.equals("_")) {
+                    event.setMessage(event.getMessage().replaceAll(word, ""));
+                } else {
+                    event.setMessage(event.getMessage().replaceAll(word, replacement));
+                }
             }
         }
 

@@ -10,7 +10,7 @@ repositories {
 dependencies {
     compileOnly 'com.github.mcMMO-Dev:mcMMO:-SNAPSHOT'
 
-    compileOnly project(':CarbonChat')
+    compileOnly project(path: ':CarbonChat', configuration: 'shadow')
 }
 
 description = 'CarbonChatMCMMO'

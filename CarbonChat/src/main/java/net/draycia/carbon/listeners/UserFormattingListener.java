@@ -8,10 +8,8 @@ public class UserFormattingListener implements Listener {
 
     @EventHandler
     public void onFormat(ChatFormatEvent event) {
-        if (event.getUser().isOnline() && event.getUser().asPlayer().hasPermission("carbonchat.formatting")) {
-            event.setFormat(event.getFormat()
-                    .replace("<pre><message></pre>", "<message>")
-                    .replace("<pre><message>", "<message>")
+        if (!event.getUser().isOnline() || !event.getUser().asPlayer().hasPermission("carbonchat.formatting")) {
+            event.setFormat(event.getFormat().replace("<message>", "<pre><message></pre>")
             );
         }
     }

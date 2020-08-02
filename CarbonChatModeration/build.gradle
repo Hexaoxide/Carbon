@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly project(':CarbonChat')
+    compileOnly project(path: ':CarbonChat', configuration: 'shadow')
 }
 
 description = 'CarbonChatModeration'
