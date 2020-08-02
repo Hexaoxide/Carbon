@@ -248,8 +248,12 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public String getFormat(String group) {
-        return getFormats().getOrDefault(group, getFormats().getOrDefault("default",
+        return getFormats().getOrDefault(group, getFormats().getOrDefault(getDefaultFormatName(),
                 "<white><%player_displayname%<white>> <message>"));
+    }
+
+    private String getDefaultFormatName() {
+        return getString("default-format-name");
     }
 
     @Override

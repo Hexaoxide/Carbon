@@ -47,6 +47,8 @@ default:
   # If true, plugin will only use the format corresponding to the user's primary group (vault).
   # If false, plugin will look through the user's groups and go with the first group with a corresponding format.
   primary-group-only: true
+  # The name of the vault group which should be considered as the default group.
+  default-group: 'default'
 
 channels:
   global:
