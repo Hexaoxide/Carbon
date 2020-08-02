@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FilterHandler implements Listener {
@@ -37,16 +38,24 @@ public class FilterHandler implements Listener {
             List<String> filteredWords = filters.getStringList(replacement);
 
             for (String word : filteredWords) {
-                if (replacement.equals("_")) {
-                    event.setMessage(event.getMessage().replaceAll(word, ""));
+                Matcher matcher;
+
+                if (config.getBoolean("filters.case-sensitive")) {
+                    matcher = Pattern.compile(word).matcher(event.getMessage());
                 } else {
-                    event.setMessage(event.getMessage().replaceAll(word, replacement));
+                    matcher = Pattern.compile(word, Pattern.CASE_INSENSITIVE).matcher(event.getMessage());
+                }
+
+                if (replacement.equals("_")) {
+                    event.setMessage(matcher.replaceAll(""));
+                } else {
+                    event.setMessage(matcher.replaceAll(replacement));
                 }
             }
         }
 
         for (String blockedWord : config.getStringList("filters.blocked-words")) {
-            if (Pattern.compile(blockedWord).matcher(event.getMessage()).find()) {
+            if (Pattern.compile(blockedWord, Pattern.CASE_INSENSITIVE).matcher(event.getMessage()).find()) {
                 event.setCancelled(true);
                 break;
             }

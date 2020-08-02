@@ -6,6 +6,7 @@ caps-protection:
 
 filters:
   enabled: true
+  case-sensitive: false
   # The keys ("****" for example) are what the text is replaced with
   # The strings in the lists ("lag" etc) are what's replaced
   filters:
