@@ -61,9 +61,6 @@ channels:
     ignorable: false
     should-bungee: false
 
-replacements:
-  '%shrug%': '¯\_(ツ)_/¯'
-
 # Options:
 # 'MiniMessage': https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#the-components
 # 'MiniMessage-Markdown': https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#markdown
