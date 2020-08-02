@@ -44,8 +44,9 @@ default:
   forward-format: true
   # Enables/disables cross server chat for this channel
   should-bungee: true
-  # Determines if this channel should use the highest matching vault group found for formatting
-  first-matching-group: false
+  # If true, plugin will only use the format corresponding to the user's primary group (vault).
+  # If false, plugin will look through the user's groups and go with the first group with a corresponding format.
+  primary-group-only: true
 
 channels:
   global:
@@ -100,9 +101,6 @@ item-link-placeholders:
   - '%item%'
 
 spy-prefix: '<color>[SPY] '
-spy-prefix-nation: '<color>[SPY <nation>] '
-spy-prefix-town: '<color>[SPY <town>] '
-spy-prefix-mcmmo: '<color>[SPY <party>] '
 
 pings:
   enabled: true

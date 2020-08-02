@@ -66,7 +66,7 @@ public abstract class ChatChannel {
 
     public abstract String getCannotUseMessage();
 
-    public abstract Boolean firstMatchingGroup();
+    public abstract Boolean primaryGroupOnly();
 
     public abstract boolean testContext(ChatUser sender, ChatUser target);
 

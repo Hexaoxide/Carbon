@@ -172,7 +172,7 @@ public class CarbonChatChannel extends ChatChannel {
     private String getFormat(ChatUser user) {
         String group = "default";
 
-        if (!firstMatchingGroup()) {
+        if (this.primaryGroupOnly()) {
             if (user.isOnline()) {
                 group = carbonChat.getPermission().getPrimaryGroup(user.asPlayer());
             } else {
@@ -181,7 +181,7 @@ public class CarbonChatChannel extends ChatChannel {
         } else {
             String[] groups;
 
-            // TODO: this can't be done on main thread :(
+            // TODO: this can't be done on main thread (if user is offline) :(
             if (user.isOnline()) {
                 groups = carbonChat.getPermission().getPlayerGroups(user.asPlayer());
             } else {
@@ -314,8 +314,8 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public Boolean firstMatchingGroup() {
-        return getBoolean("first-matching-group");
+    public Boolean primaryGroupOnly() {
+        return getBoolean("primary-group-only");
     }
 
     @Override
