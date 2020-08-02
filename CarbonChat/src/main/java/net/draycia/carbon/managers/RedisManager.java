@@ -26,14 +26,18 @@ public class RedisManager {
     public RedisManager(CarbonChat carbonChat) {
 
         String host = carbonChat.getConfig().getString("redis.host");
+        String password = carbonChat.getConfig().getString("redis.password");
         int port = carbonChat.getConfig().getInt("redis.port");
         int database = carbonChat.getConfig().getInt("redis.database");
 
-        RedisURI uri = RedisURI.Builder.redis(host, port)
-                .withDatabase(database)
-                .build();
+        RedisURI.Builder builder = RedisURI.Builder.redis(host, port)
+                .withDatabase(database);
 
-        this.client = RedisClient.create(uri);
+        if (password != null) {
+            builder.withPassword(password.toCharArray());
+        }
+
+        this.client = RedisClient.create(builder.build());
         this.connection = client.connectPubSub();
         this.sync = connection.sync();
 

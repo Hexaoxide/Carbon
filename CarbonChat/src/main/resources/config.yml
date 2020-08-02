@@ -121,4 +121,5 @@ redis:
   enabled: false
   host: 'localhost'
   port: 6379
+  #password: 'password'
   database: 0
