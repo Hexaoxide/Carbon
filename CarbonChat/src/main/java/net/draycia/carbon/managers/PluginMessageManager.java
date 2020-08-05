@@ -125,6 +125,8 @@ public class PluginMessageManager implements PluginMessageListener {
         String chatMessage = in.readUTF();
 
         ChatUser target = carbonChat.getUserService().wrap(targetUUID);
+
+        target.setReplyTarget(targetUUID);
         target.sendMessage(carbonChat.getAdventureManager().processMessage(chatMessage, "br", "\n"));
     }
 
