@@ -24,7 +24,6 @@ public class ReplyCommand extends BaseCommand {
         }
 
         ChatUser user = carbonChat.getUserService().wrap(player);
-        ChatUser targetUser = carbonChat.getUserService().wrap(user.getReplyTarget());
 
         if (user.getReplyTarget() == null) {
             String message = carbonChat.getConfig().getString("language.no-reply-target");
@@ -33,6 +32,8 @@ public class ReplyCommand extends BaseCommand {
 
             return;
         }
+
+        ChatUser targetUser = carbonChat.getUserService().wrap(user.getReplyTarget());
 
         targetUser.sendMessage(user, String.join(" ", args));
     }
