@@ -50,14 +50,17 @@ public final class CarbonChat extends JavaPlugin {
         contextManager = new ContextManager();
 
         if (getConfig().getBoolean("redis.enabled")) {
+            getLogger().info("Enabling Redis support!");
             redisManager = new RedisManager(this);
         }
 
         String storageType = getConfig().getString("storage.type");
 
         if (storageType.equalsIgnoreCase("mysql")) {
+            getLogger().info("Enabling MySQL storage!");
             userService = new MySQLUserService(this);
         } else if (storageType.equalsIgnoreCase("json")) {
+            getLogger().info("Enabling JSON storage!");
             userService = new JSONUserService(this);
         } else {
             getLogger().warning("Invalid storage type selected! Falling back to JSON.");
