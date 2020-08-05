@@ -273,6 +273,10 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         for (Player player : Bukkit.getOnlinePlayers()) {
             ChatUser user = carbonChat.getUserService().wrap(player);
 
+            if (!user.isSpyingWhispers()) {
+                return;
+            }
+
             if (user.getUUID().equals(sender.getUUID()) || user.getUUID().equals(getUUID())) {
                 continue;
             }
