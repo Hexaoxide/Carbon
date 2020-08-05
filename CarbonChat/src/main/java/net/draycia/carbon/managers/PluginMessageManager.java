@@ -141,7 +141,7 @@ public class PluginMessageManager implements PluginMessageListener {
     public void sendComponent(ChatChannel chatChannel, Player player, Component component) {
         ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
-        msg.writeUTF(chatChannel.getName());
+        msg.writeUTF(chatChannel.getKey());
         msg.writeUTF(player.getUniqueId().toString());
         msg.writeUTF(MiniMessage.get().serialize(component));
 

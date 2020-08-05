@@ -139,10 +139,10 @@ public class CarbonChatChannel extends ChatChannel {
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
-        if (user.isOnline() && fromBungee) {
-            if (shouldForwardFormatting() && shouldBungee()) {
+        if (user.isOnline() && !fromBungee && shouldBungee()) {
+            if (shouldForwardFormatting()) {
                 sendMessageToBungee(user.asPlayer(), componentEvent.getComponent());
-            } else if (shouldBungee()) {
+            } else {
                 sendMessageToBungee(user.asPlayer(), message);
             }
         }
