@@ -17,8 +17,12 @@ public class RedisManager {
     private final CarbonChat carbonChat;
 
     private final RedisClient client;
-    private final StatefulRedisPubSubConnection<String, String> connection;
-    private final RedisPubSubCommands<String, String> sync;
+
+    private final StatefulRedisPubSubConnection<String, String> subscribeConnection;
+    private final RedisPubSubCommands<String, String> subscribeSync;
+
+    private final StatefulRedisPubSubConnection<String, String> publishConnection;
+    private final RedisPubSubCommands<String, String> publishSync;
 
     public RedisManager(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
@@ -36,10 +40,14 @@ public class RedisManager {
         }
 
         this.client = RedisClient.create(builder.build());
-        this.connection = client.connectPubSub();
-        this.sync = connection.sync();
 
-        connection.addListener((RedisListener)(channel, message) -> {
+        this.subscribeConnection = client.connectPubSub();
+        this.subscribeSync = subscribeConnection.sync();
+
+        this.publishConnection = client.connectPubSub();
+        this.publishSync = publishConnection.sync();
+
+        subscribeConnection.addListener((RedisListener)(channel, message) -> {
             UUID uuid = UUID.fromString(message.split(":", 2)[0]);
 
             ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
@@ -93,7 +101,7 @@ public class RedisManager {
             }
         });
 
-        sync.subscribe("nickname", "selected-channel", "spying-whispers", "muted", "shadow-muted",
+        subscribeSync.subscribe("nickname", "selected-channel", "spying-whispers", "muted", "shadow-muted",
                 "reply-target", "ignoring-user", "unignoring-user", "ignoring-channel", "unignoring-channel",
                 "spying-channel", "unspying-channel", "channel-color");
     }
@@ -139,6 +147,6 @@ public class RedisManager {
     }
 
     public void publishChange(UUID uuid, String field, String value) {
-        sync.publish(field, uuid.toString() + ":" + value);
+        publishSync.publish(field, uuid.toString() + ":" + value);
     }
 }
