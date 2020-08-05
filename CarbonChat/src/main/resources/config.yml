@@ -78,6 +78,7 @@ language:
   empty-channel: 'NONE' #<channel>, set to "NONE" to disable
   channel-switch-failure: '<red>You cannot use channel <channel>!'
   other-nickname-set: '<green><user></rainbow>''s nickname was set to <nickname><green>!'
+  other-nickname-reset: '<green><user></rainbow>''s nickname was reset!'
 
   # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
   me: '<italic><dark_purple>*%player_displayname% </rainbow><pre><message></pre>*</dark_purple></italic>'
@@ -90,6 +91,7 @@ language:
   spy-whispers-on: '<gray>You are now spying on whispers!'
   spy-whispers-off: '<gray>You are no longer spying on whispers!'
   nickname-set: '<green>Your nickname was set to <nickname></rainbow><green>!'
+  nickname-reset: '<green>Your nickname was reset!'
 
 # Used for <server> placeholder in channel formats
 server-name: 'Server'
