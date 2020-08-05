@@ -71,6 +71,18 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+
+        this.publishChangeToRedis("nickname", nickname);
+
+    }
+
+    @Override
     public ChatChannel getSelectedChannel() {
         return carbonChat.getChannelManager().getChannelOrDefault(selectedChannel);
     }
@@ -90,7 +102,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         }
 
         this.selectedChannel = chatChannel.getKey();
-        syncToRedis();
+        this.publishChangeToRedis("selected-channel", chatChannel.getKey());
     }
 
     @Override
@@ -111,12 +123,12 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setIgnoringUser(UUID uuid, boolean ignoring) {
         if (ignoring) {
+            this.publishChangeToRedis("ignoring-user", uuid.toString());
             ignoredUsers.add(uuid);
         } else {
+            this.publishChangeToRedis("unignoring-user", uuid.toString());
             ignoredUsers.remove(uuid);
         }
-
-        syncToRedis();
     }
 
     @Override
@@ -132,7 +144,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     public void setMuted(boolean muted) {
         this.muted = muted;
 
-        syncToRedis();
+        this.publishChangeToRedis("muted", muted ? "true" : "false");
     }
 
     @Override
@@ -144,7 +156,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     public void setShadowMuted(boolean shadowMuted) {
         this.shadowMuted = shadowMuted;
 
-        syncToRedis();
+        this.publishChangeToRedis("shadow-muted", shadowMuted ? "true" : "false");
     }
 
     @Override
@@ -162,7 +174,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     public void setReplyTarget(UUID target) {
         this.replyTarget = target;
 
-        syncToRedis();
+        this.publishChangeToRedis("reply-target", target.toString());
     }
 
     @Override
@@ -172,7 +184,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public UserChannelSettings getChannelSettings(ChatChannel channel) {
-        return channelSettings.computeIfAbsent(channel.getName(), (name) -> new SimpleUserChannelSettings());
+        return channelSettings.computeIfAbsent(channel.getName(), (name) -> {
+            return new SimpleUserChannelSettings(uuid, channel.getKey());
+        });
     }
 
     public Map<String, ? extends UserChannelSettings> getChannelSettings() {
@@ -182,6 +196,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setSpyingWhispers(boolean spyingWhispers) {
         this.spyingWhispers = spyingWhispers;
+
+        this.publishChangeToRedis("spying-whispers", spyingWhispers ? "true" : "false");
     }
 
     @Override
@@ -254,8 +270,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                 continue;
             }
 
-            user.sendMessage(carbonChat.getAdventureManager().processMessage(carbonChat.getConfig().getString("language.spy-whispers"),  "br", "\n",
-                    "message", message,
+            user.sendMessage(carbonChat.getAdventureManager().processMessage(carbonChat.getConfig().getString("language.spy-whispers"),
+                    "br", "\n", "message", message,
                     "targetname", targetOfflineName, "sendername", senderOfflineName,
                     "target", targetName, "sender", senderName));
         }
@@ -263,18 +279,11 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         Bukkit.getPluginManager().callEvent(new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message));
     }
 
-    private void syncToRedis() {
-        if (carbonChat.getRedisManager() != null) {
-            carbonChat.getRedisManager().publishUser(this);
+    /* package */ void publishChangeToRedis(String key, String value) {
+        if (carbonChat.getRedisManager() == null) {
+            return;
         }
-    }
 
-    @Override
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+        carbonChat.getRedisManager().publishChange(uuid, key, value);
     }
 }

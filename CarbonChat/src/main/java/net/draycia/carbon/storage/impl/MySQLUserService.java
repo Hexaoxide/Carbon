@@ -14,6 +14,7 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
@@ -23,7 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class MySQLUserService extends UserService {
+public class MySQLUserService implements UserService {
 
     private final LoadingCache<UUID, CarbonChatUser> userCache = CacheBuilder.newBuilder()
             .expireAfterWrite(10, TimeUnit.MINUTES)
@@ -38,10 +39,14 @@ public class MySQLUserService extends UserService {
 
         ConfigurationSection section = carbonChat.getConfig().getConfigurationSection("storage");
 
-        String username = section.getString("username");
-        String password = section.getString("password");
-        String dbname = section.getString("database");
-        String hostandport = section.getString("hostname") + ":" + section.getString("port");
+        if (section == null) {
+            throw new IllegalStateException("Missing Database Credentials!");
+        }
+
+        String username = section.getString("username", "username");
+        String password = section.getString("password", "password");
+        String dbname = section.getString("database", "0");
+        String hostandport = section.getString("hostname", "hostname") + ":" + section.getString("port", "0");
 
         database = new HikariPooledDatabase(BukkitDB.getRecommendedOptions(carbonChat, username, password, dbname, hostandport));
 
@@ -84,6 +89,12 @@ public class MySQLUserService extends UserService {
     }
 
     @Override
+    @Nullable
+    public ChatUser wrapIfLoaded(UUID uuid) {
+        return userCache.getIfPresent(uuid);
+    }
+
+    @Override
     public void cleanUp() {
         userCache.invalidateAll();
         userCache.cleanUp();
@@ -96,14 +107,6 @@ public class MySQLUserService extends UserService {
     }
 
     private CarbonChatUser loadUser(UUID uuid) {
-        if (carbonChat.getRedisManager() != null) {
-            CarbonChatUser user = carbonChat.getRedisManager().getUser(uuid);
-
-            if (user != null) {
-                return user;
-            }
-        }
-
         CarbonChatUser user = new CarbonChatUser(uuid);
 
         try (DbStatement statement = database.query("SELECT * from sc_users WHERE uuid = ?;")) {

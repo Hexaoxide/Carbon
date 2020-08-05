@@ -1,16 +1,25 @@
 package net.draycia.carbon.storage;
 
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public abstract class UserService {
+public interface UserService {
 
-    public abstract ChatUser wrap(OfflinePlayer player);
-    public abstract ChatUser wrap(UUID uuid);
+    ChatUser wrap(OfflinePlayer player);
+    ChatUser wrap(UUID uuid);
 
-    public abstract void refreshUser(UUID uuid);
+    @Nullable
+    default ChatUser wrapIfLoaded(OfflinePlayer player) {
+        return wrapIfLoaded(player.getUniqueId());
+    }
 
-    public abstract void cleanUp();
+    @Nullable
+    ChatUser wrapIfLoaded(UUID uuid);
+
+    void refreshUser(UUID uuid);
+
+    void cleanUp();
 
 }

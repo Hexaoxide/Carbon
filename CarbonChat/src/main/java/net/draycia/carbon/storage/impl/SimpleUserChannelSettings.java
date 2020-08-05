@@ -1,14 +1,34 @@
 package net.draycia.carbon.storage.impl;
 
+import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.channels.ChatChannel;
+import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class SimpleUserChannelSettings implements UserChannelSettings {
 
     private boolean spying;
     private boolean ignored;
     private String color;
+
+    private UUID uuid;
+    private String channel;
+
+    public SimpleUserChannelSettings(UUID uuid, String channel) {
+        this.uuid = uuid;
+        this.channel = channel;
+    }
+
+    private CarbonChatUser getUser() {
+        CarbonChat carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+        return (CarbonChatUser)carbonChat.getUserService().wrap(uuid);
+    }
 
     @Override
     public boolean isSpying() {
@@ -18,6 +38,12 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     @Override
     public void setSpying(boolean spying) {
         this.spying = spying;
+
+        if (spying) {
+            getUser().publishChangeToRedis("spying-channel", channel);
+        } else {
+            getUser().publishChangeToRedis("unspying-channel", channel);
+        }
     }
 
     @Override
@@ -28,6 +54,12 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     @Override
     public void setIgnoring(boolean ignored) {
         this.ignored = ignored;
+
+        if (spying) {
+            getUser().publishChangeToRedis("ignoring-channel", channel);
+        } else {
+            getUser().publishChangeToRedis("unignoring-channel", channel);
+        }
     }
 
     @Override
@@ -43,10 +75,11 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     public void setColor(@Nullable TextColor color) {
         if (color == null) {
             this.color = null;
-            return;
+        } else {
+            this.color = color.asHexString();
         }
 
-        this.color = color.asHexString();
+        getUser().publishChangeToRedis("channel-color", this.color);
     }
 
 }

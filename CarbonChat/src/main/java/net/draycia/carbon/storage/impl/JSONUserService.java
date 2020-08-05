@@ -11,6 +11,7 @@ import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,7 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class JSONUserService extends UserService {
+public class JSONUserService implements UserService {
 
     private final CarbonChat carbonChat;
 
@@ -55,6 +56,12 @@ public class JSONUserService extends UserService {
     }
 
     @Override
+    @Nullable
+    public ChatUser wrapIfLoaded(UUID uuid) {
+        return userCache.getIfPresent(uuid);
+    }
+
+    @Override
     public void refreshUser(UUID uuid) {
         userCache.invalidate(uuid);
     }
@@ -66,14 +73,6 @@ public class JSONUserService extends UserService {
     }
 
     private CarbonChatUser loadUser(UUID uuid) {
-        if (carbonChat.getRedisManager() != null) {
-            CarbonChatUser user = carbonChat.getRedisManager().getUser(uuid);
-
-            if (user != null) {
-                return user;
-            }
-        }
-
         File userFile = new File(carbonChat.getDataFolder(), "users/" + uuid.toString() + ".json");
         ensureFileExists(userFile);
 

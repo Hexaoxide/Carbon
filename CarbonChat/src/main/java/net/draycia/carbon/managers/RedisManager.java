@@ -1,29 +1,27 @@
 package net.draycia.carbon.managers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.storage.impl.CarbonChatUser;
+import net.draycia.carbon.channels.ChatChannel;
+import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.util.RedisListener;
+import net.kyori.adventure.text.format.TextColor;
 
-import java.lang.reflect.Type;
 import java.util.UUID;
 
 public class RedisManager {
+
+    private final CarbonChat carbonChat;
 
     private final RedisClient client;
     private final StatefulRedisPubSubConnection<String, String> connection;
     private final RedisPubSubCommands<String, String> sync;
 
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private final Type userType = new TypeToken<CarbonChatUser>() {}.getType();
-
     public RedisManager(CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
 
         String host = carbonChat.getConfig().getString("redis.host");
         String password = carbonChat.getConfig().getString("redis.password");
@@ -41,48 +39,106 @@ public class RedisManager {
         this.connection = client.connectPubSub();
         this.sync = connection.sync();
 
-        connection.addListener(new RedisPubSubListener<String, String>() {
-            @Override
-            public void message(String channel, String message) {
-                if (channel.equalsIgnoreCase("refreshuser")) {
-                    carbonChat.getUserService().refreshUser(UUID.fromString(message));
-                }
+        connection.addListener((RedisListener)(channel, message) -> {
+            UUID uuid = UUID.fromString(message.split(":", 2)[0]);
+
+            ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
+
+            if (user == null) {
+                return;
             }
 
-            @Override
-            public void message(String pattern, String channel, String message) { }
+            String value = message.split(":", 2)[1];
 
-            @Override
-            public void subscribed(String channel, long count) { }
-
-            @Override
-            public void psubscribed(String pattern, long count) { }
-
-            @Override
-            public void unsubscribed(String channel, long count) { }
-
-            @Override
-            public void punsubscribed(String pattern, long count) { }
+            switch (channel.toLowerCase()) {
+                case "nickname":
+                    handleNicknameChange(user, value);
+                    break;
+                case "selected-channel":
+                    handleSelectedChannelChange(user, value);
+                    break;
+                case "spying-whispers":
+                    handleSpyingWhispersChange(user, value);
+                    break;
+                case "muted":
+                    handleMutedChange(user, value);
+                    break;
+                case "shadow-muted":
+                    handleShadowMutedChange(user, value);
+                    break;
+                case "reply-target":
+                    handleReplyTargetChange(user, value);
+                    break;
+                case "ignoring-user":
+                    handleIgnoringUserChange(user, value, true);
+                    break;
+                case "unignoring-user":
+                    handleIgnoringUserChange(user, value, false);
+                    break;
+                case "ignoring-channel":
+                    handleIgnoringChannelChange(user, value, true);
+                    break;
+                case "unignoring-channel":
+                    handleIgnoringChannelChange(user, value, false);
+                    break;
+                case "spying-channel":
+                    handleSpyingChannelChange(user, value, true);
+                    break;
+                case "unspying-channel":
+                    handleSpyingChannelChange(user, value, false);
+                    break;
+                case "channel-color":
+                    handleChannelColorChange(user, value);
+                    break;
+            }
         });
 
-        sync.subscribe("userdata");
+        sync.subscribe("nickname", "selected-channel", "spying-whispers", "muted", "shadow-muted",
+                "reply-target", "ignoring-user", "unignoring-user", "ignoring-channel", "unignoring-channel",
+                "spying-channel", "unspying-channel", "channel-color");
     }
 
-    public void publishUser(CarbonChatUser user) {
-        String data = gson.toJson(user, userType);
-
-        sync.set(user.getUUID().toString(), data);
-        sync.publish("refreshuser", user.getUUID().toString());
+    private void handleChannelColorChange(ChatUser user, String value) {
+        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setColor(TextColor.fromHexString(value));
     }
 
-    public CarbonChatUser getUser(UUID uuid) {
-        String value = sync.get(uuid.toString());
-
-        if (value == null) {
-            return null;
-        }
-
-        return gson.fromJson(value, userType);
+    private void handleSpyingChannelChange(ChatUser user, String value, boolean b) {
+        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setSpying(b);
     }
 
+    private void handleIgnoringChannelChange(ChatUser user, String value, boolean b) {
+        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setIgnoring(b);
+    }
+
+    private void handleIgnoringUserChange(ChatUser user, String value, boolean b) {
+        user.setIgnoringUser(UUID.fromString(value), b);
+    }
+
+    private void handleReplyTargetChange(ChatUser user, String value) {
+        user.setReplyTarget(UUID.fromString(value));
+    }
+
+    private void handleShadowMutedChange(ChatUser user, String value) {
+        user.setShadowMuted(value.equalsIgnoreCase("true"));
+    }
+
+    private void handleMutedChange(ChatUser user, String value) {
+        user.setMuted(value.equalsIgnoreCase("true"));
+    }
+
+    private void handleSpyingWhispersChange(ChatUser user, String value) {
+        user.setSpyingWhispers(value.equalsIgnoreCase("true"));
+    }
+
+    private void handleSelectedChannelChange(ChatUser user, String value) {
+        user.setSelectedChannel(carbonChat.getChannelManager().getRegistry().get(value));
+    }
+
+    private void handleNicknameChange(ChatUser user, String value) {
+        user.setNickname(value);
+    }
+
+    public void publishChange(UUID uuid, String field, String value) {
+        sync.publish(field, uuid.toString() + ":" + value);
+    }
 }
