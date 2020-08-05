@@ -27,7 +27,7 @@ public class NicknameCommand extends BaseCommand {
 
             String message = carbonChat.getConfig().getString("language.other-nickname-set");
             sender.sendMessage(carbonChat.getAdventureManager().processMessage(
-                    message, "nickname", nickname));
+                    message, "nickname", nickname, "user", target.asOfflinePlayer().getName()));
 
             target.asPlayer().setDisplayName(legacyNickname);
         } else {
