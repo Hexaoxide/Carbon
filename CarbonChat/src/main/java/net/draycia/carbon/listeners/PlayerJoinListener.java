@@ -3,7 +3,6 @@ package net.draycia.carbon.listeners;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -25,7 +24,7 @@ public class PlayerJoinListener implements Listener {
         }
 
         Component component = carbonChat.getAdventureManager().processMessage(user.getNickname());
-        String nickname = LegacyComponentSerializer.legacySection().serialize(component);
+        String nickname = CarbonChat.LEGACY.serialize(component);
 
         event.getPlayer().setDisplayName(nickname);
     }

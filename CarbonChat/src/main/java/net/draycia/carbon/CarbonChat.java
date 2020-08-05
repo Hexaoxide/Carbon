@@ -7,6 +7,7 @@ import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.ItemStackUtils;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,6 +26,9 @@ public final class CarbonChat extends JavaPlugin {
     private UserService userService;
 
     private ItemStackUtils itemStackUtils;
+
+    public static final LegacyComponentSerializer LEGACY =
+            LegacyComponentSerializer.builder().extractUrls().character('§').build();
 
     @Override
     public void onEnable() {

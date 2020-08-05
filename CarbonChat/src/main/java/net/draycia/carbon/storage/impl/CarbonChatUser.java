@@ -11,7 +11,6 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -81,7 +80,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
         if (isOnline()) {
             Component component = carbonChat.getAdventureManager().processMessage(nickname);
-            String legacyNickname = LegacyComponentSerializer.legacySection().serialize(component);
+            String legacyNickname = CarbonChat.LEGACY.serialize(component);
 
             this.asPlayer().setDisplayName(legacyNickname);
         }

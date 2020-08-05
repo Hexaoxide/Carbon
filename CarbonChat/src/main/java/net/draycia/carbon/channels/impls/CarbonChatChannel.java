@@ -8,7 +8,6 @@ import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -134,7 +133,7 @@ public class CarbonChatChannel extends ChatChannel {
 
         // Log message to console
         String sm = user.isShadowMuted() ? "[SM] " : "";
-        System.out.println(sm + LegacyComponentSerializer.legacySection().serialize(componentEvent.getComponent()));
+        System.out.println(sm + CarbonChat.LEGACY.serialize(componentEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
@@ -164,7 +163,7 @@ public class CarbonChatChannel extends ChatChannel {
             }
         }
 
-        System.out.println(LegacyComponentSerializer.legacySection().serialize(component));
+        System.out.println(CarbonChat.LEGACY.serialize(component));
     }
 
     public void sendMessageToBungee(Player player, Component component) {
