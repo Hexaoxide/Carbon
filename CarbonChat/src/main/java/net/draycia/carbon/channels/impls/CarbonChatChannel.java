@@ -159,7 +159,9 @@ public class CarbonChatChannel extends ChatChannel {
     @Override
     public void sendComponent(ChatUser player, Component component) {
         for (ChatUser user : getAudience(player)) {
-            user.sendMessage(component);
+            if (!user.isIgnoringUser(player)) {
+                user.sendMessage(component);
+            }
         }
 
         System.out.println(LegacyComponentSerializer.legacySection().serialize(component));

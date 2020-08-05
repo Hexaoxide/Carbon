@@ -114,8 +114,10 @@ public class PluginMessageManager implements PluginMessageListener {
 
     private void onWhisperReceived(ByteArrayDataInput in) {
         UUID targetUUID;
+        UUID senderUUID;
 
         try {
+            senderUUID = UUID.fromString(in.readUTF());
             targetUUID = UUID.fromString(in.readUTF());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -126,8 +128,10 @@ public class PluginMessageManager implements PluginMessageListener {
 
         ChatUser target = carbonChat.getUserService().wrap(targetUUID);
 
-        target.setReplyTarget(targetUUID);
-        target.sendMessage(carbonChat.getAdventureManager().processMessage(chatMessage, "br", "\n"));
+        if (!target.isIgnoringUser(senderUUID)) {
+            target.setReplyTarget(senderUUID);
+            target.sendMessage(carbonChat.getAdventureManager().processMessage(chatMessage, "br", "\n"));
+        }
     }
 
     public void sendMessage(ChatChannel chatChannel, Player player, String message) {
@@ -164,6 +168,7 @@ public class PluginMessageManager implements PluginMessageListener {
 
             ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
+            msg.writeUTF(sender.getUUID().toString());
             msg.writeUTF(target.getUUID().toString());
             msg.writeUTF(MiniMessage.get().serialize(fromComponent));
 
