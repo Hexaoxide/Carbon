@@ -38,6 +38,7 @@ bukkit {
     author = 'Draycia'
     depend = ['PlaceholderAPI', 'Vault']
     softDepend = ['LuckPerms']
+    loadBefore = ["Essentials"]
 }
 
 tasks.build.dependsOn tasks.shadowJar
