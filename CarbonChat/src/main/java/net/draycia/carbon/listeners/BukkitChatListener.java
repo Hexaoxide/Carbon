@@ -23,6 +23,11 @@ public class BukkitChatListener implements Listener {
 
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
 
+        // TODO: ChatUser#canUseChannel(ChatChannel channel)
+        if (!user.getSelectedChannel().canPlayerUse(user)) {
+            return;
+        }
+
         if (event.isAsynchronous()) {
             user.getSelectedChannel().sendMessage(user, event.getMessage(), false);
         } else {

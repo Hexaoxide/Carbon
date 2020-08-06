@@ -95,6 +95,8 @@ public class CarbonChatChannel extends ChatChannel {
 
             String prefix = processPlaceholders(user, carbonChat.getConfig().getString("spy-prefix"));
 
+            // TODO: restructure plugin to always format messages per player
+
             if (userColor == null) {
                 if (isUserSpying(user, chatUser)) {
                     prefix = prefix.replace("<color>", "<color:" + getColor() + ">");
