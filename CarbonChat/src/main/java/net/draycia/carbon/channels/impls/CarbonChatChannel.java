@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -257,6 +258,7 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public String getFormat(String group) {
+        // TODO: investigate this resorting to vanilla formatting when primaryGroupOnly is true and certain conditions are met
         return getFormats().getOrDefault(group, getFormats().getOrDefault(getDefaultFormatName(),
                 "<white><%player_displayname%<white>> <message>"));
     }
@@ -284,6 +286,16 @@ public class CarbonChatChannel extends ChatChannel {
     public String getName() {
         String name = getString("name");
         return name == null ? key : name;
+    }
+
+    @Override
+    @Nullable
+    public String getPrefix() {
+        if (config != null && config.contains("prefix")) {
+            return config.getString("prefix");
+        }
+
+        return null;
     }
 
     @Override

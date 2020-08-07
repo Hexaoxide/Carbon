@@ -52,6 +52,9 @@ channels:
     aliases: 'global|g'
     # If this channel is the default channel
     default: true
+    # If the player speaks in chat, and their message starts with the following, their message
+    # is automatically sent in this channel. This setting is entirely optional.
+    prefix: '#'
   announcements:
     name: 'Announcements'
     formats:
@@ -59,6 +62,7 @@ channels:
       staff: '<gold>Broadcast: <yellow><message>'
     ignorable: false
     should-bungee: false
+    prefix: '!'
 
 # Options:
 # 'MiniMessage': https://github.com/KyoriPowered/adventure-docs/blob/feature/minimessage/source/minimessage.rst#the-components

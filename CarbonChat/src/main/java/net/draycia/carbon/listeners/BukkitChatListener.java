@@ -1,6 +1,7 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -22,17 +23,33 @@ public class BukkitChatListener implements Listener {
         event.getRecipients().clear();
 
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
+        ChatChannel channel = user.getSelectedChannel();
 
-        // TODO: ChatUser#canUseChannel(ChatChannel channel)
-        if (!user.getSelectedChannel().canPlayerUse(user)) {
+        for (ChatChannel entry : carbonChat.getChannelManager().getRegistry().values()) {
+            if (entry.getPrefix() == null) {
+                continue;
+            }
+
+            if (event.getMessage().startsWith(entry.getPrefix())) {
+                if (entry.canPlayerUse(user)) {
+                    event.setMessage(event.getMessage().substring(entry.getPrefix().length()));
+                    channel = entry;
+                    break;
+                }
+            }
+        }
+
+        final ChatChannel selectedChannel = channel;
+
+        if (!selectedChannel.canPlayerUse(user)) {
             return;
         }
 
         if (event.isAsynchronous()) {
-            user.getSelectedChannel().sendMessage(user, event.getMessage(), false);
+            selectedChannel.sendMessage(user, event.getMessage(), false);
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
-                user.getSelectedChannel().sendMessage(user, event.getMessage(), false);
+                selectedChannel.sendMessage(user, event.getMessage(), false);
             });
         }
     }
