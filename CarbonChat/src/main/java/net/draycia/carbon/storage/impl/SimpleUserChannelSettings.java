@@ -36,13 +36,15 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     }
 
     @Override
-    public void setSpying(boolean spying) {
+    public void setSpying(boolean spying, boolean fromRemote) {
         this.spying = spying;
 
-        if (spying) {
-            getUser().publishChangeToRedis("spying-channel", channel);
-        } else {
-            getUser().publishChangeToRedis("unspying-channel", channel);
+        if (fromRemote) {
+            if (spying) {
+                getUser().publishChangeToRedis("spying-channel", channel);
+            } else {
+                getUser().publishChangeToRedis("unspying-channel", channel);
+            }
         }
     }
 
@@ -52,13 +54,15 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     }
 
     @Override
-    public void setIgnoring(boolean ignored) {
+    public void setIgnoring(boolean ignored, boolean fromRemote) {
         this.ignored = ignored;
 
-        if (spying) {
-            getUser().publishChangeToRedis("ignoring-channel", channel);
-        } else {
-            getUser().publishChangeToRedis("unignoring-channel", channel);
+        if (fromRemote) {
+            if (spying) {
+                getUser().publishChangeToRedis("ignoring-channel", channel);
+            } else {
+                getUser().publishChangeToRedis("unignoring-channel", channel);
+            }
         }
     }
 
@@ -72,14 +76,16 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     }
 
     @Override
-    public void setColor(@Nullable TextColor color) {
+    public void setColor(@Nullable TextColor color, boolean fromRemote) {
         if (color == null) {
             this.color = null;
         } else {
             this.color = color.asHexString();
         }
 
-        getUser().publishChangeToRedis("channel-color", this.color);
+        if (fromRemote) {
+            getUser().publishChangeToRedis("channel-color", this.color);
+        }
     }
 
 }
