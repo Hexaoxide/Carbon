@@ -290,9 +290,9 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     @Nullable
-    public String getPrefix() {
-        if (config != null && config.contains("prefix")) {
-            return config.getString("prefix");
+    public String getMessagePrefix() {
+        if (config != null && config.contains("message-prefix")) {
+            return config.getString("message-prefix");
         }
 
         return null;

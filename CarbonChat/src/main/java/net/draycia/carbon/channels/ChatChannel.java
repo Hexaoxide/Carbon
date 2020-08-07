@@ -41,7 +41,7 @@ public abstract class ChatChannel {
     public abstract String getKey();
 
     @Nullable
-    public abstract String getPrefix();
+    public abstract String getMessagePrefix();
 
     public abstract String getAliases();
 

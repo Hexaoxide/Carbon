@@ -26,13 +26,13 @@ public class BukkitChatListener implements Listener {
         ChatChannel channel = user.getSelectedChannel();
 
         for (ChatChannel entry : carbonChat.getChannelManager().getRegistry().values()) {
-            if (entry.getPrefix() == null) {
+            if (entry.getMessagePrefix() == null) {
                 continue;
             }
 
-            if (event.getMessage().startsWith(entry.getPrefix())) {
+            if (event.getMessage().startsWith(entry.getMessagePrefix())) {
                 if (entry.canPlayerUse(user)) {
-                    event.setMessage(event.getMessage().substring(entry.getPrefix().length()));
+                    event.setMessage(event.getMessage().substring(entry.getMessagePrefix().length()));
                     channel = entry;
                     break;
                 }
