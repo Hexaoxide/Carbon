@@ -58,7 +58,9 @@ public class CarbonChatChannel extends ChatChannel {
     @Override
     public void sendMessage(ChatUser user, String message, boolean fromBungee) {
         if (user.isOnline()) {
-            user.asPlayer().setDisplayName(user.getNickname());
+            if (user.getNickname() != null) {
+                user.asPlayer().setDisplayName(user.getNickname());
+            }
         }
 
         // Get player's formatting

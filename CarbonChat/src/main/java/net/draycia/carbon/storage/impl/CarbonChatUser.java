@@ -32,7 +32,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     private boolean shadowMuted = false;
     private boolean spyingWhispers = false;
 
-    private String nickname;
+    private String nickname = null;
 
     private transient UUID replyTarget = null;
 
