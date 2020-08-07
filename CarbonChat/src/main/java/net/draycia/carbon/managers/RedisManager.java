@@ -49,6 +49,7 @@ public class RedisManager {
 
         subscribeConnection.addListener((RedisListener)(channel, message) -> {
             UUID uuid = UUID.fromString(message.split(":", 2)[0]);
+            System.out.println("receiving message, uuid: " + uuid);
 
             ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
@@ -57,6 +58,8 @@ public class RedisManager {
             }
 
             String value = message.split(":", 2)[1];
+
+            System.out.println("user not null, value: " + value);
 
             switch (channel.toLowerCase()) {
                 case "nickname":
@@ -107,46 +110,55 @@ public class RedisManager {
     }
 
     private void handleChannelColorChange(ChatUser user, String value) {
-        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setColor(TextColor.fromHexString(value));
+        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setColor(TextColor.fromHexString(value), true);
     }
 
     private void handleSpyingChannelChange(ChatUser user, String value, boolean b) {
-        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setSpying(b);
+        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setSpying(b, true);
     }
 
     private void handleIgnoringChannelChange(ChatUser user, String value, boolean b) {
-        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setIgnoring(b);
+        user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(value)).setIgnoring(b, true);
     }
 
     private void handleIgnoringUserChange(ChatUser user, String value, boolean b) {
-        user.setIgnoringUser(UUID.fromString(value), b);
+        user.setIgnoringUser(UUID.fromString(value), b, true);
     }
 
     private void handleReplyTargetChange(ChatUser user, String value) {
-        user.setReplyTarget(UUID.fromString(value));
+        user.setReplyTarget(UUID.fromString(value), true);
     }
 
     private void handleShadowMutedChange(ChatUser user, String value) {
-        user.setShadowMuted(value.equalsIgnoreCase("true"));
+        user.setShadowMuted(value.equalsIgnoreCase("true"), true);
     }
 
     private void handleMutedChange(ChatUser user, String value) {
-        user.setMuted(value.equalsIgnoreCase("true"));
+        user.setMuted(value.equalsIgnoreCase("true"), true);
     }
 
     private void handleSpyingWhispersChange(ChatUser user, String value) {
-        user.setSpyingWhispers(value.equalsIgnoreCase("true"));
+        user.setSpyingWhispers(value.equalsIgnoreCase("true"), true);
     }
 
     private void handleSelectedChannelChange(ChatUser user, String value) {
-        user.setSelectedChannel(carbonChat.getChannelManager().getRegistry().get(value));
+        user.setSelectedChannel(carbonChat.getChannelManager().getRegistry().get(value), true);
     }
 
     private void handleNicknameChange(ChatUser user, String value) {
-        user.setNickname(value);
+        System.out.println("nickname set!");
+        user.setNickname(value, true);
+
+        if (user.isOnline()) {
+            String message = carbonChat.getConfig().getString("language.nickname-set");
+
+            user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.asPlayer(),
+                    message, "nickname", value));
+        }
     }
 
     public void publishChange(UUID uuid, String field, String value) {
+        System.out.println("publishing change " + field);
         publishSync.publish(field, uuid.toString() + ":" + value);
     }
 }
