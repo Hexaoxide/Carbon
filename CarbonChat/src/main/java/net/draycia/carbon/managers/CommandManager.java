@@ -78,20 +78,21 @@ public class CommandManager {
             }
         });
 
-        setupCommands(commandManager);
+        reloadCommands();
     }
 
-    private void setupCommands(BukkitCommandManager manager) {
-        manager.registerCommand(new ToggleCommand());
-        manager.registerCommand(new ChannelCommand());
-        manager.registerCommand(new IgnoreCommand());
-        manager.registerCommand(new ChatReloadCommand());
-        manager.registerCommand(new MeCommand());
-        manager.registerCommand(new MessageCommand());
-        manager.registerCommand(new NicknameCommand());
-        manager.registerCommand(new ReplyCommand());
-        manager.registerCommand(new SetColorCommand());
-        manager.registerCommand(new SpyChannelCommand());
+    public void reloadCommands() {
+        this.commandManager.unregisterCommands();
+        this.commandManager.registerCommand(new ToggleCommand());
+        this.commandManager.registerCommand(new ChannelCommand());
+        this.commandManager.registerCommand(new IgnoreCommand());
+        this.commandManager.registerCommand(new ChatReloadCommand());
+        this.commandManager.registerCommand(new MeCommand());
+        this.commandManager.registerCommand(new MessageCommand());
+        this.commandManager.registerCommand(new NicknameCommand());
+        this.commandManager.registerCommand(new ReplyCommand());
+        this.commandManager.registerCommand(new SetColorCommand());
+        this.commandManager.registerCommand(new SpyChannelCommand());
     }
 
     public co.aikar.commands.CommandManager getCommandManager() {
