@@ -49,7 +49,6 @@ public class RedisManager {
 
         subscribeConnection.addListener((RedisListener)(channel, message) -> {
             UUID uuid = UUID.fromString(message.split(":", 2)[0]);
-            System.out.println("receiving message, uuid: " + uuid);
 
             ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
@@ -58,8 +57,6 @@ public class RedisManager {
             }
 
             String value = message.split(":", 2)[1];
-
-            System.out.println("user not null, value: " + value);
 
             switch (channel.toLowerCase()) {
                 case "nickname":
@@ -146,7 +143,6 @@ public class RedisManager {
     }
 
     private void handleNicknameChange(ChatUser user, String value) {
-        System.out.println("nickname set!");
         user.setNickname(value, true);
 
         if (user.isOnline()) {
@@ -158,7 +154,6 @@ public class RedisManager {
     }
 
     public void publishChange(UUID uuid, String field, String value) {
-        System.out.println("publishing change " + field);
         publishSync.publish(field, uuid.toString() + ":" + value);
     }
 }

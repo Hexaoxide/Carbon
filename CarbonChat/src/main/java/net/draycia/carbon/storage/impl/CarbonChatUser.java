@@ -297,12 +297,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     /* package */ void publishChangeToRedis(String key, String value) {
-        System.out.println("checking if null");
         if (carbonChat.getRedisManager() == null) {
             return;
         }
-
-        System.out.println("not null");
 
         carbonChat.getRedisManager().publishChange(uuid, key, value);
     }
