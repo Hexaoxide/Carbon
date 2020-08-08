@@ -33,7 +33,8 @@ public class NicknameCommand extends BaseCommand {
             }
 
             sender.sendMessage(carbonChat.getAdventureManager().processMessage(
-                    message, "nickname", nickname, "user", target.asOfflinePlayer().getName()));
+                    message, "nickname", nickname == null ? "" : nickname,
+                    "user", target.asOfflinePlayer().getName()));
         } else {
             sender.setNickname(nickname);
 
@@ -46,7 +47,7 @@ public class NicknameCommand extends BaseCommand {
             }
 
             sender.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
-                    message, "nickname", nickname));
+                    message, "nickname", nickname == null ? "" : nickname));
         }
     }
 

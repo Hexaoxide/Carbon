@@ -77,23 +77,19 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public void setNickname(String nickname, boolean fromRemote) {
-        Component component = carbonChat.getAdventureManager().processMessage(nickname);
-        String legacyNickname = CarbonChat.LEGACY.serialize(component);
+        if (nickname != null) {
+            Component component = carbonChat.getAdventureManager().processMessage(nickname);
+            nickname = CarbonChat.LEGACY.serialize(component);
+        }
 
-        System.out.println(legacyNickname);
-
-        this.nickname = legacyNickname;
+        this.nickname = nickname;
 
         if (isOnline()) {
-            if (nickname != null) {
-                this.asPlayer().setDisplayName(legacyNickname);
-            } else {
-                this.asPlayer().setDisplayName(null);
-            }
+            this.asPlayer().setDisplayName(null);
         }
 
         if (!fromRemote) {
-            this.publishChangeToRedis("nickname", legacyNickname);
+            this.publishChangeToRedis("nickname", nickname);
         }
     }
 
