@@ -21,17 +21,7 @@ public class ChannelManager {
         this.carbonChat = carbonChat;
         this.registry = new ChannelRegistry(carbonChat);
 
-        for (String key : carbonChat.getConfig().getConfigurationSection("channels").getKeys(false)) {
-            ConfigurationSection section = carbonChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
-
-            ChatChannel channel = loadChannel(key, section);
-
-            if (channel != null) {
-                if (registerChannel(channel)) {
-                    carbonChat.getLogger().info("Registering channel: " + channel.getName());
-                }
-            }
-        }
+        reload();
     }
 
     public ChatChannel loadChannel(String key, ConfigurationSection section) {
@@ -87,6 +77,22 @@ public class ChannelManager {
         }
 
         return channel;
+    }
+
+    public void reload() {
+        registry.clearAll();
+
+        for (String key : carbonChat.getConfig().getConfigurationSection("channels").getKeys(false)) {
+            ConfigurationSection section = carbonChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
+
+            ChatChannel channel = loadChannel(key, section);
+
+            if (channel != null) {
+                if (registerChannel(channel)) {
+                    carbonChat.getLogger().info("Registering channel: " + channel.getName());
+                }
+            }
+        }
     }
 
 }

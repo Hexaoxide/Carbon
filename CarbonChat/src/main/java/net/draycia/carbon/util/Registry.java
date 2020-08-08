@@ -30,4 +30,9 @@ public interface Registry<T> {
     @Nullable
     T get(String key);
 
+    /**
+     * Clears all registered entries from the registry
+     */
+    void clearAll();
+
 }

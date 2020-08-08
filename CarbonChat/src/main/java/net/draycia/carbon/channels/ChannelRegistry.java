@@ -52,4 +52,9 @@ public class ChannelRegistry implements Registry<ChatChannel> {
         return registry.get(key);
     }
 
+    @Override
+    public void clearAll() {
+        registry.clear();
+    }
+
 }
