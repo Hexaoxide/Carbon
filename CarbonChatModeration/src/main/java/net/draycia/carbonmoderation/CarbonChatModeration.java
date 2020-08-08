@@ -1,6 +1,6 @@
 package net.draycia.carbonmoderation;
 
-import net.draycia.carbon.libs.co.aikar.commands.CommandManager;
+import net.draycia.carbon.libs.co.aikar.commands.BukkitCommandManager;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbonmoderation.commands.ClearChatCommand;
 import net.draycia.carbonmoderation.commands.MuteCommand;
@@ -27,7 +27,7 @@ public final class CarbonChatModeration extends JavaPlugin {
     }
 
     private void registerCommands() {
-        CommandManager commandManager = carbonChat.getCommandManager().getCommandManager();
+        BukkitCommandManager commandManager = carbonChat.getCommandManager().getCommandManager();
 
         commandManager.registerCommand(new ClearChatCommand(this));
         commandManager.registerCommand(new MuteCommand(this));

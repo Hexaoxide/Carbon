@@ -82,7 +82,6 @@ public class CommandManager {
     }
 
     public void reloadCommands() {
-        this.commandManager.unregisterCommands();
         this.commandManager.registerCommand(new ToggleCommand());
         this.commandManager.registerCommand(new ChannelCommand());
         this.commandManager.registerCommand(new IgnoreCommand());
@@ -95,7 +94,7 @@ public class CommandManager {
         this.commandManager.registerCommand(new SpyChannelCommand());
     }
 
-    public co.aikar.commands.CommandManager getCommandManager() {
+    public BukkitCommandManager getCommandManager() {
         return commandManager;
     }
 
