@@ -20,6 +20,8 @@ public class ChatReloadCommand extends BaseCommand {
     public void baseCommand(CommandSender sender) {
         carbonChat.reloadConfig();
 
+        carbonChat.getCommandManager().reloadCommands();
+
         carbonChat.getChannelManager().reload();
 
         Component message = carbonChat.getAdventureManager().processMessage(carbonChat.getConfig().getString("language.reloaded"),
