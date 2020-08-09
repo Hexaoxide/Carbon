@@ -26,6 +26,9 @@ public class ChatReloadCommand extends BaseCommand {
                 "br", "\n");
 
         carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(message);
+
+        // TODO: Ensure the command list is updated when reloading.
+        // If new channels are added, their commands should appear to players.
     }
 
 }
