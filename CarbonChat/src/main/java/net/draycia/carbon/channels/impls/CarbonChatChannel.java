@@ -191,7 +191,7 @@ public class CarbonChatChannel extends ChatChannel {
 
         String primaryGroupFormat = getFormat(primaryGroup);
 
-        if (primaryGroupFormat == null) {
+        if (primaryGroupFormat != null) {
             return primaryGroupFormat;
         }
 
