@@ -89,7 +89,11 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         }
 
         if (!fromRemote) {
-            this.publishChangeToRedis("nickname", nickname);
+            if (nickname == null) {
+                this.publishChangeToRedis("nickname-reset", "true");
+            } else {
+                this.publishChangeToRedis("nickname", nickname);
+            }
         }
     }
 

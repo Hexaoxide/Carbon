@@ -62,6 +62,9 @@ public class RedisManager {
                 case "nickname":
                     handleNicknameChange(user, value);
                     break;
+                case "nickname-reset":
+                    handleNicknameResetChange(user, value);
+                    break;
                 case "selected-channel":
                     handleSelectedChannelChange(user, value);
                     break;
@@ -140,6 +143,17 @@ public class RedisManager {
 
     private void handleSelectedChannelChange(ChatUser user, String value) {
         user.setSelectedChannel(carbonChat.getChannelManager().getRegistry().get(value), true);
+    }
+
+    private void handleNicknameResetChange(ChatUser user, String value) {
+        user.setNickname(null, true);
+
+        if (user.isOnline()) {
+            String message = carbonChat.getConfig().getString("language.nickname-reset");
+
+            user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.asPlayer(),
+                    message, "nickname", ""));
+        }
     }
 
     private void handleNicknameChange(ChatUser user, String value) {
