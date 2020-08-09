@@ -266,7 +266,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     private String getDefaultFormatName() {
-        return getString("default-format-name");
+        return getString("default-group");
     }
 
     @Override
