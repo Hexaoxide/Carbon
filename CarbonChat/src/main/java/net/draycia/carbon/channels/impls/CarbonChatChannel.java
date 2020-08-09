@@ -152,6 +152,61 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
+    public String getFormat(ChatUser user) {
+        if (primaryGroupOnly()) {
+            return getPrimaryGroupFormat(user);
+        } else {
+            return getFirstFoundUserFormat(user);
+        }
+    }
+
+    private String getFirstFoundUserFormat(ChatUser user) {
+        String[] playerGroups;
+
+        if (user.isOnline()) {
+            playerGroups = carbonChat.getPermission().getPlayerGroups(user.asPlayer());
+        } else {
+            playerGroups = carbonChat.getPermission().getPlayerGroups(null, user.asOfflinePlayer());
+        }
+
+        for (String group : playerGroups) {
+            String groupFormat = getFormat(group);
+
+            if (groupFormat != null) {
+                return groupFormat;
+            }
+        }
+
+        return getDefaultFormat();
+    }
+
+    private String getPrimaryGroupFormat(ChatUser user) {
+        String primaryGroup;
+
+        if (user.isOnline()) {
+            primaryGroup = carbonChat.getPermission().getPrimaryGroup(user.asPlayer());
+        } else {
+            primaryGroup = carbonChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
+        }
+
+        String primaryGroupFormat = getFormat(primaryGroup);
+
+        if (primaryGroupFormat == null) {
+            return primaryGroupFormat;
+        }
+
+        return getDefaultFormat();
+    }
+
+    private String getDefaultFormat() {
+        return getFormat(getDefaultFormatName());
+    }
+
+    @Override
+    public String getFormat(String group) {
+        return getString("formats." + group);
+    }
+
     private boolean isUserSpying(ChatUser sender, ChatUser target) {
         if (!canPlayerSee(sender, target, false)) {
             return target.getChannelSettings(this).isSpying();
@@ -177,36 +232,6 @@ public class CarbonChatChannel extends ChatChannel {
 
     public void sendMessageToBungee(Player player, String message) {
         carbonChat.getPluginMessageManager().sendMessage(this, player, message);
-    }
-
-    private String getFormat(ChatUser user) {
-        String group = "default";
-
-        if (this.primaryGroupOnly()) {
-            if (user.isOnline()) {
-                group = carbonChat.getPermission().getPrimaryGroup(user.asPlayer());
-            } else {
-                group = carbonChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
-            }
-        } else {
-            String[] groups;
-
-            // TODO: this can't be done on main thread (if user is offline) :(
-            if (user.isOnline()) {
-                groups = carbonChat.getPermission().getPlayerGroups(user.asPlayer());
-            } else {
-                groups = carbonChat.getPermission().getPlayerGroups(null, user.asOfflinePlayer());
-            }
-
-            for (String entry : groups) {
-                if (getFormats().containsKey(entry.toLowerCase())) {
-                    group = entry;
-                    break;
-                }
-            }
-        }
-
-        return getFormat(group);
     }
 
     public Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
@@ -235,32 +260,9 @@ public class CarbonChatChannel extends ChatChannel {
         return true;
     }
 
-    public Map<String, String> getFormats() {
-        HashMap<String, String> formats = new HashMap<>();
-
-        ConfigurationSection formatSection = config.getConfigurationSection("formats");
-
-        if (formatSection == null) {
-            formatSection = carbonChat.getConfig().getConfigurationSection("default").getConfigurationSection("formats");
-        }
-
-        for (String key : formatSection.getKeys(false)) {
-            formats.put(key, formatSection.getString(key));
-        }
-
-        return formats;
-    }
-
     @Override
     public TextColor getColor() {
         return TextColor.fromHexString(getString("color"));
-    }
-
-    @Override
-    public String getFormat(String group) {
-        // TODO: investigate this resorting to vanilla formatting when primaryGroupOnly is true and certain conditions are met
-        return getFormats().getOrDefault(group, getFormats().getOrDefault(getDefaultFormatName(),
-                "<white><%player_displayname%<white>> <message>"));
     }
 
     private String getDefaultFormatName() {
