@@ -17,7 +17,18 @@ public class NicknameCommand extends BaseCommand {
     public void baseCommand(Player player, String nickname, @Optional ChatUser target) {
         ChatUser sender = carbonChat.getUserService().wrap(player);
 
-        if (nickname.equalsIgnoreCase("off") || nickname.equals(target.asOfflinePlayer().getName())) {
+        // Reset nickname
+        if (nickname.equalsIgnoreCase("off")) {
+            nickname = null;
+        }
+
+        // Reset other player's nickname
+        if (target != null && nickname != null && nickname.equals(target.asOfflinePlayer().getName())) {
+            nickname = null;
+        }
+
+        // Reset own nickname
+        if (target == null && nickname != null && nickname.equals(sender.asOfflinePlayer().getName())) {
             nickname = null;
         }
 
