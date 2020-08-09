@@ -17,7 +17,7 @@ public class NicknameCommand extends BaseCommand {
     public void baseCommand(Player player, String nickname, @Optional ChatUser target) {
         ChatUser sender = carbonChat.getUserService().wrap(player);
 
-        if (nickname.equalsIgnoreCase("off")) {
+        if (nickname.equalsIgnoreCase("off") || nickname.equals(target.asOfflinePlayer().getName())) {
             nickname = null;
         }
 
