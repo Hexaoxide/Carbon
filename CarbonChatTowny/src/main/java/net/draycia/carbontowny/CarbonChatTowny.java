@@ -60,7 +60,7 @@ public final class CarbonChatTowny extends JavaPlugin {
     @EventHandler
     public void onResidentRemove(TownRemoveResidentEvent event) {
         String name = event.getResident().getName();
-        ChatUser user = carbonChat.getUserService().wrap(Bukkit.getOfflinePlayer(name));
+        ChatUser user = carbonChat.getUserService().wrap(name);
         Object town = user.getSelectedChannel().getContext(KEY);
 
         if ((town instanceof Boolean) && ((Boolean) town)) {

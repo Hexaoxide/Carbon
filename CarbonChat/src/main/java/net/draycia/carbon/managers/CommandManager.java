@@ -57,7 +57,7 @@ public class CommandManager {
         });
 
         commandManager.getCommandContexts().registerContext(ChatUser.class, (context) -> {
-            return carbonChat.getUserService().wrap(Bukkit.getOfflinePlayer(context.popFirstArg()));
+            return carbonChat.getUserService().wrap(context.popFirstArg());
         });
 
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {

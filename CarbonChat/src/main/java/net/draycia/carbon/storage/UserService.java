@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public interface UserService {
 
+    ChatUser wrap(String name);
     ChatUser wrap(OfflinePlayer player);
     ChatUser wrap(UUID uuid);
 

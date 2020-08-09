@@ -11,6 +11,7 @@ import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -38,6 +39,17 @@ public class JSONUserService implements UserService {
         this.carbonChat = carbonChat;
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(carbonChat, userCache::cleanUp, 0L, 20 * 60 * 10);
+    }
+
+    @Override
+    public ChatUser wrap(String name) {
+        Player player = Bukkit.getPlayer(name);
+
+        if (player != null) {
+            return wrap(player);
+        }
+
+        return wrap(Bukkit.getOfflinePlayer(name));
     }
 
     @Override
