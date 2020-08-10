@@ -188,7 +188,7 @@ public class MySQLUserService implements UserService {
             String selectedName = null;
 
             if (user.getSelectedChannel() != null) {
-                selectedName = user.getSelectedChannel().getName();
+                selectedName = user.getSelectedChannel().getKey();
             }
 
             carbonChat.getLogger().info("Saving user data!");
