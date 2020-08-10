@@ -24,6 +24,8 @@ public class RedisManager {
     private final StatefulRedisPubSubConnection<String, String> publishConnection;
     private final RedisPubSubCommands<String, String> publishSync;
 
+    private UUID serverUUID = UUID.randomUUID();
+
     public RedisManager(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
@@ -48,7 +50,15 @@ public class RedisManager {
         this.publishSync = publishConnection.sync();
 
         subscribeConnection.addListener((RedisListener)(channel, message) -> {
-            UUID uuid = UUID.fromString(message.split(":", 2)[0]);
+            String[] messagePieces = message.split(":");
+
+            UUID messageUUID = UUID.fromString(messagePieces[0]);
+
+            if (messageUUID.equals(serverUUID)) {
+                return;
+            }
+
+            UUID uuid = UUID.fromString(messagePieces[1]);
 
             ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
@@ -56,7 +66,7 @@ public class RedisManager {
                 return;
             }
 
-            String value = message.split(":", 2)[1];
+            String value = messagePieces[2];
 
             switch (channel.toLowerCase()) {
                 case "nickname":
@@ -168,6 +178,6 @@ public class RedisManager {
     }
 
     public void publishChange(UUID uuid, String field, String value) {
-        publishSync.publish(field, uuid.toString() + ":" + value);
+        publishSync.publish(field, serverUUID + ":" + uuid.toString() + ":" + value);
     }
 }
