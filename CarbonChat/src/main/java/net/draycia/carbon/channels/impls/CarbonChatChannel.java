@@ -438,7 +438,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public boolean isCanceled() {
-        return getBoolean("cancel");
+    public boolean shouldCancelChatEvent() {
+        return getBoolean("cancel-message-event");
     }
 }

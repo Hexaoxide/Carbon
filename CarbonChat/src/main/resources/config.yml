@@ -49,7 +49,7 @@ default:
   # The messages will still go through, however other plugins should assume they didn't.
   # As such, setting this on private channels is recommended.
   # For example, use this if DiscordSRV is sending messages when you don't want it to.
-  cancel: false
+  cancel-message-event: false
 
 channels:
   global:
