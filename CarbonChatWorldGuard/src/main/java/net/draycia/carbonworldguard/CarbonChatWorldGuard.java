@@ -14,11 +14,12 @@ import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-public final class CarbonChatWorldGuard extends JavaPlugin {
+public final class CarbonChatWorldGuard extends JavaPlugin implements Listener {
 
     private static final String KEY = "worldguard-region";
 
@@ -52,6 +53,8 @@ public final class CarbonChatWorldGuard extends JavaPlugin {
 
             return user1InRegion && user2InRegion;
         });
+
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @EventHandler(ignoreCancelled = true)
