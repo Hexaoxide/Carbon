@@ -105,6 +105,6 @@ public abstract class ChatChannel {
 
     public String processPlaceholders(ChatUser user, String input) { return input; }
 
-    public abstract boolean isCanceled();
+    public abstract boolean shouldCancelChatEvent();
 
 }

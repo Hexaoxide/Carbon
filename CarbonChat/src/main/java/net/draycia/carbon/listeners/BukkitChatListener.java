@@ -25,7 +25,7 @@ public class BukkitChatListener implements Listener {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
         ChatChannel channel = user.getSelectedChannel();
 
-        if (channel.isCanceled()) event.setCancelled(true);
+        if (channel.shouldCancelChatEvent()) event.setCancelled(true);
 
         for (ChatChannel entry : carbonChat.getChannelManager().getRegistry().values()) {
             if (entry.getMessagePrefix() == null) {
