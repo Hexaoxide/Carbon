@@ -27,7 +27,7 @@ public class CommandManager {
 
             for (ChatChannel chatChannel : carbonChat.getChannelManager().getRegistry().values()) {
                 if (chatChannel.canPlayerUse(user)) {
-                    completions.add(chatChannel.getName());
+                    completions.add(chatChannel.getKey());
                 }
             }
 
@@ -38,7 +38,7 @@ public class CommandManager {
             List<String> completions = new ArrayList<>();
 
             for (ChatChannel chatChannel : carbonChat.getChannelManager().getRegistry().values()) {
-                    completions.add(chatChannel.getName());
+                    completions.add(chatChannel.getKey());
             }
 
             return completions;
@@ -48,7 +48,7 @@ public class CommandManager {
             String name = context.popFirstArg();
 
             for (ChatChannel chatChannel : carbonChat.getChannelManager().getRegistry().values()) {
-                if (chatChannel.getName().equalsIgnoreCase(name)) {
+                if (chatChannel.getKey().equalsIgnoreCase(name)) {
                     return chatChannel;
                 }
             }

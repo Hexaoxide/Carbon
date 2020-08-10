@@ -26,7 +26,7 @@ public class SetColorCommand extends BaseCommand {
 
         ChatUser user = carbonChat.getUserService().wrap(player);
 
-        if (!player.hasPermission("carbonchat.setcolor." + channel.getName())) {
+        if (!player.hasPermission("carbonchat.setcolor." + channel.getKey())) {
             throw new ConditionFailedException("You can't set colors for this channel!");
         }
 

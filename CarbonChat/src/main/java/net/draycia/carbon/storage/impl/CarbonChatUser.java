@@ -199,7 +199,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public UserChannelSettings getChannelSettings(ChatChannel channel) {
-        return channelSettings.computeIfAbsent(channel.getName(), (name) -> {
+        return channelSettings.computeIfAbsent(channel.getKey(), (name) -> {
             return new SimpleUserChannelSettings(uuid, channel.getKey());
         });
     }

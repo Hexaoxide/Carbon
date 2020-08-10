@@ -21,7 +21,7 @@ public class UserFormattingListener implements Listener {
 
         Player p = event.getUser().asPlayer();
         if (!(p.hasPermission("carbonchat.formatting") ||
-                p.hasPermission("carbonchat.channels." + event.getChannel().getName() + ".formatting"))) {
+                p.hasPermission("carbonchat.channels." + event.getChannel().getKey() + ".formatting"))) {
             suppressFormatting(event);
             return;
         } else {
