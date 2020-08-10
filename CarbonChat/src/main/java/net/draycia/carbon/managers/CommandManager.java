@@ -5,7 +5,6 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.commands.*;
 import net.draycia.carbon.storage.ChatUser;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;

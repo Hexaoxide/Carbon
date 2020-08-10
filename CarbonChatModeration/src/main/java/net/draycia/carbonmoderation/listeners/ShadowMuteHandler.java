@@ -9,15 +9,10 @@ public class ShadowMuteHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onComponent(ChatComponentEvent event) {
-        if (event.getUser().isShadowMuted()) {
-            if (event.getRecipients().size() == 1 && event.getUser().equals(event.getRecipients().get(0))) {
-                return;
+        if (event.getSender().isShadowMuted()) {
+            if (!event.getSender().equals(event.getTarget())) {
+                event.setCancelled(true);
             }
-
-            try {
-                event.getRecipients().clear();
-                event.getRecipients().add(event.getUser());
-            } catch (UnsupportedOperationException e) {}
         }
 
         // TODO: figure out a way to add the console "[SM]" prefix for shadow muted players

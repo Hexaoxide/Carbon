@@ -17,7 +17,7 @@ import org.bukkit.command.CommandSender;
 @CommandPermission("carbonchat.shadowmute")
 public class ShadowMuteCommand extends BaseCommand {
 
-    private CarbonChatModeration moderation;
+    private final CarbonChatModeration moderation;
 
     public ShadowMuteCommand(CarbonChatModeration moderation) {
         this.moderation = moderation;

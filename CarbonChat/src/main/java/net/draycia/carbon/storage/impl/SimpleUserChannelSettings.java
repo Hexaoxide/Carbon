@@ -1,8 +1,6 @@
 package net.draycia.carbon.storage.impl;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.channels.ChatChannel;
-import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -16,8 +14,8 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     private boolean ignored;
     private String color;
 
-    private UUID uuid;
-    private String channel;
+    private final UUID uuid;
+    private final String channel;
 
     public SimpleUserChannelSettings(UUID uuid, String channel) {
         this.uuid = uuid;

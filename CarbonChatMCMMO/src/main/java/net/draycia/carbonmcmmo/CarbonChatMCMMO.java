@@ -4,7 +4,7 @@ import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChannelSwitchEvent;
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -43,7 +43,7 @@ public final class CarbonChatMCMMO extends JavaPlugin {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(ChatFormatEvent event) {
+    public void onChannelMessage(PreChatFormatEvent event) {
         Object party = event.getChannel().getContext("mcmmo-party");
 
         if ((party instanceof Boolean) && ((Boolean) party)) {

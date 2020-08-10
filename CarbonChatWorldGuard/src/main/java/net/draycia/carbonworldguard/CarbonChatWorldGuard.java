@@ -10,7 +10,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChannelSwitchEvent;
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -66,7 +66,7 @@ public final class CarbonChatWorldGuard extends JavaPlugin {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(ChatFormatEvent event) {
+    public void onChannelMessage(PreChatFormatEvent event) {
         Object value = event.getChannel().getContext(KEY);
 
         if (!isInRegionOrRegions(value, event.getUser())) {

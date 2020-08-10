@@ -8,34 +8,27 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 public class ChatComponentEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private boolean isCancelled = false;
 
-    private ChatUser user;
+    private @NotNull final ChatUser sender;
+    private @Nullable final ChatUser target;
     private ChatChannel chatChannel;
     private TextComponent component;
-    private String originalMessage;
-    private List<ChatUser> recipients;
-    private boolean customPlayerFormat;
+    private final String originalMessage;
 
-    public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, String originalMessage, List<ChatUser> recipients) {
-        this(user, chatChannel, component, originalMessage, recipients, false);
-    }
-
-    public ChatComponentEvent(ChatUser user, ChatChannel chatChannel, TextComponent component, String originalMessage, List<ChatUser> recipients, boolean customPlayerFormat) {
+    public ChatComponentEvent(ChatUser sender, ChatUser target, ChatChannel chatChannel, TextComponent component, String originalMessage) {
         super(!Bukkit.isPrimaryThread());
 
-        this.user = user;
+        this.sender = sender;
+        this.target = target;
         this.chatChannel = chatChannel;
         this.component = component;
         this.originalMessage = originalMessage;
-        this.recipients = recipients;
-        this.customPlayerFormat = customPlayerFormat;
     }
 
     @Override
@@ -58,8 +51,14 @@ public class ChatComponentEvent extends Event implements Cancellable {
         return HANDLERS_LIST;
     }
 
-    public ChatUser getUser() {
-        return user;
+    @NotNull
+    public ChatUser getSender() {
+        return sender;
+    }
+
+    @Nullable
+    public ChatUser getTarget() {
+        return target;
     }
 
     public ChatChannel getChannel() {
@@ -78,15 +77,8 @@ public class ChatComponentEvent extends Event implements Cancellable {
         this.component = component;
     }
 
-    public List<ChatUser> getRecipients() {
-        return recipients;
-    }
-
     public String getOriginalMessage() {
         return originalMessage;
     }
 
-    public boolean isCustomPlayerFormat() {
-        return customPlayerFormat;
-    }
 }

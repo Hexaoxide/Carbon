@@ -1,6 +1,6 @@
 package net.draycia.carbon.channels;
 
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -95,7 +95,7 @@ public abstract class ChatChannel {
     public abstract List<Pattern> getItemLinkPatterns();
 
     /**
-     * Parses the specified message, calls a {@link ChatFormatEvent}, and sends the message to everyone who can view this channel.
+     * Parses the specified message, calls a {@link PreChatFormatEvent}, and sends the message to everyone who can view this channel.
      * @param user The player who is saying the message.
      * @param message The message to be sent.
      */

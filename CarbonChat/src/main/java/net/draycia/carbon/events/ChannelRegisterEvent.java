@@ -24,8 +24,8 @@ public class ChannelRegisterEvent extends Event {
     }
 
     /** Relevant stuff **/
-    private List<ChatChannel> registeredChannels;
-    private Registry<ChatChannel> registry;
+    private final List<ChatChannel> registeredChannels;
+    private final Registry<ChatChannel> registry;
 
     public ChannelRegisterEvent(List<ChatChannel> registeredChannels, Registry<ChatChannel> registry) {
         super(!Bukkit.isPrimaryThread());
