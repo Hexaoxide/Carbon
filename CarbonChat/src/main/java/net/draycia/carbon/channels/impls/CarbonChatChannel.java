@@ -437,4 +437,8 @@ public class CarbonChatChannel extends ChatChannel {
         return aliases;
     }
 
+    @Override
+    public boolean isCanceled() {
+        return getBoolean("cancel");
+    }
 }

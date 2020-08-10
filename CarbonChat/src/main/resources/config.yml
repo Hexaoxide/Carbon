@@ -45,6 +45,11 @@ default:
   primary-group-only: true
   # The name of the vault group which should be considered as the default group.
   default-group: 'default'
+  # For plugin compatibility. If true, all chat messages sent will be "canceled".
+  # The messages will still go through, however other plugins should assume they didn't.
+  # As such, setting this on private channels is recommended.
+  # For example, use this if DiscordSRV is sending messages when you don't want it to.
+  cancel: false
 
 channels:
   global:
