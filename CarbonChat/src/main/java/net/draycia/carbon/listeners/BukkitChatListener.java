@@ -26,7 +26,6 @@ public class BukkitChatListener implements Listener {
         ChatChannel channel = user.getSelectedChannel();
 
         if (channel.isCanceled()) event.setCancelled(true);
-        carbonChat.getLogger().info(String.format("Message sent, canceled: %s", event.isCancelled()));
 
         for (ChatChannel entry : carbonChat.getChannelManager().getRegistry().values()) {
             if (entry.getMessagePrefix() == null) {
