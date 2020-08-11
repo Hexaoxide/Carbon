@@ -40,7 +40,6 @@ public final class CarbonChatMCMMO extends JavaPlugin implements Listener {
         if ((party instanceof Boolean) && ((Boolean) party)) {
             if (!isInParty(event.getUser())) {
                 event.setCancelled(true);
-                event.setFailureMessage(getConfig().getString("cancellation-message"));
             }
         }
     }

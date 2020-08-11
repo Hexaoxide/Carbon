@@ -53,6 +53,8 @@ public abstract class ChatChannel implements ForwardingAudience {
 
     public abstract String getSwitchOtherMessage();
 
+    public abstract String getSwitchFailureMessage();
+
     /**
      * @return The message to be send to the player when toggling this channel off.
      */

@@ -18,6 +18,10 @@ public class PingHandler implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPing(ChatComponentEvent event) {
+        if (event.getTarget() == null) {
+            return;
+        }
+
         if (event.getSender().getUUID().equals(event.getTarget().getUUID())) {
             return;
         }

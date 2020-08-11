@@ -29,29 +29,7 @@ public final class CarbonChatWorldGuard extends JavaPlugin implements Listener {
         CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
         carbonChat.getContextManager().register(KEY, (context) -> {
-            if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
-                return isInSameRegion(context.getSender(), context.getTarget());
-            }
-
-            boolean user1InRegion = false;
-            boolean user2InRegion = false;
-
-            if (context.getValue() instanceof String) {
-                user1InRegion = isInRegion((String)context.getValue(), context.getSender());
-                user2InRegion = isInRegion((String)context.getValue(), context.getTarget());
-            } else if (context.getValue() instanceof List) {
-                for (String item : (List<String>) context.getValue()) {
-                    if (!user1InRegion) {
-                        user1InRegion = isInRegion(item, context.getSender());
-                    }
-
-                    if (!user2InRegion) {
-                        user2InRegion = isInRegion(item, context.getTarget());
-                    }
-                }
-            }
-
-            return user1InRegion && user2InRegion;
+            return this.testContext(context.getSender(), context.getTarget(), context.getValue());
         });
 
         Bukkit.getPluginManager().registerEvents(this, this);
@@ -59,21 +37,21 @@ public final class CarbonChatWorldGuard extends JavaPlugin implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onChannelSwitch(ChannelSwitchEvent event) {
+        // TODO: cancellation message
         Object value = event.getChannel().getContext(KEY);
 
-        if (!isInRegionOrRegions(value, event.getUser())) {
+        if ((value instanceof String || value instanceof List) && !isInRegionOrRegions(value, event.getUser())) {
             event.setCancelled(true);
-            // TODO: placeholders (regions, etc)
-            event.setFailureMessage(getConfig().getString("cancellation-message"));
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onChannelMessage(PreChatFormatEvent event) {
+        // TODO: cancellation message
         Object value = event.getChannel().getContext(KEY);
 
-        if (!isInRegionOrRegions(value, event.getUser())) {
-                event.setCancelled(true);
+        if ((value instanceof String || value instanceof List) && !isInRegionOrRegions(value, event.getUser())) {
+            event.setCancelled(true);
         }
     }
 
@@ -91,6 +69,32 @@ public final class CarbonChatWorldGuard extends JavaPlugin implements Listener {
         }
 
         return false;
+    }
+
+    public boolean testContext(ChatUser sender, ChatUser target, Object value) {
+        boolean user1InRegion = false;
+        boolean user2InRegion = false;
+
+        if ((value instanceof Boolean) && ((Boolean) value)) {
+            return isInSameRegion(sender, target);
+        } else if (value instanceof String) {
+            user1InRegion = isInRegion((String)value, sender);
+            user2InRegion = isInRegion((String)value, target);
+        } else if (value instanceof List) {
+            for (String item : (List<String>)value) {
+                if (!user1InRegion) {
+                    user1InRegion = isInRegion(item, sender);
+                }
+
+                if (!user2InRegion) {
+                    user2InRegion = isInRegion(item, target);
+                }
+            }
+        } else {
+            return true;
+        }
+
+        return user1InRegion && user2InRegion;
     }
 
     public boolean isInSameRegion(ChatUser user1, ChatUser user2) {

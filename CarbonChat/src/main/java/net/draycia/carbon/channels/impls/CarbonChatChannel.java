@@ -334,6 +334,11 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
+    public String getSwitchFailureMessage() {
+        return getString("switch-failure-message");
+    }
+
+    @Override
     public String getToggleOffMessage() {
         return getString("toggle-off-message");
     }
