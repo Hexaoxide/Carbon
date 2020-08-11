@@ -46,12 +46,14 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public List<ChatUser> getAudience(ChatUser user) {
+    public List<ChatUser> audiences() {
         List<ChatUser> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (canPlayerSee(user, carbonChat.getUserService().wrap(player), true)) {
-                audience.add(carbonChat.getUserService().wrap(player));
+            ChatUser playerUser = carbonChat.getUserService().wrap(player);
+
+            if (canPlayerSee(playerUser, true)) {
+                audience.add(playerUser);
             }
         }
 
@@ -93,7 +95,9 @@ public class CarbonChatChannel extends ChatChannel {
         }
 
         // Iterate through players who should receive messages in this channel
-        for (ChatUser target : getAudience(user)) {
+        for (ChatUser target : audiences()) {
+            // TODO: listener to cancel events when Target ignores Sender
+
             // Call second format event. Used for relational stuff (placeholders etc)
             ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.getFormat(), preFormatEvent.getMessage());
             Bukkit.getPluginManager().callEvent(formatEvent);
@@ -218,7 +222,7 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public void sendComponent(ChatUser player, Component component) {
-        for (ChatUser user : getAudience(player)) {
+        for (ChatUser user : audiences()) {
             if (!user.isIgnoringUser(player)) {
                 user.sendMessage(component);
             }
@@ -233,6 +237,26 @@ public class CarbonChatChannel extends ChatChannel {
 
     public void sendMessageToBungee(Player player, String message) {
         carbonChat.getPluginMessageManager().sendMessage(this, player, message);
+    }
+
+    public Boolean canPlayerSee(ChatUser target, boolean checkSpying) {
+        Player targetPlayer = target.asPlayer();
+
+        if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + getName())) {
+            if (target.getChannelSettings(this).isSpying()) {
+                return true;
+            }
+        }
+
+        if (!targetPlayer.hasPermission("carbonchat.channels." + getName() + ".see")) {
+            return false;
+        }
+
+        if (isIgnorable()) {
+            return !target.getChannelSettings(this).isIgnored();
+        }
+
+        return true;
     }
 
     public Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {

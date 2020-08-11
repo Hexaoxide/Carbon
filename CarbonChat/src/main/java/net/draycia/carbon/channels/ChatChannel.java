@@ -2,6 +2,7 @@ package net.draycia.carbon.channels;
 
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.Nullable;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public abstract class ChatChannel {
+public abstract class ChatChannel implements ForwardingAudience {
 
     /**
      * @return The color that represents this channel. Optionally used in formatting.
@@ -82,8 +83,6 @@ public abstract class ChatChannel {
     public abstract Boolean canPlayerUse(ChatUser user);
 
     public abstract Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
-
-    public abstract List<ChatUser> getAudience(ChatUser user);
 
     /**
      * @return If the channel should forward its formatting / formatted message to other servers
