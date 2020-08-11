@@ -96,8 +96,6 @@ public class CarbonChatChannel extends ChatChannel {
 
         // Iterate through players who should receive messages in this channel
         for (ChatUser target : audiences()) {
-            // TODO: listener to cancel events when Target ignores Sender
-
             // Call second format event. Used for relational stuff (placeholders etc)
             ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.getFormat(), preFormatEvent.getMessage());
             Bukkit.getPluginManager().callEvent(formatEvent);
