@@ -1,7 +1,7 @@
 package net.draycia.carbonmoderation.listeners;
 
 import net.draycia.carbon.channels.ChatChannel;
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbonmoderation.CarbonChatModeration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,14 +15,14 @@ import java.util.regex.Pattern;
 
 public class FilterHandler implements Listener {
 
-    private CarbonChatModeration moderation;
+    private final CarbonChatModeration moderation;
 
     public FilterHandler(CarbonChatModeration moderation) {
         this.moderation = moderation;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onFilter(ChatFormatEvent event) {
+    public void onFilter(PreChatFormatEvent event) {
         if (!moderation.getConfig().getBoolean("filters.enabled")) {
             return;
         }

@@ -7,6 +7,7 @@ default:
   # switch-message, toggle-off-message and toggle-on-message support PlaceholderAPI
   switch-message: '<gray>You are now in <color><channel> <gray>chat!'
   switch-other-message: '<gray><player> </rainbow><gray>is now in <color><channel> <gray>chat!'
+  switch-failure-message: '<red>You cannot use channel <channel>!'
   toggle-on-message: '<gray>You can now see <color><channel> <gray>chat!'
   toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
   toggle-other-on: '<gray><player> </rainbow><gray>can now see <color><channel> <gray>chat!'
@@ -85,7 +86,6 @@ language:
   spy-whispers: '<yellow>Spy [<gray><sender></rainbow> <gold>-> <gray><target></rainbow><yellow>] <message>'
   no-reply-target: '<red>You have no one to reply to!'
   empty-channel: 'NONE' #<channel>, set to "NONE" to disable
-  channel-switch-failure: '<red>You cannot use channel <channel>!'
   other-nickname-set: '<green><user></rainbow>''s nickname was set to <nickname><green>!'
   other-nickname-reset: '<green><user></rainbow>''s nickname was reset!'
 

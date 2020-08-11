@@ -1,6 +1,6 @@
 package net.draycia.carbonmoderation.listeners;
 
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbonmoderation.CarbonChatModeration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -8,14 +8,14 @@ import org.bukkit.event.Listener;
 
 public class CapsHandler implements Listener {
 
-    private CarbonChatModeration moderation;
+    private final CarbonChatModeration moderation;
 
     public CapsHandler(CarbonChatModeration moderation) {
         this.moderation = moderation;
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onMessage(ChatFormatEvent event) {
+    public void onMessage(PreChatFormatEvent event) {
         if (!moderation.getConfig().getBoolean("caps-protection.enabled")) {
             return;
         }

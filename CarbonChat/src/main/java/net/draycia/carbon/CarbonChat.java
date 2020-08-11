@@ -86,13 +86,14 @@ public final class CarbonChat extends JavaPlugin {
 
         // Register chat listeners
         pluginManager.registerEvents(new BukkitChatListener(this), this);
-        pluginManager.registerEvents(new EmptyChatHandler(this), this);
+        pluginManager.registerEvents(new IgnoredPlayerHandler(), this);
         pluginManager.registerEvents(new ItemLinkHandler(this), this);
         pluginManager.registerEvents(new LegacyFormatHandler(), this);
         pluginManager.registerEvents(new OfflineNameHandler(), this);
         pluginManager.registerEvents(new PingHandler(this), this);
         pluginManager.registerEvents(new PlaceholderHandler(), this);
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
+        pluginManager.registerEvents(new RelationalPlaceholderHandler(), this);
         pluginManager.registerEvents(new UserFormattingListener(), this);
     }
 

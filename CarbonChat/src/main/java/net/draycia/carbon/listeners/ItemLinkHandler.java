@@ -20,13 +20,13 @@ public class ItemLinkHandler implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onItemLink(ChatComponentEvent event) {
         // Handle item linking placeholders
-        if (event.getUser().isOnline()) {
+        if (event.getSender().isOnline()) {
             for (Pattern pattern : event.getChannel().getItemLinkPatterns()) {
                 String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
 
                 if (event.getOriginalMessage().contains(patternContent)) {
                     TextComponent component = event.getComponent().replaceFirst(pattern, (input) -> {
-                        return TextComponent.builder().append(carbonChat.getItemStackUtils().createComponent(event.getUser().asPlayer()));
+                        return TextComponent.builder().append(carbonChat.getItemStackUtils().createComponent(event.getSender().asPlayer()));
                     });
 
                     event.setComponent(component);

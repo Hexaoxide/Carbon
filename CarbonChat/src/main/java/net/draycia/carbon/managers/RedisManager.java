@@ -5,7 +5,6 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.RedisListener;
 import net.kyori.adventure.text.format.TextColor;
@@ -24,7 +23,7 @@ public class RedisManager {
     private final StatefulRedisPubSubConnection<String, String> publishConnection;
     private final RedisPubSubCommands<String, String> publishSync;
 
-    private UUID serverUUID = UUID.randomUUID();
+    private final UUID serverUUID = UUID.randomUUID();
 
     public RedisManager(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;

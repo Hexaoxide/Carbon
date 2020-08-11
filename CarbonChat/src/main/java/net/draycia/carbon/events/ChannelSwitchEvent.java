@@ -34,8 +34,8 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
     }
 
     /** Relevant stuff **/
-    private ChatChannel channel;
-    private ChatUser user;
+    private final ChatChannel channel;
+    private final ChatUser user;
     private String failureMessage;
 
     public ChannelSwitchEvent(ChatChannel channel, ChatUser user, String failureMessage) {

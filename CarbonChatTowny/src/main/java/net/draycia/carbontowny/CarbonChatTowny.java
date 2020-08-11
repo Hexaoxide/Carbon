@@ -6,14 +6,15 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChannelSwitchEvent;
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class CarbonChatTowny extends JavaPlugin {
+public final class CarbonChatTowny extends JavaPlugin implements Listener {
 
     private CarbonChat carbonChat;
     private static final String KEY = "towny-town";
@@ -31,6 +32,8 @@ public final class CarbonChatTowny extends JavaPlugin {
 
             return true;
         });
+
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -46,7 +49,7 @@ public final class CarbonChatTowny extends JavaPlugin {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(ChatFormatEvent event) {
+    public void onChannelMessage(PreChatFormatEvent event) {
         // TODO: event.setFailureMessage
         Object town = event.getChannel().getContext(KEY);
 

@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 @CommandPermission("carbonchat.clearchat.clear")
 public class ClearChatCommand extends BaseCommand {
 
-    private CarbonChatModeration moderation;
+    private final CarbonChatModeration moderation;
 
     public ClearChatCommand(CarbonChatModeration moderation) {
         this.moderation = moderation;

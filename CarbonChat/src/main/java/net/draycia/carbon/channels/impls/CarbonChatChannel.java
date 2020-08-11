@@ -4,10 +4,12 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.ChatComponentEvent;
 import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -44,108 +46,109 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public List<ChatUser> getAudience(ChatUser user) {
+    public List<ChatUser> audiences() {
         List<ChatUser> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (canPlayerSee(user, carbonChat.getUserService().wrap(player), false)) {
-                audience.add(carbonChat.getUserService().wrap(player));
+            ChatUser playerUser = carbonChat.getUserService().wrap(player);
+
+            if (canPlayerSee(playerUser, true)) {
+                audience.add(playerUser);
             }
         }
 
         return audience;
     }
 
-    @Override
-    public void sendMessage(ChatUser user, String message, boolean fromBungee) {
+    private void updateUserNickname(ChatUser user) {
         if (user.isOnline()) {
             if (user.getNickname() != null) {
                 user.asPlayer().setDisplayName(user.getNickname());
             }
         }
+    }
+
+    private TextColor getColor(ChatUser user) {
+        TextColor userColor = user.getChannelSettings(this).getColor();
+
+        if (userColor != null) {
+            return userColor;
+        } else {
+            return getColor();
+        }
+    }
+
+    @Override
+    public void sendMessage(ChatUser user, String message, boolean fromRemote) {
+        updateUserNickname(user);
 
         // Get player's formatting
         String messageFormat = getFormat(user);
 
         // Call custom chat event
-        ChatFormatEvent formatEvent = new ChatFormatEvent(user, this, messageFormat, message);
+        PreChatFormatEvent preFormatEvent = new PreChatFormatEvent(user, this, messageFormat, message);
+        Bukkit.getPluginManager().callEvent(preFormatEvent);
 
-        Bukkit.getPluginManager().callEvent(formatEvent);
-
-        if (formatEvent.isCancelled() || formatEvent.getMessage().isEmpty()) {
+        // Return if cancelled or message is emptied
+        if (preFormatEvent.isCancelled() || preFormatEvent.getMessage().isEmpty()) {
             return;
         }
 
-        // Get formatted message
-        TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
+        // Iterate through players who should receive messages in this channel
+        for (ChatUser target : audiences()) {
+            // Call second format event. Used for relational stuff (placeholders etc)
+            ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.getFormat(), preFormatEvent.getMessage());
+            Bukkit.getPluginManager().callEvent(formatEvent);
+
+            // Afain, return if cancelled or message is emptied
+            if (formatEvent.isCancelled() || formatEvent.getMessage().isEmpty()) {
+                continue;
+            }
+
+            TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
+                    "br", "\n",
+                    "color", "<" + getColor(target).asHexString() + ">",
+                    "phase", Long.toString(System.currentTimeMillis() % 25),
+                    "server", carbonChat.getConfig().getString("server-name", "Server"),
+                    "message", formatEvent.getMessage());
+
+            if (isUserSpying(user, target)) {
+                String prefix = processPlaceholders(user, carbonChat.getConfig().getString("spy-prefix"));
+
+                formattedMessage = (TextComponent) MiniMessage.get().parse(prefix, "color",
+                        getColor(target).asHexString()).append(formattedMessage);
+            }
+
+            ChatComponentEvent newEvent = new ChatComponentEvent(user, target, this, formattedMessage,
+                    formatEvent.getMessage());
+
+            Bukkit.getPluginManager().callEvent(newEvent);
+
+            target.sendMessage(newEvent.getComponent());
+        }
+
+        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(preFormatEvent.getFormat(),
                 "br", "\n",
-                "color", "<color:" + getColor().toString() + ">",
+                "color", "<" + getColor().asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"),
-                "message", formatEvent.getMessage());
+                "message", preFormatEvent.getMessage());
 
-        // Call custom chat event
-        ChatComponentEvent componentEvent = new ChatComponentEvent(user, this, formattedMessage,
-                formatEvent.getMessage(), getAudience(user));
+        ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleMessage,
+                preFormatEvent.getMessage());
 
-        Bukkit.getPluginManager().callEvent(componentEvent);
-
-        // Send message as normal
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            ChatUser chatUser = carbonChat.getUserService().wrap(onlinePlayer);
-
-            TextColor userColor = chatUser.getChannelSettings(this).getColor();
-
-            String prefix = processPlaceholders(user, carbonChat.getConfig().getString("spy-prefix"));
-
-            // TODO: restructure plugin to always format messages per player
-
-            if (userColor == null) {
-                if (isUserSpying(user, chatUser)) {
-                    prefix = prefix.replace("<color>", "<color:" + getColor() + ">");
-
-                    chatUser.sendMessage(carbonChat.getAdventureManager().processMessage(prefix).append(componentEvent.getComponent()));
-                } else if (componentEvent.getRecipients().contains(chatUser)) {
-                    chatUser.sendMessage(componentEvent.getComponent());
-                }
-            } else {
-                prefix = prefix.replace("<color>", "<color:" +
-                        chatUser.getChannelSettings(this).getColor().asHexString() + ">");
-                String format = formatEvent.getFormat();
-
-                TextComponent newFormat = (TextComponent) carbonChat.getAdventureManager().processMessage(format,
-                        "br", "\n",
-                        "color", "<color:" + userColor.toString() + ">",
-                        "phase", Long.toString(System.currentTimeMillis() % 25),
-                        "server", carbonChat.getConfig().getString("server-name", "Server"),
-                        "message", formatEvent.getMessage());
-
-                if (isUserSpying(user, chatUser)) {
-                    newFormat = (TextComponent) carbonChat.getAdventureManager().processMessage(prefix, "br", "\n")
-                            .append(newFormat);
-                } else if (!componentEvent.getRecipients().contains(chatUser)) {
-                    return;
-                }
-
-                ChatComponentEvent newEvent = new ChatComponentEvent(user, this, newFormat,
-                        formatEvent.getMessage(), Collections.singletonList(chatUser), true);
-
-                Bukkit.getPluginManager().callEvent(newEvent);
-
-                chatUser.sendMessage(newEvent.getComponent());
-            }
-        }
+        Bukkit.getPluginManager().callEvent(consoleEvent);
 
         // Log message to console
         String sm = user.isShadowMuted() ? "[SM] " : "";
-        System.out.println(sm + CarbonChat.LEGACY.serialize(componentEvent.getComponent()));
+        System.out.println(sm + CarbonChat.LEGACY.serialize(consoleEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
-        if (user.isOnline() && !fromBungee && shouldBungee()) {
+        if (user.isOnline() && !fromRemote && shouldBungee()) {
             if (shouldForwardFormatting()) {
-                sendMessageToBungee(user.asPlayer(), componentEvent.getComponent());
+                sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
             } else {
                 sendMessageToBungee(user.asPlayer(), message);
             }
@@ -217,7 +220,7 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public void sendComponent(ChatUser player, Component component) {
-        for (ChatUser user : getAudience(player)) {
+        for (ChatUser user : audiences()) {
             if (!user.isIgnoringUser(player)) {
                 user.sendMessage(component);
             }
@@ -232,6 +235,26 @@ public class CarbonChatChannel extends ChatChannel {
 
     public void sendMessageToBungee(Player player, String message) {
         carbonChat.getPluginMessageManager().sendMessage(this, player, message);
+    }
+
+    public Boolean canPlayerSee(ChatUser target, boolean checkSpying) {
+        Player targetPlayer = target.asPlayer();
+
+        if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + getName())) {
+            if (target.getChannelSettings(this).isSpying()) {
+                return true;
+            }
+        }
+
+        if (!targetPlayer.hasPermission("carbonchat.channels." + getName() + ".see")) {
+            return false;
+        }
+
+        if (isIgnorable()) {
+            return !target.getChannelSettings(this).isIgnored();
+        }
+
+        return true;
     }
 
     public Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
@@ -308,6 +331,11 @@ public class CarbonChatChannel extends ChatChannel {
     @Override
     public String getSwitchOtherMessage() {
         return getString("switch-other-message");
+    }
+
+    @Override
+    public String getSwitchFailureMessage() {
+        return getString("switch-failure-message");
     }
 
     @Override

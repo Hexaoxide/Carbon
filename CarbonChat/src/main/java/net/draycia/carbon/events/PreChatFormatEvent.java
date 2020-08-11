@@ -8,24 +8,20 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class ChatFormatEvent extends Event implements Cancellable {
+public class PreChatFormatEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private boolean isCancelled = false;
 
-    private final ChatUser sender;
-    private final ChatUser target;
-
+    private final ChatUser user;
     private ChatChannel chatChannel;
     private String format;
     private String message;
 
-    public ChatFormatEvent(ChatUser sender, ChatUser target, ChatChannel chatChannel, String format, String message) {
+    public PreChatFormatEvent(ChatUser user, ChatChannel chatChannel, String format, String message) {
         super(!Bukkit.isPrimaryThread());
 
-        this.sender = sender;
-        this.target = target;
-
+        this.user = user;
         this.chatChannel = chatChannel;
         this.format = format;
         this.message = message;
@@ -51,12 +47,8 @@ public class ChatFormatEvent extends Event implements Cancellable {
         return HANDLERS_LIST;
     }
 
-    public ChatUser getSender() {
-        return sender;
-    }
-
-    public ChatUser getTarget() {
-        return target;
+    public ChatUser getUser() {
+        return user;
     }
 
     public ChatChannel getChannel() {
@@ -82,4 +74,5 @@ public class ChatFormatEvent extends Event implements Cancellable {
     public void setMessage(String message) {
         this.message = message;
     }
+
 }

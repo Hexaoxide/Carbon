@@ -104,7 +104,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     @Override
     public void setSelectedChannel(ChatChannel chatChannel, boolean fromRemote) {
-        String failureMessage = carbonChat.getConfig().getString("language.channel-switch-failure");
+        String failureMessage = chatChannel.getSwitchFailureMessage();
+
         ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
 
         Bukkit.getPluginManager().callEvent(event);

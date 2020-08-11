@@ -1,7 +1,8 @@
 package net.draycia.carbon.channels;
 
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.Nullable;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public abstract class ChatChannel {
+public abstract class ChatChannel implements ForwardingAudience {
 
     /**
      * @return The color that represents this channel. Optionally used in formatting.
@@ -52,6 +53,8 @@ public abstract class ChatChannel {
 
     public abstract String getSwitchOtherMessage();
 
+    public abstract String getSwitchFailureMessage();
+
     /**
      * @return The message to be send to the player when toggling this channel off.
      */
@@ -83,8 +86,6 @@ public abstract class ChatChannel {
 
     public abstract Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
 
-    public abstract List<ChatUser> getAudience(ChatUser user);
-
     /**
      * @return If the channel should forward its formatting / formatted message to other servers
      */
@@ -95,7 +96,7 @@ public abstract class ChatChannel {
     public abstract List<Pattern> getItemLinkPatterns();
 
     /**
-     * Parses the specified message, calls a {@link ChatFormatEvent}, and sends the message to everyone who can view this channel.
+     * Parses the specified message, calls a {@link PreChatFormatEvent}, and sends the message to everyone who can view this channel.
      * @param user The player who is saying the message.
      * @param message The message to be sent.
      */
