@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 
 public class UserFormattingListener implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onFormat(PreChatFormatEvent event) {
         if (!event.getUser().isOnline()) {
             suppressFormatting(event);

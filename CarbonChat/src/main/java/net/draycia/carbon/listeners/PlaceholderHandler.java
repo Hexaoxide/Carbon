@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 
 public class PlaceholderHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPapiPlaceholder(PreChatFormatEvent event) {
         event.setFormat(PlaceholderAPI.setPlaceholders(event.getUser().asOfflinePlayer(), event.getFormat()));
     }

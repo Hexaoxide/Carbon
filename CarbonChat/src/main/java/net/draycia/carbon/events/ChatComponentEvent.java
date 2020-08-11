@@ -21,7 +21,7 @@ public class ChatComponentEvent extends Event implements Cancellable {
     private TextComponent component;
     private final String originalMessage;
 
-    public ChatComponentEvent(ChatUser sender, ChatUser target, ChatChannel chatChannel, TextComponent component, String originalMessage) {
+    public ChatComponentEvent(@NotNull ChatUser sender, @Nullable ChatUser target, ChatChannel chatChannel, TextComponent component, String originalMessage) {
         super(!Bukkit.isPrimaryThread());
 
         this.sender = sender;

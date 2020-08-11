@@ -17,7 +17,7 @@ public class ItemLinkHandler implements Listener {
         this.carbonChat = carbonChat;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemLink(ChatComponentEvent event) {
         // Handle item linking placeholders
         if (event.getSender().isOnline()) {

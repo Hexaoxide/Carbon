@@ -58,7 +58,7 @@ public final class CarbonChatMCMMO extends JavaPlugin implements Listener {
     private final McMMOPartyChangeEvent.EventReason LEFT = McMMOPartyChangeEvent.EventReason.LEFT_PARTY;
     private final McMMOPartyChangeEvent.EventReason KICKED = McMMOPartyChangeEvent.EventReason.KICKED_FROM_PARTY;
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPartyLeave(McMMOPartyChangeEvent event) {
         if (event.getReason() != LEFT && event.getReason() != KICKED) {
             return;

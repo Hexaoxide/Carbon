@@ -118,7 +118,14 @@ pings:
   volume: 10.0
   pitch: 1.0
   highlight: true # independent of the "enabled" option!
-  on-whisper: true # independent of the "enabled" option!
+
+whisper:
+  pings:
+    enabled: true
+    source: 'PLAYER'
+    sound: 'minecraft:entity.experience_orb.pickup'
+    volume: 10.0
+    pitch: 1.0
 
 storage:
   type: JSON # JSON, MySQL

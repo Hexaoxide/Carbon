@@ -14,7 +14,7 @@ public class PlayerJoinListener implements Listener {
         this.carbonChat = carbonChat;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
 

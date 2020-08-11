@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 
 public class RelationalPlaceholderHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPapiPlaceholder(ChatFormatEvent event) {
         if (!event.getSender().isOnline() || !event.getTarget().isOnline()) {
             return;

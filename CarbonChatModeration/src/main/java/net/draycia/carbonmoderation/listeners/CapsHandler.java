@@ -14,7 +14,7 @@ public class CapsHandler implements Listener {
         this.moderation = moderation;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onMessage(PreChatFormatEvent event) {
         if (!moderation.getConfig().getBoolean("caps-protection.enabled")) {
             return;

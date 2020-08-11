@@ -255,6 +255,14 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                 "targetname", targetOfflineName, "sendername", senderOfflineName,
                 "target", targetName, "sender", senderName);
 
+        PrivateMessageEvent event = new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message);
+
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (this.isOnline()) {
             if (sender.isOnline()) {
                 sender.sendMessage(toPlayerComponent);
@@ -297,8 +305,6 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                     "targetname", targetOfflineName, "sendername", senderOfflineName,
                     "target", targetName, "sender", senderName));
         }
-
-        Bukkit.getPluginManager().callEvent(new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message));
     }
 
     /* package */ void publishChangeToRedis(String key, String value) {

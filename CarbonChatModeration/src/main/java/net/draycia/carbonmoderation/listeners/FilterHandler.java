@@ -21,7 +21,7 @@ public class FilterHandler implements Listener {
         this.moderation = moderation;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onFilter(PreChatFormatEvent event) {
         if (!moderation.getConfig().getBoolean("filters.enabled")) {
             return;
