@@ -17,11 +17,10 @@ public class RequiredBalanceHandler implements Listener {
     }
     
     @EventHandler
-    public void onChat(PreChatFormatEvent event) {
-        Double cost = (Double) event.getChannel().getContext("vault-cost");
-        Double requiredBal = (Double) event.getChannel().getContext("vault-balance");
-
-        if (cost.equals((double) 0) && requiredBal.equals((double) 0)) return;
+    public void onChatReqBal(PreChatFormatEvent event) {
+        Object requiredBalObject = event.getChannel().getContext("vault-balance");
+        if (!(requiredBalObject instanceof Double)) return;
+        Double requiredBal = (Double) requiredBalObject;
 
         Player player = event.getUser().asPlayer();
         if (!economy.has(player, requiredBal)) {
@@ -30,6 +29,17 @@ public class RequiredBalanceHandler implements Listener {
                     .processMessageWithPapi(player, event.getChannel().getCannotUseMessage()));
             return;
         }
+
+    }
+
+    @EventHandler
+    public void onChatCost(PreChatFormatEvent event) {
+        Object costObject = event.getChannel().getContext("vault-cost");
+        if (!(costObject instanceof Double)) return;
+        Double cost = (Double) costObject;
+
+        Player player = event.getUser().asPlayer();
+
 
         if (!economy.has(player, cost)) {
             event.setCancelled(true);
