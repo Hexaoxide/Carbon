@@ -21,6 +21,7 @@ public class RequiredBalanceHandler implements Listener {
         Object requiredBalObject = event.getChannel().getContext("vault-balance");
         if (!(requiredBalObject instanceof Double)) return;
         Double requiredBal = (Double) requiredBalObject;
+        if (requiredBal.equals((double) 0)) return;
 
         Player player = event.getUser().asPlayer();
         if (!economy.has(player, requiredBal)) {
@@ -37,6 +38,7 @@ public class RequiredBalanceHandler implements Listener {
         Object costObject = event.getChannel().getContext("vault-cost");
         if (!(costObject instanceof Double)) return;
         Double cost = (Double) costObject;
+        if (cost.equals((double) 0)) return;
 
         Player player = event.getUser().asPlayer();
 
