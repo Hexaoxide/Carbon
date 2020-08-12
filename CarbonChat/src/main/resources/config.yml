@@ -33,6 +33,7 @@ default:
     # filter only works when CarbonChatModeration is installed.
     # Modifies / prevents messages depending on how filters are setup.
     filter: true
+    # requires a minimum balance to chat
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true
