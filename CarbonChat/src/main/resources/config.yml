@@ -12,7 +12,7 @@ default:
   toggle-off-message: '<gray>You can no longer see <color><channel> <gray>chat!'
   toggle-other-on: '<gray><player> </rainbow><gray>can now see <color><channel> <gray>chat!'
   toggle-other-off: '<gray><player> </rainbow><gray>can no longer see <color><channel> <gray>chat!'
-  cannot-use-channel: "You cannot use that channel!"
+  cannot-use-channel: 'You cannot use that channel!'
   formats:
     # Placeholders: <username>, <displayname>, <channel>, <server>, <message>, <primaryrole>, <color>
     # Also supports PlaceholderAPI
@@ -94,7 +94,7 @@ language:
   ignoring-user: '<green>You are now ignoring <gold><player></rainbow><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player></rainbow><green>!'
   ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'
-  channel-color-set: "<green>You have set <color><channel> <green>color to <hex>!"
+  channel-color-set: '<green>You have set <color><channel> <green>color to <hex>!'
   spy-toggled-on: '<gray>You are now spying on <color><channel> <gray>chat!'
   spy-toggled-off: '<gray>You are no longer spying on <color><channel> <gray>chat!'
   spy-whispers-on: '<gray>You are now spying on whispers!'
