@@ -33,7 +33,10 @@ default:
     # filter only works when CarbonChatModeration is installed.
     # Modifies / prevents messages depending on how filters are setup.
     filter: true
-    # requires a minimum balance to chat
+    # requires a minimum balance to chat. 0 to disable. Requires a vault-compatible economy plugin
+    vault-balance: 0
+    # charges on every chat message. 0 to disable. Requires a vault-compatible economy plugin
+    vault-cost: 0
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true
