@@ -21,14 +21,12 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class JSONUserService implements UserService {
 
     private final CarbonChat carbonChat;
 
     private final LoadingCache<UUID, CarbonChatUser> userCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.MINUTES)
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
@@ -39,6 +37,12 @@ public class JSONUserService implements UserService {
         this.carbonChat = carbonChat;
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(carbonChat, userCache::cleanUp, 0L, 20 * 60 * 10);
+    }
+
+    @Override
+    public void onDisable() {
+        userCache.invalidateAll();
+        userCache.cleanUp();
     }
 
     @Override
@@ -74,14 +78,20 @@ public class JSONUserService implements UserService {
     }
 
     @Override
-    public void refreshUser(UUID uuid) {
+    public ChatUser refreshUser(UUID uuid) {
         userCache.invalidate(uuid);
+
+        return this.wrap(uuid);
     }
 
     @Override
-    public void cleanUp() {
-        userCache.invalidateAll();
-        userCache.cleanUp();
+    public void invalidate(ChatUser user) {
+        userCache.invalidate(user.getUUID());
+    }
+
+    @Override
+    public void validate(ChatUser user) {
+        userCache.put(user.getUUID(), (CarbonChatUser)user);
     }
 
     private CarbonChatUser loadUser(UUID uuid) {

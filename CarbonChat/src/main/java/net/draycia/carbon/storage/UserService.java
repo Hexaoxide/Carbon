@@ -19,8 +19,11 @@ public interface UserService {
     @Nullable
     ChatUser wrapIfLoaded(UUID uuid);
 
-    void refreshUser(UUID uuid);
+    ChatUser refreshUser(UUID uuid);
 
-    void cleanUp();
+    void onDisable();
+
+    void invalidate(ChatUser user);
+    void validate(ChatUser user);
 
 }

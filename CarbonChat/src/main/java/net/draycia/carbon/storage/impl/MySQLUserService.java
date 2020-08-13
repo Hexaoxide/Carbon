@@ -23,12 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class MySQLUserService implements UserService {
 
     private final LoadingCache<UUID, CarbonChatUser> userCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.MINUTES)
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
@@ -70,8 +68,13 @@ public class MySQLUserService implements UserService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(carbonChat, userCache::cleanUp, 0L, 20 * 60 * 10);
+    @Override
+    public void onDisable() {
+        userCache.invalidateAll();
+        userCache.cleanUp();
+        database.close();
     }
 
     @Override
@@ -107,15 +110,20 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public void cleanUp() {
-        userCache.invalidateAll();
-        userCache.cleanUp();
-        database.close();
+    public ChatUser refreshUser(UUID uuid) {
+        userCache.invalidate(uuid);
+
+        return this.wrap(uuid);
     }
 
     @Override
-    public void refreshUser(UUID uuid) {
-        userCache.invalidate(uuid);
+    public void invalidate(ChatUser user) {
+        userCache.invalidate(user.getUUID());
+    }
+
+    @Override
+    public void validate(ChatUser user) {
+        userCache.put(user.getUUID(), (CarbonChatUser)user);
     }
 
     private CarbonChatUser loadUser(UUID uuid) {

@@ -78,7 +78,7 @@ public final class CarbonChat extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        userService.cleanUp();
+        userService.onDisable();
     }
 
     private void setupListeners() {
