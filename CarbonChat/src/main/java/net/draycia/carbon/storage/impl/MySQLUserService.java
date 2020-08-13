@@ -136,18 +136,18 @@ public class MySQLUserService implements UserService {
             ChatChannel channel = carbonChat.getChannelManager().getChannelOrDefault(users.getString("channel"));
 
             if (channel != null) {
-                user.setSelectedChannel(channel);
+                user.setSelectedChannel(channel, true);
             }
 
             String nickname = users.getString("nickname");
 
             if (nickname != null) {
-                user.setNickname(nickname);
+                user.setNickname(nickname, true);
             }
 
-            user.setMuted(users.<Boolean>get("muted"));
-            user.setShadowMuted(users.<Boolean>get("shadowmuted"));
-            user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"));
+            user.setMuted(users.<Boolean>get("muted"), true);
+            user.setShadowMuted(users.<Boolean>get("shadowmuted"), true);
+            user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"), true);
 
             for (DbRow channelSetting : channelSettings) {
                 ChatChannel chatChannel = carbonChat.getChannelManager().getRegistry().get(channelSetting.getString("channel"));
@@ -155,19 +155,19 @@ public class MySQLUserService implements UserService {
                 if (chatChannel != null) {
                     UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
-                    settings.setSpying(channelSetting.<Boolean>get("spying"));
-                    settings.setIgnoring(channelSetting.<Boolean>get("ignored"));
+                    settings.setSpying(channelSetting.<Boolean>get("spying"), true);
+                    settings.setIgnoring(channelSetting.<Boolean>get("ignored"), true);
 
                     String color = channelSetting.getString("color");
 
                     if (color != null) {
-                        settings.setColor(TextColor.fromHexString(color));
+                        settings.setColor(TextColor.fromHexString(color), true);
                     }
                 }
             }
 
             for (DbRow ignoredUser : ignoredUsers) {
-                user.setIgnoringUser(UUID.fromString(ignoredUser.getString("user")), true);
+                user.setIgnoringUser(UUID.fromString(ignoredUser.getString("user")), true, true);
             }
         } catch (SQLException e) {
             e.printStackTrace();
