@@ -26,7 +26,7 @@ public class ChannelCommand extends BaseCommand {
 
             user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, channel.getSwitchMessage(),
                     "br", "\n",
-                    "color", "<" + channel.getColor().toString() + ">",
+                    "color", "<" + channel.getChannelColor(user).toString() + ">",
                     "channel", channel.getName()));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
@@ -45,10 +45,10 @@ public class ChannelCommand extends BaseCommand {
         String otherMessage = channel.getSwitchOtherMessage();
 
         user.sendMessage(carbonChat.getAdventureManager().processMessage(message, "br", "\n",
-                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
+                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
 
         carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage, "br", "\n",
-                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName(),
+                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName(),
                 "player", user.asOfflinePlayer().getName()));
     }
 

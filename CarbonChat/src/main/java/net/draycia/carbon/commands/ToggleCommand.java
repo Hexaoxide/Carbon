@@ -34,7 +34,7 @@ public class ToggleCommand extends BaseCommand {
         }
 
         user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
-                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
+                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
     }
 
     @CommandPermission("carbonchat.toggle.others")
@@ -57,10 +57,10 @@ public class ToggleCommand extends BaseCommand {
         }
 
         user.sendMessage(carbonChat.getAdventureManager().processMessage(message, "br", "\n",
-                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
+                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
 
         carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage,
-                "br", "\n", "color", "<color:" + channel.getColor().toString() + ">",
+                "br", "\n", "color", "<color:" + channel.getChannelColor(user).toString() + ">",
                 "channel", channel.getName(), "player", user.asOfflinePlayer().getName()));
     }
 }

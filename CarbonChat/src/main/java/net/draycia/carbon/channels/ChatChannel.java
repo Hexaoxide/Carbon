@@ -15,7 +15,7 @@ public abstract class ChatChannel implements ForwardingAudience {
     /**
      * @return The color that represents this channel. Optionally used in formatting.
      */
-    public abstract TextColor getColor();
+    public abstract TextColor getChannelColor(ChatUser user);
 
     /**
      * @return The MiniMessage styled format for the group in this channel.

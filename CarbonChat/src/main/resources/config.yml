@@ -33,6 +33,8 @@ default:
     # filter only works when CarbonChatModeration is installed.
     # Modifies / prevents messages depending on how filters are setup.
     filter: true
+  # The <color> placeholder in channel formats (and other formats).
+  # This option does support PlaceholderAPI placeholders, however the resulting string must be a valid color!
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true

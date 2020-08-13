@@ -1,5 +1,6 @@
 package net.draycia.carbon.channels.impls;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.ChatComponentEvent;
@@ -79,7 +80,7 @@ public class CarbonChatChannel extends ChatChannel {
         if (userColor != null) {
             return userColor;
         } else {
-            return getColor();
+            return getChannelColor(user);
         }
     }
 
@@ -134,7 +135,7 @@ public class CarbonChatChannel extends ChatChannel {
 
         TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(preFormatEvent.getFormat(),
                 "br", "\n",
-                "color", "<" + getColor().asHexString() + ">",
+                "color", "<" + getColor(user).asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"),
                 "message", preFormatEvent.getMessage());
@@ -289,8 +290,14 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public TextColor getColor() {
-        return TextColor.fromHexString(getString("color"));
+    public TextColor getChannelColor(ChatUser user) {
+        String color = getString("color");
+
+        if (user.isOnline()) {
+            return TextColor.fromHexString(PlaceholderAPI.setPlaceholders(user.asPlayer(), color));
+        }
+
+        return TextColor.fromHexString(color);
     }
 
     private String getDefaultFormatName() {
