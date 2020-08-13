@@ -111,6 +111,8 @@ item-link-placeholders:
 
 spy-prefix: '<color>[SPY] '
 
+nicknames-set-tab-name: true
+
 pings:
   enabled: true
   source: 'PLAYER'

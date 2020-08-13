@@ -86,7 +86,10 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
         if (isOnline()) {
             this.asPlayer().setDisplayName(nickname);
-            this.asPlayer().setPlayerListName(nickname);
+
+            if (carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
+                this.asPlayer().setPlayerListName(nickname);
+            }
         }
 
         if (!fromRemote) {
