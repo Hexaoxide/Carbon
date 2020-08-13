@@ -117,6 +117,7 @@ pings:
   enabled: true
   source: 'PLAYER'
   sound: 'minecraft:entity.experience_orb.pickup'
+  prefix: '@'
   volume: 10.0
   pitch: 1.0
   highlight: true # independent of the "enabled" option!
