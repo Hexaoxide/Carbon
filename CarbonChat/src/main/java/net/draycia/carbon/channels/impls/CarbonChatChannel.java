@@ -65,6 +65,7 @@ public class CarbonChatChannel extends ChatChannel {
         if (user.isOnline()) {
             if (user.getNickname() != null) {
                 user.asPlayer().setDisplayName(user.getNickname());
+                user.asPlayer().setPlayerListName(user.getNickname());
             }
         }
     }
