@@ -8,7 +8,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -20,9 +20,11 @@ public class PluginMessageManager implements PluginMessageListener {
 
     private final CarbonChat carbonChat;
     private final BungeeChannelApi api;
+    private final GsonComponentSerializer gsonSerializer;
 
     public PluginMessageManager(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
+        this.gsonSerializer = carbonChat.getAdventureManager().getAudiences().gsonSerializer();
 
         carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
         carbonChat.getServer().getMessenger().registerIncomingPluginChannel(carbonChat, "BungeeCord", this);
@@ -108,7 +110,7 @@ public class PluginMessageManager implements PluginMessageListener {
         String chatMessage = in.readUTF();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(carbonChat, () -> {
-            chatChannel.sendComponent(user, carbonChat.getAdventureManager().processMessage(chatMessage, "br", "\n"));
+            chatChannel.sendComponent(user, gsonSerializer.deserialize(chatMessage));
         });
     }
 
@@ -130,7 +132,7 @@ public class PluginMessageManager implements PluginMessageListener {
 
         if (!target.isIgnoringUser(senderUUID)) {
             target.setReplyTarget(senderUUID);
-            target.sendMessage(carbonChat.getAdventureManager().processMessage(chatMessage, "br", "\n"));
+            target.sendMessage(gsonSerializer.deserialize(chatMessage));
         }
     }
 
@@ -149,7 +151,7 @@ public class PluginMessageManager implements PluginMessageListener {
 
         msg.writeUTF(chatChannel.getKey());
         msg.writeUTF(player.getUniqueId().toString());
-        msg.writeUTF(MiniMessage.get().serialize(component));
+        msg.writeUTF(gsonSerializer.serialize(component));
 
         api.forward("ALL", "carbonchat:component", msg.toByteArray());
     }
@@ -170,7 +172,7 @@ public class PluginMessageManager implements PluginMessageListener {
 
             msg.writeUTF(sender.getUUID().toString());
             msg.writeUTF(target.getUUID().toString());
-            msg.writeUTF(MiniMessage.get().serialize(fromComponent));
+            msg.writeUTF(gsonSerializer.serialize(fromComponent));
 
             api.forward("ALL", "carbonchat:whisper", msg.toByteArray());
         });
