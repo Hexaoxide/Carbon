@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.messaging.impl.BungeeMessageService;
+import net.draycia.carbon.messaging.impl.EmptyMessageService;
 import net.draycia.carbon.messaging.impl.RedisMessageService;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.format.TextColor;
@@ -23,12 +24,28 @@ public class MessageManager {
         this.carbonChat = carbonChat;
         this.gsonSerializer = carbonChat.getAdventureManager().getAudiences().gsonSerializer();
 
-        if (carbonChat.getConfig().getBoolean("redis.enabled")) {
-            carbonChat.getLogger().info("Using Redis for message forwarding!");
-            this.messageService = new RedisMessageService(carbonChat);
-        } else {
-            carbonChat.getLogger().info("Using Bungee Plugin Messaging for message forwarding!");
-            this.messageService = new BungeeMessageService(carbonChat);
+        String messageSystem = carbonChat.getConfig().getString("message-system", "none");
+
+        if (messageSystem == null) {
+            messageSystem = "none";
+        }
+
+        switch(messageSystem.toLowerCase()) {
+            case "bungee":
+                carbonChat.getLogger().info("Using Bungee Plugin Messaging for message forwarding!");
+                messageService = new BungeeMessageService(carbonChat);
+                break;
+            case "redis":
+                carbonChat.getLogger().info("Using Redis for message forwarding!");
+                messageService = new RedisMessageService(carbonChat);
+                break;
+            case "none":
+                messageService = new EmptyMessageService();
+                break;
+            default:
+                carbonChat.getLogger().info("Invalid message service selected! Disabling syncing until next restart!");
+                messageService = new EmptyMessageService();
+                break;
         }
 
         this.registerDefaultListeners();

@@ -137,8 +137,13 @@ storage:
   hostname: 'localhost'
   port: 3306
 
+# Options:
+# 'bungee' - Uses bungee plugin messaging, requires BungeeCord or another proxy which supports it (Velocity!)
+# 'redis' - Uses redis for cross server syncing, does not require a server proxy
+# 'none' - Do not sync anything cross server, this is the default
+message-system: 'none'
+
 redis:
-  enabled: false
   host: 'localhost'
   port: 6379
   #password: 'password'
