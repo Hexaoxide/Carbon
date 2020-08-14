@@ -82,21 +82,24 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
             nickname = CarbonChat.LEGACY.serialize(component);
         }
 
-        this.nickname = nickname;
+        final String newNickname = nickname;
+        this.nickname = newNickname;
 
         if (isOnline()) {
-            this.asPlayer().setDisplayName(nickname);
+            this.asPlayer().setDisplayName(newNickname);
 
             if (carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-                this.asPlayer().setPlayerListName(nickname);
+                this.asPlayer().setPlayerListName(newNickname);
             }
         }
 
         if (!fromRemote) {
             if (nickname == null) {
-                this.publishChangeToRedis("nickname-reset", "true");
+                carbonChat.getMessageManager().sendMessage("nickname-reset", this.getUUID(), (byteArray) -> {});
             } else {
-                this.publishChangeToRedis("nickname", nickname);
+                carbonChat.getMessageManager().sendMessage("nickname", this.getUUID(), (byteArray) -> {
+                    byteArray.writeUTF(newNickname);
+                });
             }
         }
     }
@@ -124,7 +127,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         this.selectedChannel = chatChannel.getKey();
 
         if (!fromRemote) {
-            this.publishChangeToRedis("selected-channel", chatChannel.getKey());
+            carbonChat.getMessageManager().sendMessage("selected-channel", this.getUUID(), (byteArray) -> {
+                byteArray.writeUTF(chatChannel.getKey());
+            });
         }
     }
 
@@ -141,17 +146,17 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     @Override
     public void setIgnoringUser(UUID uuid, boolean ignoring, boolean fromRemote) {
         if (ignoring) {
-            if (!fromRemote) {
-                this.publishChangeToRedis("ignoring-user", uuid.toString());
-            }
-
             ignoredUsers.add(uuid);
         } else {
-            if (!fromRemote) {
-                this.publishChangeToRedis("unignoring-user", uuid.toString());
-            }
-
             ignoredUsers.remove(uuid);
+        }
+
+        if (!fromRemote) {
+            carbonChat.getMessageManager().sendMessage("ignoring-user", this.getUUID(), (byteArray) -> {
+                byteArray.writeLong(uuid.getMostSignificantBits());
+                byteArray.writeLong(uuid.getLeastSignificantBits());
+                byteArray.writeBoolean(ignoring);
+            });
         }
     }
 
@@ -164,7 +169,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         this.muted = muted;
 
         if (!fromRemote) {
-            this.publishChangeToRedis("muted", muted ? "true" : "false");
+            carbonChat.getMessageManager().sendMessage("muted", this.getUUID(), (byteArray) -> {
+                byteArray.writeBoolean(muted);
+            });
         }
     }
 
@@ -178,7 +185,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         this.shadowMuted = shadowMuted;
 
         if (!fromRemote) {
-            this.publishChangeToRedis("shadow-muted", shadowMuted ? "true" : "false");
+            carbonChat.getMessageManager().sendMessage("shadow-muted", this.getUUID(), (byteArray) -> {
+                byteArray.writeBoolean(shadowMuted);
+            });
         }
     }
 
@@ -198,7 +207,10 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         this.replyTarget = target;
 
         if (!fromRemote) {
-            this.publishChangeToRedis("reply-target", target.toString());
+            carbonChat.getMessageManager().sendMessage("reply-target", this.getUUID(), (byteArray) -> {
+                byteArray.writeLong(target.getMostSignificantBits());
+                byteArray.writeLong(target.getLeastSignificantBits());
+            });
         }
     }
 
@@ -218,7 +230,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         this.spyingWhispers = spyingWhispers;
 
         if (!fromRemote) {
-            this.publishChangeToRedis("spying-whispers", spyingWhispers ? "true" : "false");
+            carbonChat.getMessageManager().sendMessage("spying-whispers", this.getUUID(), (byteArray) -> {
+                byteArray.writeBoolean(spyingWhispers);
+            });
         }
     }
 
@@ -290,7 +304,14 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                 }
             }
         } else if (sender.isOnline()) {
-            carbonChat.getPluginMessageManager().sendComponentToPlayer(sender, this, toPlayerComponent, fromPlayerComponent);
+            sender.sendMessage(toPlayerComponent);
+
+            // TODO: make sure this works lol
+            carbonChat.getMessageManager().sendMessage("whisper-component", sender.getUUID(), (byteArray) -> {
+                byteArray.writeLong(this.getUUID().getMostSignificantBits());
+                byteArray.writeLong(this.getUUID().getLeastSignificantBits());
+                byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(fromPlayerComponent));
+            });
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -309,13 +330,5 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                     "targetname", targetOfflineName, "sendername", senderOfflineName,
                     "target", targetName, "sender", senderName));
         }
-    }
-
-    /* package */ void publishChangeToRedis(String key, String value) {
-        if (carbonChat.getRedisManager() == null) {
-            return;
-        }
-
-        carbonChat.getRedisManager().publishChange(uuid, key, value);
     }
 }

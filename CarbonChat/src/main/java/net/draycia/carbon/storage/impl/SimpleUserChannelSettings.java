@@ -17,14 +17,16 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     private final UUID uuid;
     private final String channel;
 
+    private transient CarbonChat carbonChat;
+
     public SimpleUserChannelSettings(UUID uuid, String channel) {
         this.uuid = uuid;
         this.channel = channel;
+
+        carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
     }
 
     private CarbonChatUser getUser() {
-        CarbonChat carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
-
         return (CarbonChatUser)carbonChat.getUserService().wrap(uuid);
     }
 
@@ -37,12 +39,11 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     public void setSpying(boolean spying, boolean fromRemote) {
         this.spying = spying;
 
-        if (fromRemote) {
-            if (spying) {
-                getUser().publishChangeToRedis("spying-channel", channel);
-            } else {
-                getUser().publishChangeToRedis("unspying-channel", channel);
-            }
+        if (!fromRemote) {
+            carbonChat.getMessageManager().sendMessage("spying-channel", uuid, (byteArray) -> {
+                byteArray.writeUTF(channel);
+                byteArray.writeBoolean(spying);
+            });
         }
     }
 
@@ -55,12 +56,11 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     public void setIgnoring(boolean ignored, boolean fromRemote) {
         this.ignored = ignored;
 
-        if (fromRemote) {
-            if (spying) {
-                getUser().publishChangeToRedis("ignoring-channel", channel);
-            } else {
-                getUser().publishChangeToRedis("unignoring-channel", channel);
-            }
+        if (!fromRemote) {
+            carbonChat.getMessageManager().sendMessage("ignoring-channel", uuid, (byteArray) -> {
+                byteArray.writeUTF(channel);
+                byteArray.writeBoolean(ignored);
+            });
         }
     }
 
@@ -81,8 +81,10 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
             this.color = color.asHexString();
         }
 
-        if (fromRemote) {
-            getUser().publishChangeToRedis("channel-color", this.color);
+        if (!fromRemote) {
+            carbonChat.getMessageManager().sendMessage("channel-color", uuid, (byteArray) -> {
+                byteArray.writeUTF(color.asHexString());
+            });
         }
     }
 

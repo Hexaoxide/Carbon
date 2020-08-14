@@ -232,7 +232,10 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     public void sendMessageToBungee(Player player, Component component) {
-        carbonChat.getPluginMessageManager().sendComponent(this, player, component);
+        carbonChat.getMessageManager().sendMessage("whisper-component", player.getUniqueId(), (byteArray) -> {
+            byteArray.writeUTF(this.getKey());
+            byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(component));
+        });
     }
 
     public Boolean canPlayerSee(ChatUser target, boolean checkSpying) {

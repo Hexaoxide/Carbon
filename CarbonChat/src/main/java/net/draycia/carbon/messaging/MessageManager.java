@@ -1,5 +1,6 @@
 package net.draycia.carbon.messaging;
 
+import com.google.common.io.ByteArrayDataOutput;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.messaging.impl.BungeeMessageService;
@@ -9,6 +10,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class MessageManager {
 
@@ -123,6 +125,10 @@ public class MessageManager {
 
     public MessageService getMessageService() {
         return messageService;
+    }
+
+    public void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer) {
+        getMessageService().sendMessage(key, uuid, consumer);
     }
 
 }
