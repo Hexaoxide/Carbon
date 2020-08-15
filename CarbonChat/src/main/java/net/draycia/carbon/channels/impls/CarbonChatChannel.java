@@ -133,21 +133,25 @@ public class CarbonChatChannel extends ChatChannel {
             target.sendMessage(newEvent.getComponent());
         }
 
-        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(preFormatEvent.getFormat(),
+        ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this, preFormatEvent.getFormat(),
+                preFormatEvent.getMessage());
+
+        Bukkit.getPluginManager().callEvent(consoleFormatEvent);
+
+        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getFormat(),
                 "br", "\n",
                 "color", "<" + getColor(user).asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"),
-                "message", preFormatEvent.getMessage());
+                "message", consoleFormatEvent.getMessage());
 
         ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleMessage,
-                preFormatEvent.getMessage());
+                consoleFormatEvent.getMessage());
 
         Bukkit.getPluginManager().callEvent(consoleEvent);
 
         // Log message to console
-        String sm = user.isShadowMuted() ? "[SM] " : "";
-        System.out.println(sm + CarbonChat.LEGACY.serialize(consoleEvent.getComponent()));
+        System.out.println(CarbonChat.LEGACY.serialize(consoleEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will

@@ -1,6 +1,7 @@
 package net.draycia.carbonmoderation.listeners;
 
 import net.draycia.carbon.events.ChatComponentEvent;
+import net.draycia.carbon.events.ChatFormatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -14,8 +15,19 @@ public class ShadowMuteHandler implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
 
-        // TODO: figure out a way to add the console "[SM]" prefix for shadow muted players
+    @EventHandler
+    public void on(ChatFormatEvent event) {
+        if (event.getTarget() != null) {
+            return;
+        }
+
+        if (!event.getSender().isShadowMuted()) {
+            return;
+        }
+
+        event.setFormat("[SM] " + event.getFormat());
     }
 
 }

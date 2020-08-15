@@ -9,6 +9,10 @@ public class IgnoredPlayerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPapiPlaceholder(ChatFormatEvent event) {
+        if (event.getTarget() == null) {
+            return;
+        }
+
         if (event.getTarget().isIgnoringUser(event.getSender())) {
             event.setCancelled(true);
         }
