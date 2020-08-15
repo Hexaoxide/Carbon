@@ -4,6 +4,8 @@ caps-protection:
   percent-caps: 80
   block-message: false
 
+shadow-mute-prefix: '[SM] '
+
 filters:
   enabled: true
   case-sensitive: false
