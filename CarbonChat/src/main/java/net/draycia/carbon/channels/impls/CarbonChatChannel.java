@@ -153,11 +153,7 @@ public class CarbonChatChannel extends ChatChannel {
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
         if (user.isOnline() && !fromRemote && shouldBungee()) {
-            if (shouldForwardFormatting()) {
-                sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
-            } else {
-                sendMessageToBungee(user.asPlayer(), message);
-            }
+            sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
         }
     }
 
@@ -236,11 +232,10 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     public void sendMessageToBungee(Player player, Component component) {
-        carbonChat.getPluginMessageManager().sendComponent(this, player, component);
-    }
-
-    public void sendMessageToBungee(Player player, String message) {
-        carbonChat.getPluginMessageManager().sendMessage(this, player, message);
+        carbonChat.getMessageManager().sendMessage("whisper-component", player.getUniqueId(), (byteArray) -> {
+            byteArray.writeUTF(this.getKey());
+            byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(component));
+        });
     }
 
     public Boolean canPlayerSee(ChatUser target, boolean checkSpying) {
