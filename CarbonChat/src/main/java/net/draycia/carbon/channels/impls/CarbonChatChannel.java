@@ -96,7 +96,12 @@ public class CarbonChatChannel extends ChatChannel {
         Bukkit.getPluginManager().callEvent(preFormatEvent);
 
         // Return if cancelled or message is emptied
-        if (preFormatEvent.isCancelled() || preFormatEvent.getMessage().isEmpty()) {
+
+        if (preFormatEvent.isCancelled()) {
+            return;
+        }
+
+        if (preFormatEvent.getMessage().trim().isEmpty()) {
             return;
         }
 
@@ -106,9 +111,13 @@ public class CarbonChatChannel extends ChatChannel {
             ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.getFormat(), preFormatEvent.getMessage());
             Bukkit.getPluginManager().callEvent(formatEvent);
 
-            // Afain, return if cancelled or message is emptied
-            if (formatEvent.isCancelled() || formatEvent.getMessage().isEmpty()) {
+            // Again, return if cancelled or message is emptied
+            if (formatEvent.isCancelled()) {
                 continue;
+            }
+
+            if (formatEvent.getMessage().trim().isEmpty()) {
+                return;
             }
 
             TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
