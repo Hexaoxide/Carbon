@@ -54,7 +54,7 @@ public class RedisMessageService implements MessageService {
         this.publishSync = publishConnection.sync();
 
         subscribeConnection.addListener((RedisListener)(channel, message) -> {
-            ByteArrayDataInput input = ByteStreams.newDataInput(message.getBytes());
+            ByteArrayDataInput input = ByteStreams.newDataInput(Base64.getDecoder().decode(message));
 
             UUID messageUUID = new UUID(input.readLong(), input.readLong());
 
