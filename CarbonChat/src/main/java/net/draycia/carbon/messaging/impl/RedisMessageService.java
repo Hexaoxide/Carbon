@@ -21,14 +21,18 @@ import java.util.function.Consumer;
 
 public class RedisMessageService implements MessageService {
 
-    private Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> listeners = new HashMap<>();
+    private Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+    private Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
     private final RedisPubSubCommands<String, String> subscribeSync;
     private final RedisPubSubCommands<String, String> publishSync;
 
     private final UUID serverUUID = UUID.randomUUID();
+    private final CarbonChat carbonChat;
 
     public RedisMessageService(CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
+
         String host = carbonChat.getConfig().getString("redis.host");
         String password = carbonChat.getConfig().getString("redis.password");
         int port = carbonChat.getConfig().getInt("redis.port");
@@ -60,33 +64,45 @@ public class RedisMessageService implements MessageService {
 
             UUID uuid = new UUID(input.readLong(), input.readLong());
 
-            ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
-
-            if (user == null) {
-                return;
-            }
-
-            this.receiveMessage(user, channel, input);
+            this.receiveMessage(uuid, channel, input);
         });
     }
 
-    private void receiveMessage(ChatUser user, String key, ByteArrayDataInput value) {
-        for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : listeners.entrySet()) {
-            if (key.equals(listener.getKey())) {
-                listener.getValue().accept(user, value);
+    private void receiveMessage(UUID uuid, String key, ByteArrayDataInput value) {
+        ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
+
+        if (user == null) {
+            for (Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : userNotLoadedListeners.entrySet()) {
+                if (key.equals(listener.getKey())) {
+                    listener.getValue().accept(uuid, value);
+                }
+            }
+        } else {
+            for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : userLoadedListeners.entrySet()) {
+                if (key.equals(listener.getKey())) {
+                    listener.getValue().accept(user, value);
+                }
             }
         }
     }
 
     @Override
-    public void registerMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
-        listeners.put(key, listener);
+    public void registerUserMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
+        userLoadedListeners.put(key, listener);
+        subscribeSync.subscribe(key);
+    }
+
+    @Override
+    public void registerUUIDMessageListener(String key, BiConsumer<UUID, ByteArrayDataInput> listener) {
+        userNotLoadedListeners.put(key, listener);
         subscribeSync.subscribe(key);
     }
 
     @Override
     public void unregisterMessageListener(String key) {
-        listeners.remove(key);
+        userLoadedListeners.remove(key);
+        userNotLoadedListeners.remove(key);
+
         subscribeSync.unsubscribe(key);
     }
 

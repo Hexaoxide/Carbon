@@ -12,7 +12,12 @@ import java.util.function.Consumer;
 public class EmptyMessageService implements MessageService {
 
     @Override
-    public void registerMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
+    public void registerUserMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
+        // do nothing
+    }
+
+    @Override
+    public void registerUUIDMessageListener(String key, BiConsumer<UUID, ByteArrayDataInput> listener) {
         // do nothing
     }
 
