@@ -52,7 +52,7 @@ public class MessageManager {
     }
 
     private void registerDefaultListeners() {
-        getMessageService().registerMessageListener("nickname", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("nickname", (user, byteArray) -> {
             String nickname = byteArray.readUTF();
 
             user.setNickname(nickname, true);
@@ -65,7 +65,7 @@ public class MessageManager {
             }
         });
 
-        getMessageService().registerMessageListener("nickname-reset", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
             user.setNickname(null, true);
 
             if (user.isOnline()) {
@@ -75,66 +75,67 @@ public class MessageManager {
             }
         });
 
-        getMessageService().registerMessageListener("selected-channel", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
             user.setSelectedChannel(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()), true);
         });
 
-        getMessageService().registerMessageListener("spying-whispers", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
             user.setSpyingWhispers(byteArray.readBoolean(), true);
         });
 
-        getMessageService().registerMessageListener("muted", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("muted", (user, byteArray) -> {
             user.setMuted(byteArray.readBoolean(), true);
         });
 
-        getMessageService().registerMessageListener("shadow-muted", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("shadow-muted", (user, byteArray) -> {
             user.setShadowMuted(byteArray.readBoolean(), true);
         });
 
-        getMessageService().registerMessageListener("reply-target", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("reply-target", (user, byteArray) -> {
             user.setReplyTarget(new UUID(byteArray.readLong(), byteArray.readLong()), true);
         });
 
-        getMessageService().registerMessageListener("ignoring-user", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("ignoring-user", (user, byteArray) -> {
             user.setIgnoringUser(new UUID(byteArray.readLong(), byteArray.readLong()), byteArray.readBoolean(), true);
         });
 
-        getMessageService().registerMessageListener("ignoring-channel", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
             user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
                     .setIgnoring(byteArray.readBoolean(), true);
         });
 
-        getMessageService().registerMessageListener("spying-channel", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
             user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
                     .setSpying(byteArray.readBoolean(), true);
         });
 
-        getMessageService().registerMessageListener("channel-color", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
             user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
                     .setColor(TextColor.fromHexString(byteArray.readUTF()), true);
         });
 
-        getMessageService().registerMessageListener("channel-color-reset", (user, byteArray) -> {
+        getMessageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
             user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
                     .setColor(null, true);
         });
 
-        getMessageService().registerMessageListener("channel-component", (user, byteArray) -> {
+        getMessageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
             ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF());
+            ChatUser user = carbonChat.getUserService().wrap(uuid);
 
             if (channel != null) {
                 channel.sendComponent(user, gsonSerializer.deserialize(byteArray.readUTF()));
             }
         });
 
-        getMessageService().registerMessageListener("whisper-component", (user, byteArray) -> {
+        getMessageService().registerUUIDMessageListener("whisper-component", (uuid, byteArray) -> {
             UUID recipient = new UUID(byteArray.readLong(), byteArray.readLong());
 
             ChatUser target = carbonChat.getUserService().wrap(recipient);
             String message = byteArray.readUTF();
 
-            if (!target.isIgnoringUser(user.getUUID())) {
-                target.setReplyTarget(user.getUUID());
+            if (!target.isIgnoringUser(uuid)) {
+                target.setReplyTarget(uuid);
                 target.sendMessage(gsonSerializer.deserialize(message));
             }
         });

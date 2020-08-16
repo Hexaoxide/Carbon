@@ -10,7 +10,9 @@ import java.util.function.Consumer;
 
 public interface MessageService {
 
-    void registerMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener);
+    void registerUserMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener);
+    void registerUUIDMessageListener(String key, BiConsumer<UUID, ByteArrayDataInput> listener);
+
     void unregisterMessageListener(String key);
 
     void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer);

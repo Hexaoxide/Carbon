@@ -22,7 +22,8 @@ public class BungeeMessageService implements PluginMessageListener, MessageServi
     private final CarbonChat carbonChat;
     private final BungeeChannelApi api;
 
-    private Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> listeners = new HashMap<>();
+    private Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+    private Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
     private final UUID serverUUID = UUID.randomUUID();
 
@@ -58,31 +59,41 @@ public class BungeeMessageService implements PluginMessageListener, MessageServi
 
         UUID uuid = new UUID(msg.readLong(), msg.readLong());
 
+        this.receiveMessage(uuid, key, msg);
+    }
+
+    private void receiveMessage(UUID uuid, String key, ByteArrayDataInput value) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
         if (user == null) {
-            return;
-        }
-
-        this.receiveMessage(user, key, msg);
-    }
-
-    private void receiveMessage(ChatUser user, String key, ByteArrayDataInput value) {
-        for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : listeners.entrySet()) {
-            if (key.equals(listener.getKey())) {
-                listener.getValue().accept(user, value);
+            for (Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : userNotLoadedListeners.entrySet()) {
+                if (key.equals(listener.getKey())) {
+                    listener.getValue().accept(uuid, value);
+                }
+            }
+        } else {
+            for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : userLoadedListeners.entrySet()) {
+                if (key.equals(listener.getKey())) {
+                    listener.getValue().accept(user, value);
+                }
             }
         }
     }
 
     @Override
-    public void registerMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
-        listeners.put(key, listener);
+    public void registerUserMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
+        userLoadedListeners.put(key, listener);
+    }
+
+    @Override
+    public void registerUUIDMessageListener(String key, BiConsumer<UUID, ByteArrayDataInput> listener) {
+        userNotLoadedListeners.put(key, listener);
     }
 
     @Override
     public void unregisterMessageListener(String key) {
-        listeners.remove(key);
+        userLoadedListeners.remove(key);
+        userNotLoadedListeners.remove(key);
     }
 
     @Override
