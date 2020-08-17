@@ -1,5 +1,6 @@
 package net.draycia.carbon;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.channels.contexts.impl.DistanceContext;
 import net.draycia.carbon.listeners.*;
 import net.draycia.carbon.managers.*;
@@ -7,6 +8,7 @@ import net.draycia.carbon.messaging.MessageManager;
 import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
+import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.ItemStackUtils;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
@@ -69,6 +71,8 @@ public final class CarbonChat extends JavaPlugin {
         // Setup listeners
         setupListeners();
         registerContexts();
+
+        PlaceholderAPI.registerExpansion(new CarbonPlaceholders(this));
     }
 
     @Override

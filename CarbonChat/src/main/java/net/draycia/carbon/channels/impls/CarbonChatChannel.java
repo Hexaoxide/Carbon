@@ -255,6 +255,7 @@ public class CarbonChatChannel extends ChatChannel {
         });
     }
 
+    @Override
     public Boolean canPlayerSee(ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 

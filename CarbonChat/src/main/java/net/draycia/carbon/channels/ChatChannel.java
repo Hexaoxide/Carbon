@@ -90,6 +90,8 @@ public abstract class ChatChannel implements ForwardingAudience {
 
     public abstract Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
 
+    public abstract Boolean canPlayerSee(ChatUser target, boolean checkSpying);
+
     /**
      * @return If the channel should forward its formatting / formatted message to other servers
      */
