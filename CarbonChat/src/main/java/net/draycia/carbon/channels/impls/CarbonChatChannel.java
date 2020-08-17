@@ -84,8 +84,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    @Override
-    public void sendMessage(ChatUser user, String message, boolean fromRemote) {
+    public void sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromRemote) {
         updateUserNickname(user);
 
         // Get player's formatting
@@ -106,7 +105,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
 
         // Iterate through players who should receive messages in this channel
-        for (ChatUser target : audiences()) {
+        for (ChatUser target : recipients) {
             // Call second format event. Used for relational stuff (placeholders etc)
             ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.getFormat(), preFormatEvent.getMessage());
             Bukkit.getPluginManager().callEvent(formatEvent);
@@ -168,6 +167,11 @@ public class CarbonChatChannel extends ChatChannel {
         if (user.isOnline() && !fromRemote && shouldBungee()) {
             sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
         }
+    }
+
+    @Override
+    public void sendMessage(ChatUser user, String message, boolean fromRemote) {
+        this.sendMessage(user, this.audiences(), message, fromRemote);
     }
 
     public String getFormat(ChatUser user) {
@@ -325,6 +329,11 @@ public class CarbonChatChannel extends ChatChannel {
     @Override
     public Boolean shouldBungee() {
         return getBoolean("should-bungee");
+    }
+
+    @Override
+    public Boolean honorsRecipientList() {
+        return getBoolean("honors-recipient-list");
     }
 
     @Override

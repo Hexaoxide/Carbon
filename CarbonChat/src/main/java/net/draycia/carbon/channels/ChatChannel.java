@@ -7,7 +7,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public abstract class ChatChannel implements ForwardingAudience {
@@ -75,6 +77,8 @@ public abstract class ChatChannel implements ForwardingAudience {
 
     public abstract Boolean primaryGroupOnly();
 
+    public abstract Boolean honorsRecipientList();
+
     public abstract boolean testContext(ChatUser sender, ChatUser target);
 
     public abstract Object getContext(String key);
@@ -101,6 +105,8 @@ public abstract class ChatChannel implements ForwardingAudience {
      * @param message The message to be sent.
      */
     public abstract void sendMessage(ChatUser user, String message, boolean fromBungee);
+
+    public abstract void sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromBungee);
 
     public abstract void sendComponent(ChatUser user, Component component);
 

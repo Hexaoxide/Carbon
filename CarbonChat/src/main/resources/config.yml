@@ -54,6 +54,9 @@ default:
   # As such, setting this on private channels is recommended.
   # For example, use this if DiscordSRV is sending messages when you don't want it to.
   cancel-message-event: false
+  # For plugin compatibility. If true, this channel will use bukkit's list of players to send the messages to.
+  # It's advised to leave this off unless absolutely necessary.
+  honors-recipient-list: false
 
 channels:
   global:
