@@ -15,50 +15,85 @@ public class RequiredBalanceHandler implements Listener {
     
     public RequiredBalanceHandler(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
+
         RegisteredServiceProvider<Economy> registeredEco = carbonChat.getServer().getServicesManager().getRegistration(Economy.class);
+
         if (registeredEco == null) {
             carbonChat.getServer().getLogger().warning("No Vault-compatible Economy plugin detected! Economy features won't work!");
+
             this.economy = null;
             this.enabled = false;
+
             return;
         }
+
         this.enabled = true;
         this.economy = registeredEco.getProvider();
     }
     
     @EventHandler
     public void onChatReqBal(PreChatFormatEvent event) {
-        if (!enabled) return;
+        if (!enabled) {
+            return;
+        }
+
         Object requiredBalObject = event.getChannel().getContext("vault-balance");
-        if (!(requiredBalObject instanceof Double)) return;
-        Double requiredBal = (Double) requiredBalObject;
-        if (requiredBal.equals((double) 0)) return;
+
+        Double requiredBal;
+
+        if (requiredBalObject instanceof Double) {
+            requiredBal = (Double) requiredBalObject;
+        } else if (requiredBalObject instanceof Integer) {
+            requiredBal = Double.valueOf((Integer) requiredBalObject);
+        } else {
+            return;
+        }
+
+        if (requiredBal.equals(0.0)) {
+            return;
+        }
 
         Player player = event.getUser().asPlayer();
+
         if (!economy.has(player, requiredBal)) {
             event.setCancelled(true);
+
             event.getUser().sendMessage(carbonChat.getAdventureManager()
                     .processMessageWithPapi(player, event.getChannel().getCannotUseMessage()));
-            return;
         }
 
     }
 
     @EventHandler
     public void onChatCost(PreChatFormatEvent event) {
-        if (!enabled) return;
+        if (!enabled) {
+            return;
+        }
+
         Object costObject = event.getChannel().getContext("vault-cost");
-        if (!(costObject instanceof Double)) return;
-        Double cost = (Double) costObject;
-        if (cost.equals((double) 0)) return;
+
+        Double cost;
+
+        if (costObject instanceof Double) {
+            cost = (Double) costObject;
+        } else if (costObject instanceof Integer) {
+            cost = Double.valueOf((Integer) costObject);
+        } else {
+            return;
+        }
+
+        if (cost.equals(0.0)) {
+            return;
+        }
 
         Player player = event.getUser().asPlayer();
 
-
         if (!economy.has(player, cost)) {
             event.setCancelled(true);
+
             event.getUser().sendMessage(carbonChat.getAdventureManager()
                     .processMessageWithPapi(player, event.getChannel().getCannotUseMessage()));
+
             return;
         }
 
