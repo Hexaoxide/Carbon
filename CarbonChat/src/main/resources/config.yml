@@ -96,7 +96,7 @@ language:
   other-nickname-reset: '<green><user></rainbow>''s nickname was reset!'
 
   # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
-  me: '<italic><dark_purple>*%player_displayname% </rainbow><pre><message></pre>*</dark_purple></italic>'
+  me: '<italic><dark_purple>*%player_displayname% </rainbow><message>*</dark_purple></italic>'
   ignoring-user: '<green>You are now ignoring <gold><player></rainbow><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player></rainbow><green>!'
   ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'
