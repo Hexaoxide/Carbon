@@ -37,12 +37,11 @@ default:
     vault-balance: 0
     # charges on every chat message. 0 to disable. Requires a vault-compatible economy plugin
     vault-cost: 0
+  # The <color> placeholder in channel formats (and other formats).
+  # This option does support PlaceholderAPI placeholders, however the resulting string must be a valid color!
   color: '#FFFFFF'
   # Can players /toggle this channel and hide its messages?
   ignorable: true
-  # Setting this to false causes all other servers to re-format the message locally.
-  # Unadvised unless you have notably different formatting on each server.
-  forward-format: true
   # Enables/disables cross server chat for this channel
   should-bungee: true
   # If true, plugin will only use the format corresponding to the user's primary group (vault).
@@ -115,10 +114,13 @@ item-link-placeholders:
 
 spy-prefix: '<color>[SPY] '
 
+nicknames-set-tab-name: true
+
 pings:
   enabled: true
   source: 'PLAYER'
   sound: 'minecraft:entity.experience_orb.pickup'
+  prefix: '@'
   volume: 10.0
   pitch: 1.0
   highlight: true # independent of the "enabled" option!
@@ -139,8 +141,13 @@ storage:
   hostname: 'localhost'
   port: 3306
 
+# Options:
+# 'bungee' - Uses bungee plugin messaging, requires BungeeCord or another proxy which supports it (Velocity!)
+# 'redis' - Uses redis for cross server syncing, does not require a server proxy
+# 'none' - Do not sync anything cross server, this is the default
+message-system: 'none'
+
 redis:
-  enabled: false
   host: 'localhost'
   port: 6379
   #password: 'password'

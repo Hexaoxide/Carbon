@@ -3,6 +3,7 @@ package net.draycia.carbon;
 import net.draycia.carbon.channels.contexts.impl.DistanceContext;
 import net.draycia.carbon.listeners.*;
 import net.draycia.carbon.managers.*;
+import net.draycia.carbon.messaging.MessageManager;
 import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
@@ -16,14 +17,13 @@ public final class CarbonChat extends JavaPlugin {
 
     private Permission permission;
 
-    private PluginMessageManager pluginMessageManager;
     private CommandManager commandManager;
     private ChannelManager channelManager;
-    private RedisManager redisManager = null;
     private AdventureManager adventureManager;
     private ContextManager contextManager;
 
     private UserService userService;
+    private MessageManager messageManager;
 
     private ItemStackUtils itemStackUtils;
 
@@ -48,15 +48,10 @@ public final class CarbonChat extends JavaPlugin {
         saveDefaultConfig();
 
         // Initialize managers
-        pluginMessageManager = new PluginMessageManager(this);
         commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
         contextManager = new ContextManager();
-
-        if (getConfig().getBoolean("redis.enabled")) {
-            getLogger().info("Enabling Redis support!");
-            redisManager = new RedisManager(this);
-        }
+        messageManager = new MessageManager(this);
 
         String storageType = getConfig().getString("storage.type");
 
@@ -78,7 +73,7 @@ public final class CarbonChat extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        userService.cleanUp();
+        userService.onDisable();
     }
 
     private void setupListeners() {
@@ -115,12 +110,8 @@ public final class CarbonChat extends JavaPlugin {
         return channelManager;
     }
 
-    public PluginMessageManager getPluginMessageManager() {
-        return pluginMessageManager;
-    }
-
-    public RedisManager getRedisManager() {
-        return redisManager;
+    public MessageManager getMessageManager() {
+        return messageManager;
     }
 
     public UserService getUserService() {

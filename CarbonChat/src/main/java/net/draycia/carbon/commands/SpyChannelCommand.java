@@ -33,7 +33,7 @@ public class SpyChannelCommand extends BaseCommand {
         }
 
         user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
-                "color", "<color:" + channel.getColor().toString() + ">", "channel", channel.getName()));
+                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
     }
 
     @Subcommand("whispers")

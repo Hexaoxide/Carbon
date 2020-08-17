@@ -27,8 +27,9 @@ public class PingHandler implements Listener {
         }
 
         String senderName = event.getSender().asOfflinePlayer().getName();
+        String prefix = carbonChat.getConfig().getString("pings.prefix", "");
 
-        if (senderName == null || !event.getOriginalMessage().contains(senderName)) {
+        if (senderName == null || !event.getOriginalMessage().contains(prefix + senderName)) {
             return;
         }
 

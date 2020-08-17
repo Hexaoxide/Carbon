@@ -23,12 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class MySQLUserService implements UserService {
 
     private final LoadingCache<UUID, CarbonChatUser> userCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.MINUTES)
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
@@ -70,8 +68,13 @@ public class MySQLUserService implements UserService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(carbonChat, userCache::cleanUp, 0L, 20 * 60 * 10);
+    @Override
+    public void onDisable() {
+        userCache.invalidateAll();
+        userCache.cleanUp();
+        database.close();
     }
 
     @Override
@@ -107,15 +110,20 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public void cleanUp() {
-        userCache.invalidateAll();
-        userCache.cleanUp();
-        database.close();
+    public ChatUser refreshUser(UUID uuid) {
+        userCache.invalidate(uuid);
+
+        return this.wrap(uuid);
     }
 
     @Override
-    public void refreshUser(UUID uuid) {
-        userCache.invalidate(uuid);
+    public void invalidate(ChatUser user) {
+        userCache.invalidate(user.getUUID());
+    }
+
+    @Override
+    public void validate(ChatUser user) {
+        userCache.put(user.getUUID(), (CarbonChatUser)user);
     }
 
     private CarbonChatUser loadUser(UUID uuid) {
@@ -136,18 +144,18 @@ public class MySQLUserService implements UserService {
             ChatChannel channel = carbonChat.getChannelManager().getChannelOrDefault(users.getString("channel"));
 
             if (channel != null) {
-                user.setSelectedChannel(channel);
+                user.setSelectedChannel(channel, true);
             }
 
             String nickname = users.getString("nickname");
 
             if (nickname != null) {
-                user.setNickname(nickname);
+                user.setNickname(nickname, true);
             }
 
-            user.setMuted(users.<Boolean>get("muted"));
-            user.setShadowMuted(users.<Boolean>get("shadowmuted"));
-            user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"));
+            user.setMuted(users.<Boolean>get("muted"), true);
+            user.setShadowMuted(users.<Boolean>get("shadowmuted"), true);
+            user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"), true);
 
             for (DbRow channelSetting : channelSettings) {
                 ChatChannel chatChannel = carbonChat.getChannelManager().getRegistry().get(channelSetting.getString("channel"));
@@ -155,19 +163,19 @@ public class MySQLUserService implements UserService {
                 if (chatChannel != null) {
                     UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
-                    settings.setSpying(channelSetting.<Boolean>get("spying"));
-                    settings.setIgnoring(channelSetting.<Boolean>get("ignored"));
+                    settings.setSpying(channelSetting.<Boolean>get("spying"), true);
+                    settings.setIgnoring(channelSetting.<Boolean>get("ignored"), true);
 
                     String color = channelSetting.getString("color");
 
                     if (color != null) {
-                        settings.setColor(TextColor.fromHexString(color));
+                        settings.setColor(TextColor.fromHexString(color), true);
                     }
                 }
             }
 
             for (DbRow ignoredUser : ignoredUsers) {
-                user.setIgnoringUser(UUID.fromString(ignoredUser.getString("user")), true);
+                user.setIgnoringUser(UUID.fromString(ignoredUser.getString("user")), true, true);
             }
         } catch (SQLException e) {
             e.printStackTrace();

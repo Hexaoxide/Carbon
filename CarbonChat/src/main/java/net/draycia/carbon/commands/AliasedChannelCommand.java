@@ -34,7 +34,7 @@ public class AliasedChannelCommand extends BaseCommand {
             user.setSelectedChannel(getChatChannel());
 
             user.sendMessage(carbonChat.getAdventureManager().processMessage(getChatChannel().getSwitchMessage(),
-                    "color", "<" + getChatChannel().getColor().toString() + ">",
+                    "color", "<" + getChatChannel().getChannelColor(user).toString() + ">",
                     "channel", getChatChannel().getName()));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {

@@ -11,6 +11,10 @@ public class RelationalPlaceholderHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPapiPlaceholder(ChatFormatEvent event) {
+        if (event.getTarget() == null) {
+            return;
+        }
+
         if (!event.getSender().isOnline() || !event.getTarget().isOnline()) {
             return;
         }

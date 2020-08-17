@@ -1,5 +1,6 @@
 package net.draycia.carbon.channels.impls;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.ChatComponentEvent;
@@ -65,6 +66,10 @@ public class CarbonChatChannel extends ChatChannel {
         if (user.isOnline()) {
             if (user.getNickname() != null) {
                 user.asPlayer().setDisplayName(user.getNickname());
+
+                if (carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
+                    user.asPlayer().setPlayerListName(user.getNickname());
+                }
             }
         }
     }
@@ -75,7 +80,7 @@ public class CarbonChatChannel extends ChatChannel {
         if (userColor != null) {
             return userColor;
         } else {
-            return getColor();
+            return getChannelColor(user);
         }
     }
 
@@ -91,7 +96,12 @@ public class CarbonChatChannel extends ChatChannel {
         Bukkit.getPluginManager().callEvent(preFormatEvent);
 
         // Return if cancelled or message is emptied
-        if (preFormatEvent.isCancelled() || preFormatEvent.getMessage().isEmpty()) {
+
+        if (preFormatEvent.isCancelled()) {
+            return;
+        }
+
+        if (preFormatEvent.getMessage().trim().isEmpty()) {
             return;
         }
 
@@ -101,9 +111,13 @@ public class CarbonChatChannel extends ChatChannel {
             ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.getFormat(), preFormatEvent.getMessage());
             Bukkit.getPluginManager().callEvent(formatEvent);
 
-            // Afain, return if cancelled or message is emptied
-            if (formatEvent.isCancelled() || formatEvent.getMessage().isEmpty()) {
+            // Again, return if cancelled or message is emptied
+            if (formatEvent.isCancelled()) {
                 continue;
+            }
+
+            if (formatEvent.getMessage().trim().isEmpty()) {
+                return;
             }
 
             TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
@@ -128,31 +142,31 @@ public class CarbonChatChannel extends ChatChannel {
             target.sendMessage(newEvent.getComponent());
         }
 
-        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(preFormatEvent.getFormat(),
+        ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this, preFormatEvent.getFormat(),
+                preFormatEvent.getMessage());
+
+        Bukkit.getPluginManager().callEvent(consoleFormatEvent);
+
+        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getFormat(),
                 "br", "\n",
-                "color", "<" + getColor().asHexString() + ">",
+                "color", "<" + getColor(user).asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"),
-                "message", preFormatEvent.getMessage());
+                "message", consoleFormatEvent.getMessage());
 
         ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleMessage,
-                preFormatEvent.getMessage());
+                consoleFormatEvent.getMessage());
 
         Bukkit.getPluginManager().callEvent(consoleEvent);
 
         // Log message to console
-        String sm = user.isShadowMuted() ? "[SM] " : "";
-        System.out.println(sm + CarbonChat.LEGACY.serialize(consoleEvent.getComponent()));
+        System.out.println(CarbonChat.LEGACY.serialize(consoleEvent.getComponent()));
 
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
         if (user.isOnline() && !fromRemote && shouldBungee()) {
-            if (shouldForwardFormatting()) {
-                sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
-            } else {
-                sendMessageToBungee(user.asPlayer(), message);
-            }
+            sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
         }
     }
 
@@ -231,11 +245,10 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     public void sendMessageToBungee(Player player, Component component) {
-        carbonChat.getPluginMessageManager().sendComponent(this, player, component);
-    }
-
-    public void sendMessageToBungee(Player player, String message) {
-        carbonChat.getPluginMessageManager().sendMessage(this, player, message);
+        carbonChat.getMessageManager().sendMessage("channel-component", player.getUniqueId(), (byteArray) -> {
+            byteArray.writeUTF(this.getKey());
+            byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(component));
+        });
     }
 
     public Boolean canPlayerSee(ChatUser target, boolean checkSpying) {
@@ -285,8 +298,14 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public TextColor getColor() {
-        return TextColor.fromHexString(getString("color"));
+    public TextColor getChannelColor(ChatUser user) {
+        String color = getString("color");
+
+        if (user.isOnline()) {
+            return TextColor.fromHexString(PlaceholderAPI.setPlaceholders(user.asPlayer(), color));
+        }
+
+        return TextColor.fromHexString(color);
     }
 
     private String getDefaultFormatName() {

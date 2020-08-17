@@ -38,7 +38,7 @@ public final class CarbonChatModeration extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CapsHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new FilterHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new MuteHandler(), this);
-        Bukkit.getPluginManager().registerEvents(new ShadowMuteHandler(), this);
+        Bukkit.getPluginManager().registerEvents(new ShadowMuteHandler(this), this);
     }
 
     @Override

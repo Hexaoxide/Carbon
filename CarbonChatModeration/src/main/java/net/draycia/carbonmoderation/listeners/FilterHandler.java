@@ -9,7 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,8 +20,39 @@ public class FilterHandler implements Listener {
 
     private final CarbonChatModeration moderation;
 
+    private final Map<String, List<Pattern>> patternReplacements = new HashMap<>();
+    private final List<Pattern> blockedWords = new ArrayList<>();
+
     public FilterHandler(CarbonChatModeration moderation) {
         this.moderation = moderation;
+
+        FileConfiguration config = moderation.getConfig();
+
+        ConfigurationSection filters = config.getConfigurationSection("filters.filters");
+
+        for (String replacement : filters.getKeys(false)) {
+            List<Pattern> patterns = new ArrayList<>();
+
+            for (String word : filters.getStringList(replacement)) {
+                if (moderation.getConfig().getBoolean("filters.case-sensitive")) {
+                    patterns.add(Pattern.compile(word));
+                } else {
+                    patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
+                }
+            }
+
+            patternReplacements.put(replacement, patterns);
+        }
+
+        for (String replacement : config.getStringList("filters.blocked-words")) {
+            for (String word : filters.getStringList(replacement)) {
+                if (moderation.getConfig().getBoolean("filters.case-sensitive")) {
+                    blockedWords.add(Pattern.compile(word));
+                } else {
+                    blockedWords.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -31,31 +65,25 @@ public class FilterHandler implements Listener {
             return;
         }
 
-        FileConfiguration config = moderation.getConfig();
-        ConfigurationSection filters = config.getConfigurationSection("filters.filters");
+        String message = event.getMessage();
+        //Matcher matcher;
 
-        for (String replacement : filters.getKeys(false)) {
-            List<String> filteredWords = filters.getStringList(replacement);
+        for (Map.Entry<String, List<Pattern>> entry : patternReplacements.entrySet()) {
+            for (Pattern pattern : entry.getValue()) {
+                Matcher matcher = pattern.matcher(message);
 
-            for (String word : filteredWords) {
-                Matcher matcher;
-
-                if (config.getBoolean("filters.case-sensitive")) {
-                    matcher = Pattern.compile(word).matcher(event.getMessage());
+                if (entry.getKey().equals("_")) {
+                    message = matcher.replaceAll("");
                 } else {
-                    matcher = Pattern.compile(word, Pattern.CASE_INSENSITIVE).matcher(event.getMessage());
-                }
-
-                if (replacement.equals("_")) {
-                    event.setMessage(matcher.replaceAll(""));
-                } else {
-                    event.setMessage(matcher.replaceAll(replacement));
+                    message = matcher.replaceAll(entry.getKey());
                 }
             }
         }
 
-        for (String blockedWord : config.getStringList("filters.blocked-words")) {
-            if (Pattern.compile(blockedWord, Pattern.CASE_INSENSITIVE).matcher(event.getMessage()).find()) {
+        event.setMessage(message);
+
+        for (Pattern blockedWord : blockedWords) {
+            if (blockedWord.matcher(event.getMessage()).find()) {
                 event.setCancelled(true);
                 break;
             }
