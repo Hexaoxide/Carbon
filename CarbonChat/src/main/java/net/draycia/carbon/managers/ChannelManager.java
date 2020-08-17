@@ -89,7 +89,15 @@ public class ChannelManager {
 
             if (channel != null) {
                 if (registerChannel(channel)) {
-                    carbonChat.getLogger().info("Registering channel: " + channel.getName());
+                    String prefix = channel.getMessagePrefix();
+
+                    if (prefix != null && !prefix.trim().isEmpty()) {
+                        prefix = ("(" + prefix + ") ");
+                    } else {
+                        prefix = "";
+                    }
+
+                    carbonChat.getLogger().info("Registering channel: " + prefix + channel.getName());
                 }
             }
         }
