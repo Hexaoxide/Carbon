@@ -65,17 +65,17 @@ public class BungeeMessageService implements PluginMessageListener, MessageServi
     private void receiveMessage(UUID uuid, String key, ByteArrayDataInput value) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
-        if (user == null) {
-            for (Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : userNotLoadedListeners.entrySet()) {
-                if (key.equals(listener.getKey())) {
-                    listener.getValue().accept(uuid, value);
-                }
-            }
-        } else {
+        if (user != null) {
             for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : userLoadedListeners.entrySet()) {
                 if (key.equals(listener.getKey())) {
                     listener.getValue().accept(user, value);
                 }
+            }
+        }
+
+        for (Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : userNotLoadedListeners.entrySet()) {
+            if (key.equals(listener.getKey())) {
+                listener.getValue().accept(uuid, value);
             }
         }
     }
