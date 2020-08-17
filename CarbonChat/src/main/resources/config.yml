@@ -33,6 +33,10 @@ default:
     # filter only works when CarbonChatModeration is installed.
     # Modifies / prevents messages depending on how filters are setup.
     filter: true
+    # requires a minimum balance to chat. 0 to disable. Requires a vault-compatible economy plugin
+    vault-balance: 0
+    # charges on every chat message. 0 to disable. Requires a vault-compatible economy plugin
+    vault-cost: 0
   # The <color> placeholder in channel formats (and other formats).
   # This option does support PlaceholderAPI placeholders, however the resulting string must be a valid color!
   color: '#FFFFFF'

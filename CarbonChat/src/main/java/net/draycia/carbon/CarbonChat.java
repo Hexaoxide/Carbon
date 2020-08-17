@@ -91,6 +91,7 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new RelationalPlaceholderHandler(), this);
         pluginManager.registerEvents(new UserFormattingListener(), this);
         pluginManager.registerEvents(new WhisperPingHandler(this), this);
+        pluginManager.registerEvents(new RequiredBalanceHandler(this), this);
     }
 
     private void registerContexts() {
