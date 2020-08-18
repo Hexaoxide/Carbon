@@ -18,6 +18,7 @@ public class ChannelCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@chatchannel")
+    @Syntax("<channel> [message]")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, @Optional String[] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
 
@@ -38,6 +39,7 @@ public class ChannelCommand extends BaseCommand {
     @CommandPermission("carbonchat.switch.others")
     @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
+    @Syntax("<channel> <user>")
     public void baseCommand(CommandSender sender, @Conditions("exists:true") ChatChannel channel, ChatUser user) {
         user.setSelectedChannel(channel);
 

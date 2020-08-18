@@ -1,10 +1,7 @@
 package net.draycia.carbon.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Dependency;
+import co.aikar.commands.annotation.*;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
@@ -18,6 +15,7 @@ public class ReplyCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
+    @Syntax("<message>")
     public void baseCommand(Player player, String... args) {
         if (args.length == 0) {
             return;

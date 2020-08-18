@@ -19,6 +19,7 @@ public class SetColorCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@chatchannel")
+    @Syntax("<channel> <color>")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, String color) {
         if (channel == null || color == null) {
             throw new ConditionFailedException("Channel or Color not supplied!");

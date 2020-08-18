@@ -1,5 +1,6 @@
 package net.draycia.carbonmoderation.commands;
 
+import net.draycia.carbon.libs.co.aikar.commands.annotation.Syntax;
 import net.draycia.carbon.libs.co.aikar.commands.BaseCommand;
 import net.draycia.carbon.libs.co.aikar.commands.annotation.CommandAlias;
 import net.draycia.carbon.libs.co.aikar.commands.annotation.CommandCompletion;
@@ -25,6 +26,7 @@ public class ShadowMuteCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@players")
+    @Syntax("<player>")
     public void baseCommand(CommandSender sender, ChatUser targetUser) {
         Audience audience = moderation.getCarbonChat().getAdventureManager().getAudiences().audience(sender);
 

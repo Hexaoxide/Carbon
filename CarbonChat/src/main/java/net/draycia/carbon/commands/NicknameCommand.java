@@ -14,6 +14,7 @@ public class NicknameCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
+    @Syntax("<nickname> [player]")
     public void baseCommand(Player player, String nickname, @Optional ChatUser target) {
         ChatUser sender = carbonChat.getUserService().wrap(player);
 

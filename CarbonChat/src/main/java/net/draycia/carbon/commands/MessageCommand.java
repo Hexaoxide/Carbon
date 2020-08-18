@@ -1,11 +1,7 @@
 package net.draycia.carbon.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Dependency;
+import co.aikar.commands.annotation.*;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.entity.Player;
@@ -19,6 +15,7 @@ public class MessageCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@players")
+    @Syntax("<player> <message>")
     public void baseCommand(Player player, ChatUser targetUser, String... args) {
         if (args.length == 0) {
             return;

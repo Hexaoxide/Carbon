@@ -18,6 +18,7 @@ public class ToggleCommand extends BaseCommand {
 
     @Default
     @CommandCompletion("@chatchannel @players")
+    @Syntax("<channel>")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel) {
         ChatUser user = carbonChat.getUserService().wrap(player);
 
@@ -40,6 +41,7 @@ public class ToggleCommand extends BaseCommand {
     @CommandPermission("carbonchat.toggle.others")
     @Subcommand("other")
     @CommandCompletion("@chatchannel @players")
+    @Syntax("<channel> <player>")
     public void baseCommand(CommandSender sender, @Conditions("canuse:true") ChatChannel channel, ChatUser user) {
         String message;
         String otherMessage;

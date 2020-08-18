@@ -23,6 +23,7 @@ public class AliasedChannelCommand extends BaseCommand {
     }
 
     @Default
+    @Syntax("[message]")
     public void baseCommand(Player player, @Optional String[] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
 
