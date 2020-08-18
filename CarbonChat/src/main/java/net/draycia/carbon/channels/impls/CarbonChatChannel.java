@@ -175,11 +175,39 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     public String getFormat(ChatUser user) {
+        for (String group : this.getGroupOverrides()) {
+            if (userHasGroup(user, group)) {
+                String format = getFormat(group);
+
+                if (format != null) {
+                    return format;
+                }
+            }
+        }
+
         if (primaryGroupOnly()) {
             return getPrimaryGroupFormat(user);
         } else {
             return getFirstFoundUserFormat(user);
         }
+    }
+
+    private boolean userHasGroup(ChatUser user, String group) {
+        if (user.isOnline()) {
+            if (carbonChat.getPermission().playerInGroup(user.asPlayer(), group)) {
+                return true;
+            }
+        } else {
+            if (carbonChat.getPermission().playerInGroup(null, user.asOfflinePlayer(), group)) {
+                return true;
+            }
+        }
+
+        if (user.isOnline() && this.permissionGroupMatching()) {
+            return user.asPlayer().hasPermission("carbonchat.group." + group);
+        }
+
+        return false;
     }
 
     private String getFirstFoundUserFormat(ChatUser user) {
@@ -338,6 +366,16 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
+    public Boolean permissionGroupMatching() {
+        return getBoolean("permission-group-matching");
+    }
+
+    @Override
+    public List<String> getGroupOverrides() {
+        return getStringList("group-overrides");
+    }
+
+    @Override
     public String getName() {
         String name = getString("name");
         return name == null ? key : name;
@@ -449,6 +487,20 @@ public class CarbonChatChannel extends ChatChannel {
         }
 
         return null;
+    }
+
+    private List<String> getStringList(String key) {
+        if (config != null && config.contains(key)) {
+            return config.getStringList(key);
+        }
+
+        ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
+
+        if (defaultSection != null && defaultSection.contains(key)) {
+            return defaultSection.getStringList(key);
+        }
+
+        return Collections.emptyList();
     }
 
     private boolean getBoolean(String key) {

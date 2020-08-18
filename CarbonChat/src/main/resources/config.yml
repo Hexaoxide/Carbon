@@ -18,6 +18,17 @@ default:
     # Also supports PlaceholderAPI
     staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <reset><gray>» <color><message>'
     default: '<gray>[%vault_prefix%<gray>] %player_displayname%<reset><gray>: <color><message>'
+  # The plugin will look for matching group in here when choosing which group to use for formatting
+  # If there are no matches, the plugin will fall back to the primary-group-only option.
+  # It's advised to set this option to [] if you don't want to use this.
+  format-groups:
+    - Owner
+    - Admin
+    - Moderator
+    - VIP
+  # If set to true, players with the permission carbonchat.group.groupname will count has having
+  # The group with the name groupname (carbonchat.group.owner will count has having the group owner)
+  permission-group-matching: false
   contexts:
     # -1 to disable, 0 to set to world, 1+ to fully enable
     distance: -1

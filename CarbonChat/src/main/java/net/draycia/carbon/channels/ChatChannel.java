@@ -79,9 +79,13 @@ public abstract class ChatChannel implements ForwardingAudience {
 
     public abstract Boolean honorsRecipientList();
 
+    public abstract Boolean permissionGroupMatching();
+
     public abstract boolean testContext(ChatUser sender, ChatUser target);
 
     public abstract Object getContext(String key);
+
+    public abstract List<String> getGroupOverrides();
 
     /**
      * @return If the player can use this channel.
