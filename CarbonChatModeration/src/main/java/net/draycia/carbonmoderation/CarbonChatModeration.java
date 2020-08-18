@@ -3,6 +3,7 @@ package net.draycia.carbonmoderation;
 import net.draycia.carbon.libs.co.aikar.commands.BukkitCommandManager;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbonmoderation.commands.ClearChatCommand;
+import net.draycia.carbonmoderation.commands.ModReloadCommand;
 import net.draycia.carbonmoderation.commands.MuteCommand;
 import net.draycia.carbonmoderation.commands.ShadowMuteCommand;
 import net.draycia.carbonmoderation.listeners.CapsHandler;
@@ -32,6 +33,7 @@ public final class CarbonChatModeration extends JavaPlugin {
         commandManager.registerCommand(new ClearChatCommand(this));
         commandManager.registerCommand(new MuteCommand(this));
         commandManager.registerCommand(new ShadowMuteCommand(this));
+        commandManager.registerCommand(new ModReloadCommand(this));
     }
 
     private void registerListeners() {
