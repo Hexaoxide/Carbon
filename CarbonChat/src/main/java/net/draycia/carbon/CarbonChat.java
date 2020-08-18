@@ -72,7 +72,7 @@ public final class CarbonChat extends JavaPlugin {
         setupListeners();
         registerContexts();
 
-        PlaceholderAPI.registerExpansion(new CarbonPlaceholders(this));
+        new CarbonPlaceholders(this).register();
     }
 
     @Override
