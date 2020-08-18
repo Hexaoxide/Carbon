@@ -1,6 +1,9 @@
 # CarbonChat Docs:
 # https://github.com/Draycia/Chat/wiki
 
+# Set this to false to disable warnings and tips when the plugin thinks there may be configuration issues.
+show-tips: true
+
 # All of the settings under this 'default' section can be applied to each channel individually to override these.
 # These are provided as a way to configure default channel settings.
 default:

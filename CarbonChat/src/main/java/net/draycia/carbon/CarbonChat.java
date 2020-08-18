@@ -1,6 +1,9 @@
 package net.draycia.carbon;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.clip.placeholderapi.expansion.manager.LocalExpansionManager;
 import net.draycia.carbon.channels.contexts.impl.DistanceContext;
 import net.draycia.carbon.listeners.*;
 import net.draycia.carbon.managers.*;
@@ -14,6 +17,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Optional;
 
 public final class CarbonChat extends JavaPlugin {
 
@@ -73,6 +78,30 @@ public final class CarbonChat extends JavaPlugin {
         registerContexts();
 
         new CarbonPlaceholders(this).register();
+
+        if (getConfig().getBoolean("show-tips")) {
+            LocalExpansionManager expansionManager = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager();
+
+            Optional<PlaceholderExpansion> vault = expansionManager.findExpansionByName("Vault");
+
+            if (!vault.isPresent()) {
+                getLogger().info("PlaceholderAPI expansion 'Vault' not found! To install it, run:");
+                getLogger().info("/papi ecloud download Vault");
+            }
+
+            Optional<PlaceholderExpansion> player = expansionManager.findExpansionByName("Player");
+
+            if (!player.isPresent()) {
+                getLogger().info("PlaceholderAPI expansion 'Player' not found! To install it, run:");
+                getLogger().info("/papi ecloud download Player");
+            }
+
+            if (!player.isPresent() || !vault.isPresent()) {
+                getLogger().info("Then /papi reload");
+                getLogger().info("The default formats use the expansions Vault and Player.");
+                getLogger().info("Without them, default formats may look weird.");
+            }
+        }
     }
 
     @Override
