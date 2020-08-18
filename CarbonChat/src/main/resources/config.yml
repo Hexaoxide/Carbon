@@ -26,7 +26,7 @@ default:
     - Admin
     - Moderator
     - VIP
-  # If set to true, players with the permission carbonchat.group.groupname will count has having
+  # If set to true, players with the permission carbonchat.group.groupname will count as having
   # The group with the name groupname (carbonchat.group.owner will count has having the group owner)
   permission-group-matching: false
   contexts:
