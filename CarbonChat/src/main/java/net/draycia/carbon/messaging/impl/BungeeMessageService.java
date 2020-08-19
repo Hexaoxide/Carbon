@@ -33,24 +33,26 @@ public class BungeeMessageService implements MessageService {
         api = BungeeChannelApi.of(carbonChat);
 
         api.registerForwardListener((String channel, Player player, byte[] bytes) -> {
-            ByteArrayDataInput input = ByteStreams.newDataInput(bytes);
+            try {
+                ByteArrayDataInput input = ByteStreams.newDataInput(bytes);
 
-            // Separated out for ease of debugging.
-            long mostServer = input.readLong();
-            long leastServer = input.readLong();
+                // Separated out for ease of debugging.
+                long mostServer = input.readLong();
+                long leastServer = input.readLong();
 
-            UUID messageUUID = new UUID(mostServer, leastServer);
+                UUID messageUUID = new UUID(mostServer, leastServer);
 
-            if (messageUUID.equals(serverUUID)) {
-                return;
-            }
+                if (messageUUID.equals(serverUUID)) {
+                    return;
+                }
 
-            long mostUser = input.readLong();
-            long leastUser = input.readLong();
+                long mostUser = input.readLong();
+                long leastUser = input.readLong();
 
-            UUID userUUID = new UUID(mostUser, leastUser);
+                UUID userUUID = new UUID(mostUser, leastUser);
 
-            this.receiveMessage(userUUID, channel, input);
+                this.receiveMessage(userUUID, channel, input);
+            } catch (IllegalStateException ignored) {}
         });
     }
 

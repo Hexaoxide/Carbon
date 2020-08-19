@@ -334,6 +334,10 @@ public class CarbonChatChannel extends ChatChannel {
     public TextColor getChannelColor(ChatUser user) {
         String color = getString("color");
 
+        if (color == null) {
+            color = "white";
+        }
+
         if (user.isOnline()) {
             return TextColor.fromHexString(PlaceholderAPI.setPlaceholders(user.asPlayer(), color));
         }
