@@ -8,6 +8,7 @@ import net.draycia.carbon.events.ChatFormatEvent;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -339,10 +340,20 @@ public class CarbonChatChannel extends ChatChannel {
         }
 
         if (user.isOnline()) {
-            return TextColor.fromHexString(PlaceholderAPI.setPlaceholders(user.asPlayer(), color));
+            TextColor textColor = TextColor.fromHexString(PlaceholderAPI.setPlaceholders(user.asPlayer(), color));
+
+            if (textColor != null) {
+                return textColor;
+            }
         }
 
-        return TextColor.fromHexString(color);
+        TextColor textColor = TextColor.fromHexString(color);
+
+        if (textColor != null) {
+            return textColor;
+        }
+
+        return NamedTextColor.WHITE;
     }
 
     private String getDefaultFormatName() {
