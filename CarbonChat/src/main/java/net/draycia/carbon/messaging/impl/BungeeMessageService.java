@@ -8,8 +8,6 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.messaging.MessageService;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,13 +15,13 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class BungeeMessageService implements PluginMessageListener, MessageService {
+public class BungeeMessageService implements MessageService {
 
     private final CarbonChat carbonChat;
     private final BungeeChannelApi api;
 
-    private Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
-    private Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+    private final Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+    private final Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
     private final UUID serverUUID = UUID.randomUUID();
 
@@ -31,35 +29,29 @@ public class BungeeMessageService implements PluginMessageListener, MessageServi
         this.carbonChat = carbonChat;
 
         carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
-        carbonChat.getServer().getMessenger().registerIncomingPluginChannel(carbonChat, "BungeeCord", this);
 
         api = BungeeChannelApi.of(carbonChat);
-    }
 
-    @Override
-    public void onPluginMessageReceived(String channel, @NotNull Player player, @NotNull byte[] message) {
-        if (!channel.equals("BungeeCord")) {
-            return;
-        }
+        api.registerForwardListener((String channel, Player player, byte[] bytes) -> {
+            ByteArrayDataInput input = ByteStreams.newDataInput(bytes);
 
-        ByteArrayDataInput input = ByteStreams.newDataInput(message);
+            // Separated out for ease of debugging.
+            long mostServer = input.readLong();
+            long leastServer = input.readLong();
 
-        String key = input.readUTF();
-        short length = input.readShort();
-        byte[] msgbytes = new byte[length];
-        input.readFully(msgbytes);
+            UUID messageUUID = new UUID(mostServer, leastServer);
 
-        ByteArrayDataInput msg = ByteStreams.newDataInput(msgbytes);
+            if (messageUUID.equals(serverUUID)) {
+                return;
+            }
 
-        UUID messageUUID = new UUID(msg.readLong(), msg.readLong());
+            long mostUser = input.readLong();
+            long leastUser = input.readLong();
 
-        if (messageUUID.equals(serverUUID)) {
-            return;
-        }
+            UUID userUUID = new UUID(mostUser, leastUser);
 
-        UUID uuid = new UUID(msg.readLong(), msg.readLong());
-
-        this.receiveMessage(uuid, key, msg);
+            this.receiveMessage(userUUID, channel, input);
+        });
     }
 
     private void receiveMessage(UUID uuid, String key, ByteArrayDataInput value) {
