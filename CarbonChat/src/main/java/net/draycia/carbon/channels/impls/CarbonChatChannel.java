@@ -12,6 +12,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -340,10 +342,24 @@ public class CarbonChatChannel extends ChatChannel {
         }
 
         if (user.isOnline()) {
-            TextColor textColor = TextColor.fromHexString(PlaceholderAPI.setPlaceholders(user.asPlayer(), color));
+            color = PlaceholderAPI.setPlaceholders(user.asPlayer(), color);
+        }
 
-            if (textColor != null) {
-                return textColor;
+        for (NamedTextColor namedColor : NamedTextColor.values()) {
+            if (namedColor.toString().equalsIgnoreCase(color)) {
+                return namedColor;
+            }
+        }
+
+        if (color.startsWith("&")) {
+            LegacyFormat legacyFormat = LegacyComponentSerializer.parseChar(color.charAt(1));
+
+            if (legacyFormat != null) {
+                TextColor legacyColor = legacyFormat.color();
+
+                if (legacyColor != null) {
+                    return legacyColor;
+                }
             }
         }
 
@@ -351,6 +367,11 @@ public class CarbonChatChannel extends ChatChannel {
 
         if (textColor != null) {
             return textColor;
+        }
+
+        if (carbonChat.getConfig().getBoolean("show-tips")) {
+            carbonChat.getLogger().warning("Tip: Channel color found (" + color + ") is invalid!");
+            carbonChat.getLogger().warning("Falling back to #FFFFFF");
         }
 
         return NamedTextColor.WHITE;
