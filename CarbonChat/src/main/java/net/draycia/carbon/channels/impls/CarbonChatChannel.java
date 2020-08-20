@@ -107,6 +107,14 @@ public class CarbonChatChannel extends ChatChannel {
             return;
         }
 
+        String displayName;
+
+        if (user.isOnline()) {
+            displayName = user.asPlayer().getDisplayName();
+        } else {
+            displayName = user.asOfflinePlayer().getName();
+        }
+
         // Iterate through players who should receive messages in this channel
         for (ChatUser target : recipients) {
             // Call second format event. Used for relational stuff (placeholders etc)
@@ -124,6 +132,7 @@ public class CarbonChatChannel extends ChatChannel {
 
             TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
                     "br", "\n",
+                    "displayname", displayName,
                     "color", "<" + getColor(target).asHexString() + ">",
                     "phase", Long.toString(System.currentTimeMillis() % 25),
                     "server", carbonChat.getConfig().getString("server-name", "Server"),
@@ -151,6 +160,7 @@ public class CarbonChatChannel extends ChatChannel {
 
         TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getFormat(),
                 "br", "\n",
+                "displayname", displayName,
                 "color", "<" + getColor(user).asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"),

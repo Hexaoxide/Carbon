@@ -19,8 +19,8 @@ default:
   formats:
     # Placeholders: <username>, <displayname>, <channel>, <server>, <message>, <primaryrole>, <color>
     # Also supports PlaceholderAPI
-    staff: '<gray>{[%vault_prefix%<gray>]} %player_displayname% <reset><gray>» <color><message>'
-    default: '<gray>[%vault_prefix%<gray>] %player_displayname%<reset><gray>: <color><message>'
+    staff: '<white>Staff <<displayname><reset><white>> <message>'
+    default: '<white>Player <<displayname><reset><white>> <message>'
   # CarbonChat will look for a matching group in the list below when choosing which group to use for formatting.
   # If there are no matches, the plugin will fall back to the primary-group-only option.
   # It's advised to set this option to [] if you don't want to use this.
@@ -115,7 +115,7 @@ language:
   other-nickname-reset: '<green><user><reset>''s nickname was reset!'
 
   # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
-  me: '<italic><dark_purple>*%player_displayname% <reset><message>*</dark_purple></italic>'
+  me: '<italic><dark_purple>*<displayname> <reset><message>*</dark_purple></italic>'
   ignoring-user: '<green>You are now ignoring <gold><player><reset><green>!'
   not-ignoring-user: '<green>You are no longer ignoring <gold><player><reset><green>!'
   ignore-exempt: '<red>User <player> <red>is exempt from being ignored!'

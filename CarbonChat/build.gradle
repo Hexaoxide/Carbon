@@ -39,6 +39,15 @@ bukkit {
     depend = ['PlaceholderAPI', 'Vault']
     softDepend = ['LuckPerms']
     loadBefore = ["Essentials"]
+    permissions {
+        'carbonchat.channels.Global.see' {
+            setDefault("TRUE")
+        }
+
+        'carbonchat.channels.Global.use' {
+            setDefault("TRUE")
+        }
+    }
 }
 
 tasks.build.dependsOn tasks.shadowJar

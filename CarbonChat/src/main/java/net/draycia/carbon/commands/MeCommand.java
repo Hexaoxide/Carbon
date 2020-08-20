@@ -30,7 +30,8 @@ public class MeCommand extends BaseCommand {
             format = format.replace("<message>", "<pre><message></pre>");
         }
 
-        Component component = carbonChat.getAdventureManager().processMessage(format,  "br", "\n", "message", message);
+        Component component = carbonChat.getAdventureManager().processMessage(format,  "br", "\n",
+                "displayname", player.getDisplayName(), "message", message);
 
         ChatUser user = carbonChat.getUserService().wrap(player);
 
