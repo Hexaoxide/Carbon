@@ -23,7 +23,7 @@ public class AdventureManager {
     }
 
     public Component processMessage(String input, String... placeholders) {
-        switch (carbonChat.getConfig().getString("formatting.type", "minimessage").toLowerCase()) {
+        switch (carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
             case "minedown":
                 return processMineDown(input, placeholders);
             case "minimessage-markdown":

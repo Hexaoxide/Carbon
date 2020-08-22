@@ -40,6 +40,7 @@ public final class CarbonChat extends JavaPlugin {
     private ItemStackUtils itemStackUtils;
 
     private YamlConfiguration modConfig;
+    private YamlConfiguration languageConfig;
 
     public static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.builder().extractUrls().character('§').build();
@@ -47,13 +48,30 @@ public final class CarbonChat extends JavaPlugin {
     @Override
     public void onEnable() {
         // Ensure config is present to be modified by the user
-        saveDefaultConfig();
-        saveResource("moderation.yml", false);
+        if (!(new File(getDataFolder(), "config.yml").exists())) {
+            saveDefaultConfig();
+        }
+
+        if (!(new File(getDataFolder(), "moderation.yml").exists())) {
+            saveResource("moderation.yml", false);
+        }
+
+        if (!(new File(getDataFolder(), "language.yml").exists())) {
+            saveResource("language.yml", false);
+        }
 
         modConfig = new YamlConfiguration();
 
         try {
             modConfig.load(new File(getDataFolder(), "moderation.yml"));
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+
+        languageConfig = new YamlConfiguration();
+
+        try {
+            languageConfig.load(new File(getDataFolder(), "language.yml"));
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -145,6 +163,10 @@ public final class CarbonChat extends JavaPlugin {
 
     public YamlConfiguration getModConfig() {
         return modConfig;
+    }
+
+    public YamlConfiguration getLanguage() {
+        return languageConfig;
     }
 
     public Permission getPermission() {

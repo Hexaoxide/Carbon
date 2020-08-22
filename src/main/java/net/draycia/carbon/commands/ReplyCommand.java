@@ -24,7 +24,7 @@ public class ReplyCommand extends BaseCommand {
         ChatUser user = carbonChat.getUserService().wrap(player);
 
         if (user.getReplyTarget() == null) {
-            String message = carbonChat.getConfig().getString("language.no-reply-target");
+            String message = carbonChat.getLanguage().getString("no-reply-target");
             Component component = carbonChat.getAdventureManager().processMessage(message, "br", "\n");
             user.sendMessage(component);
 

@@ -39,9 +39,9 @@ public class NicknameCommand extends BaseCommand {
             String message;
 
             if (nickname == null) {
-                message = carbonChat.getConfig().getString("language.other-nickname-reset");
+                message = carbonChat.getLanguage().getString("other-nickname-reset");
             } else {
-                message = carbonChat.getConfig().getString("language.other-nickname-set");
+                message = carbonChat.getLanguage().getString("other-nickname-set");
             }
 
             sender.sendMessage(carbonChat.getAdventureManager().processMessage(
@@ -53,9 +53,9 @@ public class NicknameCommand extends BaseCommand {
             String message;
 
             if (nickname == null) {
-                message = carbonChat.getConfig().getString("language.nickname-reset");
+                message = carbonChat.getLanguage().getString("nickname-reset");
             } else {
-                message = carbonChat.getConfig().getString("language.nickname-set");
+                message = carbonChat.getLanguage().getString("nickname-set");
             }
 
             sender.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,

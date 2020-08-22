@@ -61,7 +61,7 @@ public class CommandManager {
 
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
             if (value == null) {
-                throw new ConditionFailedException(carbonChat.getConfig().getString("language.cannot-use-channel"));
+                throw new ConditionFailedException(carbonChat.getLanguage().getString("cannot-use-channel"));
             }
 
             ChatUser user = carbonChat.getUserService().wrap(context.getIssuer().getPlayer());
@@ -73,7 +73,7 @@ public class CommandManager {
 
         commandManager.getCommandConditions().addCondition(ChatChannel.class,"exists", (context, execution, value) -> {
             if (value == null) {
-                throw new ConditionFailedException(carbonChat.getConfig().getString("language.cannot-use-channel"));
+                throw new ConditionFailedException(carbonChat.getLanguage().getString("cannot-use-channel"));
             }
         });
 

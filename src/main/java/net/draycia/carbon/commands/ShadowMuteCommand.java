@@ -25,7 +25,7 @@ public class ShadowMuteCommand extends BaseCommand {
 
         if (targetUser.isShadowMuted()) {
             targetUser.setShadowMuted(false);
-            String format = carbonChat.getConfig().getString("language.no-longer-shadow-muted");
+            String format = carbonChat.getLanguage().getString("no-longer-shadow-muted");
 
             Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
                     "player", targetUser.asOfflinePlayer().getName());
@@ -37,10 +37,10 @@ public class ShadowMuteCommand extends BaseCommand {
                 String format;
 
                 if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.shadowmute.exempt")) {
-                    format = carbonChat.getConfig().getString("language.shadow-mute-exempt");
+                    format = carbonChat.getLanguage().getString("shadow-mute-exempt");
                 } else {
                     targetUser.setShadowMuted(true);
-                    format = carbonChat.getConfig().getString("language.is-now-shadow-muted");
+                    format = carbonChat.getLanguage().getString("is-now-shadow-muted");
                 }
 
                 Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",

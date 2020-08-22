@@ -24,16 +24,16 @@ public class IgnoreCommand extends BaseCommand {
 
         if (user.isIgnoringUser(targetUser)) {
             user.setIgnoringUser(targetUser, false);
-            user.sendMessage(processMessage(player, carbonChat.getConfig().getString("language.not-ignoring-user")));
+            user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("not-ignoring-user")));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
                 Permission permission = carbonChat.getPermission();
 
                 if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.ignore.exempt")) {
-                    user.sendMessage(processMessage(player, carbonChat.getConfig().getString("language.ignore-exempt")));
+                    user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("ignore-exempt")));
                 } else {
                     user.setIgnoringUser(targetUser, true);
-                    user.sendMessage(processMessage(player, carbonChat.getConfig().getString("language.ignoring-user")));
+                    user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("ignoring-user")));
                 }
             });
 

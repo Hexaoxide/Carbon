@@ -24,7 +24,7 @@ public class MeCommand extends BaseCommand {
         }
 
         String message = String.join(" ", args).replace("</pre>", "");
-        String format = PlaceholderAPI.setPlaceholders(player, carbonChat.getConfig().getString("language.me"));
+        String format = PlaceholderAPI.setPlaceholders(player, carbonChat.getLanguage().getString("me"));
 
         if (!player.hasPermission("carbonchat.me.formatting")) {
             format = format.replace("<message>", "<pre><message></pre>");

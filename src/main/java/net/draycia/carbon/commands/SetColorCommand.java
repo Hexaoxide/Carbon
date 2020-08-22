@@ -35,7 +35,7 @@ public class SetColorCommand extends BaseCommand {
 
         settings.setColor(TextColor.fromHexString(color));
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, carbonChat.getConfig().getString("language.channel-color-set"),
+        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, carbonChat.getLanguage().getString("channel-color-set"),
                 "br", "\n", "color", "<color:" + color + ">", "channel", channel.getName(), "hex", color));
     }
 

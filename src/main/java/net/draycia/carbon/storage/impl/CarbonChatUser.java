@@ -246,8 +246,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
             return;
         }
 
-        String toPlayerFormat = carbonChat.getConfig().getString("language.message-to-other");
-        String fromPlayerFormat = carbonChat.getConfig().getString("language.message-from-other");
+        String toPlayerFormat = carbonChat.getLanguage().getString("message-to-other");
+        String fromPlayerFormat = carbonChat.getLanguage().getString("message-from-other");
 
         String senderName = sender.asOfflinePlayer().getName();
         String senderOfflineName = senderName;
@@ -325,7 +325,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                 continue;
             }
 
-            user.sendMessage(carbonChat.getAdventureManager().processMessage(carbonChat.getConfig().getString("language.spy-whispers"),
+            user.sendMessage(carbonChat.getAdventureManager().processMessage(carbonChat.getLanguage().getString("spy-whispers"),
                     "br", "\n", "message", message,
                     "targetname", targetOfflineName, "sendername", senderOfflineName,
                     "target", targetName, "sender", senderName));

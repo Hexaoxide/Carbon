@@ -58,7 +58,7 @@ public class MessageManager {
             user.setNickname(nickname, true);
 
             if (user.isOnline()) {
-                String message = carbonChat.getConfig().getString("language.nickname-set");
+                String message = carbonChat.getLanguage().getString("nickname-set");
 
                 user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.asPlayer(),
                         message, "nickname", nickname));
@@ -69,7 +69,7 @@ public class MessageManager {
             user.setNickname(null, true);
 
             if (user.isOnline()) {
-                String message = carbonChat.getConfig().getString("language.nickname-reset");
+                String message = carbonChat.getLanguage().getString("nickname-reset");
 
                 user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.asPlayer(), message));
             }

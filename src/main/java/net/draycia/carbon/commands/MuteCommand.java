@@ -25,7 +25,7 @@ public class MuteCommand extends BaseCommand {
 
         if (targetUser.isMuted()) {
             targetUser.setMuted(false);
-            String format = carbonChat.getConfig().getString("language.no-longer-muted");
+            String format = carbonChat.getLanguage().getString("no-longer-muted");
 
             Component message = carbonChat.getAdventureManager().processMessage(format,  "br", "\n",
                     "player", targetUser.asOfflinePlayer().getName());
@@ -37,10 +37,10 @@ public class MuteCommand extends BaseCommand {
                 String format;
 
                 if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.mute.exempt")) {
-                    format = carbonChat.getConfig().getString("language.mute-exempt");
+                    format = carbonChat.getLanguage().getString("mute-exempt");
                 } else {
                     targetUser.setMuted(true);
-                    format = carbonChat.getConfig().getString("language.is-now-muted");
+                    format = carbonChat.getLanguage().getString("is-now-muted");
                 }
 
                 Component message = carbonChat.getAdventureManager().processMessage(format,  "br", "\n",

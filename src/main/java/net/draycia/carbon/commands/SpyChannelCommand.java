@@ -27,10 +27,10 @@ public class SpyChannelCommand extends BaseCommand {
 
         if (settings.isSpying()) {
             settings.setSpying(false);
-            message = carbonChat.getConfig().getString("language.spy-toggled-off");
+            message = carbonChat.getLanguage().getString("spy-toggled-off");
         } else {
             settings.setSpying(true);
-            message = carbonChat.getConfig().getString("language.spy-toggled-on");
+            message = carbonChat.getLanguage().getString("spy-toggled-on");
         }
 
         user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
@@ -45,10 +45,10 @@ public class SpyChannelCommand extends BaseCommand {
 
         if (user.isSpyingWhispers()) {
             user.setSpyingWhispers(false);
-            message = carbonChat.getConfig().getString("language.spy-whispers-off");
+            message = carbonChat.getLanguage().getString("spy-whispers-off");
         } else {
             user.setSpyingWhispers(true);
-            message = carbonChat.getConfig().getString("language.spy-whispers-on");
+            message = carbonChat.getLanguage().getString("spy-whispers-on");
         }
 
         user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
