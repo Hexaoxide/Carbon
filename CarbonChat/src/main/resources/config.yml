@@ -127,6 +127,12 @@ language:
   nickname-set: '<green>Your nickname was set to <nickname><reset><green>!'
   nickname-reset: '<green>Your nickname was reset!'
 
+contexts:
+  Towny:
+    cancellation-message: '<red>You do not belong to a town!'
+  mcMMO:
+    cancellation-message: '<red>You do not have a party!'
+
 # Used for <server> placeholder in channel formats
 server-name: 'Server'
 

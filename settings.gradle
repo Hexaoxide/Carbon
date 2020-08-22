@@ -6,6 +6,3 @@ rootProject.name = 'CarbonChatPlugin'
 
 include(':CarbonChat')
 include(':CarbonChatModeration')
-include(':CarbonChatMCMMO')
-include(':CarbonChatTowny')
-include(':CarbonChatWorldGuard')

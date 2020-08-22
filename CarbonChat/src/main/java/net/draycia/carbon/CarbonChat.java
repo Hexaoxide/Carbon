@@ -1,6 +1,9 @@
 package net.draycia.carbon;
 
 import net.draycia.carbon.channels.contexts.impl.DistanceContext;
+import net.draycia.carbon.channels.contexts.impl.TownyContext;
+import net.draycia.carbon.channels.contexts.impl.WorldGuardContext;
+import net.draycia.carbon.channels.contexts.impl.mcMMOContext;
 import net.draycia.carbon.listeners.*;
 import net.draycia.carbon.managers.*;
 import net.draycia.carbon.messaging.MessageManager;
@@ -11,8 +14,14 @@ import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.ItemStackUtils;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 public final class CarbonChat extends JavaPlugin {
 
@@ -28,11 +37,25 @@ public final class CarbonChat extends JavaPlugin {
 
     private ItemStackUtils itemStackUtils;
 
+    private YamlConfiguration modConfig;
+
     public static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.builder().extractUrls().character('§').build();
 
     @Override
     public void onEnable() {
+        // Ensure config is present to be modified by the user
+        saveDefaultConfig();
+        saveResource("moderation.yml", false);
+
+        modConfig = new YamlConfiguration();
+
+        try {
+            modConfig.load(new File(getDataFolder(), "moderation.yml"));
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+
         // Setup Adventure
         adventureManager = new AdventureManager(this);
 
@@ -44,9 +67,6 @@ public final class CarbonChat extends JavaPlugin {
 
         // Setup vault and permissions
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
-
-        // Ensure config is present to be modified by the user
-        saveDefaultConfig();
 
         // Initialize managers
         commandManager = new CommandManager(this);
@@ -72,6 +92,18 @@ public final class CarbonChat extends JavaPlugin {
         registerContexts();
 
         new CarbonPlaceholders(this).register();
+
+        if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
+            getServer().getPluginManager().registerEvents(new TownyContext(this), this);
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
+            getServer().getPluginManager().registerEvents(new mcMMOContext(this), this);
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+            getServer().getPluginManager().registerEvents(new WorldGuardContext(this), this);
+        }
     }
 
     @Override
@@ -95,10 +127,19 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new UserFormattingListener(), this);
         pluginManager.registerEvents(new WhisperPingHandler(this), this);
         pluginManager.registerEvents(new RequiredBalanceHandler(this), this);
+
+        pluginManager.registerEvents(new CapsHandler(this), this);
+        pluginManager.registerEvents(new FilterHandler(this), this);
+        pluginManager.registerEvents(new MuteHandler(), this);
+        pluginManager.registerEvents(new ShadowMuteHandler(this), this);
     }
 
     private void registerContexts() {
         getContextManager().register("distance", new DistanceContext());
+    }
+
+    public YamlConfiguration getModConfig() {
+        return modConfig;
     }
 
     public Permission getPermission() {

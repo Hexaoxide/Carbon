@@ -1,4 +1,4 @@
-package net.draycia.carbontowny;
+package net.draycia.carbon.channels.contexts.impl;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
@@ -8,32 +8,25 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChannelSwitchEvent;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public final class CarbonChatTowny extends JavaPlugin implements Listener {
+public final class TownyContext implements Listener {
 
-    private CarbonChat carbonChat;
+    private final CarbonChat carbonChat;
     private static final String KEY = "towny-town";
 
-    @Override
-    public void onEnable() {
-        saveDefaultConfig();
+    public TownyContext(CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
 
-        carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
-
-        carbonChat.getContextManager().register("towny-town", (context) -> {
+        this.carbonChat.getContextManager().register("towny-town", (context) -> {
             if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
                 return isInSameTown(context.getSender(), context.getTarget());
             }
 
             return true;
         });
-
-        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -43,7 +36,7 @@ public final class CarbonChatTowny extends JavaPlugin implements Listener {
         if ((town instanceof Boolean) && ((Boolean) town)) {
             if (!isInTown(event.getUser())) {
                 event.setCancelled(true);
-                event.setFailureMessage(getConfig().getString("cancellation-message"));
+                event.setFailureMessage(carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
             }
         }
     }

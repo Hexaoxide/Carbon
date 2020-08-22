@@ -1,4 +1,4 @@
-package net.draycia.carbonmcmmo;
+package net.draycia.carbon.channels.contexts.impl;
 
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
@@ -6,31 +6,24 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChannelSwitchEvent;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public final class CarbonChatMCMMO extends JavaPlugin implements Listener {
+public final class mcMMOContext implements Listener {
 
     private CarbonChat carbonChat;
 
-    @Override
-    public void onEnable() {
-        saveDefaultConfig();
+    public mcMMOContext(CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
 
-        carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
-
-        carbonChat.getContextManager().register("mcmmo-party", (context) -> {
+        this.carbonChat.getContextManager().register("mcmmo-party", (context) -> {
             if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
                 return isInSameParty(context.getSender(), context.getTarget());
             }
 
             return true;
         });
-
-        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -40,6 +33,7 @@ public final class CarbonChatMCMMO extends JavaPlugin implements Listener {
         if ((party instanceof Boolean) && ((Boolean) party)) {
             if (!isInParty(event.getUser())) {
                 event.setCancelled(true);
+                event.setFailureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
             }
         }
     }

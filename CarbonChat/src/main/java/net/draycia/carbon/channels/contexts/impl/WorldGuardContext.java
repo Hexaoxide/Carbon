@@ -1,4 +1,4 @@
-package net.draycia.carbonworldguard;
+package net.draycia.carbon.channels.contexts.impl;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
@@ -12,27 +12,19 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChannelSwitchEvent;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-public final class CarbonChatWorldGuard extends JavaPlugin implements Listener {
+public final class WorldGuardContext implements Listener {
 
     private static final String KEY = "worldguard-region";
 
-    @Override
-    public void onEnable() {
-        saveDefaultConfig();
-        CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
-
+    public WorldGuardContext(CarbonChat carbonChat) {
         carbonChat.getContextManager().register(KEY, (context) -> {
             return this.testContext(context.getSender(), context.getTarget(), context.getValue());
         });
-
-        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @EventHandler(ignoreCancelled = true)

@@ -91,6 +91,10 @@ public class CommandManager {
         this.commandManager.registerCommand(new ReplyCommand());
         this.commandManager.registerCommand(new SetColorCommand());
         this.commandManager.registerCommand(new SpyChannelCommand());
+
+        this.commandManager.registerCommand(new ClearChatCommand());
+        this.commandManager.registerCommand(new MuteCommand());
+        this.commandManager.registerCommand(new ShadowMuteCommand());
     }
 
     public BukkitCommandManager getCommandManager() {

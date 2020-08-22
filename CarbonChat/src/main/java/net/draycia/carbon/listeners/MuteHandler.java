@@ -1,4 +1,4 @@
-package net.draycia.carbonmoderation.listeners;
+package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.events.PreChatFormatEvent;
 import org.bukkit.event.EventHandler;

@@ -6,6 +6,8 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url = "https://maven.enginehub.org/repo/" }
+    maven { url = "https://jitpack.io" }
 }
 
 dependencies {
@@ -20,6 +22,9 @@ dependencies {
     compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
     compile 'io.lettuce:lettuce-core:6.0.0.M1'
 
+    compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.143'
+    compileOnly 'com.github.TownyAdvanced:Towny:0.96.2.0'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'com.github.TownyAdvanced:Towny:0.96.1.11'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
@@ -37,7 +42,7 @@ bukkit {
     apiVersion = '1.13'
     author = 'Draycia'
     depend = ['PlaceholderAPI', 'Vault']
-    softDepend = ['LuckPerms']
+    softDepend = ['LuckPerms', 'Towny', 'mcMMO', 'WorldGuard']
     loadBefore = ["Essentials"]
     permissions {
         'carbonchat.channels.Global.see' {
