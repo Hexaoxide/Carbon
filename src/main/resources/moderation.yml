@@ -1,0 +1,30 @@
+caps-protection:
+  enabled: true
+  minimum-length: 10
+  percent-caps: 80
+  block-message: false
+
+shadow-mute-prefix: '[SM] '
+
+filters:
+  enabled: true
+  case-sensitive: false
+  # The keys ("****" for example) are what the text is replaced with
+  # The strings in the lists ("lag" etc) are what's replaced
+  filters:
+    # In this example, any instance of "lag" or "laggggg" will be replaced with "****"
+    "****":
+      - "la[g]+"
+      - "lag"
+    # Underscore = blank, empty. The text will basically be removed.
+    "_":
+      - "broccoli sucks"
+  # Anything in blocked-words will prevent the message from being sent at all.
+  blocked-words:
+    - "pineapple doesn't belong on pizza"
+
+clear-chat:
+  # The message sent to clear chat, you probably want to leave this blank
+  message: ""
+  # How many messages will be sent in order to clear chat
+  message-count: 100
