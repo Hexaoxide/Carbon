@@ -13,6 +13,7 @@ ext.projectVersion = '1.0'
 def gitHash = versionDetails().gitHash
 
 group = 'net.draycia'
+description = 'CarbonChat'
 version = project.property('projectVersion') + '-' + gitHash
 
 repositories {
@@ -54,10 +55,8 @@ dependencies {
     compileOnly 'org.jetbrains:annotations:16.0.1'
 }
 
-description = 'CarbonChat'
-
 bukkit {
-    name = description
+    name = project.description
     version = project.version
     main = 'net.draycia.carbon.CarbonChat'
     apiVersion = '1.13'
@@ -66,11 +65,11 @@ bukkit {
     softDepend = ['LuckPerms', 'Towny', 'mcMMO', 'WorldGuard']
     loadBefore = ["Essentials"]
     permissions {
-        'carbonchat.channels.Global.see' {
+        'carbonchat.channels.global.see' {
             setDefault("TRUE")
         }
 
-        'carbonchat.channels.Global.use' {
+        'carbonchat.channels.global.use' {
             setDefault("TRUE")
         }
     }
@@ -90,11 +89,11 @@ tasks.build.dependsOn tasks.shadowJar
 
 shadowJar {
     minimize()
-    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
+    archiveFileName.set(project.description + "-" + project.property('projectVersion') + ".jar")
 }
 
 jar {
-    archiveFileName.set(project.name + "-" + project.property('projectVersion') + ".jar")
+    archiveFileName.set(project.description + "-" + project.property('projectVersion') + ".jar")
 }
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
