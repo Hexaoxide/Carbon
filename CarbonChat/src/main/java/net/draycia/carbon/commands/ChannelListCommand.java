@@ -74,7 +74,6 @@ public class ChannelListCommand extends BaseCommand {
         }
     }
 
-
     private void makeList(Iterator<ChatChannel> iterator, TextComponent.Builder component) {
 
         while (iterator.hasNext()) {
