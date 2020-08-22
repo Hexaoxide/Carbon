@@ -320,14 +320,8 @@ public class CarbonChatChannel extends ChatChannel {
     public Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 
-        if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + getName())) {
-            if (target.getChannelSettings(this).isSpying()) {
-                return true;
-            }
-        }
-
-        if (!targetPlayer.hasPermission("carbonchat.channels." + getName() + ".see")) {
-            return false;
+        if (canPlayerSee(target, checkSpying)){
+            return true;
         }
 
         if (isIgnorable()) {
@@ -335,9 +329,7 @@ public class CarbonChatChannel extends ChatChannel {
                 return false;
             }
 
-            if (target.getChannelSettings(this).isIgnored()) {
-                return false;
-            }
+            return !target.getChannelSettings(this).isIgnored();
         }
 
         return true;

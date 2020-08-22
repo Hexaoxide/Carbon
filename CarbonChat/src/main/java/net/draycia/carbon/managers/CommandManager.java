@@ -83,6 +83,7 @@ public class CommandManager {
     public void reloadCommands() {
         this.commandManager.registerCommand(new ToggleCommand());
         this.commandManager.registerCommand(new ChannelCommand());
+        this.commandManager.registerCommand(new ChannelListCommand());
         this.commandManager.registerCommand(new IgnoreCommand());
         this.commandManager.registerCommand(new ChatReloadCommand());
         this.commandManager.registerCommand(new MeCommand());
