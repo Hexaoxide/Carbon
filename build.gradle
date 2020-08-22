@@ -39,14 +39,17 @@ dependencies {
     compile 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
     compile 'net.kyori:adventure-text-minimessage:3.0.0-SNAPSHOT'
     compile 'de.themoep:minedown-adventure:1.6.1-SNAPSHOT'
+
     compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'
     compile 'com.zaxxer:HikariCP:2.4.1'
+
     compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
     compile 'io.lettuce:lettuce-core:6.0.0.M1'
 
     compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.143'
     compileOnly 'com.github.TownyAdvanced:Towny:0.96.2.0'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT'
+
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'com.github.TownyAdvanced:Towny:0.96.1.11'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
