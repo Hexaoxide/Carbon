@@ -1,4 +1,4 @@
-package net.draycia.carbon.listeners;
+package net.draycia.carbon.channels.contexts.impl;
 
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.PreChatFormatEvent;
@@ -8,35 +8,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-public class RequiredBalanceHandler implements Listener {
+public class EconomyContext implements Listener {
     private final CarbonChat carbonChat;
     private final Economy economy;
-    private final boolean enabled;
-    
-    public RequiredBalanceHandler(CarbonChat carbonChat) {
+
+    public EconomyContext(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
-
-        RegisteredServiceProvider<Economy> registeredEco = carbonChat.getServer().getServicesManager().getRegistration(Economy.class);
-
-        if (registeredEco == null) {
-            carbonChat.getServer().getLogger().warning("No Vault-compatible Economy plugin detected! Economy features won't work!");
-
-            this.economy = null;
-            this.enabled = false;
-
-            return;
-        }
-
-        this.enabled = true;
-        this.economy = registeredEco.getProvider();
+        this.economy = carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }
     
     @EventHandler
     public void onChatReqBal(PreChatFormatEvent event) {
-        if (!enabled) {
-            return;
-        }
-
         Object requiredBalObject = event.getChannel().getContext("vault-balance");
 
         Double requiredBal;
@@ -66,10 +48,6 @@ public class RequiredBalanceHandler implements Listener {
 
     @EventHandler
     public void onChatCost(PreChatFormatEvent event) {
-        if (!enabled) {
-            return;
-        }
-
         Object costObject = event.getChannel().getContext("vault-cost");
 
         Double cost;

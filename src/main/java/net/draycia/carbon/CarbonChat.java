@@ -1,5 +1,6 @@
 package net.draycia.carbon;
 
+import net.draycia.carbon.channels.contexts.impl.EconomyContext;
 import net.draycia.carbon.channels.contexts.impl.DistanceContext;
 import net.draycia.carbon.channels.contexts.impl.TownyContext;
 import net.draycia.carbon.channels.contexts.impl.WorldGuardContext;
@@ -13,6 +14,7 @@ import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.ItemStackUtils;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -104,6 +106,10 @@ public final class CarbonChat extends JavaPlugin {
         if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
             getServer().getPluginManager().registerEvents(new WorldGuardContext(this), this);
         }
+
+        if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
+            Bukkit.getPluginManager().registerEvents(new EconomyContext(this), this);
+        }
     }
 
     @Override
@@ -126,7 +132,6 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new RelationalPlaceholderHandler(), this);
         pluginManager.registerEvents(new UserFormattingListener(), this);
         pluginManager.registerEvents(new WhisperPingHandler(this), this);
-        pluginManager.registerEvents(new RequiredBalanceHandler(this), this);
 
         pluginManager.registerEvents(new CapsHandler(this), this);
         pluginManager.registerEvents(new FilterHandler(this), this);

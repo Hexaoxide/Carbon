@@ -36,12 +36,12 @@ public class ClearChatCommand extends BaseCommand {
             }
 
             if (player.hasPermission("carbonchat.clearchat.notify")) {
-                String message = carbonChat.getModConfig().getString("language.clear-notify");
+                String message = carbonChat.getConfig().getString("language.clear-notify");
                 audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", issuer.getName()));
             }
 
             if (player.hasPermission("carbonchat.clearchat.exempt")) {
-                String message = carbonChat.getModConfig().getString("language.clear-exempt");
+                String message = carbonChat.getConfig().getString("language.clear-exempt");
                 audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", issuer.getName()));
             }
         }
