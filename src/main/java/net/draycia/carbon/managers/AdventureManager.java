@@ -26,12 +26,27 @@ public class AdventureManager {
         switch (carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
             case "minedown":
                 return processMineDown(input, placeholders);
+            case "mojang":
+            case "mojangson":
+            case "json":
+                return processMojang(input, placeholders);
             case "minimessage-markdown":
                 return MiniMessage.markdown().parse(input, placeholders);
             case "minimessage":
             default:
                 return MiniMessage.get().parse(input, placeholders);
         }
+    }
+
+    private Component processMojang(String input, String... placeholders) {
+        for (int i = 0; i < placeholders.length; i += 2) {
+            String placeholder = placeholders[i];
+            String replacement = placeholders[i+1];
+
+            input = input.replace("<" + placeholder + ">", replacement);
+        }
+
+        return getAudiences().gsonSerializer().deserialize(input);
     }
 
     private Component processMineDown(String input, String... placeholders) {
