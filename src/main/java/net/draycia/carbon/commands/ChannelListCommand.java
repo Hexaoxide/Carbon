@@ -5,13 +5,13 @@ import co.aikar.commands.annotation.*;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @CommandAlias("chlist|channellist")
 @CommandPermission("carbonchat.channellist")
@@ -23,12 +23,9 @@ public class ChannelListCommand extends BaseCommand {
     @Default
     @Syntax("[player]")
     public void baseCommand(Player player) {
-        TextComponent.Builder component = TextComponent.builder("");
         Iterator<ChatChannel> allChannels = carbonChat.getChannelManager().getRegistry().values().iterator();
         ChatUser user = carbonChat.getUserService().wrap(player);
-
-        getChannelLists(player, user, allChannels, component);
-        user.sendMessage(component.build());
+        getListAndSend(player, user, allChannels);
     }
 
         @CommandPermission("carbonchat.channellist.others")
@@ -37,15 +34,16 @@ public class ChannelListCommand extends BaseCommand {
         @Syntax("<player>")
         public void baseCommand(Player player, ChatUser user) {
             ChatUser cmdSender = carbonChat.getUserService().wrap(player);
-            TextComponent.Builder component = TextComponent.builder("");
+            if (!user.isOnline()) {
+                String mustBeOnline = carbonChat.getLanguage().getString("user-must-be-online");
+                cmdSender.sendMessage(carbonChat.getAdventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.asOfflinePlayer().getName()));
+                return;
+            }
             Iterator<ChatChannel> allChannels = carbonChat.getChannelManager().getRegistry().values().iterator();
-
-            getChannelLists(player, user, allChannels, component);
-
-            cmdSender.sendMessage(component.build());
+            getListAndSend(player, user, allChannels);
         }
 
-    private void getChannelLists(CommandSender player, ChatUser user, Iterator<ChatChannel> allChannels, TextComponent.Builder component) {
+    private void getListAndSend(Player player, ChatUser user, Iterator<ChatChannel> allChannels) {
         ChatChannel channel;
         List<ChatChannel> canSee = new ArrayList<>();
         List<ChatChannel> cannotSee = new ArrayList<>();
@@ -61,30 +59,38 @@ public class ChannelListCommand extends BaseCommand {
         }
 
         Iterator<ChatChannel> visibleChannels = canSee.iterator();
+        TextComponent.Builder availableList = TextComponent.builder("");
 
-        component.append(TextComponent.of("Available Channels: ").color(NamedTextColor.GREEN));
-        makeList(visibleChannels, component);
-        component.append("\n").build();
+        makeList(visibleChannels, availableList);
+
+        String availableFormat = carbonChat.getLanguage().getString("available-channels-list");
+        Component availableComponent = carbonChat.getAdventureManager().processMessage(availableFormat, "br", "\n");
+        availableComponent = ((TextComponent)availableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (ac) ->  availableList);
+
+        carbonChat.getUserService().wrap(player).sendMessage(availableComponent);
 
         if (player.hasPermission("carbonchat.channellist.bypass")) {
-            Iterator<ChatChannel> invisibleChannels = cannotSee.iterator();
 
-            component.append(TextComponent.of("Unavailable Channels: ").color(NamedTextColor.RED));
-            makeList(invisibleChannels, component);
+            Iterator<ChatChannel> invisibleChannels = cannotSee.iterator();
+            TextComponent.Builder unavailableList = TextComponent.builder("");
+
+            makeList(invisibleChannels, unavailableList);
+
+            String unavailableFormat = carbonChat.getLanguage().getString("unavailable-channels-list");
+            Component unavailableComponent = carbonChat.getAdventureManager().processMessage(unavailableFormat, "br", "\n");
+            unavailableComponent = ((TextComponent)unavailableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (uac) ->  unavailableList);
+
+            carbonChat.getUserService().wrap(player).sendMessage(unavailableComponent);
         }
     }
 
-    private void makeList(Iterator<ChatChannel> iterator, TextComponent.Builder component) {
-
+    private void makeList(Iterator<ChatChannel> iterator, TextComponent.Builder list) {
         while (iterator.hasNext()) {
-            ChatChannel chatChannel = iterator.next();
-
-            component.append(TextComponent.of(chatChannel.getName()));
+            ChatChannel channel = iterator.next();
+            list.append(TextComponent.of(channel.getName()));
 
             if (iterator.hasNext()) {
-                component.append(TextComponent.of(", "));
-            } else {
-                component.append(TextComponent.of(". "));
+                list.append(TextComponent.of(", "));
             }
         }
     }
