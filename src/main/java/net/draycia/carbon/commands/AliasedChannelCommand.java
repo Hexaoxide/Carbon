@@ -6,6 +6,8 @@ import co.aikar.commands.annotation.*;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -39,7 +41,10 @@ public class AliasedChannelCommand extends BaseCommand {
                     "channel", getChatChannel().getName()));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
-                getChatChannel().sendMessage(user, String.join(" ", args), false);
+                Component component = getChatChannel().sendMessage(user, String.join(" ", args), false);
+
+                carbonChat.getLogger().info(LegacyComponentSerializer.legacySection().serialize(component)
+                        .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
             });
         }
     }

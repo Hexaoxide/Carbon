@@ -7,8 +7,10 @@ import net.draycia.carbon.messaging.impl.BungeeMessageService;
 import net.draycia.carbon.messaging.impl.EmptyMessageService;
 import net.draycia.carbon.messaging.impl.RedisMessageService;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -124,7 +126,12 @@ public class MessageManager {
             ChatUser user = carbonChat.getUserService().wrap(uuid);
 
             if (channel != null) {
-                channel.sendComponent(user, gsonSerializer.deserialize(byteArray.readUTF()));
+                Component component = gsonSerializer.deserialize(byteArray.readUTF());
+
+                channel.sendComponent(user, component);
+
+                carbonChat.getLogger().info(LegacyComponentSerializer.legacySection().serialize(component)
+                        .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
             }
         });
 
