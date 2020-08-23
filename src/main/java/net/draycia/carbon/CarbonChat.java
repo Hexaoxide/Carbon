@@ -60,21 +60,8 @@ public final class CarbonChat extends JavaPlugin {
             saveResource("language.yml", false);
         }
 
-        modConfig = new YamlConfiguration();
-
-        try {
-            modConfig.load(new File(getDataFolder(), "moderation.yml"));
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        languageConfig = new YamlConfiguration();
-
-        try {
-            languageConfig.load(new File(getDataFolder(), "language.yml"));
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
+        loadModConfig();
+        loadLanguage();
 
         // Setup Adventure
         adventureManager = new AdventureManager(this);
@@ -155,6 +142,22 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new FilterHandler(this), this);
         pluginManager.registerEvents(new MuteHandler(), this);
         pluginManager.registerEvents(new ShadowMuteHandler(this), this);
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+
+        loadModConfig();
+        loadLanguage();
+    }
+
+    private void loadModConfig() {
+        modConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "moderation.yml"));
+    }
+
+    private void loadLanguage() {
+        languageConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "language.yml"));
     }
 
     private void registerContexts() {
