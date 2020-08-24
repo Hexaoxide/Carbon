@@ -106,10 +106,8 @@ public class CarbonChatChannel extends ChatChannel {
         String displayName;
 
         if (user.getNickname() != null) {
-            System.out.println("one");
             displayName = user.getNickname();
         } else {
-            System.out.println("null????");
             if (user.isOnline()) {
                 displayName = user.asPlayer().getDisplayName();
             } else {
