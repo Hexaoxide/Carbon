@@ -6,7 +6,6 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -35,7 +34,7 @@ public class ChannelCommand extends BaseCommand {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
                 Component component = channel.sendMessage(user, String.join(" ", args), false);
 
-                carbonChat.getLogger().info(LegacyComponentSerializer.legacySection().serialize(component)
+                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
                         .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
             });
         }

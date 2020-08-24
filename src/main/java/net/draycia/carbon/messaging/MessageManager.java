@@ -10,7 +10,6 @@ import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -130,7 +129,7 @@ public class MessageManager {
 
                 channel.sendComponent(user, component);
 
-                carbonChat.getLogger().info(LegacyComponentSerializer.legacySection().serialize(component)
+                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
                         .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
             }
         });

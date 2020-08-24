@@ -43,7 +43,12 @@ public final class CarbonChat extends JavaPlugin {
     private YamlConfiguration languageConfig;
 
     public static final LegacyComponentSerializer LEGACY =
-            LegacyComponentSerializer.builder().extractUrls().character('§').build();
+            LegacyComponentSerializer.builder()
+                    .extractUrls()
+                    .hexColors()
+                    .character('§')
+                    .useUnusualXRepeatedCharacterHexFormat()
+                    .build();
 
     @Override
     public void onEnable() {

@@ -4,7 +4,6 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,13 +70,13 @@ public class BukkitChatListener implements Listener {
         if (event.isAsynchronous()) {
             Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
 
-            event.setFormat(LegacyComponentSerializer.legacySection().serialize(component)
+            event.setFormat(CarbonChat.LEGACY.serialize(component)
                     .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
                 Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
 
-                carbonChat.getLogger().info(LegacyComponentSerializer.legacySection().serialize(component)
+                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
                         .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
 
                 if (carbonChat.getConfig().getBoolean("show-tips")) {
