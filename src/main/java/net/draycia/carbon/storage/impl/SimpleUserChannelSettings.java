@@ -14,10 +14,14 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     private boolean ignored;
     private String color;
 
-    private final UUID uuid;
-    private final String channel;
+    private UUID uuid;
+    private String channel;
 
-    private transient CarbonChat carbonChat;
+    private final transient CarbonChat carbonChat;
+
+    private SimpleUserChannelSettings() {
+        carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
+    }
 
     public SimpleUserChannelSettings(UUID uuid, String channel) {
         this.uuid = uuid;
