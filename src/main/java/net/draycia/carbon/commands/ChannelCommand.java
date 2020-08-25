@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.*;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,7 +32,10 @@ public class ChannelCommand extends BaseCommand {
                     "channel", channel.getName()));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
-                channel.sendMessage(user, String.join(" ", args), false);
+                Component component = channel.sendMessage(user, String.join(" ", args), false);
+
+                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
+                        .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
             });
         }
     }

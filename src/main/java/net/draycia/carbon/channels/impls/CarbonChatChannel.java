@@ -87,7 +87,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    public void sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromRemote) {
+    public Component sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromRemote) {
         updateUserNickname(user);
 
         // Get player's formatting
@@ -99,20 +99,20 @@ public class CarbonChatChannel extends ChatChannel {
 
         // Return if cancelled or message is emptied
 
-        if (preFormatEvent.isCancelled()) {
-            return;
-        }
-
-        if (preFormatEvent.getMessage().trim().isEmpty()) {
-            return;
+        if (preFormatEvent.isCancelled() || preFormatEvent.getMessage().trim().isEmpty()) {
+            return TextComponent.empty();
         }
 
         String displayName;
 
-        if (user.isOnline()) {
-            displayName = user.asPlayer().getDisplayName();
+        if (user.getNickname() != null) {
+            displayName = user.getNickname();
         } else {
-            displayName = user.asOfflinePlayer().getName();
+            if (user.isOnline()) {
+                displayName = user.asPlayer().getDisplayName();
+            } else {
+                displayName = user.asOfflinePlayer().getName();
+            }
         }
 
         // Iterate through players who should receive messages in this channel
@@ -122,12 +122,8 @@ public class CarbonChatChannel extends ChatChannel {
             Bukkit.getPluginManager().callEvent(formatEvent);
 
             // Again, return if cancelled or message is emptied
-            if (formatEvent.isCancelled()) {
+            if (formatEvent.isCancelled() || formatEvent.getMessage().trim().isEmpty()) {
                 continue;
-            }
-
-            if (formatEvent.getMessage().trim().isEmpty()) {
-                return;
             }
 
             TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
@@ -171,20 +167,19 @@ public class CarbonChatChannel extends ChatChannel {
 
         Bukkit.getPluginManager().callEvent(consoleEvent);
 
-        // Log message to console
-        System.out.println(CarbonChat.LEGACY.serialize(consoleEvent.getComponent()));
-
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
         if (user.isOnline() && !fromRemote && shouldBungee()) {
             sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
         }
+
+        return consoleEvent.getComponent();
     }
 
     @Override
-    public void sendMessage(ChatUser user, String message, boolean fromRemote) {
-        this.sendMessage(user, this.audiences(), message, fromRemote);
+    public Component sendMessage(ChatUser user, String message, boolean fromRemote) {
+        return this.sendMessage(user, this.audiences(), message, fromRemote);
     }
 
     public String getFormat(ChatUser user) {
@@ -285,8 +280,6 @@ public class CarbonChatChannel extends ChatChannel {
                 user.sendMessage(component);
             }
         }
-
-        System.out.println(CarbonChat.LEGACY.serialize(component));
     }
 
     public void sendMessageToBungee(Player player, Component component) {

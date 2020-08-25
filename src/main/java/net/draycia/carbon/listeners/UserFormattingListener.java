@@ -1,8 +1,8 @@
 package net.draycia.carbon.listeners;
 
+import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,8 +23,7 @@ public class UserFormattingListener implements Listener {
             suppressFormatting(event);
         } else {
             // Swap the &-style codes for minimessage-compatible strings
-            event.setMessage(MiniMessage.get().serialize(
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(event.getMessage())));
+            event.setMessage(MiniMessage.get().serialize(CarbonChat.LEGACY.deserialize(event.getMessage())));
         }
     }
 

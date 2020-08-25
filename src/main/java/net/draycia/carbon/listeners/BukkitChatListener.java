@@ -3,6 +3,7 @@ package net.draycia.carbon.listeners;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +14,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class BukkitChatListener implements Listener {
 
@@ -68,10 +68,22 @@ public class BukkitChatListener implements Listener {
         event.getRecipients().clear();
 
         if (event.isAsynchronous()) {
-            selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
+            Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
+
+            event.setFormat(CarbonChat.LEGACY.serialize(component)
+                    .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
-                selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
+                Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
+
+                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
+                        .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+
+                if (carbonChat.getConfig().getBoolean("show-tips")) {
+                    carbonChat.getLogger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");
+                    carbonChat.getLogger().info("Tip: To 'solve' this, do a binary search and see which plugin is triggering");
+                    carbonChat.getLogger().info("Tip: sync chat events and causing this, and let that plugin author know.");
+                }
             });
         }
     }

@@ -24,24 +24,31 @@ public class IgnoreCommand extends BaseCommand {
 
         if (user.isIgnoringUser(targetUser)) {
             user.setIgnoringUser(targetUser, false);
-            user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("not-ignoring-user")));
+            user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("not-ignoring-user"),
+                    "br", "\n", "player", targetUser.asOfflinePlayer().getName()));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
                 Permission permission = carbonChat.getPermission();
+                String format;
 
                 if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.ignore.exempt")) {
-                    user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("ignore-exempt")));
+                    format = carbonChat.getLanguage().getString("ignore-exempt");
                 } else {
                     user.setIgnoringUser(targetUser, true);
-                    user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("ignoring-user")));
+                    format = carbonChat.getLanguage().getString("ignoring-user");
                 }
+
+                Component message = processMessage(player, format, "br", "\n",
+                        "sender", player.getDisplayName(), "player", targetUser.asOfflinePlayer().getName());
+
+                user.sendMessage(message);
             });
 
         }
     }
 
-    private Component processMessage(Player player, String message) {
-        return carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n");
+    private Component processMessage(Player player, String message, String... args) {
+        return carbonChat.getAdventureManager().processMessageWithPapi(player, message, args);
     }
 
 }

@@ -76,16 +76,15 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public void setNickname(String nickname, boolean fromRemote) {
-        if (nickname != null) {
-            Component component = carbonChat.getAdventureManager().processMessage(nickname);
-            nickname = CarbonChat.LEGACY.serialize(component);
-        }
-
-        final String newNickname = nickname;
+    public void setNickname(String newNickname, boolean fromRemote) {
         this.nickname = newNickname;
 
         if (isOnline()) {
+            if (newNickname != null) {
+                Component component = carbonChat.getAdventureManager().processMessage(nickname);
+                newNickname = CarbonChat.LEGACY.serialize(component);
+            }
+
             this.asPlayer().setDisplayName(newNickname);
 
             if (carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
@@ -98,7 +97,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                 carbonChat.getMessageManager().sendMessage("nickname-reset", this.getUUID(), (byteArray) -> {});
             } else {
                 carbonChat.getMessageManager().sendMessage("nickname", this.getUUID(), (byteArray) -> {
-                    byteArray.writeUTF(newNickname);
+                    byteArray.writeUTF(this.nickname);
                 });
             }
         }

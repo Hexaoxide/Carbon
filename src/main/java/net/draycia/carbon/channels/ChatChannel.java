@@ -110,9 +110,9 @@ public abstract class ChatChannel implements ForwardingAudience {
      * @param user The player who is saying the message.
      * @param message The message to be sent.
      */
-    public abstract void sendMessage(ChatUser user, String message, boolean fromBungee);
+    public abstract Component sendMessage(ChatUser user, String message, boolean fromBungee);
 
-    public abstract void sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromBungee);
+    public abstract Component sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromBungee);
 
     public abstract void sendComponent(ChatUser user, Component component);
 

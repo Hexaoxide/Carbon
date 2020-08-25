@@ -45,16 +45,12 @@ default:
     # -1 to disable, 0 to set to world only, 1+ to set the distance.
     # EG. distance: 250 would require the players to be within 250 blocks to see each other's messages
     distance: -1
-    # mcmmo-party only works when the CarbonChatMCMMO addon is installed.
     # Requires both players to be in the same party to see the message.
     mcmmo-party: false
-    # worldguard-region only works when the CarbonChatWorldGuard addon is installed.
     # Requires both players to be in the same region to see the message.
     worldguard-region: false
-    # towny-town only works when the CarbonChatTowny addon is installed.
     # Requires both players to be in the same town to see the message.
     towny-town: false
-    # filter only works when CarbonChatModeration is installed.
     # Modifies / prevents messages depending on how filters are setup.
     filter: true
     # requires a minimum balance to chat. 0 to disable. Requires a vault-compatible economy plugin
