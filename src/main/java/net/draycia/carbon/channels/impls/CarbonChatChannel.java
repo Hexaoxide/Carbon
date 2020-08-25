@@ -325,11 +325,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
 
         if (isIgnorable()) {
-            if (target.isIgnoringUser(sender) && !targetPlayer.hasPermission("carbonchat.ignore.exempt")) {
-                return false;
-            }
-
-            return !target.getChannelSettings(this).isIgnored();
+            return !target.isIgnoringUser(sender) || targetPlayer.hasPermission("carbonchat.ignore.exempt");
         }
 
         return true;
