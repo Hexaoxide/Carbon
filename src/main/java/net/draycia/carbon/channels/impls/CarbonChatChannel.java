@@ -69,11 +69,16 @@ public class CarbonChatChannel extends ChatChannel {
 
     private void updateUserNickname(ChatUser user) {
         if (user.isOnline()) {
-            if (user.getNickname() != null) {
-                user.asPlayer().setDisplayName(user.getNickname());
+            String nickname = user.getNickname();
+
+            if (nickname != null) {
+                Component component = carbonChat.getAdventureManager().processMessage(nickname);
+                nickname = CarbonChat.LEGACY.serialize(component);
+
+                user.asPlayer().setDisplayName(nickname);
 
                 if (carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-                    user.asPlayer().setPlayerListName(user.getNickname());
+                    user.asPlayer().setPlayerListName(nickname);
                 }
             }
         }
