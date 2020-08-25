@@ -17,6 +17,10 @@ no-reply-target: '<red>You have no one to reply to!'
 empty-channel: 'NONE' #<channel>, set to "NONE" to disable
 other-nickname-set: '<green><user><reset>''s nickname was set to <nickname><green>!'
 other-nickname-reset: '<green><user><reset>''s nickname was reset!'
+available-channels-list: '<green>Available Channels:<reset> <list>.'
+unavailable-channels-list: '<red>Unavailable Channels:<reset> <list>.'
+channel-list-separator: ', '
+user-must-be-online: '<red><player> must be online!'
 
 # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
 me: '<italic><dark_purple>*<displayname> <reset><message>*</dark_purple></italic>'
