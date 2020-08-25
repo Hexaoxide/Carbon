@@ -126,10 +126,12 @@ public class CarbonChatChannel extends ChatChannel {
                 continue;
             }
 
+            TextColor targetColor = getColor(target);
+
             TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
                     "br", "\n",
                     "displayname", displayName,
-                    "color", "<" + getColor(target).asHexString() + ">",
+                    "color", "<" + targetColor.asHexString() + ">",
                     "phase", Long.toString(System.currentTimeMillis() % 25),
                     "server", carbonChat.getConfig().getString("server-name", "Server"),
                     "message", formatEvent.getMessage());
@@ -138,7 +140,7 @@ public class CarbonChatChannel extends ChatChannel {
                 String prefix = processPlaceholders(user, carbonChat.getConfig().getString("spy-prefix"));
 
                 formattedMessage = (TextComponent) MiniMessage.get().parse(prefix, "color",
-                        getColor(target).asHexString()).append(formattedMessage);
+                        targetColor.asHexString()).append(formattedMessage);
             }
 
             ChatComponentEvent newEvent = new ChatComponentEvent(user, target, this, formattedMessage,
@@ -342,16 +344,10 @@ public class CarbonChatChannel extends ChatChannel {
             }
         }
 
-        if (color.startsWith("&")) {
-            LegacyFormat legacyFormat = LegacyComponentSerializer.parseChar(color.charAt(1));
+        if (color.contains("&") || color.contains("§")) {
+            color = color.replace("&", "§");
 
-            if (legacyFormat != null) {
-                TextColor legacyColor = legacyFormat.color();
-
-                if (legacyColor != null) {
-                    return legacyColor;
-                }
-            }
+            return LegacyComponentSerializer.legacySection().deserialize(color).color();
         }
 
         TextColor textColor = TextColor.fromHexString(color);
