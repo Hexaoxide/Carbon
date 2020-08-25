@@ -313,8 +313,8 @@ public class CarbonChatChannel extends ChatChannel {
     public Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 
-        if (canPlayerSee(target, checkSpying)){
-            return true;
+        if (!canPlayerSee(target, checkSpying)) {
+            return false;
         }
 
         if (isIgnorable()) {
