@@ -26,7 +26,9 @@ public class ToggleCommand extends BaseCommand {
 
         UserChannelSettings settings = user.getChannelSettings(channel);
 
-        if (settings.isIgnored()) {
+        if (!channel.isIgnorable()) {
+            message = channel.getCannotIgnoreMessage();
+        } else if (settings.isIgnored()) {
             settings.setIgnoring(false);
             message = channel.getToggleOffMessage();
         } else {

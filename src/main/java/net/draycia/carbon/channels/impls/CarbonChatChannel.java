@@ -45,6 +45,10 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public Boolean canPlayerUse(ChatUser user) {
+        if (user.getChannelSettings(this).isIgnored()) {
+            return false;
+        }
+
         return user.asPlayer().hasPermission("carbonchat.channels." + getName() + ".use");
     }
 
@@ -400,6 +404,11 @@ public class CarbonChatChannel extends ChatChannel {
     @Override
     public String getSwitchFailureMessage() {
         return getString("switch-failure-message");
+    }
+
+    @Override
+    public String getCannotIgnoreMessage() {
+        return getString("cannot-ignore-message");
     }
 
     @Override

@@ -16,6 +16,7 @@ default:
   toggle-other-on: '<gray><player> <reset><gray>can now see <color><channel> <gray>chat!'
   toggle-other-off: '<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!'
   cannot-use-channel: 'You cannot use that channel!'
+  cannot-ignore-message: '<red>You cannot ignore that channel!'
   formats:
     # Placeholders: <username>, <displayname>, <channel>, <server>, <message>, <primaryrole>, <color>
     # Also supports PlaceholderAPI
