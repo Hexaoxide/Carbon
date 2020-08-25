@@ -87,17 +87,17 @@ public class ChannelListCommand extends BaseCommand {
 
     private void makeList(Iterator<ChatChannel> iterator, TextComponent.Builder list) {
         String listSeparator = carbonChat.getLanguage().getString("channel-list-separator");
-        Component listSeparatorComponent = TextComponent.of(listSeparator);
+        Component listSeparatorComponent;
+        if (listSeparator != null) {
+            listSeparatorComponent = TextComponent.of(listSeparator);
+        } else {
+            listSeparatorComponent = TextComponent.of(", ");
+        }
         while (iterator.hasNext()) {
             ChatChannel channel = iterator.next();
             list.append(TextComponent.of(channel.getName()));
-
             if (iterator.hasNext()) {
-                if (listSeparator != null) {
-                    list.append(TextComponent.of(listSeparator));
-                } else {
                     list.append(listSeparatorComponent);
-                }
             }
         }
     }
