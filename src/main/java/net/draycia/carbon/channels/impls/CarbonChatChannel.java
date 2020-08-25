@@ -1,19 +1,17 @@
 package net.draycia.carbon.channels.impls;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.ChatComponentEvent;
 import net.draycia.carbon.events.ChatFormatEvent;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -77,16 +75,6 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    private TextColor getColor(ChatUser user) {
-        TextColor userColor = user.getChannelSettings(this).getColor();
-
-        if (userColor != null) {
-            return userColor;
-        } else {
-            return getChannelColor(user);
-        }
-    }
-
     public Component sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromRemote) {
         updateUserNickname(user);
 
@@ -126,7 +114,7 @@ public class CarbonChatChannel extends ChatChannel {
                 continue;
             }
 
-            TextColor targetColor = getColor(target);
+            TextColor targetColor = getChannelColor(target);
 
             TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
                     "br", "\n",
@@ -159,7 +147,7 @@ public class CarbonChatChannel extends ChatChannel {
         TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getFormat(),
                 "br", "\n",
                 "displayname", displayName,
-                "color", "<" + getColor(user).asHexString() + ">",
+                "color", "<" + getChannelColor(user).asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"),
                 "message", consoleFormatEvent.getMessage());
@@ -328,40 +316,25 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public TextColor getChannelColor(ChatUser user) {
-        String color = getString("color");
+        TextColor userColor = user.getChannelSettings(this).getColor();
 
-        if (color == null) {
-            color = "white";
+        if (userColor != null) {
+            System.out.println("user color found!");
+            return userColor;
         }
 
-        if (user.isOnline()) {
-            color = PlaceholderAPI.setPlaceholders(user.asPlayer(), color);
-        }
+        String input = getString("color");
 
-        for (NamedTextColor namedColor : NamedTextColor.values()) {
-            if (namedColor.toString().equalsIgnoreCase(color)) {
-                return namedColor;
-            }
-        }
+        TextColor color = CarbonUtils.parseColor(user, input);
 
-        if (color.contains("&") || color.contains("§")) {
-            color = color.replace("&", "§");
-
-            return LegacyComponentSerializer.legacySection().deserialize(color).color();
-        }
-
-        TextColor textColor = TextColor.fromHexString(color);
-
-        if (textColor != null) {
-            return textColor;
-        }
-
-        if (carbonChat.getConfig().getBoolean("show-tips")) {
+        if (color == null && carbonChat.getConfig().getBoolean("show-tips")) {
             carbonChat.getLogger().warning("Tip: Channel color found (" + color + ") is invalid!");
             carbonChat.getLogger().warning("Falling back to #FFFFFF");
+
+            return NamedTextColor.WHITE;
         }
 
-        return NamedTextColor.WHITE;
+        return color;
     }
 
     private String getDefaultFormatName() {

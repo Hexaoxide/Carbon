@@ -6,7 +6,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class EconomyContext implements Listener {
     private final CarbonChat carbonChat;

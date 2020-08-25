@@ -20,9 +20,14 @@
  */
 package net.draycia.carbon.util;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,12 +36,12 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public final class ItemStackUtils {
+public final class CarbonUtils {
 
     private final Method asNMSCopyMethod;
     private final Method cMethod;
 
-    public ItemStackUtils() throws NoSuchMethodException, ClassNotFoundException {
+    public CarbonUtils() throws NoSuchMethodException, ClassNotFoundException {
         final String version = Bukkit.getServer().getClass().getPackage().getName()
                 .substring("org.bukkit.craftbukkit.".length());
 
@@ -62,6 +67,30 @@ public final class ItemStackUtils {
             e.printStackTrace();
             return TextComponent.empty();
         }
+    }
+
+    public static TextColor parseColor(ChatUser user, String input) {
+        if (input == null) {
+            input = "white";
+        }
+
+        if (user.isOnline()) {
+            input = PlaceholderAPI.setPlaceholders(user.asPlayer(), input);
+        }
+
+        for (NamedTextColor namedColor : NamedTextColor.values()) {
+            if (namedColor.toString().equalsIgnoreCase(input)) {
+                return namedColor;
+            }
+        }
+
+        if (input.contains("&") || input.contains("§")) {
+            input = input.replace("&", "§");
+
+            return LegacyComponentSerializer.legacySection().deserialize(input).color();
+        }
+
+        return TextColor.fromCSSHexString(input);
     }
 
 }

@@ -7,10 +7,11 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.UserChannelSettings;
+import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
 
-@CommandAlias("setcolor")
+@CommandAlias("setcolor|setcolour")
 @CommandPermission("carbonchat.setcolor")
 public class SetColorCommand extends BaseCommand {
 
@@ -20,8 +21,8 @@ public class SetColorCommand extends BaseCommand {
     @Default
     @CommandCompletion("@chatchannel")
     @Syntax("<channel> <color>")
-    public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, String color) {
-        if (channel == null || color == null) {
+    public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, String input) {
+        if (channel == null || input == null) {
             throw new ConditionFailedException("Channel or Color not supplied!");
         }
 
@@ -32,11 +33,12 @@ public class SetColorCommand extends BaseCommand {
         }
 
         UserChannelSettings settings = user.getChannelSettings(channel);
+        TextColor color = CarbonUtils.parseColor(user, input);
 
-        settings.setColor(TextColor.fromHexString(color));
+        settings.setColor(color);
 
         user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, carbonChat.getLanguage().getString("channel-color-set"),
-                "br", "\n", "color", "<color:" + color + ">", "channel", channel.getName(), "hex", color));
+                "br", "\n", "color", "<color:" + color.asHexString() + ">", "channel", channel.getName(), "hex", color.asHexString()));
     }
 
 }

@@ -21,8 +21,8 @@ import java.util.function.Consumer;
 
 public class RedisMessageService implements MessageService {
 
-    private Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
-    private Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+    private final Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+    private final Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
     private final RedisPubSubCommands<String, String> subscribeSync;
     private final RedisPubSubCommands<String, String> publishSync;

@@ -12,18 +12,16 @@ import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.CarbonPlaceholders;
-import net.draycia.carbon.util.ItemStackUtils;
+import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 
 public final class CarbonChat extends JavaPlugin {
 
@@ -37,7 +35,7 @@ public final class CarbonChat extends JavaPlugin {
     private UserService userService;
     private MessageManager messageManager;
 
-    private ItemStackUtils itemStackUtils;
+    private CarbonUtils itemStackUtils;
 
     private YamlConfiguration modConfig;
     private YamlConfiguration languageConfig;
@@ -72,7 +70,7 @@ public final class CarbonChat extends JavaPlugin {
         adventureManager = new AdventureManager(this);
 
         try {
-            itemStackUtils = new ItemStackUtils();
+            itemStackUtils = new CarbonUtils();
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -197,7 +195,7 @@ public final class CarbonChat extends JavaPlugin {
         return userService;
     }
 
-    public ItemStackUtils getItemStackUtils() {
+    public CarbonUtils getItemStackUtils() {
         return itemStackUtils;
     }
 

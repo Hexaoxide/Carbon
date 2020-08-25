@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public final class mcMMOContext implements Listener {
 
-    private CarbonChat carbonChat;
+    private final CarbonChat carbonChat;
 
     public mcMMOContext(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
