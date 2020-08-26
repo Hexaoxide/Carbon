@@ -19,7 +19,7 @@ public class ChannelCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
-    @CommandCompletion("@chatchannel")
+    @CommandCompletion("@chatchannel @nothing")
     @Syntax("<channel> [message]")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, @Optional String[] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);

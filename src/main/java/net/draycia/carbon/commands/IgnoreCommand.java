@@ -17,7 +17,7 @@ public class IgnoreCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
-    @CommandCompletion("@players")
+    @CommandCompletion("@players @nothing")
     @Syntax("<player>")
     public void baseCommand(Player player, ChatUser targetUser) {
         ChatUser user = carbonChat.getUserService().wrap(player);

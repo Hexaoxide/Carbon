@@ -31,7 +31,7 @@ public class ChannelListCommand extends BaseCommand {
 
         @CommandPermission("carbonchat.channellist.others")
         @Subcommand("user")
-        @CommandCompletion("@players")
+        @CommandCompletion("@players @nothing")
         @Syntax("<player>")
         public void baseCommand(Player player, ChatUser user) {
             ChatUser cmdSender = carbonChat.getUserService().wrap(player);

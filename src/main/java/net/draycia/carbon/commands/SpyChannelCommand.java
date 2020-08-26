@@ -16,7 +16,7 @@ public class SpyChannelCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
-    @CommandCompletion("@channel")
+    @CommandCompletion("@channel @nothing")
     @Syntax("<channel>")
     public void baseCommand(Player player, @Conditions("exists:true") ChatChannel channel) {
         ChatUser user = carbonChat.getUserService().wrap(player);

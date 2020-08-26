@@ -17,7 +17,7 @@ public class ToggleCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
-    @CommandCompletion("@chatchannel @players")
+    @CommandCompletion("@chatchannel @players @nothing")
     @Syntax("<channel>")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel) {
         ChatUser user = carbonChat.getUserService().wrap(player);

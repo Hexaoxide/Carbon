@@ -18,7 +18,7 @@ public class MuteCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
-    @CommandCompletion("@players")
+    @CommandCompletion("@players @nothing")
     @Syntax("<player>")
     public void baseCommand(CommandSender sender, ChatUser targetUser) {
         Audience audience = carbonChat.getAdventureManager().getAudiences().audience(sender);

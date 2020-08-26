@@ -96,4 +96,6 @@ public class FilterHandler implements Listener {
         return filter instanceof Boolean && ((Boolean) filter);
     }
 
+
+
 }

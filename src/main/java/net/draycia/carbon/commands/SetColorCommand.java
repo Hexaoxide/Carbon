@@ -19,7 +19,7 @@ public class SetColorCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
-    @CommandCompletion("@chatchannel")
+    @CommandCompletion("@chatchannel @nothing")
     @Syntax("<channel> <color>")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, String input) {
         if (channel == null || input == null) {

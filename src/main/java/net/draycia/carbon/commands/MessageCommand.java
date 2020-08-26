@@ -14,7 +14,7 @@ public class MessageCommand extends BaseCommand {
     private CarbonChat carbonChat;
 
     @Default
-    @CommandCompletion("@players")
+    @CommandCompletion("@players @nothing")
     @Syntax("<player> <message>")
     public void baseCommand(Player player, ChatUser targetUser, String... args) {
         if (args.length == 0) {
