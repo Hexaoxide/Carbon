@@ -77,10 +77,10 @@ public class CommandManager {
             }
         });
 
-        reloadCommands();
+        reloadCommands(carbonChat);
     }
 
-    public void reloadCommands() {
+    public void reloadCommands(CarbonChat carbonChat) {
         this.commandManager.registerCommand(new ToggleCommand());
         this.commandManager.registerCommand(new ChannelCommand());
         this.commandManager.registerCommand(new ChannelListCommand());
@@ -89,7 +89,7 @@ public class CommandManager {
         this.commandManager.registerCommand(new MeCommand());
         this.commandManager.registerCommand(new MessageCommand());
         this.commandManager.registerCommand(new NicknameCommand());
-        this.commandManager.registerCommand(new ReplyCommand());
+        new ReplyCommand(carbonChat);
         this.commandManager.registerCommand(new SetColorCommand());
         this.commandManager.registerCommand(new SpyChannelCommand());
 

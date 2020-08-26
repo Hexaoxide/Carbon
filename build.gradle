@@ -30,6 +30,7 @@ repositories {
     maven {url = 'https://repo.codemc.org/repository/maven-public/'}
     maven {url = 'https://repo.minebench.de/'}
     maven {url = "https://repo.aikar.co/content/groups/aikar/"}
+    maven {url = "https://raw.githubusercontent.com/JorelAli/CommandAPI/mvn-repo/"}
 }
 
 dependencies {
@@ -45,6 +46,8 @@ dependencies {
 
     compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
     compile 'io.lettuce:lettuce-core:6.0.0.M1'
+
+    compile "dev.jorel:commandapi-core:4.0"
 
     compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.143'
     compileOnly 'com.github.TownyAdvanced:Towny:0.96.2.0'
