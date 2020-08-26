@@ -45,10 +45,6 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public Boolean canPlayerUse(ChatUser user) {
-        if (user.getChannelSettings(this).isIgnored()) {
-            return false;
-        }
-
         return user.asPlayer().hasPermission("carbonchat.channels." + getName() + ".use");
     }
 
