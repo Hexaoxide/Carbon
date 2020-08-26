@@ -32,6 +32,10 @@ public class AliasedChannelCommand extends BaseCommand {
             throw new ConditionFailedException(chatChannel.getCannotUseMessage());
         }
 
+        if (user.getChannelSettings(chatChannel).isIgnored()) {
+            throw new ConditionFailedException(chatChannel.getCannotUseMessage());
+        }
+
         if (args == null || args.length == 0) {
             user.setSelectedChannel(getChatChannel());
 

@@ -1,6 +1,7 @@
 package net.draycia.carbon.commands;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.annotation.*;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
@@ -22,6 +23,10 @@ public class ChannelCommand extends BaseCommand {
     @Syntax("<channel> [message]")
     public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel, @Optional String[] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
+
+        if (user.getChannelSettings(channel).isIgnored()) {
+            throw new ConditionFailedException(channel.getCannotUseMessage());
+        }
 
         if (args == null || args.length == 0) {
             user.setSelectedChannel(channel);
