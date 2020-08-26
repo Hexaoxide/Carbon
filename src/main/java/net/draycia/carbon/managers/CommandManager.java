@@ -90,7 +90,7 @@ public class CommandManager {
         this.commandManager.registerCommand(new MessageCommand());
         this.commandManager.registerCommand(new NicknameCommand());
         new ReplyCommand(carbonChat);
-        this.commandManager.registerCommand(new SetColorCommand());
+        new SetColorCommand(carbonChat);
         this.commandManager.registerCommand(new SpyChannelCommand());
 
         this.commandManager.registerCommand(new ClearChatCommand());

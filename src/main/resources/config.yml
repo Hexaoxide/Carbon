@@ -150,3 +150,6 @@ commands:
   reply:
     name: 'reply'
     aliases: ['r']
+  setcolor:
+    name: 'setcolor'
+    aliases: ['setcolor']

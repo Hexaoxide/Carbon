@@ -1,7 +1,7 @@
 package net.draycia.carbon.commands;
 
-import co.aikar.commands.annotation.*;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.draycia.carbon.CarbonChat;
@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-@CommandAlias("reply|r")
-@CommandPermission("carbonchat.reply")
 public class ReplyCommand {
 
     private final CarbonChat carbonChat;
@@ -30,6 +28,7 @@ public class ReplyCommand {
         new CommandAPICommand(commandName)
                 .withArguments(arguments)
                 .withAliases(commandAliases.toArray(new String[0]))
+                .withPermission(CommandPermission.fromString("carbonchat.reply"))
                 .executesPlayer(this::execute)
                 .register();
     }
