@@ -26,37 +26,26 @@ public class SetColorCommand {
         for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
             LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
             arguments.put("channel", new LiteralArgument(channel.getKey()));
-            arguments.put("color", new StringArgument());
+            arguments.put("color", CarbonUtils.textColorArgument());
 
             new CommandAPICommand(commandName)
                     .withArguments(arguments)
                     .withAliases(commandAliases.toArray(new String[0]))
                     .withPermission(CommandPermission.fromString("carbonchat.setcolor"))
                     .executesPlayer((player, args) -> {
-                        String colorInput = (String) args[1];
-
+                        TextColor color = (TextColor)args[1];
                         ChatUser user = carbonChat.getUserService().wrap(player);
 
                         if (!player.hasPermission("carbonchat.setcolor." + channel.getKey())) {
                             user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
                                     carbonChat.getLanguage().getString("cannot-set-color"),
-                                    "br", "\n", "input", colorInput,
+                                    "br", "\n", "input", color.asHexString(),
                                     "channel", channel.getName()));
 
                             return;
                         }
 
                         UserChannelSettings settings = user.getChannelSettings(channel);
-                        TextColor color = CarbonUtils.parseColor(user, colorInput);
-
-                        if (color == null) {
-                            user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
-                                    carbonChat.getLanguage().getString("invalid-color"),
-                                    "br", "\n", "input", colorInput,
-                                    "channel", channel.getName()));
-
-                            return;
-                        }
 
                         settings.setColor(color);
 

@@ -153,3 +153,6 @@ commands:
   setcolor:
     name: 'setcolor'
     aliases: ['setcolor']
+  shadowmute:
+    name: 'shadowmute'
+    aliases: ['sm', 'smute']

@@ -20,7 +20,10 @@
  */
 package net.draycia.carbon.util;
 
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.CustomArgument;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
@@ -35,6 +38,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class CarbonUtils {
 
@@ -91,6 +96,66 @@ public final class CarbonUtils {
         }
 
         return TextColor.fromCSSHexString(input);
+    }
+
+    public static TextColor parseColor(String input) {
+        if (input == null) {
+            input = "white";
+        }
+
+        for (NamedTextColor namedColor : NamedTextColor.values()) {
+            if (namedColor.toString().equalsIgnoreCase(input)) {
+                return namedColor;
+            }
+        }
+
+        if (input.contains("&") || input.contains("§")) {
+            input = input.replace("&", "§");
+
+            return LegacyComponentSerializer.legacySection().deserialize(input).color();
+        }
+
+        return TextColor.fromCSSHexString(input);
+    }
+
+    public static Argument chatUserArgument() {
+        return new CustomArgument<>((input) -> {
+           CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+           return carbonChat.getUserService().wrap(input);
+        }).overrideSuggestions((sender, args) -> {
+            ArrayList<String> players = new ArrayList<>();
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                players.add(player.getName());
+            }
+
+            return players.toArray(new String[0]);
+        });
+    }
+
+    private static String[] colors;
+
+    static {
+        ArrayList<String> colorList = new ArrayList<>();
+
+        for (NamedTextColor color : NamedTextColor.values()) {
+            colorList.add(color.toString());
+        }
+
+        colors = colorList.toArray(new String[0]);
+    }
+
+    public static Argument textColorArgument() {
+        return new CustomArgument<>((input) -> {
+            TextColor color =  parseColor(input);
+
+            if (color == null) {
+                throw new CustomArgument.CustomArgumentException("Invalid color for input (" + input + ")");
+            }
+
+            return color;
+        }).overrideSuggestions(colors);
     }
 
 }

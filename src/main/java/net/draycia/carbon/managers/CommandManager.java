@@ -95,7 +95,7 @@ public class CommandManager {
 
         this.commandManager.registerCommand(new ClearChatCommand());
         this.commandManager.registerCommand(new MuteCommand());
-        this.commandManager.registerCommand(new ShadowMuteCommand());
+        new ShadowMuteCommand(carbonChat);
     }
 
     public BukkitCommandManager getCommandManager() {
