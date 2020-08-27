@@ -159,3 +159,9 @@ commands:
   nickname:
     name: 'nickname'
     aliases: ['nick']
+  mute:
+    name: 'mute'
+    aliases: ['m']
+  clearchat:
+    name: 'clearchat'
+    aliases: ['clear', 'cc']

@@ -1,10 +1,8 @@
 package net.draycia.carbon.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Dependency;
+
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
@@ -12,15 +10,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandAlias("clearchat|cc")
-@CommandPermission("carbonchat.clearchat.clear")
-public class ClearChatCommand extends BaseCommand {
+import java.util.List;
 
-    @Dependency
-    private CarbonChat carbonChat;
+public class ClearChatCommand {
 
-    @Default
-    public void baseCommand(CommandSender issuer) {
+    private final CarbonChat carbonChat;
+
+    public ClearChatCommand(CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
+
+        String commandName = carbonChat.getConfig().getString("commands.clearchat.name", "clearchat");
+        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.clearchat.aliases");
+
+        new CommandAPICommand(commandName)
+                .withAliases(commandAliases.toArray(new String[0]))
+                .withPermission(CommandPermission.fromString("carbonchat.clearchat.clear"))
+                .executes(this::execute)
+                .register();
+    }
+
+    private void execute(CommandSender sender, Object[] args) {
         String format = carbonChat.getModConfig().getString("clear-chat.message", "");
         Component component = carbonChat.getAdventureManager().processMessage(format, "br", "\n");
 
@@ -37,12 +46,12 @@ public class ClearChatCommand extends BaseCommand {
 
             if (player.hasPermission("carbonchat.clearchat.notify")) {
                 String message = carbonChat.getLanguage().getString("clear-notify");
-                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", issuer.getName()));
+                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
             }
 
             if (player.hasPermission("carbonchat.clearchat.exempt")) {
                 String message = carbonChat.getLanguage().getString("clear-exempt");
-                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", issuer.getName()));
+                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
             }
         }
     }
