@@ -24,6 +24,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
@@ -31,6 +32,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -156,6 +158,34 @@ public final class CarbonUtils {
 
             return color;
         }).overrideSuggestions(colors);
+    }
+
+    public static Argument channelArgument() {
+        return new CustomArgument<>((input) -> {
+            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+            ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(input);
+
+            if (channel == null) {
+                throw new CustomArgument.CustomArgumentException("Invalid channel for input (" + input + ")");
+            }
+
+            return channel;
+        }).overrideSuggestions((sender, args) -> {
+            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+            ArrayList<String> channels = new ArrayList<>();
+
+            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
+                channels.add(channel.getKey());
+            }
+
+            return channels.toArray(new String[0]);
+        });
+    }
+
+    public static Argument usableChannelArgument() {
+        throw new NotImplementedException("Not implemented yet.");
     }
 
 }

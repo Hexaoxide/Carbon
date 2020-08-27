@@ -165,3 +165,6 @@ commands:
   clearchat:
     name: 'clearchat'
     aliases: ['clear', 'cc']
+  spy:
+    name: 'spy'
+    aliases: ['spych', 'spychannel']

@@ -93,7 +93,7 @@ public class CommandManager {
         new ReplyCommand(carbonChat);
         new SetColorCommand(carbonChat);
         new ShadowMuteCommand(carbonChat);
-        this.commandManager.registerCommand(new SpyChannelCommand());
+        new SpyChannelCommand(carbonChat);
         this.commandManager.registerCommand(new ToggleCommand());
     }
 
