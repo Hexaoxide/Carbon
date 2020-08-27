@@ -88,13 +88,13 @@ public class CommandManager {
         this.commandManager.registerCommand(new ChatReloadCommand());
         this.commandManager.registerCommand(new MeCommand());
         this.commandManager.registerCommand(new MessageCommand());
-        this.commandManager.registerCommand(new NicknameCommand());
+        new NicknameCommand(carbonChat);
         new ReplyCommand(carbonChat);
         new SetColorCommand(carbonChat);
         this.commandManager.registerCommand(new SpyChannelCommand());
 
         this.commandManager.registerCommand(new ClearChatCommand());
-        this.commandManager.registerCommand(new MuteCommand());
+        new MuteCommand(carbonChat);
         new ShadowMuteCommand(carbonChat);
     }
 

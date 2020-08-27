@@ -156,3 +156,6 @@ commands:
   shadowmute:
     name: 'shadowmute'
     aliases: ['sm', 'smute']
+  nickname:
+    name: 'nickname'
+    aliases: ['nick']
