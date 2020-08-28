@@ -1,50 +1,76 @@
 package net.draycia.carbon.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
+import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.util.CarbonUtils;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
-@CommandAlias("chlist|channellist")
-@CommandPermission("carbonchat.channellist")
-public class ChannelListCommand extends BaseCommand {
+public class ChannelListCommand {
 
-    @Dependency
-    private CarbonChat carbonChat;
+    private final CarbonChat carbonChat;
 
-    @Default
-    @Syntax("[player]")
-    public void baseCommand(Player player) {
+    public ChannelListCommand(CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
+
+        String commandName = carbonChat.getConfig().getString("commands.channellist.name", "channellist");
+        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.channellist.aliases");
+
+        LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+
+        new CommandAPICommand(commandName)
+                .withArguments(channelArguments)
+                .withAliases(commandAliases.toArray(new String[0]))
+                .withPermission(CommandPermission.fromString("carbonchat.channellist"))
+                .executesPlayer(this::executeSelf)
+                .register();
+
+        LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
+        argumentsOther.put("player", CarbonUtils.chatUserArgument());
+
+        new CommandAPICommand(commandName)
+                .withArguments(argumentsOther)
+                .withAliases(commandAliases.toArray(new String[0]))
+                .withPermission(CommandPermission.fromString("carbonchat.channellist.other"))
+                .executes(this::executeOther)
+                .register();
+    }
+
+    public void executeSelf(Player player, Object[] args) {
         Iterator<ChatChannel> allChannels = carbonChat.getChannelManager().getRegistry().values().iterator();
         ChatUser user = carbonChat.getUserService().wrap(player);
+
         getListAndSend(player, user, allChannels);
     }
 
-        @CommandPermission("carbonchat.channellist.others")
-        @Subcommand("user")
-        @CommandCompletion("@players @nothing")
-        @Syntax("<player>")
-        public void baseCommand(Player player, ChatUser user) {
-            ChatUser cmdSender = carbonChat.getUserService().wrap(player);
-            if (!user.isOnline()) {
-                String mustBeOnline = carbonChat.getLanguage().getString("user-must-be-online");
-                cmdSender.sendMessage(carbonChat.getAdventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.asOfflinePlayer().getName()));
-                return;
-            }
-            Iterator<ChatChannel> allChannels = carbonChat.getChannelManager().getRegistry().values().iterator();
-            getListAndSend(player, user, allChannels);
+    public void executeOther(CommandSender sender, Object[] args) {
+        Audience cmdSender = carbonChat.getAdventureManager().getAudiences().audience(sender);
+        ChatUser user = (ChatUser) args[0];
+
+        if (!user.isOnline()) {
+            String mustBeOnline = carbonChat.getLanguage().getString("user-must-be-online");
+            cmdSender.sendMessage(carbonChat.getAdventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.asOfflinePlayer().getName()));
+            return;
         }
 
-    private void getListAndSend(Player player, ChatUser user, Iterator<ChatChannel> allChannels) {
+        Iterator<ChatChannel> allChannels = carbonChat.getChannelManager().getRegistry().values().iterator();
+        getListAndSend(sender, user, allChannels);
+    }
+
+    private void getListAndSend(CommandSender sender, ChatUser user, Iterator<ChatChannel> allChannels) {
         ChatChannel channel;
         List<ChatChannel> canSee = new ArrayList<>();
         List<ChatChannel> cannotSee = new ArrayList<>();
@@ -68,9 +94,11 @@ public class ChannelListCommand extends BaseCommand {
         Component availableComponent = carbonChat.getAdventureManager().processMessage(availableFormat, "br", "\n");
         availableComponent = ((TextComponent)availableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (ac) ->  availableList);
 
-        carbonChat.getUserService().wrap(player).sendMessage(availableComponent);
+        Audience audience = carbonChat.getAdventureManager().getAudiences().audience(sender);
 
-        if (player.hasPermission("carbonchat.channellist.bypass") && !cannotSee.isEmpty()) {
+        audience.sendMessage(availableComponent);
+
+        if (sender.hasPermission("carbonchat.channellist.bypass") && !cannotSee.isEmpty()) {
 
             Iterator<ChatChannel> invisibleChannels = cannotSee.iterator();
             TextComponent.Builder unavailableList = TextComponent.builder("");
@@ -81,13 +109,14 @@ public class ChannelListCommand extends BaseCommand {
             Component unavailableComponent = carbonChat.getAdventureManager().processMessage(unavailableFormat, "br", "\n");
             unavailableComponent = ((TextComponent)unavailableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (uac) ->  unavailableList);
 
-            carbonChat.getUserService().wrap(player).sendMessage(unavailableComponent);
+            audience.sendMessage(unavailableComponent);
         }
     }
 
     private void makeList(Iterator<ChatChannel> iterator, TextComponent.Builder list) {
         String listSeparator = carbonChat.getLanguage().getString("channel-list-separator", ", ");
-        Component listSeparatorComponent = listSeparatorComponent = TextComponent.of(listSeparator);
+        // TODO: Larry, why did you double assign the listSeparatorComponent?
+        Component listSeparatorComponent = TextComponent.of(listSeparator);
 
         while (iterator.hasNext()) {
             ChatChannel channel = iterator.next();

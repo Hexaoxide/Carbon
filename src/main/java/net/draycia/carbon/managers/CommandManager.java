@@ -82,7 +82,7 @@ public class CommandManager {
 
     public void reloadCommands(CarbonChat carbonChat) {
         this.commandManager.registerCommand(new ChannelCommand());
-        this.commandManager.registerCommand(new ChannelListCommand());
+        new ChannelListCommand(carbonChat);
         new ChatReloadCommand(carbonChat);
         new ClearChatCommand(carbonChat);
         new IgnoreCommand(carbonChat);
