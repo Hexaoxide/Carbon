@@ -174,3 +174,6 @@ commands:
   me:
     name: 'me'
     aliases: ['rp']
+  message:
+    name: ['message']
+    aliases: ['msg', 'whisper', 'w']
