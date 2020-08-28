@@ -44,8 +44,6 @@ public class ToggleCommand {
                 .withPermission(CommandPermission.fromString("carbonchat.toggle"))
                 .executes(this::executeOther)
                 .register();
-
-
     }
 
     private void executeSelf(Player player, Object[] args) {

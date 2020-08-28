@@ -83,7 +83,7 @@ public class CommandManager {
     public void reloadCommands(CarbonChat carbonChat) {
         this.commandManager.registerCommand(new ChannelCommand());
         this.commandManager.registerCommand(new ChannelListCommand());
-        this.commandManager.registerCommand(new ChatReloadCommand());
+        new ChatReloadCommand(carbonChat);
         new ClearChatCommand(carbonChat);
         this.commandManager.registerCommand(new IgnoreCommand());
         this.commandManager.registerCommand(new MeCommand());
