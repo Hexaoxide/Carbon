@@ -168,3 +168,6 @@ commands:
   spy:
     name: 'spy'
     aliases: ['spych', 'spychannel']
+  toggle:
+    name: 'toggle'
+    aliases: ['togglechannel', 'tch', 'togglech', 'tchannel', 'togglec']

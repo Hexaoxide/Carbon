@@ -94,7 +94,7 @@ public class CommandManager {
         new SetColorCommand(carbonChat);
         new ShadowMuteCommand(carbonChat);
         new SpyChannelCommand(carbonChat);
-        this.commandManager.registerCommand(new ToggleCommand());
+        new ToggleCommand(carbonChat);
     }
 
     public BukkitCommandManager getCommandManager() {
