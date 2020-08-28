@@ -183,3 +183,6 @@ commands:
   channellist:
     name: 'channellist'
     aliases: ['chlist']
+  channel:
+    name: 'channel'
+    aliases: ['ch', 'switch', 'join']
