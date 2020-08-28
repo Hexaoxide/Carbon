@@ -171,3 +171,6 @@ commands:
   toggle:
     name: 'toggle'
     aliases: ['togglechannel', 'tch', 'togglech', 'tchannel', 'togglec']
+  me:
+    name: 'me'
+    aliases: ['rp']

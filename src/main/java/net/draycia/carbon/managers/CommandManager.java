@@ -86,7 +86,7 @@ public class CommandManager {
         new ChatReloadCommand(carbonChat);
         new ClearChatCommand(carbonChat);
         this.commandManager.registerCommand(new IgnoreCommand());
-        this.commandManager.registerCommand(new MeCommand());
+        new MeCommand(carbonChat);
         this.commandManager.registerCommand(new MessageCommand());
         new MuteCommand(carbonChat);
         new NicknameCommand(carbonChat);
