@@ -177,3 +177,6 @@ commands:
   message:
     name: ['message']
     aliases: ['msg', 'whisper', 'w']
+  ignore:
+    name: 'ignore'
+    aliases: []
