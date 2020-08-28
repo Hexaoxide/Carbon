@@ -58,7 +58,7 @@ public class ChannelCommand {
                 .register();
 
         LinkedHashMap<String, Argument> sendMessageOtherArguments = new LinkedHashMap<>();
-        sendMessageOtherArguments.put("user", CarbonUtils.chatUserArgument());
+        sendMessageOtherArguments.put("player", CarbonUtils.chatUserArgument());
         sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
         sendMessageOtherArguments.put("message", new GreedyStringArgument());
 
