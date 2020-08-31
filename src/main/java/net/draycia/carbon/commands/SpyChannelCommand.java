@@ -3,6 +3,7 @@ package net.draycia.carbon.commands;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
@@ -43,6 +44,17 @@ public class SpyChannelCommand {
                 .withPermission(CommandPermission.fromString("carbonchat.spy"))
                 .executesPlayer(this::executeWhispers)
                 .register();
+
+        LinkedHashMap<String, Argument> everythingArguments = new LinkedHashMap<>();
+        everythingArguments.put("channel", new LiteralArgument("*"));
+        everythingArguments.put("should-spy", new BooleanArgument());
+
+        new CommandAPICommand(commandName)
+                .withArguments(everythingArguments)
+                .withAliases(commandAliases.toArray(new String[0]))
+                .withPermission(CommandPermission.fromString("carbonchat.spy"))
+                .executesPlayer(this::executeEverything) // lul
+                .register();
     }
 
     private void execute(Player player, Object[] args) {
@@ -76,6 +88,34 @@ public class SpyChannelCommand {
         } else {
             user.setSpyingWhispers(true);
             message = carbonChat.getLanguage().getString("spy-whispers-on");
+        }
+
+        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    }
+
+    private void executeEverything(Player player, Object[] args) {
+        Boolean shouldSpy = (Boolean) args[0];
+
+        ChatUser user = carbonChat.getUserService().wrap(player);
+
+        String message;
+
+        if (shouldSpy) {
+            user.setSpyingWhispers(true);
+
+            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
+                user.getChannelSettings(channel).setSpying(true);
+            }
+
+            message = carbonChat.getLanguage().getString("spy-everything-off");
+        } else {
+            user.setSpyingWhispers(false);
+
+            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
+                user.getChannelSettings(channel).setSpying(false);
+            }
+
+            message = carbonChat.getLanguage().getString("spy-everything-on");
         }
 
         user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));

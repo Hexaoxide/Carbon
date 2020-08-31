@@ -29,12 +29,10 @@ repositories {
     maven {url = 'https://dl.bintray.com/ichbinjoe/public/'}
     maven {url = 'https://repo.codemc.org/repository/maven-public/'}
     maven {url = 'https://repo.minebench.de/'}
-    maven {url = "https://repo.aikar.co/content/groups/aikar/"}
     maven {url = "https://raw.githubusercontent.com/JorelAli/CommandAPI/mvn-repo/"}
 }
 
 dependencies {
-    compile 'co.aikar:acf-bukkit:0.5.0-SNAPSHOT'
     compile 'net.kyori:adventure-api:4.0.0-SNAPSHOT'
     compile 'net.kyori:adventure-nbt:4.0.0-SNAPSHOT'
     compile 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
