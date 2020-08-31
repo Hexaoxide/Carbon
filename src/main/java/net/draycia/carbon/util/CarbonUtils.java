@@ -120,11 +120,33 @@ public final class CarbonUtils {
         return TextColor.fromCSSHexString(input);
     }
 
+    public static Argument onlineChatUserArgument() {
+        return new CustomArgument<>((input) -> {
+            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+            Player player = Bukkit.getPlayer(input);
+
+            if (player == null) {
+                throw new CustomArgument.CustomArgumentException("Invalid player for input (" + input + ")");
+            }
+
+            return carbonChat.getUserService().wrap(player);
+        }).overrideSuggestions((sender, args) -> {
+            ArrayList<String> players = new ArrayList<>();
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                players.add(player.getName());
+            }
+
+            return players.toArray(new String[0]);
+        });
+    }
+
     public static Argument chatUserArgument() {
         return new CustomArgument<>((input) -> {
-           CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
-           return carbonChat.getUserService().wrap(input);
+            return carbonChat.getUserService().wrap(input);
         }).overrideSuggestions((sender, args) -> {
             ArrayList<String> players = new ArrayList<>();
 

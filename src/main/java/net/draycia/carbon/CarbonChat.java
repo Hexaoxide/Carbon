@@ -13,6 +13,7 @@ import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.Metrics;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -24,6 +25,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 
 public final class CarbonChat extends JavaPlugin {
+
+    private static final int BSTATS_PLUGIN_ID = 8720;
 
     private Permission permission;
 
@@ -50,6 +53,8 @@ public final class CarbonChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+
         // Ensure config is present to be modified by the user
         if (!(new File(getDataFolder(), "config.yml").exists())) {
             saveDefaultConfig();
@@ -79,10 +84,10 @@ public final class CarbonChat extends JavaPlugin {
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
 
         // Initialize managers
-        commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
         contextManager = new ContextManager();
         messageManager = new MessageManager(this);
+        commandManager = new CommandManager(this);
 
         String storageType = getConfig().getString("storage.type");
 

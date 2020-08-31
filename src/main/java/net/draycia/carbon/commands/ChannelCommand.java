@@ -22,8 +22,8 @@ public class ChannelCommand {
     public ChannelCommand(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.switch.name", "switch");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.switch.aliases");
+        String commandName = carbonChat.getConfig().getString("commands.channel.name", "channel");
+        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.channel.aliases");
 
         LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
         setChannelArguments.put("channel", CarbonUtils.channelArgument());
@@ -31,20 +31,20 @@ public class ChannelCommand {
         new CommandAPICommand(commandName)
                 .withArguments(setChannelArguments)
                 .withAliases(commandAliases.toArray(new String[0]))
-                .withPermission(CommandPermission.fromString("carbonchat.switch"))
+                .withPermission(CommandPermission.fromString("carbonchat.channel"))
                 .executesPlayer(this::setChannel)
                 .register();
 
-        LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
-        setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
-        setOtherChannelArguments.put("player", CarbonUtils.chatUserArgument());
-
-        new CommandAPICommand(commandName)
-                .withArguments(setOtherChannelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
-                .withPermission(CommandPermission.fromString("carbonchat.switch.other"))
-                .executes(this::setOtherChannel)
-                .register();
+//        LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
+//        setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
+//        setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
+//
+//        new CommandAPICommand(commandName)
+//                .withArguments(setOtherChannelArguments)
+//                .withAliases(commandAliases.toArray(new String[0]))
+//                .withPermission(CommandPermission.fromString("carbonchat.channel.others"))
+//                .executes(this::setOtherChannel)
+//                .register();
 
         LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
         sendMessageArguments.put("channel", CarbonUtils.channelArgument());
@@ -53,21 +53,21 @@ public class ChannelCommand {
         new CommandAPICommand(commandName)
                 .withArguments(sendMessageArguments)
                 .withAliases(commandAliases.toArray(new String[0]))
-                .withPermission(CommandPermission.fromString("carbonchat.switch.message"))
+                .withPermission(CommandPermission.fromString("carbonchat.channel.message"))
                 .executesPlayer(this::sendMessage)
                 .register();
 
-        LinkedHashMap<String, Argument> sendMessageOtherArguments = new LinkedHashMap<>();
-        sendMessageOtherArguments.put("player", CarbonUtils.chatUserArgument());
-        sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
-        sendMessageOtherArguments.put("message", new GreedyStringArgument());
-
-        new CommandAPICommand(commandName)
-                .withArguments(sendMessageOtherArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
-                .withPermission(CommandPermission.fromString("carbonchat.switch.other.message"))
-                .executes(this::sendMessageOther)
-                .register();
+//        LinkedHashMap<String, Argument> sendMessageOtherArguments = new LinkedHashMap<>();
+//        sendMessageOtherArguments.put("player", CarbonUtils.onlineChatUserArgument());
+//        sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
+//        sendMessageOtherArguments.put("message", new GreedyStringArgument());
+//
+//        new CommandAPICommand(commandName)
+//                .withArguments(sendMessageOtherArguments)
+//                .withAliases(commandAliases.toArray(new String[0]))
+//                .withPermission(CommandPermission.fromString("carbonchat.channel.others.message"))
+//                .executes(this::sendMessageOther)
+//                .register();
     }
 
     private void setChannel(Player player, Object[] args) {
@@ -92,7 +92,6 @@ public class ChannelCommand {
     }
 
     private void setOtherChannel(CommandSender sender, Object[] args) {
-        // @CommandPermission("carbonchat.switch.others")
         ChatUser user = (ChatUser) args[0];
         ChatChannel channel = (ChatChannel) args[1];
 

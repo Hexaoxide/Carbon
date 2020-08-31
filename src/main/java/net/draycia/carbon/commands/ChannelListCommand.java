@@ -39,7 +39,7 @@ public class ChannelListCommand {
                 .register();
 
         LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
-        argumentsOther.put("player", CarbonUtils.chatUserArgument());
+        argumentsOther.put("player", CarbonUtils.onlineChatUserArgument());
 
         new CommandAPICommand(commandName)
                 .withArguments(argumentsOther)
