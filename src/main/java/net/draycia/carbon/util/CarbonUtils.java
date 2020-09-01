@@ -26,54 +26,52 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
-import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.hover.content.Content;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 
 public final class CarbonUtils {
 
-    private final Method asNMSCopyMethod;
-    private final Method cMethod;
-
-    public CarbonUtils() throws NoSuchMethodException, ClassNotFoundException {
-        final String version = Bukkit.getServer().getClass().getPackage().getName()
-                .substring("org.bukkit.craftbukkit.".length());
-
-        Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-        this.asNMSCopyMethod = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
-        Class<?> itemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
-        this.cMethod = itemStackClass.getMethod("C");
-    }
-
-    public Component createComponent(final Player player) {
-        final ItemStack itemStack = player.getInventory().getItemInMainHand();
-
-        if (itemStack == null || itemStack.getType() == Material.AIR) {
-            return TextComponent.empty();
-        }
-
+    public static Component createComponent(final Player player) {
         try {
-            final Object cbItemStack = this.asNMSCopyMethod.invoke(null, itemStack);
-            final Object mojangComponent = this.cMethod.invoke(cbItemStack);
+            final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
-            return MinecraftComponentSerializer.INSTANCE.deserialize(mojangComponent);
-        } catch (final IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-            return TextComponent.empty();
-        }
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                return net.kyori.adventure.text.TextComponent.empty();
+            }
+
+            Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
+            HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
+
+            ComponentBuilder component = new ComponentBuilder();
+            component.color(ChatColor.WHITE).append("[");
+
+            if (itemStack.getItemMeta().hasDisplayName()) {
+                component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
+            } else {
+                component.append(new TranslatableComponent(itemStack.getItemMeta().getLocalizedName()));
+            }
+
+            component.color(ChatColor.WHITE).append("]");
+
+            component.event(event);
+
+            return BungeeCordComponentSerializer.get().deserialize(component.create());
+        } catch (NoSuchMethodError ignored) {}
+
+        return net.kyori.adventure.text.TextComponent.empty();
     }
 
     public static TextColor parseColor(ChatUser user, String input) {

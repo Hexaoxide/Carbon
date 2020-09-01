@@ -12,7 +12,6 @@ import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.CarbonPlaceholders;
-import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.Metrics;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
@@ -37,8 +36,6 @@ public final class CarbonChat extends JavaPlugin {
 
     private UserService userService;
     private MessageManager messageManager;
-
-    private CarbonUtils itemStackUtils;
 
     private YamlConfiguration modConfig;
     private YamlConfiguration languageConfig;
@@ -73,12 +70,6 @@ public final class CarbonChat extends JavaPlugin {
 
         // Setup Adventure
         adventureManager = new AdventureManager(this);
-
-        try {
-            itemStackUtils = new CarbonUtils();
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
 
         // Setup vault and permissions
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
@@ -198,10 +189,6 @@ public final class CarbonChat extends JavaPlugin {
 
     public UserService getUserService() {
         return userService;
-    }
-
-    public CarbonUtils getItemStackUtils() {
-        return itemStackUtils;
     }
 
     public AdventureManager getAdventureManager() {
