@@ -3,6 +3,7 @@ package net.draycia.carbon.listeners;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChatComponentEvent;
 import net.draycia.carbon.util.CarbonUtils;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,12 +30,18 @@ public class ItemLinkHandler implements Listener {
                 return;
             }
 
+            Component itemComponent = CarbonUtils.createComponent(player);
+
+            if (itemComponent.equals(TextComponent.empty())) {
+                return;
+            }
+
             for (Pattern pattern : event.getChannel().getItemLinkPatterns()) {
                 String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
 
                 if (event.getOriginalMessage().contains(patternContent)) {
                     TextComponent component = event.getComponent().replaceFirst(pattern, (input) -> {
-                        return TextComponent.builder().append(CarbonUtils.createComponent(player));
+                        return TextComponent.builder().append(itemComponent);
                     });
 
                     event.setComponent(component);
