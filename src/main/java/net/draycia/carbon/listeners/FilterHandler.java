@@ -61,6 +61,12 @@ public class FilterHandler implements Listener {
             return;
         }
 
+        if (event.getUser().isOnline()) {
+            if (event.getUser().asPlayer().hasPermission("carbonchat.filter.exempt")) {
+                return;
+            }
+        }
+
         if (!channelUsesFilter(event.getChannel())) {
             return;
         }
@@ -95,7 +101,5 @@ public class FilterHandler implements Listener {
 
         return filter instanceof Boolean && ((Boolean) filter);
     }
-
-
 
 }
