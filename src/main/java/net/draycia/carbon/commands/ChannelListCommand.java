@@ -66,7 +66,7 @@ public class ChannelListCommand extends BaseCommand {
 
         String availableFormat = carbonChat.getLanguage().getString("available-channels-list");
         Component availableComponent = carbonChat.getAdventureManager().processMessage(availableFormat, "br", "\n");
-        availableComponent = ((TextComponent)availableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (ac) ->  availableList);
+        availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (ac) ->  availableList);
 
         carbonChat.getUserService().wrap(player).sendMessage(availableComponent);
 
@@ -79,7 +79,7 @@ public class ChannelListCommand extends BaseCommand {
 
             String unavailableFormat = carbonChat.getLanguage().getString("unavailable-channels-list");
             Component unavailableComponent = carbonChat.getAdventureManager().processMessage(unavailableFormat, "br", "\n");
-            unavailableComponent = ((TextComponent)unavailableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (uac) ->  unavailableList);
+            unavailableComponent = unavailableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (uac) ->  unavailableList);
 
             carbonChat.getUserService().wrap(player).sendMessage(unavailableComponent);
         }

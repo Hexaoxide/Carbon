@@ -25,7 +25,7 @@ public class ItemLinkHandler implements Listener {
                 String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
 
                 if (event.getOriginalMessage().contains(patternContent)) {
-                    TextComponent component = event.getComponent().replaceFirst(pattern, (input) -> {
+                    TextComponent component = (TextComponent)event.getComponent().replaceFirstText(pattern, (input) -> {
                         return TextComponent.builder().append(carbonChat.getItemStackUtils().createComponent(event.getSender().asPlayer()));
                     });
 
