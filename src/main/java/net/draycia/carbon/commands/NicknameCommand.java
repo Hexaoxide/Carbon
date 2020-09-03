@@ -1,66 +1,98 @@
 package net.draycia.carbon.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.StringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
+import net.draycia.carbon.util.CarbonUtils;
+import net.kyori.adventure.audience.Audience;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandAlias("nick|nickname")
-@CommandPermission("carbonchat.nickname")
-public class NicknameCommand extends BaseCommand {
+import java.util.LinkedHashMap;
 
-    @Dependency
-    private CarbonChat carbonChat;
+public class NicknameCommand {
 
-    @Default
-    @Syntax("<nickname> [player]")
-    public void baseCommand(Player player, String nickname, @Optional ChatUser target) {
+    private final CarbonChat carbonChat;
+
+    public NicknameCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+        this.carbonChat = carbonChat;
+
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
+
+        LinkedHashMap<String, Argument> selfArguments = new LinkedHashMap<>();
+        selfArguments.put("nickname", new StringArgument());
+
+        new CommandAPICommand(commandSettings.getName())
+                .withArguments(selfArguments)
+                .withAliases(commandSettings.getAliasesArray())
+                .withPermission(CommandPermission.fromString("carbonchat.nickname"))
+                .executesPlayer(this::executeSelf)
+                .register();
+
+        LinkedHashMap<String, Argument> otherArguments = new LinkedHashMap<>();
+        otherArguments.put("player", CarbonUtils.chatUserArgument());
+        otherArguments.put("nickname", new StringArgument());
+
+        new CommandAPICommand(commandSettings.getName())
+                .withArguments(otherArguments)
+                .withAliases(commandSettings.getAliasesArray())
+                .withPermission(CommandPermission.fromString("carbonchat.nickname.others"))
+                .executes(this::executeOther)
+                .register();
+    }
+
+    private void executeSelf(Player player, Object[] args) {
+        String nickname = (String) args[0];
         ChatUser sender = carbonChat.getUserService().wrap(player);
 
-        // Reset nickname
-        if (nickname.equalsIgnoreCase("off")) {
+        if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(player.getName())) {
             nickname = null;
         }
 
-        // Reset other player's nickname
-        if (target != null && nickname != null && nickname.equals(target.asOfflinePlayer().getName())) {
-            nickname = null;
-        }
+        sender.setNickname(nickname);
 
-        // Reset own nickname
-        if (target == null && nickname != null && nickname.equals(sender.asOfflinePlayer().getName())) {
-            nickname = null;
-        }
+        String message;
 
-        if (target != null) {
-            target.setNickname(nickname);
-
-            String message;
-
-            if (nickname == null) {
-                message = carbonChat.getLanguage().getString("other-nickname-reset");
-            } else {
-                message = carbonChat.getLanguage().getString("other-nickname-set");
-            }
-
-            sender.sendMessage(carbonChat.getAdventureManager().processMessage(
-                    message, "nickname", nickname == null ? "" : nickname,
-                    "user", target.asOfflinePlayer().getName()));
+        if (nickname == null) {
+            message = carbonChat.getLanguage().getString("nickname-reset");
         } else {
-            sender.setNickname(nickname);
-
-            String message;
-
-            if (nickname == null) {
-                message = carbonChat.getLanguage().getString("nickname-reset");
-            } else {
-                message = carbonChat.getLanguage().getString("nickname-set");
-            }
-
-            sender.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
-                    message, "nickname", nickname == null ? "" : nickname));
+            message = carbonChat.getLanguage().getString("nickname-set");
         }
+
+        sender.sendMessage(carbonChat.getAdventureManager().processMessage(
+                message, "nickname", nickname == null ? "" : nickname,
+                "user", sender.asOfflinePlayer().getName()));
+    }
+
+    private void executeOther(CommandSender sender, Object[] args) {
+        Audience user = carbonChat.getAdventureManager().getAudiences().audience(sender);
+        ChatUser target = (ChatUser) args[0];
+        String nickname = (String) args[1];
+
+        if (nickname.equalsIgnoreCase("off") ||
+                nickname.equalsIgnoreCase(target.asOfflinePlayer().getName())) {
+            nickname = null;
+        }
+
+        target.setNickname(nickname);
+
+        String message;
+
+        if (nickname == null) {
+            message = carbonChat.getLanguage().getString("other-nickname-reset");
+        } else {
+            message = carbonChat.getLanguage().getString("other-nickname-set");
+        }
+
+        user.sendMessage(carbonChat.getAdventureManager().processMessage(
+                message, "nickname", nickname == null ? "" : nickname,
+                "user", target.asOfflinePlayer().getName()));
     }
 
 }

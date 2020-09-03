@@ -1,30 +1,49 @@
 package net.draycia.carbon.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
+import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
+import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-@CommandAlias("ignore")
-@CommandPermission("carbonchat.ignore")
-public class IgnoreCommand extends BaseCommand {
+import java.util.LinkedHashMap;
 
-    @Dependency
-    private CarbonChat carbonChat;
+public class IgnoreCommand {
 
-    @Default
-    @CommandCompletion("@players @nothing")
-    @Syntax("<player>")
-    public void baseCommand(Player player, ChatUser targetUser) {
+    private final CarbonChat carbonChat;
+
+    public IgnoreCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+        this.carbonChat = carbonChat;
+
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
+
+        LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+        channelArguments.put("player", CarbonUtils.chatUserArgument());
+
+        new CommandAPICommand(commandSettings.getName())
+                .withArguments(channelArguments)
+                .withAliases(commandSettings.getAliasesArray())
+                .withPermission(CommandPermission.fromString("carbonchat.ignore"))
+                .executesPlayer(this::execute)
+                .register();
+    }
+
+    private void execute(Player player, Object[] args) {
+        ChatUser targetUser = (ChatUser) args[0];
         ChatUser user = carbonChat.getUserService().wrap(player);
 
         if (user.isIgnoringUser(targetUser)) {
             user.setIgnoringUser(targetUser, false);
-            user.sendMessage(processMessage(player, carbonChat.getLanguage().getString("not-ignoring-user"),
+            user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
+                    carbonChat.getLanguage().getString("not-ignoring-user"),
                     "br", "\n", "player", targetUser.asOfflinePlayer().getName()));
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
@@ -38,17 +57,14 @@ public class IgnoreCommand extends BaseCommand {
                     format = carbonChat.getLanguage().getString("ignoring-user");
                 }
 
-                Component message = processMessage(player, format, "br", "\n",
-                        "sender", player.getDisplayName(), "player", targetUser.asOfflinePlayer().getName());
+                Component message = carbonChat.getAdventureManager().processMessageWithPapi(player, format,
+                        "br", "\n", "sender", player.getDisplayName(), "player",
+                        targetUser.asOfflinePlayer().getName());
 
                 user.sendMessage(message);
             });
 
         }
-    }
-
-    private Component processMessage(Player player, String message, String... args) {
-        return carbonChat.getAdventureManager().processMessageWithPapi(player, message, args);
     }
 
 }

@@ -21,6 +21,9 @@ available-channels-list: '<green>Available Channels:<reset> <list>.'
 unavailable-channels-list: '<red>Unavailable Channels:<reset> <list>.'
 channel-list-separator: ', '
 user-must-be-online: '<red><player> must be online!'
+reply-message-blank: '<red>Your reply message was blank!'
+invalid-color: '<red>The input <input> is not a valid color!'
+cannot-set-color: '<red>You do not have permission to set a color for this channel!'
 
 # The following messages are compatible with PlaceholderAPI and MiniMessage/MineDown
 me: '<italic><dark_purple>*<displayname> <reset><message>*</dark_purple></italic>'

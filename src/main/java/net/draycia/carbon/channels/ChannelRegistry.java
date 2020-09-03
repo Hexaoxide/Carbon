@@ -1,6 +1,6 @@
 package net.draycia.carbon.channels;
 
-import co.aikar.commands.BukkitCommandManager;
+import dev.jorel.commandapi.CommandAPI;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.commands.AliasedChannelCommand;
 import net.draycia.carbon.util.Registry;
@@ -27,12 +27,8 @@ public class ChannelRegistry implements Registry<ChatChannel> {
         boolean registerSuccessful = registry.putIfAbsent(key, value) == null;
 
         if (registerSuccessful) {
-            BukkitCommandManager commandManager = carbonChat.getCommandManager().getCommandManager();
-            commandManager.getCommandReplacements().addReplacement("channelName", value.getAliases());
+            AliasedChannelCommand command = new AliasedChannelCommand(carbonChat, value);
 
-            AliasedChannelCommand command = new AliasedChannelCommand(value);
-
-            commandManager.registerCommand(command);
             channelCommands.add(command);
 
             if (value instanceof Listener) {
@@ -61,7 +57,7 @@ public class ChannelRegistry implements Registry<ChatChannel> {
 
         for (AliasedChannelCommand command : channelCommands) {
             carbonChat.getLogger().info("Unregistering command for channel: " +  command.getChatChannel().getName());
-            carbonChat.getCommandManager().getCommandManager().unregisterCommand(command);
+            CommandAPI.unregister(command.getCommandName());
         }
     }
 

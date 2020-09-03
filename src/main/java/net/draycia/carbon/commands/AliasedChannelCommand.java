@@ -1,58 +1,82 @@
 package net.draycia.carbon.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.ConditionFailedException;
-import co.aikar.commands.annotation.*;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-@CommandAlias("%channelName")
-@CommandPermission("carbonchat.switch")
-public class AliasedChannelCommand extends BaseCommand {
+import java.util.LinkedHashMap;
 
-    @Dependency
-    private CarbonChat carbonChat;
+public class AliasedChannelCommand {
 
+    private final CarbonChat carbonChat;
     private final ChatChannel chatChannel;
+    private final String commandName;
 
-    public AliasedChannelCommand(ChatChannel chatChannel) {
+    public AliasedChannelCommand(CarbonChat carbonChat, ChatChannel chatChannel) {
+        this.carbonChat = carbonChat;
         this.chatChannel = chatChannel;
+
+        this.commandName = chatChannel.getKey();
+
+        LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
+
+        new CommandAPICommand(commandName)
+                .withArguments(setChannelArguments)
+                .withPermission(CommandPermission.fromString("carbonchat.channel"))
+                .executesPlayer(this::setChannel)
+                .register();
+
+        LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
+        sendMessageArguments.put("message", new GreedyStringArgument());
+
+        new CommandAPICommand(commandName)
+                .withArguments(sendMessageArguments)
+                .withPermission(CommandPermission.fromString("carbonchat.channel.message"))
+                .executesPlayer(this::sendMessage)
+                .register();
     }
 
-    @Default
-    @Syntax("[message]")
-    public void baseCommand(Player player, @Optional String[] args) {
+    private void setChannel(Player player, Object[] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
 
-        if (!chatChannel.canPlayerUse(user)) {
-            throw new ConditionFailedException(chatChannel.getCannotUseMessage());
-        }
-
-        if (user.getChannelSettings(chatChannel).isIgnored()) {
-            throw new ConditionFailedException(chatChannel.getCannotUseMessage());
-        }
-
-        if (args == null || args.length == 0) {
-            user.setSelectedChannel(getChatChannel());
-
-            user.sendMessage(carbonChat.getAdventureManager().processMessage(getChatChannel().getSwitchMessage(),
+        if (user.getChannelSettings(getChatChannel()).isIgnored()) {
+            user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, getChatChannel().getCannotUseMessage(),
+                    "br", "\n",
                     "color", "<" + getChatChannel().getChannelColor(user).toString() + ">",
                     "channel", getChatChannel().getName()));
-        } else {
-            Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
-                Component component = getChatChannel().sendMessage(user, String.join(" ", args), false);
 
-                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
-                        .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
-            });
+            return;
         }
+
+        user.setSelectedChannel(getChatChannel());
+
+        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, getChatChannel().getSwitchMessage(),
+                "br", "\n",
+                "color", "<" + getChatChannel().getChannelColor(user).toString() + ">",
+                "channel", getChatChannel().getName()));
+    }
+
+    private void sendMessage(Player player, Object[] args) {
+        ChatUser user = carbonChat.getUserService().wrap(player);
+        String message = (String) args[0];
+
+        Component component = getChatChannel().sendMessage(user, message, false);
+
+        carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
+                .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
     }
 
     public ChatChannel getChatChannel() {
         return chatChannel;
+    }
+
+    public String getCommandName() {
+        return commandName;
     }
 }

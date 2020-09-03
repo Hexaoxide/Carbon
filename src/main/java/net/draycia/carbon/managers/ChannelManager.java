@@ -79,7 +79,7 @@ public class ChannelManager {
         return channel;
     }
 
-    public void reload() {
+    private void reload() {
         registry.clearAll();
 
         for (String key : carbonChat.getConfig().getConfigurationSection("channels").getKeys(false)) {

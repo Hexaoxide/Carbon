@@ -1,26 +1,55 @@
 package net.draycia.carbon.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
+import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.storage.UserChannelSettings;
+import net.draycia.carbon.util.CarbonUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandAlias("tch|togglec|togglechannel|toggle")
-@CommandPermission("carbonchat.toggle")
-public class ToggleCommand extends BaseCommand {
+import java.util.LinkedHashMap;
 
-    @Dependency
-    private CarbonChat carbonChat;
+public class ToggleCommand {
 
-    @Default
-    @CommandCompletion("@chatchannel @players @nothing")
-    @Syntax("<channel>")
-    public void baseCommand(Player player, @Conditions("canuse:true") ChatChannel channel) {
+    private final CarbonChat carbonChat;
+
+    public ToggleCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+        this.carbonChat = carbonChat;
+
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
+
+        LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+        channelArguments.put("channel", CarbonUtils.channelArgument());
+
+        new CommandAPICommand(commandSettings.getName())
+                .withArguments(channelArguments)
+                .withAliases(commandSettings.getAliasesArray())
+                .withPermission(CommandPermission.fromString("carbonchat.toggle"))
+                .executesPlayer(this::executeSelf)
+                .register();
+
+        LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
+        argumentsOther.put("players", CarbonUtils.chatUserArgument());
+        argumentsOther.put("channel", CarbonUtils.channelArgument());
+
+        new CommandAPICommand(commandSettings.getName())
+                .withArguments(argumentsOther)
+                .withAliases(commandSettings.getAliasesArray())
+                .withPermission(CommandPermission.fromString("carbonchat.toggle"))
+                .executes(this::executeOther)
+                .register();
+    }
+
+    private void executeSelf(Player player, Object[] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
+        ChatChannel channel = (ChatChannel) args[0];
 
         String message;
 
@@ -40,11 +69,10 @@ public class ToggleCommand extends BaseCommand {
                 "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
     }
 
-    @CommandPermission("carbonchat.toggle.others")
-    @Subcommand("other")
-    @CommandCompletion("@chatchannel @players")
-    @Syntax("<channel> <player>")
-    public void baseCommand(CommandSender sender, @Conditions("canuse:true") ChatChannel channel, ChatUser user) {
+    private void executeOther(CommandSender sender, Object[] args) {
+        ChatUser user = (ChatUser) args[0];
+        ChatChannel channel = (ChatChannel) args[1];
+
         String message;
         String otherMessage;
 

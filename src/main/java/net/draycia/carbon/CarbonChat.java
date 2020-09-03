@@ -1,5 +1,6 @@
 package net.draycia.carbon;
 
+import dev.jorel.commandapi.CommandAPI;
 import net.draycia.carbon.channels.contexts.impl.EconomyContext;
 import net.draycia.carbon.channels.contexts.impl.DistanceContext;
 import net.draycia.carbon.channels.contexts.impl.TownyContext;
@@ -12,7 +13,7 @@ import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.CarbonPlaceholders;
-import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.Metrics;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -25,6 +26,8 @@ import java.io.File;
 
 public final class CarbonChat extends JavaPlugin {
 
+    private static final int BSTATS_PLUGIN_ID = 8720;
+
     private Permission permission;
 
     private CommandManager commandManager;
@@ -35,10 +38,11 @@ public final class CarbonChat extends JavaPlugin {
     private UserService userService;
     private MessageManager messageManager;
 
-    private CarbonUtils itemStackUtils;
-
     private YamlConfiguration modConfig;
     private YamlConfiguration languageConfig;
+    private YamlConfiguration commandsConfig;
+
+    private FilterHandler filterHandler;
 
     public static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.builder()
@@ -49,7 +53,15 @@ public final class CarbonChat extends JavaPlugin {
                     .build();
 
     @Override
+    public void onLoad() {
+        CommandAPI.onLoad(false);
+    }
+
+    @Override
     public void onEnable() {
+        CommandAPI.onEnable(this);
+        Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+
         // Ensure config is present to be modified by the user
         if (!(new File(getDataFolder(), "config.yml").exists())) {
             saveDefaultConfig();
@@ -63,26 +75,24 @@ public final class CarbonChat extends JavaPlugin {
             saveResource("language.yml", false);
         }
 
+        if (!(new File(getDataFolder(), "commands.yml").exists())) {
+            saveResource("commands.yml", false);
+        }
+
         loadModConfig();
         loadLanguage();
 
         // Setup Adventure
         adventureManager = new AdventureManager(this);
 
-        try {
-            itemStackUtils = new CarbonUtils();
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-
         // Setup vault and permissions
         permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
 
         // Initialize managers
-        commandManager = new CommandManager(this);
         channelManager = new ChannelManager(this);
         contextManager = new ContextManager();
         messageManager = new MessageManager(this);
+        commandManager = new CommandManager(this);
 
         String storageType = getConfig().getString("storage.type");
 
@@ -142,7 +152,10 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new WhisperPingHandler(this), this);
 
         pluginManager.registerEvents(new CapsHandler(this), this);
-        pluginManager.registerEvents(new FilterHandler(this), this);
+
+        filterHandler = new FilterHandler(this);
+        pluginManager.registerEvents(filterHandler, this);
+
         pluginManager.registerEvents(new MuteHandler(), this);
         pluginManager.registerEvents(new ShadowMuteHandler(this), this);
     }
@@ -153,6 +166,11 @@ public final class CarbonChat extends JavaPlugin {
 
         loadModConfig();
         loadLanguage();
+        loadCommandsConfig();
+    }
+
+    public void reloadFilters() {
+        filterHandler.reloadFilters();
     }
 
     private void loadModConfig() {
@@ -163,12 +181,20 @@ public final class CarbonChat extends JavaPlugin {
         languageConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "language.yml"));
     }
 
+    private void loadCommandsConfig() {
+        commandsConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "commands.yml"));
+    }
+
     private void registerContexts() {
         getContextManager().register("distance", new DistanceContext());
     }
 
     public YamlConfiguration getModConfig() {
         return modConfig;
+    }
+
+    public YamlConfiguration getCommandsConfig() {
+        return commandsConfig;
     }
 
     public YamlConfiguration getLanguage() {
@@ -193,10 +219,6 @@ public final class CarbonChat extends JavaPlugin {
 
     public UserService getUserService() {
         return userService;
-    }
-
-    public CarbonUtils getItemStackUtils() {
-        return itemStackUtils;
     }
 
     public AdventureManager getAdventureManager() {

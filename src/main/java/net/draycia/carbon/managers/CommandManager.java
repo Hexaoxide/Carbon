@@ -1,105 +1,42 @@
 package net.draycia.carbon.managers;
 
-import co.aikar.commands.*;
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.commands.*;
-import net.draycia.carbon.storage.ChatUser;
-
-import java.util.ArrayList;
-import java.util.List;
+import net.draycia.carbon.storage.CommandSettings;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class CommandManager {
 
-    private final BukkitCommandManager commandManager;
+    private final CarbonChat carbonChat;
 
     public CommandManager(CarbonChat carbonChat) {
-
-        commandManager = new BukkitCommandManager(carbonChat);
-
-        commandManager.enableUnstableAPI("help");
-
-        commandManager.getCommandCompletions().registerCompletion("chatchannel", (context) -> {
-            ChatUser user = carbonChat.getUserService().wrap(context.getPlayer());
-
-            List<String> completions = new ArrayList<>();
-
-            for (ChatChannel chatChannel : carbonChat.getChannelManager().getRegistry().values()) {
-                if (chatChannel.canPlayerUse(user)) {
-                    completions.add(chatChannel.getKey());
-                }
-            }
-
-            return completions;
-        });
-
-        commandManager.getCommandCompletions().registerCompletion("channel", (context) -> {
-            List<String> completions = new ArrayList<>();
-
-            for (ChatChannel chatChannel : carbonChat.getChannelManager().getRegistry().values()) {
-                    completions.add(chatChannel.getKey());
-            }
-
-            return completions;
-        });
-
-        commandManager.getCommandContexts().registerContext(ChatChannel.class, (context) -> {
-            String name = context.popFirstArg();
-
-            for (ChatChannel chatChannel : carbonChat.getChannelManager().getRegistry().values()) {
-                if (chatChannel.getKey().equalsIgnoreCase(name)) {
-                    return chatChannel;
-                }
-            }
-
-            return null;
-        });
-
-        commandManager.getCommandContexts().registerContext(ChatUser.class, (context) -> {
-            return carbonChat.getUserService().wrap(context.popFirstArg());
-        });
-
-        commandManager.getCommandConditions().addCondition(ChatChannel.class,"canuse", (context, execution, value) -> {
-            if (value == null) {
-                throw new ConditionFailedException(carbonChat.getLanguage().getString("cannot-use-channel"));
-            }
-
-            ChatUser user = carbonChat.getUserService().wrap(context.getIssuer().getPlayer());
-
-            if (!value.canPlayerUse(user)) {
-                throw new ConditionFailedException(value.getCannotUseMessage());
-            }
-        });
-
-        commandManager.getCommandConditions().addCondition(ChatChannel.class,"exists", (context, execution, value) -> {
-            if (value == null) {
-                throw new ConditionFailedException(carbonChat.getLanguage().getString("cannot-use-channel"));
-            }
-        });
-
-        reloadCommands();
+        this.carbonChat = carbonChat;
+        reloadCommands(carbonChat);
     }
 
-    public void reloadCommands() {
-        this.commandManager.registerCommand(new ToggleCommand());
-        this.commandManager.registerCommand(new ChannelCommand());
-        this.commandManager.registerCommand(new ChannelListCommand());
-        this.commandManager.registerCommand(new IgnoreCommand());
-        this.commandManager.registerCommand(new ChatReloadCommand());
-        this.commandManager.registerCommand(new MeCommand());
-        this.commandManager.registerCommand(new MessageCommand());
-        this.commandManager.registerCommand(new NicknameCommand());
-        this.commandManager.registerCommand(new ReplyCommand());
-        this.commandManager.registerCommand(new SetColorCommand());
-        this.commandManager.registerCommand(new SpyChannelCommand());
-
-        this.commandManager.registerCommand(new ClearChatCommand());
-        this.commandManager.registerCommand(new MuteCommand());
-        this.commandManager.registerCommand(new ShadowMuteCommand());
+    private void reloadCommands(CarbonChat carbonChat) {
+        new ChannelCommand(carbonChat, getCommandSettings("channel"));
+        new ChannelListCommand(carbonChat, getCommandSettings("channellist"));
+        new ChatReloadCommand(carbonChat, getCommandSettings("chatreload"));
+        new ClearChatCommand(carbonChat, getCommandSettings("clearchat"));
+        new IgnoreCommand(carbonChat, getCommandSettings("ignore"));
+        new MeCommand(carbonChat, getCommandSettings("me"));
+        new MessageCommand(carbonChat, getCommandSettings("message"));
+        new MuteCommand(carbonChat, getCommandSettings("mute"));
+        new NicknameCommand(carbonChat, getCommandSettings("nickname"));
+        new ReplyCommand(carbonChat, getCommandSettings("reply"));
+        new SetColorCommand(carbonChat, getCommandSettings("setcolor"));
+        new ShadowMuteCommand(carbonChat, getCommandSettings("shadowmute"));
+        new SpyChannelCommand(carbonChat, getCommandSettings("spy"));
+        new SudoChannelCommand(carbonChat, getCommandSettings("sudochannel"));
+        new ToggleCommand(carbonChat, getCommandSettings("toggle"));
     }
 
-    public BukkitCommandManager getCommandManager() {
-        return commandManager;
+    private CommandSettings getCommandSettings(String command) {
+        ConfigurationSection section = carbonChat.getCommandsConfig().getConfigurationSection(command);
+
+        return new CommandSettings(section.getBoolean("enabled"), section.getString("name"),
+                section.getStringList("aliases"));
     }
 
 }

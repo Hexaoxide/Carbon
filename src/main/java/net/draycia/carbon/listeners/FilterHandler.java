@@ -25,9 +25,14 @@ public class FilterHandler implements Listener {
 
     public FilterHandler(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
+        reloadFilters();
+    }
+
+    public void reloadFilters() {
+        patternReplacements.clear();
+        blockedWords.clear();
 
         FileConfiguration config = carbonChat.getModConfig();
-
         ConfigurationSection filters = config.getConfigurationSection("filters.filters");
 
         for (String replacement : filters.getKeys(false)) {
