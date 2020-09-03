@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -18,23 +19,20 @@ public class SudoChannelCommand {
 
     private final CarbonChat carbonChat;
 
-    public SudoChannelCommand(CarbonChat carbonChat) {
+    public SudoChannelCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        if (!carbonChat.getConfig().getBoolean("commands.sudochannel.enabled")) {
+        if (!commandSettings.isEnabled()) {
             return;
         }
-
-        String commandName = carbonChat.getConfig().getString("commands.sudochannel.name", "sudochannel");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.sudochannel.aliases");
 
         LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
         setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
         setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(setOtherChannelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.channel.others"))
                 .executes((sender, args) -> { this.setOtherChannel(sender, (ChatUser) args[0], (ChatChannel) args[1]); })
                 .register();
@@ -44,9 +42,9 @@ public class SudoChannelCommand {
         sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
         sendMessageOtherArguments.put("message", new GreedyStringArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(sendMessageOtherArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.channel.others.message"))
                 .executes((sender, args) -> { this.sendMessageOther(sender, (ChatUser) args[0], (ChatChannel) args[1], (String) args[2]); })
                 .register();

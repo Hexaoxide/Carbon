@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import org.bukkit.entity.Player;
 
@@ -15,18 +16,19 @@ public class MessageCommand {
 
     private final CarbonChat carbonChat;
 
-    public MessageCommand(CarbonChat carbonChat) {
+    public MessageCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.message.name", "message");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.message.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
         channelArguments.put("player", CarbonUtils.chatUserArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(channelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.message"))
                 .executesPlayer(this::execute)
                 .register();

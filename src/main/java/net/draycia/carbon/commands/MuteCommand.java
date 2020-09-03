@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -19,18 +20,19 @@ public class MuteCommand {
 
     private final CarbonChat carbonChat;
 
-    public MuteCommand(CarbonChat carbonChat) {
+    public MuteCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
+
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
         arguments.put("player", CarbonUtils.chatUserArgument());
 
-        String commandName = carbonChat.getConfig().getString("commands.mute.name", "mute");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.mute.aliases");
-
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(arguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.mute"))
                 .executes(this::execute)
                 .register();

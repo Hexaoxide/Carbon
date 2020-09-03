@@ -6,6 +6,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.command.CommandSender;
@@ -18,18 +19,19 @@ public class NicknameCommand {
 
     private final CarbonChat carbonChat;
 
-    public NicknameCommand(CarbonChat carbonChat) {
+    public NicknameCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.nickname.name", "nickname");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.nickname.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> selfArguments = new LinkedHashMap<>();
         selfArguments.put("nickname", new StringArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(selfArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.nickname"))
                 .executesPlayer(this::executeSelf)
                 .register();
@@ -38,9 +40,9 @@ public class NicknameCommand {
         otherArguments.put("player", CarbonUtils.chatUserArgument());
         otherArguments.put("nickname", new StringArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(otherArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.nickname.others"))
                 .executes(this::executeOther)
                 .register();

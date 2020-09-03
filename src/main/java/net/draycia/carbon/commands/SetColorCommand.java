@@ -6,6 +6,7 @@ import dev.jorel.commandapi.arguments.*;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.format.TextColor;
@@ -17,20 +18,21 @@ public class SetColorCommand {
 
     private final CarbonChat carbonChat;
 
-    public SetColorCommand(CarbonChat carbonChat) {
+    public SetColorCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.setcolor.name", "setcolor");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.setcolor.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
             LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
             arguments.put("channel", new LiteralArgument(channel.getKey()));
             arguments.put("color", CarbonUtils.textColorArgument());
 
-            new CommandAPICommand(commandName)
+            new CommandAPICommand(commandSettings.getName())
                     .withArguments(arguments)
-                    .withAliases(commandAliases.toArray(new String[0]))
+                    .withAliases(commandSettings.getAliasesArray())
                     .withPermission(CommandPermission.fromString("carbonchat.setcolor"))
                     .executesPlayer((player, args) -> {
                         TextColor color = (TextColor)args[1];

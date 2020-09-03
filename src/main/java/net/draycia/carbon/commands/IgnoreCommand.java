@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
@@ -18,18 +19,19 @@ public class IgnoreCommand {
 
     private final CarbonChat carbonChat;
 
-    public IgnoreCommand(CarbonChat carbonChat) {
+    public IgnoreCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.ignore.name", "ignore");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.ignore.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
         channelArguments.put("player", CarbonUtils.chatUserArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(channelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.ignore"))
                 .executesPlayer(this::execute)
                 .register();

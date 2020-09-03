@@ -6,6 +6,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import org.bukkit.command.CommandSender;
@@ -18,18 +19,19 @@ public class ToggleCommand {
 
     private final CarbonChat carbonChat;
 
-    public ToggleCommand(CarbonChat carbonChat) {
+    public ToggleCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.toggle.name", "toggle");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.toggle.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
         channelArguments.put("channel", CarbonUtils.channelArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(channelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.toggle"))
                 .executesPlayer(this::executeSelf)
                 .register();
@@ -38,9 +40,9 @@ public class ToggleCommand {
         argumentsOther.put("players", CarbonUtils.chatUserArgument());
         argumentsOther.put("channel", CarbonUtils.channelArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(argumentsOther)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.toggle"))
                 .executes(this::executeOther)
                 .register();

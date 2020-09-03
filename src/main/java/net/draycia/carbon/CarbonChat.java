@@ -39,6 +39,7 @@ public final class CarbonChat extends JavaPlugin {
 
     private YamlConfiguration modConfig;
     private YamlConfiguration languageConfig;
+    private YamlConfiguration commandsConfig;
 
     public static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.builder()
@@ -63,6 +64,10 @@ public final class CarbonChat extends JavaPlugin {
 
         if (!(new File(getDataFolder(), "language.yml").exists())) {
             saveResource("language.yml", false);
+        }
+
+        if (!(new File(getDataFolder(), "commands.yml").exists())) {
+            saveResource("commands.yml", false);
         }
 
         loadModConfig();
@@ -149,6 +154,7 @@ public final class CarbonChat extends JavaPlugin {
 
         loadModConfig();
         loadLanguage();
+        loadCommandsConfig();
     }
 
     private void loadModConfig() {
@@ -159,12 +165,20 @@ public final class CarbonChat extends JavaPlugin {
         languageConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "language.yml"));
     }
 
+    private void loadCommandsConfig() {
+        commandsConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "commands.yml"));
+    }
+
     private void registerContexts() {
         getContextManager().register("distance", new DistanceContext());
     }
 
     public YamlConfiguration getModConfig() {
         return modConfig;
+    }
+
+    public YamlConfiguration getCommandsConfig() {
+        return commandsConfig;
     }
 
     public YamlConfiguration getLanguage() {

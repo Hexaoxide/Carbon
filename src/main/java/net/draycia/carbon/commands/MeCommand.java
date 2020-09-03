@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,18 +19,19 @@ public class MeCommand {
 
     private final CarbonChat carbonChat;
 
-    public MeCommand(CarbonChat carbonChat) {
+    public MeCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.me.name", "me");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.me.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
         channelArguments.put("message", new GreedyStringArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(channelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.me"))
                 .executesPlayer(this::execute)
                 .register();

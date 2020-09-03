@@ -5,25 +5,25 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 public class ClearChatCommand {
 
     private final CarbonChat carbonChat;
 
-    public ClearChatCommand(CarbonChat carbonChat) {
+    public ClearChatCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.clearchat.name", "clearchat");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.clearchat.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
-        new CommandAPICommand(commandName)
-                .withAliases(commandAliases.toArray(new String[0]))
+        new CommandAPICommand(commandSettings.getName())
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.clearchat.clear"))
                 .executes(this::execute)
                 .register();

@@ -7,29 +7,30 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class ChannelCommand {
 
     private final CarbonChat carbonChat;
 
-    public ChannelCommand(CarbonChat carbonChat) {
+    public ChannelCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.channel.name", "channel");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.channel.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
         setChannelArguments.put("channel", CarbonUtils.channelArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(setChannelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.channel"))
                 .executesPlayer(this::setChannel)
                 .register();
@@ -38,9 +39,9 @@ public class ChannelCommand {
         sendMessageArguments.put("channel", CarbonUtils.channelArgument());
         sendMessageArguments.put("message", new GreedyStringArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(sendMessageArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.channel.message"))
                 .executesPlayer(this::sendMessage)
                 .register();

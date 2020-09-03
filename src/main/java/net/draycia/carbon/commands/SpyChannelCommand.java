@@ -8,6 +8,7 @@ import dev.jorel.commandapi.arguments.LiteralArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import org.bukkit.entity.Player;
@@ -19,18 +20,19 @@ public class SpyChannelCommand {
 
     private final CarbonChat carbonChat;
 
-    public SpyChannelCommand(CarbonChat carbonChat) {
+    public SpyChannelCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.spy.name", "spy");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.spy.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
         channelArguments.put("channel", CarbonUtils.channelArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(channelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.spy"))
                 .executesPlayer(this::execute)
                 .register();
@@ -38,9 +40,9 @@ public class SpyChannelCommand {
         LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
         whisperArguments.put("channel", new LiteralArgument("whispers"));
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(whisperArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.spy"))
                 .executesPlayer(this::executeWhispers)
                 .register();
@@ -49,9 +51,9 @@ public class SpyChannelCommand {
         everythingArguments.put("channel", new LiteralArgument("*"));
         everythingArguments.put("should-spy", new BooleanArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(everythingArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.spy"))
                 .executesPlayer(this::executeEverything) // lul
                 .register();

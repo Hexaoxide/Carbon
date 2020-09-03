@@ -6,6 +6,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -23,17 +24,18 @@ public class ChannelListCommand {
 
     private final CarbonChat carbonChat;
 
-    public ChannelListCommand(CarbonChat carbonChat) {
+    public ChannelListCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
-        String commandName = carbonChat.getConfig().getString("commands.channellist.name", "channellist");
-        List<String> commandAliases = carbonChat.getConfig().getStringList("commands.channellist.aliases");
+        if (!commandSettings.isEnabled()) {
+            return;
+        }
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(channelArguments)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.channellist"))
                 .executesPlayer(this::executeSelf)
                 .register();
@@ -41,9 +43,9 @@ public class ChannelListCommand {
         LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
         argumentsOther.put("player", CarbonUtils.onlineChatUserArgument());
 
-        new CommandAPICommand(commandName)
+        new CommandAPICommand(commandSettings.getName())
                 .withArguments(argumentsOther)
-                .withAliases(commandAliases.toArray(new String[0]))
+                .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.channellist.other"))
                 .executes(this::executeOther)
                 .register();
@@ -92,7 +94,7 @@ public class ChannelListCommand {
 
         String availableFormat = carbonChat.getLanguage().getString("available-channels-list");
         Component availableComponent = carbonChat.getAdventureManager().processMessage(availableFormat, "br", "\n");
-        availableComponent = ((TextComponent)availableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (ac) ->  availableList);
+        availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (ac) ->  availableList);
 
         Audience audience = carbonChat.getAdventureManager().getAudiences().audience(sender);
 
@@ -107,7 +109,7 @@ public class ChannelListCommand {
 
             String unavailableFormat = carbonChat.getLanguage().getString("unavailable-channels-list");
             Component unavailableComponent = carbonChat.getAdventureManager().processMessage(unavailableFormat, "br", "\n");
-            unavailableComponent = ((TextComponent)unavailableComponent).replaceFirst(Pattern.compile(Pattern.quote("<list>")), (uac) ->  unavailableList);
+            unavailableComponent = unavailableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (uac) ->  unavailableList);
 
             audience.sendMessage(unavailableComponent);
         }
