@@ -22,6 +22,10 @@ public class ItemLinkHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemLink(ChatComponentEvent event) {
+        if (true) {
+            return;
+        }
+
         // Handle item linking placeholders
         if (event.getSender().isOnline()) {
             Player player = event.getSender().asPlayer();
