@@ -36,15 +36,10 @@ public class ChatReloadCommand {
     private void execute(CommandSender sender, Object[] args) {
         carbonChat.reloadConfig();
 
-        carbonChat.getChannelManager().reload();
-
         Component message = carbonChat.getAdventureManager().processMessage(carbonChat.getLanguage().getString("reloaded"),
                 "br", "\n");
 
         carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(message);
-
-        // TODO: Ensure the command list is updated when reloading.
-        // If new channels are added, their commands should appear to players.
 
         // TODO: Ensure moderation filters ETC are updated when reloading.
     }

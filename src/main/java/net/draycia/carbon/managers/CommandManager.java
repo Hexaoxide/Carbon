@@ -14,7 +14,7 @@ public class CommandManager {
         reloadCommands(carbonChat);
     }
 
-    public void reloadCommands(CarbonChat carbonChat) {
+    private void reloadCommands(CarbonChat carbonChat) {
         new ChannelCommand(carbonChat, getCommandSettings("channel"));
         new ChannelListCommand(carbonChat, getCommandSettings("channellist"));
         new ChatReloadCommand(carbonChat, getCommandSettings("chatreload"));

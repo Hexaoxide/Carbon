@@ -41,6 +41,8 @@ public final class CarbonChat extends JavaPlugin {
     private YamlConfiguration languageConfig;
     private YamlConfiguration commandsConfig;
 
+    private FilterHandler filterHandler;
+
     public static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.builder()
                     .extractUrls()
@@ -143,7 +145,10 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new WhisperPingHandler(this), this);
 
         pluginManager.registerEvents(new CapsHandler(this), this);
-        pluginManager.registerEvents(new FilterHandler(this), this);
+
+        filterHandler = new FilterHandler(this);
+        pluginManager.registerEvents(filterHandler, this);
+
         pluginManager.registerEvents(new MuteHandler(), this);
         pluginManager.registerEvents(new ShadowMuteHandler(this), this);
     }
@@ -155,6 +160,8 @@ public final class CarbonChat extends JavaPlugin {
         loadModConfig();
         loadLanguage();
         loadCommandsConfig();
+
+        filterHandler.reloadFilters();
     }
 
     private void loadModConfig() {
