@@ -129,14 +129,14 @@ public final class CarbonUtils {
             }
 
             return carbonChat.getUserService().wrap(player);
-        }).overrideSuggestions((sender, args) -> {
-            ArrayList<String> players = new ArrayList<>();
-
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                players.add(player.getName());
-            }
-
-            return players.toArray(new String[0]);
+//        }).overrideSuggestions((sender, args) -> {
+//            ArrayList<String> players = new ArrayList<>();
+//
+//            for (Player player : Bukkit.getOnlinePlayers()) {
+//                players.add(player.getName());
+//            }
+//
+//            return players.toArray(new String[0]);
         });
     }
 
@@ -145,14 +145,14 @@ public final class CarbonUtils {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
             return carbonChat.getUserService().wrap(input);
-        }).overrideSuggestions((sender, args) -> {
-            ArrayList<String> players = new ArrayList<>();
-
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                players.add(player.getName());
-            }
-
-            return players.toArray(new String[0]);
+//        }).overrideSuggestions((sender, args) -> {
+//            ArrayList<String> players = new ArrayList<>();
+//
+//            for (Player player : Bukkit.getOnlinePlayers()) {
+//                players.add(player.getName());
+//            }
+//
+//            return players.toArray(new String[0]);
         });
     }
 
@@ -191,16 +191,16 @@ public final class CarbonUtils {
             }
 
             return channel;
-        }).overrideSuggestions((sender, args) -> {
-            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
-
-            ArrayList<String> channels = new ArrayList<>();
-
-            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-                channels.add(channel.getKey());
-            }
-
-            return channels.toArray(new String[0]);
+//        }).overrideSuggestions((sender, args) -> {
+//            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+//
+//            ArrayList<String> channels = new ArrayList<>();
+//
+//            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
+//                channels.add(channel.getKey());
+//            }
+//
+//            return channels.toArray(new String[0]);
         });
     }
 

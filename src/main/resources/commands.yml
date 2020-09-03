@@ -24,7 +24,7 @@ me:
   aliases: ['rp']
 message:
   enabled: true
-  name: ['message']
+  name: 'message'
   aliases: ['msg', 'whisper', 'w']
 mute:
   enabled: true
