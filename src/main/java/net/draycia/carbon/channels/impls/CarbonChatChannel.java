@@ -28,6 +28,8 @@ public class CarbonChatChannel extends ChatChannel {
     private final CarbonChat carbonChat;
     private final ConfigurationSection config;
 
+    private static final Pattern MESSAGE_PATTERN = Pattern.compile("<message>");
+
     public CarbonChatChannel(String key, CarbonChat carbonChat, ConfigurationSection config) {
         this.key = key;
         this.carbonChat = carbonChat;
@@ -121,22 +123,32 @@ public class CarbonChatChannel extends ChatChannel {
 
             TextColor targetColor = getChannelColor(target);
 
-            TextComponent formattedMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
+            TextComponent formatComponent = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getFormat(),
                     "br", "\n",
                     "displayname", displayName,
                     "color", "<" + targetColor.asHexString() + ">",
                     "phase", Long.toString(System.currentTimeMillis() % 25),
-                    "server", carbonChat.getConfig().getString("server-name", "Server"),
-                    "message", formatEvent.getMessage());
+                    "server", carbonChat.getConfig().getString("server-name", "Server"));
 
             if (isUserSpying(user, target)) {
                 String prefix = processPlaceholders(user, carbonChat.getConfig().getString("spy-prefix"));
 
-                formattedMessage = (TextComponent) MiniMessage.get().parse(prefix, "color",
-                        targetColor.asHexString()).append(formattedMessage);
+                formatComponent = (TextComponent) MiniMessage.get().parse(prefix, "color",
+                        targetColor.asHexString()).append(formatComponent);
             }
 
-            ChatComponentEvent newEvent = new ChatComponentEvent(user, target, this, formattedMessage,
+            TextComponent messageComponent = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getMessage(),
+                    "br", "\n",
+                    "displayname", displayName,
+                    "color", "<" + targetColor.asHexString() + ">",
+                    "phase", Long.toString(System.currentTimeMillis() % 25),
+                    "server", carbonChat.getConfig().getString("server-name", "Server"));
+
+            TextComponent processedComponent = (TextComponent)formatComponent.replaceFirstText(MESSAGE_PATTERN, (input) -> {
+                return messageComponent.toBuilder();
+            });
+
+            ChatComponentEvent newEvent = new ChatComponentEvent(user, target, this, processedComponent,
                     formatEvent.getMessage());
 
             Bukkit.getPluginManager().callEvent(newEvent);
@@ -149,15 +161,28 @@ public class CarbonChatChannel extends ChatChannel {
 
         Bukkit.getPluginManager().callEvent(consoleFormatEvent);
 
-        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getFormat(),
+        TextColor targetColor = getChannelColor(user);
+
+        TextComponent consoleFormat = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getFormat(),
                 "br", "\n",
                 "displayname", displayName,
-                "color", "<" + getChannelColor(user).asHexString() + ">",
+                "color", "<" + targetColor.asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"),
                 "message", consoleFormatEvent.getMessage());
 
-        ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleMessage,
+        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getMessage(),
+                "br", "\n",
+                "displayname", displayName,
+                "color", "<" + targetColor.asHexString() + ">",
+                "phase", Long.toString(System.currentTimeMillis() % 25),
+                "server", carbonChat.getConfig().getString("server-name", "Server"));
+
+        TextComponent consoleComponent = (TextComponent)consoleFormat.replaceFirstText(MESSAGE_PATTERN, (input) -> {
+            return consoleMessage.toBuilder();
+        });
+
+        ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleComponent,
                 consoleFormatEvent.getMessage());
 
         Bukkit.getPluginManager().callEvent(consoleEvent);
