@@ -186,3 +186,6 @@ commands:
   channel:
     name: 'channel'
     aliases: ['ch', 'switch', 'join']
+  sudochannel:
+    name: 'sudochannel'
+    aliases: ['sch', 'sudoch', 'schannel', 'chsudo', 'channelsudo']

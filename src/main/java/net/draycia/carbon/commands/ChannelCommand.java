@@ -9,7 +9,6 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
@@ -35,17 +34,6 @@ public class ChannelCommand {
                 .executesPlayer(this::setChannel)
                 .register();
 
-//        LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
-//        setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
-//        setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
-//
-//        new CommandAPICommand(commandName)
-//                .withArguments(setOtherChannelArguments)
-//                .withAliases(commandAliases.toArray(new String[0]))
-//                .withPermission(CommandPermission.fromString("carbonchat.channel.others"))
-//                .executes(this::setOtherChannel)
-//                .register();
-
         LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
         sendMessageArguments.put("channel", CarbonUtils.channelArgument());
         sendMessageArguments.put("message", new GreedyStringArgument());
@@ -56,18 +44,6 @@ public class ChannelCommand {
                 .withPermission(CommandPermission.fromString("carbonchat.channel.message"))
                 .executesPlayer(this::sendMessage)
                 .register();
-
-//        LinkedHashMap<String, Argument> sendMessageOtherArguments = new LinkedHashMap<>();
-//        sendMessageOtherArguments.put("player", CarbonUtils.onlineChatUserArgument());
-//        sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
-//        sendMessageOtherArguments.put("message", new GreedyStringArgument());
-//
-//        new CommandAPICommand(commandName)
-//                .withArguments(sendMessageOtherArguments)
-//                .withAliases(commandAliases.toArray(new String[0]))
-//                .withPermission(CommandPermission.fromString("carbonchat.channel.others.message"))
-//                .executes(this::sendMessageOther)
-//                .register();
     }
 
     private void setChannel(Player player, Object[] args) {
@@ -91,38 +67,10 @@ public class ChannelCommand {
                 "channel", channel.getName()));
     }
 
-    private void setOtherChannel(CommandSender sender, Object[] args) {
-        ChatUser user = (ChatUser) args[0];
-        ChatChannel channel = (ChatChannel) args[1];
-
-        user.setSelectedChannel(channel);
-
-        String message = channel.getSwitchMessage();
-        String otherMessage = channel.getSwitchOtherMessage();
-
-        user.sendMessage(carbonChat.getAdventureManager().processMessage(message, "br", "\n",
-                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
-
-        carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage, "br", "\n",
-                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName(),
-                "player", user.asOfflinePlayer().getName()));
-    }
-
     private void sendMessage(Player player, Object[] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
         ChatChannel channel = (ChatChannel) args[0];
         String message = (String) args[1];
-
-        Component component = channel.sendMessage(user, message, false);
-
-        carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
-                .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
-    }
-
-    private void sendMessageOther(CommandSender sender, Object[] args) {
-        ChatUser user = (ChatUser) args[0];
-        ChatChannel channel = (ChatChannel) args[1];
-        String message = (String) args[2];
 
         Component component = channel.sendMessage(user, message, false);
 

@@ -23,6 +23,7 @@ public class CommandManager {
         new SetColorCommand(carbonChat);
         new ShadowMuteCommand(carbonChat);
         new SpyChannelCommand(carbonChat);
+        new SudoChannelCommand(carbonChat);
         new ToggleCommand(carbonChat);
     }
 
