@@ -1,5 +1,6 @@
 package net.draycia.carbon;
 
+import dev.jorel.commandapi.CommandAPI;
 import net.draycia.carbon.channels.contexts.impl.EconomyContext;
 import net.draycia.carbon.channels.contexts.impl.DistanceContext;
 import net.draycia.carbon.channels.contexts.impl.TownyContext;
@@ -52,7 +53,13 @@ public final class CarbonChat extends JavaPlugin {
                     .build();
 
     @Override
+    public void onLoad() {
+        CommandAPI.onLoad(false);
+    }
+
+    @Override
     public void onEnable() {
+        CommandAPI.onEnable(this);
         Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
         // Ensure config is present to be modified by the user
@@ -160,7 +167,9 @@ public final class CarbonChat extends JavaPlugin {
         loadModConfig();
         loadLanguage();
         loadCommandsConfig();
+    }
 
+    public void reloadFilters() {
         filterHandler.reloadFilters();
     }
 

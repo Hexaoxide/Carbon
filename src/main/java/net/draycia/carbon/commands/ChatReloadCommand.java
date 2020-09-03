@@ -35,13 +35,12 @@ public class ChatReloadCommand {
 
     private void execute(CommandSender sender, Object[] args) {
         carbonChat.reloadConfig();
+        carbonChat.reloadFilters();
 
         Component message = carbonChat.getAdventureManager().processMessage(carbonChat.getLanguage().getString("reloaded"),
                 "br", "\n");
 
         carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(message);
-
-        // TODO: Ensure moderation filters ETC are updated when reloading.
     }
 
 }
