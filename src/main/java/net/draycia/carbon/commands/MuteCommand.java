@@ -14,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class MuteCommand {
 

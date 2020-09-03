@@ -12,7 +12,6 @@ import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.format.TextColor;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class SetColorCommand {
 

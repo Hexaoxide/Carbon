@@ -11,7 +11,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class ReplyCommand {
 

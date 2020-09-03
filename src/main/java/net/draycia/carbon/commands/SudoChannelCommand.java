@@ -13,7 +13,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class SudoChannelCommand {
 
