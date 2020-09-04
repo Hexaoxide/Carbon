@@ -11,6 +11,7 @@ filters:
   case-sensitive: false
   # The keys ("****" for example) are what the text is replaced with
   # The strings in the lists ("lag" etc) are what's replaced
+  # Set to filters: {} if you want to disable the filter feature.
   filters:
     # In this example, any instance of "lag" or "laggggg" will be replaced with "****"
     "****":
@@ -20,6 +21,7 @@ filters:
     "_":
       - "broccoli sucks"
   # Anything in blocked-words will prevent the message from being sent at all.
+  # Set to blocked-words: [] if you want to disable the blocked words feature.
   blocked-words:
     - "pineapple doesn't belong on pizza"
 

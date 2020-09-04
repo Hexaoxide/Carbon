@@ -51,7 +51,6 @@ public class FilterHandler implements Listener {
             }
         }
 
-
         for (String replacement : config.getStringList("filters.blocked-words")) {
             for (String word : filters.getStringList(replacement)) {
                 if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
