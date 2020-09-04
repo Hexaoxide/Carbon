@@ -35,19 +35,22 @@ public class FilterHandler implements Listener {
         FileConfiguration config = carbonChat.getModConfig();
         ConfigurationSection filters = config.getConfigurationSection("filters.filters");
 
-        for (String replacement : filters.getKeys(false)) {
-            List<Pattern> patterns = new ArrayList<>();
+        if (filters != null) {
+            for (String replacement : filters.getKeys(false)) {
+                List<Pattern> patterns = new ArrayList<>();
 
-            for (String word : filters.getStringList(replacement)) {
-                if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
-                    patterns.add(Pattern.compile(word));
-                } else {
-                    patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
+                for (String word : filters.getStringList(replacement)) {
+                    if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+                        patterns.add(Pattern.compile(word));
+                    } else {
+                        patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
+                    }
                 }
-            }
 
-            patternReplacements.put(replacement, patterns);
+                patternReplacements.put(replacement, patterns);
+            }
         }
+
 
         for (String replacement : config.getStringList("filters.blocked-words")) {
             for (String word : filters.getStringList(replacement)) {
