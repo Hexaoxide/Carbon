@@ -116,6 +116,7 @@ nicknames-set-tab-name: true
 # Plays a sound and highlights the message when someone types your name
 pings:
   enabled: true
+  case-sensitive: false
   source: 'PLAYER'
   sound: 'minecraft:entity.experience_orb.pickup'
   prefix: '@'

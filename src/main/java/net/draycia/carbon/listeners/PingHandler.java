@@ -26,15 +26,22 @@ public class PingHandler implements Listener {
             return;
         }
 
-        if (event.getSender().getUUID().equals(event.getTarget().getUUID())) {
+        String targetName = event.getTarget().asOfflinePlayer().getName();
+        String prefix = carbonChat.getConfig().getString("pings.prefix", "");
+        boolean caseSensitive = carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
+
+        if (targetName == null) {
             return;
         }
 
-        String senderName = event.getSender().asOfflinePlayer().getName();
-        String prefix = carbonChat.getConfig().getString("pings.prefix", "");
-
-        if (senderName == null || !event.getOriginalMessage().contains(prefix + senderName)) {
-            return;
+        if (caseSensitive) {
+            if (!event.getOriginalMessage().contains(prefix + targetName)) {
+                return;
+            }
+        } else {
+            if (!event.getOriginalMessage().toLowerCase().contains((prefix + targetName).toLowerCase())) {
+                return;
+            }
         }
 
         Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
