@@ -52,12 +52,10 @@ public class FilterHandler implements Listener {
         }
 
         for (String replacement : config.getStringList("filters.blocked-words")) {
-            for (String word : filters.getStringList(replacement)) {
-                if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
-                    blockedWords.add(Pattern.compile(word));
-                } else {
-                    blockedWords.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
-                }
+            if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+                blockedWords.add(Pattern.compile(replacement));
+            } else {
+                blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
             }
         }
     }
