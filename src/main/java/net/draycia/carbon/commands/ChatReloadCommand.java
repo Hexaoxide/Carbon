@@ -22,11 +22,7 @@ public class ChatReloadCommand {
             return;
         }
 
-        LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-        channelArguments.put("channel", CarbonUtils.channelArgument());
-
         new CommandAPICommand(commandSettings.getName())
-                .withArguments(channelArguments)
                 .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.reload"))
                 .executes(this::execute)

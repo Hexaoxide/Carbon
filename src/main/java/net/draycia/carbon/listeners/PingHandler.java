@@ -18,6 +18,10 @@ public class PingHandler implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPing(ChatComponentEvent event) {
+        if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
+            return;
+        }
+
         if (event.getTarget() == null) {
             return;
         }
@@ -33,16 +37,12 @@ public class PingHandler implements Listener {
             return;
         }
 
-        if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
-            return;
-        }
-
         Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
         Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("pings.source"));
         float volume = (float) carbonChat.getConfig().getDouble("pings.volume");
         float pitch = (float) carbonChat.getConfig().getDouble("pings.pitch");
 
-        event.getSender().playSound(Sound.of(key, source, volume, pitch));
+        event.getTarget().playSound(Sound.of(key, source, volume, pitch));
     }
 
 }
