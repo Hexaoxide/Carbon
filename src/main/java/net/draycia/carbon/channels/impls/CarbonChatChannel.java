@@ -190,7 +190,7 @@ public class CarbonChatChannel extends ChatChannel {
         // Route message to bungee / discord (if message originates from this server)
         // Use instanceof and not isOnline, if this message originates from another then the instanceof will
         // fail, but isOnline may succeed if the player is online on both servers (somehow).
-        if (user.isOnline() && !fromRemote && shouldBungee()) {
+        if (user.isOnline() && !fromRemote && (shouldBungee() || isCrossServer())) {
             sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
         }
 
@@ -382,8 +382,14 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
+    @Deprecated
     public Boolean shouldBungee() {
-        return getBoolean("should-bungee") || getBoolean("is-cross-server");
+        return getBoolean("should-bungee");
+    }
+
+    @Override
+    public Boolean isCrossServer() {
+        return getBoolean("is-cross-server");
     }
 
     @Override

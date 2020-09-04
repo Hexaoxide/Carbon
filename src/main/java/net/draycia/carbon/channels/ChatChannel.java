@@ -33,7 +33,19 @@ public abstract class ChatChannel implements ForwardingAudience {
      */
     public abstract Boolean isIgnorable();
 
+    /**
+     *
+     * @return If this channel should be synced cross server
+     *
+     * @deprecated Use {@link #isCrossServer()} instead
+     */
+    @Deprecated
     public abstract Boolean shouldBungee();
+
+    /**
+     * @return If this channel should be synced cross server
+     */
+    public abstract Boolean isCrossServer();
 
     /**
      * @return The name of this channel.
