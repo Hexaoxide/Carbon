@@ -373,7 +373,11 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public Boolean isDefault() {
-        return getBoolean("default", false);
+        if (config != null && config.contains("default")) {
+            return config.getBoolean("default");
+        }
+
+        return false;
     }
 
     @Override
@@ -416,7 +420,11 @@ public class CarbonChatChannel extends ChatChannel {
     @Override
     @Nullable
     public String getMessagePrefix() {
-        return getString("message-prefix", false);
+        if (config != null && config.contains("message-prefix")) {
+            return config.getString("message-prefix");
+        }
+
+        return null;
     }
 
     @Override
@@ -508,84 +516,60 @@ public class CarbonChatChannel extends ChatChannel {
         return section.get(key);
     }
 
-    private String getString(String key, boolean includeDefault) {
+    private String getString(String key) {
         if (config != null && config.contains(key)) {
             return config.getString(key);
         }
 
-        if (includeDefault) {
-            ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
+        ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
 
-            if (defaultSection != null && defaultSection.contains(key)) {
-                return defaultSection.getString(key);
-            }
-        }
-
-        return null;
-    }
-
-    private String getString(String key) {
-        return this.getString(key, true);
-    }
-
-    private List<String> getStringList(String key, boolean includeDefault) {
-        if (config != null && config.contains(key)) {
-            return config.getStringList(key);
-        }
-
-        if (includeDefault) {
-            ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
-
-            if (defaultSection != null && defaultSection.contains(key)) {
-                return defaultSection.getStringList(key);
-            }
+        if (defaultSection != null && defaultSection.contains(key)) {
+            return defaultSection.getString(key);
         }
 
         return null;
     }
 
     private List<String> getStringList(String key) {
-        return this.getStringList(key, true);
+        if (config != null && config.contains(key)) {
+            return config.getStringList(key);
+        }
+
+        ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
+
+        if (defaultSection != null && defaultSection.contains(key)) {
+            return defaultSection.getStringList(key);
+        }
+
+        return Collections.emptyList();
     }
 
-    private boolean getBoolean(String key, boolean includeDefault) {
+    private boolean getBoolean(String key) {
         if (config != null && config.contains(key)) {
             return config.getBoolean(key);
         }
 
-        if (includeDefault) {
-            ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
+        ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
 
-            if (defaultSection != null && defaultSection.contains(key)) {
-                return defaultSection.getBoolean(key);
-            }
+        if (defaultSection != null && defaultSection.contains(key)) {
+            return defaultSection.getBoolean(key);
         }
 
         return false;
     }
 
-    private boolean getBoolean(String key) {
-        return this.getBoolean(key, true);
-    }
-
-    private double getDouble(String key, boolean includeDefault) {
+    private double getDouble(String key) {
         if (config != null && config.contains(key)) {
             return config.getDouble(key);
         }
 
-        if (includeDefault) {
-            ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
+        ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
 
-            if (defaultSection != null && defaultSection.contains(key)) {
-                return defaultSection.getDouble(key);
-            }
+        if (defaultSection != null && defaultSection.contains(key)) {
+            return defaultSection.getDouble(key);
         }
 
         return 0;
-    }
-
-    private double getDouble(String key) {
-        return this.getDouble(key, true);
     }
 
     @Override
