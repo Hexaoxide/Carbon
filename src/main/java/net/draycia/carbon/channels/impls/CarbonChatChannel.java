@@ -383,7 +383,7 @@ public class CarbonChatChannel extends ChatChannel {
 
     @Override
     public Boolean shouldBungee() {
-        return getBoolean("should-bungee");
+        return getBoolean("should-bungee") || getBoolean("is-cross-server");
     }
 
     @Override
