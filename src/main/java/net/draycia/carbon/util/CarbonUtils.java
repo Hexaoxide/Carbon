@@ -32,11 +32,13 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Content;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -45,35 +47,35 @@ import java.util.ArrayList;
 public final class CarbonUtils {
 
     public static Component createComponent(final Player player) {
-        try {
-            final ItemStack itemStack = player.getInventory().getItemInMainHand();
+        if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
+            return net.kyori.adventure.text.TextComponent.empty();
+        }
 
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                return net.kyori.adventure.text.TextComponent.empty();
-            }
+        final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
-            Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
-            HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
+        if (itemStack.getType().isAir()) {
+            return net.kyori.adventure.text.TextComponent.empty();
+        }
 
-            ComponentBuilder component = new ComponentBuilder();
-            component.event(event); // Let this be inherited by all coming components.
-            component.color(ChatColor.WHITE).append("[");
+        Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
+        HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
 
-            if (itemStack.getItemMeta().hasDisplayName()) {
-                component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
-            } else {
-                String name = itemStack.getItemMeta().hasDisplayName()
-                        ? itemStack.getItemMeta().getDisplayName()
-                        : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
-                component.append(new TranslatableComponent(name));
-            }
+        ComponentBuilder component = new ComponentBuilder();
+        component.event(event); // Let this be inherited by all coming components.
+        component.color(ChatColor.WHITE).append("[");
 
-            component.color(ChatColor.WHITE).append("]");
+        if (itemStack.getItemMeta().hasDisplayName()) {
+            component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
+        } else {
+            String name = itemStack.getItemMeta().hasDisplayName()
+                    ? itemStack.getItemMeta().getDisplayName()
+                    : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
+            component.append(new TranslatableComponent(name));
+        }
 
-            return BungeeCordComponentSerializer.get().deserialize(component.create());
-        } catch (NoSuchMethodError ignored) {}
+        component.color(ChatColor.WHITE).append("]");
 
-        return net.kyori.adventure.text.TextComponent.empty();
+        return BungeeCordComponentSerializer.get().deserialize(component.create());
     }
 
     public static TextColor parseColor(ChatUser user, String input) {
