@@ -45,6 +45,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class CarbonUtils {
 
@@ -52,7 +53,7 @@ public final class CarbonUtils {
     private static final String[] colors;
 
     static {
-        ArrayList<String> colorList = new ArrayList<>();
+        List<String> colorList = new ArrayList<>();
 
         for (NamedTextColor color : NamedTextColor.values()) {
             colorList.add(color.toString());
