@@ -83,7 +83,7 @@ public final class CarbonUtils {
             input = "white";
         }
 
-        if (user.isOnline()) {
+        if (user != null && user.isOnline()) {
             input = PlaceholderAPI.setPlaceholders(user.asPlayer(), input);
         }
 
@@ -103,23 +103,7 @@ public final class CarbonUtils {
     }
 
     public static TextColor parseColor(String input) {
-        if (input == null) {
-            input = "white";
-        }
-
-        for (NamedTextColor namedColor : NamedTextColor.values()) {
-            if (namedColor.toString().equalsIgnoreCase(input)) {
-                return namedColor;
-            }
-        }
-
-        if (input.contains("&") || input.contains("§")) {
-            input = input.replace("&", "§");
-
-            return LegacyComponentSerializer.legacySection().deserialize(input).color();
-        }
-
-        return TextColor.fromCSSHexString(input);
+        return parseColor(null, input);
     }
 
     public static Argument onlineChatUserArgument() {
