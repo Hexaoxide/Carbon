@@ -51,6 +51,16 @@ public final class CarbonUtils {
     @NotNull
     private static final String[] colors;
 
+    static {
+        ArrayList<String> colorList = new ArrayList<>();
+
+        for (NamedTextColor color : NamedTextColor.values()) {
+            colorList.add(color.toString());
+        }
+
+        colors = colorList.toArray(new String[0]);
+    }
+
     @NotNull
     public static Component createComponent(@NotNull final Player player) {
         if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
@@ -157,7 +167,7 @@ public final class CarbonUtils {
     @NotNull
     public static Argument textColorArgument() {
         return new CustomArgument<>((input) -> {
-            TextColor color =  parseColor(input);
+            TextColor color = parseColor(input);
 
             if (color == null) {
                 throw new CustomArgument.CustomArgumentException("Invalid color for input (" + input + ")");
@@ -194,16 +204,6 @@ public final class CarbonUtils {
 
     public static Argument usableChannelArgument() {
         throw new NotImplementedException("Not implemented yet.");
-    }
-
-    static {
-        ArrayList<String> colorList = new ArrayList<>();
-
-        for (NamedTextColor color : NamedTextColor.values()) {
-            colorList.add(color.toString());
-        }
-
-        colors = colorList.toArray(new String[0]);
     }
 
 }
