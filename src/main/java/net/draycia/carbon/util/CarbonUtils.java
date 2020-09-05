@@ -56,17 +56,19 @@ public final class CarbonUtils {
             HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
 
             ComponentBuilder component = new ComponentBuilder();
+            component.event(event); // Let this be inherited by all coming components.
             component.color(ChatColor.WHITE).append("[");
 
             if (itemStack.getItemMeta().hasDisplayName()) {
                 component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
             } else {
-                component.append(new TranslatableComponent(itemStack.getItemMeta().getLocalizedName()));
+                String name = itemStack.getItemMeta().hasDisplayName()
+                        ? itemStack.getItemMeta().getDisplayName()
+                        : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
+                component.append(new TranslatableComponent(name));
             }
 
             component.color(ChatColor.WHITE).append("]");
-
-            component.event(event);
 
             return BungeeCordComponentSerializer.get().deserialize(component.create());
         } catch (NoSuchMethodError ignored) {}
