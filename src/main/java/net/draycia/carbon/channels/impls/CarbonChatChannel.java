@@ -137,12 +137,7 @@ public class CarbonChatChannel extends ChatChannel {
                         targetColor.asHexString()).append(formatComponent);
             }
 
-            TextComponent messageComponent = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getMessage(),
-                    "br", "\n",
-                    "displayname", displayName,
-                    "color", "<" + targetColor.asHexString() + ">",
-                    "phase", Long.toString(System.currentTimeMillis() % 25),
-                    "server", carbonChat.getConfig().getString("server-name", "Server"));
+            TextComponent messageComponent = TextComponent.of(formatEvent.getMessage());
 
             TextComponent processedComponent = (TextComponent)formatComponent.replaceFirstText(MESSAGE_PATTERN, (input) -> {
                 return messageComponent.toBuilder();
@@ -168,15 +163,9 @@ public class CarbonChatChannel extends ChatChannel {
                 "displayname", displayName,
                 "color", "<" + targetColor.asHexString() + ">",
                 "phase", Long.toString(System.currentTimeMillis() % 25),
-                "server", carbonChat.getConfig().getString("server-name", "Server"),
-                "message", consoleFormatEvent.getMessage());
-
-        TextComponent consoleMessage = (TextComponent) carbonChat.getAdventureManager().processMessage(consoleFormatEvent.getMessage(),
-                "br", "\n",
-                "displayname", displayName,
-                "color", "<" + targetColor.asHexString() + ">",
-                "phase", Long.toString(System.currentTimeMillis() % 25),
                 "server", carbonChat.getConfig().getString("server-name", "Server"));
+
+        TextComponent consoleMessage = TextComponent.of(consoleFormatEvent.getMessage());
 
         TextComponent consoleComponent = (TextComponent)consoleFormat.replaceFirstText(MESSAGE_PATTERN, (input) -> {
             return consoleMessage.toBuilder();
