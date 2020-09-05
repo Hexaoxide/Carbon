@@ -47,7 +47,7 @@ public class ChannelRegistry implements Registry<ChatChannel> {
 
     @Override
     @Nullable
-    public ChatChannel get(String key) {
+    public ChatChannel get(@NotNull String key) {
         return registry.get(key);
     }
 

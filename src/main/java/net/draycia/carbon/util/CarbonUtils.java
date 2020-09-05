@@ -41,14 +41,18 @@ import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
 public final class CarbonUtils {
 
+    @NotNull
     private static final String[] colors;
 
-    public static Component createComponent(final Player player) {
+    @NotNull
+    public static Component createComponent(@NotNull final Player player) {
         if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
             return net.kyori.adventure.text.TextComponent.empty();
         }
@@ -80,11 +84,13 @@ public final class CarbonUtils {
         return BungeeCordComponentSerializer.get().deserialize(component.create());
     }
 
-    public static TextColor parseColor(String input) {
+    @Nullable
+    public static TextColor parseColor(@Nullable String input) {
         return parseColor(null, input);
     }
 
-    public static TextColor parseColor(ChatUser user, String input) {
+    @Nullable
+    public static TextColor parseColor(@Nullable ChatUser user, @Nullable String input) {
         if (input == null) {
             input = "white";
         }
@@ -108,6 +114,7 @@ public final class CarbonUtils {
         return TextColor.fromCSSHexString(input);
     }
 
+    @NotNull
     public static Argument onlineChatUserArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -130,6 +137,7 @@ public final class CarbonUtils {
         });
     }
 
+    @NotNull
     public static Argument chatUserArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -146,6 +154,7 @@ public final class CarbonUtils {
         });
     }
 
+    @NotNull
     public static Argument textColorArgument() {
         return new CustomArgument<>((input) -> {
             TextColor color =  parseColor(input);
@@ -158,6 +167,7 @@ public final class CarbonUtils {
         }).overrideSuggestions(colors);
     }
 
+    @NotNull
     public static Argument channelArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");

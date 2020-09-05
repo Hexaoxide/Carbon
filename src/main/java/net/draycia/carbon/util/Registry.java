@@ -28,7 +28,7 @@ public interface Registry<T> {
      * @return The entry associated with the key
      */
     @Nullable
-    T get(String key);
+    T get(@NotNull String key);
 
     /**
      * Clears all registered entries from the registry
