@@ -32,56 +32,81 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Content;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class CarbonUtils {
 
-    public static Component createComponent(final Player player) {
-        try {
-            final ItemStack itemStack = player.getInventory().getItemInMainHand();
+    @NotNull
+    private static final String[] colors;
 
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                return net.kyori.adventure.text.TextComponent.empty();
-            }
+    static {
+        List<String> colorList = new ArrayList<>();
 
-            Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
-            HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
+        for (NamedTextColor color : NamedTextColor.values()) {
+            colorList.add(color.toString());
+        }
 
-            ComponentBuilder component = new ComponentBuilder();
-            component.event(event); // Let this be inherited by all coming components.
-            component.color(ChatColor.WHITE).append("[");
-
-            if (itemStack.getItemMeta().hasDisplayName()) {
-                component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
-            } else {
-                String name = itemStack.getItemMeta().hasDisplayName()
-                        ? itemStack.getItemMeta().getDisplayName()
-                        : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
-                component.append(new TranslatableComponent(name));
-            }
-
-            component.color(ChatColor.WHITE).append("]");
-
-            return BungeeCordComponentSerializer.get().deserialize(component.create());
-        } catch (NoSuchMethodError ignored) {}
-
-        return net.kyori.adventure.text.TextComponent.empty();
+        colors = colorList.toArray(new String[0]);
     }
 
-    public static TextColor parseColor(ChatUser user, String input) {
+    @NotNull
+    public static Component createComponent(@NotNull final Player player) {
+        if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
+            return net.kyori.adventure.text.TextComponent.empty();
+        }
+
+        final ItemStack itemStack = player.getInventory().getItemInMainHand();
+
+        if (itemStack.getType().isAir()) {
+            return net.kyori.adventure.text.TextComponent.empty();
+        }
+
+        Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
+        HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
+
+        ComponentBuilder component = new ComponentBuilder();
+        component.event(event); // Let this be inherited by all coming components.
+        component.color(ChatColor.WHITE).append("[");
+
+        if (itemStack.getItemMeta().hasDisplayName()) {
+            component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
+        } else {
+            String name = itemStack.getItemMeta().hasDisplayName()
+                    ? itemStack.getItemMeta().getDisplayName()
+                    : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
+            component.append(new TranslatableComponent(name));
+        }
+
+        component.color(ChatColor.WHITE).append("]");
+
+        return BungeeCordComponentSerializer.get().deserialize(component.create());
+    }
+
+    @Nullable
+    public static TextColor parseColor(@Nullable String input) {
+        return parseColor(null, input);
+    }
+
+    @Nullable
+    public static TextColor parseColor(@Nullable ChatUser user, @Nullable String input) {
         if (input == null) {
             input = "white";
         }
 
-        if (user.isOnline()) {
+        if (user != null && user.isOnline()) {
             input = PlaceholderAPI.setPlaceholders(user.asPlayer(), input);
         }
 
@@ -100,26 +125,7 @@ public final class CarbonUtils {
         return TextColor.fromCSSHexString(input);
     }
 
-    public static TextColor parseColor(String input) {
-        if (input == null) {
-            input = "white";
-        }
-
-        for (NamedTextColor namedColor : NamedTextColor.values()) {
-            if (namedColor.toString().equalsIgnoreCase(input)) {
-                return namedColor;
-            }
-        }
-
-        if (input.contains("&") || input.contains("§")) {
-            input = input.replace("&", "§");
-
-            return LegacyComponentSerializer.legacySection().deserialize(input).color();
-        }
-
-        return TextColor.fromCSSHexString(input);
-    }
-
+    @NotNull
     public static Argument onlineChatUserArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -142,6 +148,7 @@ public final class CarbonUtils {
         });
     }
 
+    @NotNull
     public static Argument chatUserArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -158,21 +165,10 @@ public final class CarbonUtils {
         });
     }
 
-    private static String[] colors;
-
-    static {
-        ArrayList<String> colorList = new ArrayList<>();
-
-        for (NamedTextColor color : NamedTextColor.values()) {
-            colorList.add(color.toString());
-        }
-
-        colors = colorList.toArray(new String[0]);
-    }
-
+    @NotNull
     public static Argument textColorArgument() {
         return new CustomArgument<>((input) -> {
-            TextColor color =  parseColor(input);
+            TextColor color = parseColor(input);
 
             if (color == null) {
                 throw new CustomArgument.CustomArgumentException("Invalid color for input (" + input + ")");
@@ -182,6 +178,7 @@ public final class CarbonUtils {
         }).overrideSuggestions(colors);
     }
 
+    @NotNull
     public static Argument channelArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");

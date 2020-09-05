@@ -9,7 +9,8 @@ public interface Registry<T> {
 
     /**
      * Adds the specified key and value to the registry
-     * @param key The entry's key
+     *
+     * @param key   The entry's key
      * @param value The value to insert
      * @return If successfully registered
      */
@@ -17,6 +18,7 @@ public interface Registry<T> {
 
     /**
      * Gets the list of registered values
+     *
      * @return The list of registered values
      */
     @NotNull
@@ -24,11 +26,12 @@ public interface Registry<T> {
 
     /**
      * Obtains an entry associated with the specified key
+     *
      * @param key The key for the entry
      * @return The entry associated with the key
      */
     @Nullable
-    T get(String key);
+    T get(@NotNull String key);
 
     /**
      * Clears all registered entries from the registry

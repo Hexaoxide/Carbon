@@ -5,26 +5,32 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CarbonPlaceholders extends PlaceholderExpansion {
 
+    @NotNull
     private final CarbonChat carbonChat;
 
-    public CarbonPlaceholders(CarbonChat carbonChat) {
+    public CarbonPlaceholders(@NotNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
     @Override
+    @NotNull
     public String getIdentifier() {
         return "carbonchat";
     }
 
     @Override
+    @NotNull
     public String getAuthor() {
         return "Draycia (Vicarious#0001)";
     }
 
     @Override
+    @NotNull
     public String getVersion() {
         return "1.0.0";
     }
@@ -34,7 +40,9 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
         return true;
     }
 
-    public String onPlaceholderRequest(final Player player, final String identifier) {
+    @Override
+    @Nullable
+    public String onPlaceholderRequest(@NotNull final Player player, @NotNull final String identifier) {
         String key = identifier.toLowerCase();
 
         if (key.startsWith("can_use_")) {
