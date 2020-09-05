@@ -46,6 +46,8 @@ import java.util.ArrayList;
 
 public final class CarbonUtils {
 
+    private static final String[] colors;
+
     public static Component createComponent(final Player player) {
         if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
             return net.kyori.adventure.text.TextComponent.empty();
@@ -78,6 +80,10 @@ public final class CarbonUtils {
         return BungeeCordComponentSerializer.get().deserialize(component.create());
     }
 
+    public static TextColor parseColor(String input) {
+        return parseColor(null, input);
+    }
+
     public static TextColor parseColor(ChatUser user, String input) {
         if (input == null) {
             input = "white";
@@ -100,10 +106,6 @@ public final class CarbonUtils {
         }
 
         return TextColor.fromCSSHexString(input);
-    }
-
-    public static TextColor parseColor(String input) {
-        return parseColor(null, input);
     }
 
     public static Argument onlineChatUserArgument() {
@@ -144,18 +146,6 @@ public final class CarbonUtils {
         });
     }
 
-    private static String[] colors;
-
-    static {
-        ArrayList<String> colorList = new ArrayList<>();
-
-        for (NamedTextColor color : NamedTextColor.values()) {
-            colorList.add(color.toString());
-        }
-
-        colors = colorList.toArray(new String[0]);
-    }
-
     public static Argument textColorArgument() {
         return new CustomArgument<>((input) -> {
             TextColor color =  parseColor(input);
@@ -194,6 +184,16 @@ public final class CarbonUtils {
 
     public static Argument usableChannelArgument() {
         throw new NotImplementedException("Not implemented yet.");
+    }
+
+    static {
+        ArrayList<String> colorList = new ArrayList<>();
+
+        for (NamedTextColor color : NamedTextColor.values()) {
+            colorList.add(color.toString());
+        }
+
+        colors = colorList.toArray(new String[0]);
     }
 
 }
