@@ -5,6 +5,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class CarbonPlaceholders extends PlaceholderExpansion {
 
@@ -15,16 +16,19 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
     }
 
     @Override
+    @NotNull
     public String getIdentifier() {
         return "carbonchat";
     }
 
     @Override
+    @NotNull
     public String getAuthor() {
         return "Draycia (Vicarious#0001)";
     }
 
     @Override
+    @NotNull
     public String getVersion() {
         return "1.0.0";
     }
