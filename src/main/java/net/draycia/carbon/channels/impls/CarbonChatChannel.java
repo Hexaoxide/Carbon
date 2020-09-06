@@ -8,6 +8,7 @@ import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.Component;
@@ -130,12 +131,15 @@ public class CarbonChatChannel extends ChatChannel {
                     "phase", Long.toString(System.currentTimeMillis() % 25),
                     "server", carbonChat.getConfig().getString("server-name", "Server"));
 
+
             if (isUserSpying(user, target)) {
                 String prefix = processPlaceholders(user, carbonChat.getConfig().getString("spy-prefix"));
 
                 formatComponent = (TextComponent) MiniMessage.get().parse(prefix, "color",
                         targetColor.asHexString()).append(formatComponent);
             }
+
+            TranslatableComponent translation = TranslatableComponent.of("<message>", formatComponent);
 
             TextComponent messageComponent;
 
@@ -150,9 +154,7 @@ public class CarbonChatChannel extends ChatChannel {
                 messageComponent = TextComponent.of(formatEvent.getMessage());
             }
 
-            TextComponent processedComponent = (TextComponent)formatComponent.replaceFirstText(MESSAGE_PATTERN, (input) -> {
-                return messageComponent.toBuilder();
-            });
+            TranslatableComponent processedComponent = translation.args(messageComponent);
 
             ChatComponentEvent newEvent = new ChatComponentEvent(user, target, this, processedComponent,
                     formatEvent.getMessage());
@@ -178,11 +180,10 @@ public class CarbonChatChannel extends ChatChannel {
 
         TextComponent consoleMessage = TextComponent.of(consoleFormatEvent.getMessage());
 
-        TextComponent consoleComponent = (TextComponent)consoleFormat.replaceFirstText(MESSAGE_PATTERN, (input) -> {
-            return consoleMessage.toBuilder();
-        });
+        TranslatableComponent consoleTranslation = TranslatableComponent.of("<message>", consoleFormat)
+                .args(consoleMessage);
 
-        ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleComponent,
+        ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleTranslation,
                 consoleFormatEvent.getMessage());
 
         Bukkit.getPluginManager().callEvent(consoleEvent);

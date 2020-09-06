@@ -2,6 +2,7 @@ package net.draycia.carbon.events;
 
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
@@ -18,10 +19,10 @@ public class ChatComponentEvent extends Event implements Cancellable {
     private @NotNull final ChatUser sender;
     private @Nullable final ChatUser target;
     private ChatChannel chatChannel;
-    private TextComponent component;
+    private Component component;
     private final String originalMessage;
 
-    public ChatComponentEvent(@NotNull ChatUser sender, @Nullable ChatUser target, ChatChannel chatChannel, TextComponent component, String originalMessage) {
+    public ChatComponentEvent(@NotNull ChatUser sender, @Nullable ChatUser target, ChatChannel chatChannel, Component component, String originalMessage) {
         super(!Bukkit.isPrimaryThread());
 
         this.sender = sender;
@@ -69,11 +70,11 @@ public class ChatComponentEvent extends Event implements Cancellable {
         this.chatChannel = chatChannel;
     }
 
-    public TextComponent getComponent() {
+    public Component getComponent() {
         return component;
     }
 
-    public void setComponent(TextComponent component) {
+    public void setComponent(Component component) {
         this.component = component;
     }
 
