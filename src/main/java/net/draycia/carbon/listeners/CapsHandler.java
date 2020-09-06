@@ -9,14 +9,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CapsHandler implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public CapsHandler(CarbonChat carbonChat) {
+    public CapsHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onMessage(@NonNull PreChatFormatEvent event) {
+    public void onMessage(PreChatFormatEvent event) {
         if (!carbonChat.getModConfig().getBoolean("caps-protection.enabled")) {
             return;
         }

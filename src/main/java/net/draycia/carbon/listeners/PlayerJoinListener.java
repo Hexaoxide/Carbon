@@ -11,14 +11,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PlayerJoinListener implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public PlayerJoinListener(CarbonChat carbonChat) {
+    public PlayerJoinListener(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
     @EventHandler
-    public void onPlayerJoin(@NonNull PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
 
         carbonChat.getUserService().validate(user);
@@ -46,7 +47,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerQuit(@NonNull PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(event.getPlayer());
 
         if (user != null) {

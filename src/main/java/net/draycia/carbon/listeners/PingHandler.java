@@ -11,14 +11,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PingHandler implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public PingHandler(CarbonChat carbonChat) {
+    public PingHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPing(@NonNull ChatComponentEvent event) {
+    public void onPing(ChatComponentEvent event) {
         if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
             return;
         }

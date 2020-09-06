@@ -11,18 +11,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class WhisperPingHandler implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public WhisperPingHandler(CarbonChat carbonChat) {
+    public WhisperPingHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPing(@NonNull PrivateMessageEvent event) {
-        if (event.getTarget() == null) {
-            return;
-        }
-
+    public void onPing(PrivateMessageEvent event) {
         if (event.getSender().getUUID().equals(event.getTarget().getUUID())) {
             return;
         }

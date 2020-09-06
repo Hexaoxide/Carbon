@@ -18,15 +18,16 @@ import java.util.List;
 
 public class BukkitChatListener implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public BukkitChatListener(CarbonChat carbonChat) {
+    public BukkitChatListener(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
     // Chat messages
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerchat(@NonNull AsyncPlayerChatEvent event) {
+    public void onPlayerchat(AsyncPlayerChatEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
         ChatChannel channel = user.getSelectedChannel();
 
@@ -63,7 +64,7 @@ public class BukkitChatListener implements Listener {
                 recipients.add(carbonChat.getUserService().wrap(recipient));
             }
         } else {
-            recipients = (List<ChatUser>)selectedChannel.audiences();
+            recipients = (List<ChatUser>) selectedChannel.audiences();
         }
 
         event.getRecipients().clear();

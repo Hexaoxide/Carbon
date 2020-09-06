@@ -19,12 +19,16 @@ import java.util.regex.Pattern;
 
 public class FilterHandler implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
+    @NonNull
     private final Map<String, List<Pattern>> patternReplacements = new HashMap<>();
+
+    @NonNull
     private final List<Pattern> blockedWords = new ArrayList<>();
 
-    public FilterHandler(CarbonChat carbonChat) {
+    public FilterHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         reloadFilters();
     }
@@ -62,7 +66,7 @@ public class FilterHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onFilter(@NonNull PreChatFormatEvent event) {
+    public void onFilter(PreChatFormatEvent event) {
         if (!carbonChat.getModConfig().getBoolean("filters.enabled")) {
             return;
         }

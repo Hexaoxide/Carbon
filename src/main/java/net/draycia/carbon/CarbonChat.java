@@ -154,7 +154,7 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new CustomPlaceholderHandler(this), this);
         pluginManager.registerEvents(filterHandler, this);
         pluginManager.registerEvents(new IgnoredPlayerHandler(), this);
-        pluginManager.registerEvents(new ItemLinkHandler(this), this);
+        pluginManager.registerEvents(new ItemLinkHandler(), this);
         pluginManager.registerEvents(new LegacyFormatHandler(), this);
         pluginManager.registerEvents(new MuteHandler(), this);
         pluginManager.registerEvents(new OfflineNameHandler(), this);
