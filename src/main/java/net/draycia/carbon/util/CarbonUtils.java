@@ -49,8 +49,7 @@ import java.util.List;
 
 public final class CarbonUtils {
 
-    @NonNull
-    private static final String @NonNull [] colors;
+    private static final @NonNull String @NonNull [] colors;
 
     static {
         List<String> colorList = new ArrayList<>();
@@ -203,7 +202,8 @@ public final class CarbonUtils {
         });
     }
 
-    public static @NonNull Argument usableChannelArgument() {
+    @NonNull
+    public static Argument usableChannelArgument() {
         throw new NotImplementedException("Not implemented yet.");
     }
 
