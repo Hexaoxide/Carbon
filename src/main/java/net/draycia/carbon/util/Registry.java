@@ -5,7 +5,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 
-public interface Registry<T> {
+public interface Registry<@NonNull T> {
 
     /**
      * Adds the specified key and value to the registry
@@ -22,13 +22,13 @@ public interface Registry<T> {
      * @return The list of registered values
      */
     @NonNull
-    Collection<T> values();
+    Collection<@NonNull T> values();
 
     /**
      * Obtains an entry associated with the specified key
      *
      * @param key The key for the entry
-     * @return The entry associated with the key
+     * @return The entry associated with the key or {@code null} if unassociated
      */
     @Nullable
     T get(@NonNull String key);

@@ -11,7 +11,10 @@ import java.util.List;
 
 public class ChannelRegisterEvent extends Event {
 
-    /** Bukkit event stuff **/
+    /**
+     * Bukkit event stuff
+     */
+    @NonNull
     private static final HandlerList handlers = new HandlerList();
 
     @Override
@@ -20,15 +23,21 @@ public class ChannelRegisterEvent extends Event {
         return handlers;
     }
 
-    public static @NonNull HandlerList getHandlerList() {
+    @NonNull
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    /** Relevant stuff **/
-    private final List<ChatChannel> registeredChannels;
+    /**
+     * Relevant stuff
+     */
+    @NonNull
+    private final List<@NonNull ChatChannel> registeredChannels;
+
+    @NonNull
     private final Registry<ChatChannel> registry;
 
-    public ChannelRegisterEvent(List<ChatChannel> registeredChannels, Registry<ChatChannel> registry) {
+    public ChannelRegisterEvent(@NonNull List<@NonNull ChatChannel> registeredChannels, @NonNull Registry<ChatChannel> registry) {
         super(!Bukkit.isPrimaryThread());
 
         this.registeredChannels = registeredChannels;
@@ -39,7 +48,8 @@ public class ChannelRegisterEvent extends Event {
         registry.register(chatChannel.getKey(), chatChannel);
     }
 
-    public List<ChatChannel> getRegisteredChannels() {
+    @NonNull
+    public List<@NonNull ChatChannel> getRegisteredChannels() {
         return registeredChannels;
     }
 }

@@ -10,7 +10,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PrivateMessageEvent extends Event implements Cancellable {
 
-    /** Bukkit event stuff **/
+    /**
+     * Bukkit event stuff
+     */
+    @NonNull
     private static final HandlerList handlers = new HandlerList();
     private boolean cancelled = false;
 
@@ -20,7 +23,8 @@ public class PrivateMessageEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public static @NonNull HandlerList getHandlerList() {
+    @NonNull
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
@@ -34,14 +38,25 @@ public class PrivateMessageEvent extends Event implements Cancellable {
         this.cancelled = cancelled;
     }
 
-    /** Relevant stuff **/
+    /**
+     * Relevant stuff
+     */
+    @NonNull
     private final ChatUser sender;
+
+    @NonNull
     private final ChatUser target;
+
+    @NonNull
     private final Component senderComponent;
+
+    @NonNull
     private final Component targetComponent;
+
+    @NonNull
     private final String message;
 
-    public PrivateMessageEvent(ChatUser sender, ChatUser target, Component senderComponent, Component targetComponent, String message) {
+    public PrivateMessageEvent(@NonNull ChatUser sender, @NonNull ChatUser target, @NonNull Component senderComponent, @NonNull Component targetComponent, @NonNull String message) {
         super(!Bukkit.isPrimaryThread());
 
         this.sender = sender;
@@ -51,22 +66,27 @@ public class PrivateMessageEvent extends Event implements Cancellable {
         this.message = message;
     }
 
+    @NonNull
     public ChatUser getSender() {
         return sender;
     }
 
+    @NonNull
     public ChatUser getTarget() {
         return target;
     }
 
+    @NonNull
     public Component getSenderComponent() {
         return senderComponent;
     }
 
+    @NonNull
     public Component getTargetComponent() {
         return targetComponent;
     }
 
+    @NonNull
     public String getMessage() {
         return message;
     }

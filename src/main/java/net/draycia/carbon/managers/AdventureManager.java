@@ -5,9 +5,11 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AdventureManager {
 
@@ -19,11 +21,19 @@ public class AdventureManager {
         this.audiences = BukkitAudiences.create(carbonChat);
     }
 
-    public Component processMessageWithPapi(Player player, @NonNull String input, String... placeholders) {
+    public Component processMessageWithPapi(@NonNull Player player, @Nullable String input, @NonNull String @NonNull ... placeholders) {
+        if (input == null || input.trim().isEmpty()) {
+            return TextComponent.empty();
+        }
+
         return processMessage(PlaceholderAPI.setPlaceholders(player, input), placeholders);
     }
 
-    public Component processMessage(@NonNull String input, String... placeholders) {
+    public Component processMessage(@Nullable String input, @NonNull String @NonNull ... placeholders) {
+        if (input == null || input.trim().isEmpty()) {
+            return TextComponent.empty();
+        }
+
         switch (carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
             case "minedown":
                 return processMineDown(input, placeholders);
@@ -39,10 +49,11 @@ public class AdventureManager {
         }
     }
 
-    private @NonNull Component processMojang(String input, String @NonNull ... placeholders) {
+    @NonNull
+    private Component processMojang(String input, String @NonNull ... placeholders) {
         for (int i = 0; i < placeholders.length; i += 2) {
             String placeholder = placeholders[i];
-            String replacement = placeholders[i+1];
+            String replacement = placeholders[i + 1];
 
             input = input.replace("<" + placeholder + ">", replacement);
         }

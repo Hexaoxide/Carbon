@@ -7,10 +7,14 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class ChannelSwitchEvent extends Event implements Cancellable {
 
-    /** Bukkit event stuff **/
+    /**
+     * Bukkit event stuff
+     */
+    @NonNull
     private static final HandlerList handlers = new HandlerList();
     private boolean cancelled = false;
 
@@ -20,7 +24,8 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public static @NonNull HandlerList getHandlerList() {
+    @NonNull
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
@@ -34,12 +39,19 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
         this.cancelled = cancelled;
     }
 
-    /** Relevant stuff **/
+    /**
+     * Relevant stuff
+     */
+    @NonNull
     private final ChatChannel channel;
+
+    @NonNull
     private final ChatUser user;
+
+    @Nullable
     private String failureMessage;
 
-    public ChannelSwitchEvent(ChatChannel channel, ChatUser user, String failureMessage) {
+    public ChannelSwitchEvent(@NonNull ChatChannel channel, @NonNull ChatUser user, @Nullable String failureMessage) {
         super(!Bukkit.isPrimaryThread());
 
         this.channel = channel;
@@ -47,19 +59,22 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
         this.failureMessage = failureMessage;
     }
 
+    @NonNull
     public ChatUser getUser() {
         return user;
     }
 
+    @NonNull
     public ChatChannel getChannel() {
         return channel;
     }
 
+    @Nullable
     public String getFailureMessage() {
         return failureMessage;
     }
 
-    public void setFailureMessage(String failureMessage) {
+    public void setFailureMessage(@Nullable String failureMessage) {
         this.failureMessage = failureMessage;
     }
 }
