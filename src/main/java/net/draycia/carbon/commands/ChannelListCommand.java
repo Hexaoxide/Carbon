@@ -8,6 +8,7 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -30,6 +31,8 @@ public class ChannelListCommand {
         if (!commandSettings.isEnabled()) {
             return;
         }
+
+        CommandUtils.handleDuplicateCommands(commandSettings);
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
 

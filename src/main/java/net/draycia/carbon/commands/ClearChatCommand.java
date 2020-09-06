@@ -6,6 +6,7 @@ import dev.jorel.commandapi.CommandPermission;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
+import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,8 @@ public class ClearChatCommand {
         if (!commandSettings.isEnabled()) {
             return;
         }
+
+        CommandUtils.handleDuplicateCommands(commandSettings);
 
         new CommandAPICommand(commandSettings.getName())
                 .withAliases(commandSettings.getAliasesArray())

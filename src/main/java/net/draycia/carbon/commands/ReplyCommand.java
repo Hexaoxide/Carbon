@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
+import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
@@ -22,6 +23,8 @@ public class ReplyCommand {
         if (!commandSettings.isEnabled()) {
             return;
         }
+
+        CommandUtils.handleDuplicateCommands(commandSettings);
 
         LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
         arguments.put("message", new GreedyStringArgument());

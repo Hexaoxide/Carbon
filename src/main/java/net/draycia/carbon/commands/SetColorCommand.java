@@ -9,6 +9,7 @@ import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.format.TextColor;
 
 import java.util.LinkedHashMap;
@@ -23,6 +24,8 @@ public class SetColorCommand {
         if (!commandSettings.isEnabled()) {
             return;
         }
+
+        CommandUtils.handleDuplicateCommands(commandSettings);
 
         for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
             LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();

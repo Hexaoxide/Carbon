@@ -8,6 +8,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,6 +25,8 @@ public class NicknameCommand {
         if (!commandSettings.isEnabled()) {
             return;
         }
+
+        CommandUtils.handleDuplicateCommands(commandSettings);
 
         LinkedHashMap<String, Argument> selfArguments = new LinkedHashMap<>();
         selfArguments.put("nickname", new StringArgument());

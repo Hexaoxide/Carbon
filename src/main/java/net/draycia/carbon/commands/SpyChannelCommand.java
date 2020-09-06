@@ -11,6 +11,7 @@ import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.CommandUtils;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
@@ -25,6 +26,8 @@ public class SpyChannelCommand {
         if (!commandSettings.isEnabled()) {
             return;
         }
+
+        CommandUtils.handleDuplicateCommands(commandSettings);
 
         LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
         channelArguments.put("channel", CarbonUtils.channelArgument());

@@ -9,6 +9,7 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
@@ -24,6 +25,8 @@ public class SudoChannelCommand {
         if (!commandSettings.isEnabled()) {
             return;
         }
+
+        CommandUtils.handleDuplicateCommands(commandSettings);
 
         LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
         setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
