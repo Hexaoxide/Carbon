@@ -4,6 +4,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -11,28 +12,31 @@ import java.util.UUID;
 
 public class SimpleUserChannelSettings implements UserChannelSettings {
 
+    @NonNull
+    private final transient CarbonChat carbonChat;
     private boolean spying;
     private boolean ignored;
-    private @Nullable String color;
-
+    @Nullable
+    private String color;
+    @MonotonicNonNull // @NonNull but not initialised in all constructors.
     private UUID uuid;
+    @MonotonicNonNull // @NonNull but not initialised in all constructors.
     private String channel;
 
-    private final transient @Nullable @NonNull CarbonChat carbonChat;
-
     private SimpleUserChannelSettings() {
-        carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
+        carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
     }
 
-    public SimpleUserChannelSettings(UUID uuid, String channel) {
+    public SimpleUserChannelSettings(@NonNull UUID uuid, @NonNull String channel) {
         this.uuid = uuid;
         this.channel = channel;
 
-        carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
+        carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
     }
 
-    private @NonNull CarbonChatUser getUser() {
-        return (CarbonChatUser)carbonChat.getUserService().wrap(uuid);
+    @NonNull
+    private CarbonChatUser getUser() {
+        return (CarbonChatUser) carbonChat.getUserService().wrap(uuid);
     }
 
     @Override
