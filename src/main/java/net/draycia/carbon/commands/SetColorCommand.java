@@ -17,7 +17,8 @@ import java.util.LinkedHashMap;
 
 public class SetColorCommand {
 
-    private final @NonNull CarbonChat carbonChat;
+    @NonNull
+    private final CarbonChat carbonChat;
 
     public SetColorCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;

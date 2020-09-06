@@ -19,9 +19,10 @@ import java.util.LinkedHashMap;
 
 public class SpyChannelCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public SpyChannelCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    public SpyChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -62,7 +63,7 @@ public class SpyChannelCommand {
                 .register();
     }
 
-    private void execute(Player player, Object[] args) {
+    private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatChannel chatChannel = (ChatChannel) args[0];
         ChatUser user = carbonChat.getUserService().wrap(player);
 
@@ -82,7 +83,7 @@ public class SpyChannelCommand {
                 "color", "<color:" + chatChannel.getChannelColor(user).toString() + ">", "channel", chatChannel.getName()));
     }
 
-    private void executeWhispers(Player player, Object[] args) {
+    private void executeWhispers(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
 
         String message;
@@ -98,7 +99,7 @@ public class SpyChannelCommand {
         user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
     }
 
-    private void executeEverything(Player player, Object[] args) {
+    private void executeEverything(@NonNull Player player, @NonNull Object @NonNull [] args) {
         Boolean shouldSpy = (Boolean) args[0];
 
         ChatUser user = carbonChat.getUserService().wrap(player);

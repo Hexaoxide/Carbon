@@ -16,9 +16,10 @@ import java.util.LinkedHashMap;
 
 public class MessageCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public MessageCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    public MessageCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -39,7 +40,7 @@ public class MessageCommand {
                 .register();
     }
 
-    private void execute(Player player, Object[] args) {
+    private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser targetUser = (ChatUser) args[0];
         String message = (String) args[1];
 

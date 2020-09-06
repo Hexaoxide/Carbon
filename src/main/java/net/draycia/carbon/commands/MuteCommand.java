@@ -19,9 +19,10 @@ import java.util.LinkedHashMap;
 
 public class MuteCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public MuteCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    public MuteCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -41,7 +42,7 @@ public class MuteCommand {
                 .register();
     }
 
-    private void execute(@NonNull CommandSender sender, Object[] args) {
+    private void execute(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
         ChatUser user = (ChatUser) args[0];
         Audience audience = carbonChat.getAdventureManager().getAudiences().audience(sender);
 

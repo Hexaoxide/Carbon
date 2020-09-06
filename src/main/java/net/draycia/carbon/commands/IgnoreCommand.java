@@ -18,9 +18,10 @@ import java.util.LinkedHashMap;
 
 public class IgnoreCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public IgnoreCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    public IgnoreCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -40,7 +41,7 @@ public class IgnoreCommand {
                 .register();
     }
 
-    private void execute(@NonNull Player player, Object[] args) {
+    private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser targetUser = (ChatUser) args[0];
         ChatUser user = carbonChat.getUserService().wrap(player);
 

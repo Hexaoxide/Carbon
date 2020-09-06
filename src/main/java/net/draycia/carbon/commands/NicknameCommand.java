@@ -18,9 +18,10 @@ import java.util.LinkedHashMap;
 
 public class NicknameCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public NicknameCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    public NicknameCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -51,7 +52,7 @@ public class NicknameCommand {
                 .register();
     }
 
-    private void executeSelf(@NonNull Player player, Object[] args) {
+    private void executeSelf(@NonNull Player player, @NonNull Object @NonNull [] args) {
         String nickname = (String) args[0];
         ChatUser sender = carbonChat.getUserService().wrap(player);
 
@@ -74,7 +75,7 @@ public class NicknameCommand {
                 "user", sender.asOfflinePlayer().getName()));
     }
 
-    private void executeOther(@NonNull CommandSender sender, Object[] args) {
+    private void executeOther(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
         Audience user = carbonChat.getAdventureManager().getAudiences().audience(sender);
         ChatUser target = (ChatUser) args[0];
         String nickname = (String) args[1];

@@ -2,22 +2,19 @@ package net.draycia.carbon.commands;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.CommandSettings;
-import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
-
 public class ChatReloadCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public ChatReloadCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    public ChatReloadCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -33,7 +30,7 @@ public class ChatReloadCommand {
                 .register();
     }
 
-    private void execute(@NonNull CommandSender sender, Object[] args) {
+    private void execute(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
         carbonChat.reloadConfig();
         carbonChat.reloadFilters();
 

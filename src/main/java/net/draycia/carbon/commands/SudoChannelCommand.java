@@ -18,9 +18,10 @@ import java.util.LinkedHashMap;
 
 public class SudoChannelCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public SudoChannelCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    public SudoChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -67,7 +68,7 @@ public class SudoChannelCommand {
                 "player", user.asOfflinePlayer().getName()));
     }
 
-    private void sendMessageOther(CommandSender sender, ChatUser user, @NonNull ChatChannel channel, String message) {
+    private void sendMessageOther(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull ChatChannel channel, @NonNull String message) {
         Component component = channel.sendMessage(user, message, false);
 
         carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
