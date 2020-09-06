@@ -9,16 +9,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.regex.Pattern;
 
 public class ItemLinkHandler implements Listener {
 
-    @NotNull
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public ItemLinkHandler(@NotNull CarbonChat carbonChat) {
+    public ItemLinkHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 

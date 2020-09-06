@@ -4,7 +4,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
@@ -69,7 +69,8 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     }
 
     @Override
-    public @Nullable TextColor getColor() {
+    @Nullable
+    public TextColor getColor() {
         if (color == null) {
             return null;
         }

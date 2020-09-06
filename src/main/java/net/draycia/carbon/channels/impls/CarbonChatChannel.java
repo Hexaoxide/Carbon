@@ -15,8 +15,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -51,7 +51,8 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public @NotNull List<ChatUser> audiences() {
+    @NonNull
+    public List<ChatUser> audiences() {
         List<ChatUser> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {

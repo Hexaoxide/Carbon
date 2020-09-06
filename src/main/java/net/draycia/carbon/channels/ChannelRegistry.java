@@ -6,8 +6,8 @@ import net.draycia.carbon.commands.AliasedChannelCommand;
 import net.draycia.carbon.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 
@@ -23,7 +23,7 @@ public class ChannelRegistry implements Registry<ChatChannel> {
     }
 
     @Override
-    public boolean register(@NotNull String key, @NotNull ChatChannel value) {
+    public boolean register(@NonNull String key, @NonNull ChatChannel value) {
         boolean registerSuccessful = registry.putIfAbsent(key, value) == null;
 
         if (registerSuccessful) {
@@ -40,14 +40,14 @@ public class ChannelRegistry implements Registry<ChatChannel> {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public Collection<ChatChannel> values() {
         return registry.values();
     }
 
     @Override
     @Nullable
-    public ChatChannel get(@NotNull String key) {
+    public ChatChannel get(@NonNull String key) {
         return registry.get(key);
     }
 

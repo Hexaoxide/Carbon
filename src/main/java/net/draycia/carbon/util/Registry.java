@@ -1,7 +1,7 @@
 package net.draycia.carbon.util;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 
@@ -14,14 +14,14 @@ public interface Registry<T> {
      * @param value The value to insert
      * @return If successfully registered
      */
-    boolean register(@NotNull String key, @NotNull T value);
+    boolean register(@NonNull String key, @NonNull T value);
 
     /**
      * Gets the list of registered values
      *
      * @return The list of registered values
      */
-    @NotNull
+    @NonNull
     Collection<T> values();
 
     /**
@@ -31,7 +31,7 @@ public interface Registry<T> {
      * @return The entry associated with the key
      */
     @Nullable
-    T get(@NotNull String key);
+    T get(@NonNull String key);
 
     /**
      * Clears all registered entries from the registry

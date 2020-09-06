@@ -1,7 +1,7 @@
 package net.draycia.carbon.storage;
 
 import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 

@@ -1,27 +1,27 @@
 package net.draycia.carbon.util;
 
 import io.lettuce.core.pubsub.RedisPubSubListener;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 @FunctionalInterface
 public interface RedisListener extends RedisPubSubListener<String, String> {
 
     @Override
-    void message(@NotNull String channel, @NotNull String message);
+    void message(@NonNull String channel, @NonNull String message);
 
     @Override
-    default void message(@NotNull String pattern, @NotNull String channel, @NotNull String message) { }
+    default void message(@NonNull String pattern, @NonNull String channel, @NonNull String message) { }
 
     @Override
-    default void subscribed(@NotNull String channel, long count) { }
+    default void subscribed(@NonNull String channel, long count) { }
 
     @Override
-    default void psubscribed(@NotNull String pattern, long count) { }
+    default void psubscribed(@NonNull String pattern, long count) { }
 
     @Override
-    default void unsubscribed(@NotNull String channel, long count) { }
+    default void unsubscribed(@NonNull String channel, long count) { }
 
     @Override
-    default void punsubscribed(@NotNull String pattern, long count) { }
+    default void punsubscribed(@NonNull String pattern, long count) { }
 
 }

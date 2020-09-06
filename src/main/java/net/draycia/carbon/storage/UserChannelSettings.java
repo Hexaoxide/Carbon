@@ -1,7 +1,7 @@
 package net.draycia.carbon.storage;
 
 import net.kyori.adventure.text.format.TextColor;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface UserChannelSettings {
 

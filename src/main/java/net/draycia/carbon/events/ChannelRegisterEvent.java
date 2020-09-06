@@ -5,7 +5,7 @@ import net.draycia.carbon.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 
@@ -15,7 +15,8 @@ public class ChannelRegisterEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     @Override
-    public @NotNull HandlerList getHandlers() {
+    @NonNull
+    public HandlerList getHandlers() {
         return handlers;
     }
 

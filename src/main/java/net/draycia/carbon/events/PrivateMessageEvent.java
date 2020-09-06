@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PrivateMessageEvent extends Event implements Cancellable {
 
@@ -15,7 +15,8 @@ public class PrivateMessageEvent extends Event implements Cancellable {
     private boolean cancelled = false;
 
     @Override
-    public @NotNull HandlerList getHandlers() {
+    @NonNull
+    public HandlerList getHandlers() {
         return handlers;
     }
 

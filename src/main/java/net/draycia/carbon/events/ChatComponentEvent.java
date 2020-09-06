@@ -7,21 +7,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class ChatComponentEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private boolean isCancelled = false;
 
-    private @NotNull final ChatUser sender;
+    private @NonNull final ChatUser sender;
     private @Nullable final ChatUser target;
     private ChatChannel chatChannel;
     private TextComponent component;
     private final String originalMessage;
 
-    public ChatComponentEvent(@NotNull ChatUser sender, @Nullable ChatUser target, ChatChannel chatChannel, TextComponent component, String originalMessage) {
+    public ChatComponentEvent(@NonNull ChatUser sender, @Nullable ChatUser target, ChatChannel chatChannel, TextComponent component, String originalMessage) {
         super(!Bukkit.isPrimaryThread());
 
         this.sender = sender;
@@ -42,7 +42,7 @@ public class ChatComponentEvent extends Event implements Cancellable {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public HandlerList getHandlers() {
         return HANDLERS_LIST;
     }
@@ -51,7 +51,7 @@ public class ChatComponentEvent extends Event implements Cancellable {
         return HANDLERS_LIST;
     }
 
-    @NotNull
+    @NonNull
     public ChatUser getSender() {
         return sender;
     }
