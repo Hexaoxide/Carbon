@@ -137,7 +137,18 @@ public class CarbonChatChannel extends ChatChannel {
                         targetColor.asHexString()).append(formatComponent);
             }
 
-            TextComponent messageComponent = TextComponent.of(formatEvent.getMessage());
+            TextComponent messageComponent;
+
+            if (user.isOnline() && user.asPlayer().hasPermission("carbonchat.formatting")) {
+                messageComponent = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getMessage(),
+                        "br", "\n",
+                        "displayname", displayName,
+                        "color", "<" + targetColor.asHexString() + ">",
+                        "phase", Long.toString(System.currentTimeMillis() % 25),
+                        "server", carbonChat.getConfig().getString("server-name", "Server"));
+            } else {
+                messageComponent = TextComponent.of(formatEvent.getMessage());
+            }
 
             TextComponent processedComponent = (TextComponent)formatComponent.replaceFirstText(MESSAGE_PATTERN, (input) -> {
                 return messageComponent.toBuilder();
