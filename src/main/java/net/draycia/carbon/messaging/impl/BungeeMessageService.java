@@ -8,6 +8,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.messaging.MessageService;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
 
 public class BungeeMessageService implements MessageService {
 
-    private final CarbonChat carbonChat;
+    private final @NonNull CarbonChat carbonChat;
     private final BungeeChannelApi api;
 
     private final Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
@@ -25,7 +26,7 @@ public class BungeeMessageService implements MessageService {
 
     private final UUID serverUUID = UUID.randomUUID();
 
-    public BungeeMessageService(CarbonChat carbonChat) {
+    public BungeeMessageService(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
         carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
@@ -56,7 +57,7 @@ public class BungeeMessageService implements MessageService {
         });
     }
 
-    private void receiveMessage(UUID uuid, String key, ByteArrayDataInput value) {
+    private void receiveMessage(UUID uuid, @NonNull String key, ByteArrayDataInput value) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
         if (user != null) {
@@ -91,7 +92,7 @@ public class BungeeMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer) {
+    public void sendMessage(String key, @NonNull UUID uuid, @NonNull Consumer<ByteArrayDataOutput> consumer) {
         ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
         msg.writeLong(serverUUID.getMostSignificantBits());

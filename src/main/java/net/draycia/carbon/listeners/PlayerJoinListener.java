@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PlayerJoinListener implements Listener {
 
@@ -17,7 +18,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(@NonNull PlayerJoinEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
 
         carbonChat.getUserService().validate(user);
@@ -45,7 +46,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(@NonNull PlayerQuitEvent event) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(event.getPlayer());
 
         if (user != null) {

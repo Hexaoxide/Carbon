@@ -13,6 +13,7 @@ import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
@@ -20,7 +21,7 @@ public class SpyChannelCommand {
 
     private final CarbonChat carbonChat;
 
-    public SpyChannelCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public SpyChannelCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {

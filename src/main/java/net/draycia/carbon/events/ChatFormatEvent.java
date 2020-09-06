@@ -47,7 +47,7 @@ public class ChatFormatEvent extends Event implements Cancellable {
         return HANDLERS_LIST;
     }
 
-    public static HandlerList getHandlerList() {
+    public static @NonNull HandlerList getHandlerList() {
         return HANDLERS_LIST;
     }
 

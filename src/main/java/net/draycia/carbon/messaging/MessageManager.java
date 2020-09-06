@@ -10,18 +10,19 @@ import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class MessageManager {
 
-    private final CarbonChat carbonChat;
-    private final MessageService messageService;
+    private final @NonNull CarbonChat carbonChat;
+    private final @NonNull MessageService messageService;
 
-    private final GsonComponentSerializer gsonSerializer;
+    private final @NonNull GsonComponentSerializer gsonSerializer;
 
-    public MessageManager(CarbonChat carbonChat) {
+    public MessageManager(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         this.gsonSerializer = carbonChat.getAdventureManager().getAudiences().gsonSerializer();
 
@@ -146,7 +147,7 @@ public class MessageManager {
         });
     }
 
-    public MessageService getMessageService() {
+    public @NonNull MessageService getMessageService() {
         return messageService;
     }
 

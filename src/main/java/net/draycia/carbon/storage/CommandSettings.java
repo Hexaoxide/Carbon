@@ -1,5 +1,7 @@
 package net.draycia.carbon.storage;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.util.List;
 
 public class CommandSettings {
@@ -14,7 +16,7 @@ public class CommandSettings {
         this.aliases = aliases;
     }
 
-    public String[] getAliasesArray() {
+    public String @NonNull [] getAliasesArray() {
         return aliases.toArray(new String[0]);
     }
 

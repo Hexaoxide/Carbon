@@ -16,26 +16,27 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.annotation.CheckForNull;
 import java.util.*;
 
 public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
-    private final transient CarbonChat carbonChat;
+    private final transient @Nullable @NonNull CarbonChat carbonChat;
 
     private UUID uuid;
 
-    private String selectedChannel = null;
+    private @Nullable String selectedChannel = null;
     private final Map<String, SimpleUserChannelSettings> channelSettings = new HashMap<>();
     private final List<UUID> ignoredUsers = new ArrayList<>();
     private boolean muted = false;
     private boolean shadowMuted = false;
     private boolean spyingWhispers = false;
 
-    private String nickname = null;
+    private @Nullable String nickname = null;
 
-    private transient UUID replyTarget = null;
+    private transient @Nullable UUID replyTarget = null;
 
     public CarbonChatUser() {
         this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -52,12 +53,12 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public Player asPlayer() {
+    public @Nullable Player asPlayer() {
         return Bukkit.getPlayer(uuid);
     }
 
     @Override
-    public OfflinePlayer asOfflinePlayer() {
+    public @NonNull OfflinePlayer asOfflinePlayer() {
         return Bukkit.getOfflinePlayer(uuid);
     }
 
@@ -72,12 +73,12 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public String getNickname() {
+    public @Nullable String getNickname() {
         return nickname;
     }
 
     @Override
-    public void setNickname(String newNickname, boolean fromRemote) {
+    public void setNickname(@Nullable String newNickname, boolean fromRemote) {
         this.nickname = newNickname;
 
         if (isOnline()) {
@@ -110,7 +111,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public void setSelectedChannel(ChatChannel chatChannel, boolean fromRemote) {
+    public void setSelectedChannel(@NonNull ChatChannel chatChannel, boolean fromRemote) {
         String failureMessage = chatChannel.getSwitchFailureMessage();
 
         ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
@@ -144,7 +145,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public void setIgnoringUser(UUID uuid, boolean ignoring, boolean fromRemote) {
+    public void setIgnoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote) {
         if (ignoring) {
             ignoredUsers.add(uuid);
         } else {
@@ -160,7 +161,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         }
     }
 
-    public List<UUID> getIgnoredUsers() {
+    public @NonNull List<UUID> getIgnoredUsers() {
         return ignoredUsers;
     }
 
@@ -203,7 +204,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public void setReplyTarget(UUID target, boolean fromRemote) {
+    public void setReplyTarget(@NonNull UUID target, boolean fromRemote) {
         this.replyTarget = target;
 
         if (!fromRemote) {
@@ -215,13 +216,13 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public UserChannelSettings getChannelSettings(ChatChannel channel) {
+    public UserChannelSettings getChannelSettings(@NonNull ChatChannel channel) {
         return channelSettings.computeIfAbsent(channel.getKey(), (name) -> {
             return new SimpleUserChannelSettings(uuid, channel.getKey());
         });
     }
 
-    public Map<String, ? extends UserChannelSettings> getChannelSettings() {
+    public @NonNull Map<String, ? extends UserChannelSettings> getChannelSettings() {
         return channelSettings;
     }
 
@@ -241,7 +242,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         return spyingWhispers;
     }
 
-    public void sendMessage(ChatUser sender, String message) {
+    public void sendMessage(@NonNull ChatUser sender, String message) {
         if (isIgnoringUser(sender) || sender.isIgnoringUser(this)) {
             return;
         }

@@ -12,6 +12,7 @@ import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
@@ -19,7 +20,7 @@ public class ChannelCommand {
 
     private final CarbonChat carbonChat;
 
-    public ChannelCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public ChannelCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {

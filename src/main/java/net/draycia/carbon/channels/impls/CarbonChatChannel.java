@@ -46,7 +46,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public Boolean canPlayerUse(ChatUser user) {
+    public Boolean canPlayerUse(@NonNull ChatUser user) {
         return user.asPlayer().hasPermission("carbonchat.channels." + getName() + ".use");
     }
 
@@ -66,7 +66,7 @@ public class CarbonChatChannel extends ChatChannel {
         return audience;
     }
 
-    private void updateUserNickname(ChatUser user) {
+    private void updateUserNickname(@NonNull ChatUser user) {
         if (user.isOnline()) {
             String nickname = user.getNickname();
 
@@ -83,7 +83,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    public Component sendMessage(ChatUser user, Collection<ChatUser> recipients, String message, boolean fromRemote) {
+    public Component sendMessage(@NonNull ChatUser user, @NonNull Collection<ChatUser> recipients, String message, boolean fromRemote) {
         updateUserNickname(user);
 
         // Get player's formatting
@@ -178,11 +178,11 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public Component sendMessage(ChatUser user, String message, boolean fromRemote) {
+    public Component sendMessage(@NonNull ChatUser user, String message, boolean fromRemote) {
         return this.sendMessage(user, this.audiences(), message, fromRemote);
     }
 
-    public String getFormat(ChatUser user) {
+    public @Nullable String getFormat(@NonNull ChatUser user) {
         for (String group : this.getGroupOverrides()) {
             if (userHasGroup(user, group)) {
                 String format = getFormat(group);
@@ -200,7 +200,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    private boolean userHasGroup(ChatUser user, String group) {
+    private boolean userHasGroup(@NonNull ChatUser user, String group) {
         if (user.isOnline()) {
             if (carbonChat.getPermission().playerInGroup(user.asPlayer(), group)) {
                 return true;
@@ -218,7 +218,7 @@ public class CarbonChatChannel extends ChatChannel {
         return false;
     }
 
-    private String getFirstFoundUserFormat(ChatUser user) {
+    private @Nullable String getFirstFoundUserFormat(@NonNull ChatUser user) {
         String[] playerGroups;
 
         if (user.isOnline()) {
@@ -238,7 +238,7 @@ public class CarbonChatChannel extends ChatChannel {
         return getDefaultFormat();
     }
 
-    private String getPrimaryGroupFormat(ChatUser user) {
+    private @Nullable String getPrimaryGroupFormat(@NonNull ChatUser user) {
         String primaryGroup;
 
         if (user.isOnline()) {
@@ -256,16 +256,16 @@ public class CarbonChatChannel extends ChatChannel {
         return getDefaultFormat();
     }
 
-    private String getDefaultFormat() {
+    private @Nullable String getDefaultFormat() {
         return getFormat(getDefaultFormatName());
     }
 
     @Override
-    public String getFormat(String group) {
+    public @Nullable String getFormat(String group) {
         return getString("formats." + group);
     }
 
-    private boolean isUserSpying(ChatUser sender, ChatUser target) {
+    private boolean isUserSpying(@NonNull ChatUser sender, @NonNull ChatUser target) {
         if (!canPlayerSee(sender, target, false)) {
             return target.getChannelSettings(this).isSpying();
         }
@@ -274,7 +274,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public void sendComponent(ChatUser player, Component component) {
+    public void sendComponent(@NonNull ChatUser player, @NonNull Component component) {
         for (ChatUser user : audiences()) {
             if (!user.isIgnoringUser(player)) {
                 user.sendMessage(component);
@@ -282,7 +282,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    public void sendMessageToBungee(Player player, Component component) {
+    public void sendMessageToBungee(@NonNull Player player, @NonNull Component component) {
         carbonChat.getMessageManager().sendMessage("channel-component", player.getUniqueId(), (byteArray) -> {
             byteArray.writeUTF(this.getKey());
             byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(component));
@@ -290,7 +290,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public Boolean canPlayerSee(ChatUser target, boolean checkSpying) {
+    public @NonNull Boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 
         if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + getName())) {
@@ -310,7 +310,7 @@ public class CarbonChatChannel extends ChatChannel {
         return true;
     }
 
-    public Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying) {
+    public @NonNull Boolean canPlayerSee(@NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 
         if (!canPlayerSee(target, checkSpying)) {
@@ -325,7 +325,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public TextColor getChannelColor(ChatUser user) {
+    public @Nullable TextColor getChannelColor(@NonNull ChatUser user) {
         TextColor userColor = user.getChannelSettings(this).getColor();
 
         if (userColor != null) {
@@ -347,7 +347,7 @@ public class CarbonChatChannel extends ChatChannel {
         return color;
     }
 
-    private String getDefaultFormatName() {
+    private @Nullable String getDefaultFormatName() {
         return getString("default-group");
     }
 
@@ -387,7 +387,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public List<String> getGroupOverrides() {
+    public @NonNull List<String> getGroupOverrides() {
         return getStringList("group-overrides");
     }
 
@@ -408,47 +408,47 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public String getSwitchMessage() {
+    public @Nullable String getSwitchMessage() {
         return getString("switch-message");
     }
 
     @Override
-    public String getSwitchOtherMessage() {
+    public @Nullable String getSwitchOtherMessage() {
         return getString("switch-other-message");
     }
 
     @Override
-    public String getSwitchFailureMessage() {
+    public @Nullable String getSwitchFailureMessage() {
         return getString("switch-failure-message");
     }
 
     @Override
-    public String getCannotIgnoreMessage() {
+    public @Nullable String getCannotIgnoreMessage() {
         return getString("cannot-ignore-message");
     }
 
     @Override
-    public String getToggleOffMessage() {
+    public @Nullable String getToggleOffMessage() {
         return getString("toggle-off-message");
     }
 
     @Override
-    public String getToggleOnMessage() {
+    public @Nullable String getToggleOnMessage() {
         return getString("toggle-on-message");
     }
 
     @Override
-    public String getToggleOtherOnMessage() {
+    public @Nullable String getToggleOtherOnMessage() {
         return getString("toggle-other-on");
     }
 
     @Override
-    public String getToggleOtherOffMessage() {
+    public @Nullable String getToggleOtherOffMessage() {
         return getString("toggle-other-off");
     }
 
     @Override
-    public String getCannotUseMessage() {
+    public @Nullable String getCannotUseMessage() {
         return getString("cannot-use-channel");
     }
 
@@ -463,7 +463,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public List<Pattern> getItemLinkPatterns() {
+    public @NonNull List<Pattern> getItemLinkPatterns() {
         ArrayList<Pattern> itemPatterns = new ArrayList<>();
 
         for (String entry : carbonChat.getConfig().getStringList("item-link-placeholders")) {
@@ -474,7 +474,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public Object getContext(String key) {
+    public @Nullable Object getContext(@NonNull String key) {
         ConfigurationSection section = config.getConfigurationSection("contexts");
 
         if (section == null) {
@@ -496,7 +496,7 @@ public class CarbonChatChannel extends ChatChannel {
         return section.get(key);
     }
 
-    private String getString(String key) {
+    private @Nullable String getString(@NonNull String key) {
         if (config != null && config.contains(key)) {
             return config.getString(key);
         }
@@ -510,7 +510,7 @@ public class CarbonChatChannel extends ChatChannel {
         return null;
     }
 
-    private List<String> getStringList(String key) {
+    private @NonNull List<String> getStringList(@NonNull String key) {
         if (config != null && config.contains(key)) {
             return config.getStringList(key);
         }
@@ -524,7 +524,7 @@ public class CarbonChatChannel extends ChatChannel {
         return Collections.emptyList();
     }
 
-    private boolean getBoolean(String key) {
+    private boolean getBoolean(@NonNull String key) {
         if (config != null && config.contains(key)) {
             return config.getBoolean(key);
         }
@@ -538,7 +538,7 @@ public class CarbonChatChannel extends ChatChannel {
         return false;
     }
 
-    private double getDouble(String key) {
+    private double getDouble(@NonNull String key) {
         if (config != null && config.contains(key)) {
             return config.getDouble(key);
         }
@@ -558,7 +558,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public String getAliases() {
+    public @Nullable String getAliases() {
         String aliases = getString("aliases");
 
         if (aliases == null) {

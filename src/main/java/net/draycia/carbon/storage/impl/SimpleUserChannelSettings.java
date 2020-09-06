@@ -4,6 +4,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
@@ -12,12 +13,12 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
 
     private boolean spying;
     private boolean ignored;
-    private String color;
+    private @Nullable String color;
 
     private UUID uuid;
     private String channel;
 
-    private final transient CarbonChat carbonChat;
+    private final transient @Nullable @NonNull CarbonChat carbonChat;
 
     private SimpleUserChannelSettings() {
         carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -30,7 +31,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
         carbonChat = (CarbonChat)Bukkit.getPluginManager().getPlugin("CarbonChat");
     }
 
-    private CarbonChatUser getUser() {
+    private @NonNull CarbonChatUser getUser() {
         return (CarbonChatUser)carbonChat.getUserService().wrap(uuid);
     }
 

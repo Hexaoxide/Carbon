@@ -2,13 +2,14 @@ package net.draycia.carbon.channels.contexts.impl;
 
 import net.draycia.carbon.channels.contexts.MessageContext;
 import org.bukkit.Location;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.function.Function;
 
 public class DistanceContext implements Function<MessageContext, Boolean> {
 
     @Override
-    public Boolean apply(MessageContext context) {
+    public @NonNull Boolean apply(@NonNull MessageContext context) {
         if (!context.getSender().isOnline() || !context.getTarget().isOnline()) {
             return false;
         }

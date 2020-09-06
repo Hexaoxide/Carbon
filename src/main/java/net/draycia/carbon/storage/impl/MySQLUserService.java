@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.SQLException;
@@ -30,10 +31,10 @@ public class MySQLUserService implements UserService {
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
-    private final CarbonChat carbonChat;
-    private final Database database;
+    private final @NonNull CarbonChat carbonChat;
+    private final @NonNull Database database;
 
-    public MySQLUserService(CarbonChat carbonChat) {
+    public MySQLUserService(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
         ConfigurationSection section = carbonChat.getConfig().getConfigurationSection("storage");
@@ -78,7 +79,7 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public ChatUser wrap(String name) {
+    public @Nullable ChatUser wrap(@NonNull String name) {
         Player player = Bukkit.getPlayer(name);
 
         if (player != null) {
@@ -89,12 +90,12 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public ChatUser wrap(OfflinePlayer player) {
+    public @Nullable ChatUser wrap(@NonNull OfflinePlayer player) {
         return wrap(player.getUniqueId());
     }
 
     @Override
-    public ChatUser wrap(UUID uuid) {
+    public @Nullable ChatUser wrap(@NonNull UUID uuid) {
         try {
             return userCache.get(uuid);
         } catch (ExecutionException e) {
@@ -105,28 +106,28 @@ public class MySQLUserService implements UserService {
 
     @Override
     @Nullable
-    public ChatUser wrapIfLoaded(UUID uuid) {
+    public ChatUser wrapIfLoaded(@NonNull UUID uuid) {
         return userCache.getIfPresent(uuid);
     }
 
     @Override
-    public ChatUser refreshUser(UUID uuid) {
+    public @Nullable ChatUser refreshUser(@NonNull UUID uuid) {
         userCache.invalidate(uuid);
 
         return this.wrap(uuid);
     }
 
     @Override
-    public void invalidate(ChatUser user) {
+    public void invalidate(@NonNull ChatUser user) {
         userCache.invalidate(user.getUUID());
     }
 
     @Override
-    public void validate(ChatUser user) {
+    public void validate(@NonNull ChatUser user) {
         userCache.put(user.getUUID(), (CarbonChatUser)user);
     }
 
-    private CarbonChatUser loadUser(UUID uuid) {
+    private @NonNull CarbonChatUser loadUser(@NonNull UUID uuid) {
         CarbonChatUser user = new CarbonChatUser(uuid);
 
         try (DbStatement statement = database.query("SELECT * from sc_users WHERE uuid = ?;")) {
@@ -184,7 +185,7 @@ public class MySQLUserService implements UserService {
         return user;
     }
 
-    private void saveUser(RemovalNotification<UUID, CarbonChatUser> notification) {
+    private void saveUser(@NonNull RemovalNotification<UUID, CarbonChatUser> notification) {
         CarbonChatUser user = notification.getValue();
 
         if (user == null) {

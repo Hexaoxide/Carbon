@@ -4,19 +4,20 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
 public interface ChatUser extends Audience {
 
-    Player asPlayer();
-    OfflinePlayer asOfflinePlayer();
+    @Nullable Player asPlayer();
+    @NonNull OfflinePlayer asOfflinePlayer();
     UUID getUUID();
 
     boolean isOnline();
 
-    String getNickname();
+    @Nullable String getNickname();
     void setNickname(String nickname, boolean fromRemote);
     default void setNickname(String nickname) {
         this.setNickname(nickname, false);
@@ -50,7 +51,7 @@ public interface ChatUser extends Audience {
         this.setShadowMuted(shadowMuted, false);
     }
 
-    @Nullable UUID getReplyTarget();
+    @Nullable @Nullable UUID getReplyTarget();
     void setReplyTarget(@Nullable UUID target, boolean fromRemote);
     default void setReplyTarget(@Nullable UUID target) {
         this.setReplyTarget(target, false);
@@ -69,13 +70,13 @@ public interface ChatUser extends Audience {
         this.setIgnoringUser(uuid, ignoring, false);
     }
 
-    default boolean isIgnoringUser(ChatUser user) {
+    default boolean isIgnoringUser(@NonNull ChatUser user) {
         return this.isIgnoringUser(user.getUUID());
     }
-    default void setIgnoringUser(ChatUser user, boolean ignoring, boolean fromRemote) {
+    default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring, boolean fromRemote) {
         this.setIgnoringUser(user.getUUID(), ignoring, fromRemote);
     }
-    default void setIgnoringUser(ChatUser user, boolean ignoring) {
+    default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring) {
         this.setIgnoringUser(user.getUUID(), ignoring, false);
     }
 

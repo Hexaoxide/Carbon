@@ -9,6 +9,7 @@ import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class mcMMOContext implements Listener {
 
@@ -27,7 +28,7 @@ public final class mcMMOContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelSwitch(ChannelSwitchEvent event) {
+    public void onChannelSwitch(@NonNull ChannelSwitchEvent event) {
         Object party = event.getChannel().getContext("mcmmo-party");
 
         if ((party instanceof Boolean) && ((Boolean) party)) {
@@ -39,7 +40,7 @@ public final class mcMMOContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(PreChatFormatEvent event) {
+    public void onChannelMessage(@NonNull PreChatFormatEvent event) {
         Object party = event.getChannel().getContext("mcmmo-party");
 
         if ((party instanceof Boolean) && ((Boolean) party)) {
@@ -53,7 +54,7 @@ public final class mcMMOContext implements Listener {
     private final McMMOPartyChangeEvent.EventReason KICKED = McMMOPartyChangeEvent.EventReason.KICKED_FROM_PARTY;
 
     @EventHandler(ignoreCancelled = true)
-    public void onPartyLeave(McMMOPartyChangeEvent event) {
+    public void onPartyLeave(@NonNull McMMOPartyChangeEvent event) {
         if (event.getReason() != LEFT && event.getReason() != KICKED) {
             return;
         }
@@ -67,7 +68,7 @@ public final class mcMMOContext implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(@NonNull PlayerJoinEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
         Object party = user.getSelectedChannel().getContext("mcmmo-party");
 
@@ -76,11 +77,11 @@ public final class mcMMOContext implements Listener {
         }
     }
 
-    public boolean isInParty(ChatUser user) {
+    public boolean isInParty(@NonNull ChatUser user) {
         return PartyAPI.inParty(user.asPlayer());
     }
 
-    public boolean isInSameParty(ChatUser user1, ChatUser user2) {
+    public boolean isInSameParty(@NonNull ChatUser user1, @NonNull ChatUser user2) {
         if (!user1.isOnline() || !user2.isOnline()) {
             return false;
         }

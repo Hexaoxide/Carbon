@@ -14,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +26,7 @@ public class ChannelListCommand {
 
     private final CarbonChat carbonChat;
 
-    public ChannelListCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public ChannelListCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -54,14 +55,14 @@ public class ChannelListCommand {
                 .register();
     }
 
-    public void executeSelf(Player player, Object[] args) {
+    public void executeSelf(@NonNull Player player, Object[] args) {
         Iterator<ChatChannel> allChannels = carbonChat.getChannelManager().getRegistry().values().iterator();
         ChatUser user = carbonChat.getUserService().wrap(player);
 
         getListAndSend(player, user, allChannels);
     }
 
-    public void executeOther(CommandSender sender, Object[] args) {
+    public void executeOther(@NonNull CommandSender sender, Object[] args) {
         Audience cmdSender = carbonChat.getAdventureManager().getAudiences().audience(sender);
         ChatUser user = (ChatUser) args[0];
 
@@ -75,7 +76,7 @@ public class ChannelListCommand {
         getListAndSend(sender, user, allChannels);
     }
 
-    private void getListAndSend(CommandSender sender, ChatUser user, Iterator<ChatChannel> allChannels) {
+    private void getListAndSend(@NonNull CommandSender sender, ChatUser user, @NonNull Iterator<ChatChannel> allChannels) {
         ChatChannel channel;
         List<ChatChannel> canSee = new ArrayList<>();
         List<ChatChannel> cannotSee = new ArrayList<>();
@@ -118,7 +119,7 @@ public class ChannelListCommand {
         }
     }
 
-    private void makeList(Iterator<ChatChannel> iterator, TextComponent.Builder list) {
+    private void makeList(@NonNull Iterator<ChatChannel> iterator, TextComponent.@NonNull Builder list) {
         String listSeparator = carbonChat.getLanguage().getString("channel-list-separator", ", ");
         // TODO: Larry, why did you double assign the listSeparatorComponent?
         Component listSeparatorComponent = TextComponent.of(listSeparator);

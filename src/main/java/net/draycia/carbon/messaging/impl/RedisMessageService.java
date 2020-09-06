@@ -11,6 +11,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.messaging.MessageService;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.RedisListener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -28,9 +29,9 @@ public class RedisMessageService implements MessageService {
     private final RedisPubSubCommands<String, String> publishSync;
 
     private final UUID serverUUID = UUID.randomUUID();
-    private final CarbonChat carbonChat;
+    private final @NonNull CarbonChat carbonChat;
 
-    public RedisMessageService(CarbonChat carbonChat) {
+    public RedisMessageService(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
         String host = carbonChat.getConfig().getString("redis.host");
@@ -68,7 +69,7 @@ public class RedisMessageService implements MessageService {
         });
     }
 
-    private void receiveMessage(UUID uuid, String key, ByteArrayDataInput value) {
+    private void receiveMessage(UUID uuid, @NonNull String key, ByteArrayDataInput value) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
         if (user != null) {
@@ -107,7 +108,7 @@ public class RedisMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer) {
+    public void sendMessage(String key, @NonNull UUID uuid, @NonNull Consumer<ByteArrayDataOutput> consumer) {
         ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
         msg.writeLong(serverUUID.getMostSignificantBits());

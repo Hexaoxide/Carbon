@@ -17,7 +17,7 @@ public interface UserChannelSettings {
         this.setIgnoring(ignored, false);
     }
 
-    @Nullable TextColor getColor();
+    @Nullable @Nullable TextColor getColor();
     void setColor(@Nullable TextColor color, boolean fromRemote);
     default void setColor(@Nullable TextColor color) {
         this.setColor(color, false);

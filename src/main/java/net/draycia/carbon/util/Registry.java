@@ -30,7 +30,7 @@ public interface Registry<T> {
      * @param key The key for the entry
      * @return The entry associated with the key
      */
-    @Nullable
+    @Nullable @Nullable
     T get(@NonNull String key);
 
     /**

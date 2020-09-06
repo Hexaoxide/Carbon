@@ -9,6 +9,7 @@ import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
@@ -16,7 +17,7 @@ public class ChatReloadCommand {
 
     private final CarbonChat carbonChat;
 
-    public ChatReloadCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public ChatReloadCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -32,7 +33,7 @@ public class ChatReloadCommand {
                 .register();
     }
 
-    private void execute(CommandSender sender, Object[] args) {
+    private void execute(@NonNull CommandSender sender, Object[] args) {
         carbonChat.reloadConfig();
         carbonChat.reloadFilters();
 

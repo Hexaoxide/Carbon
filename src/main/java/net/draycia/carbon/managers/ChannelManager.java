@@ -8,14 +8,16 @@ import net.draycia.carbon.events.ChannelRegisterEvent;
 import net.draycia.carbon.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collections;
 
 public class ChannelManager {
 
     private final CarbonChat carbonChat;
-    private final ChannelRegistry registry;
-    private String defaultChannelKey = null;
+    private final @NonNull ChannelRegistry registry;
+    private @Nullable String defaultChannelKey = null;
 
     public ChannelManager(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
@@ -24,7 +26,7 @@ public class ChannelManager {
         reload();
     }
 
-    public ChatChannel loadChannel(String key, ConfigurationSection section) {
+    public @Nullable ChatChannel loadChannel(String key, @NonNull ConfigurationSection section) {
         ChatChannel channel = new CarbonChatChannel(key, carbonChat, section);
 
         String name = section.getString("name");
@@ -38,7 +40,7 @@ public class ChannelManager {
         return channel;
     }
 
-    public boolean registerChannel(ChatChannel channel) {
+    public boolean registerChannel(@NonNull ChatChannel channel) {
          boolean success = getRegistry().register(channel.getKey(), channel);
 
          if (success) {
@@ -53,11 +55,11 @@ public class ChannelManager {
          return success;
     }
 
-    public Registry<ChatChannel> getRegistry() {
+    public @NonNull Registry<ChatChannel> getRegistry() {
         return registry;
     }
 
-    public ChatChannel getDefaultChannel() {
+    public @Nullable ChatChannel getDefaultChannel() {
         if (defaultChannelKey != null) {
             return registry.get(defaultChannelKey);
         }
@@ -65,7 +67,7 @@ public class ChannelManager {
         return null;
     }
 
-    public ChatChannel getChannelOrDefault(String key) {
+    public @Nullable ChatChannel getChannelOrDefault(@Nullable String key) {
         if (key == null) {
             return getDefaultChannel();
         }

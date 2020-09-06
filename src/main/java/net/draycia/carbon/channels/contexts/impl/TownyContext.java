@@ -11,6 +11,7 @@ import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class TownyContext implements Listener {
 
@@ -30,7 +31,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelSwitch(ChannelSwitchEvent event) {
+    public void onChannelSwitch(@NonNull ChannelSwitchEvent event) {
         Object town = event.getChannel().getContext(KEY);
 
         if ((town instanceof Boolean) && ((Boolean) town)) {
@@ -42,7 +43,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(PreChatFormatEvent event) {
+    public void onChannelMessage(@NonNull PreChatFormatEvent event) {
         // TODO: event.setFailureMessage
         Object town = event.getChannel().getContext(KEY);
 
@@ -54,7 +55,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler
-    public void onResidentRemove(TownRemoveResidentEvent event) {
+    public void onResidentRemove(@NonNull TownRemoveResidentEvent event) {
         String name = event.getResident().getName();
         ChatUser user = carbonChat.getUserService().wrap(name);
         Object town = user.getSelectedChannel().getContext(KEY);
@@ -65,7 +66,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(@NonNull PlayerJoinEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
         Object town = user.getSelectedChannel().getContext(KEY);
 
@@ -74,7 +75,7 @@ public final class TownyContext implements Listener {
         }
     }
 
-    public boolean isInTown(ChatUser user) {
+    public boolean isInTown(@NonNull ChatUser user) {
         try {
             return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
         } catch (NotRegisteredException e) {
@@ -84,7 +85,7 @@ public final class TownyContext implements Listener {
         return false;
     }
 
-    public boolean isInSameTown(ChatUser user1, ChatUser user2) {
+    public boolean isInSameTown(@NonNull ChatUser user1, @NonNull ChatUser user2) {
         if (!user1.isOnline() || !user2.isOnline()) {
             return false;
         }

@@ -5,6 +5,7 @@ import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
@@ -16,12 +17,12 @@ public abstract class ChatChannel implements ForwardingAudience {
     /**
      * @return The color that represents this channel. Optionally used in formatting.
      */
-    public abstract TextColor getChannelColor(ChatUser user);
+    public abstract @Nullable TextColor getChannelColor(ChatUser user);
 
     /**
      * @return The MiniMessage styled format for the group in this channel.
      */
-    public abstract String getFormat(String group);
+    public abstract @Nullable String getFormat(String group);
 
     /**
      * @return If this is the default (typically Global) channel players use when they're in no other channel.
@@ -55,38 +56,38 @@ public abstract class ChatChannel implements ForwardingAudience {
     public abstract String getKey();
 
     @Nullable
-    public abstract String getMessagePrefix();
+    public abstract @Nullable String getMessagePrefix();
 
-    public abstract String getAliases();
+    public abstract @Nullable String getAliases();
 
     /**
      * @return The message to be sent to the player when switching to this channel.
      */
-    public abstract String getSwitchMessage();
+    public abstract @Nullable String getSwitchMessage();
 
-    public abstract String getSwitchOtherMessage();
+    public abstract @Nullable String getSwitchOtherMessage();
 
-    public abstract String getSwitchFailureMessage();
+    public abstract @Nullable String getSwitchFailureMessage();
 
-    public abstract String getCannotIgnoreMessage();
+    public abstract @Nullable String getCannotIgnoreMessage();
 
     /**
      * @return The message to be send to the player when toggling this channel off.
      */
 
-    public abstract String getToggleOffMessage();
+    public abstract @Nullable String getToggleOffMessage();
 
     /**
      * @return The message to be send to the player when toggling this channel on.
      */
 
-    public abstract String getToggleOnMessage();
+    public abstract @Nullable String getToggleOnMessage();
 
-    public abstract String getToggleOtherOnMessage();
+    public abstract @Nullable String getToggleOtherOnMessage();
 
-    public abstract String getToggleOtherOffMessage();
+    public abstract @Nullable String getToggleOtherOffMessage();
 
-    public abstract String getCannotUseMessage();
+    public abstract @Nullable String getCannotUseMessage();
 
     public abstract Boolean primaryGroupOnly();
 
@@ -96,18 +97,18 @@ public abstract class ChatChannel implements ForwardingAudience {
 
     public abstract boolean testContext(ChatUser sender, ChatUser target);
 
-    public abstract Object getContext(String key);
+    public abstract @Nullable Object getContext(String key);
 
-    public abstract List<String> getGroupOverrides();
+    public abstract @NonNull List<String> getGroupOverrides();
 
     /**
      * @return If the player can use this channel.
      */
     public abstract Boolean canPlayerUse(ChatUser user);
 
-    public abstract Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
+    public abstract @NonNull Boolean canPlayerSee(ChatUser sender, ChatUser target, boolean checkSpying);
 
-    public abstract Boolean canPlayerSee(ChatUser target, boolean checkSpying);
+    public abstract @NonNull Boolean canPlayerSee(ChatUser target, boolean checkSpying);
 
     /**
      * @return If the channel should forward its formatting / formatted message to other servers
@@ -116,7 +117,7 @@ public abstract class ChatChannel implements ForwardingAudience {
         return true;
     }
 
-    public abstract List<Pattern> getItemLinkPatterns();
+    public abstract @NonNull List<Pattern> getItemLinkPatterns();
 
     /**
      * Parses the specified message, calls a {@link PreChatFormatEvent}, and sends the message to everyone who can view this channel.

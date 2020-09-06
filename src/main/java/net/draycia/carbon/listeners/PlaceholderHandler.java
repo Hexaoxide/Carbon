@@ -5,11 +5,12 @@ import net.draycia.carbon.events.PreChatFormatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PlaceholderHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPapiPlaceholder(PreChatFormatEvent event) {
+    public void onPapiPlaceholder(@NonNull PreChatFormatEvent event) {
         event.setFormat(PlaceholderAPI.setPlaceholders(event.getUser().asOfflinePlayer(), event.getFormat()));
     }
 

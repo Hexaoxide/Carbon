@@ -7,6 +7,7 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PingHandler implements Listener {
 
@@ -17,7 +18,7 @@ public class PingHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPing(ChatComponentEvent event) {
+    public void onPing(@NonNull ChatComponentEvent event) {
         if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
             return;
         }

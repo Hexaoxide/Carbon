@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
@@ -19,7 +20,7 @@ public class IgnoreCommand {
 
     private final CarbonChat carbonChat;
 
-    public IgnoreCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public IgnoreCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -39,7 +40,7 @@ public class IgnoreCommand {
                 .register();
     }
 
-    private void execute(Player player, Object[] args) {
+    private void execute(@NonNull Player player, Object[] args) {
         ChatUser targetUser = (ChatUser) args[0];
         ChatUser user = carbonChat.getUserService().wrap(player);
 

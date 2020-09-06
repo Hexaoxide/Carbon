@@ -6,18 +6,19 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext implements Listener {
-    private final CarbonChat carbonChat;
-    private final Economy economy;
+    private final @NonNull CarbonChat carbonChat;
+    private final @NonNull Economy economy;
 
-    public EconomyContext(CarbonChat carbonChat) {
+    public EconomyContext(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         this.economy = carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }
     
     @EventHandler
-    public void onChatReqBal(PreChatFormatEvent event) {
+    public void onChatReqBal(@NonNull PreChatFormatEvent event) {
         Object requiredBalObject = event.getChannel().getContext("vault-balance");
 
         Double requiredBal;
@@ -46,7 +47,7 @@ public class EconomyContext implements Listener {
     }
 
     @EventHandler
-    public void onChatCost(PreChatFormatEvent event) {
+    public void onChatCost(@NonNull PreChatFormatEvent event) {
         Object costObject = event.getChannel().getContext("vault-cost");
 
         Double cost;

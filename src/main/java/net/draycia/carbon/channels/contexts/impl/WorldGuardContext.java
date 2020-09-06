@@ -14,6 +14,7 @@ import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 
@@ -21,14 +22,14 @@ public final class WorldGuardContext implements Listener {
 
     private static final String KEY = "worldguard-region";
 
-    public WorldGuardContext(CarbonChat carbonChat) {
+    public WorldGuardContext(@NonNull CarbonChat carbonChat) {
         carbonChat.getContextManager().register(KEY, (context) -> {
             return this.testContext(context.getSender(), context.getTarget(), context.getValue());
         });
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelSwitch(ChannelSwitchEvent event) {
+    public void onChannelSwitch(@NonNull ChannelSwitchEvent event) {
         // TODO: cancellation message
         Object value = event.getChannel().getContext(KEY);
 
@@ -38,7 +39,7 @@ public final class WorldGuardContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(PreChatFormatEvent event) {
+    public void onChannelMessage(@NonNull PreChatFormatEvent event) {
         // TODO: cancellation message
         Object value = event.getChannel().getContext(KEY);
 
@@ -47,7 +48,7 @@ public final class WorldGuardContext implements Listener {
         }
     }
 
-    private boolean isInRegionOrRegions(Object value, ChatUser user) {
+    private boolean isInRegionOrRegions(Object value, @NonNull ChatUser user) {
         if ((value instanceof String)) {
             return isInRegion((String) value, user);
         }
@@ -63,7 +64,7 @@ public final class WorldGuardContext implements Listener {
         return false;
     }
 
-    public boolean testContext(ChatUser sender, ChatUser target, Object value) {
+    public boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target, Object value) {
         boolean user1InRegion = false;
         boolean user2InRegion = false;
 
@@ -89,7 +90,7 @@ public final class WorldGuardContext implements Listener {
         return user1InRegion && user2InRegion;
     }
 
-    public boolean isInSameRegion(ChatUser user1, ChatUser user2) {
+    public boolean isInSameRegion(@NonNull ChatUser user1, @NonNull ChatUser user2) {
         if (!user1.isOnline() || !user2.isOnline()) {
             return false;
         }
@@ -112,7 +113,7 @@ public final class WorldGuardContext implements Listener {
         return false;
     }
 
-    public boolean isInRegion(String region, ChatUser user) {
+    public boolean isInRegion(@NonNull String region, @NonNull ChatUser user) {
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         World world = BukkitAdapter.adapt(user.asPlayer().getWorld());
         ProtectedRegion protection = container.get(world).getRegion(region);
@@ -120,7 +121,7 @@ public final class WorldGuardContext implements Listener {
         return isInRegion(protection, user);
     }
 
-    public boolean isInRegion(ProtectedRegion region, ChatUser user) {
+    public boolean isInRegion(@NonNull ProtectedRegion region, @NonNull ChatUser user) {
         Location location = BukkitAdapter.adapt(user.asPlayer().getLocation());
 
         return region.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ());

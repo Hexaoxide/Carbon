@@ -7,6 +7,7 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class WhisperPingHandler implements Listener {
 
@@ -17,7 +18,7 @@ public class WhisperPingHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPing(PrivateMessageEvent event) {
+    public void onPing(@NonNull PrivateMessageEvent event) {
         if (event.getTarget() == null) {
             return;
         }

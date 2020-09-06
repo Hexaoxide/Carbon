@@ -20,7 +20,7 @@ public class ChannelRegisterEvent extends Event {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    public static @NonNull HandlerList getHandlerList() {
         return handlers;
     }
 
@@ -35,7 +35,7 @@ public class ChannelRegisterEvent extends Event {
         this.registry = registry;
     }
 
-    public void register(ChatChannel chatChannel) {
+    public void register(@NonNull ChatChannel chatChannel) {
         registry.register(chatChannel.getKey(), chatChannel);
     }
 

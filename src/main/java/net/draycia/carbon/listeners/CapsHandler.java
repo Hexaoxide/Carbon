@@ -5,6 +5,7 @@ import net.draycia.carbon.events.PreChatFormatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CapsHandler implements Listener {
 
@@ -15,7 +16,7 @@ public class CapsHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onMessage(PreChatFormatEvent event) {
+    public void onMessage(@NonNull PreChatFormatEvent event) {
         if (!carbonChat.getModConfig().getBoolean("caps-protection.enabled")) {
             return;
         }

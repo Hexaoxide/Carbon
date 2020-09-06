@@ -7,22 +7,23 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class AdventureManager {
 
-    private final CarbonChat carbonChat;
-    private final BukkitAudiences audiences;
+    private final @NonNull CarbonChat carbonChat;
+    private final @NonNull BukkitAudiences audiences;
 
-    public AdventureManager(CarbonChat carbonChat) {
+    public AdventureManager(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         this.audiences = BukkitAudiences.create(carbonChat);
     }
 
-    public Component processMessageWithPapi(Player player, String input, String... placeholders) {
+    public Component processMessageWithPapi(Player player, @NonNull String input, String... placeholders) {
         return processMessage(PlaceholderAPI.setPlaceholders(player, input), placeholders);
     }
 
-    public Component processMessage(String input, String... placeholders) {
+    public Component processMessage(@NonNull String input, String... placeholders) {
         switch (carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
             case "minedown":
                 return processMineDown(input, placeholders);
@@ -38,7 +39,7 @@ public class AdventureManager {
         }
     }
 
-    private Component processMojang(String input, String... placeholders) {
+    private @NonNull Component processMojang(String input, String @NonNull ... placeholders) {
         for (int i = 0; i < placeholders.length; i += 2) {
             String placeholder = placeholders[i];
             String replacement = placeholders[i+1];
@@ -53,7 +54,7 @@ public class AdventureManager {
         return MineDown.parse(input, placeholders);
     }
 
-    public BukkitAudiences getAudiences() {
+    public @NonNull BukkitAudiences getAudiences() {
         return audiences;
     }
 }

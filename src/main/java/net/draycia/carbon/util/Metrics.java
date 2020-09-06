@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -63,10 +65,10 @@ public class Metrics {
     private static boolean logResponseStatusText;
 
     // The uuid of the server
-    private static String serverUUID;
+    private static @Nullable String serverUUID;
 
     // The plugin
-    private final Plugin plugin;
+    private final @Nullable Plugin plugin;
 
     // The plugin id
     private final int pluginId;
@@ -81,7 +83,7 @@ public class Metrics {
      * @param pluginId The id of the plugin.
      *                 It can be found at <a href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
-    public Metrics(Plugin plugin, int pluginId) {
+    public Metrics(@Nullable Plugin plugin, int pluginId) {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null!");
         }
@@ -159,7 +161,7 @@ public class Metrics {
      *
      * @param chart The chart to add.
      */
-    public void addCustomChart(CustomChart chart) {
+    public void addCustomChart(@Nullable CustomChart chart) {
         if (chart == null) {
             throw new IllegalArgumentException("Chart cannot be null!");
         }
@@ -194,7 +196,7 @@ public class Metrics {
      *
      * @return The plugin specific data.
      */
-    public JsonObject getPluginData() {
+    public @NonNull JsonObject getPluginData() {
         JsonObject data = new JsonObject();
 
         String pluginName = plugin.getDescription().getName();
@@ -222,7 +224,7 @@ public class Metrics {
      *
      * @return The server specific data.
      */
-    private JsonObject getServerData() {
+    private @NonNull JsonObject getServerData() {
         // Minecraft specific data
         int playerAmount;
         try {
@@ -298,7 +300,7 @@ public class Metrics {
                                 }
                             }
                         }
-                    } catch (NullPointerException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) { }
+                    } catch (@NonNull NullPointerException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) { }
                 }
             } catch (NoSuchFieldException ignored) { }
         }
@@ -326,7 +328,7 @@ public class Metrics {
      * @param data The data to send.
      * @throws Exception If the request failed.
      */
-    private static void sendData(Plugin plugin, JsonObject data) throws Exception {
+    private static void sendData(@NonNull Plugin plugin, @Nullable JsonObject data) throws Exception {
         if (data == null) {
             throw new IllegalArgumentException("Data cannot be null!");
         }
@@ -376,7 +378,7 @@ public class Metrics {
      * @return The gzipped String.
      * @throws IOException If the compression failed.
      */
-    private static byte[] compress(final String str) throws IOException {
+    private static byte @Nullable [] compress(final @Nullable String str) throws IOException {
         if (str == null) {
             return null;
         }
@@ -393,21 +395,21 @@ public class Metrics {
     public static abstract class CustomChart {
 
         // The id of the chart
-        final String chartId;
+        final @Nullable String chartId;
 
         /**
          * Class constructor.
          *
          * @param chartId The id of the chart.
          */
-        CustomChart(String chartId) {
+        CustomChart(@Nullable String chartId) {
             if (chartId == null || chartId.isEmpty()) {
                 throw new IllegalArgumentException("ChartId cannot be null or empty!");
             }
             this.chartId = chartId;
         }
 
-        private JsonObject getRequestJsonObject() {
+        private @Nullable JsonObject getRequestJsonObject() {
             JsonObject chart = new JsonObject();
             chart.addProperty("chartId", chartId);
             try {
@@ -426,7 +428,7 @@ public class Metrics {
             return chart;
         }
 
-        protected abstract JsonObject getChartData() throws Exception;
+        protected abstract @Nullable JsonObject getChartData() throws Exception;
 
     }
 
@@ -449,7 +451,7 @@ public class Metrics {
         }
 
         @Override
-        protected JsonObject getChartData() throws Exception {
+        protected @Nullable JsonObject getChartData() throws Exception {
             JsonObject data = new JsonObject();
             String value = callable.call();
             if (value == null || value.isEmpty()) {
@@ -480,7 +482,7 @@ public class Metrics {
         }
 
         @Override
-        protected JsonObject getChartData() throws Exception {
+        protected @Nullable JsonObject getChartData() throws Exception {
             JsonObject data = new JsonObject();
             JsonObject values = new JsonObject();
             Map<String, Integer> map = callable.call();
@@ -524,7 +526,7 @@ public class Metrics {
         }
 
         @Override
-        public JsonObject getChartData() throws Exception {
+        public @Nullable JsonObject getChartData() throws Exception {
             JsonObject data = new JsonObject();
             JsonObject values = new JsonObject();
             Map<String, Map<String, Integer>> map = callable.call();
@@ -573,7 +575,7 @@ public class Metrics {
         }
 
         @Override
-        protected JsonObject getChartData() throws Exception {
+        protected @Nullable JsonObject getChartData() throws Exception {
             JsonObject data = new JsonObject();
             int value = callable.call();
             if (value == 0) {
@@ -605,7 +607,7 @@ public class Metrics {
         }
 
         @Override
-        protected JsonObject getChartData() throws Exception {
+        protected @Nullable JsonObject getChartData() throws Exception {
             JsonObject data = new JsonObject();
             JsonObject values = new JsonObject();
             Map<String, Integer> map = callable.call();
@@ -650,7 +652,7 @@ public class Metrics {
         }
 
         @Override
-        protected JsonObject getChartData() throws Exception {
+        protected @Nullable JsonObject getChartData() throws Exception {
             JsonObject data = new JsonObject();
             JsonObject values = new JsonObject();
             Map<String, Integer> map = callable.call();
@@ -688,7 +690,7 @@ public class Metrics {
         }
 
         @Override
-        protected JsonObject getChartData() throws Exception {
+        protected @Nullable JsonObject getChartData() throws Exception {
             JsonObject data = new JsonObject();
             JsonObject values = new JsonObject();
             Map<String, int[]> map = callable.call();

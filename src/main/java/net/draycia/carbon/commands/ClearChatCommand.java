@@ -11,12 +11,13 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ClearChatCommand {
 
     private final CarbonChat carbonChat;
 
-    public ClearChatCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public ClearChatCommand(CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -32,7 +33,7 @@ public class ClearChatCommand {
                 .register();
     }
 
-    private void execute(CommandSender sender, Object[] args) {
+    private void execute(@NonNull CommandSender sender, Object[] args) {
         String format = carbonChat.getModConfig().getString("clear-chat.message", "");
         Component component = carbonChat.getAdventureManager().processMessage(format, "br", "\n");
 

@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class FilterHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onFilter(PreChatFormatEvent event) {
+    public void onFilter(@NonNull PreChatFormatEvent event) {
         if (!carbonChat.getModConfig().getBoolean("filters.enabled")) {
             return;
         }
@@ -101,7 +102,7 @@ public class FilterHandler implements Listener {
         }
     }
 
-    private boolean channelUsesFilter(ChatChannel chatChannel) {
+    private boolean channelUsesFilter(@NonNull ChatChannel chatChannel) {
         Object filter = chatChannel.getContext("filter");
 
         return filter instanceof Boolean && ((Boolean) filter);

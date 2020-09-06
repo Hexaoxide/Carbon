@@ -4,6 +4,7 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.channels.contexts.MessageContext;
 import net.draycia.carbon.channels.contexts.impl.SimpleMessageContext;
 import net.draycia.carbon.storage.ChatUser;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class ContextManager {
         return true;
     }
 
-    public boolean testContext(ChatUser user, ChatUser target, ChatChannel channel) {
+    public boolean testContext(ChatUser user, ChatUser target, @NonNull ChatChannel channel) {
         for (Map.Entry<String, Function<MessageContext, Boolean>> handler : handlers.entrySet()) {
             String key = handler.getKey();
 

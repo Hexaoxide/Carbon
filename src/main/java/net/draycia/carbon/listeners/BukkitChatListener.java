@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,7 +26,7 @@ public class BukkitChatListener implements Listener {
 
     // Chat messages
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerchat(AsyncPlayerChatEvent event) {
+    public void onPlayerchat(@NonNull AsyncPlayerChatEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
         ChatChannel channel = user.getSelectedChannel();
 

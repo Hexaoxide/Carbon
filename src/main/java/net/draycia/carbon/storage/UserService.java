@@ -1,25 +1,26 @@
 package net.draycia.carbon.storage;
 
 import org.bukkit.OfflinePlayer;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
 public interface UserService {
 
-    ChatUser wrap(String name);
-    ChatUser wrap(OfflinePlayer player);
-    ChatUser wrap(UUID uuid);
+    @Nullable ChatUser wrap(String name);
+    @Nullable ChatUser wrap(OfflinePlayer player);
+    @Nullable ChatUser wrap(UUID uuid);
 
     @Nullable
-    default ChatUser wrapIfLoaded(OfflinePlayer player) {
+    default ChatUser wrapIfLoaded(@NonNull OfflinePlayer player) {
         return wrapIfLoaded(player.getUniqueId());
     }
 
-    @Nullable
+    @Nullable @Nullable
     ChatUser wrapIfLoaded(UUID uuid);
 
-    ChatUser refreshUser(UUID uuid);
+    @Nullable ChatUser refreshUser(UUID uuid);
 
     void onDisable();
 
