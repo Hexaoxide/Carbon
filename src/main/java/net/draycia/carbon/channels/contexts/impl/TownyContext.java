@@ -15,13 +15,16 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class TownyContext implements Listener {
 
-    private final CarbonChat carbonChat;
+    @NonNull
     private static final String KEY = "towny-town";
 
-    public TownyContext(CarbonChat carbonChat) {
+    @NonNull
+    private final CarbonChat carbonChat;
+
+    public TownyContext(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
-        this.carbonChat.getContextManager().register("towny-town", (context) -> {
+        this.carbonChat.getContextManager().register(KEY, (context) -> {
             if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
                 return isInSameTown(context.getSender(), context.getTarget());
             }
@@ -31,7 +34,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelSwitch(@NonNull ChannelSwitchEvent event) {
+    public void onChannelSwitch(ChannelSwitchEvent event) {
         Object town = event.getChannel().getContext(KEY);
 
         if ((town instanceof Boolean) && ((Boolean) town)) {
@@ -43,7 +46,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(@NonNull PreChatFormatEvent event) {
+    public void onChannelMessage(PreChatFormatEvent event) {
         // TODO: event.setFailureMessage
         Object town = event.getChannel().getContext(KEY);
 
@@ -55,7 +58,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler
-    public void onResidentRemove(@NonNull TownRemoveResidentEvent event) {
+    public void onResidentRemove(TownRemoveResidentEvent event) {
         String name = event.getResident().getName();
         ChatUser user = carbonChat.getUserService().wrap(name);
         Object town = user.getSelectedChannel().getContext(KEY);
@@ -66,7 +69,7 @@ public final class TownyContext implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(@NonNull PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
         Object town = user.getSelectedChannel().getContext(KEY);
 

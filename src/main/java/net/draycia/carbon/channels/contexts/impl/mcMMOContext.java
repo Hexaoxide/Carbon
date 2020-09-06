@@ -13,9 +13,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class mcMMOContext implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public mcMMOContext(CarbonChat carbonChat) {
+    public mcMMOContext(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
         this.carbonChat.getContextManager().register("mcmmo-party", (context) -> {
@@ -28,7 +29,7 @@ public final class mcMMOContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelSwitch(@NonNull ChannelSwitchEvent event) {
+    public void onChannelSwitch(ChannelSwitchEvent event) {
         Object party = event.getChannel().getContext("mcmmo-party");
 
         if ((party instanceof Boolean) && ((Boolean) party)) {
@@ -40,7 +41,7 @@ public final class mcMMOContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(@NonNull PreChatFormatEvent event) {
+    public void onChannelMessage(PreChatFormatEvent event) {
         Object party = event.getChannel().getContext("mcmmo-party");
 
         if ((party instanceof Boolean) && ((Boolean) party)) {
@@ -54,7 +55,7 @@ public final class mcMMOContext implements Listener {
     private final McMMOPartyChangeEvent.EventReason KICKED = McMMOPartyChangeEvent.EventReason.KICKED_FROM_PARTY;
 
     @EventHandler(ignoreCancelled = true)
-    public void onPartyLeave(@NonNull McMMOPartyChangeEvent event) {
+    public void onPartyLeave(McMMOPartyChangeEvent event) {
         if (event.getReason() != LEFT && event.getReason() != KICKED) {
             return;
         }
@@ -68,7 +69,7 @@ public final class mcMMOContext implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(@NonNull PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
         Object party = user.getSelectedChannel().getContext("mcmmo-party");
 

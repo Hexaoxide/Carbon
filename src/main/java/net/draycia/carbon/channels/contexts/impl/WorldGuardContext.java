@@ -15,11 +15,13 @@ import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
 
 public final class WorldGuardContext implements Listener {
 
+    @NonNull
     private static final String KEY = "worldguard-region";
 
     public WorldGuardContext(@NonNull CarbonChat carbonChat) {
@@ -29,7 +31,7 @@ public final class WorldGuardContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelSwitch(@NonNull ChannelSwitchEvent event) {
+    public void onChannelSwitch(ChannelSwitchEvent event) {
         // TODO: cancellation message
         Object value = event.getChannel().getContext(KEY);
 
@@ -39,7 +41,7 @@ public final class WorldGuardContext implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(@NonNull PreChatFormatEvent event) {
+    public void onChannelMessage(PreChatFormatEvent event) {
         // TODO: cancellation message
         Object value = event.getChannel().getContext(KEY);
 
@@ -48,8 +50,8 @@ public final class WorldGuardContext implements Listener {
         }
     }
 
-    private boolean isInRegionOrRegions(Object value, @NonNull ChatUser user) {
-        if ((value instanceof String)) {
+    private boolean isInRegionOrRegions(@Nullable Object value, @NonNull ChatUser user) {
+        if (value instanceof String) {
             return isInRegion((String) value, user);
         }
 
@@ -64,17 +66,17 @@ public final class WorldGuardContext implements Listener {
         return false;
     }
 
-    public boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target, Object value) {
+    public boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target, @Nullable Object value) {
         boolean user1InRegion = false;
         boolean user2InRegion = false;
 
-        if ((value instanceof Boolean) && ((Boolean) value)) {
+        if (value instanceof Boolean && (Boolean) value) {
             return isInSameRegion(sender, target);
         } else if (value instanceof String) {
-            user1InRegion = isInRegion((String)value, sender);
-            user2InRegion = isInRegion((String)value, target);
+            user1InRegion = isInRegion((String) value, sender);
+            user2InRegion = isInRegion((String) value, target);
         } else if (value instanceof List) {
-            for (String item : (List<String>)value) {
+            for (String item : (List<String>) value) {
                 if (!user1InRegion) {
                     user1InRegion = isInRegion(item, sender);
                 }

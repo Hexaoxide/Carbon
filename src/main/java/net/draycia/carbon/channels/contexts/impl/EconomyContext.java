@@ -9,16 +9,19 @@ import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext implements Listener {
-    private final @NonNull CarbonChat carbonChat;
-    private final @NonNull Economy economy;
+    @NonNull
+    private final CarbonChat carbonChat;
+
+    @NonNull
+    private final Economy economy;
 
     public EconomyContext(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         this.economy = carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }
-    
+
     @EventHandler
-    public void onChatReqBal(@NonNull PreChatFormatEvent event) {
+    public void onChatReqBal(PreChatFormatEvent event) {
         Object requiredBalObject = event.getChannel().getContext("vault-balance");
 
         Double requiredBal;
@@ -47,7 +50,7 @@ public class EconomyContext implements Listener {
     }
 
     @EventHandler
-    public void onChatCost(@NonNull PreChatFormatEvent event) {
+    public void onChatCost(PreChatFormatEvent event) {
         Object costObject = event.getChannel().getContext("vault-cost");
 
         Double cost;

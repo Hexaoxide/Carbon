@@ -7,10 +7,10 @@ import net.draycia.carbon.events.ChatFormatEvent;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.CarbonUtils;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,41 +18,50 @@ import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class CarbonChatChannel extends ChatChannel {
 
-    private final String key;
-
-    private final CarbonChat carbonChat;
-    private final ConfigurationSection config;
-
+    @NonNull
     private static final Pattern MESSAGE_PATTERN = Pattern.compile("<message>");
 
-    public CarbonChatChannel(String key, CarbonChat carbonChat, ConfigurationSection config) {
+    @NonNull
+    private final String key;
+
+    @NonNull
+    private final CarbonChat carbonChat;
+
+    @Nullable
+    private final ConfigurationSection config;
+
+    public CarbonChatChannel(@NonNull String key, @NonNull CarbonChat carbonChat, @Nullable ConfigurationSection config) {
         this.key = key;
         this.carbonChat = carbonChat;
         this.config = config;
     }
 
+    @NonNull
     public CarbonChat getCarbonChat() {
         return carbonChat;
     }
 
     @Override
-    public boolean testContext(ChatUser sender, ChatUser target) {
+    public boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target) {
         return carbonChat.getContextManager().testContext(sender, target, this);
     }
 
     @Override
-    public Boolean canPlayerUse(@NonNull ChatUser user) {
+    public boolean canPlayerUse(@NonNull ChatUser user) {
         return user.asPlayer().hasPermission("carbonchat.channels." + getName() + ".use");
     }
 
     @Override
     @NonNull
-    public List<ChatUser> audiences() {
+    public List<@NonNull ChatUser> audiences() {
         List<ChatUser> audience = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -83,7 +92,9 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    public Component sendMessage(@NonNull ChatUser user, @NonNull Collection<ChatUser> recipients, String message, boolean fromRemote) {
+    @Override
+    @NonNull
+    public Component sendMessage(@NonNull ChatUser user, @NonNull Collection<@NonNull ChatUser> recipients, @NonNull String message, boolean fromRemote) {
         updateUserNickname(user);
 
         // Get player's formatting
@@ -178,11 +189,13 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public Component sendMessage(@NonNull ChatUser user, String message, boolean fromRemote) {
+    @NonNull
+    public Component sendMessage(@NonNull ChatUser user, @NonNull String message, boolean fromRemote) {
         return this.sendMessage(user, this.audiences(), message, fromRemote);
     }
 
-    public @Nullable String getFormat(@NonNull ChatUser user) {
+    @Nullable
+    public String getFormat(@NonNull ChatUser user) {
         for (String group : this.getGroupOverrides()) {
             if (userHasGroup(user, group)) {
                 String format = getFormat(group);
@@ -200,7 +213,7 @@ public class CarbonChatChannel extends ChatChannel {
         }
     }
 
-    private boolean userHasGroup(@NonNull ChatUser user, String group) {
+    private boolean userHasGroup(@NonNull ChatUser user, @NonNull String group) {
         if (user.isOnline()) {
             if (carbonChat.getPermission().playerInGroup(user.asPlayer(), group)) {
                 return true;
@@ -218,7 +231,8 @@ public class CarbonChatChannel extends ChatChannel {
         return false;
     }
 
-    private @Nullable String getFirstFoundUserFormat(@NonNull ChatUser user) {
+    @Nullable
+    private String getFirstFoundUserFormat(@NonNull ChatUser user) {
         String[] playerGroups;
 
         if (user.isOnline()) {
@@ -238,7 +252,8 @@ public class CarbonChatChannel extends ChatChannel {
         return getDefaultFormat();
     }
 
-    private @Nullable String getPrimaryGroupFormat(@NonNull ChatUser user) {
+    @Nullable
+    private String getPrimaryGroupFormat(@NonNull ChatUser user) {
         String primaryGroup;
 
         if (user.isOnline()) {
@@ -256,12 +271,14 @@ public class CarbonChatChannel extends ChatChannel {
         return getDefaultFormat();
     }
 
-    private @Nullable String getDefaultFormat() {
+    @Nullable
+    private String getDefaultFormat() {
         return getFormat(getDefaultFormatName());
     }
 
     @Override
-    public @Nullable String getFormat(String group) {
+    @Nullable
+    public String getFormat(@NonNull String group) {
         return getString("formats." + group);
     }
 
@@ -290,7 +307,7 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public @NonNull Boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying) {
+    public boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 
         if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + getName())) {
@@ -310,7 +327,7 @@ public class CarbonChatChannel extends ChatChannel {
         return true;
     }
 
-    public @NonNull Boolean canPlayerSee(@NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying) {
+    public boolean canPlayerSee(@NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying) {
         Player targetPlayer = target.asPlayer();
 
         if (!canPlayerSee(target, checkSpying)) {
@@ -325,7 +342,8 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public @Nullable TextColor getChannelColor(@NonNull ChatUser user) {
+    @Nullable
+    public TextColor getChannelColor(@NonNull ChatUser user) {
         TextColor userColor = user.getChannelSettings(this).getColor();
 
         if (userColor != null) {
@@ -347,12 +365,13 @@ public class CarbonChatChannel extends ChatChannel {
         return color;
     }
 
-    private @Nullable String getDefaultFormatName() {
+    @Nullable
+    private String getDefaultFormatName() {
         return getString("default-group");
     }
 
     @Override
-    public Boolean isDefault() {
+    public boolean isDefault() {
         if (config != null && config.contains("default")) {
             return config.getBoolean("default");
         }
@@ -361,37 +380,39 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public Boolean isIgnorable() {
+    public boolean isIgnorable() {
         return getBoolean("ignorable");
     }
 
     @Override
     @Deprecated
-    public Boolean shouldBungee() {
+    public boolean shouldBungee() {
         return getBoolean("should-bungee");
     }
 
     @Override
-    public Boolean isCrossServer() {
+    public boolean isCrossServer() {
         return getBoolean("is-cross-server");
     }
 
     @Override
-    public Boolean honorsRecipientList() {
+    public boolean honorsRecipientList() {
         return getBoolean("honors-recipient-list");
     }
 
     @Override
-    public Boolean permissionGroupMatching() {
+    public boolean permissionGroupMatching() {
         return getBoolean("permission-group-matching");
     }
 
     @Override
-    public @NonNull List<String> getGroupOverrides() {
+    @NonNull
+    public List<@NonNull String> getGroupOverrides() {
         return getStringList("group-overrides");
     }
 
     @Override
+    @NonNull
     public String getName() {
         String name = getString("name");
         return name == null ? key : name;
@@ -408,62 +429,72 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public @Nullable String getSwitchMessage() {
+    @Nullable
+    public String getSwitchMessage() {
         return getString("switch-message");
     }
 
     @Override
-    public @Nullable String getSwitchOtherMessage() {
+    @Nullable
+    public String getSwitchOtherMessage() {
         return getString("switch-other-message");
     }
 
     @Override
-    public @Nullable String getSwitchFailureMessage() {
+    @Nullable
+    public String getSwitchFailureMessage() {
         return getString("switch-failure-message");
     }
 
     @Override
-    public @Nullable String getCannotIgnoreMessage() {
+    @Nullable
+    public String getCannotIgnoreMessage() {
         return getString("cannot-ignore-message");
     }
 
     @Override
-    public @Nullable String getToggleOffMessage() {
+    @Nullable
+    public String getToggleOffMessage() {
         return getString("toggle-off-message");
     }
 
     @Override
-    public @Nullable String getToggleOnMessage() {
+    @Nullable
+    public String getToggleOnMessage() {
         return getString("toggle-on-message");
     }
 
     @Override
-    public @Nullable String getToggleOtherOnMessage() {
+    @Nullable
+    public String getToggleOtherOnMessage() {
         return getString("toggle-other-on");
     }
 
     @Override
-    public @Nullable String getToggleOtherOffMessage() {
+    @Nullable
+    public String getToggleOtherOffMessage() {
         return getString("toggle-other-off");
     }
 
     @Override
-    public @Nullable String getCannotUseMessage() {
+    @Nullable
+    public String getCannotUseMessage() {
         return getString("cannot-use-channel");
     }
 
     @Override
-    public Boolean shouldForwardFormatting() {
+    public boolean shouldForwardFormatting() {
         return getBoolean("forward-format");
     }
 
     @Override
-    public Boolean primaryGroupOnly() {
+    public boolean primaryGroupOnly() {
         return getBoolean("primary-group-only");
     }
 
     @Override
-    public @NonNull List<Pattern> getItemLinkPatterns() {
+    @NonNull
+    public List<@NonNull Pattern> getItemLinkPatterns() {
         ArrayList<Pattern> itemPatterns = new ArrayList<>();
 
         for (String entry : carbonChat.getConfig().getStringList("item-link-placeholders")) {
@@ -474,8 +505,9 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
-    public @Nullable Object getContext(@NonNull String key) {
-        ConfigurationSection section = config.getConfigurationSection("contexts");
+    @Nullable
+    public Object getContext(@NonNull String key) {
+        ConfigurationSection section = config == null ? null : config.getConfigurationSection("contexts");
 
         if (section == null) {
             ConfigurationSection defaultSection = carbonChat.getConfig().getConfigurationSection("default");
@@ -496,7 +528,8 @@ public class CarbonChatChannel extends ChatChannel {
         return section.get(key);
     }
 
-    private @Nullable String getString(@NonNull String key) {
+    @Nullable
+    private String getString(@NonNull String key) {
         if (config != null && config.contains(key)) {
             return config.getString(key);
         }
@@ -510,7 +543,8 @@ public class CarbonChatChannel extends ChatChannel {
         return null;
     }
 
-    private @NonNull List<String> getStringList(@NonNull String key) {
+    @NonNull
+    private List<@NonNull String> getStringList(@NonNull String key) {
         if (config != null && config.contains(key)) {
             return config.getStringList(key);
         }
@@ -553,12 +587,14 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     @Override
+    @NonNull
     public String getKey() {
         return key;
     }
 
     @Override
-    public @Nullable String getAliases() {
+    @Nullable
+    public String getAliases() {
         String aliases = getString("aliases");
 
         if (aliases == null) {

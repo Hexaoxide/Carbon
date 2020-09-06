@@ -56,7 +56,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
 
             ChatUser user = carbonChat.getUserService().wrap(player);
 
-            return channel.canPlayerUse(user) ? "true" : "false";
+            return String.valueOf(channel.canPlayerUse(user));
         } else if (key.startsWith("can_see_")) {
             String value = key.replace("can_see_", "");
 
@@ -68,7 +68,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
 
             ChatUser user = carbonChat.getUserService().wrap(player);
 
-            return channel.canPlayerSee(user, true) ? "true" : "false";
+            return String.valueOf(channel.canPlayerSee(user, true));
         } else if (key.startsWith("ignoring_channel_")) {
             String value = key.replace("ignoring_channel_", "");
 
@@ -80,7 +80,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
 
             ChatUser user = carbonChat.getUserService().wrap(player);
 
-            return user.getChannelSettings(channel).isIgnored() ? "true" : "false";
+            return String.valueOf(user.getChannelSettings(channel).isIgnored());
         } else if (key.startsWith("selected_channel")) {
             ChatChannel channel = carbonChat.getUserService().wrap(player).getSelectedChannel();
 

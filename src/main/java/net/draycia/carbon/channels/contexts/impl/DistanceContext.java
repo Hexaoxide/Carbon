@@ -9,7 +9,8 @@ import java.util.function.Function;
 public class DistanceContext implements Function<MessageContext, Boolean> {
 
     @Override
-    public @NonNull Boolean apply(@NonNull MessageContext context) {
+    @NonNull
+    public Boolean apply(@NonNull MessageContext context) {
         if (!context.getSender().isOnline() || !context.getTarget().isOnline()) {
             return false;
         }

@@ -13,12 +13,16 @@ import java.util.*;
 
 public class ChannelRegistry implements Registry<ChatChannel> {
 
-    private final Map<String, ChatChannel> registry = new HashMap<>();
-    private final List<AliasedChannelCommand> channelCommands = new ArrayList<>();
+    @NonNull
+    private final Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
 
+    @NonNull
+    private final List<@NonNull AliasedChannelCommand> channelCommands = new ArrayList<>();
+
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public ChannelRegistry(CarbonChat carbonChat) {
+    public ChannelRegistry(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
@@ -32,7 +36,7 @@ public class ChannelRegistry implements Registry<ChatChannel> {
             channelCommands.add(command);
 
             if (value instanceof Listener) {
-                Bukkit.getPluginManager().registerEvents((Listener)value, carbonChat);
+                Bukkit.getPluginManager().registerEvents((Listener) value, carbonChat);
             }
         }
 
@@ -41,7 +45,7 @@ public class ChannelRegistry implements Registry<ChatChannel> {
 
     @Override
     @NonNull
-    public Collection<ChatChannel> values() {
+    public Collection<@NonNull ChatChannel> values() {
         return registry.values();
     }
 
@@ -56,7 +60,7 @@ public class ChannelRegistry implements Registry<ChatChannel> {
         registry.clear();
 
         for (AliasedChannelCommand command : channelCommands) {
-            carbonChat.getLogger().info("Unregistering command for channel: " +  command.getChatChannel().getName());
+            carbonChat.getLogger().info("Unregistering command for channel: " + command.getChatChannel().getName());
             CommandAPI.unregister(command.getCommandName());
         }
     }
