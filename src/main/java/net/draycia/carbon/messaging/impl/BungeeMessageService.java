@@ -18,12 +18,19 @@ import java.util.function.Consumer;
 
 public class BungeeMessageService implements MessageService {
 
-    private final @NonNull CarbonChat carbonChat;
+    @NonNull
+    private final CarbonChat carbonChat;
+
+    @NonNull
     private final BungeeChannelApi api;
 
-    private final Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
-    private final Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+    @NonNull
+    private final Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
+    @NonNull
+    private final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+
+    @NonNull
     private final UUID serverUUID = UUID.randomUUID();
 
     public BungeeMessageService(@NonNull CarbonChat carbonChat) {
@@ -57,7 +64,7 @@ public class BungeeMessageService implements MessageService {
         });
     }
 
-    private void receiveMessage(UUID uuid, @NonNull String key, ByteArrayDataInput value) {
+    private void receiveMessage(@NonNull UUID uuid, @NonNull String key, @NonNull ByteArrayDataInput value) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
         if (user != null) {
@@ -76,23 +83,23 @@ public class BungeeMessageService implements MessageService {
     }
 
     @Override
-    public void registerUserMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
+    public void registerUserMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
         userLoadedListeners.put(key, listener);
     }
 
     @Override
-    public void registerUUIDMessageListener(String key, BiConsumer<UUID, ByteArrayDataInput> listener) {
+    public void registerUUIDMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
         userNotLoadedListeners.put(key, listener);
     }
 
     @Override
-    public void unregisterMessageListener(String key) {
+    public void unregisterMessageListener(@NonNull String key) {
         userLoadedListeners.remove(key);
         userNotLoadedListeners.remove(key);
     }
 
     @Override
-    public void sendMessage(String key, @NonNull UUID uuid, @NonNull Consumer<ByteArrayDataOutput> consumer) {
+    public void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<ByteArrayDataOutput> consumer) {
         ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
         msg.writeLong(serverUUID.getMostSignificantBits());

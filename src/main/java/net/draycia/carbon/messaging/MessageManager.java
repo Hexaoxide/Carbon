@@ -17,10 +17,14 @@ import java.util.function.Consumer;
 
 public class MessageManager {
 
-    private final @NonNull CarbonChat carbonChat;
-    private final @NonNull MessageService messageService;
+    @NonNull
+    private final CarbonChat carbonChat;
 
-    private final @NonNull GsonComponentSerializer gsonSerializer;
+    @NonNull
+    private final MessageService messageService;
+
+    @NonNull
+    private final GsonComponentSerializer gsonSerializer;
 
     public MessageManager(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
@@ -32,7 +36,7 @@ public class MessageManager {
             messageSystem = "none";
         }
 
-        switch(messageSystem.toLowerCase()) {
+        switch (messageSystem.toLowerCase()) {
             case "bungee":
                 carbonChat.getLogger().info("Using Bungee Plugin Messaging for message forwarding!");
                 messageService = new BungeeMessageService(carbonChat);
@@ -147,11 +151,12 @@ public class MessageManager {
         });
     }
 
-    public @NonNull MessageService getMessageService() {
+    @NonNull
+    public MessageService getMessageService() {
         return messageService;
     }
 
-    public void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer) {
+    public void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
         getMessageService().sendMessage(key, uuid, consumer);
     }
 

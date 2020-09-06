@@ -3,6 +3,7 @@ package net.draycia.carbon.messaging;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import net.draycia.carbon.storage.ChatUser;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -10,11 +11,12 @@ import java.util.function.Consumer;
 
 public interface MessageService {
 
-    void registerUserMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener);
-    void registerUUIDMessageListener(String key, BiConsumer<UUID, ByteArrayDataInput> listener);
+    void registerUserMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener);
 
-    void unregisterMessageListener(String key);
+    void registerUUIDMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener);
 
-    void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer);
+    void unregisterMessageListener(@NonNull String key);
+
+    void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer);
 
 }
