@@ -8,14 +8,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CommandManager {
 
-    private final @NonNull CarbonChat carbonChat;
+    @NonNull
+    private final CarbonChat carbonChat;
 
     public CommandManager(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
-        reloadCommands(carbonChat);
+        reloadCommands();
     }
 
-    private void reloadCommands(@NonNull CarbonChat carbonChat) {
+    private void reloadCommands() {
         new ChannelCommand(carbonChat, getCommandSettings("channel"));
         new ChannelListCommand(carbonChat, getCommandSettings("channellist"));
         new ChatReloadCommand(carbonChat, getCommandSettings("chatreload"));
@@ -33,7 +34,8 @@ public class CommandManager {
         new ToggleCommand(carbonChat, getCommandSettings("toggle"));
     }
 
-    private @NonNull CommandSettings getCommandSettings(@NonNull String command) {
+    @NonNull
+    private CommandSettings getCommandSettings(@NonNull String command) {
         ConfigurationSection section = carbonChat.getCommandsConfig().getConfigurationSection(command);
 
         return new CommandSettings(section.getBoolean("enabled"), section.getString("name"),

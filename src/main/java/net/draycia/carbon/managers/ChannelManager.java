@@ -3,11 +3,12 @@ package net.draycia.carbon.managers;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChannelRegistry;
 import net.draycia.carbon.channels.ChatChannel;
-import net.draycia.carbon.channels.impls.*;
+import net.draycia.carbon.channels.impls.CarbonChatChannel;
 import net.draycia.carbon.events.ChannelRegisterEvent;
 import net.draycia.carbon.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -15,9 +16,15 @@ import java.util.Collections;
 
 public class ChannelManager {
 
+    @NonNull
     private final CarbonChat carbonChat;
-    private final @NonNull ChannelRegistry registry;
-    private @Nullable String defaultChannelKey = null;
+
+    @NonNull
+    private final ChannelRegistry registry;
+
+    @Nullable
+    @MonotonicNonNull
+    private String defaultChannelKey = null;
 
     public ChannelManager(CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
@@ -41,18 +48,18 @@ public class ChannelManager {
     }
 
     public boolean registerChannel(@NonNull ChatChannel channel) {
-         boolean success = getRegistry().register(channel.getKey(), channel);
+        boolean success = getRegistry().register(channel.getKey(), channel);
 
-         if (success) {
-             if (channel.isDefault() && defaultChannelKey == null) {
-                 carbonChat.getLogger().info("Default channel registered: " + channel.getName());
-                 defaultChannelKey = channel.getKey();
-             }
+        if (success) {
+            if (channel.isDefault() && defaultChannelKey == null) {
+                carbonChat.getLogger().info("Default channel registered: " + channel.getName());
+                defaultChannelKey = channel.getKey();
+            }
 
-             Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(Collections.singletonList(channel), getRegistry()));
-         }
+            Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(Collections.singletonList(channel), getRegistry()));
+        }
 
-         return success;
+        return success;
     }
 
     public @NonNull Registry<ChatChannel> getRegistry() {

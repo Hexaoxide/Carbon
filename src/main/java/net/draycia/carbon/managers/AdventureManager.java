@@ -13,14 +13,18 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AdventureManager {
 
-    private final @NonNull CarbonChat carbonChat;
-    private final @NonNull BukkitAudiences audiences;
+    @NonNull
+    private final CarbonChat carbonChat;
+
+    @NonNull
+    private final BukkitAudiences audiences;
 
     public AdventureManager(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         this.audiences = BukkitAudiences.create(carbonChat);
     }
 
+    @NonNull
     public Component processMessageWithPapi(@NonNull Player player, @Nullable String input, @NonNull String @NonNull ... placeholders) {
         if (input == null || input.trim().isEmpty()) {
             return TextComponent.empty();
@@ -29,6 +33,7 @@ public class AdventureManager {
         return processMessage(PlaceholderAPI.setPlaceholders(player, input), placeholders);
     }
 
+    @NonNull
     public Component processMessage(@Nullable String input, @NonNull String @NonNull ... placeholders) {
         if (input == null || input.trim().isEmpty()) {
             return TextComponent.empty();
@@ -36,7 +41,7 @@ public class AdventureManager {
 
         switch (carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
             case "minedown":
-                return processMineDown(input, placeholders);
+                return MineDown.parse(input, placeholders);
             case "mojang":
             case "mojangson":
             case "json":
@@ -50,7 +55,7 @@ public class AdventureManager {
     }
 
     @NonNull
-    private Component processMojang(String input, String @NonNull ... placeholders) {
+    private Component processMojang(@NonNull String input, @NonNull String @NonNull ... placeholders) {
         for (int i = 0; i < placeholders.length; i += 2) {
             String placeholder = placeholders[i];
             String replacement = placeholders[i + 1];
@@ -61,11 +66,8 @@ public class AdventureManager {
         return getAudiences().gsonSerializer().deserialize(input);
     }
 
-    private Component processMineDown(String input, String... placeholders) {
-        return MineDown.parse(input, placeholders);
-    }
-
-    public @NonNull BukkitAudiences getAudiences() {
+    @NonNull
+    public BukkitAudiences getAudiences() {
         return audiences;
     }
 }
