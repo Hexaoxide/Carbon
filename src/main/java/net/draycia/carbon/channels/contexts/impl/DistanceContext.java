@@ -13,6 +13,10 @@ public class DistanceContext implements Function<MessageContext, Boolean> {
             return false;
         }
 
+        if (context.isBoolean() && !context.asBoolean()) {
+            return true;
+        }
+
         Location senderLocation = context.getSender().asPlayer().getLocation();
         Location targetLocation = context.getTarget().asPlayer().getLocation();
 
@@ -20,10 +24,12 @@ public class DistanceContext implements Function<MessageContext, Boolean> {
             return false;
         }
 
-        Double value = (Double) context.getValue();
+        if (context.isDouble()) {
+            Double value = context.asDouble();
 
-        if (value > 0) {
-            return senderLocation.distance(targetLocation) <= value;
+            if (value > 0) {
+                return senderLocation.distance(targetLocation) <= value;
+            }
         }
 
         return true;
