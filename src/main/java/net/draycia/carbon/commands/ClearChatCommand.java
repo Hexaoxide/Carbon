@@ -37,23 +37,19 @@ public class ClearChatCommand {
         Component component = carbonChat.getAdventureManager().processMessage(format, "br", "\n");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("carbonchat.clearchat.exempt")) {
-                continue;
-            }
-
             ChatUser audience = carbonChat.getUserService().wrap(player);
 
-            for (int i = 0; i < carbonChat.getModConfig().getInt("clear-chat.message-count", 100); i++) {
-                audience.sendMessage(component);
+            if (player.hasPermission("carbonchat.clearchat.exempt")) {
+                String message = carbonChat.getLanguage().getString("clear-exempt");
+                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
+            } else {
+                for (int i = 0; i < carbonChat.getModConfig().getInt("clear-chat.message-count", 100); i++) {
+                    audience.sendMessage(component);
+                }
             }
 
             if (player.hasPermission("carbonchat.clearchat.notify")) {
                 String message = carbonChat.getLanguage().getString("clear-notify");
-                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
-            }
-
-            if (player.hasPermission("carbonchat.clearchat.exempt")) {
-                String message = carbonChat.getLanguage().getString("clear-exempt");
                 audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
             }
         }
