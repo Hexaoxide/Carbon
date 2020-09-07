@@ -317,7 +317,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
             ChatUser user = carbonChat.getUserService().wrap(player);
 
             if (!user.isSpyingWhispers()) {
-                return;
+                continue;
             }
 
             if (user.getUUID().equals(sender.getUUID()) || user.getUUID().equals(getUUID())) {
