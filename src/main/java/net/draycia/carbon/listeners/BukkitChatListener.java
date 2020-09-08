@@ -76,8 +76,7 @@ public class BukkitChatListener implements Listener {
             Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
                 Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
 
-                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
-                        .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+                carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
 
                 if (carbonChat.getConfig().getBoolean("show-tips")) {
                     carbonChat.getLogger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");

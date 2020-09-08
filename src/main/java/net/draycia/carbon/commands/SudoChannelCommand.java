@@ -69,8 +69,7 @@ public class SudoChannelCommand {
     private void sendMessageOther(CommandSender sender, ChatUser user, ChatChannel channel, String message) {
         Component component = channel.sendMessage(user, message, false);
 
-        carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
-                .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+        carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
     }
 
 }

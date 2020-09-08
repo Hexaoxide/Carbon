@@ -78,8 +78,7 @@ public class ChannelCommand {
 
         Component component = channel.sendMessage(user, message, false);
 
-        carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
-                .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+        carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
     }
 
 }

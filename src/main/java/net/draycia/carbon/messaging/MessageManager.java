@@ -129,8 +129,7 @@ public class MessageManager {
 
                 channel.sendComponent(user, component);
 
-                carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
-                        .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+                carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
             }
         });
 

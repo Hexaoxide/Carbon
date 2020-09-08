@@ -68,8 +68,7 @@ public class AliasedChannelCommand {
 
         Component component = getChatChannel().sendMessage(user, message, false);
 
-        carbonChat.getLogger().info(CarbonChat.LEGACY.serialize(component)
-                .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+        carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
     }
 
     public ChatChannel getChatChannel() {
