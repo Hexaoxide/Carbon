@@ -3,6 +3,7 @@ package net.draycia.carbon.commands;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.CommandSettings;
@@ -25,11 +26,12 @@ public class MessageCommand {
 
         CommandUtils.handleDuplicateCommands(commandSettings);
 
-        LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-        channelArguments.put("player", CarbonUtils.chatUserArgument());
+        LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
+        arguments.put("player", CarbonUtils.chatUserArgument());
+        arguments.put("message", new GreedyStringArgument());
 
         new CommandAPICommand(commandSettings.getName())
-                .withArguments(channelArguments)
+                .withArguments(arguments)
                 .withAliases(commandSettings.getAliasesArray())
                 .withPermission(CommandPermission.fromString("carbonchat.message"))
                 .executesPlayer(this::execute)
