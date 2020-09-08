@@ -140,14 +140,14 @@ public class CarbonChatChannel extends ChatChannel {
             TextComponent messageComponent;
 
             if (user.isOnline() && user.asPlayer().hasPermission("carbonchat.formatting")) {
-                messageComponent = (TextComponent) carbonChat.getAdventureManager().processMessage(formatEvent.getMessage(),
+                messageComponent = (TextComponent) carbonChat.getAdventureManager().processMessage("<color>" + formatEvent.getMessage(),
                         "br", "\n",
                         "displayname", displayName,
                         "color", "<" + targetColor.asHexString() + ">",
                         "phase", Long.toString(System.currentTimeMillis() % 25),
                         "server", carbonChat.getConfig().getString("server-name", "Server"));
             } else {
-                messageComponent = TextComponent.of(formatEvent.getMessage());
+                messageComponent = TextComponent.of(formatEvent.getMessage()).color(targetColor);
             }
 
             TextComponent processedComponent = (TextComponent)formatComponent.replaceFirstText(MESSAGE_PATTERN, (input) -> {
