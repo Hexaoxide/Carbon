@@ -34,7 +34,7 @@ public class BukkitChatListener implements Listener {
         }
 
         for (ChatChannel entry : carbonChat.getChannelManager().getRegistry().values()) {
-            if (entry.getMessagePrefix() == null) {
+            if (entry.getMessagePrefix() == null || entry.getMessagePrefix().isEmpty()) {
                 continue;
             }
 
