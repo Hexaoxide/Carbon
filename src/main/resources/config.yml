@@ -99,6 +99,13 @@ placeholders:
   prefix: "<gray>[<group><gray>]"
   group: "<green>%vault_group%"
 
+# Sets the player's channel to the specified channel when they join
+# Set to "" or remove to disable
+# Set to DEFAULT to set the player's channel to the default channel on join
+# Otherwise, set to a channel to set the player's channel to it on join
+# For example, channel-on-join: "global" sets their channel to global on join
+channel-on-join: ""
+
 # Global context options
 contexts:
   Towny:

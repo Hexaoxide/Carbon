@@ -1,6 +1,7 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +24,23 @@ public class PlayerJoinListener implements Listener {
 
         if (user.getNickname() != null) {
             user.setNickname(user.getNickname());
+        }
+
+        String channel = carbonChat.getConfig().getString("channel-on-join");
+
+        if (channel == null || channel.isEmpty()) {
+            return;
+        }
+
+        if (channel.equals("DEFAULT")) {
+            user.setSelectedChannel(carbonChat.getChannelManager().getDefaultChannel());
+            return;
+        }
+
+        ChatChannel chatChannel = carbonChat.getChannelManager().getRegistry().get(channel);
+
+        if (chatChannel != null) {
+            user.setSelectedChannel(chatChannel);
         }
     }
 
