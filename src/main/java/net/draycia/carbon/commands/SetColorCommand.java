@@ -37,7 +37,7 @@ public class SetColorCommand {
                     .withAliases(commandSettings.getAliasesArray())
                     .withPermission(CommandPermission.fromString("carbonchat.setcolor"))
                     .executesPlayer((player, args) -> {
-                        TextColor color = (TextColor)args[1];
+                        TextColor color = (TextColor)args[0];
                         ChatUser user = carbonChat.getUserService().wrap(player);
 
                         if (!player.hasPermission("carbonchat.setcolor." + channel.getKey())) {
