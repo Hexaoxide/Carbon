@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class UserFormattingListener implements Listener {
+public class UserFormattingHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onFormat(PreChatFormatEvent event) {

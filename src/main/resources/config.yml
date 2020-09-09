@@ -93,6 +93,12 @@ channels:
     is-cross-server: false
     message-prefix: '!'
 
+# Used for message formats - custom tags that are replaced in descending order
+# For example, in the default config, <group> wil be replaced with <green>%vault_group%
+placeholders:
+  prefix: "<gray>[<group><gray>]"
+  group: "<green>%vault_group%"
+
 # Global context options
 contexts:
   Towny:

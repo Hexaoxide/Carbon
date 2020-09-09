@@ -141,26 +141,26 @@ public final class CarbonChat extends JavaPlugin {
     private void setupListeners() {
         PluginManager pluginManager = getServer().getPluginManager();
 
+        filterHandler = new FilterHandler(this);
+
         // Register chat listeners
         pluginManager.registerEvents(new BukkitChatListener(this), this);
+        pluginManager.registerEvents(new CapsHandler(this), this);
+        pluginManager.registerEvents(new CustomPlaceholderHandler(this), this);
+        pluginManager.registerEvents(filterHandler, this);
         pluginManager.registerEvents(new IgnoredPlayerHandler(), this);
         pluginManager.registerEvents(new ItemLinkHandler(this), this);
         pluginManager.registerEvents(new LegacyFormatHandler(), this);
+        pluginManager.registerEvents(new MuteHandler(), this);
         pluginManager.registerEvents(new OfflineNameHandler(), this);
         pluginManager.registerEvents(new PingHandler(this), this);
         pluginManager.registerEvents(new PlaceholderHandler(), this);
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
         pluginManager.registerEvents(new RelationalPlaceholderHandler(), this);
-        pluginManager.registerEvents(new UserFormattingListener(), this);
+        pluginManager.registerEvents(new ShadowMuteHandler(this), this);
+        pluginManager.registerEvents(new UserFormattingHandler(), this);
         pluginManager.registerEvents(new WhisperPingHandler(this), this);
 
-        pluginManager.registerEvents(new CapsHandler(this), this);
-
-        filterHandler = new FilterHandler(this);
-        pluginManager.registerEvents(filterHandler, this);
-
-        pluginManager.registerEvents(new MuteHandler(), this);
-        pluginManager.registerEvents(new ShadowMuteHandler(this), this);
     }
 
     @Override
