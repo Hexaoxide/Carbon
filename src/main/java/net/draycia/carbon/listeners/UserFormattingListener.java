@@ -18,8 +18,8 @@ public class UserFormattingListener implements Listener {
 
         Player player = event.getUser().asPlayer();
 
-        if (!(player.hasPermission("carbonchat.formatting") ||
-                player.hasPermission("carbonchat.channels." + event.getChannel().getKey() + ".formatting"))) {
+        if (!player.hasPermission("carbonchat.formatting") &&
+                !player.hasPermission("carbonchat.channels." + event.getChannel().getKey() + ".formatting")) {
             suppressFormatting(event);
         } else {
             // Swap the &-style codes for minimessage-compatible strings
