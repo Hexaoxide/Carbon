@@ -13,6 +13,7 @@ import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.CarbonPlaceholders;
+import net.draycia.carbon.util.FunctionalityConstants;
 import net.draycia.carbon.util.Metrics;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
@@ -130,6 +131,10 @@ public final class CarbonChat extends JavaPlugin {
 
         if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
             Bukkit.getPluginManager().registerEvents(new EconomyContext(this), this);
+        }
+
+        if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
+            getLogger().warning("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
         }
     }
 
