@@ -23,6 +23,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
 public final class CarbonChat extends JavaPlugin {
 
@@ -59,6 +60,8 @@ public final class CarbonChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        checkForBungee();
+
         CommandAPI.onEnable(this);
         Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
@@ -171,6 +174,20 @@ public final class CarbonChat extends JavaPlugin {
 
     public void reloadFilters() {
         filterHandler.reloadFilters();
+    }
+
+    private boolean bungeeEnabled = false;
+
+    private void checkForBungee() {
+        try {
+            Class<?> spigotConfig = Class.forName("org.spigotmc.Spigotconfig");
+            Field bungee = spigotConfig.getField("bungee");
+            bungeeEnabled = bungee.getBoolean(null);
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) { }
+    }
+
+    public boolean isBungeeEnabled() {
+        return bungeeEnabled;
     }
 
     private void loadModConfig() {

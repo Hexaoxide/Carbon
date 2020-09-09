@@ -307,6 +307,20 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
             final String targetNameFinal = targetName;
             final String senderNameFinal = senderName;
 
+            if (!carbonChat.isBungeeEnabled()) {
+                String playerOfflineFormat = carbonChat.getLanguage().getString("other-player-offline");
+
+                Component playerOfflineComponent = carbonChat.getAdventureManager().processMessage(playerOfflineFormat,
+                        "br", "\n",
+                        "message", message,
+                        "targetname", targetOfflineName, "sendername", senderOfflineName,
+                        "target", targetNameFinal, "sender", senderNameFinal);
+
+                sender.sendMessage(playerOfflineComponent);
+
+                return;
+            }
+
             BungeeChannelApi.of(carbonChat).getPlayerList("ALL").thenAccept(list -> {
                 if (!list.contains(this.asOfflinePlayer().getName())) {
                     String playerOfflineFormat = carbonChat.getLanguage().getString("other-player-offline");
