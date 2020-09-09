@@ -12,6 +12,7 @@ formatting:
 reloaded: '<yellow>Chat config has been reloaded!'
 message-to-other: '<green>[<gray>Me <gold>-> <gray><target><reset><green>] <message>'
 message-from-other: '<green>[<gray><sender><reset> <gold>-> <gray>Me<green>] <message>'
+other-player-offline: '<red>That player is offline!'
 spy-whispers: '<yellow>Spy [<gray><sender><reset> <gold>-> <gray><target><reset><yellow>] <message>'
 no-reply-target: '<red>You have no one to reply to!'
 empty-channel: 'NONE' #<channel>, set to "NONE" to disable

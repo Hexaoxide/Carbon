@@ -1,5 +1,6 @@
 package net.draycia.carbon.storage.impl;
 
+import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.ChannelSwitchEvent;
@@ -303,13 +304,31 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
                 }
             }
         } else if (sender.isOnline()) {
-            sender.sendMessage(toPlayerComponent);
+            final String targetNameFinal = targetName;
+            final String senderNameFinal = senderName;
 
-            // TODO: make sure this works lol
-            carbonChat.getMessageManager().sendMessage("whisper-component", sender.getUUID(), (byteArray) -> {
-                byteArray.writeLong(this.getUUID().getMostSignificantBits());
-                byteArray.writeLong(this.getUUID().getLeastSignificantBits());
-                byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(fromPlayerComponent));
+            BungeeChannelApi.of(carbonChat).getPlayerList("ALL").thenAccept(list -> {
+                if (!list.contains(this.asOfflinePlayer().getName())) {
+                    String playerOfflineFormat = carbonChat.getLanguage().getString("other-player-offline");
+
+                    Component playerOfflineComponent = carbonChat.getAdventureManager().processMessage(playerOfflineFormat,
+                            "br", "\n",
+                            "message", message,
+                            "targetname", targetOfflineName, "sendername", senderOfflineName,
+                            "target", targetNameFinal, "sender", senderNameFinal);
+
+                    sender.sendMessage(playerOfflineComponent);
+
+                    return;
+                }
+
+                sender.sendMessage(toPlayerComponent);
+
+                carbonChat.getMessageManager().sendMessage("whisper-component", sender.getUUID(), (byteArray) -> {
+                    byteArray.writeLong(this.getUUID().getMostSignificantBits());
+                    byteArray.writeLong(this.getUUID().getLeastSignificantBits());
+                    byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(fromPlayerComponent));
+                });
             });
         }
 
