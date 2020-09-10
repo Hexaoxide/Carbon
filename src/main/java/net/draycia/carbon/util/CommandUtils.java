@@ -6,12 +6,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CommandUtils {
 
-    public static void handleDuplicateCommands(@NonNull CommandSettings settings) {
-        CommandAPI.unregister(settings.getName());
+  public static void handleDuplicateCommands(@NonNull CommandSettings settings) {
+    CommandAPI.unregister(settings.getName());
 
-        for (String command : settings.getAliases()) {
-            CommandAPI.unregister(command);
-        }
+    for (String command : settings.getAliases()) {
+      CommandAPI.unregister(command);
     }
-
+  }
 }

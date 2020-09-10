@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
+import java.util.LinkedHashMap;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
@@ -15,116 +16,125 @@ import net.draycia.carbon.util.CommandUtils;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
-
 public class SpyChannelCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull private final CarbonChat carbonChat;
 
-    public SpyChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public SpyChannelCommand(
+      @NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-        channelArguments.put("channel", CarbonUtils.channelArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(channelArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.spy"))
-                .executesPlayer(this::execute)
-                .register();
-
-        LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
-        whisperArguments.put("channel", new LiteralArgument("whispers"));
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(whisperArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.spy"))
-                .executesPlayer(this::executeWhispers)
-                .register();
-
-        LinkedHashMap<String, Argument> everythingArguments = new LinkedHashMap<>();
-        everythingArguments.put("channel", new LiteralArgument("*"));
-        everythingArguments.put("should-spy", new BooleanArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(everythingArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.spy"))
-                .executesPlayer(this::executeEverything) // lul
-                .register();
+    if (!commandSettings.isEnabled()) {
+      return;
     }
 
-    private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
-        ChatChannel chatChannel = (ChatChannel) args[0];
-        ChatUser user = carbonChat.getUserService().wrap(player);
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        String message;
+    LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+    channelArguments.put("channel", CarbonUtils.channelArgument());
 
-        UserChannelSettings settings = user.getChannelSettings(chatChannel);
+    new CommandAPICommand(commandSettings.getName())
+        .withArguments(channelArguments)
+        .withAliases(commandSettings.getAliasesArray())
+        .withPermission(CommandPermission.fromString("carbonchat.spy"))
+        .executesPlayer(this::execute)
+        .register();
 
-        if (settings.isSpying()) {
-            settings.setSpying(false);
-            message = carbonChat.getLanguage().getString("spy-toggled-off");
-        } else {
-            settings.setSpying(true);
-            message = carbonChat.getLanguage().getString("spy-toggled-on");
-        }
+    LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
+    whisperArguments.put("channel", new LiteralArgument("whispers"));
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
-                "color", "<color:" + chatChannel.getChannelColor(user).toString() + ">", "channel", chatChannel.getName()));
+    new CommandAPICommand(commandSettings.getName())
+        .withArguments(whisperArguments)
+        .withAliases(commandSettings.getAliasesArray())
+        .withPermission(CommandPermission.fromString("carbonchat.spy"))
+        .executesPlayer(this::executeWhispers)
+        .register();
+
+    LinkedHashMap<String, Argument> everythingArguments = new LinkedHashMap<>();
+    everythingArguments.put("channel", new LiteralArgument("*"));
+    everythingArguments.put("should-spy", new BooleanArgument());
+
+    new CommandAPICommand(commandSettings.getName())
+        .withArguments(everythingArguments)
+        .withAliases(commandSettings.getAliasesArray())
+        .withPermission(CommandPermission.fromString("carbonchat.spy"))
+        .executesPlayer(this::executeEverything) // lul
+        .register();
+  }
+
+  private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
+    ChatChannel chatChannel = (ChatChannel) args[0];
+    ChatUser user = carbonChat.getUserService().wrap(player);
+
+    String message;
+
+    UserChannelSettings settings = user.getChannelSettings(chatChannel);
+
+    if (settings.isSpying()) {
+      settings.setSpying(false);
+      message = carbonChat.getLanguage().getString("spy-toggled-off");
+    } else {
+      settings.setSpying(true);
+      message = carbonChat.getLanguage().getString("spy-toggled-on");
     }
 
-    private void executeWhispers(@NonNull Player player, @NonNull Object @NonNull [] args) {
-        ChatUser user = carbonChat.getUserService().wrap(player);
+    user.sendMessage(
+        carbonChat
+            .getAdventureManager()
+            .processMessageWithPapi(
+                player,
+                message,
+                "br",
+                "\n",
+                "color",
+                "<color:" + chatChannel.getChannelColor(user).toString() + ">",
+                "channel",
+                chatChannel.getName()));
+  }
 
-        String message;
+  private void executeWhispers(@NonNull Player player, @NonNull Object @NonNull [] args) {
+    ChatUser user = carbonChat.getUserService().wrap(player);
 
-        if (user.isSpyingWhispers()) {
-            user.setSpyingWhispers(false);
-            message = carbonChat.getLanguage().getString("spy-whispers-off");
-        } else {
-            user.setSpyingWhispers(true);
-            message = carbonChat.getLanguage().getString("spy-whispers-on");
-        }
+    String message;
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    if (user.isSpyingWhispers()) {
+      user.setSpyingWhispers(false);
+      message = carbonChat.getLanguage().getString("spy-whispers-off");
+    } else {
+      user.setSpyingWhispers(true);
+      message = carbonChat.getLanguage().getString("spy-whispers-on");
     }
 
-    private void executeEverything(@NonNull Player player, @NonNull Object @NonNull [] args) {
-        Boolean shouldSpy = (Boolean) args[0];
+    user.sendMessage(
+        carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+  }
 
-        ChatUser user = carbonChat.getUserService().wrap(player);
+  private void executeEverything(@NonNull Player player, @NonNull Object @NonNull [] args) {
+    Boolean shouldSpy = (Boolean) args[0];
 
-        String message;
+    ChatUser user = carbonChat.getUserService().wrap(player);
 
-        if (shouldSpy) {
-            user.setSpyingWhispers(true);
+    String message;
 
-            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-                user.getChannelSettings(channel).setSpying(true);
-            }
+    if (shouldSpy) {
+      user.setSpyingWhispers(true);
 
-            message = carbonChat.getLanguage().getString("spy-everything-off");
-        } else {
-            user.setSpyingWhispers(false);
+      for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
+        user.getChannelSettings(channel).setSpying(true);
+      }
 
-            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-                user.getChannelSettings(channel).setSpying(false);
-            }
+      message = carbonChat.getLanguage().getString("spy-everything-off");
+    } else {
+      user.setSpyingWhispers(false);
 
-            message = carbonChat.getLanguage().getString("spy-everything-on");
-        }
+      for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
+        user.getChannelSettings(channel).setSpying(false);
+      }
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+      message = carbonChat.getLanguage().getString("spy-everything-on");
     }
 
+    user.sendMessage(
+        carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+  }
 }

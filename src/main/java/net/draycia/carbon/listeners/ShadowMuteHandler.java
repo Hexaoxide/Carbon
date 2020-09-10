@@ -10,35 +10,33 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ShadowMuteHandler implements Listener {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull private final CarbonChat carbonChat;
 
-    public ShadowMuteHandler(@NonNull CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
+  public ShadowMuteHandler(@NonNull CarbonChat carbonChat) {
+    this.carbonChat = carbonChat;
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void onComponent(ChatComponentEvent event) {
+    if (event.getSender().isShadowMuted()) {
+      if (!event.getSender().equals(event.getTarget())) {
+        event.setCancelled(true);
+      }
+    }
+  }
+
+  @EventHandler
+  public void on(ChatFormatEvent event) {
+    if (event.getTarget() != null) {
+      return;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onComponent(ChatComponentEvent event) {
-        if (event.getSender().isShadowMuted()) {
-            if (!event.getSender().equals(event.getTarget())) {
-                event.setCancelled(true);
-            }
-        }
+    if (!event.getSender().isShadowMuted()) {
+      return;
     }
 
-    @EventHandler
-    public void on(ChatFormatEvent event) {
-        if (event.getTarget() != null) {
-            return;
-        }
+    String prefix = carbonChat.getModConfig().getString("shadow-mute-prefix", "[SM] ");
 
-        if (!event.getSender().isShadowMuted()) {
-            return;
-        }
-
-        String prefix = carbonChat.getModConfig().getString("shadow-mute-prefix", "[SM] ");
-
-        event.setFormat(prefix + event.getFormat());
-    }
-
+    event.setFormat(prefix + event.getFormat());
+  }
 }

@@ -11,70 +11,64 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class ChannelSwitchEvent extends Event implements Cancellable {
 
-    /**
-     * Bukkit event stuff
-     */
-    @NonNull
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled = false;
+  /** Bukkit event stuff */
+  @NonNull private static final HandlerList handlers = new HandlerList();
 
-    @Override
-    @NonNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
+  private boolean cancelled = false;
 
-    @NonNull
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+  @Override
+  @NonNull
+  public HandlerList getHandlers() {
+    return handlers;
+  }
 
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
+  @NonNull
+  public static HandlerList getHandlerList() {
+    return handlers;
+  }
 
-    @Override
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
+  @Override
+  public boolean isCancelled() {
+    return cancelled;
+  }
 
-    /**
-     * Relevant stuff
-     */
-    @NonNull
-    private final ChatChannel channel;
+  @Override
+  public void setCancelled(boolean cancelled) {
+    this.cancelled = cancelled;
+  }
 
-    @NonNull
-    private final ChatUser user;
+  /** Relevant stuff */
+  @NonNull private final ChatChannel channel;
 
-    @Nullable
-    private String failureMessage;
+  @NonNull private final ChatUser user;
 
-    public ChannelSwitchEvent(@NonNull ChatChannel channel, @NonNull ChatUser user, @Nullable String failureMessage) {
-        super(!Bukkit.isPrimaryThread());
+  @Nullable private String failureMessage;
 
-        this.channel = channel;
-        this.user = user;
-        this.failureMessage = failureMessage;
-    }
+  public ChannelSwitchEvent(
+      @NonNull ChatChannel channel, @NonNull ChatUser user, @Nullable String failureMessage) {
+    super(!Bukkit.isPrimaryThread());
 
-    @NonNull
-    public ChatUser getUser() {
-        return user;
-    }
+    this.channel = channel;
+    this.user = user;
+    this.failureMessage = failureMessage;
+  }
 
-    @NonNull
-    public ChatChannel getChannel() {
-        return channel;
-    }
+  @NonNull
+  public ChatUser getUser() {
+    return user;
+  }
 
-    @Nullable
-    public String getFailureMessage() {
-        return failureMessage;
-    }
+  @NonNull
+  public ChatChannel getChannel() {
+    return channel;
+  }
 
-    public void setFailureMessage(@Nullable String failureMessage) {
-        this.failureMessage = failureMessage;
-    }
+  @Nullable
+  public String getFailureMessage() {
+    return failureMessage;
+  }
+
+  public void setFailureMessage(@Nullable String failureMessage) {
+    this.failureMessage = failureMessage;
+  }
 }

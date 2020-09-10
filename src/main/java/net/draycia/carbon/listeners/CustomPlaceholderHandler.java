@@ -9,21 +9,21 @@ import org.bukkit.event.Listener;
 
 public class CustomPlaceholderHandler implements Listener {
 
-    private final CarbonChat carbonChat;
+  private final CarbonChat carbonChat;
 
-    public CustomPlaceholderHandler(CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
+  public CustomPlaceholderHandler(CarbonChat carbonChat) {
+    this.carbonChat = carbonChat;
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+  public void onPapiPlaceholder(PreChatFormatEvent event) {
+    ConfigurationSection placeholders =
+        carbonChat.getConfig().getConfigurationSection("placeholders");
+
+    for (String key : placeholders.getKeys(false)) {
+      String value = placeholders.getString(key);
+
+      event.setFormat(event.getFormat().replace("<" + key + ">", value));
     }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPapiPlaceholder(PreChatFormatEvent event) {
-        ConfigurationSection placeholders = carbonChat.getConfig().getConfigurationSection("placeholders");
-
-        for (String key : placeholders.getKeys(false)) {
-            String value = placeholders.getString(key);
-
-            event.setFormat(event.getFormat().replace("<" + key + ">", value));
-        }
-    }
-
+  }
 }

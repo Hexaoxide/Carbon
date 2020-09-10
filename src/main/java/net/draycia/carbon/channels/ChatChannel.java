@@ -1,5 +1,8 @@
 package net.draycia.carbon.channels;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Pattern;
 import net.draycia.carbon.events.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -8,147 +11,138 @@ import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Pattern;
-
 public abstract class ChatChannel implements ForwardingAudience {
 
-    /**
-     * @return The color that represents this channel. Optionally used in formatting.
-     */
-    @Nullable
-    public abstract TextColor getChannelColor(@NonNull ChatUser user);
+  /** @return The color that represents this channel. Optionally used in formatting. */
+  @Nullable
+  public abstract TextColor getChannelColor(@NonNull ChatUser user);
 
-    /**
-     * @return The MiniMessage styled format for the group in this channel.
-     */
-    @Nullable
-    public abstract String getFormat(@NonNull String group);
+  /** @return The MiniMessage styled format for the group in this channel. */
+  @Nullable
+  public abstract String getFormat(@NonNull String group);
 
-    /**
-     * @return If this is the default (typically Global) channel players use when they're in no other channel.
-     */
-    public abstract boolean isDefault();
+  @NonNull
+  public abstract List<@NonNull ChatUser> audiences();
 
-    /**
-     * @return If this channel can be toggled off and if players can ignore player messages in this channel.
-     */
-    public abstract boolean isIgnorable();
+  /**
+   * @return If this is the default (typically Global) channel players use when they're in no other
+   *     channel.
+   */
+  public abstract boolean isDefault();
 
-    /**
-     * @return If this channel should be synced cross server
-     * @deprecated Use {@link #isCrossServer()} instead
-     */
-    @Deprecated
-    public abstract boolean shouldBungee();
+  /**
+   * @return If this channel can be toggled off and if players can ignore player messages in this
+   *     channel.
+   */
+  public abstract boolean isIgnorable();
 
-    /**
-     * @return If this channel should be synced cross server
-     */
-    public abstract boolean isCrossServer();
+  /**
+   * @return If this channel should be synced cross server
+   * @deprecated Use {@link #isCrossServer()} instead
+   */
+  @Deprecated
+  public abstract boolean shouldBungee();
 
-    /**
-     * @return The name of this channel.
-     */
-    @NonNull
-    public abstract String getName();
+  /** @return If this channel should be synced cross server */
+  public abstract boolean isCrossServer();
 
-    @NonNull
-    public abstract String getKey();
+  /** @return The name of this channel. */
+  @NonNull
+  public abstract String getName();
 
-    @Nullable
-    public abstract String getMessagePrefix();
+  @NonNull
+  public abstract String getKey();
 
-    @Nullable
-    public abstract String getAliases();
+  @Nullable
+  public abstract String getMessagePrefix();
 
-    /**
-     * @return The message to be sent to the player when switching to this channel.
-     */
-    @Nullable
-    public abstract String getSwitchMessage();
+  @Nullable
+  public abstract String getAliases();
 
-    @Nullable
-    public abstract String getSwitchOtherMessage();
+  /** @return The message to be sent to the player when switching to this channel. */
+  @Nullable
+  public abstract String getSwitchMessage();
 
-    @Nullable
-    public abstract String getSwitchFailureMessage();
+  @Nullable
+  public abstract String getSwitchOtherMessage();
 
-    @Nullable
-    public abstract String getCannotIgnoreMessage();
+  @Nullable
+  public abstract String getSwitchFailureMessage();
 
-    /**
-     * @return The message to be send to the player when toggling this channel off.
-     */
-    @Nullable
-    public abstract String getToggleOffMessage();
+  @Nullable
+  public abstract String getCannotIgnoreMessage();
 
-    /**
-     * @return The message to be send to the player when toggling this channel on.
-     */
-    @Nullable
-    public abstract String getToggleOnMessage();
+  /** @return The message to be send to the player when toggling this channel off. */
+  @Nullable
+  public abstract String getToggleOffMessage();
 
-    @Nullable
-    public abstract String getToggleOtherOnMessage();
+  /** @return The message to be send to the player when toggling this channel on. */
+  @Nullable
+  public abstract String getToggleOnMessage();
 
-    @Nullable
-    public abstract String getToggleOtherOffMessage();
+  @Nullable
+  public abstract String getToggleOtherOnMessage();
 
-    @Nullable
-    public abstract String getCannotUseMessage();
+  @Nullable
+  public abstract String getToggleOtherOffMessage();
 
-    public abstract boolean primaryGroupOnly();
+  @Nullable
+  public abstract String getCannotUseMessage();
 
-    public abstract boolean honorsRecipientList();
+  public abstract boolean primaryGroupOnly();
 
-    public abstract boolean permissionGroupMatching();
+  public abstract boolean honorsRecipientList();
 
-    public abstract boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target);
+  public abstract boolean permissionGroupMatching();
 
-    @Nullable
-    public abstract Object getContext(@NonNull String key);
+  public abstract boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target);
 
-    @NonNull
-    public abstract List<@NonNull String> getGroupOverrides();
+  @Nullable
+  public abstract Object getContext(@NonNull String key);
 
-    /**
-     * @return If the player can use this channel.
-     */
-    public abstract boolean canPlayerUse(@NonNull ChatUser user);
+  @NonNull
+  public abstract List<@NonNull String> getGroupOverrides();
 
-    public abstract boolean canPlayerSee(@NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying);
+  /** @return If the player can use this channel. */
+  public abstract boolean canPlayerUse(@NonNull ChatUser user);
 
-    public abstract boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying);
+  public abstract boolean canPlayerSee(
+      @NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying);
 
-    /**
-     * @return If the channel should forward its formatting / formatted message to other servers
-     */
-    public boolean shouldForwardFormatting() {
-        return true;
-    }
+  public abstract boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying);
 
-    @NonNull
-    public abstract List<@NonNull Pattern> getItemLinkPatterns();
+  /** @return If the channel should forward its formatting / formatted message to other servers */
+  public boolean shouldForwardFormatting() {
+    return true;
+  }
 
-    /**
-     * Parses the specified message, calls a {@link PreChatFormatEvent}, and sends the message to everyone who can view this channel.
-     *
-     * @param user    The player who is saying the message.
-     * @param message The message to be sent.
-     */
-    @NonNull
-    public abstract Component sendMessage(@NonNull ChatUser user, @NonNull String message, boolean fromBungee);
+  @NonNull
+  public abstract List<@NonNull Pattern> getItemLinkPatterns();
 
-    @NonNull
-    public abstract Component sendMessage(@NonNull ChatUser user, @NonNull Collection<@NonNull ChatUser> recipients, @NonNull String message, boolean fromBungee);
+  /**
+   * Parses the specified message, calls a {@link PreChatFormatEvent}, and sends the message to
+   * everyone who can view this channel.
+   *
+   * @param user The player who is saying the message.
+   * @param message The message to be sent.
+   */
+  @NonNull
+  public abstract Component sendMessage(
+      @NonNull ChatUser user, @NonNull String message, boolean fromBungee);
 
-    public abstract void sendComponent(@NonNull ChatUser user, @NonNull Component component);
+  @NonNull
+  public abstract Component sendMessage(
+      @NonNull ChatUser user,
+      @NonNull Collection<@NonNull ChatUser> recipients,
+      @NonNull String message,
+      boolean fromBungee);
 
-    @Nullable
-    public String processPlaceholders(@NonNull ChatUser user, @Nullable String input) { return input; }
+  public abstract void sendComponent(@NonNull ChatUser user, @NonNull Component component);
 
-    public abstract boolean shouldCancelChatEvent();
+  @Nullable
+  public String processPlaceholders(@NonNull ChatUser user, @Nullable String input) {
+    return input;
+  }
 
+  public abstract boolean shouldCancelChatEvent();
 }
