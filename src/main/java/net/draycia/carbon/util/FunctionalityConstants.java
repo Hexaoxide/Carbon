@@ -7,19 +7,23 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @SuppressWarnings("ResultOfMethodCallIgnored") // This is a common pattern in this class.
 public final class FunctionalityConstants {
 
-    public static final boolean HAS_HOVER_EVENT_METHOD = noThrow(() -> ItemFactory.class.getMethod("hoverContentOf", ItemStack.class));
+  public static final boolean HAS_HOVER_EVENT_METHOD = noThrow(() -> ItemFactory.class.getMethod("hoverContentOf", ItemStack.class));
 
-    private static boolean noThrow(@NonNull ThrowingRunnable runnable) {
-        try {
-            runnable.run();
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
+  private FunctionalityConstants() {
 
-    @FunctionalInterface
-    private interface ThrowingRunnable {
-        void run() throws Exception;
+  }
+
+  private static boolean noThrow(@NonNull final ThrowingRunnable runnable) {
+    try {
+      runnable.run();
+      return true;
+    } catch (final Exception ex) {
+      return false;
     }
+  }
+
+  @FunctionalInterface
+  private interface ThrowingRunnable {
+    void run() throws Exception;
+  }
 }

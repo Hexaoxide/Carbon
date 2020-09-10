@@ -11,33 +11,33 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChatReloadCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public ChatReloadCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public ChatReloadCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        new CommandAPICommand(commandSettings.getName())
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.reload"))
-                .executes(this::execute)
-                .register();
+    if (!commandSettings.enabled()) {
+      return;
     }
 
-    private void execute(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
-        carbonChat.reloadConfig();
-        carbonChat.reloadFilters();
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        Component message = carbonChat.getAdventureManager().processMessage(carbonChat.getLanguage().getString("reloaded"),
-                "br", "\n");
+    new CommandAPICommand(commandSettings.name())
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.reload"))
+      .executes(this::execute)
+      .register();
+  }
 
-        carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(message);
-    }
+  private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
+    this.carbonChat.reloadConfig();
+    this.carbonChat.reloadFilters();
+
+    final Component message = this.carbonChat.adventureManager()
+      .processMessage(this.carbonChat.language().getString("reloaded"), "br", "\n");
+
+    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(message);
+  }
 
 }

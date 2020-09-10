@@ -9,20 +9,20 @@ import org.bukkit.event.Listener;
 
 public class RelationalPlaceholderHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPapiPlaceholder(ChatFormatEvent event) {
-        if (event.getTarget() == null) {
-            return;
-        }
-
-        if (!event.getSender().isOnline() || !event.getTarget().isOnline()) {
-            return;
-        }
-
-        Player sender = event.getSender().asPlayer();
-        Player target = event.getTarget().asPlayer();
-
-        event.setFormat(PlaceholderAPI.setRelationalPlaceholders(sender, target, event.getFormat()));
+  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+  public void onPapiPlaceholder(final ChatFormatEvent event) {
+    if (event.target() == null) {
+      return;
     }
+
+    if (!event.sender().online() || !event.target().online()) {
+      return;
+    }
+
+    final Player sender = event.sender().player();
+    final Player target = event.target().player();
+
+    event.format(PlaceholderAPI.setRelationalPlaceholders(sender, target, event.format()));
+  }
 
 }

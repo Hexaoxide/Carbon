@@ -16,100 +16,101 @@ import java.util.Collections;
 
 public class ChannelManager {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    @NonNull
-    private final ChannelRegistry registry;
+  @NonNull
+  private final ChannelRegistry registry;
 
-    @Nullable
-    @MonotonicNonNull
-    private String defaultChannelKey = null;
+  @Nullable
+  @MonotonicNonNull
+  private String defaultChannelKey = null;
 
-    public ChannelManager(CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
-        this.registry = new ChannelRegistry(carbonChat);
+  public ChannelManager(@NonNull final CarbonChat carbonChat) {
+    this.carbonChat = carbonChat;
+    this.registry = new ChannelRegistry(carbonChat);
 
-        reload();
+    this.reload();
+  }
+
+  public @Nullable ChatChannel loadChannel(@NonNull final String key, @NonNull final ConfigurationSection section) {
+    final ChatChannel channel = new CarbonChatChannel(key, this.carbonChat, section);
+
+    final String name = section.getString("name");
+
+    if (name != null && name.length() > 16) {
+      this.carbonChat.getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
+      this.carbonChat.getLogger().warning("Skipping channel, please check your settings!");
+      return null;
     }
 
-    public @Nullable ChatChannel loadChannel(String key, @NonNull ConfigurationSection section) {
-        ChatChannel channel = new CarbonChatChannel(key, carbonChat, section);
+    return channel;
+  }
 
-        String name = section.getString("name");
+  public boolean registerChannel(@NonNull final ChatChannel channel) {
+    final boolean success = this.registry().register(channel.key(), channel);
 
-        if (name != null && name.length() > 16) {
-            carbonChat.getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
-            carbonChat.getLogger().warning("Skipping channel, please check your settings!");
-            return null;
+    if (success) {
+      if (channel.isDefault() && this.defaultChannelKey == null) {
+        this.carbonChat.getLogger().info("Default channel registered: " + channel.name());
+        this.defaultChannelKey = channel.key();
+      }
+
+      Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
+    }
+
+    return success;
+  }
+
+  public @NonNull Registry<ChatChannel> registry() {
+    return this.registry;
+  }
+
+  public @Nullable ChatChannel defaultChannel() {
+    if (this.defaultChannelKey != null) {
+      return this.registry.channel(this.defaultChannelKey);
+    }
+
+    return null;
+  }
+
+  public @Nullable ChatChannel channelOrDefault(@Nullable final String key) {
+    if (key == null) {
+      return this.defaultChannel();
+    }
+
+    final ChatChannel channel = this.registry.channel(key);
+
+    if (channel == null) {
+      return this.defaultChannel();
+    }
+
+    return channel;
+  }
+
+  private void reload() {
+    this.registry.clearAll();
+
+    for (final String key : this.carbonChat.getConfig().getConfigurationSection("channels").getKeys(false)) {
+      final ConfigurationSection section =
+        this.carbonChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
+
+      final ChatChannel channel = this.loadChannel(key, section);
+
+      if (channel != null) {
+        if (this.registerChannel(channel)) {
+          String prefix = channel.messagePrefix();
+
+          if (prefix != null && !prefix.trim().isEmpty()) {
+            prefix = "(" + prefix + ") ";
+          } else {
+            prefix = "";
+          }
+
+          this.carbonChat.getLogger().info("Registering channel: " + prefix + channel.name());
         }
-
-        return channel;
+      }
     }
-
-    public boolean registerChannel(@NonNull ChatChannel channel) {
-        boolean success = getRegistry().register(channel.getKey(), channel);
-
-        if (success) {
-            if (channel.isDefault() && defaultChannelKey == null) {
-                carbonChat.getLogger().info("Default channel registered: " + channel.getName());
-                defaultChannelKey = channel.getKey();
-            }
-
-            Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(Collections.singletonList(channel), getRegistry()));
-        }
-
-        return success;
-    }
-
-    public @NonNull Registry<ChatChannel> getRegistry() {
-        return registry;
-    }
-
-    public @Nullable ChatChannel getDefaultChannel() {
-        if (defaultChannelKey != null) {
-            return registry.get(defaultChannelKey);
-        }
-
-        return null;
-    }
-
-    public @Nullable ChatChannel getChannelOrDefault(@Nullable String key) {
-        if (key == null) {
-            return getDefaultChannel();
-        }
-
-        ChatChannel channel = registry.get(key);
-
-        if (channel == null) {
-            return getDefaultChannel();
-        }
-
-        return channel;
-    }
-
-    private void reload() {
-        registry.clearAll();
-
-        for (String key : carbonChat.getConfig().getConfigurationSection("channels").getKeys(false)) {
-            ConfigurationSection section = carbonChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
-
-            ChatChannel channel = loadChannel(key, section);
-
-            if (channel != null) {
-                if (registerChannel(channel)) {
-                    String prefix = channel.getMessagePrefix();
-
-                    if (prefix != null && !prefix.trim().isEmpty()) {
-                        prefix = ("(" + prefix + ") ");
-                    } else {
-                        prefix = "";
-                    }
-
-                    carbonChat.getLogger().info("Registering channel: " + prefix + channel.getName());
-                }
-            }
-        }
-    }
+  }
 
 }

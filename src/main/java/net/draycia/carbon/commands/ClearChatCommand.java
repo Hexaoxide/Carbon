@@ -1,6 +1,5 @@
 package net.draycia.carbon.commands;
 
-
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import net.draycia.carbon.CarbonChat;
@@ -15,46 +14,46 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ClearChatCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public ClearChatCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public ClearChatCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        new CommandAPICommand(commandSettings.getName())
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.clearchat.clear"))
-                .executes(this::execute)
-                .register();
+    if (!commandSettings.enabled()) {
+      return;
     }
 
-    private void execute(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
-        String format = carbonChat.getModConfig().getString("clear-chat.message", "");
-        Component component = carbonChat.getAdventureManager().processMessage(format, "br", "\n");
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            ChatUser audience = carbonChat.getUserService().wrap(player);
+    new CommandAPICommand(commandSettings.name())
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.clearchat.clear"))
+      .executes(this::execute)
+      .register();
+  }
 
-            if (player.hasPermission("carbonchat.clearchat.exempt")) {
-                String message = carbonChat.getLanguage().getString("clear-exempt");
-                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
-            } else {
-                for (int i = 0; i < carbonChat.getModConfig().getInt("clear-chat.message-count", 100); i++) {
-                    audience.sendMessage(component);
-                }
-            }
+  private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
+    final String format = this.carbonChat.moderationConfig().getString("clear-chat.message", "");
+    final Component component = this.carbonChat.adventureManager().processMessage(format, "br", "\n");
 
-            if (player.hasPermission("carbonchat.clearchat.notify")) {
-                String message = carbonChat.getLanguage().getString("clear-notify");
-                audience.sendMessage(carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
-            }
+    for (final Player player : Bukkit.getOnlinePlayers()) {
+      final ChatUser audience = this.carbonChat.userService().wrap(player);
+
+      if (player.hasPermission("carbonchat.clearchat.exempt")) {
+        final String message = this.carbonChat.language().getString("clear-exempt");
+        audience.sendMessage(this.carbonChat.adventureManager().processMessage(message, "player", sender.getName()));
+      } else {
+        for (int i = 0; i < this.carbonChat.moderationConfig().getInt("clear-chat.message-count", 100); i++) {
+          audience.sendMessage(component);
         }
+      }
+
+      if (player.hasPermission("carbonchat.clearchat.notify")) {
+        final String message = this.carbonChat.language().getString("clear-notify");
+        audience.sendMessage(this.carbonChat.adventureManager().processMessage(message, "player", sender.getName()));
+      }
     }
+  }
 
 }

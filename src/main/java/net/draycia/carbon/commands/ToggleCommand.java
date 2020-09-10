@@ -18,86 +18,87 @@ import java.util.LinkedHashMap;
 
 public class ToggleCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public ToggleCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public ToggleCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-        channelArguments.put("channel", CarbonUtils.channelArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(channelArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.toggle"))
-                .executesPlayer(this::executeSelf)
-                .register();
-
-        LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
-        argumentsOther.put("players", CarbonUtils.chatUserArgument());
-        argumentsOther.put("channel", CarbonUtils.channelArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(argumentsOther)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.toggle"))
-                .executes(this::executeOther)
-                .register();
+    if (!commandSettings.enabled()) {
+      return;
     }
 
-    private void executeSelf(@NonNull Player player, @NonNull Object @NonNull [] args) {
-        ChatUser user = carbonChat.getUserService().wrap(player);
-        ChatChannel channel = (ChatChannel) args[0];
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        String message;
+    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+    channelArguments.put("channel", CarbonUtils.channelArgument());
 
-        UserChannelSettings settings = user.getChannelSettings(channel);
+    new CommandAPICommand(commandSettings.name())
+      .withArguments(channelArguments)
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.toggle"))
+      .executesPlayer(this::executeSelf)
+      .register();
 
-        if (!channel.isIgnorable()) {
-            message = channel.getCannotIgnoreMessage();
-        } else if (settings.isIgnored()) {
-            settings.setIgnoring(false);
-            message = channel.getToggleOffMessage();
-        } else {
-            settings.setIgnoring(true);
-            message = channel.getToggleOnMessage();
-        }
+    final LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
+    argumentsOther.put("players", CarbonUtils.chatUserArgument());
+    argumentsOther.put("channel", CarbonUtils.channelArgument());
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
-                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
+    new CommandAPICommand(commandSettings.name())
+      .withArguments(argumentsOther)
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.toggle"))
+      .executes(this::executeOther)
+      .register();
+  }
+
+  private void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatChannel channel = (ChatChannel) args[0];
+
+    final String message;
+
+    final UserChannelSettings settings = user.channelSettings(channel);
+
+    if (!channel.ignorable()) {
+      message = channel.cannotIgnoreMessage();
+    } else if (settings.ignored()) {
+      settings.ignoring(false);
+      message = channel.toggleOffMessage();
+    } else {
+      settings.ignoring(true);
+      message = channel.toggleOnMessage();
     }
 
-    private void executeOther(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
-        ChatUser user = (ChatUser) args[0];
-        ChatChannel channel = (ChatChannel) args[1];
+    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n",
+      "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
+  }
 
-        String message;
-        String otherMessage;
+  private void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = (ChatUser) args[0];
+    final ChatChannel channel = (ChatChannel) args[1];
 
-        UserChannelSettings settings = user.getChannelSettings(channel);
+    final String message;
+    final String otherMessage;
 
-        if (settings.isIgnored()) {
-            settings.setIgnoring(false);
-            message = channel.getToggleOffMessage();
-            otherMessage = channel.getToggleOtherOffMessage();
-        } else {
-            settings.setIgnoring(true);
-            message = channel.getToggleOnMessage();
-            otherMessage = channel.getToggleOtherOnMessage();
-        }
+    final UserChannelSettings settings = user.channelSettings(channel);
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessage(message, "br", "\n",
-                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
-
-        carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage,
-                "br", "\n", "color", "<color:" + channel.getChannelColor(user).toString() + ">",
-                "channel", channel.getName(), "player", user.asOfflinePlayer().getName()));
+    if (settings.ignored()) {
+      settings.ignoring(false);
+      message = channel.toggleOffMessage();
+      otherMessage = channel.toggleOtherOffMessage();
+    } else {
+      settings.ignoring(true);
+      message = channel.toggleOnMessage();
+      otherMessage = channel.toggleOtherOnMessage();
     }
+
+    user.sendMessage(this.carbonChat.adventureManager().processMessage(message, "br", "\n",
+      "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
+
+    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
+      this.carbonChat.adventureManager().processMessage(otherMessage,
+        "br", "\n", "color", "<color:" + channel.channelColor(user).toString() + ">",
+        "channel", channel.name(), "player", user.offlinePlayer().getName()));
+  }
 }

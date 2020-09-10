@@ -18,86 +18,86 @@ import java.util.LinkedHashMap;
 
 public class NicknameCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public NicknameCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public NicknameCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        LinkedHashMap<String, Argument> selfArguments = new LinkedHashMap<>();
-        selfArguments.put("nickname", new StringArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(selfArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.nickname"))
-                .executesPlayer(this::executeSelf)
-                .register();
-
-        LinkedHashMap<String, Argument> otherArguments = new LinkedHashMap<>();
-        otherArguments.put("player", CarbonUtils.chatUserArgument());
-        otherArguments.put("nickname", new StringArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(otherArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.nickname.others"))
-                .executes(this::executeOther)
-                .register();
+    if (!commandSettings.enabled()) {
+      return;
     }
 
-    private void executeSelf(@NonNull Player player, @NonNull Object @NonNull [] args) {
-        String nickname = (String) args[0];
-        ChatUser sender = carbonChat.getUserService().wrap(player);
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(player.getName())) {
-            nickname = null;
-        }
+    final LinkedHashMap<String, Argument> selfArguments = new LinkedHashMap<>();
+    selfArguments.put("nickname", new StringArgument());
 
-        sender.setNickname(nickname);
+    new CommandAPICommand(commandSettings.name())
+      .withArguments(selfArguments)
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.nickname"))
+      .executesPlayer(this::executeSelf)
+      .register();
 
-        String message;
+    final LinkedHashMap<String, Argument> otherArguments = new LinkedHashMap<>();
+    otherArguments.put("player", CarbonUtils.chatUserArgument());
+    otherArguments.put("nickname", new StringArgument());
 
-        if (nickname == null) {
-            message = carbonChat.getLanguage().getString("nickname-reset");
-        } else {
-            message = carbonChat.getLanguage().getString("nickname-set");
-        }
+    new CommandAPICommand(commandSettings.name())
+      .withArguments(otherArguments)
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.nickname.others"))
+      .executes(this::executeOther)
+      .register();
+  }
 
-        sender.sendMessage(carbonChat.getAdventureManager().processMessage(
-                message, "nickname", nickname == null ? "" : nickname,
-                "user", sender.asOfflinePlayer().getName()));
+  private void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    String nickname = (String) args[0];
+    final ChatUser sender = this.carbonChat.userService().wrap(player);
+
+    if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(player.getName())) {
+      nickname = null;
     }
 
-    private void executeOther(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
-        Audience user = carbonChat.getAdventureManager().getAudiences().audience(sender);
-        ChatUser target = (ChatUser) args[0];
-        String nickname = (String) args[1];
+    sender.nickname(nickname);
 
-        if (nickname.equalsIgnoreCase("off") ||
-                nickname.equalsIgnoreCase(target.asOfflinePlayer().getName())) {
-            nickname = null;
-        }
+    final String message;
 
-        target.setNickname(nickname);
-
-        String message;
-
-        if (nickname == null) {
-            message = carbonChat.getLanguage().getString("other-nickname-reset");
-        } else {
-            message = carbonChat.getLanguage().getString("other-nickname-set");
-        }
-
-        user.sendMessage(carbonChat.getAdventureManager().processMessage(
-                message, "nickname", nickname == null ? "" : nickname,
-                "user", target.asOfflinePlayer().getName()));
+    if (nickname == null) {
+      message = this.carbonChat.language().getString("nickname-reset");
+    } else {
+      message = this.carbonChat.language().getString("nickname-set");
     }
+
+    sender.sendMessage(this.carbonChat.adventureManager().processMessage(
+      message, "nickname", nickname == null ? "" : nickname,
+      "user", sender.offlinePlayer().getName()));
+  }
+
+  private void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
+    final Audience user = this.carbonChat.adventureManager().audiences().audience(sender);
+    final ChatUser target = (ChatUser) args[0];
+    String nickname = (String) args[1];
+
+    if (nickname.equalsIgnoreCase("off") ||
+      nickname.equalsIgnoreCase(target.offlinePlayer().getName())) {
+      nickname = null;
+    }
+
+    target.nickname(nickname);
+
+    final String message;
+
+    if (nickname == null) {
+      message = this.carbonChat.language().getString("other-nickname-reset");
+    } else {
+      message = this.carbonChat.language().getString("other-nickname-set");
+    }
+
+    user.sendMessage(this.carbonChat.adventureManager().processMessage(
+      message, "nickname", nickname == null ? "" : nickname,
+      "user", target.offlinePlayer().getName()));
+  }
 
 }

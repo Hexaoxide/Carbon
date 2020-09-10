@@ -15,95 +15,95 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class TownyContext implements Listener {
 
-    @NonNull
-    private static final String KEY = "towny-town";
+  @NonNull
+  private static final String KEY = "towny-town";
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public TownyContext(@NonNull CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
+  public TownyContext(@NonNull final CarbonChat carbonChat) {
+    this.carbonChat = carbonChat;
 
-        this.carbonChat.getContextManager().register(KEY, (context) -> {
-            if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
-                return isInSameTown(context.getSender(), context.getTarget());
-            }
+    this.carbonChat.contextManager().register(KEY, context -> {
+      if ((context.value() instanceof Boolean) && ((Boolean) context.value())) {
+        return this.isInSameTown(context.sender(), context.target());
+      }
 
-            return true;
-        });
+      return true;
+    });
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onChannelSwitch(final ChannelSwitchEvent event) {
+    final Object town = event.channel().context(KEY);
+
+    if ((town instanceof Boolean) && ((Boolean) town)) {
+      if (!this.isInTown(event.user())) {
+        event.setCancelled(true);
+        event.failureMessage(this.carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
+      }
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onChannelMessage(final PreChatFormatEvent event) {
+    // TODO: event.setFailureMessage
+    final Object town = event.channel().context(KEY);
+
+    if ((town instanceof Boolean) && ((Boolean) town)) {
+      if (!this.isInTown(event.user())) {
+        event.setCancelled(true);
+      }
+    }
+  }
+
+  @EventHandler
+  public void onResidentRemove(final TownRemoveResidentEvent event) {
+    final String name = event.getResident().getName();
+    final ChatUser user = this.carbonChat.userService().wrap(name);
+    final Object town = user.selectedChannel().context(KEY);
+
+    if ((town instanceof Boolean) && ((Boolean) town)) {
+      user.clearSelectedChannel();
+    }
+  }
+
+  @EventHandler
+  public void onPlayerJoin(final PlayerJoinEvent event) {
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
+    final Object town = user.selectedChannel().context(KEY);
+
+    if ((town instanceof Boolean) && ((Boolean) town) && !this.isInTown(user)) {
+      user.clearSelectedChannel();
+    }
+  }
+
+  public boolean isInTown(@NonNull final ChatUser user) {
+    try {
+      return TownyAPI.getInstance().getDataSource().getResident(user.player().getName()).hasTown();
+    } catch (final NotRegisteredException exception) {
+      exception.printStackTrace();
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onChannelSwitch(ChannelSwitchEvent event) {
-        Object town = event.getChannel().getContext(KEY);
+    return false;
+  }
 
-        if ((town instanceof Boolean) && ((Boolean) town)) {
-            if (!isInTown(event.getUser())) {
-                event.setCancelled(true);
-                event.setFailureMessage(carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
-            }
-        }
+  public boolean isInSameTown(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
+    if (!user1.online() || !user2.online()) {
+      return false;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onChannelMessage(PreChatFormatEvent event) {
-        // TODO: event.setFailureMessage
-        Object town = event.getChannel().getContext(KEY);
+    try {
+      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.player().getName());
 
-        if ((town instanceof Boolean) && ((Boolean) town)) {
-            if (!isInTown(event.getUser())) {
-                event.setCancelled(true);
-            }
-        }
+      if (resident.hasTown()) {
+        return resident.getTown().hasResident(user2.player().getName());
+      }
+    } catch (final NotRegisteredException exception) {
+      exception.printStackTrace();
     }
 
-    @EventHandler
-    public void onResidentRemove(TownRemoveResidentEvent event) {
-        String name = event.getResident().getName();
-        ChatUser user = carbonChat.getUserService().wrap(name);
-        Object town = user.getSelectedChannel().getContext(KEY);
-
-        if ((town instanceof Boolean) && ((Boolean) town)) {
-            user.clearSelectedChannel();
-        }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
-        Object town = user.getSelectedChannel().getContext(KEY);
-
-        if ((town instanceof Boolean) && ((Boolean) town) && !isInTown(user)) {
-            user.clearSelectedChannel();
-        }
-    }
-
-    public boolean isInTown(@NonNull ChatUser user) {
-        try {
-            return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
-        } catch (NotRegisteredException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public boolean isInSameTown(@NonNull ChatUser user1, @NonNull ChatUser user2) {
-        if (!user1.isOnline() || !user2.isOnline()) {
-            return false;
-        }
-
-        try {
-            Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.asPlayer().getName());
-
-            if (resident.hasTown()) {
-                return resident.getTown().hasResident(user2.asPlayer().getName());
-            }
-        } catch (NotRegisteredException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
+    return false;
+  }
 
 }

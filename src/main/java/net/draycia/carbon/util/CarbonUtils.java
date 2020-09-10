@@ -49,162 +49,166 @@ import java.util.List;
 
 public final class CarbonUtils {
 
-    private static final @NonNull String @NonNull [] colors;
+  private static final @NonNull String @NonNull [] colors;
 
-    static {
-        List<String> colorList = new ArrayList<>();
+  private CarbonUtils() {
 
-        for (NamedTextColor color : NamedTextColor.values()) {
-            colorList.add(color.toString());
-        }
+  }
 
-        colors = colorList.toArray(new String[0]);
+  static {
+    final List<String> colorList = new ArrayList<>();
+
+    for (final NamedTextColor color : NamedTextColor.values()) {
+      colorList.add(color.toString());
     }
 
-    @NonNull
-    public static Component createComponent(@NonNull final Player player) {
-        if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
-            return net.kyori.adventure.text.TextComponent.empty();
-        }
+    colors = colorList.toArray(new String[0]);
+  }
 
-        final ItemStack itemStack = player.getInventory().getItemInMainHand();
-
-        if (itemStack.getType().isAir()) {
-            return net.kyori.adventure.text.TextComponent.empty();
-        }
-
-        Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
-        HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
-
-        ComponentBuilder component = new ComponentBuilder();
-        component.event(event); // Let this be inherited by all coming components.
-        component.color(ChatColor.WHITE).append("[");
-
-        if (itemStack.getItemMeta().hasDisplayName()) {
-            component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
-        } else {
-            String name = itemStack.getItemMeta().hasDisplayName()
-                    ? itemStack.getItemMeta().getDisplayName()
-                    : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
-            component.append(new TranslatableComponent(name));
-        }
-
-        component.color(ChatColor.WHITE).append("]");
-
-        return BungeeCordComponentSerializer.get().deserialize(component.create());
+  @NonNull
+  public static Component createComponent(@NonNull final Player player) {
+    if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
+      return net.kyori.adventure.text.TextComponent.empty();
     }
 
-    @Nullable
-    public static TextColor parseColor(@Nullable String input) {
-        return parseColor(null, input);
+    final ItemStack itemStack = player.getInventory().getItemInMainHand();
+
+    if (itemStack.getType().isAir()) {
+      return net.kyori.adventure.text.TextComponent.empty();
     }
 
-    @Nullable
-    public static TextColor parseColor(@Nullable ChatUser user, @Nullable String input) {
-        if (input == null) {
-            input = "white";
-        }
+    final Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
+    final HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
 
-        if (user != null && user.isOnline()) {
-            input = PlaceholderAPI.setPlaceholders(user.asPlayer(), input);
-        }
+    final ComponentBuilder component = new ComponentBuilder();
+    component.event(event); // Let this be inherited by all coming components.
+    component.color(ChatColor.WHITE).append("[");
 
-        for (NamedTextColor namedColor : NamedTextColor.values()) {
-            if (namedColor.toString().equalsIgnoreCase(input)) {
-                return namedColor;
-            }
-        }
-
-        if (input.contains("&") || input.contains("§")) {
-            input = input.replace("&", "§");
-
-            return LegacyComponentSerializer.legacySection().deserialize(input).color();
-        }
-
-        return TextColor.fromCSSHexString(input);
+    if (itemStack.getItemMeta().hasDisplayName()) {
+      component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
+    } else {
+      final String name = itemStack.getItemMeta().hasDisplayName()
+        ? itemStack.getItemMeta().getDisplayName()
+        : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
+      component.append(new TranslatableComponent(name));
     }
 
-    @NonNull
-    public static Argument onlineChatUserArgument() {
-        return new CustomArgument<>((input) -> {
-            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    component.color(ChatColor.WHITE).append("]");
 
-            Player player = Bukkit.getPlayer(input);
+    return BungeeCordComponentSerializer.get().deserialize(component.create());
+  }
 
-            if (player == null) {
-                throw new CustomArgument.CustomArgumentException("Invalid player for input (" + input + ")");
-            }
+  @Nullable
+  public static TextColor parseColor(@Nullable final String input) {
+    return parseColor(null, input);
+  }
 
-            return carbonChat.getUserService().wrap(player);
-//        }).overrideSuggestions((sender, args) -> {
-//            ArrayList<String> players = new ArrayList<>();
-//
-//            for (Player player : Bukkit.getOnlinePlayers()) {
-//                players.add(player.getName());
-//            }
-//
-//            return players.toArray(new String[0]);
-        });
+  @Nullable
+  public static TextColor parseColor(@Nullable final ChatUser user, @Nullable String input) {
+    if (input == null) {
+      input = "white";
     }
 
-    @NonNull
-    public static Argument chatUserArgument() {
-        return new CustomArgument<>((input) -> {
-            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
-
-            return carbonChat.getUserService().wrap(input);
-//        }).overrideSuggestions((sender, args) -> {
-//            ArrayList<String> players = new ArrayList<>();
-//
-//            for (Player player : Bukkit.getOnlinePlayers()) {
-//                players.add(player.getName());
-//            }
-//
-//            return players.toArray(new String[0]);
-        });
+    if (user != null && user.online()) {
+      input = PlaceholderAPI.setPlaceholders(user.player(), input);
     }
 
-    @NonNull
-    public static Argument textColorArgument() {
-        return new CustomArgument<>((input) -> {
-            TextColor color = parseColor(input);
-
-            if (color == null) {
-                throw new CustomArgument.CustomArgumentException("Invalid color for input (" + input + ")");
-            }
-
-            return color;
-        }).overrideSuggestions(colors);
+    for (final NamedTextColor namedColor : NamedTextColor.values()) {
+      if (namedColor.toString().equalsIgnoreCase(input)) {
+        return namedColor;
+      }
     }
 
-    @NonNull
-    public static Argument channelArgument() {
-        return new CustomArgument<>((input) -> {
-            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    if (input.contains("&") || input.contains("§")) {
+      input = input.replace("&", "§");
 
-            ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(input);
-
-            if (channel == null) {
-                throw new CustomArgument.CustomArgumentException("Invalid channel for input (" + input + ")");
-            }
-
-            return channel;
-//        }).overrideSuggestions((sender, args) -> {
-//            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
-//
-//            ArrayList<String> channels = new ArrayList<>();
-//
-//            for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-//                channels.add(channel.getKey());
-//            }
-//
-//            return channels.toArray(new String[0]);
-        });
+      return LegacyComponentSerializer.legacySection().deserialize(input).color();
     }
 
-    @NonNull
-    public static Argument usableChannelArgument() {
-        throw new NotImplementedException("Not implemented yet.");
-    }
+    return TextColor.fromCSSHexString(input);
+  }
+
+  @NonNull
+  public static Argument onlineChatUserArgument() {
+    return new CustomArgument<>(input -> {
+      final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+      final Player player = Bukkit.getPlayer(input);
+
+      if (player == null) {
+        throw new CustomArgument.CustomArgumentException("Invalid player for input (" + input + ")");
+      }
+
+      return carbonChat.userService().wrap(player);
+      //        }).overrideSuggestions((sender, args) -> {
+      //            ArrayList<String> players = new ArrayList<>();
+      //
+      //            for (Player player : Bukkit.getOnlinePlayers()) {
+      //                players.add(player.getName());
+      //            }
+      //
+      //            return players.toArray(new String[0]);
+    });
+  }
+
+  @NonNull
+  public static Argument chatUserArgument() {
+    return new CustomArgument<>(input -> {
+      final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+      return carbonChat.userService().wrap(input);
+      //        }).overrideSuggestions((sender, args) -> {
+      //            ArrayList<String> players = new ArrayList<>();
+      //
+      //            for (Player player : Bukkit.getOnlinePlayers()) {
+      //                players.add(player.getName());
+      //            }
+      //
+      //            return players.toArray(new String[0]);
+    });
+  }
+
+  @NonNull
+  public static Argument textColorArgument() {
+    return new CustomArgument<>(input -> {
+      final TextColor color = parseColor(input);
+
+      if (color == null) {
+        throw new CustomArgument.CustomArgumentException("Invalid color for input (" + input + ")");
+      }
+
+      return color;
+    }).overrideSuggestions(colors);
+  }
+
+  @NonNull
+  public static Argument channelArgument() {
+    return new CustomArgument<>(input -> {
+      final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+      final ChatChannel channel = carbonChat.channelManager().registry().channel(input);
+
+      if (channel == null) {
+        throw new CustomArgument.CustomArgumentException("Invalid channel for input (" + input + ")");
+      }
+
+      return channel;
+      //        }).overrideSuggestions((sender, args) -> {
+      //            CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+      //
+      //            ArrayList<String> channels = new ArrayList<>();
+      //
+      //            for (ChatChannel channel : this.carbonChat.getChannelManager().getRegistry().values()) {
+      //                channels.add(channel.getKey());
+      //            }
+      //
+      //            return channels.toArray(new String[0]);
+    });
+  }
+
+  @NonNull
+  public static Argument usableChannelArgument() {
+    throw new NotImplementedException("Not implemented yet.");
+  }
 
 }

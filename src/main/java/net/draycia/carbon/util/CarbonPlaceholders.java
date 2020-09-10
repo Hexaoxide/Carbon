@@ -10,84 +10,84 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class CarbonPlaceholders extends PlaceholderExpansion {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public CarbonPlaceholders(@NonNull CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
+  public CarbonPlaceholders(@NonNull final CarbonChat carbonChat) {
+    this.carbonChat = carbonChat;
+  }
+
+  @Override
+  @NonNull
+  public String getIdentifier() {
+    return "carbonchat";
+  }
+
+  @Override
+  @NonNull
+  public String getAuthor() {
+    return "Draycia (Vicarious#0001)";
+  }
+
+  @Override
+  @NonNull
+  public String getVersion() {
+    return "1.0.0";
+  }
+
+  @Override
+  public boolean persist() {
+    return true;
+  }
+
+  @Override
+  @Nullable
+  public String onPlaceholderRequest(@NonNull final Player player, @NonNull final String identifier) {
+    final String key = identifier.toLowerCase();
+
+    if (key.startsWith("can_use_")) {
+      final String value = key.replace("can_use_", "");
+
+      final ChatChannel channel = this.carbonChat.channelManager().registry().channel(value);
+
+      if (channel == null) {
+        return "false";
+      }
+
+      final ChatUser user = this.carbonChat.userService().wrap(player);
+
+      return String.valueOf(channel.canPlayerUse(user));
+    } else if (key.startsWith("can_see_")) {
+      final String value = key.replace("can_see_", "");
+
+      final ChatChannel channel = this.carbonChat.channelManager().registry().channel(value);
+
+      if (channel == null) {
+        return "false";
+      }
+
+      final ChatUser user = this.carbonChat.userService().wrap(player);
+
+      return String.valueOf(channel.canPlayerSee(user, true));
+    } else if (key.startsWith("ignoring_channel_")) {
+      final String value = key.replace("ignoring_channel_", "");
+
+      final ChatChannel channel = this.carbonChat.channelManager().registry().channel(value);
+
+      if (channel == null) {
+        return "false";
+      }
+
+      final ChatUser user = this.carbonChat.userService().wrap(player);
+
+      return String.valueOf(user.channelSettings(channel).ignored());
+    } else if (key.startsWith("selected_channel")) {
+      final ChatChannel channel = this.carbonChat.userService().wrap(player).selectedChannel();
+
+      return channel == null ? this.carbonChat.channelManager().defaultChannel().name() : channel.name();
     }
 
-    @Override
-    @NonNull
-    public String getIdentifier() {
-        return "carbonchat";
-    }
-
-    @Override
-    @NonNull
-    public String getAuthor() {
-        return "Draycia (Vicarious#0001)";
-    }
-
-    @Override
-    @NonNull
-    public String getVersion() {
-        return "1.0.0";
-    }
-
-    @Override
-    public boolean persist() {
-        return true;
-    }
-
-    @Override
-    @Nullable
-    public String onPlaceholderRequest(@NonNull final Player player, @NonNull final String identifier) {
-        String key = identifier.toLowerCase();
-
-        if (key.startsWith("can_use_")) {
-            String value = key.replace("can_use_", "");
-
-            ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(value);
-
-            if (channel == null) {
-                return "false";
-            }
-
-            ChatUser user = carbonChat.getUserService().wrap(player);
-
-            return String.valueOf(channel.canPlayerUse(user));
-        } else if (key.startsWith("can_see_")) {
-            String value = key.replace("can_see_", "");
-
-            ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(value);
-
-            if (channel == null) {
-                return "false";
-            }
-
-            ChatUser user = carbonChat.getUserService().wrap(player);
-
-            return String.valueOf(channel.canPlayerSee(user, true));
-        } else if (key.startsWith("ignoring_channel_")) {
-            String value = key.replace("ignoring_channel_", "");
-
-            ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(value);
-
-            if (channel == null) {
-                return "false";
-            }
-
-            ChatUser user = carbonChat.getUserService().wrap(player);
-
-            return String.valueOf(user.getChannelSettings(channel).isIgnored());
-        } else if (key.startsWith("selected_channel")) {
-            ChatChannel channel = carbonChat.getUserService().wrap(player).getSelectedChannel();
-
-            return channel == null ? carbonChat.getChannelManager().getDefaultChannel().getName() : channel.getName();
-        }
-
-        return null;
-    }
+    return null;
+  }
 
 }

@@ -18,60 +18,66 @@ import java.util.LinkedHashMap;
 
 public class SudoChannelCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public SudoChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public SudoChannelCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
-        setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
-        setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(setOtherChannelArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.channel.others"))
-                .executes((sender, args) -> { this.setOtherChannel(sender, (ChatUser) args[0], (ChatChannel) args[1]); })
-                .register();
-
-        LinkedHashMap<String, Argument> sendMessageOtherArguments = new LinkedHashMap<>();
-        sendMessageOtherArguments.put("player", CarbonUtils.onlineChatUserArgument());
-        sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
-        sendMessageOtherArguments.put("message", new GreedyStringArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(sendMessageOtherArguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.channel.others.message"))
-                .executes((sender, args) -> { this.sendMessageOther(sender, (ChatUser) args[0], (ChatChannel) args[1], (String) args[2]); })
-                .register();
+    if (!commandSettings.enabled()) {
+      return;
     }
 
-    private void setOtherChannel(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull ChatChannel channel) {
-        user.setSelectedChannel(channel);
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        String message = channel.getSwitchMessage();
-        String otherMessage = channel.getSwitchOtherMessage();
+    final LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
+    setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
+    setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessage(message, "br", "\n",
-                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
+    new CommandAPICommand(commandSettings.name())
+      .withArguments(setOtherChannelArguments)
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.channel.others"))
+      .executes((sender, args) -> {
+        this.otherChannel(sender, (ChatUser) args[0], (ChatChannel) args[1]);
+      })
+      .register();
 
-        carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage, "br", "\n",
-                "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName(),
-                "player", user.asOfflinePlayer().getName()));
-    }
+    final LinkedHashMap<String, Argument> sendMessageOtherArguments = new LinkedHashMap<>();
+    sendMessageOtherArguments.put("player", CarbonUtils.onlineChatUserArgument());
+    sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
+    sendMessageOtherArguments.put("message", new GreedyStringArgument());
 
-    private void sendMessageOther(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull ChatChannel channel, @NonNull String message) {
-        Component component = channel.sendMessage(user, message, false);
+    new CommandAPICommand(commandSettings.name())
+      .withArguments(sendMessageOtherArguments)
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.channel.others.message"))
+      .executes((sender, args) -> {
+        this.sendMessageOther(sender, (ChatUser) args[0], (ChatChannel) args[1], (String) args[2]);
+      })
+      .register();
+  }
 
-        carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
-    }
+  private void otherChannel(@NonNull final CommandSender sender, @NonNull final ChatUser user, @NonNull final ChatChannel channel) {
+    user.selectedChannel(channel);
+
+    final String message = channel.switchMessage();
+    final String otherMessage = channel.switchOtherMessage();
+
+    user.sendMessage(this.carbonChat.adventureManager().processMessage(message, "br", "\n",
+      "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
+
+    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
+      this.carbonChat.adventureManager().processMessage(otherMessage, "br", "\n",
+        "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name(),
+        "player", user.offlinePlayer().getName()));
+  }
+
+  private void sendMessageOther(@NonNull final CommandSender sender, @NonNull final ChatUser user,
+                                @NonNull final ChatChannel channel, @NonNull final String message) {
+    final Component component = channel.sendMessage(user, message, false);
+
+    this.carbonChat.adventureManager().audiences().console().sendMessage(component);
+  }
 
 }

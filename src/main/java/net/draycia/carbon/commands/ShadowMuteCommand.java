@@ -19,58 +19,58 @@ import java.util.LinkedHashMap;
 
 public class ShadowMuteCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public ShadowMuteCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public ShadowMuteCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-        arguments.put("player", CarbonUtils.chatUserArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(arguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.shadowmute"))
-                .executes(this::execute)
-                .register();
+    if (!commandSettings.enabled()) {
+      return;
     }
 
-    private void execute(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
-        ChatUser user = (ChatUser) args[0];
-        Audience audience = carbonChat.getAdventureManager().getAudiences().audience(sender);
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        if (user.isShadowMuted()) {
-            user.setShadowMuted(false);
-            String format = carbonChat.getLanguage().getString("no-longer-shadow-muted");
+    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
+    arguments.put("player", CarbonUtils.chatUserArgument());
 
-            Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
-                    "player", user.asOfflinePlayer().getName());
+    new CommandAPICommand(commandSettings.name())
+      .withArguments(arguments)
+      .withAliases(commandSettings.aliases())
+      .withPermission(CommandPermission.fromString("carbonchat.shadowmute"))
+      .executes(this::execute)
+      .register();
+  }
 
-            audience.sendMessage(message);
+  private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = (ChatUser) args[0];
+    final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
+
+    if (user.shadowMuted()) {
+      user.shadowMuted(false);
+      final String format = this.carbonChat.language().getString("no-longer-shadow-muted");
+
+      final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
+        "player", user.offlinePlayer().getName());
+
+      audience.sendMessage(message);
+    } else {
+      Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
+        final Permission permission = this.carbonChat.permission();
+        final String format;
+
+        if (permission.playerHas(null, user.offlinePlayer(), "carbonchat.shadowmute.exempt")) {
+          format = this.carbonChat.language().getString("shadow-mute-exempt");
         } else {
-            Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
-                Permission permission = carbonChat.getPermission();
-                String format;
-
-                if (permission.playerHas(null, user.asOfflinePlayer(), "carbonchat.shadowmute.exempt")) {
-                    format = carbonChat.getLanguage().getString("shadow-mute-exempt");
-                } else {
-                    user.setShadowMuted(true);
-                    format = carbonChat.getLanguage().getString("is-now-shadow-muted");
-                }
-
-                Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
-                        "player", user.asOfflinePlayer().getName());
-
-                audience.sendMessage(message);
-            });
+          user.shadowMuted(true);
+          format = this.carbonChat.language().getString("is-now-shadow-muted");
         }
+
+        final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
+          "player", user.offlinePlayer().getName());
+
+        audience.sendMessage(message);
+      });
     }
+  }
 }
