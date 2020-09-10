@@ -60,7 +60,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   @Override
   @NonNull
   public Iterable<@NonNull ? extends Audience> audiences() {
-    return Collections.singleton(carbonChat.getAdventureManager().getAudiences().player(uuid));
+    return Collections.singleton(carbonChat.getAdventureManager().audiences().player(uuid));
   }
 
   @Override
@@ -98,7 +98,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     if (online()) {
       if (newNickname != null) {
-        Component component = carbonChat.getAdventureManager().processMessage(nickname);
+        Component component = this.carbonChat.getAdventureManager().processMessage(nickname);
         newNickname = CarbonChat.LEGACY.serialize(component);
       }
 
@@ -111,10 +111,10 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     if (!fromRemote) {
       if (nickname == null) {
-        carbonChat.getMessageManager().sendMessage("nickname-reset", this.uuid(), (byteArray) -> {
+        this.carbonChat.getMessageManager().sendMessage("nickname-reset", this.uuid(), (byteArray) -> {
         });
       } else {
-        carbonChat.getMessageManager().sendMessage("nickname", this.uuid(), (byteArray) -> {
+        this.carbonChat.getMessageManager().sendMessage("nickname", this.uuid(), (byteArray) -> {
           byteArray.writeUTF(this.nickname);
         });
       }
@@ -124,45 +124,45 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   @Override
   @Nullable
   public ChatChannel selectedChannel() {
-    return carbonChat.getChannelManager().getChannelOrDefault(selectedChannel);
+    return this.carbonChat.getChannelManager().channelOrDefault(selectedChannel);
   }
 
   @Override
   public void selectedChannel(@NonNull ChatChannel chatChannel, boolean fromRemote) {
-    String failureMessage = chatChannel.getSwitchFailureMessage();
+    String failureMessage = chatChannel.switchFailureMessage();
 
     ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
 
     Bukkit.getPluginManager().callEvent(event);
 
     if (event.isCancelled()) {
-      sendMessage(carbonChat.getAdventureManager().processMessage(event.getFailureMessage(),
-        "channel", chatChannel.getName()));
+      sendMessage(carbonChat.getAdventureManager().processMessage(event.failureMessage(),
+        "channel", chatChannel.name()));
 
       return;
     }
 
-    this.selectedChannel = chatChannel.getKey();
+    this.selectedChannel = chatChannel.key();
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("selected-channel", this.uuid(), (byteArray) -> {
-        byteArray.writeUTF(chatChannel.getKey());
+      this.carbonChat.getMessageManager().sendMessage("selected-channel", this.uuid(), (byteArray) -> {
+        byteArray.writeUTF(chatChannel.key());
       });
     }
   }
 
   @Override
   public void clearSelectedChannel() {
-    selectedChannel(carbonChat.getChannelManager().getDefaultChannel());
+    selectedChannel(carbonChat.getChannelManager().defaultChannel());
   }
 
   @Override
-  public boolean isIgnoringUser(@NonNull UUID uuid) {
+  public boolean ignoringUser(@NonNull UUID uuid) {
     return ignoredUsers.contains(uuid);
   }
 
   @Override
-  public void setIgnoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote) {
+  public void ignoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote) {
     if (ignoring) {
       ignoredUsers.add(uuid);
     } else {
@@ -170,7 +170,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("ignoring-user", this.uuid(), (byteArray) -> {
+      this.carbonChat.getMessageManager().sendMessage("ignoring-user", this.uuid(), (byteArray) -> {
         byteArray.writeLong(uuid.getMostSignificantBits());
         byteArray.writeLong(uuid.getLeastSignificantBits());
         byteArray.writeBoolean(ignoring);
@@ -184,49 +184,49 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public void setMuted(boolean muted, boolean fromRemote) {
+  public void muted(boolean muted, boolean fromRemote) {
     this.muted = muted;
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("muted", this.uuid(), (byteArray) -> {
+      this.carbonChat.getMessageManager().sendMessage("muted", this.uuid(), (byteArray) -> {
         byteArray.writeBoolean(muted);
       });
     }
   }
 
   @Override
-  public boolean isMuted() {
+  public boolean muted() {
     return muted;
   }
 
   @Override
-  public void setShadowMuted(boolean shadowMuted, boolean fromRemote) {
+  public void shadowMuted(boolean shadowMuted, boolean fromRemote) {
     this.shadowMuted = shadowMuted;
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("shadow-muted", this.uuid(), (byteArray) -> {
+      this.carbonChat.getMessageManager().sendMessage("shadow-muted", this.uuid(), (byteArray) -> {
         byteArray.writeBoolean(shadowMuted);
       });
     }
   }
 
   @Override
-  public boolean isShadowMuted() {
+  public boolean shadowMuted() {
     return shadowMuted;
   }
 
   @Override
   @Nullable
-  public UUID getReplyTarget() {
+  public UUID replyTarget() {
     return replyTarget;
   }
 
   @Override
-  public void setReplyTarget(@Nullable UUID target, boolean fromRemote) {
+  public void replyTarget(@Nullable UUID target, boolean fromRemote) {
     this.replyTarget = target;
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("reply-target", this.uuid(), (byteArray) -> {
+      this.carbonChat.getMessageManager().sendMessage("reply-target", this.uuid(), (byteArray) -> {
         byteArray.writeLong(target.getMostSignificantBits());
         byteArray.writeLong(target.getLeastSignificantBits());
       });
@@ -235,9 +235,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
   @Override
   @NonNull
-  public UserChannelSettings getChannelSettings(@NonNull ChatChannel channel) {
-    return channelSettings.computeIfAbsent(channel.getKey(), (name) -> {
-      return new SimpleUserChannelSettings(uuid, channel.getKey());
+  public UserChannelSettings channelSettings(@NonNull ChatChannel channel) {
+    return channelSettings.computeIfAbsent(channel.key(), (name) -> {
+      return new SimpleUserChannelSettings(uuid, channel.key());
     });
   }
 
@@ -247,29 +247,29 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public void setSpyingWhispers(boolean spyingWhispers, boolean fromRemote) {
+  public void spyingWhispers(boolean spyingWhispers, boolean fromRemote) {
     this.spyingWhispers = spyingWhispers;
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("spying-whispers", this.uuid(), (byteArray) -> {
+      this.carbonChat.getMessageManager().sendMessage("spying-whispers", this.uuid(), (byteArray) -> {
         byteArray.writeBoolean(spyingWhispers);
       });
     }
   }
 
   @Override
-  public boolean isSpyingWhispers() {
+  public boolean spyingwhispers() {
     return spyingWhispers;
   }
 
   @Override
   public void sendMessage(@NonNull ChatUser sender, @NonNull String message) {
-    if (isIgnoringUser(sender) || sender.isIgnoringUser(this)) {
+    if (ignoringUser(sender) || sender.ignoringUser(this)) {
       return;
     }
 
-    String toPlayerFormat = carbonChat.getLanguage().getString("message-to-other");
-    String fromPlayerFormat = carbonChat.getLanguage().getString("message-from-other");
+    String toPlayerFormat = this.carbonChat.getLanguage().getString("message-to-other");
+    String fromPlayerFormat = this.carbonChat.getLanguage().getString("message-from-other");
 
     String senderName = sender.offlinePlayer().getName();
     String senderOfflineName = senderName;
@@ -285,12 +285,12 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       targetName = this.player().getDisplayName();
     }
 
-    Component toPlayerComponent = carbonChat.getAdventureManager().processMessage(toPlayerFormat, "br", "\n",
+    Component toPlayerComponent = this.carbonChat.getAdventureManager().processMessage(toPlayerFormat, "br", "\n",
       "message", message,
       "targetname", targetOfflineName, "sendername", senderOfflineName,
       "target", targetName, "sender", senderName);
 
-    Component fromPlayerComponent = carbonChat.getAdventureManager().processMessage(fromPlayerFormat, "br", "\n",
+    Component fromPlayerComponent = this.carbonChat.getAdventureManager().processMessage(fromPlayerFormat, "br", "\n",
       "message", message,
       "targetname", targetOfflineName, "sendername", senderOfflineName,
       "target", targetName, "sender", senderName);
@@ -307,20 +307,20 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       if (sender.online()) {
         sender.sendMessage(toPlayerComponent);
 
-        if (sender.isShadowMuted()) {
+        if (sender.shadowMuted()) {
           return;
         }
 
         this.sendMessage(fromPlayerComponent);
 
-        sender.setReplyTarget(this);
-        this.setReplyTarget(sender);
+        sender.replyTarget(this);
+        this.replyTarget(sender);
 
         if (carbonChat.getConfig().getBoolean("pings.on-whisper")) {
           Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
           Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("pings.source"));
-          float volume = (float) carbonChat.getConfig().getDouble("pings.volume");
-          float pitch = (float) carbonChat.getConfig().getDouble("pings.pitch");
+          float volume = (float) this.carbonChat.getConfig().getDouble("pings.volume");
+          float pitch = (float) this.carbonChat.getConfig().getDouble("pings.pitch");
 
           this.playSound(Sound.of(key, source, volume, pitch));
         }
@@ -330,9 +330,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       final String senderNameFinal = senderName;
 
       if (!carbonChat.isBungeeEnabled()) {
-        String playerOfflineFormat = carbonChat.getLanguage().getString("other-player-offline");
+        String playerOfflineFormat = this.carbonChat.getLanguage().getString("other-player-offline");
 
-        Component playerOfflineComponent = carbonChat.getAdventureManager().processMessage(playerOfflineFormat,
+        Component playerOfflineComponent = this.carbonChat.getAdventureManager().processMessage(playerOfflineFormat,
           "br", "\n",
           "message", message,
           "targetname", targetOfflineName, "sendername", senderOfflineName,
@@ -345,9 +345,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
       BungeeChannelApi.of(carbonChat).getPlayerList("ALL").thenAccept(list -> {
         if (!list.contains(this.offlinePlayer().getName())) {
-          String playerOfflineFormat = carbonChat.getLanguage().getString("other-player-offline");
+          String playerOfflineFormat = this.carbonChat.getLanguage().getString("other-player-offline");
 
-          Component playerOfflineComponent = carbonChat.getAdventureManager().processMessage(playerOfflineFormat,
+          Component playerOfflineComponent = this.carbonChat.getAdventureManager().processMessage(playerOfflineFormat,
             "br", "\n",
             "message", message,
             "targetname", targetOfflineName, "sendername", senderOfflineName,
@@ -360,18 +360,18 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
         sender.sendMessage(toPlayerComponent);
 
-        carbonChat.getMessageManager().sendMessage("whisper-component", sender.uuid(), (byteArray) -> {
+        this.carbonChat.getMessageManager().sendMessage("whisper-component", sender.uuid(), (byteArray) -> {
           byteArray.writeLong(this.uuid().getMostSignificantBits());
           byteArray.writeLong(this.uuid().getLeastSignificantBits());
-          byteArray.writeUTF(carbonChat.getAdventureManager().getAudiences().gsonSerializer().serialize(fromPlayerComponent));
+          byteArray.writeUTF(carbonChat.getAdventureManager().audiences().gsonSerializer().serialize(fromPlayerComponent));
         });
       });
     }
 
     for (Player player : Bukkit.getOnlinePlayers()) {
-      ChatUser user = carbonChat.getUserService().wrap(player);
+      ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-      if (!user.isSpyingWhispers()) {
+      if (!user.spyingwhispers()) {
         continue;
       }
 

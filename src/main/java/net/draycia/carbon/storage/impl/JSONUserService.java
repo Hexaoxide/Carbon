@@ -33,108 +33,107 @@ public class JSONUserService implements UserService {
   @NonNull
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   @NonNull
-  private final Type userType = new TypeToken<CarbonChatUser>() {
-  }.getType();
+  private final Type userType = new TypeToken<CarbonChatUser>() {}.getType();
   @NonNull
   private final LoadingCache<@NonNull UUID, @NonNull CarbonChatUser> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public JSONUserService(@NonNull CarbonChat carbonChat) {
+  public JSONUserService(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    Bukkit.getScheduler().scheduleSyncRepeatingTask(carbonChat, userCache::cleanUp, 0L, 20 * 60 * 10);
+    Bukkit.getScheduler().scheduleSyncRepeatingTask(carbonChat, this.userCache::cleanUp, 0L, 20 * 60 * 10);
   }
 
   @Override
   public void onDisable() {
-    userCache.invalidateAll();
-    userCache.cleanUp();
+    this.userCache.invalidateAll();
+    this.userCache.cleanUp();
   }
 
   @Override
   @Nullable
-  public ChatUser wrap(@NonNull String name) {
-    Player player = Bukkit.getPlayer(name);
+  public ChatUser wrap(@NonNull final String name) {
+    final Player player = Bukkit.getPlayer(name);
 
     if (player != null) {
-      return wrap(player);
+      return this.wrap(player);
     }
 
-    return wrap(Bukkit.getOfflinePlayer(name));
+    return this.wrap(Bukkit.getOfflinePlayer(name));
   }
 
   @Override
   @Nullable
-  public ChatUser wrap(@NonNull OfflinePlayer player) {
-    return wrap(player.getUniqueId());
+  public ChatUser wrap(@NonNull final OfflinePlayer player) {
+    return this.wrap(player.getUniqueId());
   }
 
   @Override
   @Nullable
-  public ChatUser wrap(@NonNull UUID uuid) {
+  public ChatUser wrap(@NonNull final UUID uuid) {
     try {
-      return userCache.get(uuid);
-    } catch (ExecutionException e) {
-      e.printStackTrace();
+      return this.userCache.get(uuid);
+    } catch (final ExecutionException exception) {
+      exception.printStackTrace();
       return null;
     }
   }
 
   @Override
   @Nullable
-  public ChatUser wrapIfLoaded(@NonNull UUID uuid) {
-    return userCache.getIfPresent(uuid);
+  public ChatUser wrapIfLoaded(@NonNull final UUID uuid) {
+    return this.userCache.getIfPresent(uuid);
   }
 
   @Override
   @Nullable
-  public ChatUser refreshUser(@NonNull UUID uuid) {
-    userCache.invalidate(uuid);
+  public ChatUser refreshUser(@NonNull final UUID uuid) {
+    this.userCache.invalidate(uuid);
 
     return this.wrap(uuid);
   }
 
   @Override
-  public void invalidate(@NonNull ChatUser user) {
-    userCache.invalidate(user.uuid());
+  public void invalidate(@NonNull final ChatUser user) {
+    this.userCache.invalidate(user.uuid());
   }
 
   @Override
-  public void validate(@NonNull ChatUser user) {
-    userCache.put(user.uuid(), (CarbonChatUser) user);
+  public void validate(@NonNull final ChatUser user) {
+    this.userCache.put(user.uuid(), (CarbonChatUser) user);
   }
 
   @NonNull
-  private CarbonChatUser loadUser(@NonNull UUID uuid) {
-    File userFile = new File(carbonChat.getDataFolder(), "users/" + uuid.toString() + ".json");
-    ensureFileExists(userFile);
+  private CarbonChatUser loadUser(@NonNull final UUID uuid) {
+    final File userFile = new File(this.carbonChat.getDataFolder(), "users/" + uuid.toString() + ".json");
+    this.ensureFileExists(userFile);
 
-    try (JsonReader reader = gson.newJsonReader(new FileReader(userFile))) {
-      CarbonChatUser user = gson.fromJson(reader, userType);
+    try (final JsonReader reader = this.gson.newJsonReader(new FileReader(userFile))) {
+      final CarbonChatUser user = this.gson.fromJson(reader, this.userType);
 
       if (user != null) {
         return user;
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (final IOException exception) {
+      exception.printStackTrace();
     }
 
     return new CarbonChatUser(uuid);
   }
 
-  private void saveUser(@NonNull RemovalNotification<@NonNull UUID, @NonNull CarbonChatUser> notification) {
-    File userFile = new File(carbonChat.getDataFolder(), "users/" + notification.getKey().toString() + ".json");
-    ensureFileExists(userFile);
+  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull CarbonChatUser> notification) {
+    final File userFile = new File(this.carbonChat.getDataFolder(), "users/" + notification.getKey().toString() + ".json");
+    this.ensureFileExists(userFile);
 
-    try (JsonWriter writer = gson.newJsonWriter(new FileWriter(userFile))) {
-      gson.toJson(notification.getValue(), userType, writer);
-    } catch (IOException e) {
-      e.printStackTrace();
+    try (final JsonWriter writer = this.gson.newJsonWriter(new FileWriter(userFile))) {
+      this.gson.toJson(notification.getValue(), this.userType, writer);
+    } catch (final IOException exception) {
+      exception.printStackTrace();
     }
   }
 
-  private void ensureFileExists(@NonNull File file) {
+  private void ensureFileExists(@NonNull final File file) {
     if (!file.getParentFile().exists()) {
       file.getParentFile().mkdirs();
     }
@@ -142,8 +141,8 @@ public class JSONUserService implements UserService {
     if (!file.exists()) {
       try {
         file.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
+      } catch (final IOException exception) {
+        exception.printStackTrace();
       }
     }
   }

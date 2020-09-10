@@ -13,32 +13,32 @@ public class ShadowMuteHandler implements Listener {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ShadowMuteHandler(@NonNull CarbonChat carbonChat) {
+  public ShadowMuteHandler(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
-  public void onComponent(ChatComponentEvent event) {
-    if (event.getSender().isShadowMuted()) {
-      if (!event.getSender().equals(event.getTarget())) {
+  public void onComponent(final ChatComponentEvent event) {
+    if (event.sender().shadowMuted()) {
+      if (!event.sender().equals(event.target())) {
         event.setCancelled(true);
       }
     }
   }
 
   @EventHandler
-  public void on(ChatFormatEvent event) {
-    if (event.getTarget() != null) {
+  public void on(final ChatFormatEvent event) {
+    if (event.target() != null) {
       return;
     }
 
-    if (!event.getSender().isShadowMuted()) {
+    if (!event.sender().shadowMuted()) {
       return;
     }
 
-    String prefix = carbonChat.getModConfig().getString("shadow-mute-prefix", "[SM] ");
+    final String prefix = this.carbonChat.getModConfig().getString("shadow-mute-prefix", "[SM] ");
 
-    event.setFormat(prefix + event.getFormat());
+    event.format(prefix + event.format());
   }
 
 }

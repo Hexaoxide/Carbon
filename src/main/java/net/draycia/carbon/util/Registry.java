@@ -31,7 +31,7 @@ public interface Registry<@NonNull T> {
    * @return The entry associated with the key or {@code null} if unassociated
    */
   @Nullable
-  T get(@NonNull String key);
+  T channel(@NonNull String key);
 
   /**
    * Clears all registered entries from the registry

@@ -14,44 +14,44 @@ public class PingHandler implements Listener {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public PingHandler(@NonNull CarbonChat carbonChat) {
+  public PingHandler(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onPing(ChatComponentEvent event) {
-    if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
+  public void onPing(final ChatComponentEvent event) {
+    if (!this.carbonChat.getConfig().getBoolean("pings.enabled")) {
       return;
     }
 
-    if (event.getTarget() == null) {
+    if (event.target() == null) {
       return;
     }
 
-    String targetName = event.getTarget().offlinePlayer().getName();
-    String prefix = carbonChat.getConfig().getString("pings.prefix", "");
-    boolean caseSensitive = carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
+    final String targetName = event.target().offlinePlayer().getName();
+    final String prefix = this.carbonChat.getConfig().getString("pings.prefix", "");
+    final boolean caseSensitive = this.carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
 
     if (targetName == null) {
       return;
     }
 
     if (caseSensitive) {
-      if (!event.getOriginalMessage().contains(prefix + targetName)) {
+      if (!event.originalMessage().contains(prefix + targetName)) {
         return;
       }
     } else {
-      if (!event.getOriginalMessage().toLowerCase().contains((prefix + targetName).toLowerCase())) {
+      if (!event.originalMessage().toLowerCase().contains((prefix + targetName).toLowerCase())) {
         return;
       }
     }
 
-    Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
-    Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("pings.source"));
-    float volume = (float) carbonChat.getConfig().getDouble("pings.volume");
-    float pitch = (float) carbonChat.getConfig().getDouble("pings.pitch");
+    final Key key = Key.of(this.carbonChat.getConfig().getString("pings.sound"));
+    final Sound.Source source = Sound.Source.valueOf(this.carbonChat.getConfig().getString("pings.source"));
+    final float volume = (float) this.carbonChat.getConfig().getDouble("pings.volume");
+    final float pitch = (float) this.carbonChat.getConfig().getDouble("pings.pitch");
 
-    event.getTarget().playSound(Sound.of(key, source, volume, pitch));
+    event.target().playSound(Sound.of(key, source, volume, pitch));
   }
 
 }

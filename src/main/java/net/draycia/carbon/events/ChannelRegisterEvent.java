@@ -24,6 +24,7 @@ public class ChannelRegisterEvent extends Event {
   }
 
   @NonNull
+  @SuppressWarnings("checkstyle:MethodName")
   public static HandlerList getHandlerList() {
     return handlers;
   }
@@ -37,19 +38,19 @@ public class ChannelRegisterEvent extends Event {
   @NonNull
   private final Registry<ChatChannel> registry;
 
-  public ChannelRegisterEvent(@NonNull List<@NonNull ChatChannel> registeredChannels, @NonNull Registry<ChatChannel> registry) {
+  public ChannelRegisterEvent(@NonNull final List<@NonNull ChatChannel> registeredChannels, @NonNull final Registry<ChatChannel> registry) {
     super(!Bukkit.isPrimaryThread());
 
     this.registeredChannels = registeredChannels;
     this.registry = registry;
   }
 
-  public void register(@NonNull ChatChannel chatChannel) {
-    registry.register(chatChannel.getKey(), chatChannel);
+  public void register(@NonNull final ChatChannel chatChannel) {
+    this.registry.register(chatChannel.key(), chatChannel);
   }
 
   @NonNull
-  public List<@NonNull ChatChannel> getRegisteredChannels() {
-    return registeredChannels;
+  public List<@NonNull ChatChannel> registeredChannels() {
+    return this.registeredChannels;
   }
 }

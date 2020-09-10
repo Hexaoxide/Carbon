@@ -24,66 +24,66 @@ public class AliasedChannelCommand {
   @NonNull
   private final String commandName;
 
-  public AliasedChannelCommand(@NonNull CarbonChat carbonChat, @NonNull ChatChannel chatChannel) {
+  public AliasedChannelCommand(@NonNull final CarbonChat carbonChat, @NonNull final ChatChannel chatChannel) {
     this.carbonChat = carbonChat;
     this.chatChannel = chatChannel;
 
-    this.commandName = chatChannel.getKey();
+    this.commandName = chatChannel.key();
 
-    LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
 
-    new CommandAPICommand(commandName)
+    new CommandAPICommand(this.commandName)
       .withArguments(setChannelArguments)
       .withPermission(CommandPermission.fromString("carbonchat.channel"))
-      .executesPlayer(this::setChannel)
+      .executesPlayer(this::channel)
       .register();
 
-    LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
     sendMessageArguments.put("message", new GreedyStringArgument());
 
-    new CommandAPICommand(commandName)
+    new CommandAPICommand(this.commandName)
       .withArguments(sendMessageArguments)
       .withPermission(CommandPermission.fromString("carbonchat.channel.message"))
       .executesPlayer(this::sendMessage)
       .register();
   }
 
-  private void setChannel(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    ChatUser user = carbonChat.getUserService().wrap(player);
+  private void channel(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-    if (user.getChannelSettings(getChatChannel()).ignored()) {
-      user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, getChatChannel().getCannotUseMessage(),
+    if (user.channelSettings(this.chatChannel()).ignored()) {
+      user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, this.chatChannel().cannotUseMessage(),
         "br", "\n",
-        "color", "<" + getChatChannel().getChannelColor(user).toString() + ">",
-        "channel", getChatChannel().getName()));
+        "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
+        "channel", this.chatChannel().name()));
 
       return;
     }
 
-    user.selectedChannel(getChatChannel());
+    user.selectedChannel(this.chatChannel());
 
-    user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, getChatChannel().getSwitchMessage(),
+    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, this.chatChannel().switchMessage(),
       "br", "\n",
-      "color", "<" + getChatChannel().getChannelColor(user).toString() + ">",
-      "channel", getChatChannel().getName()));
+      "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
+      "channel", this.chatChannel().name()));
   }
 
-  private void sendMessage(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    ChatUser user = carbonChat.getUserService().wrap(player);
-    String message = (String) args[0];
+  private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final String message = (String) args[0];
 
-    Component component = getChatChannel().sendMessage(user, message, false);
+    final Component component = this.chatChannel().sendMessage(user, message, false);
 
-    carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
-  }
-
-  @NonNull
-  public ChatChannel getChatChannel() {
-    return chatChannel;
+    this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
   }
 
   @NonNull
-  public String getCommandName() {
-    return commandName;
+  public ChatChannel chatChannel() {
+    return this.chatChannel;
+  }
+
+  @NonNull
+  public String commandName() {
+    return this.commandName;
   }
 }

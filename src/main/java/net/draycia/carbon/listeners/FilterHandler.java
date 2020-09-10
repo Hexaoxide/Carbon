@@ -23,70 +23,69 @@ public class FilterHandler implements Listener {
   private final CarbonChat carbonChat;
 
   @NonNull
-  private final Map<String, List<Pattern>> patternReplacements = new HashMap<>();
+  private final Map<String, List<@NonNull Pattern>> patternReplacements = new HashMap<>();
 
   @NonNull
-  private final List<Pattern> blockedWords = new ArrayList<>();
+  private final List<@NonNull Pattern> blockedWords = new ArrayList<>();
 
-  public FilterHandler(@NonNull CarbonChat carbonChat) {
+  public FilterHandler(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
-    reloadFilters();
+    this.reloadFilters();
   }
 
   public void reloadFilters() {
-    patternReplacements.clear();
-    blockedWords.clear();
+    this.patternReplacements.clear();
+    this.blockedWords.clear();
 
-    FileConfiguration config = carbonChat.getModConfig();
-    ConfigurationSection filters = config.getConfigurationSection("filters.filters");
+    final FileConfiguration config = this.carbonChat.getModConfig();
+    final ConfigurationSection filters = config.getConfigurationSection("filters.filters");
 
     if (filters != null) {
-      for (String replacement : filters.getKeys(false)) {
-        List<Pattern> patterns = new ArrayList<>();
+      for (final String replacement : filters.getKeys(false)) {
+        final List<Pattern> patterns = new ArrayList<>();
 
-        for (String word : filters.getStringList(replacement)) {
-          if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+        for (final String word : filters.getStringList(replacement)) {
+          if (this.carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
             patterns.add(Pattern.compile(word));
           } else {
             patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
           }
         }
 
-        patternReplacements.put(replacement, patterns);
+        this.patternReplacements.put(replacement, patterns);
       }
     }
 
-    for (String replacement : config.getStringList("filters.blocked-words")) {
-      if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
-        blockedWords.add(Pattern.compile(replacement));
+    for (final String replacement : config.getStringList("filters.blocked-words")) {
+      if (this.carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+        this.blockedWords.add(Pattern.compile(replacement));
       } else {
-        blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
+        this.blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
       }
     }
   }
 
   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onFilter(PreChatFormatEvent event) {
-    if (!carbonChat.getModConfig().getBoolean("filters.enabled")) {
+  public void onFilter(final PreChatFormatEvent event) {
+    if (!this.carbonChat.getModConfig().getBoolean("filters.enabled")) {
       return;
     }
 
-    if (event.getUser().online()) {
-      if (event.getUser().player().hasPermission("carbonchat.filter.exempt")) {
+    if (event.user().online()) {
+      if (event.user().player().hasPermission("carbonchat.filter.exempt")) {
         return;
       }
     }
 
-    if (!channelUsesFilter(event.getChannel())) {
+    if (!this.channelUsesFilter(event.channel())) {
       return;
     }
 
-    String message = event.getMessage();
-    //Matcher matcher;
+    String message = event.message();
 
-    for (Map.Entry<String, List<Pattern>> entry : patternReplacements.entrySet()) {
-      for (Pattern pattern : entry.getValue()) {
-        Matcher matcher = pattern.matcher(message);
+    for (final Map.Entry<String, List<Pattern>> entry : this.patternReplacements.entrySet()) {
+      for (final Pattern pattern : entry.getValue()) {
+        final Matcher matcher = pattern.matcher(message);
 
         if (entry.getKey().equals("_")) {
           message = matcher.replaceAll("");
@@ -96,18 +95,18 @@ public class FilterHandler implements Listener {
       }
     }
 
-    event.setMessage(message);
+    event.message(message);
 
-    for (Pattern blockedWord : blockedWords) {
-      if (blockedWord.matcher(event.getMessage()).find()) {
+    for (final Pattern blockedWord : this.blockedWords) {
+      if (blockedWord.matcher(event.message()).find()) {
         event.setCancelled(true);
         break;
       }
     }
   }
 
-  private boolean channelUsesFilter(@NonNull ChatChannel chatChannel) {
-    Object filter = chatChannel.getContext("filter");
+  private boolean channelUsesFilter(@NonNull final ChatChannel chatChannel) {
+    final Object filter = chatChannel.context("filter");
 
     return filter instanceof Boolean && ((Boolean) filter);
   }

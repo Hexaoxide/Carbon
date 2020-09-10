@@ -13,7 +13,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public CarbonPlaceholders(@NonNull CarbonChat carbonChat) {
+  public CarbonPlaceholders(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
   }
 
@@ -43,48 +43,48 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
   @Override
   @Nullable
   public String onPlaceholderRequest(@NonNull final Player player, @NonNull final String identifier) {
-    String key = identifier.toLowerCase();
+    final String key = identifier.toLowerCase();
 
     if (key.startsWith("can_use_")) {
-      String value = key.replace("can_use_", "");
+      final String value = key.replace("can_use_", "");
 
-      ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(value);
+      final ChatChannel channel = this.carbonChat.getChannelManager().registry().channel(value);
 
       if (channel == null) {
         return "false";
       }
 
-      ChatUser user = carbonChat.getUserService().wrap(player);
+      final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
       return String.valueOf(channel.canPlayerUse(user));
     } else if (key.startsWith("can_see_")) {
-      String value = key.replace("can_see_", "");
+      final String value = key.replace("can_see_", "");
 
-      ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(value);
+      final ChatChannel channel = this.carbonChat.getChannelManager().registry().channel(value);
 
       if (channel == null) {
         return "false";
       }
 
-      ChatUser user = carbonChat.getUserService().wrap(player);
+      final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
       return String.valueOf(channel.canPlayerSee(user, true));
     } else if (key.startsWith("ignoring_channel_")) {
-      String value = key.replace("ignoring_channel_", "");
+      final String value = key.replace("ignoring_channel_", "");
 
-      ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(value);
+      final ChatChannel channel = this.carbonChat.getChannelManager().registry().channel(value);
 
       if (channel == null) {
         return "false";
       }
 
-      ChatUser user = carbonChat.getUserService().wrap(player);
+      final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-      return String.valueOf(user.getChannelSettings(channel).ignored());
+      return String.valueOf(user.channelSettings(channel).ignored());
     } else if (key.startsWith("selected_channel")) {
-      ChatChannel channel = carbonChat.getUserService().wrap(player).selectedChannel();
+      final ChatChannel channel = this.carbonChat.getUserService().wrap(player).selectedChannel();
 
-      return channel == null ? carbonChat.getChannelManager().getDefaultChannel().getName() : channel.getName();
+      return channel == null ? this.carbonChat.getChannelManager().defaultChannel().name() : channel.name();
     }
 
     return null;

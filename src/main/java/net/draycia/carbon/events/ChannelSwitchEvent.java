@@ -25,17 +25,18 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
   }
 
   @NonNull
+  @SuppressWarnings("checkstyle:MethodName")
   public static HandlerList getHandlerList() {
     return handlers;
   }
 
   @Override
   public boolean isCancelled() {
-    return cancelled;
+    return this.cancelled;
   }
 
   @Override
-  public void setCancelled(boolean cancelled) {
+  public void setCancelled(final boolean cancelled) {
     this.cancelled = cancelled;
   }
 
@@ -51,7 +52,7 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
   @Nullable
   private String failureMessage;
 
-  public ChannelSwitchEvent(@NonNull ChatChannel channel, @NonNull ChatUser user, @Nullable String failureMessage) {
+  public ChannelSwitchEvent(@NonNull final ChatChannel channel, @NonNull final ChatUser user, @Nullable final String failureMessage) {
     super(!Bukkit.isPrimaryThread());
 
     this.channel = channel;
@@ -60,21 +61,21 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
   }
 
   @NonNull
-  public ChatUser getUser() {
-    return user;
+  public ChatUser user() {
+    return this.user;
   }
 
   @NonNull
-  public ChatChannel getChannel() {
-    return channel;
+  public ChatChannel channel() {
+    return this.channel;
   }
 
   @Nullable
-  public String getFailureMessage() {
-    return failureMessage;
+  public String failureMessage() {
+    return this.failureMessage;
   }
 
-  public void setFailureMessage(@Nullable String failureMessage) {
+  public void failureMessage(@Nullable final String failureMessage) {
     this.failureMessage = failureMessage;
   }
 }

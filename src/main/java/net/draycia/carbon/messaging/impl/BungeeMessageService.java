@@ -36,7 +36,7 @@ public class BungeeMessageService implements MessageService {
   public BungeeMessageService(@NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
+    this.carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
 
     api = BungeeChannelApi.of(carbonChat);
 
@@ -66,7 +66,7 @@ public class BungeeMessageService implements MessageService {
   }
 
   private void receiveMessage(@NonNull UUID uuid, @NonNull String key, @NonNull ByteArrayDataInput value) {
-    ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
+    ChatUser user = this.carbonChat.getUserService().wrapIfLoaded(uuid);
 
     if (user != null) {
       for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : userLoadedListeners.entrySet()) {

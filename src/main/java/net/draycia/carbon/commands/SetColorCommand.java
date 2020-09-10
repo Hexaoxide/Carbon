@@ -21,7 +21,7 @@ public class SetColorCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SetColorCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public SetColorCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -30,9 +30,9 @@ public class SetColorCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-      LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-      arguments.put("channel", new LiteralArgument(channel.getKey()));
+    for (final ChatChannel channel : this.carbonChat.getChannelManager().registry().values()) {
+      final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
+      arguments.put("channel", new LiteralArgument(channel.key()));
       arguments.put("color", CarbonUtils.textColorArgument());
 
       new CommandAPICommand(commandSettings.name())
@@ -40,26 +40,26 @@ public class SetColorCommand {
         .withAliases(commandSettings.aliases())
         .withPermission(CommandPermission.fromString("carbonchat.setcolor"))
         .executesPlayer((player, args) -> {
-          TextColor color = (TextColor) args[0];
-          ChatUser user = carbonChat.getUserService().wrap(player);
+          final TextColor color = (TextColor) args[0];
+          final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-          if (!player.hasPermission("carbonchat.setcolor." + channel.getKey())) {
+          if (!player.hasPermission("carbonchat.setcolor." + channel.key())) {
             user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
-              carbonChat.getLanguage().getString("cannot-set-color"),
+              this.carbonChat.getLanguage().getString("cannot-set-color"),
               "br", "\n", "input", color.asHexString(),
-              "channel", channel.getName()));
+              "channel", channel.name()));
 
             return;
           }
 
-          UserChannelSettings settings = user.getChannelSettings(channel);
+          final UserChannelSettings settings = user.channelSettings(channel);
 
           settings.color(color);
 
           user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
-            carbonChat.getLanguage().getString("channel-color-set"),
+            this.carbonChat.getLanguage().getString("channel-color-set"),
             "br", "\n", "color", "<color:" + color.asHexString() + ">", "channel",
-            channel.getName(), "hex", color.asHexString()));
+            channel.name(), "hex", color.asHexString()));
         })
         .register();
     }

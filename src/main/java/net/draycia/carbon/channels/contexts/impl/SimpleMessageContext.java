@@ -6,6 +6,7 @@ import net.draycia.carbon.storage.ChatUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SimpleMessageContext implements MessageContext {
+
   @NonNull
   private final ChatUser sender;
 
@@ -15,7 +16,8 @@ public class SimpleMessageContext implements MessageContext {
   private final ChatChannel chatChannel;
   private final Object value;
 
-  public SimpleMessageContext(@NonNull ChatUser sender, @NonNull ChatUser target, ChatChannel chatChannel, Object value) {
+  public SimpleMessageContext(@NonNull final ChatUser sender, @NonNull final ChatUser target,
+                              @NonNull final ChatChannel chatChannel, @NonNull final Object value) {
     this.sender = sender;
     this.target = target;
     this.chatChannel = chatChannel;
@@ -24,23 +26,24 @@ public class SimpleMessageContext implements MessageContext {
 
   @Override
   @NonNull
-  public ChatUser getSender() {
-    return sender;
+  public ChatUser sender() {
+    return this.sender;
   }
 
   @Override
   @NonNull
-  public ChatUser getTarget() {
-    return target;
+  public ChatUser target() {
+    return this.target;
   }
 
   @Override
-  public ChatChannel getChatChannel() {
-    return chatChannel;
+  public ChatChannel chatChannel() {
+    return this.chatChannel;
   }
 
   @Override
-  public Object getValue() {
-    return value;
+  public Object value() {
+    return this.value;
   }
+  
 }

@@ -43,10 +43,10 @@ public class RedisMessageService implements MessageService {
   public RedisMessageService(@NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    String host = carbonChat.getConfig().getString("redis.host");
-    String password = carbonChat.getConfig().getString("redis.password");
-    int port = carbonChat.getConfig().getInt("redis.port");
-    int database = carbonChat.getConfig().getInt("redis.database");
+    String host = this.carbonChat.getConfig().getString("redis.host");
+    String password = this.carbonChat.getConfig().getString("redis.password");
+    int port = this.carbonChat.getConfig().getInt("redis.port");
+    int database = this.carbonChat.getConfig().getInt("redis.database");
 
     RedisURI.Builder builder = RedisURI.Builder.redis(host, port)
       .withDatabase(database);
@@ -79,7 +79,7 @@ public class RedisMessageService implements MessageService {
   }
 
   private void receiveMessage(@NonNull UUID uuid, @NonNull String key, @NonNull ByteArrayDataInput value) {
-    ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
+    ChatUser user = this.carbonChat.getUserService().wrapIfLoaded(uuid);
 
     if (user != null) {
       for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : userLoadedListeners.entrySet()) {

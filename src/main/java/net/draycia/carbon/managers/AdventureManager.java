@@ -19,33 +19,34 @@ public class AdventureManager {
   @NonNull
   private final BukkitAudiences audiences;
 
-  public AdventureManager(@NonNull CarbonChat carbonChat) {
+  public AdventureManager(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.audiences = BukkitAudiences.create(carbonChat);
   }
 
   @NonNull
-  public Component processMessageWithPapi(@NonNull Player player, @Nullable String input, @NonNull String @NonNull ... placeholders) {
+  public Component processMessageWithPapi(@NonNull final Player player, @Nullable final String input,
+                                          @NonNull final String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
       return TextComponent.empty();
     }
 
-    return processMessage(PlaceholderAPI.setPlaceholders(player, input), placeholders);
+    return this.processMessage(PlaceholderAPI.setPlaceholders(player, input), placeholders);
   }
 
   @NonNull
-  public Component processMessage(@Nullable String input, @NonNull String @NonNull ... placeholders) {
+  public Component processMessage(@Nullable final String input, @NonNull final String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
       return TextComponent.empty();
     }
 
-    switch (carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
+    switch (this.carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
       case "minedown":
         return MineDown.parse(input, placeholders);
       case "mojang":
       case "mojangson":
       case "json":
-        return processMojang(input, placeholders);
+        return this.processMojang(input, placeholders);
       case "minimessage-markdown":
         return MiniMessage.markdown().parse(input, placeholders);
       case "minimessage":
@@ -55,19 +56,19 @@ public class AdventureManager {
   }
 
   @NonNull
-  private Component processMojang(@NonNull String input, @NonNull String @NonNull ... placeholders) {
+  private Component processMojang(@NonNull String input, @NonNull final String @NonNull ... placeholders) {
     for (int i = 0; i < placeholders.length; i += 2) {
-      String placeholder = placeholders[i];
-      String replacement = placeholders[i + 1];
+      final String placeholder = placeholders[i];
+      final String replacement = placeholders[i + 1];
 
       input = input.replace("<" + placeholder + ">", replacement);
     }
 
-    return getAudiences().gsonSerializer().deserialize(input);
+    return this.audiences().gsonSerializer().deserialize(input);
   }
 
   @NonNull
-  public BukkitAudiences getAudiences() {
-    return audiences;
+  public BukkitAudiences audiences() {
+    return this.audiences;
   }
 }

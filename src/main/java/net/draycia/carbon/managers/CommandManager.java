@@ -25,32 +25,33 @@ public class CommandManager {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public CommandManager(@NonNull CarbonChat carbonChat) {
+  public CommandManager(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
-    reloadCommands();
+
+    this.reloadCommands();
   }
 
   private void reloadCommands() {
-    new ChannelCommand(carbonChat, getCommandSettings("channel"));
-    new ChannelListCommand(carbonChat, getCommandSettings("channellist"));
-    new ChatReloadCommand(carbonChat, getCommandSettings("chatreload"));
-    new ClearChatCommand(carbonChat, getCommandSettings("clearchat"));
-    new IgnoreCommand(carbonChat, getCommandSettings("ignore"));
-    new MeCommand(carbonChat, getCommandSettings("me"));
-    new MessageCommand(carbonChat, getCommandSettings("message"));
-    new MuteCommand(carbonChat, getCommandSettings("mute"));
-    new NicknameCommand(carbonChat, getCommandSettings("nickname"));
-    new ReplyCommand(carbonChat, getCommandSettings("reply"));
-    new SetColorCommand(carbonChat, getCommandSettings("setcolor"));
-    new ShadowMuteCommand(carbonChat, getCommandSettings("shadowmute"));
-    new SpyChannelCommand(carbonChat, getCommandSettings("spy"));
-    new SudoChannelCommand(carbonChat, getCommandSettings("sudochannel"));
-    new ToggleCommand(carbonChat, getCommandSettings("toggle"));
+    new ChannelCommand(this.carbonChat, this.commandSettings("channel"));
+    new ChannelListCommand(this.carbonChat, this.commandSettings("channellist"));
+    new ChatReloadCommand(this.carbonChat, this.commandSettings("chatreload"));
+    new ClearChatCommand(this.carbonChat, this.commandSettings("clearchat"));
+    new IgnoreCommand(this.carbonChat, this.commandSettings("ignore"));
+    new MeCommand(this.carbonChat, this.commandSettings("me"));
+    new MessageCommand(this.carbonChat, this.commandSettings("message"));
+    new MuteCommand(this.carbonChat, this.commandSettings("mute"));
+    new NicknameCommand(this.carbonChat, this.commandSettings("nickname"));
+    new ReplyCommand(this.carbonChat, this.commandSettings("reply"));
+    new SetColorCommand(this.carbonChat, this.commandSettings("setcolor"));
+    new ShadowMuteCommand(this.carbonChat, this.commandSettings("shadowmute"));
+    new SpyChannelCommand(this.carbonChat, this.commandSettings("spy"));
+    new SudoChannelCommand(this.carbonChat, this.commandSettings("sudochannel"));
+    new ToggleCommand(this.carbonChat, this.commandSettings("toggle"));
   }
 
   @NonNull
-  private CommandSettings getCommandSettings(@NonNull String command) {
-    ConfigurationSection section = carbonChat.getCommandsConfig().getConfigurationSection(command);
+  private CommandSettings commandSettings(@NonNull final String command) {
+    final ConfigurationSection section = this.carbonChat.getCommandsConfig().getConfigurationSection(command);
 
     return new CommandSettings(section.getBoolean("enabled"), section.getString("name"),
       section.getStringList("aliases"));

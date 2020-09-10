@@ -21,7 +21,7 @@ public class ChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public ChannelCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -30,17 +30,17 @@ public class ChannelCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
     setChannelArguments.put("channel", CarbonUtils.channelArgument());
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(setChannelArguments)
       .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.channel"))
-      .executesPlayer(this::setChannel)
+      .executesPlayer(this::channel)
       .register();
 
-    LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
     sendMessageArguments.put("channel", CarbonUtils.channelArgument());
     sendMessageArguments.put("message", new GreedyStringArgument());
 
@@ -52,35 +52,35 @@ public class ChannelCommand {
       .register();
   }
 
-  private void setChannel(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    ChatUser user = carbonChat.getUserService().wrap(player);
-    ChatChannel channel = (ChatChannel) args[0];
+  private void channel(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatChannel channel = (ChatChannel) args[0];
 
-    if (user.getChannelSettings(channel).ignored()) {
-      user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, channel.getCannotUseMessage(),
+    if (user.channelSettings(channel).ignored()) {
+      user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, channel.cannotUseMessage(),
         "br", "\n",
-        "color", "<" + channel.getChannelColor(user).toString() + ">",
-        "channel", channel.getName()));
+        "color", "<" + channel.channelColor(user).toString() + ">",
+        "channel", channel.name()));
 
       return;
     }
 
     user.selectedChannel(channel);
 
-    user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, channel.getSwitchMessage(),
+    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, channel.switchMessage(),
       "br", "\n",
-      "color", "<" + channel.getChannelColor(user).toString() + ">",
-      "channel", channel.getName()));
+      "color", "<" + channel.channelColor(user).toString() + ">",
+      "channel", channel.name()));
   }
 
-  private void sendMessage(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    ChatUser user = carbonChat.getUserService().wrap(player);
-    ChatChannel channel = (ChatChannel) args[0];
-    String message = (String) args[1];
+  private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatChannel channel = (ChatChannel) args[0];
+    final String message = (String) args[1];
 
-    Component component = channel.sendMessage(user, message, false);
+    final Component component = channel.sendMessage(user, message, false);
 
-    carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
+    this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
   }
 
 }

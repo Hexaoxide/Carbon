@@ -41,146 +41,146 @@ public class MySQLUserService implements UserService {
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public MySQLUserService(@NonNull CarbonChat carbonChat) {
+  public MySQLUserService(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    ConfigurationSection section = carbonChat.getConfig().getConfigurationSection("storage");
+    final ConfigurationSection section = this.carbonChat.getConfig().getConfigurationSection("storage");
 
     if (section == null) {
       throw new IllegalStateException("Missing Database Credentials!");
     }
 
-    String username = section.getString("username", "username");
-    String password = section.getString("password", "password");
-    String dbname = section.getString("database", "0");
-    String hostandport = section.getString("hostname", "hostname") + ":" + section.getString("port", "0");
+    final String username = section.getString("username", "username");
+    final String password = section.getString("password", "password");
+    final String dbname = section.getString("database", "0");
+    final String hostandport = section.getString("hostname", "hostname") + ":" + section.getString("port", "0");
 
-    database = new HikariPooledDatabase(BukkitDB.getRecommendedOptions(carbonChat, username, password, dbname, hostandport));
+    this.database = new HikariPooledDatabase(BukkitDB.getRecommendedOptions(carbonChat, username, password, dbname, hostandport));
 
-    DB.setGlobalDatabase(database);
+    DB.setGlobalDatabase(this.database);
 
     try {
-      database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
+      this.database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
         "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN, spyingwhispers BOOLEAN," +
         "nickname VARCHAR(512))");
 
       // Ignore the exception, it's just saying the column already exists
       try {
-        database.executeUpdate("ALTER TABLE sc_users ADD COLUMN spyingwhispers BOOLEAN DEFAULT false");
-        database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR(512) DEFAULT false");
-      } catch (SQLSyntaxErrorException ignored) {
+        this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN spyingwhispers BOOLEAN DEFAULT false");
+        this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR(512) DEFAULT false");
+      } catch (final SQLSyntaxErrorException ignored) {
       }
 
-      database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel CHAR(16), spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
+      this.database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel CHAR(16), spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
 
-      database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_ignored_users (uuid CHAR(36), user CHAR(36), PRIMARY KEY (uuid, user))");
-    } catch (SQLException e) {
-      e.printStackTrace();
+      this.database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_ignored_users (uuid CHAR(36), user CHAR(36), PRIMARY KEY (uuid, user))");
+    } catch (final SQLException exception) {
+      exception.printStackTrace();
     }
   }
 
   @Override
   public void onDisable() {
-    userCache.invalidateAll();
-    userCache.cleanUp();
-    database.close();
+    this.userCache.invalidateAll();
+    this.userCache.cleanUp();
+    this.database.close();
   }
 
   @Override
   @Nullable
-  public ChatUser wrap(@NonNull String name) {
-    Player player = Bukkit.getPlayer(name);
+  public ChatUser wrap(@NonNull final String name) {
+    final Player player = Bukkit.getPlayer(name);
 
     if (player != null) {
-      return wrap(player);
+      return this.wrap(player);
     }
 
-    return wrap(Bukkit.getOfflinePlayer(name));
+    return this.wrap(Bukkit.getOfflinePlayer(name));
   }
 
   @Override
   @Nullable
-  public ChatUser wrap(@NonNull OfflinePlayer player) {
-    return wrap(player.getUniqueId());
+  public ChatUser wrap(@NonNull final OfflinePlayer player) {
+    return this.wrap(player.getUniqueId());
   }
 
   @Override
   @Nullable
-  public ChatUser wrap(@NonNull UUID uuid) {
+  public ChatUser wrap(@NonNull final UUID uuid) {
     try {
-      return userCache.get(uuid);
-    } catch (ExecutionException e) {
-      e.printStackTrace();
+      return this.userCache.get(uuid);
+    } catch (final ExecutionException exception) {
+      exception.printStackTrace();
       return null;
     }
   }
 
   @Override
   @Nullable
-  public ChatUser wrapIfLoaded(@NonNull UUID uuid) {
-    return userCache.getIfPresent(uuid);
+  public ChatUser wrapIfLoaded(@NonNull final UUID uuid) {
+    return this.userCache.getIfPresent(uuid);
   }
 
   @Override
   @Nullable
-  public ChatUser refreshUser(@NonNull UUID uuid) {
-    userCache.invalidate(uuid);
+  public ChatUser refreshUser(@NonNull final UUID uuid) {
+    this.userCache.invalidate(uuid);
 
     return this.wrap(uuid);
   }
 
   @Override
-  public void invalidate(@NonNull ChatUser user) {
-    userCache.invalidate(user.uuid());
+  public void invalidate(@NonNull final ChatUser user) {
+    this.userCache.invalidate(user.uuid());
   }
 
   @Override
-  public void validate(@NonNull ChatUser user) {
-    userCache.put(user.uuid(), (CarbonChatUser) user);
+  public void validate(@NonNull final ChatUser user) {
+    this.userCache.put(user.uuid(), (CarbonChatUser) user);
   }
 
   @NonNull
-  private CarbonChatUser loadUser(@NonNull UUID uuid) {
-    CarbonChatUser user = new CarbonChatUser(uuid);
+  private CarbonChatUser loadUser(@NonNull final UUID uuid) {
+    final CarbonChatUser user = new CarbonChatUser(uuid);
 
-    try (DbStatement statement = database.query("SELECT * from sc_users WHERE uuid = ?;")) {
+    try (final DbStatement statement = this.database.query("SELECT * from sc_users WHERE uuid = ?;")) {
       statement.execute(uuid.toString());
 
-      DbRow users = statement.getNextRow();
+      final DbRow users = statement.getNextRow();
 
       if (users == null) {
         return user;
       }
 
-      List<DbRow> channelSettings = database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
-      List<DbRow> ignoredUsers = database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
+      final List<DbRow> channelSettings = this.database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
+      final List<DbRow> ignoredUsers = this.database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
 
-      ChatChannel channel = carbonChat.getChannelManager().getChannelOrDefault(users.getString("channel"));
+      final ChatChannel channel = this.carbonChat.getChannelManager().channelOrDefault(users.getString("channel"));
 
       if (channel != null) {
         user.selectedChannel(channel, true);
       }
 
-      String nickname = users.getString("nickname");
+      final String nickname = users.getString("nickname");
 
       if (nickname != null) {
         user.nickname(nickname, true);
       }
 
-      user.setMuted(users.<Boolean>get("muted"), true);
-      user.setShadowMuted(users.<Boolean>get("shadowmuted"), true);
-      user.setSpyingWhispers(users.<Boolean>get("spyingwhispers"), true);
+      user.muted(users.<Boolean>get("muted"), true);
+      user.shadowMuted(users.<Boolean>get("shadowmuted"), true);
+      user.spyingWhispers(users.<Boolean>get("spyingwhispers"), true);
 
-      for (DbRow channelSetting : channelSettings) {
-        ChatChannel chatChannel = carbonChat.getChannelManager().getRegistry().get(channelSetting.getString("channel"));
+      for (final DbRow channelSetting : channelSettings) {
+        final ChatChannel chatChannel = this.carbonChat.getChannelManager().registry().channel(channelSetting.getString("channel"));
 
         if (chatChannel != null) {
-          UserChannelSettings settings = user.getChannelSettings(chatChannel);
+          final UserChannelSettings settings = user.channelSettings(chatChannel);
 
           settings.spying(channelSetting.<Boolean>get("spying"), true);
           settings.ignoring(channelSetting.<Boolean>get("ignored"), true);
 
-          String color = channelSetting.getString("color");
+          final String color = channelSetting.getString("color");
 
           if (color != null) {
             settings.color(TextColor.fromHexString(color), true);
@@ -188,37 +188,37 @@ public class MySQLUserService implements UserService {
         }
       }
 
-      for (DbRow ignoredUser : ignoredUsers) {
-        user.setIgnoringUser(UUID.fromString(ignoredUser.getString("user")), true, true);
+      for (final DbRow ignoredUser : ignoredUsers) {
+        user.ignoringUser(UUID.fromString(ignoredUser.getString("user")), true, true);
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
+    } catch (final SQLException exception) {
+      exception.printStackTrace();
     }
 
     return user;
   }
 
-  private void saveUser(@NonNull RemovalNotification<@NonNull UUID, @NonNull CarbonChatUser> notification) {
-    CarbonChatUser user = notification.getValue();
+  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull CarbonChatUser> notification) {
+    final CarbonChatUser user = notification.getValue();
 
-    database.createTransaction(stm -> {
+    this.database.createTransaction(stm -> {
       // Save user general data
       String selectedName = null;
 
       if (user.selectedChannel() != null) {
-        selectedName = user.selectedChannel().getKey();
+        selectedName = user.selectedChannel().key();
       }
 
-      carbonChat.getLogger().info("Saving user data!");
+      this.carbonChat.getLogger().info("Saving user data!");
       stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname) VALUES (?, ?, ?, ?, ?, ?) " +
           "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname =?",
-        user.uuid().toString(), selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.nickname(),
-        selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.nickname());
+        user.uuid().toString(), selectedName, user.muted(), user.shadowMuted(), user.spyingwhispers(), user.nickname(),
+        selectedName, user.muted(), user.shadowMuted(), user.spyingwhispers(), user.nickname());
 
-      carbonChat.getLogger().info("Saving user channel settings!");
+      this.carbonChat.getLogger().info("Saving user channel settings!");
       // Save user channel settings
-      for (Map.Entry<String, ? extends UserChannelSettings> entry : user.getChannelSettings().entrySet()) {
-        UserChannelSettings value = entry.getValue();
+      for (final Map.Entry<String, ? extends UserChannelSettings> entry : user.getChannelSettings().entrySet()) {
+        final UserChannelSettings value = entry.getValue();
 
         String colorString = null;
 
@@ -232,12 +232,12 @@ public class MySQLUserService implements UserService {
           value.spying(), value.ignored(), colorString);
       }
 
-      carbonChat.getLogger().info("Saving user ignores!");
+      this.carbonChat.getLogger().info("Saving user ignores!");
       // Save user ignore list (remove old entries then add new ones)
       // TODO: keep DB up to date with settings as settings are mutated
       stm.executeUpdateQuery("DELETE FROM sc_ignored_users WHERE uuid = ?", user.uuid().toString());
 
-      for (UUID entry : user.getIgnoredUsers()) {
+      for (final UUID entry : user.getIgnoredUsers()) {
         stm.executeUpdateQuery("INSERT INTO sc_ignored_users (uuid, user) VALUES (?, ?)",
           user.uuid().toString(), entry.toString());
       }

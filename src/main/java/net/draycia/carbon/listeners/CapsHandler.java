@@ -12,38 +12,38 @@ public class CapsHandler implements Listener {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public CapsHandler(@NonNull CarbonChat carbonChat) {
+  public CapsHandler(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-  public void onMessage(PreChatFormatEvent event) {
-    if (!carbonChat.getModConfig().getBoolean("caps-protection.enabled")) {
+  public void onMessage(final PreChatFormatEvent event) {
+    if (!this.carbonChat.getModConfig().getBoolean("caps-protection.enabled")) {
       return;
     }
 
-    if (!(event.getMessage().length() >= carbonChat.getModConfig().getInt("caps-protection.minimum-length"))) {
+    if (!(event.message().length() >= this.carbonChat.getModConfig().getInt("caps-protection.minimum-length"))) {
       return;
     }
 
     int amountOfCaps = 0;
 
-    for (char letter : event.getMessage().toCharArray()) {
+    for (final char letter : event.message().toCharArray()) {
       if (Character.isUpperCase(letter)) {
         amountOfCaps++;
       }
     }
 
-    double capsPercentage = (amountOfCaps * 100.0) / event.getMessage().length();
+    final double capsPercentage = (amountOfCaps * 100.0) / event.message().length();
 
-    if (!(capsPercentage >= carbonChat.getModConfig().getDouble("caps-protection.percent-caps"))) {
+    if (!(capsPercentage >= this.carbonChat.getModConfig().getDouble("caps-protection.percent-caps"))) {
       return;
     }
 
-    if (carbonChat.getModConfig().getBoolean("block-message")) {
+    if (this.carbonChat.getModConfig().getBoolean("block-message")) {
       event.setCancelled(true);
     } else {
-      event.setMessage(event.getMessage().toLowerCase());
+      event.message(event.message().toLowerCase());
     }
   }
 

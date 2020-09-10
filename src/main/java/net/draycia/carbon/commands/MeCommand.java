@@ -21,7 +21,7 @@ public class MeCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public MeCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public MeCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -30,7 +30,7 @@ public class MeCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("message", new GreedyStringArgument());
 
     new CommandAPICommand(commandSettings.name())
@@ -41,28 +41,28 @@ public class MeCommand {
       .register();
   }
 
-  private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    String message = ((String) args[0]).replace("</pre>", "");
-    String format = PlaceholderAPI.setPlaceholders(player, carbonChat.getLanguage().getString("me"));
+  private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final String message = ((String) args[0]).replace("</pre>", "");
+    String format = PlaceholderAPI.setPlaceholders(player, this.carbonChat.getLanguage().getString("me"));
 
     if (!player.hasPermission("carbonchat.me.formatting")) {
       format = format.replace("<message>", "<pre><message></pre>");
     }
 
-    Component component = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
+    final Component component = this.carbonChat.getAdventureManager().processMessage(format, "br", "\n",
       "displayname", player.getDisplayName(), "message", message);
 
-    ChatUser user = carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-    if (user.isShadowMuted()) {
+    if (user.shadowMuted()) {
       user.sendMessage(component);
     } else {
-      for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-        if (carbonChat.getUserService().wrap(onlinePlayer).isIgnoringUser(user)) {
+      for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+        if (this.carbonChat.getUserService().wrap(onlinePlayer).ignoringUser(user)) {
           continue;
         }
 
-        carbonChat.getAdventureManager().getAudiences().player(onlinePlayer).sendMessage(component);
+        this.carbonChat.getAdventureManager().audiences().player(onlinePlayer).sendMessage(component);
       }
     }
   }

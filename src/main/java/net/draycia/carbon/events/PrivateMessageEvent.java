@@ -24,17 +24,18 @@ public class PrivateMessageEvent extends Event implements Cancellable {
   }
 
   @NonNull
+  @SuppressWarnings("checkstyle:MethodName")
   public static HandlerList getHandlerList() {
     return handlers;
   }
 
   @Override
   public boolean isCancelled() {
-    return cancelled;
+    return this.cancelled;
   }
 
   @Override
-  public void setCancelled(boolean cancelled) {
+  public void setCancelled(final boolean cancelled) {
     this.cancelled = cancelled;
   }
 
@@ -56,7 +57,10 @@ public class PrivateMessageEvent extends Event implements Cancellable {
   @NonNull
   private final String message;
 
-  public PrivateMessageEvent(@NonNull ChatUser sender, @NonNull ChatUser target, @NonNull Component senderComponent, @NonNull Component targetComponent, @NonNull String message) {
+  public PrivateMessageEvent(@NonNull final ChatUser sender, @NonNull final ChatUser target,
+                             @NonNull final Component senderComponent, @NonNull final Component targetComponent,
+                             @NonNull final String message) {
+
     super(!Bukkit.isPrimaryThread());
 
     this.sender = sender;
@@ -67,28 +71,28 @@ public class PrivateMessageEvent extends Event implements Cancellable {
   }
 
   @NonNull
-  public ChatUser getSender() {
-    return sender;
+  public ChatUser sender() {
+    return this.sender;
   }
 
   @NonNull
-  public ChatUser getTarget() {
-    return target;
+  public ChatUser target() {
+    return this.target;
   }
 
   @NonNull
-  public Component getSenderComponent() {
-    return senderComponent;
+  public Component senderComponent() {
+    return this.senderComponent;
   }
 
   @NonNull
-  public Component getTargetComponent() {
-    return targetComponent;
+  public Component targetComponent() {
+    return this.targetComponent;
   }
 
   @NonNull
-  public String getMessage() {
-    return message;
+  public String message() {
+    return this.message;
   }
 
 }

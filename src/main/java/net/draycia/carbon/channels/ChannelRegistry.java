@@ -26,21 +26,21 @@ public class ChannelRegistry implements Registry<ChatChannel> {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChannelRegistry(@NonNull CarbonChat carbonChat) {
+  public ChannelRegistry(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   @Override
-  public boolean register(@NonNull String key, @NonNull ChatChannel value) {
-    boolean registerSuccessful = registry.putIfAbsent(key, value) == null;
+  public boolean register(@NonNull final String key, @NonNull final ChatChannel value) {
+    final boolean registerSuccessful = this.registry.putIfAbsent(key, value) == null;
 
     if (registerSuccessful) {
-      AliasedChannelCommand command = new AliasedChannelCommand(carbonChat, value);
+      final AliasedChannelCommand command = new AliasedChannelCommand(this.carbonChat, value);
 
-      channelCommands.add(command);
+      this.channelCommands.add(command);
 
       if (value instanceof Listener) {
-        Bukkit.getPluginManager().registerEvents((Listener) value, carbonChat);
+        Bukkit.getPluginManager().registerEvents((Listener) value, this.carbonChat);
       }
     }
 
@@ -50,22 +50,22 @@ public class ChannelRegistry implements Registry<ChatChannel> {
   @Override
   @NonNull
   public Collection<@NonNull ChatChannel> values() {
-    return registry.values();
+    return this.registry.values();
   }
 
   @Override
   @Nullable
-  public ChatChannel get(@NonNull String key) {
-    return registry.get(key);
+  public ChatChannel channel(@NonNull final String key) {
+    return this.registry.get(key);
   }
 
   @Override
   public void clearAll() {
-    registry.clear();
+    this.registry.clear();
 
-    for (AliasedChannelCommand command : channelCommands) {
-      carbonChat.getLogger().info("Unregistering command for channel: " + command.getChatChannel().getName());
-      CommandAPI.unregister(command.getCommandName());
+    for (final AliasedChannelCommand command : this.channelCommands) {
+      this.carbonChat.getLogger().info("Unregistering command for channel: " + command.chatChannel().name());
+      CommandAPI.unregister(command.commandName());
     }
   }
 

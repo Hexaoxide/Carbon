@@ -14,7 +14,7 @@ public class ChatReloadCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChatReloadCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public ChatReloadCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -30,14 +30,14 @@ public class ChatReloadCommand {
       .register();
   }
 
-  private void execute(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
-    carbonChat.reloadConfig();
-    carbonChat.reloadFilters();
+  private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
+    this.carbonChat.reloadConfig();
+    this.carbonChat.reloadFilters();
 
-    Component message = carbonChat.getAdventureManager().processMessage(carbonChat.getLanguage().getString("reloaded"),
-      "br", "\n");
+    final Component message = this.carbonChat.getAdventureManager()
+      .processMessage(this.carbonChat.getLanguage().getString("reloaded"), "br", "\n");
 
-    carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(message);
+    this.carbonChat.getAdventureManager().audiences().audience(sender).sendMessage(message);
   }
 
 }

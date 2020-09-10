@@ -22,7 +22,7 @@ public class SpyChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SpyChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public SpyChannelCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -31,7 +31,7 @@ public class SpyChannelCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("channel", CarbonUtils.channelArgument());
 
     new CommandAPICommand(commandSettings.name())
@@ -41,7 +41,7 @@ public class SpyChannelCommand {
       .executesPlayer(this::execute)
       .register();
 
-    LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
     whisperArguments.put("channel", new LiteralArgument("whispers"));
 
     new CommandAPICommand(commandSettings.name())
@@ -51,7 +51,7 @@ public class SpyChannelCommand {
       .executesPlayer(this::executeWhispers)
       .register();
 
-    LinkedHashMap<String, Argument> everythingArguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> everythingArguments = new LinkedHashMap<>();
     everythingArguments.put("channel", new LiteralArgument("*"));
     everythingArguments.put("should-spy", new BooleanArgument());
 
@@ -63,68 +63,68 @@ public class SpyChannelCommand {
       .register();
   }
 
-  private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    ChatChannel chatChannel = (ChatChannel) args[0];
-    ChatUser user = carbonChat.getUserService().wrap(player);
+  private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatChannel chatChannel = (ChatChannel) args[0];
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-    String message;
+    final String message;
 
-    UserChannelSettings settings = user.getChannelSettings(chatChannel);
+    final UserChannelSettings settings = user.channelSettings(chatChannel);
 
     if (settings.spying()) {
       settings.spying(false);
-      message = carbonChat.getLanguage().getString("spy-toggled-off");
+      message = this.carbonChat.getLanguage().getString("spy-toggled-off");
     } else {
       settings.spying(true);
-      message = carbonChat.getLanguage().getString("spy-toggled-on");
+      message = this.carbonChat.getLanguage().getString("spy-toggled-on");
     }
 
-    user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
-      "color", "<color:" + chatChannel.getChannelColor(user).toString() + ">", "channel", chatChannel.getName()));
+    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
+      "color", "<color:" + chatChannel.channelColor(user).toString() + ">", "channel", chatChannel.name()));
   }
 
-  private void executeWhispers(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    ChatUser user = carbonChat.getUserService().wrap(player);
+  private void executeWhispers(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-    String message;
+    final String message;
 
-    if (user.isSpyingWhispers()) {
-      user.setSpyingWhispers(false);
-      message = carbonChat.getLanguage().getString("spy-whispers-off");
+    if (user.spyingwhispers()) {
+      user.spyingWhispers(false);
+      message = this.carbonChat.getLanguage().getString("spy-whispers-off");
     } else {
-      user.setSpyingWhispers(true);
-      message = carbonChat.getLanguage().getString("spy-whispers-on");
+      user.spyingWhispers(true);
+      message = this.carbonChat.getLanguage().getString("spy-whispers-on");
     }
 
-    user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
   }
 
-  private void executeEverything(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    Boolean shouldSpy = (Boolean) args[0];
+  private void executeEverything(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final Boolean shouldSpy = (Boolean) args[0];
 
-    ChatUser user = carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-    String message;
+    final String message;
 
     if (shouldSpy) {
-      user.setSpyingWhispers(true);
+      user.spyingWhispers(true);
 
-      for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-        user.getChannelSettings(channel).spying(true);
+      for (final ChatChannel channel : this.carbonChat.getChannelManager().registry().values()) {
+        user.channelSettings(channel).spying(true);
       }
 
-      message = carbonChat.getLanguage().getString("spy-everything-off");
+      message = this.carbonChat.getLanguage().getString("spy-everything-off");
     } else {
-      user.setSpyingWhispers(false);
+      user.spyingWhispers(false);
 
-      for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-        user.getChannelSettings(channel).spying(false);
+      for (final ChatChannel channel : this.carbonChat.getChannelManager().registry().values()) {
+        user.channelSettings(channel).spying(false);
       }
 
-      message = carbonChat.getLanguage().getString("spy-everything-on");
+      message = this.carbonChat.getLanguage().getString("spy-everything-on");
     }
 
-    user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
   }
 
 }

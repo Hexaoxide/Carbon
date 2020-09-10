@@ -24,19 +24,19 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   private String channel;
 
   private SimpleUserChannelSettings() {
-    carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
   }
 
-  public SimpleUserChannelSettings(@NonNull UUID uuid, @NonNull String channel) {
+  public SimpleUserChannelSettings(@NonNull final UUID uuid, @NonNull final String channel) {
     this.uuid = uuid;
     this.channel = channel;
 
-    carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
   }
 
   @NonNull
-  private CarbonChatUser getUser() {
-    return (CarbonChatUser) carbonChat.getUserService().wrap(uuid);
+  private CarbonChatUser user() {
+    return (CarbonChatUser) this.carbonChat.getUserService().wrap(this.uuid);
   }
 
   @Override
@@ -45,12 +45,12 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public void spying(boolean spying, boolean fromRemote) {
+  public void spying(final boolean spying, final boolean fromRemote) {
     this.spying = spying;
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("spying-channel", uuid, (byteArray) -> {
-        byteArray.writeUTF(channel);
+      this.carbonChat.getMessageManager().sendMessage("spying-channel", this.uuid, byteArray -> {
+        byteArray.writeUTF(this.channel);
         byteArray.writeBoolean(spying);
       });
     }
@@ -58,16 +58,16 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
 
   @Override
   public boolean ignored() {
-    return ignored;
+    return this.ignored;
   }
 
   @Override
-  public void ignoring(boolean ignored, boolean fromRemote) {
+  public void ignoring(final boolean ignored, final boolean fromRemote) {
     this.ignored = ignored;
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("ignoring-channel", uuid, (byteArray) -> {
-        byteArray.writeUTF(channel);
+      this.carbonChat.getMessageManager().sendMessage("ignoring-channel", this.uuid, byteArray -> {
+        byteArray.writeUTF(this.channel);
         byteArray.writeBoolean(ignored);
       });
     }
@@ -76,15 +76,15 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   @Override
   @Nullable
   public TextColor color() {
-    if (color == null) {
+    if (this.color == null) {
       return null;
     }
 
-    return TextColor.fromHexString(color);
+    return TextColor.fromHexString(this.color);
   }
 
   @Override
-  public void color(@Nullable TextColor color, boolean fromRemote) {
+  public void color(@Nullable final TextColor color, final boolean fromRemote) {
     if (color == null) {
       this.color = null;
     } else {
@@ -92,7 +92,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     }
 
     if (!fromRemote) {
-      carbonChat.getMessageManager().sendMessage("channel-color", uuid, (byteArray) -> {
+      this.carbonChat.getMessageManager().sendMessage("channel-color", this.uuid, byteArray -> {
         byteArray.writeUTF(color.asHexString());
       });
     }

@@ -4,7 +4,7 @@ import dev.jorel.commandapi.CommandAPI;
 import net.draycia.carbon.storage.CommandSettings;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class CommandUtils {
+public final class CommandUtils {
 
   private CommandUtils() {
 

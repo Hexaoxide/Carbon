@@ -15,16 +15,16 @@ public class EconomyContext implements Listener {
   @NonNull
   private final Economy economy;
 
-  public EconomyContext(@NonNull CarbonChat carbonChat) {
+  public EconomyContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
-    this.economy = carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+    this.economy = this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
   }
 
   @EventHandler
-  public void onChatReqBal(PreChatFormatEvent event) {
-    Object requiredBalObject = event.getChannel().getContext("vault-balance");
+  public void onChatReqBal(final PreChatFormatEvent event) {
+    final Object requiredBalObject = event.channel().context("vault-balance");
 
-    Double requiredBal;
+    final Double requiredBal;
 
     if (requiredBalObject instanceof Double) {
       requiredBal = (Double) requiredBalObject;
@@ -38,22 +38,22 @@ public class EconomyContext implements Listener {
       return;
     }
 
-    Player player = event.getUser().player();
+    final Player player = event.user().player();
 
-    if (!economy.has(player, requiredBal)) {
+    if (!this.economy.has(player, requiredBal)) {
       event.setCancelled(true);
 
-      event.getUser().sendMessage(carbonChat.getAdventureManager()
-        .processMessageWithPapi(player, event.getChannel().getCannotUseMessage()));
+      event.user().sendMessage(this.carbonChat.getAdventureManager()
+        .processMessageWithPapi(player, event.channel().cannotUseMessage()));
     }
 
   }
 
   @EventHandler
-  public void onChatCost(PreChatFormatEvent event) {
-    Object costObject = event.getChannel().getContext("vault-cost");
+  public void onChatCost(final PreChatFormatEvent event) {
+    final Object costObject = event.channel().context("vault-cost");
 
-    Double cost;
+    final Double cost;
 
     if (costObject instanceof Double) {
       cost = (Double) costObject;
@@ -67,17 +67,17 @@ public class EconomyContext implements Listener {
       return;
     }
 
-    Player player = event.getUser().player();
+    final Player player = event.user().player();
 
-    if (!economy.has(player, cost)) {
+    if (!this.economy.has(player, cost)) {
       event.setCancelled(true);
 
-      event.getUser().sendMessage(carbonChat.getAdventureManager()
-        .processMessageWithPapi(player, event.getChannel().getCannotUseMessage()));
+      event.user().sendMessage(this.carbonChat.getAdventureManager()
+        .processMessageWithPapi(player, event.channel().cannotUseMessage()));
 
       return;
     }
 
-    economy.withdrawPlayer(player, cost);
+    this.economy.withdrawPlayer(player, cost);
   }
 }

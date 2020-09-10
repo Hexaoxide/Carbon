@@ -31,7 +31,10 @@ public class ChatComponentEvent extends Event implements Cancellable {
   @NonNull
   private final String originalMessage;
 
-  public ChatComponentEvent(@NonNull ChatUser sender, @Nullable ChatUser target, @NonNull ChatChannel chatChannel, @NonNull TextComponent component, @NonNull String originalMessage) {
+  public ChatComponentEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
+                            @NonNull final ChatChannel chatChannel, @NonNull final TextComponent component,
+                            @NonNull final String originalMessage) {
+
     super(!Bukkit.isPrimaryThread());
 
     this.sender = sender;
@@ -43,11 +46,11 @@ public class ChatComponentEvent extends Event implements Cancellable {
 
   @Override
   public boolean isCancelled() {
-    return isCancelled;
+    return this.isCancelled;
   }
 
   @Override
-  public void setCancelled(boolean cancelled) {
+  public void setCancelled(final boolean cancelled) {
     this.isCancelled = cancelled;
   }
 
@@ -58,41 +61,42 @@ public class ChatComponentEvent extends Event implements Cancellable {
   }
 
   @NonNull
+  @SuppressWarnings("checkstyle:MethodName")
   public static HandlerList getHandlerList() {
     return HANDLERS_LIST;
   }
 
   @NonNull
-  public ChatUser getSender() {
-    return sender;
+  public ChatUser sender() {
+    return this.sender;
   }
 
   @Nullable
-  public ChatUser getTarget() {
-    return target;
+  public ChatUser target() {
+    return this.target;
   }
 
   @NonNull
-  public ChatChannel getChannel() {
-    return chatChannel;
+  public ChatChannel channel() {
+    return this.chatChannel;
   }
 
-  public void setChannel(@NonNull ChatChannel chatChannel) {
+  public void channel(@NonNull final ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
   @NonNull
-  public TextComponent getComponent() {
-    return component;
+  public TextComponent component() {
+    return this.component;
   }
 
-  public void setComponent(@NonNull TextComponent component) {
+  public void component(@NonNull final TextComponent component) {
     this.component = component;
   }
 
   @NonNull
-  public String getOriginalMessage() {
-    return originalMessage;
+  public String originalMessage() {
+    return this.originalMessage;
   }
 
 }

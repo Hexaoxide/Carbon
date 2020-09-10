@@ -22,7 +22,7 @@ public class ShadowMuteCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ShadowMuteCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public ShadowMuteCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -31,7 +31,7 @@ public class ShadowMuteCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
     arguments.put("player", CarbonUtils.chatUserArgument());
 
     new CommandAPICommand(commandSettings.name())
@@ -42,31 +42,31 @@ public class ShadowMuteCommand {
       .register();
   }
 
-  private void execute(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
-    ChatUser user = (ChatUser) args[0];
-    Audience audience = carbonChat.getAdventureManager().getAudiences().audience(sender);
+  private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
+    final ChatUser user = (ChatUser) args[0];
+    final Audience audience = this.carbonChat.getAdventureManager().audiences().audience(sender);
 
-    if (user.isShadowMuted()) {
-      user.setShadowMuted(false);
-      String format = carbonChat.getLanguage().getString("no-longer-shadow-muted");
+    if (user.shadowMuted()) {
+      user.shadowMuted(false);
+      final String format = this.carbonChat.getLanguage().getString("no-longer-shadow-muted");
 
-      Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
+      final Component message = this.carbonChat.getAdventureManager().processMessage(format, "br", "\n",
         "player", user.offlinePlayer().getName());
 
       audience.sendMessage(message);
     } else {
-      Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
-        Permission permission = carbonChat.getPermission();
-        String format;
+      Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
+        final Permission permission = this.carbonChat.getPermission();
+        final String format;
 
         if (permission.playerHas(null, user.offlinePlayer(), "carbonchat.shadowmute.exempt")) {
-          format = carbonChat.getLanguage().getString("shadow-mute-exempt");
+          format = this.carbonChat.getLanguage().getString("shadow-mute-exempt");
         } else {
-          user.setShadowMuted(true);
-          format = carbonChat.getLanguage().getString("is-now-shadow-muted");
+          user.shadowMuted(true);
+          format = this.carbonChat.getLanguage().getString("is-now-shadow-muted");
         }
 
-        Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
+        final Component message = this.carbonChat.getAdventureManager().processMessage(format, "br", "\n",
           "player", user.offlinePlayer().getName());
 
         audience.sendMessage(message);

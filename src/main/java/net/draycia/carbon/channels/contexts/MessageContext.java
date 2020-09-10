@@ -7,45 +7,45 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public interface MessageContext {
 
   @NonNull
-  ChatUser getSender();
+  ChatUser sender();
 
   @NonNull
-  ChatUser getTarget();
+  ChatUser target();
 
-  ChatChannel getChatChannel();
+  ChatChannel chatChannel();
 
-  Object getValue();
+  Object value();
 
   default boolean isDouble() {
-    return getValue() instanceof Double;
+    return this.value() instanceof Double;
   }
 
   default boolean isString() {
-    return getValue() instanceof String;
+    return this.value() instanceof String;
   }
 
   default boolean isInteger() {
-    return getValue() instanceof Integer;
+    return this.value() instanceof Integer;
   }
 
   default boolean isBoolean() {
-    return getValue() instanceof Boolean;
+    return this.value() instanceof Boolean;
   }
 
   default Double asDouble() {
-    return (Double) getValue();
+    return (Double) this.value();
   }
 
   default String asString() {
-    return (String) getValue();
+    return (String) this.value();
   }
 
   default Integer asInteger() {
-    return (Integer) getValue();
+    return (Integer) this.value();
   }
 
   default Boolean asBoolean() {
-    return (Boolean) getValue();
+    return (Boolean) this.value();
   }
 
 }

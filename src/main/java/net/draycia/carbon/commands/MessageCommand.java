@@ -19,7 +19,7 @@ public class MessageCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public MessageCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public MessageCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -28,7 +28,7 @@ public class MessageCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
     arguments.put("player", CarbonUtils.chatUserArgument());
     arguments.put("message", new GreedyStringArgument());
 
@@ -40,11 +40,11 @@ public class MessageCommand {
       .register();
   }
 
-  private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    ChatUser targetUser = (ChatUser) args[0];
-    String message = (String) args[1];
+  private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final ChatUser targetUser = (ChatUser) args[0];
+    final String message = (String) args[1];
 
-    ChatUser sender = carbonChat.getUserService().wrap(player);
+    final ChatUser sender = this.carbonChat.getUserService().wrap(player);
 
     targetUser.sendMessage(sender, message);
   }

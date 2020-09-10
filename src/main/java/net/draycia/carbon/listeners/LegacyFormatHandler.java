@@ -11,9 +11,9 @@ import org.bukkit.event.Listener;
 public class LegacyFormatHandler implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onLegacyFormat(PreChatFormatEvent event) {
-    Component component = CarbonChat.LEGACY.deserialize(event.getFormat());
-    event.setFormat(MiniMessage.get().serialize(component));
+  public void onLegacyFormat(final PreChatFormatEvent event) {
+    final Component component = CarbonChat.LEGACY.deserialize(event.format());
+    event.format(MiniMessage.get().serialize(component));
   }
 
 }

@@ -28,7 +28,7 @@ public class ContextManager {
     for (final Map.Entry<String, Function<MessageContext, Boolean>> handler : this.handlers.entrySet()) {
       final String key = handler.getKey();
 
-      final Object value = channel.getContext(key);
+      final Object value = channel.context(key);
 
       if (value == null) {
         continue;

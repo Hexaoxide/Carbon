@@ -8,12 +8,12 @@ import org.bukkit.event.Listener;
 public class IgnoredPlayerHandler implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onPapiPlaceholder(ChatFormatEvent event) {
-    if (event.getTarget() == null) {
+  public void onPapiPlaceholder(final ChatFormatEvent event) {
+    if (event.target() == null) {
       return;
     }
 
-    if (event.getTarget().isIgnoringUser(event.getSender())) {
+    if (event.target().ignoringUser(event.sender())) {
       event.setCancelled(true);
     }
   }

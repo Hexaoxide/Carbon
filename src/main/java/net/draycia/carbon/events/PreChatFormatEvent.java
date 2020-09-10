@@ -27,7 +27,8 @@ public class PreChatFormatEvent extends Event implements Cancellable {
   @NonNull
   private String message;
 
-  public PreChatFormatEvent(@NonNull ChatUser user, @NonNull ChatChannel chatChannel, @Nullable String format, @NonNull String message) {
+  public PreChatFormatEvent(@NonNull final ChatUser user, @NonNull final ChatChannel chatChannel,
+                            @Nullable final String format, @NonNull final String message) {
     super(!Bukkit.isPrimaryThread());
 
     this.user = user;
@@ -38,11 +39,11 @@ public class PreChatFormatEvent extends Event implements Cancellable {
 
   @Override
   public boolean isCancelled() {
-    return isCancelled;
+    return this.isCancelled;
   }
 
   @Override
-  public void setCancelled(boolean cancelled) {
+  public void setCancelled(final boolean cancelled) {
     this.isCancelled = cancelled;
   }
 
@@ -53,39 +54,40 @@ public class PreChatFormatEvent extends Event implements Cancellable {
   }
 
   @NonNull
+  @SuppressWarnings("checkstyle:MethodName")
   public static HandlerList getHandlerList() {
     return HANDLERS_LIST;
   }
 
   @NonNull
-  public ChatUser getUser() {
-    return user;
+  public ChatUser user() {
+    return this.user;
   }
 
   @NonNull
-  public ChatChannel getChannel() {
-    return chatChannel;
+  public ChatChannel channel() {
+    return this.chatChannel;
   }
 
-  public void setChannel(@NonNull ChatChannel chatChannel) {
+  public void channel(@NonNull final ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
   @Nullable
-  public String getFormat() {
-    return format;
+  public String format() {
+    return this.format;
   }
 
-  public void setFormat(@Nullable String format) {
+  public void format(@Nullable final String format) {
     this.format = format;
   }
 
   @NonNull
-  public String getMessage() {
-    return message;
+  public String message() {
+    return this.message;
   }
 
-  public void setMessage(@NonNull String message) {
+  public void message(@NonNull final String message) {
     this.message = message;
   }
 

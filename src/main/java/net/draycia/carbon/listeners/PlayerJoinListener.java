@@ -14,32 +14,32 @@ public class PlayerJoinListener implements Listener {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public PlayerJoinListener(@NonNull CarbonChat carbonChat) {
+  public PlayerJoinListener(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
+  public void onPlayerJoin(final PlayerJoinEvent event) {
+    final ChatUser user = this.carbonChat.getUserService().wrap(event.getPlayer());
 
-    carbonChat.getUserService().validate(user);
+    this.carbonChat.getUserService().validate(user);
 
     if (user.nickname() != null) {
       user.nickname(user.nickname());
     }
 
-    String channel = carbonChat.getConfig().getString("channel-on-join");
+    final String channel = this.carbonChat.getConfig().getString("channel-on-join");
 
     if (channel == null || channel.isEmpty()) {
       return;
     }
 
     if (channel.equals("DEFAULT")) {
-      user.selectedChannel(carbonChat.getChannelManager().getDefaultChannel());
+      user.selectedChannel(this.carbonChat.getChannelManager().defaultChannel());
       return;
     }
 
-    ChatChannel chatChannel = carbonChat.getChannelManager().getRegistry().get(channel);
+    final ChatChannel chatChannel = this.carbonChat.getChannelManager().registry().channel(channel);
 
     if (chatChannel != null) {
       user.selectedChannel(chatChannel);
@@ -47,11 +47,11 @@ public class PlayerJoinListener implements Listener {
   }
 
   @EventHandler
-  public void onPlayerQuit(PlayerQuitEvent event) {
-    ChatUser user = carbonChat.getUserService().wrapIfLoaded(event.getPlayer());
+  public void onPlayerQuit(final PlayerQuitEvent event) {
+    final ChatUser user = this.carbonChat.getUserService().wrapIfLoaded(event.getPlayer());
 
     if (user != null) {
-      carbonChat.getUserService().invalidate(user);
+      this.carbonChat.getUserService().invalidate(user);
     }
   }
 

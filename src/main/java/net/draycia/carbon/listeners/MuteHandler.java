@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 public class MuteHandler implements Listener {
 
   @EventHandler
-  public void onMute(PreChatFormatEvent event) {
-    if (event.getUser().isMuted()) {
+  public void onMute(final PreChatFormatEvent event) {
+    if (event.user().muted()) {
       event.setCancelled(true);
     }
   }

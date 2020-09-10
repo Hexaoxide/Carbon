@@ -19,7 +19,7 @@ public class ReplyCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ReplyCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+  public ReplyCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -28,7 +28,7 @@ public class ReplyCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
+    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
     arguments.put("message", new GreedyStringArgument());
 
     new CommandAPICommand(commandSettings.name())
@@ -39,26 +39,30 @@ public class ReplyCommand {
       .register();
   }
 
-  private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
-    String input = (String) args[0];
+  private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
+    final String input = (String) args[0];
 
-    ChatUser user = carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.getUserService().wrap(player);
 
-    if (input == null || input.isEmpty()) {
-      String message = carbonChat.getLanguage().getString("reply-message-blank");
-      Component component = carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+    if (input.isEmpty()) {
+      final String message = this.carbonChat.getLanguage().getString("reply-message-blank");
+      final Component component = this.carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+
       user.sendMessage(component);
+
       return;
     }
 
-    if (user.getReplyTarget() == null) {
-      String message = carbonChat.getLanguage().getString("no-reply-target");
-      Component component = carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+    if (user.replyTarget() == null) {
+      final String message = this.carbonChat.getLanguage().getString("no-reply-target");
+      final Component component = this.carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+
       user.sendMessage(component);
+
       return;
     }
 
-    ChatUser targetUser = carbonChat.getUserService().wrap(user.getReplyTarget());
+    final ChatUser targetUser = this.carbonChat.getUserService().wrap(user.replyTarget());
 
     targetUser.sendMessage(user, input);
   }

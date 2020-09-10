@@ -26,11 +26,11 @@ public class MessageManager {
   @NonNull
   private final GsonComponentSerializer gsonSerializer;
 
-  public MessageManager(@NonNull CarbonChat carbonChat) {
+  public MessageManager(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
-    this.gsonSerializer = carbonChat.getAdventureManager().getAudiences().gsonSerializer();
+    this.gsonSerializer = this.carbonChat.getAdventureManager().audiences().gsonSerializer();
 
-    String messageSystem = carbonChat.getConfig().getString("message-system", "none");
+    String messageSystem = this.carbonChat.getConfig().getString("message-system", "none");
 
     if (messageSystem == null) {
       messageSystem = "none";
@@ -38,19 +38,19 @@ public class MessageManager {
 
     switch (messageSystem.toLowerCase()) {
       case "bungee":
-        carbonChat.getLogger().info("Using Bungee Plugin Messaging for message forwarding!");
-        messageService = new BungeeMessageService(carbonChat);
+        this.carbonChat.getLogger().info("Using Bungee Plugin Messaging for message forwarding!");
+        this.messageService = new BungeeMessageService(this.carbonChat);
         break;
       case "redis":
-        carbonChat.getLogger().info("Using Redis for message forwarding!");
-        messageService = new RedisMessageService(carbonChat);
+        this.carbonChat.getLogger().info("Using Redis for message forwarding!");
+        this.messageService = new RedisMessageService(this.carbonChat);
         break;
       case "none":
-        messageService = new EmptyMessageService();
+        this.messageService = new EmptyMessageService();
         break;
       default:
-        carbonChat.getLogger().info("Invalid message service selected! Disabling syncing until next restart!");
-        messageService = new EmptyMessageService();
+        this.carbonChat.getLogger().info("Invalid message service selected! Disabling syncing until next restart!");
+        this.messageService = new EmptyMessageService();
         break;
     }
 
@@ -58,106 +58,107 @@ public class MessageManager {
   }
 
   private void registerDefaultListeners() {
-    getMessageService().registerUserMessageListener("nickname", (user, byteArray) -> {
-      String nickname = byteArray.readUTF();
+    this.messageService().registerUserMessageListener("nickname", (user, byteArray) -> {
+      final String nickname = byteArray.readUTF();
 
       user.nickname(nickname, true);
 
       if (user.online()) {
-        String message = carbonChat.getLanguage().getString("nickname-set");
+        final String message = this.carbonChat.getLanguage().getString("nickname-set");
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.player(),
+        user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(user.player(),
           message, "nickname", nickname));
       }
     });
 
-    getMessageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
+    this.messageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
       user.nickname(null, true);
 
       if (user.online()) {
-        String message = carbonChat.getLanguage().getString("nickname-reset");
+        final String message = this.carbonChat.getLanguage().getString("nickname-reset");
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.player(), message));
+        user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(user.player(), message));
       }
     });
 
-    getMessageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
-      user.selectedChannel(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()), true);
+    this.messageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
+      user.selectedChannel(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()), true);
     });
 
-    getMessageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
-      user.setSpyingWhispers(byteArray.readBoolean(), true);
+    this.messageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
+      user.spyingWhispers(byteArray.readBoolean(), true);
     });
 
-    getMessageService().registerUserMessageListener("muted", (user, byteArray) -> {
-      user.setMuted(byteArray.readBoolean(), true);
+    this.messageService().registerUserMessageListener("muted", (user, byteArray) -> {
+      user.muted(byteArray.readBoolean(), true);
     });
 
-    getMessageService().registerUserMessageListener("shadow-muted", (user, byteArray) -> {
-      user.setShadowMuted(byteArray.readBoolean(), true);
+    this.messageService().registerUserMessageListener("shadow-muted", (user, byteArray) -> {
+      user.shadowMuted(byteArray.readBoolean(), true);
     });
 
-    getMessageService().registerUserMessageListener("reply-target", (user, byteArray) -> {
-      user.setReplyTarget(new UUID(byteArray.readLong(), byteArray.readLong()), true);
+    this.messageService().registerUserMessageListener("reply-target", (user, byteArray) -> {
+      user.replyTarget(new UUID(byteArray.readLong(), byteArray.readLong()), true);
     });
 
-    getMessageService().registerUserMessageListener("ignoring-user", (user, byteArray) -> {
-      user.setIgnoringUser(new UUID(byteArray.readLong(), byteArray.readLong()), byteArray.readBoolean(), true);
+    this.messageService().registerUserMessageListener("ignoring-user", (user, byteArray) -> {
+      user.ignoringUser(new UUID(byteArray.readLong(), byteArray.readLong()), byteArray.readBoolean(), true);
     });
 
-    getMessageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
-      user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
+    this.messageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
+      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
         .ignoring(byteArray.readBoolean(), true);
     });
 
-    getMessageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
-      user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
+    this.messageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
+      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
         .spying(byteArray.readBoolean(), true);
     });
 
-    getMessageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
-      user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
+    this.messageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
+      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
         .color(TextColor.fromHexString(byteArray.readUTF()), true);
     });
 
-    getMessageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
-      user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
+    this.messageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
+      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
         .color(null, true);
     });
 
-    getMessageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
-      ChatChannel channel = carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF());
-      ChatUser user = carbonChat.getUserService().wrap(uuid);
+    this.messageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
+      final ChatChannel channel = this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF());
+      final ChatUser user = this.carbonChat.getUserService().wrap(uuid);
 
       if (channel != null) {
-        Component component = gsonSerializer.deserialize(byteArray.readUTF());
+        final Component component = this.gsonSerializer.deserialize(byteArray.readUTF());
 
         channel.sendComponent(user, component);
 
-        carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
+        this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
       }
     });
 
-    getMessageService().registerUUIDMessageListener("whisper-component", (uuid, byteArray) -> {
-      UUID recipient = new UUID(byteArray.readLong(), byteArray.readLong());
+    this.messageService().registerUUIDMessageListener("whisper-component", (uuid, byteArray) -> {
+      final UUID recipient = new UUID(byteArray.readLong(), byteArray.readLong());
 
-      ChatUser target = carbonChat.getUserService().wrap(recipient);
-      String message = byteArray.readUTF();
+      final ChatUser target = this.carbonChat.getUserService().wrap(recipient);
+      final String message = byteArray.readUTF();
 
-      if (!target.isIgnoringUser(uuid)) {
-        target.setReplyTarget(uuid);
-        target.sendMessage(gsonSerializer.deserialize(message));
+      if (!target.ignoringUser(uuid)) {
+        target.replyTarget(uuid);
+        target.sendMessage(this.gsonSerializer.deserialize(message));
       }
     });
   }
 
   @NonNull
-  public MessageService getMessageService() {
-    return messageService;
+  public MessageService messageService() {
+    return this.messageService;
   }
 
-  public void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
-    getMessageService().sendMessage(key, uuid, consumer);
+  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid,
+                          @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
+    this.messageService().sendMessage(key, uuid, consumer);
   }
 
 }

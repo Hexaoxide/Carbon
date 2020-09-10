@@ -14,17 +14,20 @@ import java.util.regex.Pattern;
 
 public abstract class ChatChannel implements ForwardingAudience {
 
+  @NonNull
+  public abstract List<ChatUser> audiences();
+
   /**
    * @return The color that represents this channel. Optionally used in formatting.
    */
   @Nullable
-  public abstract TextColor getChannelColor(@NonNull ChatUser user);
+  public abstract TextColor channelColor(@NonNull ChatUser user);
 
   /**
    * @return The MiniMessage styled format for the group in this channel.
    */
   @Nullable
-  public abstract String getFormat(@NonNull String group);
+  public abstract String format(@NonNull String group);
 
   /**
    * @return If this is the default (typically Global) channel players use when they're in no other channel.
@@ -34,70 +37,70 @@ public abstract class ChatChannel implements ForwardingAudience {
   /**
    * @return If this channel can be toggled off and if players can ignore player messages in this channel.
    */
-  public abstract boolean isIgnorable();
+  public abstract boolean ignorable();
 
   /**
    * @return If this channel should be synced cross server
-   * @deprecated Use {@link #isCrossServer()} instead
+   * @deprecated Use {@link #crossServer()} instead
    */
   @Deprecated
-  public abstract boolean shouldBungee();
+  public abstract boolean bungee();
 
   /**
    * @return If this channel should be synced cross server
    */
-  public abstract boolean isCrossServer();
+  public abstract boolean crossServer();
 
   /**
    * @return The name of this channel.
    */
   @NonNull
-  public abstract String getName();
+  public abstract String name();
 
   @NonNull
-  public abstract String getKey();
+  public abstract String key();
 
   @Nullable
-  public abstract String getMessagePrefix();
+  public abstract String messagePrefix();
 
   @Nullable
-  public abstract String getAliases();
+  public abstract String aliases();
 
   /**
    * @return The message to be sent to the player when switching to this channel.
    */
   @Nullable
-  public abstract String getSwitchMessage();
+  public abstract String switchMessage();
 
   @Nullable
-  public abstract String getSwitchOtherMessage();
+  public abstract String switchOtherMessage();
 
   @Nullable
-  public abstract String getSwitchFailureMessage();
+  public abstract String switchFailureMessage();
 
   @Nullable
-  public abstract String getCannotIgnoreMessage();
+  public abstract String cannotIgnoreMessage();
 
   /**
    * @return The message to be send to the player when toggling this channel off.
    */
   @Nullable
-  public abstract String getToggleOffMessage();
+  public abstract String toggleOffMessage();
 
   /**
    * @return The message to be send to the player when toggling this channel on.
    */
   @Nullable
-  public abstract String getToggleOnMessage();
+  public abstract String toggleOnMessage();
 
   @Nullable
-  public abstract String getToggleOtherOnMessage();
+  public abstract String toggleOtherOnMessage();
 
   @Nullable
-  public abstract String getToggleOtherOffMessage();
+  public abstract String toggleOtherOffMessage();
 
   @Nullable
-  public abstract String getCannotUseMessage();
+  public abstract String cannotUseMessage();
 
   public abstract boolean primaryGroupOnly();
 
@@ -105,13 +108,18 @@ public abstract class ChatChannel implements ForwardingAudience {
 
   public abstract boolean permissionGroupMatching();
 
+  public abstract boolean shouldCancelChatEvent();
+
   public abstract boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target);
 
+  @NonNull
+  public abstract List<@NonNull Pattern> itemLinkPatterns();
+
   @Nullable
-  public abstract Object getContext(@NonNull String key);
+  public abstract Object context(@NonNull String key);
 
   @NonNull
-  public abstract List<@NonNull String> getGroupOverrides();
+  public abstract List<@NonNull String> groupOverrides();
 
   /**
    * @return If the player can use this channel.
@@ -121,16 +129,6 @@ public abstract class ChatChannel implements ForwardingAudience {
   public abstract boolean canPlayerSee(@NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying);
 
   public abstract boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying);
-
-  /**
-   * @return If the channel should forward its formatting / formatted message to other servers
-   */
-  public boolean shouldForwardFormatting() {
-    return true;
-  }
-
-  @NonNull
-  public abstract List<@NonNull Pattern> getItemLinkPatterns();
 
   /**
    * Parses the specified message, calls a {@link PreChatFormatEvent}, and sends the message to everyone who can view this channel.
@@ -147,10 +145,8 @@ public abstract class ChatChannel implements ForwardingAudience {
   public abstract void sendComponent(@NonNull ChatUser user, @NonNull Component component);
 
   @Nullable
-  public String processPlaceholders(@NonNull ChatUser user, @Nullable String input) {
+  public String processPlaceholders(@NonNull final ChatUser user, @Nullable final String input) {
     return input;
   }
-
-  public abstract boolean shouldCancelChatEvent();
 
 }
