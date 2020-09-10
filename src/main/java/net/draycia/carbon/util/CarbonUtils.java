@@ -41,16 +41,15 @@ import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class CarbonUtils {
 
-    @NotNull
-    private static final String[] colors;
+    private static final @NonNull String @NonNull [] colors;
 
     static {
         List<String> colorList = new ArrayList<>();
@@ -62,8 +61,8 @@ public final class CarbonUtils {
         colors = colorList.toArray(new String[0]);
     }
 
-    @NotNull
-    public static Component createComponent(@NotNull final Player player) {
+    @NonNull
+    public static Component createComponent(@NonNull final Player player) {
         if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
             return net.kyori.adventure.text.TextComponent.empty();
         }
@@ -125,7 +124,7 @@ public final class CarbonUtils {
         return TextColor.fromCSSHexString(input);
     }
 
-    @NotNull
+    @NonNull
     public static Argument onlineChatUserArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -148,7 +147,7 @@ public final class CarbonUtils {
         });
     }
 
-    @NotNull
+    @NonNull
     public static Argument chatUserArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -165,7 +164,7 @@ public final class CarbonUtils {
         });
     }
 
-    @NotNull
+    @NonNull
     public static Argument textColorArgument() {
         return new CustomArgument<>((input) -> {
             TextColor color = parseColor(input);
@@ -178,7 +177,7 @@ public final class CarbonUtils {
         }).overrideSuggestions(colors);
     }
 
-    @NotNull
+    @NonNull
     public static Argument channelArgument() {
         return new CustomArgument<>((input) -> {
             CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -203,6 +202,7 @@ public final class CarbonUtils {
         });
     }
 
+    @NonNull
     public static Argument usableChannelArgument() {
         throw new NotImplementedException("Not implemented yet.");
     }

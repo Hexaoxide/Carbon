@@ -12,14 +12,16 @@ import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
 public class SudoChannelCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public SudoChannelCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public SudoChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -52,7 +54,7 @@ public class SudoChannelCommand {
                 .register();
     }
 
-    private void setOtherChannel(CommandSender sender, ChatUser user, ChatChannel channel) {
+    private void setOtherChannel(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull ChatChannel channel) {
         user.setSelectedChannel(channel);
 
         String message = channel.getSwitchMessage();
@@ -66,7 +68,7 @@ public class SudoChannelCommand {
                 "player", user.asOfflinePlayer().getName()));
     }
 
-    private void sendMessageOther(CommandSender sender, ChatUser user, ChatChannel channel, String message) {
+    private void sendMessageOther(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull ChatChannel channel, @NonNull String message) {
         Component component = channel.sendMessage(user, message, false);
 
         carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);

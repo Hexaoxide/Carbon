@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,9 +18,10 @@ import java.util.List;
 
 public class BukkitChatListener implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public BukkitChatListener(CarbonChat carbonChat) {
+    public BukkitChatListener(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 
@@ -62,7 +64,7 @@ public class BukkitChatListener implements Listener {
                 recipients.add(carbonChat.getUserService().wrap(recipient));
             }
         } else {
-            recipients = (List<ChatUser>)selectedChannel.audiences();
+            recipients = (List<ChatUser>) selectedChannel.audiences();
         }
 
         event.getRecipients().clear();

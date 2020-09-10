@@ -6,12 +6,14 @@ import net.draycia.carbon.events.ChatFormatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ShadowMuteHandler implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public ShadowMuteHandler(CarbonChat carbonChat) {
+    public ShadowMuteHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 

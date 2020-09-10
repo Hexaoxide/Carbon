@@ -1,13 +1,13 @@
 plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven'
+    id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
     id 'com.palantir.git-version' version '0.12.3'
+    id 'org.checkerframework' version '0.5.9'
 }
-
-apply plugin: 'java-library'
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'maven'
 
 // Gets the git commit hash of the latest commit, used for version string
 ext.projectVersion = '1.0'
@@ -54,17 +54,18 @@ dependencies {
     compile "dev.jorel:commandapi-shade:4.1"
 
     // Plugins
-    compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.143'
+    compileOnly('com.gmail.nossr50.mcMMO:mcMMO:2.1.143') {
+        exclude group: 'org.jetbrains', module: 'annotations'
+    }
     compileOnly 'com.github.TownyAdvanced:Towny:0.96.2.0'
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT'
+    compileOnly('com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT') {
+        exclude group: 'org.spigotmc', module: 'spigot-api' // Honestly?
+    }
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'com.github.TownyAdvanced:Towny:0.96.1.11'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'com.vexsoftware:nuvotifier-universal:2.6.0'
     compileOnly 'net.luckperms:api:5.1'
-
-    // Util
-    compileOnly 'org.jetbrains:annotations:16.0.1'
 
     // Server
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.2-R0.1-SNAPSHOT'

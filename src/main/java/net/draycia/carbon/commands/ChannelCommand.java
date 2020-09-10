@@ -12,14 +12,16 @@ import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
 public class ChannelCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public ChannelCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public ChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -50,7 +52,7 @@ public class ChannelCommand {
                 .register();
     }
 
-    private void setChannel(Player player, Object[] args) {
+    private void setChannel(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
         ChatChannel channel = (ChatChannel) args[0];
 
@@ -71,7 +73,7 @@ public class ChannelCommand {
                 "channel", channel.getName()));
     }
 
-    private void sendMessage(Player player, Object[] args) {
+    private void sendMessage(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
         ChatChannel channel = (ChatChannel) args[0];
         String message = (String) args[1];

@@ -1,13 +1,12 @@
 package net.draycia.carbon;
 
 import dev.jorel.commandapi.CommandAPI;
-import net.draycia.carbon.channels.contexts.impl.EconomyContext;
-import net.draycia.carbon.channels.contexts.impl.DistanceContext;
-import net.draycia.carbon.channels.contexts.impl.TownyContext;
-import net.draycia.carbon.channels.contexts.impl.WorldGuardContext;
-import net.draycia.carbon.channels.contexts.impl.mcMMOContext;
+import net.draycia.carbon.channels.contexts.impl.*;
 import net.draycia.carbon.listeners.*;
-import net.draycia.carbon.managers.*;
+import net.draycia.carbon.managers.AdventureManager;
+import net.draycia.carbon.managers.ChannelManager;
+import net.draycia.carbon.managers.CommandManager;
+import net.draycia.carbon.managers.ContextManager;
 import net.draycia.carbon.messaging.MessageManager;
 import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
@@ -22,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -154,7 +154,7 @@ public final class CarbonChat extends JavaPlugin {
         pluginManager.registerEvents(new CustomPlaceholderHandler(this), this);
         pluginManager.registerEvents(filterHandler, this);
         pluginManager.registerEvents(new IgnoredPlayerHandler(), this);
-        pluginManager.registerEvents(new ItemLinkHandler(this), this);
+        pluginManager.registerEvents(new ItemLinkHandler(), this);
         pluginManager.registerEvents(new LegacyFormatHandler(), this);
         pluginManager.registerEvents(new MuteHandler(), this);
         pluginManager.registerEvents(new OfflineNameHandler(), this);
@@ -211,42 +211,52 @@ public final class CarbonChat extends JavaPlugin {
         getContextManager().register("distance", new DistanceContext());
     }
 
+    @NonNull
     public YamlConfiguration getModConfig() {
         return modConfig;
     }
 
+    @NonNull
     public YamlConfiguration getCommandsConfig() {
         return commandsConfig;
     }
 
+    @NonNull
     public YamlConfiguration getLanguage() {
         return languageConfig;
     }
 
+    @NonNull
     public Permission getPermission() {
         return permission;
     }
 
+    @NonNull
     public CommandManager getCommandManager() {
         return commandManager;
     }
 
+    @NonNull
     public ChannelManager getChannelManager() {
         return channelManager;
     }
 
+    @NonNull
     public MessageManager getMessageManager() {
         return messageManager;
     }
 
+    @NonNull
     public UserService getUserService() {
         return userService;
     }
 
+    @NonNull
     public AdventureManager getAdventureManager() {
         return adventureManager;
     }
 
+    @NonNull
     public ContextManager getContextManager() {
         return contextManager;
     }

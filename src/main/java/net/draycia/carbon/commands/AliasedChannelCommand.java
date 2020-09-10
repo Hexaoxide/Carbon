@@ -9,16 +9,22 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
 public class AliasedChannelCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
+
+    @NonNull
     private final ChatChannel chatChannel;
+
+    @NonNull
     private final String commandName;
 
-    public AliasedChannelCommand(CarbonChat carbonChat, ChatChannel chatChannel) {
+    public AliasedChannelCommand(@NonNull CarbonChat carbonChat, @NonNull ChatChannel chatChannel) {
         this.carbonChat = carbonChat;
         this.chatChannel = chatChannel;
 
@@ -42,7 +48,7 @@ public class AliasedChannelCommand {
                 .register();
     }
 
-    private void setChannel(Player player, Object[] args) {
+    private void setChannel(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
 
         if (user.getChannelSettings(getChatChannel()).isIgnored()) {
@@ -62,7 +68,7 @@ public class AliasedChannelCommand {
                 "channel", getChatChannel().getName()));
     }
 
-    private void sendMessage(Player player, Object[] args) {
+    private void sendMessage(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
         String message = (String) args[0];
 
@@ -71,10 +77,12 @@ public class AliasedChannelCommand {
         carbonChat.getAdventureManager().getAudiences().console().sendMessage(component);
     }
 
+    @NonNull
     public ChatChannel getChatChannel() {
         return chatChannel;
     }
 
+    @NonNull
     public String getCommandName() {
         return commandName;
     }

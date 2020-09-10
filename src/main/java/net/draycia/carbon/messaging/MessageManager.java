@@ -10,18 +10,23 @@ import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class MessageManager {
 
+    @NonNull
     private final CarbonChat carbonChat;
+
+    @NonNull
     private final MessageService messageService;
 
+    @NonNull
     private final GsonComponentSerializer gsonSerializer;
 
-    public MessageManager(CarbonChat carbonChat) {
+    public MessageManager(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         this.gsonSerializer = carbonChat.getAdventureManager().getAudiences().gsonSerializer();
 
@@ -31,7 +36,7 @@ public class MessageManager {
             messageSystem = "none";
         }
 
-        switch(messageSystem.toLowerCase()) {
+        switch (messageSystem.toLowerCase()) {
             case "bungee":
                 carbonChat.getLogger().info("Using Bungee Plugin Messaging for message forwarding!");
                 messageService = new BungeeMessageService(carbonChat);
@@ -146,11 +151,12 @@ public class MessageManager {
         });
     }
 
+    @NonNull
     public MessageService getMessageService() {
         return messageService;
     }
 
-    public void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer) {
+    public void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
         getMessageService().sendMessage(key, uuid, consumer);
     }
 

@@ -6,16 +6,20 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext implements Listener {
+    @NonNull
     private final CarbonChat carbonChat;
+
+    @NonNull
     private final Economy economy;
 
-    public EconomyContext(CarbonChat carbonChat) {
+    public EconomyContext(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
         this.economy = carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }
-    
+
     @EventHandler
     public void onChatReqBal(PreChatFormatEvent event) {
         Object requiredBalObject = event.getChannel().getContext("vault-balance");

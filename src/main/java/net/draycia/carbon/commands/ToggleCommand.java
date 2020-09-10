@@ -12,14 +12,16 @@ import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
 public class ToggleCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public ToggleCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public ToggleCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -50,7 +52,7 @@ public class ToggleCommand {
                 .register();
     }
 
-    private void executeSelf(Player player, Object[] args) {
+    private void executeSelf(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser user = carbonChat.getUserService().wrap(player);
         ChatChannel channel = (ChatChannel) args[0];
 
@@ -72,7 +74,7 @@ public class ToggleCommand {
                 "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName()));
     }
 
-    private void executeOther(CommandSender sender, Object[] args) {
+    private void executeOther(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
         ChatUser user = (ChatUser) args[0];
         ChatChannel channel = (ChatChannel) args[1];
 

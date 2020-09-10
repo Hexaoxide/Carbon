@@ -5,12 +5,14 @@ import net.draycia.carbon.events.PreChatFormatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CapsHandler implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public CapsHandler(CarbonChat carbonChat) {
+    public CapsHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 

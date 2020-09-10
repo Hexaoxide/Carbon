@@ -4,17 +4,19 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.commands.*;
 import net.draycia.carbon.storage.CommandSettings;
 import org.bukkit.configuration.ConfigurationSection;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CommandManager {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public CommandManager(CarbonChat carbonChat) {
+    public CommandManager(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
-        reloadCommands(carbonChat);
+        reloadCommands();
     }
 
-    private void reloadCommands(CarbonChat carbonChat) {
+    private void reloadCommands() {
         new ChannelCommand(carbonChat, getCommandSettings("channel"));
         new ChannelListCommand(carbonChat, getCommandSettings("channellist"));
         new ChatReloadCommand(carbonChat, getCommandSettings("chatreload"));
@@ -32,7 +34,8 @@ public class CommandManager {
         new ToggleCommand(carbonChat, getCommandSettings("toggle"));
     }
 
-    private CommandSettings getCommandSettings(String command) {
+    @NonNull
+    private CommandSettings getCommandSettings(@NonNull String command) {
         ConfigurationSection section = carbonChat.getCommandsConfig().getConfigurationSection(command);
 
         return new CommandSettings(section.getBoolean("enabled"), section.getString("name"),

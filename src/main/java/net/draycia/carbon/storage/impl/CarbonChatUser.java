@@ -15,48 +15,57 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.CheckForNull;
 import java.util.*;
 
 public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
+    @NonNull
     private final transient CarbonChat carbonChat;
-
+    @NonNull
+    private final Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
+    @NonNull
+    private final List<@NonNull UUID> ignoredUsers = new ArrayList<>();
+    @MonotonicNonNull // @NonNull but not initialised in all constructors.
     private UUID uuid;
-
+    @Nullable
     private String selectedChannel = null;
-    private final Map<String, SimpleUserChannelSettings> channelSettings = new HashMap<>();
-    private final List<UUID> ignoredUsers = new ArrayList<>();
     private boolean muted = false;
     private boolean shadowMuted = false;
     private boolean spyingWhispers = false;
 
+    @Nullable
     private String nickname = null;
 
+    @Nullable
     private transient UUID replyTarget = null;
 
     public CarbonChatUser() {
         this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
     }
 
-    public CarbonChatUser(UUID uuid) {
-        this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    public CarbonChatUser(@NonNull UUID uuid) {
+        this();
         this.uuid = uuid;
     }
 
     @Override
-    public @NonNull Iterable<? extends Audience> audiences() {
+    @NonNull
+    public Iterable<@NonNull ? extends Audience> audiences() {
         return Collections.singleton(carbonChat.getAdventureManager().getAudiences().player(uuid));
     }
 
     @Override
+    @Nullable
     public Player asPlayer() {
         return Bukkit.getPlayer(uuid);
     }
 
     @Override
+    @NonNull
     public OfflinePlayer asOfflinePlayer() {
         return Bukkit.getOfflinePlayer(uuid);
     }
@@ -67,17 +76,19 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
+    @NonNull
     public UUID getUUID() {
         return uuid;
     }
 
     @Override
+    @Nullable
     public String getNickname() {
         return nickname;
     }
 
     @Override
-    public void setNickname(String newNickname, boolean fromRemote) {
+    public void setNickname(@Nullable String newNickname, boolean fromRemote) {
         this.nickname = newNickname;
 
         if (isOnline()) {
@@ -105,12 +116,13 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
+    @Nullable
     public ChatChannel getSelectedChannel() {
         return carbonChat.getChannelManager().getChannelOrDefault(selectedChannel);
     }
 
     @Override
-    public void setSelectedChannel(ChatChannel chatChannel, boolean fromRemote) {
+    public void setSelectedChannel(@NonNull ChatChannel chatChannel, boolean fromRemote) {
         String failureMessage = chatChannel.getSwitchFailureMessage();
 
         ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
@@ -139,12 +151,12 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public boolean isIgnoringUser(UUID uuid) {
+    public boolean isIgnoringUser(@NonNull UUID uuid) {
         return ignoredUsers.contains(uuid);
     }
 
     @Override
-    public void setIgnoringUser(UUID uuid, boolean ignoring, boolean fromRemote) {
+    public void setIgnoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote) {
         if (ignoring) {
             ignoredUsers.add(uuid);
         } else {
@@ -160,7 +172,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         }
     }
 
-    public List<UUID> getIgnoredUsers() {
+    @NonNull
+    public List<@NonNull UUID> getIgnoredUsers() {
         return ignoredUsers;
     }
 
@@ -196,14 +209,14 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         return shadowMuted;
     }
 
-    @CheckForNull
     @Override
+    @Nullable
     public UUID getReplyTarget() {
         return replyTarget;
     }
 
     @Override
-    public void setReplyTarget(UUID target, boolean fromRemote) {
+    public void setReplyTarget(@Nullable UUID target, boolean fromRemote) {
         this.replyTarget = target;
 
         if (!fromRemote) {
@@ -215,13 +228,15 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     @Override
-    public UserChannelSettings getChannelSettings(ChatChannel channel) {
+    @NonNull
+    public UserChannelSettings getChannelSettings(@NonNull ChatChannel channel) {
         return channelSettings.computeIfAbsent(channel.getKey(), (name) -> {
             return new SimpleUserChannelSettings(uuid, channel.getKey());
         });
     }
 
-    public Map<String, ? extends UserChannelSettings> getChannelSettings() {
+    @NonNull
+    public Map<@NonNull String, @NonNull ? extends UserChannelSettings> getChannelSettings() {
         return channelSettings;
     }
 
@@ -241,7 +256,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         return spyingWhispers;
     }
 
-    public void sendMessage(ChatUser sender, String message) {
+    @Override
+    public void sendMessage(@NonNull ChatUser sender, @NonNull String message) {
         if (isIgnoringUser(sender) || sender.isIgnoringUser(this)) {
             return;
         }

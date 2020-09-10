@@ -7,12 +7,14 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PingHandler implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public PingHandler(CarbonChat carbonChat) {
+    public PingHandler(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 

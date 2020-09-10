@@ -2,10 +2,14 @@ package net.draycia.carbon.channels.contexts;
 
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface MessageContext {
 
+    @NonNull
     ChatUser getSender();
+
+    @NonNull
     ChatUser getTarget();
 
     ChatChannel getChatChannel();

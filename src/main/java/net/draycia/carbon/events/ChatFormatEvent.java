@@ -6,21 +6,31 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class ChatFormatEvent extends Event implements Cancellable {
 
+    @NonNull
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private boolean isCancelled = false;
 
+    @NonNull
     private final ChatUser sender;
+
+    @Nullable
     private final ChatUser target;
 
+    @NonNull
     private ChatChannel chatChannel;
+
+    @Nullable
     private String format;
+
+    @NonNull
     private String message;
 
-    public ChatFormatEvent(ChatUser sender, ChatUser target, ChatChannel chatChannel, String format, String message) {
+    public ChatFormatEvent(@NonNull ChatUser sender, @Nullable ChatUser target, @NonNull ChatChannel chatChannel, @Nullable String format, @NonNull String message) {
         super(!Bukkit.isPrimaryThread());
 
         this.sender = sender;
@@ -42,44 +52,50 @@ public class ChatFormatEvent extends Event implements Cancellable {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public HandlerList getHandlers() {
         return HANDLERS_LIST;
     }
 
+    @NonNull
     public static HandlerList getHandlerList() {
         return HANDLERS_LIST;
     }
 
+    @NonNull
     public ChatUser getSender() {
         return sender;
     }
 
+    @Nullable
     public ChatUser getTarget() {
         return target;
     }
 
+    @NonNull
     public ChatChannel getChannel() {
         return chatChannel;
     }
 
-    public void setChannel(ChatChannel chatChannel) {
+    public void setChannel(@NonNull ChatChannel chatChannel) {
         this.chatChannel = chatChannel;
     }
 
+    @Nullable
     public String getFormat() {
         return format;
     }
 
-    public void setFormat(String format) {
+    public void setFormat(@Nullable String format) {
         this.format = format;
     }
 
+    @NonNull
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(@NonNull String message) {
         this.message = message;
     }
 }

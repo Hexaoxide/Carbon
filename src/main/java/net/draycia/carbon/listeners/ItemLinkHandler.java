@@ -1,6 +1,5 @@
 package net.draycia.carbon.listeners;
 
-import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.ChatComponentEvent;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
@@ -9,18 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 
 public class ItemLinkHandler implements Listener {
-
-    @NotNull
-    private final CarbonChat carbonChat;
-
-    public ItemLinkHandler(@NotNull CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
-    }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemLink(ChatComponentEvent event) {

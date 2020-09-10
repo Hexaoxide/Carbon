@@ -15,7 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
@@ -26,14 +27,16 @@ import java.util.concurrent.ExecutionException;
 
 public class MySQLUserService implements UserService {
 
-    private final LoadingCache<UUID, CarbonChatUser> userCache = CacheBuilder.newBuilder()
+    @NonNull
+    private final CarbonChat carbonChat;
+    @NonNull
+    private final Database database;
+    @NonNull
+    private final LoadingCache<@NonNull UUID, @NonNull CarbonChatUser> userCache = CacheBuilder.newBuilder()
             .removalListener(this::saveUser)
             .build(CacheLoader.from(this::loadUser));
 
-    private final CarbonChat carbonChat;
-    private final Database database;
-
-    public MySQLUserService(CarbonChat carbonChat) {
+    public MySQLUserService(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
         ConfigurationSection section = carbonChat.getConfig().getConfigurationSection("storage");
@@ -60,7 +63,8 @@ public class MySQLUserService implements UserService {
             try {
                 database.executeUpdate("ALTER TABLE sc_users ADD COLUMN spyingwhispers BOOLEAN DEFAULT false");
                 database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR(512) DEFAULT false");
-            } catch (SQLSyntaxErrorException syntaxErrorException) {}
+            } catch (SQLSyntaxErrorException ignored) {
+            }
 
             database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_channel_settings (uuid CHAR(36), channel CHAR(16), spying BOOLEAN, ignored BOOLEAN, color TINYTEXT, PRIMARY KEY (uuid, channel))");
 
@@ -78,7 +82,8 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public ChatUser wrap(String name) {
+    @Nullable
+    public ChatUser wrap(@NonNull String name) {
         Player player = Bukkit.getPlayer(name);
 
         if (player != null) {
@@ -89,12 +94,14 @@ public class MySQLUserService implements UserService {
     }
 
     @Override
-    public ChatUser wrap(OfflinePlayer player) {
+    @Nullable
+    public ChatUser wrap(@NonNull OfflinePlayer player) {
         return wrap(player.getUniqueId());
     }
 
     @Override
-    public ChatUser wrap(UUID uuid) {
+    @Nullable
+    public ChatUser wrap(@NonNull UUID uuid) {
         try {
             return userCache.get(uuid);
         } catch (ExecutionException e) {
@@ -105,28 +112,30 @@ public class MySQLUserService implements UserService {
 
     @Override
     @Nullable
-    public ChatUser wrapIfLoaded(UUID uuid) {
+    public ChatUser wrapIfLoaded(@NonNull UUID uuid) {
         return userCache.getIfPresent(uuid);
     }
 
     @Override
-    public ChatUser refreshUser(UUID uuid) {
+    @Nullable
+    public ChatUser refreshUser(@NonNull UUID uuid) {
         userCache.invalidate(uuid);
 
         return this.wrap(uuid);
     }
 
     @Override
-    public void invalidate(ChatUser user) {
+    public void invalidate(@NonNull ChatUser user) {
         userCache.invalidate(user.getUUID());
     }
 
     @Override
-    public void validate(ChatUser user) {
-        userCache.put(user.getUUID(), (CarbonChatUser)user);
+    public void validate(@NonNull ChatUser user) {
+        userCache.put(user.getUUID(), (CarbonChatUser) user);
     }
 
-    private CarbonChatUser loadUser(UUID uuid) {
+    @NonNull
+    private CarbonChatUser loadUser(@NonNull UUID uuid) {
         CarbonChatUser user = new CarbonChatUser(uuid);
 
         try (DbStatement statement = database.query("SELECT * from sc_users WHERE uuid = ?;")) {
@@ -184,12 +193,8 @@ public class MySQLUserService implements UserService {
         return user;
     }
 
-    private void saveUser(RemovalNotification<UUID, CarbonChatUser> notification) {
+    private void saveUser(@NonNull RemovalNotification<@NonNull UUID, @NonNull CarbonChatUser> notification) {
         CarbonChatUser user = notification.getValue();
-
-        if (user == null) {
-            return;
-        }
 
         database.createTransaction(stm -> {
             // Save user general data

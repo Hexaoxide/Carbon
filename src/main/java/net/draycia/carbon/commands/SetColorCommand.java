@@ -11,14 +11,16 @@ import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.format.TextColor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
 public class SetColorCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public SetColorCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public SetColorCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {

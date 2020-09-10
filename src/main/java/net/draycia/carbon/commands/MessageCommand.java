@@ -10,14 +10,16 @@ import net.draycia.carbon.storage.CommandSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
 
 public class MessageCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public MessageCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public MessageCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -38,7 +40,7 @@ public class MessageCommand {
                 .register();
     }
 
-    private void execute(Player player, Object[] args) {
+    private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
         ChatUser targetUser = (ChatUser) args[0];
         String message = (String) args[1];
 

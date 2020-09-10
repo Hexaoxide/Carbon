@@ -14,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,9 +24,10 @@ import java.util.regex.Pattern;
 
 public class ChannelListCommand {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public ChannelListCommand(CarbonChat carbonChat, CommandSettings commandSettings) {
+    public ChannelListCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
         this.carbonChat = carbonChat;
 
         if (!commandSettings.isEnabled()) {
@@ -54,14 +56,14 @@ public class ChannelListCommand {
                 .register();
     }
 
-    public void executeSelf(Player player, Object[] args) {
+    public void executeSelf(@NonNull Player player, @NonNull Object @NonNull [] args) {
         Iterator<ChatChannel> allChannels = carbonChat.getChannelManager().getRegistry().values().iterator();
         ChatUser user = carbonChat.getUserService().wrap(player);
 
         getListAndSend(player, user, allChannels);
     }
 
-    public void executeOther(CommandSender sender, Object[] args) {
+    public void executeOther(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
         Audience cmdSender = carbonChat.getAdventureManager().getAudiences().audience(sender);
         ChatUser user = (ChatUser) args[0];
 
@@ -75,7 +77,7 @@ public class ChannelListCommand {
         getListAndSend(sender, user, allChannels);
     }
 
-    private void getListAndSend(CommandSender sender, ChatUser user, Iterator<ChatChannel> allChannels) {
+    private void getListAndSend(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull Iterator<ChatChannel> allChannels) {
         ChatChannel channel;
         List<ChatChannel> canSee = new ArrayList<>();
         List<ChatChannel> cannotSee = new ArrayList<>();
@@ -97,7 +99,7 @@ public class ChannelListCommand {
 
         String availableFormat = carbonChat.getLanguage().getString("available-channels-list");
         Component availableComponent = carbonChat.getAdventureManager().processMessage(availableFormat, "br", "\n");
-        availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (ac) ->  availableList);
+        availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (ac) -> availableList);
 
         Audience audience = carbonChat.getAdventureManager().getAudiences().audience(sender);
 
@@ -112,13 +114,13 @@ public class ChannelListCommand {
 
             String unavailableFormat = carbonChat.getLanguage().getString("unavailable-channels-list");
             Component unavailableComponent = carbonChat.getAdventureManager().processMessage(unavailableFormat, "br", "\n");
-            unavailableComponent = unavailableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (uac) ->  unavailableList);
+            unavailableComponent = unavailableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), (uac) -> unavailableList);
 
             audience.sendMessage(unavailableComponent);
         }
     }
 
-    private void makeList(Iterator<ChatChannel> iterator, TextComponent.Builder list) {
+    private void makeList(@NonNull Iterator<@NonNull ChatChannel> iterator, TextComponent.@NonNull Builder list) {
         String listSeparator = carbonChat.getLanguage().getString("channel-list-separator", ", ");
         // TODO: Larry, why did you double assign the listSeparatorComponent?
         Component listSeparatorComponent = TextComponent.of(listSeparator);
@@ -127,7 +129,7 @@ public class ChannelListCommand {
             ChatChannel channel = iterator.next();
             list.append(TextComponent.of(channel.getName()));
             if (iterator.hasNext()) {
-                    list.append(listSeparatorComponent);
+                list.append(listSeparatorComponent);
             }
         }
     }

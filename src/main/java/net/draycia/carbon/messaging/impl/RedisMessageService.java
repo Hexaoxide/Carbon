@@ -11,6 +11,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.messaging.MessageService;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.RedisListener;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -21,16 +22,25 @@ import java.util.function.Consumer;
 
 public class RedisMessageService implements MessageService {
 
-    private final Map<String, BiConsumer<ChatUser, ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
-    private final Map<String, BiConsumer<UUID, ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+    @NonNull
+    private final Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
-    private final RedisPubSubCommands<String, String> subscribeSync;
-    private final RedisPubSubCommands<String, String> publishSync;
+    @NonNull
+    private final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
+    @NonNull
+    private final RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
+
+    @NonNull
+    private final RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
+
+    @NonNull
     private final UUID serverUUID = UUID.randomUUID();
+
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public RedisMessageService(CarbonChat carbonChat) {
+    public RedisMessageService(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
         String host = carbonChat.getConfig().getString("redis.host");
@@ -53,7 +63,7 @@ public class RedisMessageService implements MessageService {
         StatefulRedisPubSubConnection<String, String> publishConnection = client.connectPubSub();
         this.publishSync = publishConnection.sync();
 
-        subscribeConnection.addListener((RedisListener)(channel, message) -> {
+        subscribeConnection.addListener((RedisListener) (channel, message) -> {
             ByteArrayDataInput input = ByteStreams.newDataInput(Base64.getDecoder().decode(message));
 
             UUID messageUUID = new UUID(input.readLong(), input.readLong());
@@ -68,7 +78,7 @@ public class RedisMessageService implements MessageService {
         });
     }
 
-    private void receiveMessage(UUID uuid, String key, ByteArrayDataInput value) {
+    private void receiveMessage(@NonNull UUID uuid, @NonNull String key, @NonNull ByteArrayDataInput value) {
         ChatUser user = carbonChat.getUserService().wrapIfLoaded(uuid);
 
         if (user != null) {
@@ -87,19 +97,19 @@ public class RedisMessageService implements MessageService {
     }
 
     @Override
-    public void registerUserMessageListener(String key, BiConsumer<ChatUser, ByteArrayDataInput> listener) {
+    public void registerUserMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
         userLoadedListeners.put(key, listener);
         subscribeSync.subscribe(key);
     }
 
     @Override
-    public void registerUUIDMessageListener(String key, BiConsumer<UUID, ByteArrayDataInput> listener) {
+    public void registerUUIDMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
         userNotLoadedListeners.put(key, listener);
         subscribeSync.subscribe(key);
     }
 
     @Override
-    public void unregisterMessageListener(String key) {
+    public void unregisterMessageListener(@NonNull String key) {
         userLoadedListeners.remove(key);
         userNotLoadedListeners.remove(key);
 
@@ -107,7 +117,7 @@ public class RedisMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(String key, UUID uuid, Consumer<ByteArrayDataOutput> consumer) {
+    public void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
         ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
         msg.writeLong(serverUUID.getMostSignificantBits());

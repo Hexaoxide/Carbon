@@ -7,12 +7,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PlayerJoinListener implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public PlayerJoinListener(CarbonChat carbonChat) {
+    public PlayerJoinListener(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
     }
 

@@ -11,16 +11,20 @@ import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class TownyContext implements Listener {
 
-    private final CarbonChat carbonChat;
+    @NonNull
     private static final String KEY = "towny-town";
 
-    public TownyContext(CarbonChat carbonChat) {
+    @NonNull
+    private final CarbonChat carbonChat;
+
+    public TownyContext(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
-        this.carbonChat.getContextManager().register("towny-town", (context) -> {
+        this.carbonChat.getContextManager().register(KEY, (context) -> {
             if ((context.getValue() instanceof Boolean) && ((Boolean) context.getValue())) {
                 return isInSameTown(context.getSender(), context.getTarget());
             }
@@ -74,7 +78,7 @@ public final class TownyContext implements Listener {
         }
     }
 
-    public boolean isInTown(ChatUser user) {
+    public boolean isInTown(@NonNull ChatUser user) {
         try {
             return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
         } catch (NotRegisteredException e) {
@@ -84,7 +88,7 @@ public final class TownyContext implements Listener {
         return false;
     }
 
-    public boolean isInSameTown(ChatUser user1, ChatUser user2) {
+    public boolean isInSameTown(@NonNull ChatUser user1, @NonNull ChatUser user2) {
         if (!user1.isOnline() || !user2.isOnline()) {
             return false;
         }

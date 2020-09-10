@@ -9,12 +9,14 @@ import net.draycia.carbon.storage.ChatUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class mcMMOContext implements Listener {
 
+    @NonNull
     private final CarbonChat carbonChat;
 
-    public mcMMOContext(CarbonChat carbonChat) {
+    public mcMMOContext(@NonNull CarbonChat carbonChat) {
         this.carbonChat = carbonChat;
 
         this.carbonChat.getContextManager().register("mcmmo-party", (context) -> {
@@ -76,11 +78,11 @@ public final class mcMMOContext implements Listener {
         }
     }
 
-    public boolean isInParty(ChatUser user) {
+    public boolean isInParty(@NonNull ChatUser user) {
         return PartyAPI.inParty(user.asPlayer());
     }
 
-    public boolean isInSameParty(ChatUser user1, ChatUser user2) {
+    public boolean isInSameParty(@NonNull ChatUser user1, @NonNull ChatUser user2) {
         if (!user1.isOnline() || !user2.isOnline()) {
             return false;
         }
