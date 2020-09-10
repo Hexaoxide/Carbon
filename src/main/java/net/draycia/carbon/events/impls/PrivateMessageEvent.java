@@ -1,4 +1,4 @@
-package net.draycia.carbon.events;
+package net.draycia.carbon.events.impls;
 
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;

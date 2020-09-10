@@ -1,7 +1,7 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.ChatComponentEvent;
+import net.draycia.carbon.events.impls.ChatComponentEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.event.EventHandler;

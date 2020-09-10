@@ -52,6 +52,8 @@ dependencies {
   compile 'net.kyori:adventure-text-minimessage:3.0.0-SNAPSHOT'
   compile 'de.themoep:minedown-adventure:1.6.1-SNAPSHOT'
 
+  compile 'net.kyori:event-api:3.0.0'
+
   // Databases
   compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'
   compile 'com.zaxxer:HikariCP:2.4.1'

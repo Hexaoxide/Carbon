@@ -1,7 +1,7 @@
 package net.draycia.carbon.channels.contexts.impl;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.PreChatFormatEvent;
+import net.draycia.carbon.events.impls.PreChatFormatEvent;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

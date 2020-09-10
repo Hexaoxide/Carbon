@@ -1,6 +1,6 @@
 package net.draycia.carbon.listeners;
 
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.impls.ChatFormatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

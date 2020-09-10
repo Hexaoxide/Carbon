@@ -1,7 +1,7 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.PrivateMessageEvent;
+import net.draycia.carbon.events.impls.PrivateMessageEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.event.EventHandler;

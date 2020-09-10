@@ -1,7 +1,7 @@
 package net.draycia.carbon.listeners;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.draycia.carbon.events.ChatFormatEvent;
+import net.draycia.carbon.events.impls.ChatFormatEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

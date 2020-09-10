@@ -1,37 +1,30 @@
-package net.draycia.carbon.events;
+package net.draycia.carbon.events.impls.api;
 
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.util.Registry;
-import org.bukkit.Bukkit;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import net.kyori.event.EventBus;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.SimpleEventBus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 
-public class ChannelRegisterEvent extends Event {
+public class ChannelRegisterEvent {
 
-  /**
-   * Bukkit event stuff
-   */
-  @NonNull
-  private static final HandlerList handlers = new HandlerList();
+  private static EventBus<ChannelRegisterEvent> EVENT_BUS = new SimpleEventBus<>(ChannelRegisterEvent.class);
 
-  @Override
-  @NonNull
-  public HandlerList getHandlers() {
-    return handlers;
+  public static void register(@NonNull final EventSubscriber<? super ChannelRegisterEvent> subscriber) {
+    EVENT_BUS.register(ChannelRegisterEvent.class, subscriber);
   }
 
-  @NonNull
-  @SuppressWarnings("checkstyle:MethodName")
-  public static HandlerList getHandlerList() {
-    return handlers;
+  public static void unregister(@NonNull final EventSubscriber<? super ChannelRegisterEvent> subscriber) {
+    EVENT_BUS.unregister(subscriber);
   }
 
-  /**
-   * Relevant stuff
-   */
+  public static void post(@NonNull final ChannelRegisterEvent event) {
+    EVENT_BUS.post(event);
+  }
+
   @NonNull
   private final List<@NonNull ChatChannel> registeredChannels;
 
@@ -39,8 +32,6 @@ public class ChannelRegisterEvent extends Event {
   private final Registry<ChatChannel> registry;
 
   public ChannelRegisterEvent(@NonNull final List<@NonNull ChatChannel> registeredChannels, @NonNull final Registry<ChatChannel> registry) {
-    super(!Bukkit.isPrimaryThread());
-
     this.registeredChannels = registeredChannels;
     this.registry = registry;
   }
@@ -53,4 +44,5 @@ public class ChannelRegisterEvent extends Event {
   public List<@NonNull ChatChannel> registeredChannels() {
     return this.registeredChannels;
   }
+
 }

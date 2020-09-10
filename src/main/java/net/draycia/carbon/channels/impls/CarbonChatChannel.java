@@ -2,9 +2,9 @@ package net.draycia.carbon.channels.impls;
 
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
-import net.draycia.carbon.events.ChatComponentEvent;
-import net.draycia.carbon.events.ChatFormatEvent;
-import net.draycia.carbon.events.PreChatFormatEvent;
+import net.draycia.carbon.events.impls.ChatComponentEvent;
+import net.draycia.carbon.events.impls.ChatFormatEvent;
+import net.draycia.carbon.events.impls.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;

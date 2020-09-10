@@ -4,7 +4,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChannelRegistry;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.channels.impls.CarbonChatChannel;
-import net.draycia.carbon.events.ChannelRegisterEvent;
+import net.draycia.carbon.events.impls.ChannelRegisterEvent;
 import net.draycia.carbon.util.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;

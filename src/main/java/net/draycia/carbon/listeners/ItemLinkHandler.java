@@ -1,6 +1,6 @@
 package net.draycia.carbon.listeners;
 
-import net.draycia.carbon.events.ChatComponentEvent;
+import net.draycia.carbon.events.impls.ChatComponentEvent;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;

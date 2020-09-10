@@ -1,7 +1,7 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.PreChatFormatEvent;
+import net.draycia.carbon.events.impls.PreChatFormatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.event.EventHandler;
