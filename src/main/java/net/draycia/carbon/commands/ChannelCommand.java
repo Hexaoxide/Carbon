@@ -53,11 +53,11 @@ public class ChannelCommand {
   }
 
   private void channel(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
     final ChatChannel channel = (ChatChannel) args[0];
 
     if (user.channelSettings(channel).ignored()) {
-      user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, channel.cannotUseMessage(),
+      user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, channel.cannotUseMessage(),
         "br", "\n",
         "color", "<" + channel.channelColor(user).toString() + ">",
         "channel", channel.name()));
@@ -67,20 +67,20 @@ public class ChannelCommand {
 
     user.selectedChannel(channel);
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, channel.switchMessage(),
+    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, channel.switchMessage(),
       "br", "\n",
       "color", "<" + channel.channelColor(user).toString() + ">",
       "channel", channel.name()));
   }
 
   private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
     final ChatChannel channel = (ChatChannel) args[0];
     final String message = (String) args[1];
 
     final Component component = channel.sendMessage(user, message, false);
 
-    this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
+    this.carbonChat.adventureManager().audiences().console().sendMessage(component);
   }
 
 }

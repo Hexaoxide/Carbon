@@ -24,7 +24,7 @@ public final class TownyContext implements Listener {
   public TownyContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    this.carbonChat.getContextManager().register(KEY, context -> {
+    this.carbonChat.contextManager().register(KEY, context -> {
       if ((context.value() instanceof Boolean) && ((Boolean) context.value())) {
         return this.isInSameTown(context.sender(), context.target());
       }
@@ -60,7 +60,7 @@ public final class TownyContext implements Listener {
   @EventHandler
   public void onResidentRemove(final TownRemoveResidentEvent event) {
     final String name = event.getResident().getName();
-    final ChatUser user = this.carbonChat.getUserService().wrap(name);
+    final ChatUser user = this.carbonChat.userService().wrap(name);
     final Object town = user.selectedChannel().context(KEY);
 
     if ((town instanceof Boolean) && ((Boolean) town)) {
@@ -70,7 +70,7 @@ public final class TownyContext implements Listener {
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
     final Object town = user.selectedChannel().context(KEY);
 
     if ((town instanceof Boolean) && ((Boolean) town) && !this.isInTown(user)) {

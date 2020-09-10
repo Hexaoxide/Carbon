@@ -25,7 +25,7 @@ public final class WorldGuardContext implements Listener {
   private static final String KEY = "worldguard-region";
 
   public WorldGuardContext(@NonNull final CarbonChat carbonChat) {
-    carbonChat.getContextManager().register(KEY, context -> {
+    carbonChat.contextManager().register(KEY, context -> {
       return this.testContext(context.sender(), context.target(), context.value());
     });
   }

@@ -33,50 +33,50 @@ public class BungeeMessageService implements MessageService {
   @NonNull
   private final UUID serverUUID = UUID.randomUUID();
 
-  public BungeeMessageService(@NonNull CarbonChat carbonChat) {
+  public BungeeMessageService(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     this.carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
 
-    api = BungeeChannelApi.of(carbonChat);
+    this.api = BungeeChannelApi.of(carbonChat);
 
-    api.registerForwardListener((String channel, Player player, byte[] bytes) -> {
+    this.api.registerForwardListener((String channel, Player player, byte[] bytes) -> {
       try {
-        ByteArrayDataInput input = ByteStreams.newDataInput(bytes);
+        final ByteArrayDataInput input = ByteStreams.newDataInput(bytes);
 
         // Separated out for ease of debugging.
-        long mostServer = input.readLong();
-        long leastServer = input.readLong();
+        final long mostServer = input.readLong();
+        final long leastServer = input.readLong();
 
-        UUID messageUUID = new UUID(mostServer, leastServer);
+        final UUID messageUUID = new UUID(mostServer, leastServer);
 
-        if (messageUUID.equals(serverUUID)) {
+        if (messageUUID.equals(this.serverUUID)) {
           return;
         }
 
-        long mostUser = input.readLong();
-        long leastUser = input.readLong();
+        final long mostUser = input.readLong();
+        final long leastUser = input.readLong();
 
-        UUID userUUID = new UUID(mostUser, leastUser);
+        final UUID userUUID = new UUID(mostUser, leastUser);
 
         this.receiveMessage(userUUID, channel, input);
-      } catch (IllegalStateException ignored) {
+      } catch (final IllegalStateException ignored) {
       }
     });
   }
 
-  private void receiveMessage(@NonNull UUID uuid, @NonNull String key, @NonNull ByteArrayDataInput value) {
-    ChatUser user = this.carbonChat.getUserService().wrapIfLoaded(uuid);
+  private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
+    final ChatUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
-      for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : userLoadedListeners.entrySet()) {
+      for (final Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : this.userLoadedListeners.entrySet()) {
         if (key.equals(listener.getKey())) {
           listener.getValue().accept(user, value);
         }
       }
     }
 
-    for (Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : userNotLoadedListeners.entrySet()) {
+    for (final Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : this.userNotLoadedListeners.entrySet()) {
       if (key.equals(listener.getKey())) {
         listener.getValue().accept(uuid, value);
       }
@@ -84,33 +84,33 @@ public class BungeeMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
-    userLoadedListeners.put(key, listener);
+  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
+    this.userLoadedListeners.put(key, listener);
   }
 
   @Override
-  public void registerUUIDMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
-    userNotLoadedListeners.put(key, listener);
+  public void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
+    this.userNotLoadedListeners.put(key, listener);
   }
 
   @Override
-  public void unregisterMessageListener(@NonNull String key) {
-    userLoadedListeners.remove(key);
-    userNotLoadedListeners.remove(key);
+  public void unregisterMessageListener(@NonNull final String key) {
+    this.userLoadedListeners.remove(key);
+    this.userNotLoadedListeners.remove(key);
   }
 
   @Override
-  public void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<ByteArrayDataOutput> consumer) {
-    ByteArrayDataOutput msg = ByteStreams.newDataOutput();
+  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid, @NonNull final Consumer<ByteArrayDataOutput> consumer) {
+    final ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
-    msg.writeLong(serverUUID.getMostSignificantBits());
-    msg.writeLong(serverUUID.getLeastSignificantBits());
+    msg.writeLong(this.serverUUID.getMostSignificantBits());
+    msg.writeLong(this.serverUUID.getLeastSignificantBits());
     msg.writeLong(uuid.getMostSignificantBits());
     msg.writeLong(uuid.getLeastSignificantBits());
 
     consumer.accept(msg);
 
-    api.forward("ALL", key, msg.toByteArray());
+    this.api.forward("ALL", key, msg.toByteArray());
   }
 
 }

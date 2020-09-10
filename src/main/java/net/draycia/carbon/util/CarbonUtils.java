@@ -139,7 +139,7 @@ public final class CarbonUtils {
         throw new CustomArgument.CustomArgumentException("Invalid player for input (" + input + ")");
       }
 
-      return carbonChat.getUserService().wrap(player);
+      return carbonChat.userService().wrap(player);
       //        }).overrideSuggestions((sender, args) -> {
       //            ArrayList<String> players = new ArrayList<>();
       //
@@ -156,7 +156,7 @@ public final class CarbonUtils {
     return new CustomArgument<>(input -> {
       final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
-      return carbonChat.getUserService().wrap(input);
+      return carbonChat.userService().wrap(input);
       //        }).overrideSuggestions((sender, args) -> {
       //            ArrayList<String> players = new ArrayList<>();
       //
@@ -186,7 +186,7 @@ public final class CarbonUtils {
     return new CustomArgument<>(input -> {
       final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
-      final ChatChannel channel = carbonChat.getChannelManager().registry().channel(input);
+      final ChatChannel channel = carbonChat.channelManager().registry().channel(input);
 
       if (channel == null) {
         throw new CustomArgument.CustomArgumentException("Invalid channel for input (" + input + ")");

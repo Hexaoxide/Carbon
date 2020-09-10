@@ -64,11 +64,11 @@ public class SudoChannelCommand {
     final String message = channel.switchMessage();
     final String otherMessage = channel.switchOtherMessage();
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessage(message, "br", "\n",
+    user.sendMessage(this.carbonChat.adventureManager().processMessage(message, "br", "\n",
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
 
-    this.carbonChat.getAdventureManager().audiences().audience(sender).sendMessage(
-      this.carbonChat.getAdventureManager().processMessage(otherMessage, "br", "\n",
+    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
+      this.carbonChat.adventureManager().processMessage(otherMessage, "br", "\n",
         "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name(),
         "player", user.offlinePlayer().getName()));
   }
@@ -77,7 +77,7 @@ public class SudoChannelCommand {
                                 @NonNull final ChatChannel channel, @NonNull final String message) {
     final Component component = channel.sendMessage(user, message, false);
 
-    this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
+    this.carbonChat.adventureManager().audiences().console().sendMessage(component);
   }
 
 }

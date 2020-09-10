@@ -28,5 +28,5 @@
 <suppressions>
   <!-- add any necessary suppressions here -->
   <suppress files="src[\\/]test[\\/]java[\\/].*" checks="RequireExplicitVisibilityModifier"/>
-  <suppress files=".*[\\/]nbt[\\/](List|Compound)BinaryTag.java" checks="MethodName"/>
+  <suppress files="Metrics\.java" checks="[a-zA-Z0-9]*"/>
 </suppressions>

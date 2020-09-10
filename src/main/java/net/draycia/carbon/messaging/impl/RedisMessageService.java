@@ -40,56 +40,56 @@ public class RedisMessageService implements MessageService {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public RedisMessageService(@NonNull CarbonChat carbonChat) {
+  public RedisMessageService(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    String host = this.carbonChat.getConfig().getString("redis.host");
-    String password = this.carbonChat.getConfig().getString("redis.password");
-    int port = this.carbonChat.getConfig().getInt("redis.port");
-    int database = this.carbonChat.getConfig().getInt("redis.database");
+    final String host = this.carbonChat.getConfig().getString("redis.host");
+    final String password = this.carbonChat.getConfig().getString("redis.password");
+    final int port = this.carbonChat.getConfig().getInt("redis.port");
+    final int database = this.carbonChat.getConfig().getInt("redis.database");
 
-    RedisURI.Builder builder = RedisURI.Builder.redis(host, port)
+    final RedisURI.Builder builder = RedisURI.Builder.redis(host, port)
       .withDatabase(database);
 
     if (password != null) {
       builder.withPassword(password.toCharArray());
     }
 
-    RedisClient client = RedisClient.create(builder.build());
+    final RedisClient client = RedisClient.create(builder.build());
 
-    StatefulRedisPubSubConnection<String, String> subscribeConnection = client.connectPubSub();
+    final StatefulRedisPubSubConnection<String, String> subscribeConnection = client.connectPubSub();
     this.subscribeSync = subscribeConnection.sync();
 
-    StatefulRedisPubSubConnection<String, String> publishConnection = client.connectPubSub();
+    final StatefulRedisPubSubConnection<String, String> publishConnection = client.connectPubSub();
     this.publishSync = publishConnection.sync();
 
     subscribeConnection.addListener((RedisListener) (channel, message) -> {
-      ByteArrayDataInput input = ByteStreams.newDataInput(Base64.getDecoder().decode(message));
+      final ByteArrayDataInput input = ByteStreams.newDataInput(Base64.getDecoder().decode(message));
 
-      UUID messageUUID = new UUID(input.readLong(), input.readLong());
+      final UUID messageUUID = new UUID(input.readLong(), input.readLong());
 
-      if (messageUUID.equals(serverUUID)) {
+      if (messageUUID.equals(this.serverUUID)) {
         return;
       }
 
-      UUID uuid = new UUID(input.readLong(), input.readLong());
+      final UUID uuid = new UUID(input.readLong(), input.readLong());
 
       this.receiveMessage(uuid, channel, input);
     });
   }
 
-  private void receiveMessage(@NonNull UUID uuid, @NonNull String key, @NonNull ByteArrayDataInput value) {
-    ChatUser user = this.carbonChat.getUserService().wrapIfLoaded(uuid);
+  private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
+    final ChatUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
-      for (Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : userLoadedListeners.entrySet()) {
+      for (final Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : this.userLoadedListeners.entrySet()) {
         if (key.equals(listener.getKey())) {
           listener.getValue().accept(user, value);
         }
       }
     }
 
-    for (Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : userNotLoadedListeners.entrySet()) {
+    for (final Map.Entry<String, BiConsumer<UUID, ByteArrayDataInput>> listener : this.userNotLoadedListeners.entrySet()) {
       if (key.equals(listener.getKey())) {
         listener.getValue().accept(uuid, value);
       }
@@ -97,37 +97,37 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
-    userLoadedListeners.put(key, listener);
-    subscribeSync.subscribe(key);
+  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
+    this.userLoadedListeners.put(key, listener);
+    this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void registerUUIDMessageListener(@NonNull String key, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
-    userNotLoadedListeners.put(key, listener);
-    subscribeSync.subscribe(key);
+  public void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
+    this.userNotLoadedListeners.put(key, listener);
+    this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void unregisterMessageListener(@NonNull String key) {
-    userLoadedListeners.remove(key);
-    userNotLoadedListeners.remove(key);
+  public void unregisterMessageListener(@NonNull final String key) {
+    this.userLoadedListeners.remove(key);
+    this.userNotLoadedListeners.remove(key);
 
-    subscribeSync.unsubscribe(key);
+    this.subscribeSync.unsubscribe(key);
   }
 
   @Override
-  public void sendMessage(@NonNull String key, @NonNull UUID uuid, @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
-    ByteArrayDataOutput msg = ByteStreams.newDataOutput();
+  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid, @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
+    final ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
-    msg.writeLong(serverUUID.getMostSignificantBits());
-    msg.writeLong(serverUUID.getLeastSignificantBits());
+    msg.writeLong(this.serverUUID.getMostSignificantBits());
+    msg.writeLong(this.serverUUID.getLeastSignificantBits());
     msg.writeLong(uuid.getMostSignificantBits());
     msg.writeLong(uuid.getLeastSignificantBits());
 
     consumer.accept(msg);
 
-    publishSync.publish(key, Base64.getEncoder().encodeToString(msg.toByteArray()));
+    this.publishSync.publish(key, Base64.getEncoder().encodeToString(msg.toByteArray()));
   }
 
 }

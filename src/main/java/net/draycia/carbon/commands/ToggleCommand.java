@@ -53,7 +53,7 @@ public class ToggleCommand {
   }
 
   private void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
     final ChatChannel channel = (ChatChannel) args[0];
 
     final String message;
@@ -70,7 +70,7 @@ public class ToggleCommand {
       message = channel.toggleOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
+    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n",
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
   }
 
@@ -93,11 +93,11 @@ public class ToggleCommand {
       otherMessage = channel.toggleOtherOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessage(message, "br", "\n",
+    user.sendMessage(this.carbonChat.adventureManager().processMessage(message, "br", "\n",
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
 
-    this.carbonChat.getAdventureManager().audiences().audience(sender).sendMessage(
-      this.carbonChat.getAdventureManager().processMessage(otherMessage,
+    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
+      this.carbonChat.adventureManager().processMessage(otherMessage,
         "br", "\n", "color", "<color:" + channel.channelColor(user).toString() + ">",
         "channel", channel.name(), "player", user.offlinePlayer().getName()));
   }

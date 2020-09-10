@@ -28,7 +28,7 @@ public class MessageManager {
 
   public MessageManager(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
-    this.gsonSerializer = this.carbonChat.getAdventureManager().audiences().gsonSerializer();
+    this.gsonSerializer = this.carbonChat.adventureManager().audiences().gsonSerializer();
 
     String messageSystem = this.carbonChat.getConfig().getString("message-system", "none");
 
@@ -64,9 +64,9 @@ public class MessageManager {
       user.nickname(nickname, true);
 
       if (user.online()) {
-        final String message = this.carbonChat.getLanguage().getString("nickname-set");
+        final String message = this.carbonChat.language().getString("nickname-set");
 
-        user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(user.player(),
+        user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(user.player(),
           message, "nickname", nickname));
       }
     });
@@ -75,14 +75,14 @@ public class MessageManager {
       user.nickname(null, true);
 
       if (user.online()) {
-        final String message = this.carbonChat.getLanguage().getString("nickname-reset");
+        final String message = this.carbonChat.language().getString("nickname-reset");
 
-        user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(user.player(), message));
+        user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(user.player(), message));
       }
     });
 
     this.messageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
-      user.selectedChannel(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()), true);
+      user.selectedChannel(this.carbonChat.channelManager().registry().channel(byteArray.readUTF()), true);
     });
 
     this.messageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
@@ -106,42 +106,42 @@ public class MessageManager {
     });
 
     this.messageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelManager().registry().channel(byteArray.readUTF()))
         .ignoring(byteArray.readBoolean(), true);
     });
 
     this.messageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelManager().registry().channel(byteArray.readUTF()))
         .spying(byteArray.readBoolean(), true);
     });
 
     this.messageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelManager().registry().channel(byteArray.readUTF()))
         .color(TextColor.fromHexString(byteArray.readUTF()), true);
     });
 
     this.messageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelManager().registry().channel(byteArray.readUTF()))
         .color(null, true);
     });
 
     this.messageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
-      final ChatChannel channel = this.carbonChat.getChannelManager().registry().channel(byteArray.readUTF());
-      final ChatUser user = this.carbonChat.getUserService().wrap(uuid);
+      final ChatChannel channel = this.carbonChat.channelManager().registry().channel(byteArray.readUTF());
+      final ChatUser user = this.carbonChat.userService().wrap(uuid);
 
       if (channel != null) {
         final Component component = this.gsonSerializer.deserialize(byteArray.readUTF());
 
         channel.sendComponent(user, component);
 
-        this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
+        this.carbonChat.adventureManager().audiences().console().sendMessage(component);
       }
     });
 
     this.messageService().registerUUIDMessageListener("whisper-component", (uuid, byteArray) -> {
       final UUID recipient = new UUID(byteArray.readLong(), byteArray.readLong());
 
-      final ChatUser target = this.carbonChat.getUserService().wrap(recipient);
+      final ChatUser target = this.carbonChat.userService().wrap(recipient);
       final String message = byteArray.readUTF();
 
       if (!target.ignoringUser(uuid)) {

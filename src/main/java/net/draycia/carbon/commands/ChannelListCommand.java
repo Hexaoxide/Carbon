@@ -57,23 +57,23 @@ public class ChannelListCommand {
   }
 
   public void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final Iterator<ChatChannel> allChannels = this.carbonChat.getChannelManager().registry().values().iterator();
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().values().iterator();
+    final ChatUser user = this.carbonChat.userService().wrap(player);
 
     this.listAndSend(player, user, allChannels);
   }
 
   public void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final Audience cmdSender = this.carbonChat.getAdventureManager().audiences().audience(sender);
+    final Audience cmdSender = this.carbonChat.adventureManager().audiences().audience(sender);
     final ChatUser user = (ChatUser) args[0];
 
     if (!user.online()) {
-      final String mustBeOnline = this.carbonChat.getLanguage().getString("user-must-be-online");
-      cmdSender.sendMessage(this.carbonChat.getAdventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.offlinePlayer().getName()));
+      final String mustBeOnline = this.carbonChat.language().getString("user-must-be-online");
+      cmdSender.sendMessage(this.carbonChat.adventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.offlinePlayer().getName()));
       return;
     }
 
-    final Iterator<ChatChannel> allChannels = this.carbonChat.getChannelManager().registry().values().iterator();
+    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().values().iterator();
     this.listAndSend(sender, user, allChannels);
   }
 
@@ -98,11 +98,11 @@ public class ChannelListCommand {
 
     this.makeList(visibleChannels, availableList);
 
-    final String availableFormat = this.carbonChat.getLanguage().getString("available-channels-list");
-    Component availableComponent = this.carbonChat.getAdventureManager().processMessage(availableFormat, "br", "\n");
+    final String availableFormat = this.carbonChat.language().getString("available-channels-list");
+    Component availableComponent = this.carbonChat.adventureManager().processMessage(availableFormat, "br", "\n");
     availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), ac -> availableList);
 
-    final Audience audience = this.carbonChat.getAdventureManager().audiences().audience(sender);
+    final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
 
     audience.sendMessage(availableComponent);
 
@@ -112,8 +112,8 @@ public class ChannelListCommand {
 
       this.makeList(invisibleChannels, unavailableList);
 
-      final String unavailableFormat = this.carbonChat.getLanguage().getString("unavailable-channels-list");
-      Component unavailableComponent = this.carbonChat.getAdventureManager().processMessage(unavailableFormat, "br", "\n");
+      final String unavailableFormat = this.carbonChat.language().getString("unavailable-channels-list");
+      Component unavailableComponent = this.carbonChat.adventureManager().processMessage(unavailableFormat, "br", "\n");
       unavailableComponent = unavailableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), uac -> unavailableList);
 
       audience.sendMessage(unavailableComponent);
@@ -121,7 +121,7 @@ public class ChannelListCommand {
   }
 
   private void makeList(@NonNull final Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
-    final String listSeparator = this.carbonChat.getLanguage().getString("channel-list-separator", ", ");
+    final String listSeparator = this.carbonChat.language().getString("channel-list-separator", ", ");
     // TODO: Larry, why did you double assign the listSeparatorComponent?
     final Component listSeparatorComponent = TextComponent.of(listSeparator);
 

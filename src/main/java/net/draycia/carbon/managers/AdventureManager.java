@@ -40,7 +40,7 @@ public class AdventureManager {
       return TextComponent.empty();
     }
 
-    switch (this.carbonChat.getLanguage().getString("formatting.type", "minimessage").toLowerCase()) {
+    switch (this.carbonChat.language().getString("formatting.type", "minimessage").toLowerCase()) {
       case "minedown":
         return MineDown.parse(input, placeholders);
       case "mojang":

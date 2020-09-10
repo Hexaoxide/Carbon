@@ -44,29 +44,29 @@ public class MuteCommand {
 
   private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
     final ChatUser user = (ChatUser) args[0];
-    final Audience audience = this.carbonChat.getAdventureManager().audiences().audience(sender);
+    final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
 
     if (user.shadowMuted()) {
       user.muted(false);
-      final String format = this.carbonChat.getLanguage().getString("no-longer-muted");
+      final String format = this.carbonChat.language().getString("no-longer-muted");
 
-      final Component message = this.carbonChat.getAdventureManager().processMessage(format, "br", "\n",
+      final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
         "player", user.offlinePlayer().getName());
 
       audience.sendMessage(message);
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
-        final Permission permission = this.carbonChat.getPermission();
+        final Permission permission = this.carbonChat.permission();
         final String format;
 
         if (permission.playerHas(null, user.offlinePlayer(), "carbonchat.mute.exempt")) {
-          format = this.carbonChat.getLanguage().getString("mute-exempt");
+          format = this.carbonChat.language().getString("mute-exempt");
         } else {
           user.muted(true);
-          format = this.carbonChat.getLanguage().getString("is-now-muted");
+          format = this.carbonChat.language().getString("is-now-muted");
         }
 
-        final Component message = this.carbonChat.getAdventureManager().processMessage(format, "br", "\n",
+        final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
           "player", user.offlinePlayer().getName());
 
         audience.sendMessage(message);

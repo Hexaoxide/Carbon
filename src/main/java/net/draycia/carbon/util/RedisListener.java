@@ -10,23 +10,23 @@ public interface RedisListener extends RedisPubSubListener<String, String> {
   void message(@NonNull String channel, @NonNull String message);
 
   @Override
-  default void message(@NonNull String pattern, @NonNull String channel, @NonNull String message) {
+  default void message(@NonNull final String pattern, @NonNull final String channel, @NonNull final String message) {
   }
 
   @Override
-  default void subscribed(@NonNull String channel, long count) {
+  default void subscribed(@NonNull final String channel, final long count) {
   }
 
   @Override
-  default void psubscribed(@NonNull String pattern, long count) {
+  default void psubscribed(@NonNull final String pattern, final long count) {
   }
 
   @Override
-  default void unsubscribed(@NonNull String channel, long count) {
+  default void unsubscribed(@NonNull final String channel, final long count) {
   }
 
   @Override
-  default void punsubscribed(@NonNull String pattern, long count) {
+  default void punsubscribed(@NonNull final String pattern, final long count) {
   }
 
 }

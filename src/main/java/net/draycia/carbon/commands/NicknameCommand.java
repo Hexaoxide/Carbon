@@ -54,7 +54,7 @@ public class NicknameCommand {
 
   private void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     String nickname = (String) args[0];
-    final ChatUser sender = this.carbonChat.getUserService().wrap(player);
+    final ChatUser sender = this.carbonChat.userService().wrap(player);
 
     if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(player.getName())) {
       nickname = null;
@@ -65,18 +65,18 @@ public class NicknameCommand {
     final String message;
 
     if (nickname == null) {
-      message = this.carbonChat.getLanguage().getString("nickname-reset");
+      message = this.carbonChat.language().getString("nickname-reset");
     } else {
-      message = this.carbonChat.getLanguage().getString("nickname-set");
+      message = this.carbonChat.language().getString("nickname-set");
     }
 
-    sender.sendMessage(this.carbonChat.getAdventureManager().processMessage(
+    sender.sendMessage(this.carbonChat.adventureManager().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
       "user", sender.offlinePlayer().getName()));
   }
 
   private void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final Audience user = this.carbonChat.getAdventureManager().audiences().audience(sender);
+    final Audience user = this.carbonChat.adventureManager().audiences().audience(sender);
     final ChatUser target = (ChatUser) args[0];
     String nickname = (String) args[1];
 
@@ -90,12 +90,12 @@ public class NicknameCommand {
     final String message;
 
     if (nickname == null) {
-      message = this.carbonChat.getLanguage().getString("other-nickname-reset");
+      message = this.carbonChat.language().getString("other-nickname-reset");
     } else {
-      message = this.carbonChat.getLanguage().getString("other-nickname-set");
+      message = this.carbonChat.language().getString("other-nickname-set");
     }
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessage(
+    user.sendMessage(this.carbonChat.adventureManager().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
       "user", target.offlinePlayer().getName()));
   }

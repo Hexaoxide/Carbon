@@ -37,7 +37,7 @@ public class FilterHandler implements Listener {
     this.patternReplacements.clear();
     this.blockedWords.clear();
 
-    final FileConfiguration config = this.carbonChat.getModConfig();
+    final FileConfiguration config = this.carbonChat.moderationConfig();
     final ConfigurationSection filters = config.getConfigurationSection("filters.filters");
 
     if (filters != null) {
@@ -45,7 +45,7 @@ public class FilterHandler implements Listener {
         final List<Pattern> patterns = new ArrayList<>();
 
         for (final String word : filters.getStringList(replacement)) {
-          if (this.carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+          if (this.carbonChat.moderationConfig().getBoolean("filters.case-sensitive")) {
             patterns.add(Pattern.compile(word));
           } else {
             patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
@@ -57,7 +57,7 @@ public class FilterHandler implements Listener {
     }
 
     for (final String replacement : config.getStringList("filters.blocked-words")) {
-      if (this.carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+      if (this.carbonChat.moderationConfig().getBoolean("filters.case-sensitive")) {
         this.blockedWords.add(Pattern.compile(replacement));
       } else {
         this.blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
@@ -67,7 +67,7 @@ public class FilterHandler implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
   public void onFilter(final PreChatFormatEvent event) {
-    if (!this.carbonChat.getModConfig().getBoolean("filters.enabled")) {
+    if (!this.carbonChat.moderationConfig().getBoolean("filters.enabled")) {
       return;
     }
 

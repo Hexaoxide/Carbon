@@ -34,10 +34,10 @@ public class ChatReloadCommand {
     this.carbonChat.reloadConfig();
     this.carbonChat.reloadFilters();
 
-    final Component message = this.carbonChat.getAdventureManager()
-      .processMessage(this.carbonChat.getLanguage().getString("reloaded"), "br", "\n");
+    final Component message = this.carbonChat.adventureManager()
+      .processMessage(this.carbonChat.language().getString("reloaded"), "br", "\n");
 
-    this.carbonChat.getAdventureManager().audiences().audience(sender).sendMessage(message);
+    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(message);
   }
 
 }

@@ -36,7 +36,7 @@ public class ShadowMuteHandler implements Listener {
       return;
     }
 
-    final String prefix = this.carbonChat.getModConfig().getString("shadow-mute-prefix", "[SM] ");
+    final String prefix = this.carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
 
     event.format(prefix + event.format());
   }

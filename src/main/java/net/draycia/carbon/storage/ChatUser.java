@@ -25,7 +25,7 @@ public interface ChatUser extends Audience {
   @Nullable
   String nickname();
 
-  default void nickname(@NonNull String nickname) {
+  default void nickname(@NonNull final String nickname) {
     this.nickname(nickname, false);
   }
 
@@ -34,7 +34,7 @@ public interface ChatUser extends Audience {
   @Nullable
   ChatChannel selectedChannel();
 
-  default void selectedChannel(@NonNull ChatChannel channel) {
+  default void selectedChannel(@NonNull final ChatChannel channel) {
     this.selectedChannel(channel, false);
   }
 
@@ -47,7 +47,7 @@ public interface ChatUser extends Audience {
 
   boolean spyingwhispers();
 
-  default void spyingWhispers(boolean spyingWhispers) {
+  default void spyingWhispers(final boolean spyingWhispers) {
     this.spyingWhispers(spyingWhispers, false);
   }
 
@@ -55,7 +55,7 @@ public interface ChatUser extends Audience {
 
   boolean muted();
 
-  default void muted(boolean muted) {
+  default void muted(final boolean muted) {
     this.muted(muted, false);
   }
 
@@ -63,7 +63,7 @@ public interface ChatUser extends Audience {
 
   boolean shadowMuted();
 
-  default void shadowMuted(boolean shadowMuted) {
+  default void shadowMuted(final boolean shadowMuted) {
     this.shadowMuted(shadowMuted, false);
   }
 
@@ -72,17 +72,17 @@ public interface ChatUser extends Audience {
   @Nullable
   UUID replyTarget();
 
-  default void replyTarget(@Nullable UUID target) {
+  default void replyTarget(@Nullable final UUID target) {
     this.replyTarget(target, false);
   }
 
-  default void replyTarget(@Nullable ChatUser user) {
+  default void replyTarget(@Nullable final ChatUser user) {
     this.replyTarget(user.uuid(), false);
   }
 
   void replyTarget(@Nullable UUID target, boolean fromRemote);
 
-  default void replyTarget(@Nullable ChatUser user, boolean fromRemote) {
+  default void replyTarget(@Nullable final ChatUser user, final boolean fromRemote) {
     this.replyTarget(user.uuid(), fromRemote);
   }
 
@@ -90,19 +90,19 @@ public interface ChatUser extends Audience {
 
   void ignoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote);
 
-  default void ignoringUser(@NonNull UUID uuid, boolean ignoring) {
+  default void ignoringUser(@NonNull final UUID uuid, final boolean ignoring) {
     this.ignoringUser(uuid, ignoring, false);
   }
 
-  default boolean ignoringUser(@NonNull ChatUser user) {
+  default boolean ignoringUser(@NonNull final ChatUser user) {
     return this.ignoringUser(user.uuid());
   }
 
-  default void ignoringUser(@NonNull ChatUser user, boolean ignoring, boolean fromRemote) {
+  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring, final boolean fromRemote) {
     this.ignoringUser(user.uuid(), ignoring, fromRemote);
   }
 
-  default void ignoringUser(@NonNull ChatUser user, boolean ignoring) {
+  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring) {
     this.ignoringUser(user.uuid(), ignoring, false);
   }
 

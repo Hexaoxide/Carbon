@@ -43,7 +43,7 @@ public class EconomyContext implements Listener {
     if (!this.economy.has(player, requiredBal)) {
       event.setCancelled(true);
 
-      event.user().sendMessage(this.carbonChat.getAdventureManager()
+      event.user().sendMessage(this.carbonChat.adventureManager()
         .processMessageWithPapi(player, event.channel().cannotUseMessage()));
     }
 
@@ -72,7 +72,7 @@ public class EconomyContext implements Listener {
     if (!this.economy.has(player, cost)) {
       event.setCancelled(true);
 
-      event.user().sendMessage(this.carbonChat.getAdventureManager()
+      event.user().sendMessage(this.carbonChat.adventureManager()
         .processMessageWithPapi(player, event.channel().cannotUseMessage()));
 
       return;

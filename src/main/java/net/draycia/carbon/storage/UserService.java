@@ -18,7 +18,7 @@ public interface UserService {
   ChatUser wrap(UUID uuid);
 
   @Nullable
-  default ChatUser wrapIfLoaded(@NonNull OfflinePlayer player) {
+  default ChatUser wrapIfLoaded(@NonNull final OfflinePlayer player) {
     return this.wrapIfLoaded(player.getUniqueId());
   }
 

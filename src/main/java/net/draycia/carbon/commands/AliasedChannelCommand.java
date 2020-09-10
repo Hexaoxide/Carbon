@@ -49,10 +49,10 @@ public class AliasedChannelCommand {
   }
 
   private void channel(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
-      user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, this.chatChannel().cannotUseMessage(),
+      user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, this.chatChannel().cannotUseMessage(),
         "br", "\n",
         "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
         "channel", this.chatChannel().name()));
@@ -62,19 +62,19 @@ public class AliasedChannelCommand {
 
     user.selectedChannel(this.chatChannel());
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, this.chatChannel().switchMessage(),
+    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, this.chatChannel().switchMessage(),
       "br", "\n",
       "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
       "channel", this.chatChannel().name()));
   }
 
   private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
     final String message = (String) args[0];
 
     final Component component = this.chatChannel().sendMessage(user, message, false);
 
-    this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
+    this.carbonChat.adventureManager().audiences().console().sendMessage(component);
   }
 
   @NonNull

@@ -51,7 +51,7 @@ public class CommandManager {
 
   @NonNull
   private CommandSettings commandSettings(@NonNull final String command) {
-    final ConfigurationSection section = this.carbonChat.getCommandsConfig().getConfigurationSection(command);
+    final ConfigurationSection section = this.carbonChat.commandsConfig().getConfigurationSection(command);
 
     return new CommandSettings(section.getBoolean("enabled"), section.getString("name"),
       section.getStringList("aliases"));

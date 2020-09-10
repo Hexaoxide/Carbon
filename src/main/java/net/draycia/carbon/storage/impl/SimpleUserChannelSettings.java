@@ -36,7 +36,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
 
   @NonNull
   private CarbonChatUser user() {
-    return (CarbonChatUser) this.carbonChat.getUserService().wrap(this.uuid);
+    return (CarbonChatUser) this.carbonChat.userService().wrap(this.uuid);
   }
 
   @Override
@@ -49,7 +49,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     this.spying = spying;
 
     if (!fromRemote) {
-      this.carbonChat.getMessageManager().sendMessage("spying-channel", this.uuid, byteArray -> {
+      this.carbonChat.messageManager().sendMessage("spying-channel", this.uuid, byteArray -> {
         byteArray.writeUTF(this.channel);
         byteArray.writeBoolean(spying);
       });
@@ -66,7 +66,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     this.ignored = ignored;
 
     if (!fromRemote) {
-      this.carbonChat.getMessageManager().sendMessage("ignoring-channel", this.uuid, byteArray -> {
+      this.carbonChat.messageManager().sendMessage("ignoring-channel", this.uuid, byteArray -> {
         byteArray.writeUTF(this.channel);
         byteArray.writeBoolean(ignored);
       });
@@ -92,7 +92,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     }
 
     if (!fromRemote) {
-      this.carbonChat.getMessageManager().sendMessage("channel-color", this.uuid, byteArray -> {
+      this.carbonChat.messageManager().sendMessage("channel-color", this.uuid, byteArray -> {
         byteArray.writeUTF(color.asHexString());
       });
     }

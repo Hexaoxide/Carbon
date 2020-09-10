@@ -65,7 +65,7 @@ public class SpyChannelCommand {
 
   private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final ChatChannel chatChannel = (ChatChannel) args[0];
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
 
     final String message;
 
@@ -73,58 +73,58 @@ public class SpyChannelCommand {
 
     if (settings.spying()) {
       settings.spying(false);
-      message = this.carbonChat.getLanguage().getString("spy-toggled-off");
+      message = this.carbonChat.language().getString("spy-toggled-off");
     } else {
       settings.spying(true);
-      message = this.carbonChat.getLanguage().getString("spy-toggled-on");
+      message = this.carbonChat.language().getString("spy-toggled-on");
     }
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n",
+    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n",
       "color", "<color:" + chatChannel.channelColor(user).toString() + ">", "channel", chatChannel.name()));
   }
 
   private void executeWhispers(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
 
     final String message;
 
     if (user.spyingwhispers()) {
       user.spyingWhispers(false);
-      message = this.carbonChat.getLanguage().getString("spy-whispers-off");
+      message = this.carbonChat.language().getString("spy-whispers-off");
     } else {
       user.spyingWhispers(true);
-      message = this.carbonChat.getLanguage().getString("spy-whispers-on");
+      message = this.carbonChat.language().getString("spy-whispers-on");
     }
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n"));
   }
 
   private void executeEverything(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final Boolean shouldSpy = (Boolean) args[0];
 
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
 
     final String message;
 
     if (shouldSpy) {
       user.spyingWhispers(true);
 
-      for (final ChatChannel channel : this.carbonChat.getChannelManager().registry().values()) {
+      for (final ChatChannel channel : this.carbonChat.channelManager().registry().values()) {
         user.channelSettings(channel).spying(true);
       }
 
-      message = this.carbonChat.getLanguage().getString("spy-everything-off");
+      message = this.carbonChat.language().getString("spy-everything-off");
     } else {
       user.spyingWhispers(false);
 
-      for (final ChatChannel channel : this.carbonChat.getChannelManager().registry().values()) {
+      for (final ChatChannel channel : this.carbonChat.channelManager().registry().values()) {
         user.channelSettings(channel).spying(false);
       }
 
-      message = this.carbonChat.getLanguage().getString("spy-everything-on");
+      message = this.carbonChat.language().getString("spy-everything-on");
     }
 
-    user.sendMessage(this.carbonChat.getAdventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n"));
   }
 
 }

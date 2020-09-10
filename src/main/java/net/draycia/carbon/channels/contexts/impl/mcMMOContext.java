@@ -19,7 +19,7 @@ public final class mcMMOContext implements Listener {
   public mcMMOContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    this.carbonChat.getContextManager().register("mcmmo-party", context -> {
+    this.carbonChat.contextManager().register("mcmmo-party", context -> {
       if ((context.value() instanceof Boolean) && ((Boolean) context.value())) {
         return this.isInSameParty(context.sender(), context.target());
       }
@@ -60,7 +60,7 @@ public final class mcMMOContext implements Listener {
       return;
     }
 
-    final ChatUser user = this.carbonChat.getUserService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
     final Object party = user.selectedChannel().context("mcmmo-party");
 
     if ((party instanceof Boolean) && ((Boolean) party)) {
@@ -70,7 +70,7 @@ public final class mcMMOContext implements Listener {
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
     final Object party = user.selectedChannel().context("mcmmo-party");
 
     if ((party instanceof Boolean) && ((Boolean) party) && !this.isInParty(user)) {

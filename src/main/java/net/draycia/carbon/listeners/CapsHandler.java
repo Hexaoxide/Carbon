@@ -18,11 +18,11 @@ public class CapsHandler implements Listener {
 
   @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
   public void onMessage(final PreChatFormatEvent event) {
-    if (!this.carbonChat.getModConfig().getBoolean("caps-protection.enabled")) {
+    if (!this.carbonChat.moderationConfig().getBoolean("caps-protection.enabled")) {
       return;
     }
 
-    if (!(event.message().length() >= this.carbonChat.getModConfig().getInt("caps-protection.minimum-length"))) {
+    if (!(event.message().length() >= this.carbonChat.moderationConfig().getInt("caps-protection.minimum-length"))) {
       return;
     }
 
@@ -36,11 +36,11 @@ public class CapsHandler implements Listener {
 
     final double capsPercentage = (amountOfCaps * 100.0) / event.message().length();
 
-    if (!(capsPercentage >= this.carbonChat.getModConfig().getDouble("caps-protection.percent-caps"))) {
+    if (!(capsPercentage >= this.carbonChat.moderationConfig().getDouble("caps-protection.percent-caps"))) {
       return;
     }
 
-    if (this.carbonChat.getModConfig().getBoolean("block-message")) {
+    if (this.carbonChat.moderationConfig().getBoolean("block-message")) {
       event.setCancelled(true);
     } else {
       event.message(event.message().toLowerCase());

@@ -42,11 +42,11 @@ public class ReplyCommand {
   private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final String input = (String) args[0];
 
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
 
     if (input.isEmpty()) {
-      final String message = this.carbonChat.getLanguage().getString("reply-message-blank");
-      final Component component = this.carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+      final String message = this.carbonChat.language().getString("reply-message-blank");
+      final Component component = this.carbonChat.adventureManager().processMessage(message, "br", "\n");
 
       user.sendMessage(component);
 
@@ -54,15 +54,15 @@ public class ReplyCommand {
     }
 
     if (user.replyTarget() == null) {
-      final String message = this.carbonChat.getLanguage().getString("no-reply-target");
-      final Component component = this.carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+      final String message = this.carbonChat.language().getString("no-reply-target");
+      final Component component = this.carbonChat.adventureManager().processMessage(message, "br", "\n");
 
       user.sendMessage(component);
 
       return;
     }
 
-    final ChatUser targetUser = this.carbonChat.getUserService().wrap(user.replyTarget());
+    final ChatUser targetUser = this.carbonChat.userService().wrap(user.replyTarget());
 
     targetUser.sendMessage(user, input);
   }

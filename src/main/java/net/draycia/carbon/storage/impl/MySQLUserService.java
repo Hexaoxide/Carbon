@@ -155,7 +155,7 @@ public class MySQLUserService implements UserService {
       final List<DbRow> channelSettings = this.database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
       final List<DbRow> ignoredUsers = this.database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
 
-      final ChatChannel channel = this.carbonChat.getChannelManager().channelOrDefault(users.getString("channel"));
+      final ChatChannel channel = this.carbonChat.channelManager().channelOrDefault(users.getString("channel"));
 
       if (channel != null) {
         user.selectedChannel(channel, true);
@@ -172,7 +172,7 @@ public class MySQLUserService implements UserService {
       user.spyingWhispers(users.<Boolean>get("spyingwhispers"), true);
 
       for (final DbRow channelSetting : channelSettings) {
-        final ChatChannel chatChannel = this.carbonChat.getChannelManager().registry().channel(channelSetting.getString("channel"));
+        final ChatChannel chatChannel = this.carbonChat.channelManager().registry().channel(channelSetting.getString("channel"));
 
         if (chatChannel != null) {
           final UserChannelSettings settings = user.channelSettings(chatChannel);
@@ -217,7 +217,7 @@ public class MySQLUserService implements UserService {
 
       this.carbonChat.getLogger().info("Saving user channel settings!");
       // Save user channel settings
-      for (final Map.Entry<String, ? extends UserChannelSettings> entry : user.getChannelSettings().entrySet()) {
+      for (final Map.Entry<String, ? extends UserChannelSettings> entry : user.channelSettings().entrySet()) {
         final UserChannelSettings value = entry.getValue();
 
         String colorString = null;
@@ -237,7 +237,7 @@ public class MySQLUserService implements UserService {
       // TODO: keep DB up to date with settings as settings are mutated
       stm.executeUpdateQuery("DELETE FROM sc_ignored_users WHERE uuid = ?", user.uuid().toString());
 
-      for (final UUID entry : user.getIgnoredUsers()) {
+      for (final UUID entry : user.ignoredUsers()) {
         stm.executeUpdateQuery("INSERT INTO sc_ignored_users (uuid, user) VALUES (?, ?)",
           user.uuid().toString(), entry.toString());
       }

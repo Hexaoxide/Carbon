@@ -43,26 +43,26 @@ public class MeCommand {
 
   private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final String message = ((String) args[0]).replace("</pre>", "");
-    String format = PlaceholderAPI.setPlaceholders(player, this.carbonChat.getLanguage().getString("me"));
+    String format = PlaceholderAPI.setPlaceholders(player, this.carbonChat.language().getString("me"));
 
     if (!player.hasPermission("carbonchat.me.formatting")) {
       format = format.replace("<message>", "<pre><message></pre>");
     }
 
-    final Component component = this.carbonChat.getAdventureManager().processMessage(format, "br", "\n",
+    final Component component = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
       "displayname", player.getDisplayName(), "message", message);
 
-    final ChatUser user = this.carbonChat.getUserService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player);
 
     if (user.shadowMuted()) {
       user.sendMessage(component);
     } else {
       for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-        if (this.carbonChat.getUserService().wrap(onlinePlayer).ignoringUser(user)) {
+        if (this.carbonChat.userService().wrap(onlinePlayer).ignoringUser(user)) {
           continue;
         }
 
-        this.carbonChat.getAdventureManager().audiences().player(onlinePlayer).sendMessage(component);
+        this.carbonChat.adventureManager().audiences().player(onlinePlayer).sendMessage(component);
       }
     }
   }

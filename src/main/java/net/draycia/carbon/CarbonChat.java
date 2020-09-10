@@ -80,72 +80,72 @@ public final class CarbonChat extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    checkForBungee();
+    this.checkForBungee();
 
     CommandAPI.onEnable(this);
-    Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+    final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
     // Ensure config is present to be modified by the user
-    if (!(new File(getDataFolder(), "config.yml").exists())) {
-      saveDefaultConfig();
+    if (!(new File(this.getDataFolder(), "config.yml").exists())) {
+      this.saveDefaultConfig();
     }
 
-    if (!(new File(getDataFolder(), "moderation.yml").exists())) {
-      saveResource("moderation.yml", false);
+    if (!(new File(this.getDataFolder(), "moderation.yml").exists())) {
+      this.saveResource("moderation.yml", false);
     }
 
-    if (!(new File(getDataFolder(), "language.yml").exists())) {
-      saveResource("language.yml", false);
+    if (!(new File(this.getDataFolder(), "language.yml").exists())) {
+      this.saveResource("language.yml", false);
     }
 
-    if (!(new File(getDataFolder(), "commands.yml").exists())) {
-      saveResource("commands.yml", false);
+    if (!(new File(this.getDataFolder(), "commands.yml").exists())) {
+      this.saveResource("commands.yml", false);
     }
 
-    loadModConfig();
-    loadLanguage();
+    this.loadModConfig();
+    this.loadLanguage();
 
     // Setup Adventure
-    adventureManager = new AdventureManager(this);
+    this.adventureManager = new AdventureManager(this);
 
     // Setup vault and permissions
-    permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
+    this.permission = this.getServer().getServicesManager().getRegistration(Permission.class).getProvider();
 
     // Initialize managers
-    channelManager = new ChannelManager(this);
-    contextManager = new ContextManager();
-    messageManager = new MessageManager(this);
-    commandManager = new CommandManager(this);
+    this.channelManager = new ChannelManager(this);
+    this.contextManager = new ContextManager();
+    this.messageManager = new MessageManager(this);
+    this.commandManager = new CommandManager(this);
 
-    String storageType = getConfig().getString("storage.type");
+    final String storageType = this.getConfig().getString("storage.type");
 
     if (storageType.equalsIgnoreCase("mysql")) {
-      getLogger().info("Enabling MySQL storage!");
-      userService = new MySQLUserService(this);
+      this.getLogger().info("Enabling MySQL storage!");
+      this.userService = new MySQLUserService(this);
     } else if (storageType.equalsIgnoreCase("json")) {
-      getLogger().info("Enabling JSON storage!");
-      userService = new JSONUserService(this);
+      this.getLogger().info("Enabling JSON storage!");
+      this.userService = new JSONUserService(this);
     } else {
-      getLogger().warning("Invalid storage type selected! Falling back to JSON.");
-      userService = new JSONUserService(this);
+      this.getLogger().warning("Invalid storage type selected! Falling back to JSON.");
+      this.userService = new JSONUserService(this);
     }
 
     // Setup listeners
-    setupListeners();
-    registerContexts();
+    this.setupListeners();
+    this.registerContexts();
 
     new CarbonPlaceholders(this).register();
 
     if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
-      getServer().getPluginManager().registerEvents(new TownyContext(this), this);
+      this.getServer().getPluginManager().registerEvents(new TownyContext(this), this);
     }
 
     if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
-      getServer().getPluginManager().registerEvents(new mcMMOContext(this), this);
+      this.getServer().getPluginManager().registerEvents(new mcMMOContext(this), this);
     }
 
     if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-      getServer().getPluginManager().registerEvents(new WorldGuardContext(this), this);
+      this.getServer().getPluginManager().registerEvents(new WorldGuardContext(this), this);
     }
 
     if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
@@ -153,25 +153,25 @@ public final class CarbonChat extends JavaPlugin {
     }
 
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
-      getLogger().warning("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
+      this.getLogger().warning("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
     }
   }
 
   @Override
   public void onDisable() {
-    userService.onDisable();
+    this.userService.onDisable();
   }
 
   private void setupListeners() {
-    PluginManager pluginManager = getServer().getPluginManager();
+    final PluginManager pluginManager = this.getServer().getPluginManager();
 
-    filterHandler = new FilterHandler(this);
+    this.filterHandler = new FilterHandler(this);
 
     // Register chat listeners
     pluginManager.registerEvents(new BukkitChatListener(this), this);
     pluginManager.registerEvents(new CapsHandler(this), this);
     pluginManager.registerEvents(new CustomPlaceholderHandler(this), this);
-    pluginManager.registerEvents(filterHandler, this);
+    pluginManager.registerEvents(this.filterHandler, this);
     pluginManager.registerEvents(new IgnoredPlayerHandler(), this);
     pluginManager.registerEvents(new ItemLinkHandler(), this);
     pluginManager.registerEvents(new LegacyFormatHandler(), this);
@@ -191,93 +191,93 @@ public final class CarbonChat extends JavaPlugin {
   public void reloadConfig() {
     super.reloadConfig();
 
-    loadModConfig();
-    loadLanguage();
-    loadCommandsConfig();
+    this.loadModConfig();
+    this.loadLanguage();
+    this.loadCommandsConfig();
   }
 
   public void reloadFilters() {
-    filterHandler.reloadFilters();
+    this.filterHandler.reloadFilters();
   }
 
   private boolean bungeeEnabled = false;
 
   private void checkForBungee() {
     try {
-      Class<?> spigotConfig = Class.forName("org.spigotmc.Spigotconfig");
-      Field bungee = spigotConfig.getField("bungee");
-      bungeeEnabled = bungee.getBoolean(null);
-    } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
+      final Class<?> spigotConfig = Class.forName("org.spigotmc.Spigotconfig");
+      final Field bungee = spigotConfig.getField("bungee");
+      this.bungeeEnabled = bungee.getBoolean(null);
+    } catch (final ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
     }
   }
 
-  public boolean isBungeeEnabled() {
-    return bungeeEnabled;
+  public boolean bungeeEnabled() {
+    return this.bungeeEnabled;
   }
 
   private void loadModConfig() {
-    modConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "moderation.yml"));
+    this.modConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "moderation.yml"));
   }
 
   private void loadLanguage() {
-    languageConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "language.yml"));
+    this.languageConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "language.yml"));
   }
 
   private void loadCommandsConfig() {
-    commandsConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "commands.yml"));
+    this.commandsConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "commands.yml"));
   }
 
   private void registerContexts() {
-    getContextManager().register("distance", new DistanceContext());
+    this.contextManager().register("distance", new DistanceContext());
   }
 
   @NonNull
-  public YamlConfiguration getModConfig() {
-    return modConfig;
+  public YamlConfiguration moderationConfig() {
+    return this.modConfig;
   }
 
   @NonNull
-  public YamlConfiguration getCommandsConfig() {
-    return commandsConfig;
+  public YamlConfiguration commandsConfig() {
+    return this.commandsConfig;
   }
 
   @NonNull
-  public YamlConfiguration getLanguage() {
-    return languageConfig;
+  public YamlConfiguration language() {
+    return this.languageConfig;
   }
 
   @NonNull
-  public Permission getPermission() {
-    return permission;
+  public Permission permission() {
+    return this.permission;
   }
 
   @NonNull
-  public CommandManager getCommandManager() {
-    return commandManager;
+  public CommandManager commandManager() {
+    return this.commandManager;
   }
 
   @NonNull
-  public ChannelManager getChannelManager() {
-    return channelManager;
+  public ChannelManager channelManager() {
+    return this.channelManager;
   }
 
   @NonNull
-  public MessageManager getMessageManager() {
-    return messageManager;
+  public MessageManager messageManager() {
+    return this.messageManager;
   }
 
   @NonNull
-  public UserService getUserService() {
-    return userService;
+  public UserService userService() {
+    return this.userService;
   }
 
   @NonNull
-  public AdventureManager getAdventureManager() {
-    return adventureManager;
+  public AdventureManager adventureManager() {
+    return this.adventureManager;
   }
 
   @NonNull
-  public ContextManager getContextManager() {
-    return contextManager;
+  public ContextManager contextManager() {
+    return this.contextManager;
   }
 }

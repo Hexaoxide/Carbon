@@ -27,14 +27,14 @@ public class BukkitChatListener implements Listener {
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
     ChatChannel channel = user.selectedChannel();
 
     if (channel.shouldCancelChatEvent()) {
       event.setCancelled(true);
     }
 
-    for (final ChatChannel entry : this.carbonChat.getChannelManager().registry().values()) {
+    for (final ChatChannel entry : this.carbonChat.channelManager().registry().values()) {
       if (entry.messagePrefix() == null || entry.messagePrefix().isEmpty()) {
         continue;
       }
@@ -60,7 +60,7 @@ public class BukkitChatListener implements Listener {
       recipients = new HashSet<>();
 
       for (final Player recipient : event.getRecipients()) {
-        recipients.add(this.carbonChat.getUserService().wrap(recipient));
+        recipients.add(this.carbonChat.userService().wrap(recipient));
       }
     } else {
       recipients = selectedChannel.audiences();
@@ -77,7 +77,7 @@ public class BukkitChatListener implements Listener {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
         final Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
 
-        this.carbonChat.getAdventureManager().audiences().console().sendMessage(component);
+        this.carbonChat.adventureManager().audiences().console().sendMessage(component);
 
         if (this.carbonChat.getConfig().getBoolean("show-tips")) {
           this.carbonChat.getLogger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");

@@ -20,9 +20,9 @@ public class PlayerJoinListener implements Listener {
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final ChatUser user = this.carbonChat.getUserService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
 
-    this.carbonChat.getUserService().validate(user);
+    this.carbonChat.userService().validate(user);
 
     if (user.nickname() != null) {
       user.nickname(user.nickname());
@@ -35,11 +35,11 @@ public class PlayerJoinListener implements Listener {
     }
 
     if (channel.equals("DEFAULT")) {
-      user.selectedChannel(this.carbonChat.getChannelManager().defaultChannel());
+      user.selectedChannel(this.carbonChat.channelManager().defaultChannel());
       return;
     }
 
-    final ChatChannel chatChannel = this.carbonChat.getChannelManager().registry().channel(channel);
+    final ChatChannel chatChannel = this.carbonChat.channelManager().registry().channel(channel);
 
     if (chatChannel != null) {
       user.selectedChannel(chatChannel);
@@ -48,10 +48,10 @@ public class PlayerJoinListener implements Listener {
 
   @EventHandler
   public void onPlayerQuit(final PlayerQuitEvent event) {
-    final ChatUser user = this.carbonChat.getUserService().wrapIfLoaded(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrapIfLoaded(event.getPlayer());
 
     if (user != null) {
-      this.carbonChat.getUserService().invalidate(user);
+      this.carbonChat.userService().invalidate(user);
     }
   }
 

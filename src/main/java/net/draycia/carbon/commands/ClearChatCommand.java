@@ -34,24 +34,24 @@ public class ClearChatCommand {
   }
 
   private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final String format = this.carbonChat.getModConfig().getString("clear-chat.message", "");
-    final Component component = this.carbonChat.getAdventureManager().processMessage(format, "br", "\n");
+    final String format = this.carbonChat.moderationConfig().getString("clear-chat.message", "");
+    final Component component = this.carbonChat.adventureManager().processMessage(format, "br", "\n");
 
     for (final Player player : Bukkit.getOnlinePlayers()) {
-      final ChatUser audience = this.carbonChat.getUserService().wrap(player);
+      final ChatUser audience = this.carbonChat.userService().wrap(player);
 
       if (player.hasPermission("carbonchat.clearchat.exempt")) {
-        final String message = this.carbonChat.getLanguage().getString("clear-exempt");
-        audience.sendMessage(this.carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
+        final String message = this.carbonChat.language().getString("clear-exempt");
+        audience.sendMessage(this.carbonChat.adventureManager().processMessage(message, "player", sender.getName()));
       } else {
-        for (int i = 0; i < this.carbonChat.getModConfig().getInt("clear-chat.message-count", 100); i++) {
+        for (int i = 0; i < this.carbonChat.moderationConfig().getInt("clear-chat.message-count", 100); i++) {
           audience.sendMessage(component);
         }
       }
 
       if (player.hasPermission("carbonchat.clearchat.notify")) {
-        final String message = this.carbonChat.getLanguage().getString("clear-notify");
-        audience.sendMessage(this.carbonChat.getAdventureManager().processMessage(message, "player", sender.getName()));
+        final String message = this.carbonChat.language().getString("clear-notify");
+        audience.sendMessage(this.carbonChat.adventureManager().processMessage(message, "player", sender.getName()));
       }
     }
   }
