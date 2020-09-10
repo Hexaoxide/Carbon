@@ -10,85 +10,85 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PrivateMessageEvent extends Event implements Cancellable {
 
-    /**
-     * Bukkit event stuff
-     */
-    @NonNull
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled = false;
+  /**
+   * Bukkit event stuff
+   */
+  @NonNull
+  private static final HandlerList handlers = new HandlerList();
+  private boolean cancelled = false;
 
-    @Override
-    @NonNull
-    public HandlerList getHandlers() {
-        return handlers;
-    }
+  @Override
+  @NonNull
+  public HandlerList getHandlers() {
+    return handlers;
+  }
 
-    @NonNull
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+  @NonNull
+  public static HandlerList getHandlerList() {
+    return handlers;
+  }
 
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
+  @Override
+  public boolean isCancelled() {
+    return cancelled;
+  }
 
-    @Override
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
+  @Override
+  public void setCancelled(boolean cancelled) {
+    this.cancelled = cancelled;
+  }
 
-    /**
-     * Relevant stuff
-     */
-    @NonNull
-    private final ChatUser sender;
+  /**
+   * Relevant stuff
+   */
+  @NonNull
+  private final ChatUser sender;
 
-    @NonNull
-    private final ChatUser target;
+  @NonNull
+  private final ChatUser target;
 
-    @NonNull
-    private final Component senderComponent;
+  @NonNull
+  private final Component senderComponent;
 
-    @NonNull
-    private final Component targetComponent;
+  @NonNull
+  private final Component targetComponent;
 
-    @NonNull
-    private final String message;
+  @NonNull
+  private final String message;
 
-    public PrivateMessageEvent(@NonNull ChatUser sender, @NonNull ChatUser target, @NonNull Component senderComponent, @NonNull Component targetComponent, @NonNull String message) {
-        super(!Bukkit.isPrimaryThread());
+  public PrivateMessageEvent(@NonNull ChatUser sender, @NonNull ChatUser target, @NonNull Component senderComponent, @NonNull Component targetComponent, @NonNull String message) {
+    super(!Bukkit.isPrimaryThread());
 
-        this.sender = sender;
-        this.target = target;
-        this.senderComponent = senderComponent;
-        this.targetComponent = targetComponent;
-        this.message = message;
-    }
+    this.sender = sender;
+    this.target = target;
+    this.senderComponent = senderComponent;
+    this.targetComponent = targetComponent;
+    this.message = message;
+  }
 
-    @NonNull
-    public ChatUser getSender() {
-        return sender;
-    }
+  @NonNull
+  public ChatUser getSender() {
+    return sender;
+  }
 
-    @NonNull
-    public ChatUser getTarget() {
-        return target;
-    }
+  @NonNull
+  public ChatUser getTarget() {
+    return target;
+  }
 
-    @NonNull
-    public Component getSenderComponent() {
-        return senderComponent;
-    }
+  @NonNull
+  public Component getSenderComponent() {
+    return senderComponent;
+  }
 
-    @NonNull
-    public Component getTargetComponent() {
-        return targetComponent;
-    }
+  @NonNull
+  public Component getTargetComponent() {
+    return targetComponent;
+  }
 
-    @NonNull
-    public String getMessage() {
-        return message;
-    }
+  @NonNull
+  public String getMessage() {
+    return message;
+  }
 
 }

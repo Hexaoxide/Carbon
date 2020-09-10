@@ -169,11 +169,6 @@
                 value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF,
                     SUPER_CTOR_CALL, ENUM_CONSTANT_DEF"/>
     </module>
-    <module name="NoWhitespaceBefore">
-      <property name="tokens"
-                value="COMMA, SEMI, POST_INC, POST_DEC, DOT,
-                    LABELED_STAT, METHOD_REF"/>
-      <property name="allowLineBreaks" value="true"/>
-    </module>
+    <module name="WhitespaceAfter"/>
   </module>
 </module>

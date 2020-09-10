@@ -19,97 +19,97 @@ import java.util.regex.Pattern;
 
 public class FilterHandler implements Listener {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    @NonNull
-    private final Map<String, List<Pattern>> patternReplacements = new HashMap<>();
+  @NonNull
+  private final Map<String, List<Pattern>> patternReplacements = new HashMap<>();
 
-    @NonNull
-    private final List<Pattern> blockedWords = new ArrayList<>();
+  @NonNull
+  private final List<Pattern> blockedWords = new ArrayList<>();
 
-    public FilterHandler(@NonNull CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
-        reloadFilters();
+  public FilterHandler(@NonNull CarbonChat carbonChat) {
+    this.carbonChat = carbonChat;
+    reloadFilters();
+  }
+
+  public void reloadFilters() {
+    patternReplacements.clear();
+    blockedWords.clear();
+
+    FileConfiguration config = carbonChat.getModConfig();
+    ConfigurationSection filters = config.getConfigurationSection("filters.filters");
+
+    if (filters != null) {
+      for (String replacement : filters.getKeys(false)) {
+        List<Pattern> patterns = new ArrayList<>();
+
+        for (String word : filters.getStringList(replacement)) {
+          if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+            patterns.add(Pattern.compile(word));
+          } else {
+            patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
+          }
+        }
+
+        patternReplacements.put(replacement, patterns);
+      }
     }
 
-    public void reloadFilters() {
-        patternReplacements.clear();
-        blockedWords.clear();
+    for (String replacement : config.getStringList("filters.blocked-words")) {
+      if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
+        blockedWords.add(Pattern.compile(replacement));
+      } else {
+        blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
+      }
+    }
+  }
 
-        FileConfiguration config = carbonChat.getModConfig();
-        ConfigurationSection filters = config.getConfigurationSection("filters.filters");
-
-        if (filters != null) {
-            for (String replacement : filters.getKeys(false)) {
-                List<Pattern> patterns = new ArrayList<>();
-
-                for (String word : filters.getStringList(replacement)) {
-                    if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
-                        patterns.add(Pattern.compile(word));
-                    } else {
-                        patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
-                    }
-                }
-
-                patternReplacements.put(replacement, patterns);
-            }
-        }
-
-        for (String replacement : config.getStringList("filters.blocked-words")) {
-            if (carbonChat.getModConfig().getBoolean("filters.case-sensitive")) {
-                blockedWords.add(Pattern.compile(replacement));
-            } else {
-                blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
-            }
-        }
+  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+  public void onFilter(PreChatFormatEvent event) {
+    if (!carbonChat.getModConfig().getBoolean("filters.enabled")) {
+      return;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onFilter(PreChatFormatEvent event) {
-        if (!carbonChat.getModConfig().getBoolean("filters.enabled")) {
-            return;
-        }
-
-        if (event.getUser().isOnline()) {
-            if (event.getUser().asPlayer().hasPermission("carbonchat.filter.exempt")) {
-                return;
-            }
-        }
-
-        if (!channelUsesFilter(event.getChannel())) {
-            return;
-        }
-
-        String message = event.getMessage();
-        //Matcher matcher;
-
-        for (Map.Entry<String, List<Pattern>> entry : patternReplacements.entrySet()) {
-            for (Pattern pattern : entry.getValue()) {
-                Matcher matcher = pattern.matcher(message);
-
-                if (entry.getKey().equals("_")) {
-                    message = matcher.replaceAll("");
-                } else {
-                    message = matcher.replaceAll(entry.getKey());
-                }
-            }
-        }
-
-        event.setMessage(message);
-
-        for (Pattern blockedWord : blockedWords) {
-            if (blockedWord.matcher(event.getMessage()).find()) {
-                event.setCancelled(true);
-                break;
-            }
-        }
+    if (event.getUser().isOnline()) {
+      if (event.getUser().asPlayer().hasPermission("carbonchat.filter.exempt")) {
+        return;
+      }
     }
 
-    private boolean channelUsesFilter(@NonNull ChatChannel chatChannel) {
-        Object filter = chatChannel.getContext("filter");
-
-        return filter instanceof Boolean && ((Boolean) filter);
+    if (!channelUsesFilter(event.getChannel())) {
+      return;
     }
+
+    String message = event.getMessage();
+    //Matcher matcher;
+
+    for (Map.Entry<String, List<Pattern>> entry : patternReplacements.entrySet()) {
+      for (Pattern pattern : entry.getValue()) {
+        Matcher matcher = pattern.matcher(message);
+
+        if (entry.getKey().equals("_")) {
+          message = matcher.replaceAll("");
+        } else {
+          message = matcher.replaceAll(entry.getKey());
+        }
+      }
+    }
+
+    event.setMessage(message);
+
+    for (Pattern blockedWord : blockedWords) {
+      if (blockedWord.matcher(event.getMessage()).find()) {
+        event.setCancelled(true);
+        break;
+      }
+    }
+  }
+
+  private boolean channelUsesFilter(@NonNull ChatChannel chatChannel) {
+    Object filter = chatChannel.getContext("filter");
+
+    return filter instanceof Boolean && ((Boolean) filter);
+  }
 
 }

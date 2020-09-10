@@ -11,101 +11,101 @@ import java.util.UUID;
 
 public interface ChatUser extends Audience {
 
-    @Nullable
-    Player asPlayer();
+  @Nullable
+  Player asPlayer();
 
-    @NonNull
-    OfflinePlayer asOfflinePlayer();
+  @NonNull
+  OfflinePlayer asOfflinePlayer();
 
-    @NonNull
-    UUID getUUID();
+  @NonNull
+  UUID getUUID();
 
-    boolean isOnline();
+  boolean isOnline();
 
-    @Nullable
-    String getNickname();
+  @Nullable
+  String getNickname();
 
-    default void setNickname(@NonNull String nickname) {
-        this.setNickname(nickname, false);
-    }
+  default void setNickname(@NonNull String nickname) {
+    this.setNickname(nickname, false);
+  }
 
-    void setNickname(@Nullable String nickname, boolean fromRemote);
+  void setNickname(@Nullable String nickname, boolean fromRemote);
 
-    @Nullable
-    ChatChannel getSelectedChannel();
+  @Nullable
+  ChatChannel getSelectedChannel();
 
-    default void setSelectedChannel(@NonNull ChatChannel channel) {
-        this.setSelectedChannel(channel, false);
-    }
+  default void setSelectedChannel(@NonNull ChatChannel channel) {
+    this.setSelectedChannel(channel, false);
+  }
 
-    void setSelectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
+  void setSelectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
 
-    void clearSelectedChannel();
+  void clearSelectedChannel();
 
-    @NonNull
-    UserChannelSettings getChannelSettings(@NonNull ChatChannel channel);
+  @NonNull
+  UserChannelSettings getChannelSettings(@NonNull ChatChannel channel);
 
-    boolean isSpyingWhispers();
+  boolean isSpyingWhispers();
 
-    default void setSpyingWhispers(boolean spyingWhispers) {
-        this.setSpyingWhispers(spyingWhispers, false);
-    }
+  default void setSpyingWhispers(boolean spyingWhispers) {
+    this.setSpyingWhispers(spyingWhispers, false);
+  }
 
-    void setSpyingWhispers(boolean spyingWhispers, boolean fromRemote);
+  void setSpyingWhispers(boolean spyingWhispers, boolean fromRemote);
 
-    boolean isMuted();
+  boolean isMuted();
 
-    default void setMuted(boolean muted) {
-        this.setMuted(muted, false);
-    }
+  default void setMuted(boolean muted) {
+    this.setMuted(muted, false);
+  }
 
-    void setMuted(boolean muted, boolean fromRemote);
+  void setMuted(boolean muted, boolean fromRemote);
 
-    boolean isShadowMuted();
+  boolean isShadowMuted();
 
-    default void setShadowMuted(boolean shadowMuted) {
-        this.setShadowMuted(shadowMuted, false);
-    }
+  default void setShadowMuted(boolean shadowMuted) {
+    this.setShadowMuted(shadowMuted, false);
+  }
 
-    void setShadowMuted(boolean shadowMuted, boolean fromRemote);
+  void setShadowMuted(boolean shadowMuted, boolean fromRemote);
 
-    @Nullable
-    UUID getReplyTarget();
+  @Nullable
+  UUID getReplyTarget();
 
-    default void setReplyTarget(@Nullable UUID target) {
-        this.setReplyTarget(target, false);
-    }
+  default void setReplyTarget(@Nullable UUID target) {
+    this.setReplyTarget(target, false);
+  }
 
-    default void setReplyTarget(@Nullable ChatUser user) {
-        this.setReplyTarget(user.getUUID(), false);
-    }
+  default void setReplyTarget(@Nullable ChatUser user) {
+    this.setReplyTarget(user.getUUID(), false);
+  }
 
-    void setReplyTarget(@Nullable UUID target, boolean fromRemote);
+  void setReplyTarget(@Nullable UUID target, boolean fromRemote);
 
-    default void setReplyTarget(@Nullable ChatUser user, boolean fromRemote) {
-        this.setReplyTarget(user.getUUID(), fromRemote);
-    }
+  default void setReplyTarget(@Nullable ChatUser user, boolean fromRemote) {
+    this.setReplyTarget(user.getUUID(), fromRemote);
+  }
 
-    boolean isIgnoringUser(@NonNull UUID uuid);
+  boolean isIgnoringUser(@NonNull UUID uuid);
 
-    void setIgnoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote);
+  void setIgnoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote);
 
-    default void setIgnoringUser(@NonNull UUID uuid, boolean ignoring) {
-        this.setIgnoringUser(uuid, ignoring, false);
-    }
+  default void setIgnoringUser(@NonNull UUID uuid, boolean ignoring) {
+    this.setIgnoringUser(uuid, ignoring, false);
+  }
 
-    default boolean isIgnoringUser(@NonNull ChatUser user) {
-        return this.isIgnoringUser(user.getUUID());
-    }
+  default boolean isIgnoringUser(@NonNull ChatUser user) {
+    return this.isIgnoringUser(user.getUUID());
+  }
 
-    default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring, boolean fromRemote) {
-        this.setIgnoringUser(user.getUUID(), ignoring, fromRemote);
-    }
+  default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring, boolean fromRemote) {
+    this.setIgnoringUser(user.getUUID(), ignoring, fromRemote);
+  }
 
-    default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring) {
-        this.setIgnoringUser(user.getUUID(), ignoring, false);
-    }
+  default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring) {
+    this.setIgnoringUser(user.getUUID(), ignoring, false);
+  }
 
-    void sendMessage(@NonNull ChatUser sender, @NonNull String message);
+  void sendMessage(@NonNull ChatUser sender, @NonNull String message);
 
 }

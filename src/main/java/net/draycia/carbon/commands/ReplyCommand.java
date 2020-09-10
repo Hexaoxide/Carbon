@@ -16,51 +16,51 @@ import java.util.LinkedHashMap;
 
 public class ReplyCommand {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public ReplyCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
-        this.carbonChat = carbonChat;
+  public ReplyCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
+    this.carbonChat = carbonChat;
 
-        if (!commandSettings.isEnabled()) {
-            return;
-        }
-
-        CommandUtils.handleDuplicateCommands(commandSettings);
-
-        LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-        arguments.put("message", new GreedyStringArgument());
-
-        new CommandAPICommand(commandSettings.getName())
-                .withArguments(arguments)
-                .withAliases(commandSettings.getAliasesArray())
-                .withPermission(CommandPermission.fromString("carbonchat.reply"))
-                .executesPlayer(this::execute)
-                .register();
+    if (!commandSettings.isEnabled()) {
+      return;
     }
 
-    private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
-        String input = (String) args[0];
+    CommandUtils.handleDuplicateCommands(commandSettings);
 
-        ChatUser user = carbonChat.getUserService().wrap(player);
+    LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
+    arguments.put("message", new GreedyStringArgument());
 
-        if (input == null || input.isEmpty()) {
-            String message = carbonChat.getLanguage().getString("reply-message-blank");
-            Component component = carbonChat.getAdventureManager().processMessage(message, "br", "\n");
-            user.sendMessage(component);
-            return;
-        }
+    new CommandAPICommand(commandSettings.getName())
+      .withArguments(arguments)
+      .withAliases(commandSettings.getAliasesArray())
+      .withPermission(CommandPermission.fromString("carbonchat.reply"))
+      .executesPlayer(this::execute)
+      .register();
+  }
 
-        if (user.getReplyTarget() == null) {
-            String message = carbonChat.getLanguage().getString("no-reply-target");
-            Component component = carbonChat.getAdventureManager().processMessage(message, "br", "\n");
-            user.sendMessage(component);
-            return;
-        }
+  private void execute(@NonNull Player player, @NonNull Object @NonNull [] args) {
+    String input = (String) args[0];
 
-        ChatUser targetUser = carbonChat.getUserService().wrap(user.getReplyTarget());
+    ChatUser user = carbonChat.getUserService().wrap(player);
 
-        targetUser.sendMessage(user, input);
+    if (input == null || input.isEmpty()) {
+      String message = carbonChat.getLanguage().getString("reply-message-blank");
+      Component component = carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+      user.sendMessage(component);
+      return;
     }
+
+    if (user.getReplyTarget() == null) {
+      String message = carbonChat.getLanguage().getString("no-reply-target");
+      Component component = carbonChat.getAdventureManager().processMessage(message, "br", "\n");
+      user.sendMessage(component);
+      return;
+    }
+
+    ChatUser targetUser = carbonChat.getUserService().wrap(user.getReplyTarget());
+
+    targetUser.sendMessage(user, input);
+  }
 
 }

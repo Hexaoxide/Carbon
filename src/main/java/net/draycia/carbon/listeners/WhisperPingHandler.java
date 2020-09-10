@@ -11,35 +11,35 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class WhisperPingHandler implements Listener {
 
-    @NonNull
-    private final CarbonChat carbonChat;
+  @NonNull
+  private final CarbonChat carbonChat;
 
-    public WhisperPingHandler(@NonNull CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
+  public WhisperPingHandler(@NonNull CarbonChat carbonChat) {
+    this.carbonChat = carbonChat;
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onPing(PrivateMessageEvent event) {
+    if (event.getSender().getUUID().equals(event.getTarget().getUUID())) {
+      return;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPing(PrivateMessageEvent event) {
-        if (event.getSender().getUUID().equals(event.getTarget().getUUID())) {
-            return;
-        }
+    String senderName = event.getSender().asOfflinePlayer().getName();
 
-        String senderName = event.getSender().asOfflinePlayer().getName();
-
-        if (senderName == null || !event.getMessage().contains(senderName)) {
-            return;
-        }
-
-        if (!carbonChat.getConfig().getBoolean("whisper.pings.enabled")) {
-            return;
-        }
-
-        Key key = Key.of(carbonChat.getConfig().getString("whisper.pings.sound"));
-        Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("whisper.pings.source"));
-        float volume = (float) carbonChat.getConfig().getDouble("whisper.pings.volume");
-        float pitch = (float) carbonChat.getConfig().getDouble("whisper.pings.pitch");
-
-        event.getSender().playSound(Sound.of(key, source, volume, pitch));
+    if (senderName == null || !event.getMessage().contains(senderName)) {
+      return;
     }
+
+    if (!carbonChat.getConfig().getBoolean("whisper.pings.enabled")) {
+      return;
+    }
+
+    Key key = Key.of(carbonChat.getConfig().getString("whisper.pings.sound"));
+    Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("whisper.pings.source"));
+    float volume = (float) carbonChat.getConfig().getDouble("whisper.pings.volume");
+    float pitch = (float) carbonChat.getConfig().getDouble("whisper.pings.pitch");
+
+    event.getSender().playSound(Sound.of(key, source, volume, pitch));
+  }
 
 }

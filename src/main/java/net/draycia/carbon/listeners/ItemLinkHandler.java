@@ -13,35 +13,35 @@ import java.util.regex.Pattern;
 
 public class ItemLinkHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onItemLink(ChatComponentEvent event) {
-        // Handle item linking placeholders
-        if (event.getSender().isOnline()) {
-            Player player = event.getSender().asPlayer();
+  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+  public void onItemLink(ChatComponentEvent event) {
+    // Handle item linking placeholders
+    if (event.getSender().isOnline()) {
+      Player player = event.getSender().asPlayer();
 
-            if (!player.hasPermission("carbonchat.itemlink")) {
-                return;
-            }
+      if (!player.hasPermission("carbonchat.itemlink")) {
+        return;
+      }
 
-            Component itemComponent = CarbonUtils.createComponent(player);
+      Component itemComponent = CarbonUtils.createComponent(player);
 
-            if (itemComponent.equals(TextComponent.empty())) {
-                return;
-            }
+      if (itemComponent.equals(TextComponent.empty())) {
+        return;
+      }
 
-            for (Pattern pattern : event.getChannel().getItemLinkPatterns()) {
-                String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
+      for (Pattern pattern : event.getChannel().getItemLinkPatterns()) {
+        String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
 
-                if (event.getOriginalMessage().contains(patternContent)) {
-                    TextComponent component = (TextComponent) event.getComponent().replaceFirstText(pattern, (input) -> {
-                        return TextComponent.builder().append(itemComponent);
-                    });
+        if (event.getOriginalMessage().contains(patternContent)) {
+          TextComponent component = (TextComponent) event.getComponent().replaceFirstText(pattern, (input) -> {
+            return TextComponent.builder().append(itemComponent);
+          });
 
-                    event.setComponent(component);
-                    break;
-                }
-            }
+          event.setComponent(component);
+          break;
         }
+      }
     }
+  }
 
 }
