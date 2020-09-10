@@ -61,7 +61,7 @@ public final class mcMMOContext implements Listener {
     }
 
     ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
-    Object party = user.getSelectedChannel().getContext("mcmmo-party");
+    Object party = user.selectedChannel().getContext("mcmmo-party");
 
     if ((party instanceof Boolean) && ((Boolean) party)) {
       user.clearSelectedChannel();
@@ -71,7 +71,7 @@ public final class mcMMOContext implements Listener {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
-    Object party = user.getSelectedChannel().getContext("mcmmo-party");
+    Object party = user.selectedChannel().getContext("mcmmo-party");
 
     if ((party instanceof Boolean) && ((Boolean) party) && !isInParty(user)) {
       user.clearSelectedChannel();
@@ -79,15 +79,15 @@ public final class mcMMOContext implements Listener {
   }
 
   public boolean isInParty(@NonNull ChatUser user) {
-    return PartyAPI.inParty(user.asPlayer());
+    return PartyAPI.inParty(user.player());
   }
 
   public boolean isInSameParty(@NonNull ChatUser user1, @NonNull ChatUser user2) {
-    if (!user1.isOnline() || !user2.isOnline()) {
+    if (!user1.online() || !user2.online()) {
       return false;
     }
 
-    return PartyAPI.inSameParty(user1.asPlayer(), user2.asPlayer());
+    return PartyAPI.inSameParty(user1.player(), user2.player());
   }
 
 }

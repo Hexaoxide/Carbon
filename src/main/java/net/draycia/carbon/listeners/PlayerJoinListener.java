@@ -24,8 +24,8 @@ public class PlayerJoinListener implements Listener {
 
     carbonChat.getUserService().validate(user);
 
-    if (user.getNickname() != null) {
-      user.setNickname(user.getNickname());
+    if (user.nickname() != null) {
+      user.nickname(user.nickname());
     }
 
     String channel = carbonChat.getConfig().getString("channel-on-join");
@@ -35,14 +35,14 @@ public class PlayerJoinListener implements Listener {
     }
 
     if (channel.equals("DEFAULT")) {
-      user.setSelectedChannel(carbonChat.getChannelManager().getDefaultChannel());
+      user.selectedChannel(carbonChat.getChannelManager().getDefaultChannel());
       return;
     }
 
     ChatChannel chatChannel = carbonChat.getChannelManager().getRegistry().get(channel);
 
     if (chatChannel != null) {
-      user.setSelectedChannel(chatChannel);
+      user.selectedChannel(chatChannel);
     }
   }
 

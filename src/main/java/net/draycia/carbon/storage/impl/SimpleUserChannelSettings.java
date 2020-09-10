@@ -40,12 +40,12 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public boolean isSpying() {
+  public boolean spying() {
     return this.spying;
   }
 
   @Override
-  public void setSpying(boolean spying, boolean fromRemote) {
+  public void spying(boolean spying, boolean fromRemote) {
     this.spying = spying;
 
     if (!fromRemote) {
@@ -57,12 +57,12 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public boolean isIgnored() {
+  public boolean ignored() {
     return ignored;
   }
 
   @Override
-  public void setIgnoring(boolean ignored, boolean fromRemote) {
+  public void ignoring(boolean ignored, boolean fromRemote) {
     this.ignored = ignored;
 
     if (!fromRemote) {
@@ -75,7 +75,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
 
   @Override
   @Nullable
-  public TextColor getColor() {
+  public TextColor color() {
     if (color == null) {
       return null;
     }
@@ -84,7 +84,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public void setColor(@Nullable TextColor color, boolean fromRemote) {
+  public void color(@Nullable TextColor color, boolean fromRemote) {
     if (color == null) {
       this.color = null;
     } else {

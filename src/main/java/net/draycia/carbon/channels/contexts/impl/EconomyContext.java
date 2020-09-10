@@ -38,7 +38,7 @@ public class EconomyContext implements Listener {
       return;
     }
 
-    Player player = event.getUser().asPlayer();
+    Player player = event.getUser().player();
 
     if (!economy.has(player, requiredBal)) {
       event.setCancelled(true);
@@ -67,7 +67,7 @@ public class EconomyContext implements Listener {
       return;
     }
 
-    Player player = event.getUser().asPlayer();
+    Player player = event.getUser().player();
 
     if (!economy.has(player, cost)) {
       event.setCancelled(true);

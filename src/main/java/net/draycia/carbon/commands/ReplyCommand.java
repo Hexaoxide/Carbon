@@ -22,7 +22,7 @@ public class ReplyCommand {
   public ReplyCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -31,9 +31,9 @@ public class ReplyCommand {
     LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
     arguments.put("message", new GreedyStringArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(arguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.reply"))
       .executesPlayer(this::execute)
       .register();

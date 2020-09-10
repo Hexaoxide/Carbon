@@ -24,7 +24,7 @@ public class ToggleCommand {
   public ToggleCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -33,9 +33,9 @@ public class ToggleCommand {
     LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("channel", CarbonUtils.channelArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.toggle"))
       .executesPlayer(this::executeSelf)
       .register();
@@ -44,9 +44,9 @@ public class ToggleCommand {
     argumentsOther.put("players", CarbonUtils.chatUserArgument());
     argumentsOther.put("channel", CarbonUtils.channelArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(argumentsOther)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.toggle"))
       .executes(this::executeOther)
       .register();
@@ -62,11 +62,11 @@ public class ToggleCommand {
 
     if (!channel.isIgnorable()) {
       message = channel.getCannotIgnoreMessage();
-    } else if (settings.isIgnored()) {
-      settings.setIgnoring(false);
+    } else if (settings.ignored()) {
+      settings.ignoring(false);
       message = channel.getToggleOffMessage();
     } else {
-      settings.setIgnoring(true);
+      settings.ignoring(true);
       message = channel.getToggleOnMessage();
     }
 
@@ -83,12 +83,12 @@ public class ToggleCommand {
 
     UserChannelSettings settings = user.getChannelSettings(channel);
 
-    if (settings.isIgnored()) {
-      settings.setIgnoring(false);
+    if (settings.ignored()) {
+      settings.ignoring(false);
       message = channel.getToggleOffMessage();
       otherMessage = channel.getToggleOtherOffMessage();
     } else {
-      settings.setIgnoring(true);
+      settings.ignoring(true);
       message = channel.getToggleOnMessage();
       otherMessage = channel.getToggleOtherOnMessage();
     }
@@ -98,6 +98,6 @@ public class ToggleCommand {
 
     carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage,
       "br", "\n", "color", "<color:" + channel.getChannelColor(user).toString() + ">",
-      "channel", channel.getName(), "player", user.asOfflinePlayer().getName()));
+      "channel", channel.getName(), "player", user.offlinePlayer().getName()));
   }
 }

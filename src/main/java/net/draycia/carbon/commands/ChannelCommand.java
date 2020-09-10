@@ -24,7 +24,7 @@ public class ChannelCommand {
   public ChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -33,9 +33,9 @@ public class ChannelCommand {
     LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
     setChannelArguments.put("channel", CarbonUtils.channelArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(setChannelArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.channel"))
       .executesPlayer(this::setChannel)
       .register();
@@ -44,9 +44,9 @@ public class ChannelCommand {
     sendMessageArguments.put("channel", CarbonUtils.channelArgument());
     sendMessageArguments.put("message", new GreedyStringArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(sendMessageArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.channel.message"))
       .executesPlayer(this::sendMessage)
       .register();
@@ -56,7 +56,7 @@ public class ChannelCommand {
     ChatUser user = carbonChat.getUserService().wrap(player);
     ChatChannel channel = (ChatChannel) args[0];
 
-    if (user.getChannelSettings(channel).isIgnored()) {
+    if (user.getChannelSettings(channel).ignored()) {
       user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, channel.getCannotUseMessage(),
         "br", "\n",
         "color", "<" + channel.getChannelColor(user).toString() + ">",
@@ -65,7 +65,7 @@ public class ChannelCommand {
       return;
     }
 
-    user.setSelectedChannel(channel);
+    user.selectedChannel(channel);
 
     user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, channel.getSwitchMessage(),
       "br", "\n",

@@ -24,7 +24,7 @@ public class SudoChannelCommand {
   public SudoChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -34,9 +34,9 @@ public class SudoChannelCommand {
     setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
     setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(setOtherChannelArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.channel.others"))
       .executes((sender, args) -> {
         this.setOtherChannel(sender, (ChatUser) args[0], (ChatChannel) args[1]);
@@ -48,9 +48,9 @@ public class SudoChannelCommand {
     sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
     sendMessageOtherArguments.put("message", new GreedyStringArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(sendMessageOtherArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.channel.others.message"))
       .executes((sender, args) -> {
         this.sendMessageOther(sender, (ChatUser) args[0], (ChatChannel) args[1], (String) args[2]);
@@ -59,7 +59,7 @@ public class SudoChannelCommand {
   }
 
   private void setOtherChannel(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull ChatChannel channel) {
-    user.setSelectedChannel(channel);
+    user.selectedChannel(channel);
 
     String message = channel.getSwitchMessage();
     String otherMessage = channel.getSwitchOtherMessage();
@@ -69,7 +69,7 @@ public class SudoChannelCommand {
 
     carbonChat.getAdventureManager().getAudiences().audience(sender).sendMessage(carbonChat.getAdventureManager().processMessage(otherMessage, "br", "\n",
       "color", "<color:" + channel.getChannelColor(user).toString() + ">", "channel", channel.getName(),
-      "player", user.asOfflinePlayer().getName()));
+      "player", user.offlinePlayer().getName()));
   }
 
   private void sendMessageOther(@NonNull CommandSender sender, @NonNull ChatUser user, @NonNull ChatChannel channel, @NonNull String message) {

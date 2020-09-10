@@ -61,28 +61,28 @@ public class MessageManager {
     getMessageService().registerUserMessageListener("nickname", (user, byteArray) -> {
       String nickname = byteArray.readUTF();
 
-      user.setNickname(nickname, true);
+      user.nickname(nickname, true);
 
-      if (user.isOnline()) {
+      if (user.online()) {
         String message = carbonChat.getLanguage().getString("nickname-set");
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.asPlayer(),
+        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.player(),
           message, "nickname", nickname));
       }
     });
 
     getMessageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
-      user.setNickname(null, true);
+      user.nickname(null, true);
 
-      if (user.isOnline()) {
+      if (user.online()) {
         String message = carbonChat.getLanguage().getString("nickname-reset");
 
-        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.asPlayer(), message));
+        user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(user.player(), message));
       }
     });
 
     getMessageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
-      user.setSelectedChannel(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()), true);
+      user.selectedChannel(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()), true);
     });
 
     getMessageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
@@ -107,22 +107,22 @@ public class MessageManager {
 
     getMessageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
       user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
-        .setIgnoring(byteArray.readBoolean(), true);
+        .ignoring(byteArray.readBoolean(), true);
     });
 
     getMessageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
       user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
-        .setSpying(byteArray.readBoolean(), true);
+        .spying(byteArray.readBoolean(), true);
     });
 
     getMessageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
       user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
-        .setColor(TextColor.fromHexString(byteArray.readUTF()), true);
+        .color(TextColor.fromHexString(byteArray.readUTF()), true);
     });
 
     getMessageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
       user.getChannelSettings(carbonChat.getChannelManager().getRegistry().get(byteArray.readUTF()))
-        .setColor(null, true);
+        .color(null, true);
     });
 
     getMessageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {

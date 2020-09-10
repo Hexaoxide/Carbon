@@ -11,12 +11,12 @@ public class UserFormattingHandler implements Listener {
 
   @EventHandler(ignoreCancelled = true)
   public void onFormat(PreChatFormatEvent event) {
-    if (!event.getUser().isOnline()) {
+    if (!event.getUser().online()) {
       suppressFormatting(event);
       return;
     }
 
-    Player player = event.getUser().asPlayer();
+    Player player = event.getUser().player();
 
     if (!player.hasPermission("carbonchat.formatting") &&
       !player.hasPermission("carbonchat.channels." + event.getChannel().getKey() + ".formatting")) {

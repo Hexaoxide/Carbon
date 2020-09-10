@@ -71,8 +71,8 @@ public class FilterHandler implements Listener {
       return;
     }
 
-    if (event.getUser().isOnline()) {
-      if (event.getUser().asPlayer().hasPermission("carbonchat.filter.exempt")) {
+    if (event.getUser().online()) {
+      if (event.getUser().player().hasPermission("carbonchat.filter.exempt")) {
         return;
       }
     }

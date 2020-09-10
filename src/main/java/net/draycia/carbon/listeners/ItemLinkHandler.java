@@ -16,8 +16,8 @@ public class ItemLinkHandler implements Listener {
   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
   public void onItemLink(ChatComponentEvent event) {
     // Handle item linking placeholders
-    if (event.getSender().isOnline()) {
-      Player player = event.getSender().asPlayer();
+    if (event.getSender().online()) {
+      Player player = event.getSender().player();
 
       if (!player.hasPermission("carbonchat.itemlink")) {
         return;

@@ -5,29 +5,29 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface UserChannelSettings {
 
-  boolean isSpying();
+  boolean spying();
 
-  default void setSpying(boolean spying) {
-    this.setSpying(spying, false);
+  default void spying(boolean spying) {
+    this.spying(spying, false);
   }
 
-  void setSpying(boolean spying, boolean fromRemote);
+  void spying(boolean spying, boolean fromRemote);
 
-  boolean isIgnored();
+  boolean ignored();
 
-  void setIgnoring(boolean ignored, boolean fromRemote);
+  void ignoring(boolean ignored, boolean fromRemote);
 
-  default void setIgnoring(boolean ignored) {
-    this.setIgnoring(ignored, false);
+  default void ignoring(boolean ignored) {
+    this.ignoring(ignored, false);
   }
 
   @Nullable
-  TextColor getColor();
+  TextColor color();
 
-  default void setColor(@Nullable TextColor color) {
-    this.setColor(color, false);
+  default void color(@Nullable TextColor color) {
+    this.color(color, false);
   }
 
-  void setColor(@Nullable TextColor color, boolean fromRemote);
+  void color(@Nullable TextColor color, boolean fromRemote);
 
 }

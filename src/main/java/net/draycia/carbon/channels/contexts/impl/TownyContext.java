@@ -61,7 +61,7 @@ public final class TownyContext implements Listener {
   public void onResidentRemove(TownRemoveResidentEvent event) {
     String name = event.getResident().getName();
     ChatUser user = carbonChat.getUserService().wrap(name);
-    Object town = user.getSelectedChannel().getContext(KEY);
+    Object town = user.selectedChannel().getContext(KEY);
 
     if ((town instanceof Boolean) && ((Boolean) town)) {
       user.clearSelectedChannel();
@@ -71,7 +71,7 @@ public final class TownyContext implements Listener {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
-    Object town = user.getSelectedChannel().getContext(KEY);
+    Object town = user.selectedChannel().getContext(KEY);
 
     if ((town instanceof Boolean) && ((Boolean) town) && !isInTown(user)) {
       user.clearSelectedChannel();
@@ -80,7 +80,7 @@ public final class TownyContext implements Listener {
 
   public boolean isInTown(@NonNull ChatUser user) {
     try {
-      return TownyAPI.getInstance().getDataSource().getResident(user.asPlayer().getName()).hasTown();
+      return TownyAPI.getInstance().getDataSource().getResident(user.player().getName()).hasTown();
     } catch (NotRegisteredException e) {
       e.printStackTrace();
     }
@@ -89,15 +89,15 @@ public final class TownyContext implements Listener {
   }
 
   public boolean isInSameTown(@NonNull ChatUser user1, @NonNull ChatUser user2) {
-    if (!user1.isOnline() || !user2.isOnline()) {
+    if (!user1.online() || !user2.online()) {
       return false;
     }
 
     try {
-      Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.asPlayer().getName());
+      Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.player().getName());
 
       if (resident.hasTown()) {
-        return resident.getTown().hasResident(user2.asPlayer().getName());
+        return resident.getTown().hasResident(user2.player().getName());
       }
     } catch (NotRegisteredException e) {
       e.printStackTrace();

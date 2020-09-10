@@ -25,7 +25,7 @@ public class SpyChannelCommand {
   public SpyChannelCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -34,9 +34,9 @@ public class SpyChannelCommand {
     LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("channel", CarbonUtils.channelArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.spy"))
       .executesPlayer(this::execute)
       .register();
@@ -44,9 +44,9 @@ public class SpyChannelCommand {
     LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
     whisperArguments.put("channel", new LiteralArgument("whispers"));
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(whisperArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.spy"))
       .executesPlayer(this::executeWhispers)
       .register();
@@ -55,9 +55,9 @@ public class SpyChannelCommand {
     everythingArguments.put("channel", new LiteralArgument("*"));
     everythingArguments.put("should-spy", new BooleanArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(everythingArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.spy"))
       .executesPlayer(this::executeEverything) // lul
       .register();
@@ -71,11 +71,11 @@ public class SpyChannelCommand {
 
     UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
-    if (settings.isSpying()) {
-      settings.setSpying(false);
+    if (settings.spying()) {
+      settings.spying(false);
       message = carbonChat.getLanguage().getString("spy-toggled-off");
     } else {
-      settings.setSpying(true);
+      settings.spying(true);
       message = carbonChat.getLanguage().getString("spy-toggled-on");
     }
 
@@ -110,7 +110,7 @@ public class SpyChannelCommand {
       user.setSpyingWhispers(true);
 
       for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-        user.getChannelSettings(channel).setSpying(true);
+        user.getChannelSettings(channel).spying(true);
       }
 
       message = carbonChat.getLanguage().getString("spy-everything-off");
@@ -118,7 +118,7 @@ public class SpyChannelCommand {
       user.setSpyingWhispers(false);
 
       for (ChatChannel channel : carbonChat.getChannelManager().getRegistry().values()) {
-        user.getChannelSettings(channel).setSpying(false);
+        user.getChannelSettings(channel).spying(false);
       }
 
       message = carbonChat.getLanguage().getString("spy-everything-on");

@@ -97,12 +97,12 @@ public class JSONUserService implements UserService {
 
   @Override
   public void invalidate(@NonNull ChatUser user) {
-    userCache.invalidate(user.getUUID());
+    userCache.invalidate(user.uuid());
   }
 
   @Override
   public void validate(@NonNull ChatUser user) {
-    userCache.put(user.getUUID(), (CarbonChatUser) user);
+    userCache.put(user.uuid(), (CarbonChatUser) user);
   }
 
   @NonNull

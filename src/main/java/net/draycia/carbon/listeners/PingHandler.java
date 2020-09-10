@@ -28,7 +28,7 @@ public class PingHandler implements Listener {
       return;
     }
 
-    String targetName = event.getTarget().asOfflinePlayer().getName();
+    String targetName = event.getTarget().offlinePlayer().getName();
     String prefix = carbonChat.getConfig().getString("pings.prefix", "");
     boolean caseSensitive = carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
 

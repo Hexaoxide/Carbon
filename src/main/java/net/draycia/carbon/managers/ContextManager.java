@@ -15,7 +15,7 @@ public class ContextManager {
   @NonNull
   private final Map<@NonNull String, @NonNull Function<@NonNull MessageContext, @NonNull Boolean>> handlers = new HashMap<>();
 
-  public boolean register(@NonNull String key, @NonNull Function<@NonNull MessageContext, @NonNull Boolean> handler) {
+  public boolean register(@NonNull final String key, @NonNull final Function<@NonNull MessageContext, @NonNull Boolean> handler) {
     if (this.handlers.containsKey(key)) {
       return false;
     }
@@ -24,17 +24,17 @@ public class ContextManager {
     return true;
   }
 
-  public boolean testContext(@NonNull ChatUser user, @NonNull ChatUser target, @NonNull ChatChannel channel) {
-    for (Map.Entry<String, Function<MessageContext, Boolean>> handler : handlers.entrySet()) {
-      String key = handler.getKey();
+  public boolean testContext(@NonNull final ChatUser user, @NonNull final ChatUser target, @NonNull final ChatChannel channel) {
+    for (final Map.Entry<String, Function<MessageContext, Boolean>> handler : this.handlers.entrySet()) {
+      final String key = handler.getKey();
 
-      Object value = channel.getContext(key);
+      final Object value = channel.getContext(key);
 
       if (value == null) {
         continue;
       }
 
-      MessageContext context = new SimpleMessageContext(user, target, channel, value);
+      final MessageContext context = new SimpleMessageContext(user, target, channel, value);
 
       return handler.getValue().apply(context);
     }

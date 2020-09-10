@@ -80,9 +80,9 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
 
       ChatUser user = carbonChat.getUserService().wrap(player);
 
-      return String.valueOf(user.getChannelSettings(channel).isIgnored());
+      return String.valueOf(user.getChannelSettings(channel).ignored());
     } else if (key.startsWith("selected_channel")) {
-      ChatChannel channel = carbonChat.getUserService().wrap(player).getSelectedChannel();
+      ChatChannel channel = carbonChat.getUserService().wrap(player).selectedChannel();
 
       return channel == null ? carbonChat.getChannelManager().getDefaultChannel().getName() : channel.getName();
     }

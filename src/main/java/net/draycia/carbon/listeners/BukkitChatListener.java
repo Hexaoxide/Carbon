@@ -27,15 +27,15 @@ public class BukkitChatListener implements Listener {
 
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-  public void onPlayerchat(AsyncPlayerChatEvent event) {
+  public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
     ChatUser user = carbonChat.getUserService().wrap(event.getPlayer());
-    ChatChannel channel = user.getSelectedChannel();
+    ChatChannel channel = user.selectedChannel();
 
     if (channel.shouldCancelChatEvent()) {
       event.setCancelled(true);
     }
 
-    for (ChatChannel entry : carbonChat.getChannelManager().getRegistry().values()) {
+    for (final ChatChannel entry : carbonChat.getChannelManager().getRegistry().values()) {
       if (entry.getMessagePrefix() == null || entry.getMessagePrefix().isEmpty()) {
         continue;
       }

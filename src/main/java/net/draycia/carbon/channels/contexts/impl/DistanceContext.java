@@ -11,7 +11,7 @@ public class DistanceContext implements Function<MessageContext, Boolean> {
   @Override
   @NonNull
   public Boolean apply(@NonNull MessageContext context) {
-    if (!context.getSender().isOnline() || !context.getTarget().isOnline()) {
+    if (!context.getSender().online() || !context.getTarget().online()) {
       return false;
     }
 
@@ -19,8 +19,8 @@ public class DistanceContext implements Function<MessageContext, Boolean> {
       return true;
     }
 
-    Location senderLocation = context.getSender().asPlayer().getLocation();
-    Location targetLocation = context.getTarget().asPlayer().getLocation();
+    Location senderLocation = context.getSender().player().getLocation();
+    Location targetLocation = context.getTarget().player().getLocation();
 
     if (!senderLocation.getWorld().equals(targetLocation.getWorld())) {
       return false;

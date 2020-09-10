@@ -20,11 +20,11 @@ public class WhisperPingHandler implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onPing(PrivateMessageEvent event) {
-    if (event.getSender().getUUID().equals(event.getTarget().getUUID())) {
+    if (event.getSender().uuid().equals(event.getTarget().uuid())) {
       return;
     }
 
-    String senderName = event.getSender().asOfflinePlayer().getName();
+    String senderName = event.getSender().offlinePlayer().getName();
 
     if (senderName == null || !event.getMessage().contains(senderName)) {
       return;

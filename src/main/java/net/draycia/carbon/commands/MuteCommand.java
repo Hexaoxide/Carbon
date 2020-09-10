@@ -25,7 +25,7 @@ public class MuteCommand {
   public MuteCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -34,9 +34,9 @@ public class MuteCommand {
     LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
     arguments.put("player", CarbonUtils.chatUserArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(arguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.mute"))
       .executes(this::execute)
       .register();
@@ -51,7 +51,7 @@ public class MuteCommand {
       String format = carbonChat.getLanguage().getString("no-longer-muted");
 
       Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
-        "player", user.asOfflinePlayer().getName());
+        "player", user.offlinePlayer().getName());
 
       audience.sendMessage(message);
     } else {
@@ -59,7 +59,7 @@ public class MuteCommand {
         Permission permission = carbonChat.getPermission();
         String format;
 
-        if (permission.playerHas(null, user.asOfflinePlayer(), "carbonchat.mute.exempt")) {
+        if (permission.playerHas(null, user.offlinePlayer(), "carbonchat.mute.exempt")) {
           format = carbonChat.getLanguage().getString("mute-exempt");
         } else {
           user.setMuted(true);
@@ -67,7 +67,7 @@ public class MuteCommand {
         }
 
         Component message = carbonChat.getAdventureManager().processMessage(format, "br", "\n",
-          "player", user.asOfflinePlayer().getName());
+          "player", user.offlinePlayer().getName());
 
         audience.sendMessage(message);
       });

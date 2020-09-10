@@ -24,7 +24,7 @@ public class NicknameCommand {
   public NicknameCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -33,9 +33,9 @@ public class NicknameCommand {
     LinkedHashMap<String, Argument> selfArguments = new LinkedHashMap<>();
     selfArguments.put("nickname", new StringArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(selfArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.nickname"))
       .executesPlayer(this::executeSelf)
       .register();
@@ -44,9 +44,9 @@ public class NicknameCommand {
     otherArguments.put("player", CarbonUtils.chatUserArgument());
     otherArguments.put("nickname", new StringArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(otherArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.nickname.others"))
       .executes(this::executeOther)
       .register();
@@ -60,7 +60,7 @@ public class NicknameCommand {
       nickname = null;
     }
 
-    sender.setNickname(nickname);
+    sender.nickname(nickname);
 
     String message;
 
@@ -72,7 +72,7 @@ public class NicknameCommand {
 
     sender.sendMessage(carbonChat.getAdventureManager().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
-      "user", sender.asOfflinePlayer().getName()));
+      "user", sender.offlinePlayer().getName()));
   }
 
   private void executeOther(@NonNull CommandSender sender, @NonNull Object @NonNull [] args) {
@@ -81,11 +81,11 @@ public class NicknameCommand {
     String nickname = (String) args[1];
 
     if (nickname.equalsIgnoreCase("off") ||
-      nickname.equalsIgnoreCase(target.asOfflinePlayer().getName())) {
+      nickname.equalsIgnoreCase(target.offlinePlayer().getName())) {
       nickname = null;
     }
 
-    target.setNickname(nickname);
+    target.nickname(nickname);
 
     String message;
 
@@ -97,7 +97,7 @@ public class NicknameCommand {
 
     user.sendMessage(carbonChat.getAdventureManager().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
-      "user", target.asOfflinePlayer().getName()));
+      "user", target.offlinePlayer().getName()));
   }
 
 }

@@ -24,7 +24,7 @@ public class SetColorCommand {
   public SetColorCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -35,9 +35,9 @@ public class SetColorCommand {
       arguments.put("channel", new LiteralArgument(channel.getKey()));
       arguments.put("color", CarbonUtils.textColorArgument());
 
-      new CommandAPICommand(commandSettings.getName())
+      new CommandAPICommand(commandSettings.name())
         .withArguments(arguments)
-        .withAliases(commandSettings.getAliasesArray())
+        .withAliases(commandSettings.aliases())
         .withPermission(CommandPermission.fromString("carbonchat.setcolor"))
         .executesPlayer((player, args) -> {
           TextColor color = (TextColor) args[0];
@@ -54,7 +54,7 @@ public class SetColorCommand {
 
           UserChannelSettings settings = user.getChannelSettings(channel);
 
-          settings.setColor(color);
+          settings.color(color);
 
           user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
             carbonChat.getLanguage().getString("channel-color-set"),

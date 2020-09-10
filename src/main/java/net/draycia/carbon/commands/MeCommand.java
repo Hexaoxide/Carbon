@@ -24,7 +24,7 @@ public class MeCommand {
   public MeCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -33,9 +33,9 @@ public class MeCommand {
     LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("message", new GreedyStringArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.me"))
       .executesPlayer(this::execute)
       .register();

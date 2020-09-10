@@ -10,7 +10,7 @@ public class OfflineNameHandler implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onOfflineMessage(PreChatFormatEvent event) {
     // If the player isn't online (cross server message), use their normal name
-    if (!event.getUser().isOnline()) {
+    if (!event.getUser().online()) {
       event.setFormat(event.getFormat().replace("%player_displayname%", "%player_name%"));
     }
   }

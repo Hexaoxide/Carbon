@@ -56,10 +56,6 @@
     <module name="EmptyForInitializerPad"/>
     <module name="EmptyForIteratorPad"/>
 
-    <module name="StatementNoWhitespaceAfter">
-      <property name="tokens" value="LITERAL_IF, LITERAL_FOR, LITERAL_WHILE, LITERAL_CATCH, LITERAL_TRY"/>
-    </module>
-
     <!-- one empty line between each class element -->
     <module name="EmptyLineSeparator">
       <!-- No new line after the license header -->
@@ -73,9 +69,6 @@
     <module name="GenericWhitespace"/>
     <!-- packages and imports must be on one line each -->
     <module name="NoLineWrap"/>
-    <module name="NoWhitespaceAfter">
-      <property name="allowLineBreaks" value="false"/>
-    </module>
     <module name="SingleSpaceSeparator">
       <property name="validateComments" value="true"/>
     </module>

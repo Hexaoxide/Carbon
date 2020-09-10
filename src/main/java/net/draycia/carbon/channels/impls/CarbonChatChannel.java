@@ -38,7 +38,7 @@ public class CarbonChatChannel extends ChatChannel {
   @Nullable
   private final ConfigurationSection config;
 
-  public CarbonChatChannel(@NonNull String key, @NonNull CarbonChat carbonChat, @Nullable ConfigurationSection config) {
+  public CarbonChatChannel(@NonNull final String key, @NonNull final CarbonChat carbonChat, @Nullable final ConfigurationSection config) {
     this.key = key;
     this.carbonChat = carbonChat;
     this.config = config;
@@ -50,13 +50,13 @@ public class CarbonChatChannel extends ChatChannel {
   }
 
   @Override
-  public boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target) {
+  public boolean testContext(@NonNull final ChatUser sender, @NonNull final ChatUser target) {
     return carbonChat.getContextManager().testContext(sender, target, this);
   }
 
   @Override
-  public boolean canPlayerUse(@NonNull ChatUser user) {
-    return user.asPlayer().hasPermission("carbonchat.channels." + getName() + ".use");
+  public boolean canPlayerUse(@NonNull final ChatUser user) {
+    return user.player().hasPermission("carbonchat.channels." + getName() + ".use");
   }
 
   @Override
@@ -76,17 +76,17 @@ public class CarbonChatChannel extends ChatChannel {
   }
 
   private void updateUserNickname(@NonNull ChatUser user) {
-    if (user.isOnline()) {
-      String nickname = user.getNickname();
+    if (user.online()) {
+      String nickname = user.nickname();
 
       if (nickname != null) {
         Component component = carbonChat.getAdventureManager().processMessage(nickname);
         nickname = CarbonChat.LEGACY.serialize(component);
 
-        user.asPlayer().setDisplayName(nickname);
+        user.player().setDisplayName(nickname);
 
         if (carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-          user.asPlayer().setPlayerListName(nickname);
+          user.player().setPlayerListName(nickname);
         }
       }
     }
@@ -112,13 +112,13 @@ public class CarbonChatChannel extends ChatChannel {
 
     String displayName;
 
-    if (user.getNickname() != null) {
-      displayName = user.getNickname();
+    if (user.nickname() != null) {
+      displayName = user.nickname();
     } else {
-      if (user.isOnline()) {
-        displayName = user.asPlayer().getDisplayName();
+      if (user.online()) {
+        displayName = user.player().getDisplayName();
       } else {
-        displayName = user.asOfflinePlayer().getName();
+        displayName = user.offlinePlayer().getName();
       }
     }
 
@@ -181,8 +181,8 @@ public class CarbonChatChannel extends ChatChannel {
     // Route message to bungee / discord (if message originates from this server)
     // Use instanceof and not isOnline, if this message originates from another then the instanceof will
     // fail, but isOnline may succeed if the player is online on both servers (somehow).
-    if (user.isOnline() && !fromRemote && (shouldBungee() || isCrossServer())) {
-      sendMessageToBungee(user.asPlayer(), consoleEvent.getComponent());
+    if (user.online() && !fromRemote && (shouldBungee() || isCrossServer())) {
+      sendMessageToBungee(user.player(), consoleEvent.getComponent());
     }
 
     return consoleEvent.getComponent();
@@ -214,18 +214,18 @@ public class CarbonChatChannel extends ChatChannel {
   }
 
   private boolean userHasGroup(@NonNull ChatUser user, @NonNull String group) {
-    if (user.isOnline()) {
-      if (carbonChat.getPermission().playerInGroup(user.asPlayer(), group)) {
+    if (user.online()) {
+      if (carbonChat.getPermission().playerInGroup(user.player(), group)) {
         return true;
       }
     } else {
-      if (carbonChat.getPermission().playerInGroup(null, user.asOfflinePlayer(), group)) {
+      if (carbonChat.getPermission().playerInGroup(null, user.offlinePlayer(), group)) {
         return true;
       }
     }
 
-    if (user.isOnline() && this.permissionGroupMatching()) {
-      return user.asPlayer().hasPermission("carbonchat.group." + group);
+    if (user.online() && this.permissionGroupMatching()) {
+      return user.player().hasPermission("carbonchat.group." + group);
     }
 
     return false;
@@ -235,10 +235,10 @@ public class CarbonChatChannel extends ChatChannel {
   private String getFirstFoundUserFormat(@NonNull ChatUser user) {
     String[] playerGroups;
 
-    if (user.isOnline()) {
-      playerGroups = carbonChat.getPermission().getPlayerGroups(user.asPlayer());
+    if (user.online()) {
+      playerGroups = carbonChat.getPermission().getPlayerGroups(user.player());
     } else {
-      playerGroups = carbonChat.getPermission().getPlayerGroups(null, user.asOfflinePlayer());
+      playerGroups = carbonChat.getPermission().getPlayerGroups(null, user.offlinePlayer());
     }
 
     for (String group : playerGroups) {
@@ -256,10 +256,10 @@ public class CarbonChatChannel extends ChatChannel {
   private String getPrimaryGroupFormat(@NonNull ChatUser user) {
     String primaryGroup;
 
-    if (user.isOnline()) {
-      primaryGroup = carbonChat.getPermission().getPrimaryGroup(user.asPlayer());
+    if (user.online()) {
+      primaryGroup = carbonChat.getPermission().getPrimaryGroup(user.player());
     } else {
-      primaryGroup = carbonChat.getPermission().getPrimaryGroup(null, user.asOfflinePlayer());
+      primaryGroup = carbonChat.getPermission().getPrimaryGroup(null, user.offlinePlayer());
     }
 
     String primaryGroupFormat = getFormat(primaryGroup);
@@ -284,7 +284,7 @@ public class CarbonChatChannel extends ChatChannel {
 
   private boolean isUserSpying(@NonNull ChatUser sender, @NonNull ChatUser target) {
     if (!canPlayerSee(sender, target, false)) {
-      return target.getChannelSettings(this).isSpying();
+      return target.getChannelSettings(this).spying();
     }
 
     return false;
@@ -308,10 +308,10 @@ public class CarbonChatChannel extends ChatChannel {
 
   @Override
   public boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying) {
-    Player targetPlayer = target.asPlayer();
+    Player targetPlayer = target.player();
 
     if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + getName())) {
-      if (target.getChannelSettings(this).isSpying()) {
+      if (target.getChannelSettings(this).spying()) {
         return true;
       }
     }
@@ -321,14 +321,14 @@ public class CarbonChatChannel extends ChatChannel {
     }
 
     if (isIgnorable()) {
-      return !target.getChannelSettings(this).isIgnored();
+      return !target.getChannelSettings(this).ignored();
     }
 
     return true;
   }
 
   public boolean canPlayerSee(@NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying) {
-    Player targetPlayer = target.asPlayer();
+    Player targetPlayer = target.player();
 
     if (!canPlayerSee(target, checkSpying)) {
       return false;
@@ -344,7 +344,7 @@ public class CarbonChatChannel extends ChatChannel {
   @Override
   @Nullable
   public TextColor getChannelColor(@NonNull ChatUser user) {
-    TextColor userColor = user.getChannelSettings(this).getColor();
+    TextColor userColor = user.getChannelSettings(this).color();
 
     if (userColor != null) {
       System.out.println("user color found!");

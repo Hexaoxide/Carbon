@@ -51,7 +51,7 @@ public class AliasedChannelCommand {
   private void setChannel(@NonNull Player player, @NonNull Object @NonNull [] args) {
     ChatUser user = carbonChat.getUserService().wrap(player);
 
-    if (user.getChannelSettings(getChatChannel()).isIgnored()) {
+    if (user.getChannelSettings(getChatChannel()).ignored()) {
       user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, getChatChannel().getCannotUseMessage(),
         "br", "\n",
         "color", "<" + getChatChannel().getChannelColor(user).toString() + ">",
@@ -60,7 +60,7 @@ public class AliasedChannelCommand {
       return;
     }
 
-    user.setSelectedChannel(getChatChannel());
+    user.selectedChannel(getChatChannel());
 
     user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player, getChatChannel().getSwitchMessage(),
       "br", "\n",

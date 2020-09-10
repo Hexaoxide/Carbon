@@ -9,11 +9,15 @@ public final class FunctionalityConstants {
 
   public static final boolean HAS_HOVER_EVENT_METHOD = noThrow(() -> ItemFactory.class.getMethod("hoverContentOf", ItemStack.class));
 
-  private static boolean noThrow(@NonNull ThrowingRunnable runnable) {
+  private FunctionalityConstants() {
+
+  }
+
+  private static boolean noThrow(@NonNull final ThrowingRunnable runnable) {
     try {
       runnable.run();
       return true;
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       return false;
     }
   }

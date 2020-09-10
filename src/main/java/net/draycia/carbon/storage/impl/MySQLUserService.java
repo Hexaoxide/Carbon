@@ -131,12 +131,12 @@ public class MySQLUserService implements UserService {
 
   @Override
   public void invalidate(@NonNull ChatUser user) {
-    userCache.invalidate(user.getUUID());
+    userCache.invalidate(user.uuid());
   }
 
   @Override
   public void validate(@NonNull ChatUser user) {
-    userCache.put(user.getUUID(), (CarbonChatUser) user);
+    userCache.put(user.uuid(), (CarbonChatUser) user);
   }
 
   @NonNull
@@ -158,13 +158,13 @@ public class MySQLUserService implements UserService {
       ChatChannel channel = carbonChat.getChannelManager().getChannelOrDefault(users.getString("channel"));
 
       if (channel != null) {
-        user.setSelectedChannel(channel, true);
+        user.selectedChannel(channel, true);
       }
 
       String nickname = users.getString("nickname");
 
       if (nickname != null) {
-        user.setNickname(nickname, true);
+        user.nickname(nickname, true);
       }
 
       user.setMuted(users.<Boolean>get("muted"), true);
@@ -177,13 +177,13 @@ public class MySQLUserService implements UserService {
         if (chatChannel != null) {
           UserChannelSettings settings = user.getChannelSettings(chatChannel);
 
-          settings.setSpying(channelSetting.<Boolean>get("spying"), true);
-          settings.setIgnoring(channelSetting.<Boolean>get("ignored"), true);
+          settings.spying(channelSetting.<Boolean>get("spying"), true);
+          settings.ignoring(channelSetting.<Boolean>get("ignored"), true);
 
           String color = channelSetting.getString("color");
 
           if (color != null) {
-            settings.setColor(TextColor.fromHexString(color), true);
+            settings.color(TextColor.fromHexString(color), true);
           }
         }
       }
@@ -205,15 +205,15 @@ public class MySQLUserService implements UserService {
       // Save user general data
       String selectedName = null;
 
-      if (user.getSelectedChannel() != null) {
-        selectedName = user.getSelectedChannel().getKey();
+      if (user.selectedChannel() != null) {
+        selectedName = user.selectedChannel().getKey();
       }
 
       carbonChat.getLogger().info("Saving user data!");
       stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname) VALUES (?, ?, ?, ?, ?, ?) " +
           "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname =?",
-        user.getUUID().toString(), selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.getNickname(),
-        selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.getNickname());
+        user.uuid().toString(), selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.nickname(),
+        selectedName, user.isMuted(), user.isShadowMuted(), user.isSpyingWhispers(), user.nickname());
 
       carbonChat.getLogger().info("Saving user channel settings!");
       // Save user channel settings
@@ -222,24 +222,24 @@ public class MySQLUserService implements UserService {
 
         String colorString = null;
 
-        if (value.getColor() != null) {
-          colorString = value.getColor().asHexString();
+        if (value.color() != null) {
+          colorString = value.color().asHexString();
         }
 
         stm.executeUpdateQuery("INSERT INTO sc_channel_settings (uuid, channel, spying, ignored, color) VALUES (?, ?, ?, ?, ?) " +
             "ON DUPLICATE KEY UPDATE spying = ?, ignored = ?, color = ?",
-          user.getUUID().toString(), entry.getKey(), value.isSpying(), value.isIgnored(), colorString,
-          value.isSpying(), value.isIgnored(), colorString);
+          user.uuid().toString(), entry.getKey(), value.spying(), value.ignored(), colorString,
+          value.spying(), value.ignored(), colorString);
       }
 
       carbonChat.getLogger().info("Saving user ignores!");
       // Save user ignore list (remove old entries then add new ones)
       // TODO: keep DB up to date with settings as settings are mutated
-      stm.executeUpdateQuery("DELETE FROM sc_ignored_users WHERE uuid = ?", user.getUUID().toString());
+      stm.executeUpdateQuery("DELETE FROM sc_ignored_users WHERE uuid = ?", user.uuid().toString());
 
       for (UUID entry : user.getIgnoredUsers()) {
         stm.executeUpdateQuery("INSERT INTO sc_ignored_users (uuid, user) VALUES (?, ?)",
-          user.getUUID().toString(), entry.toString());
+          user.uuid().toString(), entry.toString());
       }
 
       return true;

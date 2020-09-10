@@ -15,12 +15,12 @@ public class RelationalPlaceholderHandler implements Listener {
       return;
     }
 
-    if (!event.getSender().isOnline() || !event.getTarget().isOnline()) {
+    if (!event.getSender().online() || !event.getTarget().online()) {
       return;
     }
 
-    Player sender = event.getSender().asPlayer();
-    Player target = event.getTarget().asPlayer();
+    Player sender = event.getSender().player();
+    Player target = event.getTarget().player();
 
     event.setFormat(PlaceholderAPI.setRelationalPlaceholders(sender, target, event.getFormat()));
   }

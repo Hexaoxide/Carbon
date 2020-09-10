@@ -12,33 +12,33 @@ import java.util.UUID;
 public interface ChatUser extends Audience {
 
   @Nullable
-  Player asPlayer();
+  Player player();
 
   @NonNull
-  OfflinePlayer asOfflinePlayer();
+  OfflinePlayer offlinePlayer();
 
   @NonNull
-  UUID getUUID();
+  UUID uuid();
 
-  boolean isOnline();
-
-  @Nullable
-  String getNickname();
-
-  default void setNickname(@NonNull String nickname) {
-    this.setNickname(nickname, false);
-  }
-
-  void setNickname(@Nullable String nickname, boolean fromRemote);
+  boolean online();
 
   @Nullable
-  ChatChannel getSelectedChannel();
+  String nickname();
 
-  default void setSelectedChannel(@NonNull ChatChannel channel) {
-    this.setSelectedChannel(channel, false);
+  default void nickname(@NonNull String nickname) {
+    this.nickname(nickname, false);
   }
 
-  void setSelectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
+  void nickname(@Nullable String nickname, boolean fromRemote);
+
+  @Nullable
+  ChatChannel selectedChannel();
+
+  default void selectedChannel(@NonNull ChatChannel channel) {
+    this.selectedChannel(channel, false);
+  }
+
+  void selectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
 
   void clearSelectedChannel();
 
@@ -77,13 +77,13 @@ public interface ChatUser extends Audience {
   }
 
   default void setReplyTarget(@Nullable ChatUser user) {
-    this.setReplyTarget(user.getUUID(), false);
+    this.setReplyTarget(user.uuid(), false);
   }
 
   void setReplyTarget(@Nullable UUID target, boolean fromRemote);
 
   default void setReplyTarget(@Nullable ChatUser user, boolean fromRemote) {
-    this.setReplyTarget(user.getUUID(), fromRemote);
+    this.setReplyTarget(user.uuid(), fromRemote);
   }
 
   boolean isIgnoringUser(@NonNull UUID uuid);
@@ -95,15 +95,15 @@ public interface ChatUser extends Audience {
   }
 
   default boolean isIgnoringUser(@NonNull ChatUser user) {
-    return this.isIgnoringUser(user.getUUID());
+    return this.isIgnoringUser(user.uuid());
   }
 
   default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring, boolean fromRemote) {
-    this.setIgnoringUser(user.getUUID(), ignoring, fromRemote);
+    this.setIgnoringUser(user.uuid(), ignoring, fromRemote);
   }
 
   default void setIgnoringUser(@NonNull ChatUser user, boolean ignoring) {
-    this.setIgnoringUser(user.getUUID(), ignoring, false);
+    this.setIgnoringUser(user.uuid(), ignoring, false);
   }
 
   void sendMessage(@NonNull ChatUser sender, @NonNull String message);

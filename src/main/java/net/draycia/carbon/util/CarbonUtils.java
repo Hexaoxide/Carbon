@@ -105,8 +105,8 @@ public final class CarbonUtils {
       input = "white";
     }
 
-    if (user != null && user.isOnline()) {
-      input = PlaceholderAPI.setPlaceholders(user.asPlayer(), input);
+    if (user != null && user.online()) {
+      input = PlaceholderAPI.setPlaceholders(user.player(), input);
     }
 
     for (NamedTextColor namedColor : NamedTextColor.values()) {

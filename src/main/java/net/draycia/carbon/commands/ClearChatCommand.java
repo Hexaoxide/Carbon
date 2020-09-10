@@ -21,14 +21,14 @@ public class ClearChatCommand {
   public ClearChatCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    new CommandAPICommand(commandSettings.getName())
-      .withAliases(commandSettings.getAliasesArray())
+    new CommandAPICommand(commandSettings.name())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.clearchat.clear"))
       .executes(this::execute)
       .register();

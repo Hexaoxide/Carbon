@@ -93,12 +93,12 @@ public final class WorldGuardContext implements Listener {
   }
 
   public boolean isInSameRegion(@NonNull ChatUser user1, @NonNull ChatUser user2) {
-    if (!user1.isOnline() || !user2.isOnline()) {
+    if (!user1.online() || !user2.online()) {
       return false;
     }
 
-    Location user1Location = BukkitAdapter.adapt(user1.asPlayer().getLocation());
-    Location user2Location = BukkitAdapter.adapt(user2.asPlayer().getLocation());
+    Location user1Location = BukkitAdapter.adapt(user1.player().getLocation());
+    Location user2Location = BukkitAdapter.adapt(user2.player().getLocation());
 
     RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     RegionQuery regionQuery = container.createQuery();
@@ -117,14 +117,14 @@ public final class WorldGuardContext implements Listener {
 
   public boolean isInRegion(@NonNull String region, @NonNull ChatUser user) {
     RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-    World world = BukkitAdapter.adapt(user.asPlayer().getWorld());
+    World world = BukkitAdapter.adapt(user.player().getWorld());
     ProtectedRegion protection = container.get(world).getRegion(region);
 
     return isInRegion(protection, user);
   }
 
   public boolean isInRegion(@NonNull ProtectedRegion region, @NonNull ChatUser user) {
-    Location location = BukkitAdapter.adapt(user.asPlayer().getLocation());
+    Location location = BukkitAdapter.adapt(user.player().getLocation());
 
     return region.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ());
   }

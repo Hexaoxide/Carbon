@@ -22,7 +22,7 @@ public class MessageCommand {
   public MessageCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -32,9 +32,9 @@ public class MessageCommand {
     arguments.put("player", CarbonUtils.chatUserArgument());
     arguments.put("message", new GreedyStringArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(arguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.message"))
       .executesPlayer(this::execute)
       .register();

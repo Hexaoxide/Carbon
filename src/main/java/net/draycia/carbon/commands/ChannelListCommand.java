@@ -30,7 +30,7 @@ public class ChannelListCommand {
   public ChannelListCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -38,9 +38,9 @@ public class ChannelListCommand {
 
     LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.channellist"))
       .executesPlayer(this::executeSelf)
       .register();
@@ -48,9 +48,9 @@ public class ChannelListCommand {
     LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
     argumentsOther.put("player", CarbonUtils.onlineChatUserArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(argumentsOther)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.channellist.other"))
       .executes(this::executeOther)
       .register();
@@ -67,9 +67,9 @@ public class ChannelListCommand {
     Audience cmdSender = carbonChat.getAdventureManager().getAudiences().audience(sender);
     ChatUser user = (ChatUser) args[0];
 
-    if (!user.isOnline()) {
+    if (!user.online()) {
       String mustBeOnline = carbonChat.getLanguage().getString("user-must-be-online");
-      cmdSender.sendMessage(carbonChat.getAdventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.asOfflinePlayer().getName()));
+      cmdSender.sendMessage(carbonChat.getAdventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.offlinePlayer().getName()));
       return;
     }
 

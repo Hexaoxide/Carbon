@@ -24,7 +24,7 @@ public class IgnoreCommand {
   public IgnoreCommand(@NonNull CarbonChat carbonChat, @NonNull CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
-    if (!commandSettings.isEnabled()) {
+    if (!commandSettings.enabled()) {
       return;
     }
 
@@ -33,9 +33,9 @@ public class IgnoreCommand {
     LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("player", CarbonUtils.chatUserArgument());
 
-    new CommandAPICommand(commandSettings.getName())
+    new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
-      .withAliases(commandSettings.getAliasesArray())
+      .withAliases(commandSettings.aliases())
       .withPermission(CommandPermission.fromString("carbonchat.ignore"))
       .executesPlayer(this::execute)
       .register();
@@ -49,13 +49,13 @@ public class IgnoreCommand {
       user.setIgnoringUser(targetUser, false);
       user.sendMessage(carbonChat.getAdventureManager().processMessageWithPapi(player,
         carbonChat.getLanguage().getString("not-ignoring-user"),
-        "br", "\n", "player", targetUser.asOfflinePlayer().getName()));
+        "br", "\n", "player", targetUser.offlinePlayer().getName()));
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(carbonChat, () -> {
         Permission permission = carbonChat.getPermission();
         String format;
 
-        if (permission.playerHas(null, targetUser.asOfflinePlayer(), "carbonchat.ignore.exempt")) {
+        if (permission.playerHas(null, targetUser.offlinePlayer(), "carbonchat.ignore.exempt")) {
           format = carbonChat.getLanguage().getString("ignore-exempt");
         } else {
           user.setIgnoringUser(targetUser, true);
@@ -64,7 +64,7 @@ public class IgnoreCommand {
 
         Component message = carbonChat.getAdventureManager().processMessageWithPapi(player, format,
           "br", "\n", "sender", player.getDisplayName(), "player",
-          targetUser.asOfflinePlayer().getName());
+          targetUser.offlinePlayer().getName());
 
         user.sendMessage(message);
       });
