@@ -44,6 +44,8 @@ repositories {
 }
 
 dependencies {
+  checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
+
   // Components
   compile 'net.kyori:adventure-api:4.0.0-SNAPSHOT'
   compile 'net.kyori:adventure-nbt:4.0.0-SNAPSHOT'
