@@ -32,8 +32,6 @@ public class FilterHandler {
     this.carbonChat = carbonChat;
     this.reloadFilters();
 
-    final FilterHandler instance = this;
-
     CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
       @Override
       public int postOrder() {
@@ -57,13 +55,13 @@ public class FilterHandler {
           }
         }
 
-        if (!instance.channelUsesFilter(event.channel())) {
+        if (!FilterHandler.this.channelUsesFilter(event.channel())) {
           return;
         }
 
         String message = event.message();
 
-        for (final Map.Entry<String, List<Pattern>> entry : instance.patternReplacements.entrySet()) {
+        for (final Map.Entry<String, List<Pattern>> entry : FilterHandler.this.patternReplacements.entrySet()) {
           for (final Pattern pattern : entry.getValue()) {
             final Matcher matcher = pattern.matcher(message);
 
@@ -77,7 +75,7 @@ public class FilterHandler {
 
         event.message(message);
 
-        for (final Pattern blockedWord : instance.blockedWords) {
+        for (final Pattern blockedWord : FilterHandler.this.blockedWords) {
           if (blockedWord.matcher(event.message()).find()) {
             event.cancelled(true);
             break;

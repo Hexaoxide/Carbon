@@ -29,8 +29,6 @@ public final class mcMMOContext implements Listener {
       return true;
     });
 
-    final mcMMOContext instance = this;
-
     CarbonEvents.register(ChannelSwitchEvent.class, new EventSubscriber<ChannelSwitchEvent>() {
       @Override
       public boolean consumeCancelledEvents() {
@@ -42,7 +40,7 @@ public final class mcMMOContext implements Listener {
         final Object party = event.channel().context("mcmmo-party");
 
         if ((party instanceof Boolean) && ((Boolean) party)) {
-          if (!instance.isInParty(event.user())) {
+          if (!mcMMOContext.this.isInParty(event.user())) {
             event.cancelled(true);
             event.failureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
           }
@@ -61,7 +59,7 @@ public final class mcMMOContext implements Listener {
         final Object party = event.channel().context("mcmmo-party");
 
         if ((party instanceof Boolean) && ((Boolean) party)) {
-          if (!instance.isInParty(event.user())) {
+          if (!mcMMOContext.this.isInParty(event.user())) {
             event.cancelled(true);
           }
         }

@@ -10,8 +10,6 @@ import net.kyori.event.PostOrders;
 public class UserFormattingHandler {
 
   public UserFormattingHandler() {
-    final UserFormattingHandler instance = this;
-
     CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
       @Override
       public int postOrder() {
@@ -26,13 +24,13 @@ public class UserFormattingHandler {
       @Override
       public void invoke(final PreChatFormatEvent event) {
         if (!event.user().online()) {
-          instance.suppressFormatting(event);
+          UserFormattingHandler.this.suppressFormatting(event);
           return;
         }
 
         if (!event.user().player().hasPermission("carbonchat.formatting") &&
           !event.user().player().hasPermission("carbonchat.channels." + event.channel().key() + ".formatting")) {
-          instance.suppressFormatting(event);
+          UserFormattingHandler.this.suppressFormatting(event);
         } else {
           // Swap the &-style codes for minimessage-compatible strings
           event.message(MiniMessage.get().serialize(CarbonChat.LEGACY.deserialize(event.message())));

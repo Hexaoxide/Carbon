@@ -29,8 +29,6 @@ public final class WorldGuardContext {
       return this.testContext(context.sender(), context.target(), context.value());
     });
 
-    final WorldGuardContext instance = this;
-
     CarbonEvents.register(ChannelSwitchEvent.class, event -> {
       // TODO: cancellation message
       final Object value = event.channel().context(KEY);
@@ -51,7 +49,7 @@ public final class WorldGuardContext {
         // TODO: cancellation message
         final Object value = event.channel().context(KEY);
 
-        if ((value instanceof String || value instanceof List) && !instance.isInRegionOrRegions(value, event.user())) {
+        if ((value instanceof String || value instanceof List) && !WorldGuardContext.this.isInRegionOrRegions(value, event.user())) {
           event.cancelled(true);
         }
       }

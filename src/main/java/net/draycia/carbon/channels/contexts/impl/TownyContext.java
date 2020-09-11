@@ -36,8 +36,6 @@ public final class TownyContext implements Listener {
       return true;
     });
 
-    final TownyContext instance = this;
-
     CarbonEvents.register(ChannelSwitchEvent.class, event -> {
       final Object town = event.channel().context(KEY);
 
@@ -61,7 +59,7 @@ public final class TownyContext implements Listener {
         final Object town = event.channel().context(KEY);
 
         if ((town instanceof Boolean) && ((Boolean) town)) {
-          if (!instance.isInTown(event.user())) {
+          if (!TownyContext.this.isInTown(event.user())) {
             event.cancelled(true);
           }
         }
