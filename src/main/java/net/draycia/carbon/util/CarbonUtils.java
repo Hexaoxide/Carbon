@@ -87,9 +87,10 @@ public final class CarbonUtils {
     if (itemStack.getItemMeta().hasDisplayName()) {
       component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
     } else {
-      final String name = itemStack.getItemMeta().hasDisplayName()
-        ? itemStack.getItemMeta().getDisplayName()
-        : "item.minecraft." + itemStack.getType().name().toLowerCase(); // As of 1.13, Material is 1:1 with MC's names
+      // As of 1.13, Material is 1:1 with MC's names
+      final String prefix = itemStack.getType().isBlock() ? "block" : "item";
+      final String name = prefix + ".minecraft." + itemStack.getType().name().toLowerCase();
+
       component.append(new TranslatableComponent(name));
     }
 
