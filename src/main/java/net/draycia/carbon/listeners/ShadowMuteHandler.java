@@ -1,44 +1,63 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.impls.ChatComponentEvent;
-import net.draycia.carbon.events.impls.ChatFormatEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChatComponentEvent;
+import net.draycia.carbon.events.api.ChatFormatEvent;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class ShadowMuteHandler implements Listener {
-
-  @NonNull
-  private final CarbonChat carbonChat;
+public class ShadowMuteHandler {
 
   public ShadowMuteHandler(@NonNull final CarbonChat carbonChat) {
-    this.carbonChat = carbonChat;
-  }
-
-  @EventHandler(priority = EventPriority.LOWEST)
-  public void onComponent(final ChatComponentEvent event) {
-    if (event.sender().shadowMuted()) {
-      if (!event.sender().equals(event.target())) {
-        event.setCancelled(true);
+    CarbonEvents.register(ChatComponentEvent.class, new EventSubscriber<ChatComponentEvent>() {
+      @Override
+      public int postOrder() {
+        return PostOrders.FIRST;
       }
-    }
-  }
 
-  @EventHandler
-  public void on(final ChatFormatEvent event) {
-    if (event.target() != null) {
-      return;
-    }
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
 
-    if (!event.sender().shadowMuted()) {
-      return;
-    }
+      @Override
+      public void invoke(final ChatComponentEvent event) {
+        if (event.sender().shadowMuted()) {
+          if (!event.sender().equals(event.target())) {
+            event.cancelled(true);
+          }
+        }
+      }
+    });
 
-    final String prefix = this.carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
+    CarbonEvents.register(ChatFormatEvent.class, new EventSubscriber<ChatFormatEvent>() {
+      @Override
+      public int postOrder() {
+        return PostOrders.FIRST;
+      }
 
-    event.format(prefix + event.format());
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
+
+      @Override
+      public void invoke(final ChatFormatEvent event) {
+        if (event.target() != null) {
+          return;
+        }
+
+        if (!event.sender().shadowMuted()) {
+          return;
+        }
+
+        final String prefix = carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
+
+        event.format(prefix + event.format());
+      }
+    });
   }
 
 }

@@ -3,8 +3,9 @@ package net.draycia.carbon.storage.impl;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
-import net.draycia.carbon.events.impls.ChannelSwitchEvent;
-import net.draycia.carbon.events.impls.PrivateMessageEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChannelSwitchEvent;
+import net.draycia.carbon.events.api.PrivateMessageEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.UserChannelSettings;
 import net.draycia.carbon.util.FunctionalityConstants;
@@ -100,7 +101,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     if (this.online()) {
       if (newNickname != null) {
         final Component component = this.carbonChat.adventureManager().processMessage(this.nickname);
-        newNickname = this.carbonChat.LEGACY.serialize(component);
+        newNickname = CarbonChat.LEGACY.serialize(component);
       }
 
       this.player().setDisplayName(newNickname);
@@ -134,9 +135,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     final ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
 
-    Bukkit.getPluginManager().callEvent(event);
+    CarbonEvents.post(event);
 
-    if (event.isCancelled()) {
+    if (event.cancelled()) {
       this.sendMessage(this.carbonChat.adventureManager().processMessage(event.failureMessage(),
         "channel", chatChannel.name()));
 
@@ -298,9 +299,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     final PrivateMessageEvent event = new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message);
 
-    Bukkit.getPluginManager().callEvent(event);
+    CarbonEvents.post(event);
 
-    if (event.isCancelled()) {
+    if (event.cancelled()) {
       return;
     }
 

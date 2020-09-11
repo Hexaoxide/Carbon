@@ -1,21 +1,35 @@
 package net.draycia.carbon.listeners;
 
-import net.draycia.carbon.events.impls.ChatFormatEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChatFormatEvent;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 
-public class IgnoredPlayerHandler implements Listener {
+public class IgnoredPlayerHandler {
 
-  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onPapiPlaceholder(final ChatFormatEvent event) {
-    if (event.target() == null) {
-      return;
-    }
+  public IgnoredPlayerHandler() {
+    CarbonEvents.register(ChatFormatEvent.class, new EventSubscriber<ChatFormatEvent>() {
+      @Override
+      public int postOrder() {
+        return PostOrders.FIRST;
+      }
 
-    if (event.target().ignoringUser(event.sender())) {
-      event.setCancelled(true);
-    }
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
+
+      @Override
+      public void invoke(final ChatFormatEvent event) {
+        if (event.target() == null) {
+          return;
+        }
+
+        if (event.target().ignoringUser(event.sender())) {
+          event.cancelled(true);
+        }
+      }
+    });
   }
 
 }

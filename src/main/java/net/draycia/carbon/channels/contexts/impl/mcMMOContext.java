@@ -3,9 +3,11 @@ package net.draycia.carbon.channels.contexts.impl;
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.impls.ChannelSwitchEvent;
-import net.draycia.carbon.events.impls.PreChatFormatEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChannelSwitchEvent;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.event.EventSubscriber;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -26,29 +28,45 @@ public final class mcMMOContext implements Listener {
 
       return true;
     });
-  }
 
-  @EventHandler(ignoreCancelled = true)
-  public void onChannelSwitch(final ChannelSwitchEvent event) {
-    final Object party = event.channel().context("mcmmo-party");
+    final mcMMOContext instance = this;
 
-    if ((party instanceof Boolean) && ((Boolean) party)) {
-      if (!this.isInParty(event.user())) {
-        event.setCancelled(true);
-        event.failureMessage(this.carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
+    CarbonEvents.register(ChannelSwitchEvent.class, new EventSubscriber<ChannelSwitchEvent>() {
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
       }
-    }
-  }
 
-  @EventHandler(ignoreCancelled = true)
-  public void onChannelMessage(final PreChatFormatEvent event) {
-    final Object party = event.channel().context("mcmmo-party");
+      @Override
+      public void invoke(final ChannelSwitchEvent event) {
+        final Object party = event.channel().context("mcmmo-party");
 
-    if ((party instanceof Boolean) && ((Boolean) party)) {
-      if (!this.isInParty(event.user())) {
-        event.setCancelled(true);
+        if ((party instanceof Boolean) && ((Boolean) party)) {
+          if (!instance.isInParty(event.user())) {
+            event.cancelled(true);
+            event.failureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
+          }
+        }
       }
-    }
+    });
+
+    CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
+
+      @Override
+      public void invoke(final PreChatFormatEvent event) {
+        final Object party = event.channel().context("mcmmo-party");
+
+        if ((party instanceof Boolean) && ((Boolean) party)) {
+          if (!instance.isInParty(event.user())) {
+            event.cancelled(true);
+          }
+        }
+      }
+    });
   }
 
   private static final McMMOPartyChangeEvent.EventReason LEFT = McMMOPartyChangeEvent.EventReason.LEFT_PARTY;

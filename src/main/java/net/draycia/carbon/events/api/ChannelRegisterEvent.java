@@ -1,33 +1,16 @@
-package net.draycia.carbon.events.impls.api;
+package net.draycia.carbon.events.api;
 
 import net.draycia.carbon.channels.ChatChannel;
+import net.draycia.carbon.events.CarbonEvent;
 import net.draycia.carbon.util.Registry;
-import net.kyori.event.EventBus;
-import net.kyori.event.EventSubscriber;
-import net.kyori.event.SimpleEventBus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 
-public class ChannelRegisterEvent {
-
-  private static EventBus<ChannelRegisterEvent> EVENT_BUS = new SimpleEventBus<>(ChannelRegisterEvent.class);
-
-  public static void register(@NonNull final EventSubscriber<? super ChannelRegisterEvent> subscriber) {
-    EVENT_BUS.register(ChannelRegisterEvent.class, subscriber);
-  }
-
-  public static void unregister(@NonNull final EventSubscriber<? super ChannelRegisterEvent> subscriber) {
-    EVENT_BUS.unregister(subscriber);
-  }
-
-  public static void post(@NonNull final ChannelRegisterEvent event) {
-    EVENT_BUS.post(event);
-  }
+public class ChannelRegisterEvent implements CarbonEvent {
 
   @NonNull
   private final List<@NonNull ChatChannel> registeredChannels;
-
   @NonNull
   private final Registry<ChatChannel> registry;
 

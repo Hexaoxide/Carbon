@@ -1,60 +1,23 @@
-package net.draycia.carbon.events.impls;
+package net.draycia.carbon.events.api;
 
 import net.draycia.carbon.channels.ChatChannel;
+import net.draycia.carbon.events.CarbonEvent;
 import net.draycia.carbon.storage.ChatUser;
-import org.bukkit.Bukkit;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class ChannelSwitchEvent extends Event implements Cancellable {
+public class ChannelSwitchEvent implements CarbonEvent, Cancellable {
 
-  /**
-   * Bukkit event stuff
-   */
-  @NonNull
-  private static final HandlerList handlers = new HandlerList();
-  private boolean cancelled = false;
-
-  @Override
-  @NonNull
-  public HandlerList getHandlers() {
-    return handlers;
-  }
-
-  @NonNull
-  @SuppressWarnings("checkstyle:MethodName")
-  public static HandlerList getHandlerList() {
-    return handlers;
-  }
-
-  @Override
-  public boolean isCancelled() {
-    return this.cancelled;
-  }
-
-  @Override
-  public void setCancelled(final boolean cancelled) {
-    this.cancelled = cancelled;
-  }
-
-  /**
-   * Relevant stuff
-   */
   @NonNull
   private final ChatChannel channel;
-
   @NonNull
   private final ChatUser user;
-
   @Nullable
   private String failureMessage;
+  private boolean cancelled;
 
   public ChannelSwitchEvent(@NonNull final ChatChannel channel, @NonNull final ChatUser user, @Nullable final String failureMessage) {
-    super(!Bukkit.isPrimaryThread());
-
     this.channel = channel;
     this.user = user;
     this.failureMessage = failureMessage;
@@ -78,4 +41,15 @@ public class ChannelSwitchEvent extends Event implements Cancellable {
   public void failureMessage(@Nullable final String failureMessage) {
     this.failureMessage = failureMessage;
   }
+
+  @Override
+  public boolean cancelled() {
+    return this.cancelled;
+  }
+
+  @Override
+  public void cancelled(final boolean cancelled) {
+    this.cancelled = cancelled;
+  }
+
 }

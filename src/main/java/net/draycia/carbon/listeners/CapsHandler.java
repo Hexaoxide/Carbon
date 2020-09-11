@@ -1,50 +1,57 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.impls.PreChatFormatEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class CapsHandler implements Listener {
-
-  @NonNull
-  private final CarbonChat carbonChat;
+public class CapsHandler {
 
   public CapsHandler(@NonNull final CarbonChat carbonChat) {
-    this.carbonChat = carbonChat;
-  }
-
-  @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-  public void onMessage(final PreChatFormatEvent event) {
-    if (!this.carbonChat.moderationConfig().getBoolean("caps-protection.enabled")) {
-      return;
-    }
-
-    if (!(event.message().length() >= this.carbonChat.moderationConfig().getInt("caps-protection.minimum-length"))) {
-      return;
-    }
-
-    int amountOfCaps = 0;
-
-    for (final char letter : event.message().toCharArray()) {
-      if (Character.isUpperCase(letter)) {
-        amountOfCaps++;
+    CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
+      @Override
+      public int postOrder() {
+        return PostOrders.FIRST;
       }
-    }
 
-    final double capsPercentage = (amountOfCaps * 100.0) / event.message().length();
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
 
-    if (!(capsPercentage >= this.carbonChat.moderationConfig().getDouble("caps-protection.percent-caps"))) {
-      return;
-    }
+      @Override
+      public void invoke(final PreChatFormatEvent event) {
+        if (!carbonChat.moderationConfig().getBoolean("caps-protection.enabled")) {
+          return;
+        }
 
-    if (this.carbonChat.moderationConfig().getBoolean("block-message")) {
-      event.setCancelled(true);
-    } else {
-      event.message(event.message().toLowerCase());
-    }
+        if (!(event.message().length() >= carbonChat.moderationConfig().getInt("caps-protection.minimum-length"))) {
+          return;
+        }
+
+        int amountOfCaps = 0;
+
+        for (final char letter : event.message().toCharArray()) {
+          if (Character.isUpperCase(letter)) {
+            amountOfCaps++;
+          }
+        }
+
+        final double capsPercentage = (amountOfCaps * 100.0) / event.message().length();
+
+        if (!(capsPercentage >= carbonChat.moderationConfig().getDouble("caps-protection.percent-caps"))) {
+          return;
+        }
+
+        if (carbonChat.moderationConfig().getBoolean("block-message")) {
+          event.cancelled(true);
+        } else {
+          event.message(event.message().toLowerCase());
+        }
+      }
+    });
   }
 
 }

@@ -2,9 +2,10 @@ package net.draycia.carbon.channels.impls;
 
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
-import net.draycia.carbon.events.impls.ChatComponentEvent;
-import net.draycia.carbon.events.impls.ChatFormatEvent;
-import net.draycia.carbon.events.impls.PreChatFormatEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChatComponentEvent;
+import net.draycia.carbon.events.api.ChatFormatEvent;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
@@ -102,11 +103,12 @@ public class CarbonChatChannel extends ChatChannel {
 
     // Call custom chat event
     final PreChatFormatEvent preFormatEvent = new PreChatFormatEvent(user, this, messageFormat, message);
-    Bukkit.getPluginManager().callEvent(preFormatEvent);
+
+    CarbonEvents.post(preFormatEvent);
 
     // Return if cancelled or message is emptied
 
-    if (preFormatEvent.isCancelled() || preFormatEvent.message().trim().isEmpty()) {
+    if (preFormatEvent.cancelled() || preFormatEvent.message().trim().isEmpty()) {
       return TextComponent.empty();
     }
 
@@ -153,7 +155,7 @@ public class CarbonChatChannel extends ChatChannel {
       final ChatComponentEvent newEvent = new ChatComponentEvent(user, target, this, formatComponent,
         formatEvent.message());
 
-      Bukkit.getPluginManager().callEvent(newEvent);
+      CarbonEvents.post(newEvent);
 
       target.sendMessage(newEvent.component());
     }
@@ -176,7 +178,7 @@ public class CarbonChatChannel extends ChatChannel {
     final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleFormat,
       consoleFormatEvent.message());
 
-    Bukkit.getPluginManager().callEvent(consoleEvent);
+    CarbonEvents.post(consoleEvent);
 
     // Route message to bungee / discord (if message originates from this server)
     // Use instanceof and not isOnline, if this message originates from another then the instanceof will

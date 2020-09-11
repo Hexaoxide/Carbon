@@ -1,28 +1,42 @@
 package net.draycia.carbon.listeners;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.draycia.carbon.events.impls.ChatFormatEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChatFormatEvent;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
-public class RelationalPlaceholderHandler implements Listener {
+public class RelationalPlaceholderHandler {
 
-  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onPapiPlaceholder(final ChatFormatEvent event) {
-    if (event.target() == null) {
-      return;
-    }
+  public RelationalPlaceholderHandler() {
+    CarbonEvents.register(ChatFormatEvent.class, new EventSubscriber<ChatFormatEvent>() {
+      @Override
+      public int postOrder() {
+        return PostOrders.FIRST;
+      }
 
-    if (!event.sender().online() || !event.target().online()) {
-      return;
-    }
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
 
-    final Player sender = event.sender().player();
-    final Player target = event.target().player();
+      @Override
+      public void invoke(final ChatFormatEvent event) {
+        if (event.target() == null) {
+          return;
+        }
 
-    event.format(PlaceholderAPI.setRelationalPlaceholders(sender, target, event.format()));
+        if (!event.sender().online() || !event.target().online()) {
+          return;
+        }
+
+        final Player sender = event.sender().player();
+        final Player target = event.target().player();
+
+        event.format(PlaceholderAPI.setRelationalPlaceholders(sender, target, event.format()));
+      }
+    });
   }
 
 }

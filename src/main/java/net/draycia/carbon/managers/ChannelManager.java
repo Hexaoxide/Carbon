@@ -4,9 +4,9 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChannelRegistry;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.channels.impls.CarbonChatChannel;
-import net.draycia.carbon.events.impls.ChannelRegisterEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChannelRegisterEvent;
 import net.draycia.carbon.util.Registry;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -56,7 +56,7 @@ public class ChannelManager {
         this.defaultChannelKey = channel.key();
       }
 
-      Bukkit.getPluginManager().callEvent(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
+      CarbonEvents.post(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
     }
 
     return success;

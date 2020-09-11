@@ -2,12 +2,12 @@ package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
-import net.draycia.carbon.events.impls.PreChatFormatEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FilterHandler implements Listener {
+public class FilterHandler {
 
   @NonNull
   private final CarbonChat carbonChat;
@@ -31,6 +31,60 @@ public class FilterHandler implements Listener {
   public FilterHandler(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.reloadFilters();
+
+    final FilterHandler instance = this;
+
+    CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
+      @Override
+      public int postOrder() {
+        return PostOrders.FIRST;
+      }
+
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
+
+      @Override
+      public void invoke(final PreChatFormatEvent event) {
+        if (!carbonChat.moderationConfig().getBoolean("filters.enabled")) {
+          return;
+        }
+
+        if (event.user().online()) {
+          if (event.user().player().hasPermission("carbonchat.filter.exempt")) {
+            return;
+          }
+        }
+
+        if (!instance.channelUsesFilter(event.channel())) {
+          return;
+        }
+
+        String message = event.message();
+
+        for (final Map.Entry<String, List<Pattern>> entry : instance.patternReplacements.entrySet()) {
+          for (final Pattern pattern : entry.getValue()) {
+            final Matcher matcher = pattern.matcher(message);
+
+            if (entry.getKey().equals("_")) {
+              message = matcher.replaceAll("");
+            } else {
+              message = matcher.replaceAll(entry.getKey());
+            }
+          }
+        }
+
+        event.message(message);
+
+        for (final Pattern blockedWord : instance.blockedWords) {
+          if (blockedWord.matcher(event.message()).find()) {
+            event.cancelled(true);
+            break;
+          }
+        }
+      }
+    });
   }
 
   public void reloadFilters() {
@@ -61,46 +115,6 @@ public class FilterHandler implements Listener {
         this.blockedWords.add(Pattern.compile(replacement));
       } else {
         this.blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
-      }
-    }
-  }
-
-  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onFilter(final PreChatFormatEvent event) {
-    if (!this.carbonChat.moderationConfig().getBoolean("filters.enabled")) {
-      return;
-    }
-
-    if (event.user().online()) {
-      if (event.user().player().hasPermission("carbonchat.filter.exempt")) {
-        return;
-      }
-    }
-
-    if (!this.channelUsesFilter(event.channel())) {
-      return;
-    }
-
-    String message = event.message();
-
-    for (final Map.Entry<String, List<Pattern>> entry : this.patternReplacements.entrySet()) {
-      for (final Pattern pattern : entry.getValue()) {
-        final Matcher matcher = pattern.matcher(message);
-
-        if (entry.getKey().equals("_")) {
-          message = matcher.replaceAll("");
-        } else {
-          message = matcher.replaceAll(entry.getKey());
-        }
-      }
-    }
-
-    event.message(message);
-
-    for (final Pattern blockedWord : this.blockedWords) {
-      if (blockedWord.matcher(event.message()).find()) {
-        event.setCancelled(true);
-        break;
       }
     }
   }

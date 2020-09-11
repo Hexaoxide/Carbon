@@ -1,19 +1,33 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.impls.PreChatFormatEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 
-public class LegacyFormatHandler implements Listener {
+public class LegacyFormatHandler {
 
-  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onLegacyFormat(final PreChatFormatEvent event) {
-    final Component component = CarbonChat.LEGACY.deserialize(event.format());
-    event.format(MiniMessage.get().serialize(component));
+  public LegacyFormatHandler() {
+    CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
+      @Override
+      public int postOrder() {
+        return PostOrders.FIRST;
+      }
+
+      @Override
+      public boolean consumeCancelledEvents() {
+        return false;
+      }
+
+      @Override
+      public void invoke(final PreChatFormatEvent event) {
+        final Component component = CarbonChat.LEGACY.deserialize(event.format());
+        event.format(MiniMessage.get().serialize(component));
+      }
+    });
   }
 
 }
