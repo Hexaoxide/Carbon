@@ -43,7 +43,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.File;
-import java.lang.reflect.Field;
 
 public final class CarbonChat extends JavaPlugin {
 
@@ -80,8 +79,6 @@ public final class CarbonChat extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    this.checkForBungee();
-
     CommandAPI.onEnable(this);
     final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
@@ -198,21 +195,6 @@ public final class CarbonChat extends JavaPlugin {
 
   public void reloadFilters() {
     this.filterHandler.reloadFilters();
-  }
-
-  private boolean bungeeEnabled = false;
-
-  private void checkForBungee() {
-    try {
-      final Class<?> spigotConfig = Class.forName("org.spigotmc.Spigotconfig");
-      final Field bungee = spigotConfig.getField("bungee");
-      this.bungeeEnabled = bungee.getBoolean(null);
-    } catch (final ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
-    }
-  }
-
-  public boolean bungeeEnabled() {
-    return this.bungeeEnabled;
   }
 
   private void loadModConfig() {

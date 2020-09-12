@@ -7,6 +7,7 @@ import net.draycia.carbon.events.ChannelSwitchEvent;
 import net.draycia.carbon.events.PrivateMessageEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.storage.UserChannelSettings;
+import net.draycia.carbon.util.FunctionalityConstants;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
@@ -329,7 +330,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       final String targetNameFinal = targetName;
       final String senderNameFinal = senderName;
 
-      if (!this.carbonChat.bungeeEnabled()) {
+      if (!FunctionalityConstants.HAS_PROXY) {
         final String playerOfflineFormat = this.carbonChat.language().getString("other-player-offline");
 
         final Component playerOfflineComponent = this.carbonChat.adventureManager().processMessage(playerOfflineFormat,
