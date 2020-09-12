@@ -20,6 +20,7 @@ import net.draycia.carbon.listeners.PlaceholderHandler;
 import net.draycia.carbon.listeners.PlayerJoinListener;
 import net.draycia.carbon.listeners.RelationalPlaceholderHandler;
 import net.draycia.carbon.listeners.ShadowMuteHandler;
+import net.draycia.carbon.listeners.UrlLinkHandler;
 import net.draycia.carbon.listeners.UserFormattingHandler;
 import net.draycia.carbon.listeners.WhisperPingHandler;
 import net.draycia.carbon.managers.AdventureManager;
@@ -179,6 +180,7 @@ public final class CarbonChat extends JavaPlugin {
     pluginManager.registerEvents(new PlayerJoinListener(this), this);
     pluginManager.registerEvents(new RelationalPlaceholderHandler(), this);
     pluginManager.registerEvents(new ShadowMuteHandler(this), this);
+    pluginManager.registerEvents(new UrlLinkHandler(), this);
     pluginManager.registerEvents(new UserFormattingHandler(), this);
     pluginManager.registerEvents(new WhisperPingHandler(this), this);
 
