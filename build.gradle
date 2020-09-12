@@ -61,7 +61,7 @@ dependencies {
   compile 'io.lettuce:lettuce-core:6.0.0.M1'
 
   // Commands
-  compile "dev.jorel:commandapi-shade:4.1"
+  compile "dev.jorel:commandapi-shade:4.2"
 
   // Plugins
   compileOnly('com.gmail.nossr50.mcMMO:mcMMO:2.1.143') {
