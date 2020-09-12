@@ -4,59 +4,30 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChatComponentEvent;
 import net.draycia.carbon.events.api.ChatFormatEvent;
-import net.kyori.event.EventSubscriber;
 import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ShadowMuteHandler {
 
   public ShadowMuteHandler(@NonNull final CarbonChat carbonChat) {
-    CarbonEvents.register(ChatComponentEvent.class, new EventSubscriber<ChatComponentEvent>() {
-      @Override
-      public int postOrder() {
-        return PostOrders.FIRST;
-      }
-
-      @Override
-      public boolean consumeCancelledEvents() {
-        return false;
-      }
-
-      @Override
-      public void invoke(final ChatComponentEvent event) {
-        if (event.sender().shadowMuted()) {
-          if (!event.sender().equals(event.target())) {
-            event.cancelled(true);
-          }
-        }
+    CarbonEvents.register(ChatComponentEvent.class, PostOrders.FIRST, false, event -> {
+      if (event.sender().shadowMuted() && event.sender().equals(event.target())) {
+        event.cancelled(true);
       }
     });
 
-    CarbonEvents.register(ChatFormatEvent.class, new EventSubscriber<ChatFormatEvent>() {
-      @Override
-      public int postOrder() {
-        return PostOrders.FIRST;
+    CarbonEvents.register(ChatFormatEvent.class, PostOrders.FIRST, false, event -> {
+      if (event.target() != null) {
+        return;
       }
 
-      @Override
-      public boolean consumeCancelledEvents() {
-        return false;
+      if (!event.sender().shadowMuted()) {
+        return;
       }
 
-      @Override
-      public void invoke(final ChatFormatEvent event) {
-        if (event.target() != null) {
-          return;
-        }
+      final String prefix = carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
 
-        if (!event.sender().shadowMuted()) {
-          return;
-        }
-
-        final String prefix = carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
-
-        event.format(prefix + event.format());
-      }
+      event.format(prefix + event.format());
     });
   }
 

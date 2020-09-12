@@ -5,64 +5,45 @@ import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChatComponentEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.event.EventSubscriber;
 import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PingHandler {
 
-  @NonNull
-  private final CarbonChat carbonChat;
-
   public PingHandler(@NonNull final CarbonChat carbonChat) {
-    this.carbonChat = carbonChat;
-
-    CarbonEvents.register(ChatComponentEvent.class, new EventSubscriber<ChatComponentEvent>() {
-      @Override
-      public int postOrder() {
-        return PostOrders.LAST;
+    CarbonEvents.register(ChatComponentEvent.class, PostOrders.LAST, false, event -> {
+      if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
+        return;
       }
 
-      @Override
-      public boolean consumeCancelledEvents() {
-        return false;
+      if (event.target() == null) {
+        return;
       }
 
-      @Override
-      public void invoke(final ChatComponentEvent event) {
-        if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
-          return;
-        }
+      final String targetName = event.target().offlinePlayer().getName();
+      final String prefix = carbonChat.getConfig().getString("pings.prefix", "");
+      final boolean caseSensitive = carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
 
-        if (event.target() == null) {
-          return;
-        }
-
-        final String targetName = event.target().offlinePlayer().getName();
-        final String prefix = carbonChat.getConfig().getString("pings.prefix", "");
-        final boolean caseSensitive = carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
-
-        if (targetName == null) {
-          return;
-        }
-
-        if (caseSensitive) {
-          if (!event.originalMessage().contains(prefix + targetName)) {
-            return;
-          }
-        } else {
-          if (!event.originalMessage().toLowerCase().contains((prefix + targetName).toLowerCase())) {
-            return;
-          }
-        }
-
-        final Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
-        final Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("pings.source"));
-        final float volume = (float) carbonChat.getConfig().getDouble("pings.volume");
-        final float pitch = (float) carbonChat.getConfig().getDouble("pings.pitch");
-
-        event.target().playSound(Sound.of(key, source, volume, pitch));
+      if (targetName == null) {
+        return;
       }
+
+      if (caseSensitive) {
+        if (!event.originalMessage().contains(prefix + targetName)) {
+          return;
+        }
+      } else {
+        if (!event.originalMessage().toLowerCase().contains((prefix + targetName).toLowerCase())) {
+          return;
+        }
+      }
+
+      final Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
+      final Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("pings.source"));
+      final float volume = (float) carbonChat.getConfig().getDouble("pings.volume");
+      final float pitch = (float) carbonChat.getConfig().getDouble("pings.pitch");
+
+      event.target().playSound(Sound.of(key, source, volume, pitch));
     });
   }
 

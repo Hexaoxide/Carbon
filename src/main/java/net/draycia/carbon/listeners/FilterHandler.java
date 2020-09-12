@@ -4,7 +4,6 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
-import net.kyori.event.EventSubscriber;
 import net.kyori.event.PostOrders;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -32,54 +31,41 @@ public class FilterHandler {
     this.carbonChat = carbonChat;
     this.reloadFilters();
 
-    CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
-      @Override
-      public int postOrder() {
-        return PostOrders.FIRST;
+    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
+      if (!carbonChat.moderationConfig().getBoolean("filters.enabled")) {
+        return;
       }
 
-      @Override
-      public boolean consumeCancelledEvents() {
-        return false;
+      if (event.user().online()) {
+        if (event.user().player().hasPermission("carbonchat.filter.exempt")) {
+          return;
+        }
       }
 
-      @Override
-      public void invoke(final PreChatFormatEvent event) {
-        if (!carbonChat.moderationConfig().getBoolean("filters.enabled")) {
-          return;
-        }
+      if (!this.channelUsesFilter(event.channel())) {
+        return;
+      }
 
-        if (event.user().online()) {
-          if (event.user().player().hasPermission("carbonchat.filter.exempt")) {
-            return;
+      String message = event.message();
+
+      for (final Map.Entry<String, List<Pattern>> entry : this.patternReplacements.entrySet()) {
+        for (final Pattern pattern : entry.getValue()) {
+          final Matcher matcher = pattern.matcher(message);
+
+          if (entry.getKey().equals("_")) {
+            message = matcher.replaceAll("");
+          } else {
+            message = matcher.replaceAll(entry.getKey());
           }
         }
+      }
 
-        if (!FilterHandler.this.channelUsesFilter(event.channel())) {
-          return;
-        }
+      event.message(message);
 
-        String message = event.message();
-
-        for (final Map.Entry<String, List<Pattern>> entry : FilterHandler.this.patternReplacements.entrySet()) {
-          for (final Pattern pattern : entry.getValue()) {
-            final Matcher matcher = pattern.matcher(message);
-
-            if (entry.getKey().equals("_")) {
-              message = matcher.replaceAll("");
-            } else {
-              message = matcher.replaceAll(entry.getKey());
-            }
-          }
-        }
-
-        event.message(message);
-
-        for (final Pattern blockedWord : FilterHandler.this.blockedWords) {
-          if (blockedWord.matcher(event.message()).find()) {
-            event.cancelled(true);
-            break;
-          }
+      for (final Pattern blockedWord : this.blockedWords) {
+        if (blockedWord.matcher(event.message()).find()) {
+          event.cancelled(true);
+          break;
         }
       }
     });

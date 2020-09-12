@@ -7,10 +7,8 @@ import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChannelSwitchEvent;
-import net.draycia.carbon.events.api.ChatComponentEvent;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
-import net.kyori.event.EventSubscriber;
 import net.kyori.event.PostOrders;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -47,21 +45,13 @@ public final class TownyContext implements Listener {
       }
     });
 
-    CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
-      @Override
-      public boolean consumeCancelledEvents() {
-        return false;
-      }
+    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.NORMAL, false, event -> {
+      // TODO: event.setFailureMessage
+      final Object town = event.channel().context(KEY);
 
-      @Override
-      public void invoke(final PreChatFormatEvent event) {
-        // TODO: event.setFailureMessage
-        final Object town = event.channel().context(KEY);
-
-        if ((town instanceof Boolean) && ((Boolean) town)) {
-          if (!TownyContext.this.isInTown(event.user())) {
-            event.cancelled(true);
-          }
+      if ((town instanceof Boolean) && ((Boolean) town)) {
+        if (!this.isInTown(event.user())) {
+          event.cancelled(true);
         }
       }
     });

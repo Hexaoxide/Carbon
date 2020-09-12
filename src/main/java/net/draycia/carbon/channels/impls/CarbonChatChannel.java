@@ -128,10 +128,11 @@ public class CarbonChatChannel extends ChatChannel {
     for (final ChatUser target : recipients) {
       // Call second format event. Used for relational stuff (placeholders etc)
       final ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.format(), preFormatEvent.message());
-      Bukkit.getPluginManager().callEvent(formatEvent);
+
+      CarbonEvents.post(formatEvent);
 
       // Again, return if cancelled or message is emptied
-      if (formatEvent.isCancelled() || formatEvent.message().trim().isEmpty()) {
+      if (formatEvent.cancelled() || formatEvent.message().trim().isEmpty()) {
         continue;
       }
 
@@ -163,7 +164,7 @@ public class CarbonChatChannel extends ChatChannel {
     final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this, preFormatEvent.format(),
       preFormatEvent.message());
 
-    Bukkit.getPluginManager().callEvent(consoleFormatEvent);
+    CarbonEvents.post(consoleFormatEvent);
 
     final TextColor targetColor = this.channelColor(user);
 

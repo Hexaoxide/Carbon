@@ -7,7 +7,7 @@ import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChannelSwitchEvent;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
-import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -29,39 +29,23 @@ public final class mcMMOContext implements Listener {
       return true;
     });
 
-    CarbonEvents.register(ChannelSwitchEvent.class, new EventSubscriber<ChannelSwitchEvent>() {
-      @Override
-      public boolean consumeCancelledEvents() {
-        return false;
-      }
+    CarbonEvents.register(ChannelSwitchEvent.class, PostOrders.NORMAL, false, event -> {
+      final Object party = event.channel().context("mcmmo-party");
 
-      @Override
-      public void invoke(final ChannelSwitchEvent event) {
-        final Object party = event.channel().context("mcmmo-party");
-
-        if ((party instanceof Boolean) && ((Boolean) party)) {
-          if (!mcMMOContext.this.isInParty(event.user())) {
-            event.cancelled(true);
-            event.failureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
-          }
+      if ((party instanceof Boolean) && ((Boolean) party)) {
+        if (!this.isInParty(event.user())) {
+          event.cancelled(true);
+          event.failureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
         }
       }
     });
 
-    CarbonEvents.register(PreChatFormatEvent.class, new EventSubscriber<PreChatFormatEvent>() {
-      @Override
-      public boolean consumeCancelledEvents() {
-        return false;
-      }
+    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.NORMAL, false, event -> {
+      final Object party = event.channel().context("mcmmo-party");
 
-      @Override
-      public void invoke(final PreChatFormatEvent event) {
-        final Object party = event.channel().context("mcmmo-party");
-
-        if ((party instanceof Boolean) && ((Boolean) party)) {
-          if (!mcMMOContext.this.isInParty(event.user())) {
-            event.cancelled(true);
-          }
+      if ((party instanceof Boolean) && ((Boolean) party)) {
+        if (!this.isInParty(event.user())) {
+          event.cancelled(true);
         }
       }
     });
