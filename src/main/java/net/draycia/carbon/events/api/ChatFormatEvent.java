@@ -1,39 +1,29 @@
-package net.draycia.carbon.events;
+package net.draycia.carbon.events.api;
 
 import net.draycia.carbon.channels.ChatChannel;
+import net.draycia.carbon.events.CarbonEvent;
 import net.draycia.carbon.storage.ChatUser;
-import org.bukkit.Bukkit;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class ChatFormatEvent extends Event implements Cancellable {
+public class ChatFormatEvent implements CarbonEvent, Cancellable {
 
-  @NonNull
-  private static final HandlerList HANDLERS_LIST = new HandlerList();
   private boolean isCancelled = false;
-
   @NonNull
   private final ChatUser sender;
-
   @Nullable
   private final ChatUser target;
-
   @NonNull
   private ChatChannel chatChannel;
-
   @Nullable
   private String format;
-
   @NonNull
   private String message;
 
   public ChatFormatEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
                          @NonNull final ChatChannel chatChannel, @Nullable final String format,
                          @NonNull final String message) {
-    super(!Bukkit.isPrimaryThread());
 
     this.sender = sender;
     this.target = target;
@@ -44,25 +34,13 @@ public class ChatFormatEvent extends Event implements Cancellable {
   }
 
   @Override
-  public boolean isCancelled() {
+  public boolean cancelled() {
     return this.isCancelled;
   }
 
   @Override
-  public void setCancelled(final boolean cancelled) {
+  public void cancelled(final boolean cancelled) {
     this.isCancelled = cancelled;
-  }
-
-  @Override
-  @NonNull
-  public HandlerList getHandlers() {
-    return HANDLERS_LIST;
-  }
-
-  @NonNull
-  @SuppressWarnings("checkstyle:MethodName")
-  public static HandlerList getHandlerList() {
-    return HANDLERS_LIST;
   }
 
   @NonNull

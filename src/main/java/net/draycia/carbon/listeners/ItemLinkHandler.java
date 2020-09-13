@@ -1,22 +1,24 @@
 package net.draycia.carbon.listeners;
 
-import net.draycia.carbon.events.ChatComponentEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChatComponentEvent;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.event.PostOrders;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
 import java.util.regex.Pattern;
 
-public class ItemLinkHandler implements Listener {
+public class ItemLinkHandler {
 
-  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onItemLink(final ChatComponentEvent event) {
-    // Handle item linking placeholders
-    if (event.sender().online()) {
+  public ItemLinkHandler() {
+    CarbonEvents.register(ChatComponentEvent.class, PostOrders.FIRST, false, event -> {
+      if (!event.sender().online()) {
+        return;
+      }
+
+      // Handle item linking placeholders
       final Player player = event.sender().player();
 
       if (!player.hasPermission("carbonchat.itemlink")) {
@@ -41,7 +43,7 @@ public class ItemLinkHandler implements Listener {
           break;
         }
       }
-    }
+    });
   }
 
 }

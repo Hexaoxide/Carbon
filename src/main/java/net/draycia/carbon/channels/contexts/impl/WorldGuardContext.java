@@ -9,17 +9,17 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.ChannelSwitchEvent;
-import net.draycia.carbon.events.PreChatFormatEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChannelSwitchEvent;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
 
-public final class WorldGuardContext implements Listener {
+public final class WorldGuardContext {
 
   @NonNull
   private static final String KEY = "worldguard-region";
@@ -28,26 +28,24 @@ public final class WorldGuardContext implements Listener {
     carbonChat.contextManager().register(KEY, context -> {
       return this.testContext(context.sender(), context.target(), context.value());
     });
-  }
 
-  @EventHandler(ignoreCancelled = true)
-  public void onChannelSwitch(final ChannelSwitchEvent event) {
-    // TODO: cancellation message
-    final Object value = event.channel().context(KEY);
+    CarbonEvents.register(ChannelSwitchEvent.class, event -> {
+      // TODO: cancellation message
+      final Object value = event.channel().context(KEY);
 
-    if ((value instanceof String || value instanceof List) && !this.isInRegionOrRegions(value, event.user())) {
-      event.setCancelled(true);
-    }
-  }
+      if ((value instanceof String || value instanceof List) && !this.isInRegionOrRegions(value, event.user())) {
+        event.cancelled(true);
+      }
+    });
 
-  @EventHandler(ignoreCancelled = true)
-  public void onChannelMessage(final PreChatFormatEvent event) {
-    // TODO: cancellation message
-    final Object value = event.channel().context(KEY);
+    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.NORMAL, false, event -> {
+      // TODO: cancellation message
+      final Object value = event.channel().context(KEY);
 
-    if ((value instanceof String || value instanceof List) && !this.isInRegionOrRegions(value, event.user())) {
-      event.setCancelled(true);
-    }
+      if ((value instanceof String || value instanceof List) && !this.isInRegionOrRegions(value, event.user())) {
+        event.cancelled(true);
+      }
+    });
   }
 
   private boolean isInRegionOrRegions(@Nullable final Object value, @NonNull final ChatUser user) {

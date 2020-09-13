@@ -6,6 +6,9 @@ caps-protection:
 
 shadow-mute-prefix: '[SM] '
 
+# If true, muted users will be unable to use /whisper /msg
+mute-stops-whispers: false
+
 filters:
   enabled: true
   case-sensitive: false

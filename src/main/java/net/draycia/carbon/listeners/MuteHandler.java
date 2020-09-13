@@ -1,16 +1,23 @@
 package net.draycia.carbon.listeners;
 
-import net.draycia.carbon.events.PreChatFormatEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.PrivateMessageEvent;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
 
-public class MuteHandler implements Listener {
+public class MuteHandler {
 
-  @EventHandler
-  public void onMute(final PreChatFormatEvent event) {
-    if (event.user().muted()) {
-      event.setCancelled(true);
-    }
+  public MuteHandler() {
+    CarbonEvents.register(PrivateMessageEvent.class, event -> {
+      if (event.sender().muted()) {
+        event.cancelled(true);
+      }
+    });
+
+    CarbonEvents.register(PreChatFormatEvent.class, event -> {
+      if (event.user().muted()) {
+        event.cancelled(true);
+      }
+    });
   }
 
 }

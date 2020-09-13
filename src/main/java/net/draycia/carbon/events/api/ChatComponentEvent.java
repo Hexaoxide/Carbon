@@ -1,41 +1,30 @@
-package net.draycia.carbon.events;
+package net.draycia.carbon.events.api;
 
 import net.draycia.carbon.channels.ChatChannel;
+import net.draycia.carbon.events.CarbonEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class ChatComponentEvent extends Event implements Cancellable {
+public class ChatComponentEvent implements CarbonEvent, Cancellable {
 
-  @NonNull
-  private static final HandlerList HANDLERS_LIST = new HandlerList();
   private boolean isCancelled = false;
-
   @NonNull
   private final ChatUser sender;
-
   @Nullable
   private final ChatUser target;
-
   @NonNull
   private ChatChannel chatChannel;
-
   @NonNull
   private TextComponent component;
-
   @NonNull
   private final String originalMessage;
 
   public ChatComponentEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
                             @NonNull final ChatChannel chatChannel, @NonNull final TextComponent component,
                             @NonNull final String originalMessage) {
-
-    super(!Bukkit.isPrimaryThread());
 
     this.sender = sender;
     this.target = target;
@@ -45,25 +34,13 @@ public class ChatComponentEvent extends Event implements Cancellable {
   }
 
   @Override
-  public boolean isCancelled() {
+  public boolean cancelled() {
     return this.isCancelled;
   }
 
   @Override
-  public void setCancelled(final boolean cancelled) {
+  public void cancelled(final boolean cancelled) {
     this.isCancelled = cancelled;
-  }
-
-  @Override
-  @NonNull
-  public HandlerList getHandlers() {
-    return HANDLERS_LIST;
-  }
-
-  @NonNull
-  @SuppressWarnings("checkstyle:MethodName")
-  public static HandlerList getHandlerList() {
-    return HANDLERS_LIST;
   }
 
   @NonNull

@@ -5,9 +5,11 @@ import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.ChannelSwitchEvent;
-import net.draycia.carbon.events.PreChatFormatEvent;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChannelSwitchEvent;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
+import net.kyori.event.PostOrders;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -31,30 +33,28 @@ public final class TownyContext implements Listener {
 
       return true;
     });
-  }
 
-  @EventHandler(ignoreCancelled = true)
-  public void onChannelSwitch(final ChannelSwitchEvent event) {
-    final Object town = event.channel().context(KEY);
+    CarbonEvents.register(ChannelSwitchEvent.class, event -> {
+      final Object town = event.channel().context(KEY);
 
-    if ((town instanceof Boolean) && ((Boolean) town)) {
-      if (!this.isInTown(event.user())) {
-        event.setCancelled(true);
-        event.failureMessage(this.carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
+      if ((town instanceof Boolean) && ((Boolean) town)) {
+        if (!this.isInTown(event.user())) {
+          event.cancelled(true);
+          event.failureMessage(this.carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
+        }
       }
-    }
-  }
+    });
 
-  @EventHandler(ignoreCancelled = true)
-  public void onChannelMessage(final PreChatFormatEvent event) {
-    // TODO: event.setFailureMessage
-    final Object town = event.channel().context(KEY);
+    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.NORMAL, false, event -> {
+      // TODO: event.setFailureMessage
+      final Object town = event.channel().context(KEY);
 
-    if ((town instanceof Boolean) && ((Boolean) town)) {
-      if (!this.isInTown(event.user())) {
-        event.setCancelled(true);
+      if ((town instanceof Boolean) && ((Boolean) town)) {
+        if (!this.isInTown(event.user())) {
+          event.cancelled(true);
+        }
       }
-    }
+    });
   }
 
   @EventHandler

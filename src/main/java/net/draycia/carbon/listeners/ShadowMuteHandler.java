@@ -1,44 +1,34 @@
 package net.draycia.carbon.listeners;
 
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.events.ChatComponentEvent;
-import net.draycia.carbon.events.ChatFormatEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChatComponentEvent;
+import net.draycia.carbon.events.api.ChatFormatEvent;
+import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class ShadowMuteHandler implements Listener {
-
-  @NonNull
-  private final CarbonChat carbonChat;
+public class ShadowMuteHandler {
 
   public ShadowMuteHandler(@NonNull final CarbonChat carbonChat) {
-    this.carbonChat = carbonChat;
-  }
-
-  @EventHandler(priority = EventPriority.LOWEST)
-  public void onComponent(final ChatComponentEvent event) {
-    if (event.sender().shadowMuted()) {
-      if (!event.sender().equals(event.target())) {
-        event.setCancelled(true);
+    CarbonEvents.register(ChatComponentEvent.class, PostOrders.FIRST, false, event -> {
+      if (event.sender().shadowMuted() && event.sender().equals(event.target())) {
+        event.cancelled(true);
       }
-    }
-  }
+    });
 
-  @EventHandler
-  public void on(final ChatFormatEvent event) {
-    if (event.target() != null) {
-      return;
-    }
+    CarbonEvents.register(ChatFormatEvent.class, PostOrders.FIRST, false, event -> {
+      if (event.target() != null) {
+        return;
+      }
 
-    if (!event.sender().shadowMuted()) {
-      return;
-    }
+      if (!event.sender().shadowMuted()) {
+        return;
+      }
 
-    final String prefix = this.carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
+      final String prefix = carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
 
-    event.format(prefix + event.format());
+      event.format(prefix + event.format());
+    });
   }
 
 }

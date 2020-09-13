@@ -1,16 +1,16 @@
 package net.draycia.carbon.listeners;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.draycia.carbon.events.PreChatFormatEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.kyori.event.PostOrders;
 
-public class PlaceholderHandler implements Listener {
+public class PlaceholderHandler {
 
-  @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-  public void onPapiPlaceholder(final PreChatFormatEvent event) {
-    event.format(PlaceholderAPI.setPlaceholders(event.user().offlinePlayer(), event.format()));
+  public PlaceholderHandler() {
+    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
+      event.format(PlaceholderAPI.setPlaceholders(event.user().offlinePlayer(), event.format()));
+    });
   }
 
 }

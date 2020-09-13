@@ -1,6 +1,6 @@
 package net.draycia.carbon.channels;
 
-import net.draycia.carbon.events.PreChatFormatEvent;
+import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;

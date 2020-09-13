@@ -143,11 +143,11 @@ public final class CarbonChat extends JavaPlugin {
     }
 
     if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-      this.getServer().getPluginManager().registerEvents(new WorldGuardContext(this), this);
+      new WorldGuardContext(this);
     }
 
     if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
-      Bukkit.getPluginManager().registerEvents(new EconomyContext(this), this);
+      new EconomyContext(this);
     }
 
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
@@ -167,23 +167,21 @@ public final class CarbonChat extends JavaPlugin {
 
     // Register chat listeners
     pluginManager.registerEvents(new BukkitChatListener(this), this);
-    pluginManager.registerEvents(new CapsHandler(this), this);
-    pluginManager.registerEvents(new CustomPlaceholderHandler(this), this);
-    pluginManager.registerEvents(this.filterHandler, this);
-    pluginManager.registerEvents(new IgnoredPlayerHandler(), this);
-    pluginManager.registerEvents(new ItemLinkHandler(), this);
-    pluginManager.registerEvents(new LegacyFormatHandler(), this);
-    pluginManager.registerEvents(new MuteHandler(), this);
-    pluginManager.registerEvents(new OfflineNameHandler(), this);
-    pluginManager.registerEvents(new PingHandler(this), this);
-    pluginManager.registerEvents(new PlaceholderHandler(), this);
+    new CapsHandler(this);
+    new CustomPlaceholderHandler(this);
+    new IgnoredPlayerHandler();
+    new ItemLinkHandler();
+    new LegacyFormatHandler();
+    new MuteHandler();
+    new OfflineNameHandler();
+    new PingHandler(this);
+    new PlaceholderHandler();
     pluginManager.registerEvents(new PlayerJoinListener(this), this);
-    pluginManager.registerEvents(new RelationalPlaceholderHandler(), this);
-    pluginManager.registerEvents(new ShadowMuteHandler(this), this);
-    pluginManager.registerEvents(new UrlLinkHandler(), this);
-    pluginManager.registerEvents(new UserFormattingHandler(), this);
-    pluginManager.registerEvents(new WhisperPingHandler(this), this);
-
+    new RelationalPlaceholderHandler();
+    new ShadowMuteHandler(this);
+    new UrlLinkHandler();
+    new UserFormattingHandler();
+    new WhisperPingHandler(this);
   }
 
   @Override
