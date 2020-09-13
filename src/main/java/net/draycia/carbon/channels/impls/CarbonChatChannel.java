@@ -5,6 +5,7 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChatComponentEvent;
 import net.draycia.carbon.events.api.ChatFormatEvent;
+import net.draycia.carbon.events.api.MessageContextEvent;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.events.api.ReceiverContextEvent;
 import net.draycia.carbon.storage.ChatUser;
@@ -103,6 +104,14 @@ public class CarbonChatChannel extends ChatChannel {
   @NonNull
   public Component sendMessage(@NonNull final ChatUser user, @NonNull final Collection<@NonNull ChatUser> recipients, @NonNull final String message, final boolean fromRemote) {
     this.updateUserNickname(user);
+
+    final MessageContextEvent event = new MessageContextEvent(this, user);
+
+    CarbonEvents.post(event);
+
+    if (event.cancelled()) {
+      return TextComponent.empty();
+    }
 
     // Get player's formatting
     final String messageFormat = this.format(user);
@@ -356,7 +365,6 @@ public class CarbonChatChannel extends ChatChannel {
     final TextColor userColor = user.channelSettings(this).color();
 
     if (userColor != null) {
-      System.out.println("user color found!");
       return userColor;
     }
 
@@ -365,7 +373,7 @@ public class CarbonChatChannel extends ChatChannel {
     final TextColor color = CarbonUtils.parseColor(user, input);
 
     if (color == null && this.carbonChat.getConfig().getBoolean("show-tips")) {
-      this.carbonChat.getLogger().warning("Tip: Channel color found (" + color + ") is invalid!");
+      this.carbonChat.getLogger().warning("Tip: Channel color found (" + input + ") is invalid!");
       this.carbonChat.getLogger().warning("Falling back to #FFFFFF");
 
       return NamedTextColor.WHITE;

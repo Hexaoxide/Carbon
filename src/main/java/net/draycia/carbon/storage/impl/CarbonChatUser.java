@@ -4,6 +4,7 @@ import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
+import net.draycia.carbon.events.api.ChannelContextEvent;
 import net.draycia.carbon.events.api.ChannelSwitchEvent;
 import net.draycia.carbon.events.api.PrivateMessageEvent;
 import net.draycia.carbon.storage.ChatUser;
@@ -132,6 +133,14 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   @Override
   public void selectedChannel(@NonNull final ChatChannel chatChannel, final boolean fromRemote) {
     final String failureMessage = chatChannel.switchFailureMessage();
+
+    final ChannelContextEvent contextEvent = new ChannelContextEvent(chatChannel, this);
+
+    CarbonEvents.post(contextEvent);
+
+    if (contextEvent.cancelled()) {
+      return;
+    }
 
     final ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
 
