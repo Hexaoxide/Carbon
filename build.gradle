@@ -60,7 +60,9 @@ dependencies {
 
   // Messaging
   compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
-  compile 'io.lettuce:lettuce-core:6.0.0.M1'
+  compile('io.lettuce:lettuce-core:6.0.0.M1') {
+    exclude group: 'io.netty'
+  }
 
   // Commands
   compile "dev.jorel:commandapi-shade:4.2"

@@ -1,14 +1,17 @@
-package net.draycia.carbon.channels.contexts.impl;
+package net.draycia.carbon.listeners.contexts;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChannelSwitchEvent;
-import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.draycia.carbon.events.api.MessageContextEvent;
+import net.draycia.carbon.events.api.ReceiverContextEvent;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.util.Context;
 import net.kyori.event.PostOrders;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,32 +29,29 @@ public final class TownyContext implements Listener {
   public TownyContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    this.carbonChat.contextManager().register(KEY, context -> {
-      if ((context.value() instanceof Boolean) && ((Boolean) context.value())) {
-        return this.isInSameTown(context.sender(), context.target());
-      }
+    CarbonEvents.register(ReceiverContextEvent.class, event -> {
+      final Context context = event.channel().context(KEY);
 
-      return true;
+      if (context != null && context.isBoolean() && context.asBoolean()) {
+        event.cancelled(!this.isInSameTown(event.sender(), event.recipient()));
+      }
     });
 
     CarbonEvents.register(ChannelSwitchEvent.class, event -> {
-      final Object town = event.channel().context(KEY);
+      final Context context = event.channel().context(KEY);
 
-      if ((town instanceof Boolean) && ((Boolean) town)) {
-        if (!this.isInTown(event.user())) {
-          event.cancelled(true);
-          event.failureMessage(this.carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
-        }
+      if (context != null && context.isBoolean() && context.asBoolean()) {
+        event.cancelled(!this.isInTown(event.user()));
       }
     });
 
-    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.NORMAL, false, event -> {
+    CarbonEvents.register(MessageContextEvent.class, PostOrders.NORMAL, false, event -> {
       // TODO: event.setFailureMessage
-      final Object town = event.channel().context(KEY);
+      final Context context = event.channel().context(KEY);
 
-      if ((town instanceof Boolean) && ((Boolean) town)) {
+      if (context != null && context.isBoolean() && context.asBoolean()) {
         if (!this.isInTown(event.user())) {
-          event.cancelled(true);
+          event.cancelled(!this.isInTown(event.user()));
         }
       }
     });
@@ -61,9 +61,15 @@ public final class TownyContext implements Listener {
   public void onResidentRemove(final TownRemoveResidentEvent event) {
     final String name = event.getResident().getName();
     final ChatUser user = this.carbonChat.userService().wrap(name);
-    final Object town = user.selectedChannel().context(KEY);
+    final ChatChannel channel = user.selectedChannel();
 
-    if ((town instanceof Boolean) && ((Boolean) town)) {
+    if (channel == null) {
+      return;
+    }
+
+    final Context context = channel.context(KEY);
+
+    if (context != null && context.isBoolean() && context.asBoolean()) {
       user.clearSelectedChannel();
     }
   }
@@ -71,9 +77,15 @@ public final class TownyContext implements Listener {
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
     final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
-    final Object town = user.selectedChannel().context(KEY);
+    final ChatChannel channel = user.selectedChannel();
 
-    if ((town instanceof Boolean) && ((Boolean) town) && !this.isInTown(user)) {
+    if (channel == null) {
+      return;
+    }
+
+    final Context context = channel.context(KEY);
+
+    if (context != null && context.isBoolean() && context.asBoolean() && !this.isInTown(user)) {
       user.clearSelectedChannel();
     }
   }

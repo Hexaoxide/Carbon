@@ -15,7 +15,7 @@ public class ChannelSwitchEvent implements CarbonEvent, Cancellable {
   private final ChatUser user;
   @Nullable
   private String failureMessage;
-  private boolean cancelled;
+  private boolean cancelled = false;
 
   public ChannelSwitchEvent(@NonNull final ChatChannel channel, @NonNull final ChatUser user, @Nullable final String failureMessage) {
     this.channel = channel;

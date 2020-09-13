@@ -6,8 +6,10 @@ import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChatComponentEvent;
 import net.draycia.carbon.events.api.ChatFormatEvent;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.draycia.carbon.events.api.ReceiverContextEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.util.Context;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -52,7 +54,11 @@ public class CarbonChatChannel extends ChatChannel {
 
   @Override
   public boolean testContext(@NonNull final ChatUser sender, @NonNull final ChatUser target) {
-    return this.carbonChat.contextManager().testContext(sender, target, this);
+    final ReceiverContextEvent event = new ReceiverContextEvent(this, sender, target);
+
+    CarbonEvents.post(event);
+
+    return !event.cancelled();
   }
 
   @Override
@@ -509,7 +515,7 @@ public class CarbonChatChannel extends ChatChannel {
 
   @Override
   @Nullable
-  public Object context(@NonNull final String key) {
+  public Context context(@NonNull final String key) {
     final ConfigurationSection section = this.config == null ? null : this.config.getConfigurationSection("contexts");
 
     if (section == null) {
@@ -525,10 +531,21 @@ public class CarbonChatChannel extends ChatChannel {
         return null;
       }
 
-      return defaultContexts.get(key);
+      final Object value = defaultContexts.get(key);
+
+      if (value != null) {
+        return new Context(key, value);
+      }
+
     }
 
-    return section.get(key);
+    final Object value = section.get(key);
+
+    if (value == null) {
+      return null;
+    }
+
+    return new Context(key, value);
   }
 
   @Nullable

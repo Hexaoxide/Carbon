@@ -1,10 +1,11 @@
-package net.draycia.carbon.channels.contexts.impl;
+package net.draycia.carbon.listeners.contexts;
 
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.draycia.carbon.util.Context;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext {
@@ -19,14 +20,18 @@ public class EconomyContext {
     this.economy = this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 
     CarbonEvents.register(PreChatFormatEvent.class, event -> {
-      final Object requiredBalObject = event.channel().context("vault-balance");
+      final Context context = event.channel().context("vault-balance");
+
+      if (context == null) {
+        return;
+      }
 
       final Double requiredBal;
 
-      if (requiredBalObject instanceof Double) {
-        requiredBal = (Double) requiredBalObject;
-      } else if (requiredBalObject instanceof Integer) {
-        requiredBal = Double.valueOf((Integer) requiredBalObject);
+      if (context.isDouble()) {
+        requiredBal = context.asDouble();
+      } else if (context.isInteger()) {
+        requiredBal = Double.valueOf(context.asInteger());
       } else {
         return;
       }
@@ -35,25 +40,29 @@ public class EconomyContext {
         return;
       }
 
-      final Player player = event.user().player();
+      final OfflinePlayer player = event.user().offlinePlayer();
 
       if (!this.economy.has(player, requiredBal)) {
         event.cancelled(true);
 
         event.user().sendMessage(this.carbonChat.adventureManager()
-          .processMessageWithPapi(player, event.channel().cannotUseMessage()));
+          .processMessage(event.channel().cannotUseMessage()));
       }
     });
 
     CarbonEvents.register(PreChatFormatEvent.class, event -> {
-      final Object costObject = event.channel().context("vault-cost");
+      final Context context = event.channel().context("vault-cost");
+
+      if (context == null) {
+        return;
+      }
 
       final Double cost;
 
-      if (costObject instanceof Double) {
-        cost = (Double) costObject;
-      } else if (costObject instanceof Integer) {
-        cost = Double.valueOf((Integer) costObject);
+      if (context.isDouble()) {
+        cost = context.asDouble();
+      } else if (context.isInteger()) {
+        cost = Double.valueOf(context.asInteger());
       } else {
         return;
       }
@@ -62,13 +71,13 @@ public class EconomyContext {
         return;
       }
 
-      final Player player = event.user().player();
+      final OfflinePlayer player = event.user().offlinePlayer();
 
       if (!this.economy.has(player, cost)) {
         event.cancelled(true);
 
         event.user().sendMessage(this.carbonChat.adventureManager()
-          .processMessageWithPapi(player, event.channel().cannotUseMessage()));
+          .processMessage(event.channel().cannotUseMessage()));
 
         return;
       }
