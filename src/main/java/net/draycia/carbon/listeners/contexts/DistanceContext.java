@@ -20,12 +20,12 @@ public class DistanceContext {
         return;
       }
 
-      if (!event.sender().online() || !event.recipient().online()) {
-        event.cancelled(true);
+      if (context.isBoolean() && !context.asBoolean()) {
         return;
       }
 
-      if (context.isBoolean() && !context.asBoolean()) {
+      if (!event.sender().online() || !event.recipient().online()) {
+        event.cancelled(true);
         return;
       }
 
@@ -37,8 +37,8 @@ public class DistanceContext {
         return;
       }
 
-      if (context.isDouble()) {
-        final Double value = context.asDouble();
+      if (context.isNumber()) {
+        final double value = context.asNumber().doubleValue();
 
         if (value > 0) {
           event.cancelled(senderLocation.distance(targetLocation) > value);

@@ -22,16 +22,28 @@ public class Context {
     return this.value;
   }
 
+  public boolean isFloat() {
+    return this.value instanceof Float;
+  }
+
   public boolean isDouble() {
     return this.value() instanceof Double;
   }
 
-  public boolean isString() {
-    return this.value() instanceof String;
+  public boolean isByte() {
+    return this.value() instanceof Byte;
   }
 
   public boolean isInteger() {
     return this.value() instanceof Integer;
+  }
+
+  public boolean isLong() {
+    return this.value() instanceof Long;
+  }
+
+  public boolean isString() {
+    return this.value() instanceof String;
   }
 
   public boolean isBoolean() {
@@ -42,28 +54,42 @@ public class Context {
     return this.value() instanceof List;
   }
 
-  public Double asDouble() {
-    return (Double) this.value();
+  public boolean isListChecked(final Class<?> type) {
+    if (!this.isList()) {
+      return false;
+    }
+
+    final List<?> list = this.asList();
+
+    if (list.size() > 0) {
+      final Object value = list.get(0);
+
+      if (value != null) {
+        return list.get(0).getClass().isAssignableFrom(type);
+      }
+    }
+
+    return false;
+  }
+
+  public boolean isNumber() {
+    return this.value() instanceof Number;
   }
 
   public String asString() {
     return (String) this.value();
   }
 
-  public Integer asInteger() {
-    return (Integer) this.value();
-  }
-
   public Boolean asBoolean() {
     return (Boolean) this.value();
   }
 
-  public List<?> asList() {
-    return (List<?>) this.value();
+  public <T> List<T> asList() {
+    return (List<T>) this.value();
   }
 
-  public List<String> asStringList() {
-    return (List<String>) this.value();
+  public Number asNumber() {
+    return (Number) this.value();
   }
 
 }

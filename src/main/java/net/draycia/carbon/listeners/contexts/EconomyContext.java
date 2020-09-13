@@ -28,10 +28,8 @@ public class EconomyContext {
 
       final Double requiredBal;
 
-      if (context.isDouble()) {
-        requiredBal = context.asDouble();
-      } else if (context.isInteger()) {
-        requiredBal = Double.valueOf(context.asInteger());
+      if (context.isNumber()) {
+        requiredBal = context.asNumber().doubleValue();;
       } else {
         return;
       }
@@ -59,10 +57,8 @@ public class EconomyContext {
 
       final Double cost;
 
-      if (context.isDouble()) {
-        cost = context.asDouble();
-      } else if (context.isInteger()) {
-        cost = Double.valueOf(context.asInteger());
+      if (context.isNumber()) {
+        cost = context.asNumber().doubleValue();
       } else {
         return;
       }
