@@ -9,7 +9,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.draycia.carbon.events.CarbonEvents;
-import net.draycia.carbon.events.api.ChannelContextEvent;
 import net.draycia.carbon.events.api.MessageContextEvent;
 import net.draycia.carbon.events.api.ReceiverContextEvent;
 import net.draycia.carbon.storage.ChatUser;
@@ -24,14 +23,6 @@ public final class WorldGuardContext {
   public WorldGuardContext() {
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
       event.cancelled(this.testContext(event.sender(), event.recipient(), event.context(KEY)));
-    });
-
-    CarbonEvents.register(ChannelContextEvent.class, event -> {
-      final Context value = event.channel().context(KEY);
-
-      if (value != null && (value.isString() || value.isList()) && !this.isInRegionOrRegions(value, event.user())) {
-        event.cancelled(true);
-      }
     });
 
     CarbonEvents.register(MessageContextEvent.class, event -> {

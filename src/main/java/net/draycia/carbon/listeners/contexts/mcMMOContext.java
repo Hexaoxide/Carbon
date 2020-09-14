@@ -5,7 +5,7 @@ import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
-import net.draycia.carbon.events.api.ChannelContextEvent;
+import net.draycia.carbon.events.api.ChannelSwitchEvent;
 import net.draycia.carbon.events.api.MessageContextEvent;
 import net.draycia.carbon.events.api.ReceiverContextEvent;
 import net.draycia.carbon.storage.ChatUser;
@@ -31,15 +31,19 @@ public final class mcMMOContext implements Listener {
       final Context context = event.channel().context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
-        event.cancelled(this.isInSameParty(event.sender(), event.recipient()));
+        // TODO: failureMessage
+        event.cancelled(!this.isInSameParty(event.sender(), event.recipient()));
       }
     });
 
-    CarbonEvents.register(ChannelContextEvent.class, PostOrders.NORMAL, false, event -> {
+    CarbonEvents.register(ChannelSwitchEvent.class, PostOrders.NORMAL, false, event -> {
       final Context context = event.channel().context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
-        event.cancelled(this.isInParty(event.user()));
+        if (!this.isInParty(event.user())) {
+          event.failureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
+          event.cancelled(true);
+        }
       }
     });
 
@@ -47,7 +51,7 @@ public final class mcMMOContext implements Listener {
       final Context context = event.channel().context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
-        event.cancelled(this.isInParty(event.user()));
+        event.cancelled(!this.isInParty(event.user()));
       }
     });
   }

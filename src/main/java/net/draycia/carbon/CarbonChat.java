@@ -9,7 +9,7 @@ import net.draycia.carbon.listeners.contexts.mcMMOContext;
 import net.draycia.carbon.listeners.events.BukkitChatListener;
 import net.draycia.carbon.listeners.events.CapsHandler;
 import net.draycia.carbon.listeners.events.CustomPlaceholderHandler;
-import net.draycia.carbon.listeners.events.FilterHandler;
+import net.draycia.carbon.listeners.contexts.FilterContext;
 import net.draycia.carbon.listeners.events.IgnoredPlayerHandler;
 import net.draycia.carbon.listeners.events.ItemLinkHandler;
 import net.draycia.carbon.listeners.events.LegacyFormatHandler;
@@ -61,7 +61,7 @@ public final class CarbonChat extends JavaPlugin {
   private YamlConfiguration languageConfig;
   private YamlConfiguration commandsConfig;
 
-  private FilterHandler filterHandler;
+  private FilterContext filterContext;
 
   public static final LegacyComponentSerializer LEGACY =
     LegacyComponentSerializer.builder()
@@ -144,8 +144,6 @@ public final class CarbonChat extends JavaPlugin {
   private void setupListeners() {
     final PluginManager pluginManager = this.getServer().getPluginManager();
 
-    this.filterHandler = new FilterHandler(this);
-
     // Register chat listeners
     pluginManager.registerEvents(new BukkitChatListener(this), this);
     new CapsHandler(this);
@@ -175,7 +173,7 @@ public final class CarbonChat extends JavaPlugin {
   }
 
   public void reloadFilters() {
-    this.filterHandler.reloadFilters();
+    this.filterContext.reloadFilters();
   }
 
   private void loadModConfig() {
@@ -191,6 +189,8 @@ public final class CarbonChat extends JavaPlugin {
   }
 
   private void registerContexts() {
+    this.filterContext = new FilterContext(this);
+
     if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
       this.getServer().getPluginManager().registerEvents(new TownyContext(this), this);
     }

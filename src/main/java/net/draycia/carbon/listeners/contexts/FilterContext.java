@@ -1,9 +1,10 @@
-package net.draycia.carbon.listeners.events;
+package net.draycia.carbon.listeners.contexts;
 
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.draycia.carbon.util.Context;
 import net.kyori.event.PostOrders;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FilterHandler {
+public class FilterContext {
 
   @NonNull
   private final CarbonChat carbonChat;
@@ -27,7 +28,7 @@ public class FilterHandler {
   @NonNull
   private final List<@NonNull Pattern> blockedWords = new ArrayList<>();
 
-  public FilterHandler(@NonNull final CarbonChat carbonChat) {
+  public FilterContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.reloadFilters();
 
@@ -104,9 +105,13 @@ public class FilterHandler {
   }
 
   private boolean channelUsesFilter(@NonNull final ChatChannel chatChannel) {
-    final Object filter = chatChannel.context("filter");
+    final Context context = chatChannel.context("filter");
 
-    return filter instanceof Boolean && ((Boolean) filter);
+    if (context == null) {
+      return false;
+    }
+
+    return context.isBoolean() && context.asBoolean();
   }
 
 }

@@ -4,7 +4,6 @@ import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
-import net.draycia.carbon.events.api.ChannelContextEvent;
 import net.draycia.carbon.events.api.ChannelSwitchEvent;
 import net.draycia.carbon.events.api.PrivateMessageEvent;
 import net.draycia.carbon.storage.ChatUser;
@@ -127,20 +126,16 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   @Override
   @Nullable
   public ChatChannel selectedChannel() {
+    if (this.selectedChannel == null) {
+      return null;
+    }
+
     return this.carbonChat.channelManager().channelOrDefault(this.selectedChannel);
   }
 
   @Override
   public void selectedChannel(@NonNull final ChatChannel chatChannel, final boolean fromRemote) {
     final String failureMessage = chatChannel.switchFailureMessage();
-
-    final ChannelContextEvent contextEvent = new ChannelContextEvent(chatChannel, this);
-
-    CarbonEvents.post(contextEvent);
-
-    if (contextEvent.cancelled()) {
-      return;
-    }
 
     final ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
 
@@ -159,6 +154,13 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       this.carbonChat.messageManager().sendMessage("selected-channel", this.uuid(), byteArray -> {
         byteArray.writeUTF(chatChannel.key());
       });
+    }
+
+    if (this.online()) {
+      this.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(this.player(), chatChannel.switchMessage(),
+        "br", "\n",
+        "color", "<" + chatChannel.channelColor(this).toString() + ">",
+        "channel", chatChannel.name()));
     }
   }
 

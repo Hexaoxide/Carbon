@@ -41,7 +41,10 @@ public final class TownyContext implements Listener {
       final Context context = event.channel().context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
-        event.cancelled(!this.isInTown(event.user()));
+        if (!this.isInTown(event.user())) {
+          event.failureMessage(carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
+          event.cancelled(true);
+        }
       }
     });
 
