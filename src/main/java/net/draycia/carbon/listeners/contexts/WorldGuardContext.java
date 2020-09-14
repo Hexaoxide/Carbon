@@ -1,4 +1,4 @@
-package net.draycia.carbon.channels.contexts.impl;
+package net.draycia.carbon.listeners.contexts;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
@@ -8,53 +8,39 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.events.CarbonEvents;
-import net.draycia.carbon.events.api.ChannelSwitchEvent;
-import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.draycia.carbon.events.api.MessageContextEvent;
+import net.draycia.carbon.events.api.ReceiverContextEvent;
 import net.draycia.carbon.storage.ChatUser;
-import net.kyori.event.PostOrders;
+import net.draycia.carbon.util.Context;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.List;
 
 public final class WorldGuardContext {
 
   @NonNull
   private static final String KEY = "worldguard-region";
 
-  public WorldGuardContext(@NonNull final CarbonChat carbonChat) {
-    carbonChat.contextManager().register(KEY, context -> {
-      return this.testContext(context.sender(), context.target(), context.value());
+  public WorldGuardContext() {
+    CarbonEvents.register(ReceiverContextEvent.class, event -> {
+      event.cancelled(this.testContext(event.sender(), event.recipient(), event.context(KEY)));
     });
 
-    CarbonEvents.register(ChannelSwitchEvent.class, event -> {
-      // TODO: cancellation message
-      final Object value = event.channel().context(KEY);
+    CarbonEvents.register(MessageContextEvent.class, event -> {
+      final Context value = event.channel().context(KEY);
 
-      if ((value instanceof String || value instanceof List) && !this.isInRegionOrRegions(value, event.user())) {
-        event.cancelled(true);
-      }
-    });
-
-    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.NORMAL, false, event -> {
-      // TODO: cancellation message
-      final Object value = event.channel().context(KEY);
-
-      if ((value instanceof String || value instanceof List) && !this.isInRegionOrRegions(value, event.user())) {
+      if (value != null && (value.isString() || value.isList()) && !this.isInRegionOrRegions(value, event.user())) {
         event.cancelled(true);
       }
     });
   }
 
-  private boolean isInRegionOrRegions(@Nullable final Object value, @NonNull final ChatUser user) {
-    if (value instanceof String) {
-      return this.isInRegion((String) value, user);
+  private boolean isInRegionOrRegions(@NonNull final Context context, @NonNull final ChatUser user) {
+    if (context.isString()) {
+      return this.isInRegion(context.asString(), user);
     }
 
-    if (value instanceof List) {
-      for (final String region : (List<String>) value) {
+    if (context.isList()) {
+      for (final String region : context.<String>asList()) {
         if (this.isInRegion(region, user)) {
           return true;
         }
@@ -64,17 +50,17 @@ public final class WorldGuardContext {
     return false;
   }
 
-  public boolean testContext(@NonNull final ChatUser sender, @NonNull final ChatUser target, @Nullable final Object value) {
+  public boolean testContext(@NonNull final ChatUser sender, @NonNull final ChatUser target, @NonNull final Context context) {
     boolean user1InRegion = false;
     boolean user2InRegion = false;
 
-    if (value instanceof Boolean && (Boolean) value) {
+    if (context.isBoolean() && context.asBoolean()) {
       return this.isInSameRegion(sender, target);
-    } else if (value instanceof String) {
-      user1InRegion = this.isInRegion((String) value, sender);
-      user2InRegion = this.isInRegion((String) value, target);
-    } else if (value instanceof List) {
-      for (final String item : (List<String>) value) {
+    } else if (context.isString()) {
+      user1InRegion = this.isInRegion(context.asString(), sender);
+      user2InRegion = this.isInRegion(context.asString(), target);
+    } else if (context.isList()) {
+      for (final String item : context.<String>asList()) {
         if (!user1InRegion) {
           user1InRegion = this.isInRegion(item, sender);
         }

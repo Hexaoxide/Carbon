@@ -1,5 +1,6 @@
 package net.draycia.carbon.channels;
 
+import net.draycia.carbon.util.Context;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -116,7 +117,7 @@ public abstract class ChatChannel implements ForwardingAudience {
   public abstract List<@NonNull Pattern> itemLinkPatterns();
 
   @Nullable
-  public abstract Object context(@NonNull String key);
+  public abstract Context context(@NonNull String key);
 
   @NonNull
   public abstract List<@NonNull String> groupOverrides();

@@ -126,6 +126,10 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   @Override
   @Nullable
   public ChatChannel selectedChannel() {
+    if (this.selectedChannel == null) {
+      return null;
+    }
+
     return this.carbonChat.channelManager().channelOrDefault(this.selectedChannel);
   }
 
@@ -150,6 +154,13 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       this.carbonChat.messageManager().sendMessage("selected-channel", this.uuid(), byteArray -> {
         byteArray.writeUTF(chatChannel.key());
       });
+    }
+
+    if (this.online()) {
+      this.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(this.player(), chatChannel.switchMessage(),
+        "br", "\n",
+        "color", "<" + chatChannel.channelColor(this).toString() + ">",
+        "channel", chatChannel.name()));
     }
   }
 

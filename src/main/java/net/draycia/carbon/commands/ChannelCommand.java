@@ -66,11 +66,6 @@ public class ChannelCommand {
     }
 
     user.selectedChannel(channel);
-
-    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, channel.switchMessage(),
-      "br", "\n",
-      "color", "<" + channel.channelColor(user).toString() + ">",
-      "channel", channel.name()));
   }
 
   private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {

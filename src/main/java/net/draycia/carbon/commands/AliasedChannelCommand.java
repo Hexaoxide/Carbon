@@ -61,11 +61,6 @@ public class AliasedChannelCommand {
     }
 
     user.selectedChannel(this.chatChannel());
-
-    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, this.chatChannel().switchMessage(),
-      "br", "\n",
-      "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
-      "channel", this.chatChannel().name()));
   }
 
   private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {

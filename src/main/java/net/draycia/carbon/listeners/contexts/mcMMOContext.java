@@ -1,12 +1,15 @@
-package net.draycia.carbon.channels.contexts.impl;
+package net.draycia.carbon.listeners.contexts;
 
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
 import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.ChannelSwitchEvent;
-import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.draycia.carbon.events.api.MessageContextEvent;
+import net.draycia.carbon.events.api.ReceiverContextEvent;
 import net.draycia.carbon.storage.ChatUser;
+import net.draycia.carbon.util.Context;
 import net.kyori.event.PostOrders;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,35 +21,37 @@ public final class mcMMOContext implements Listener {
   @NonNull
   private final CarbonChat carbonChat;
 
+  @NonNull
+  private static final String KEY = "mcmmo-party";
+
   public mcMMOContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
-    this.carbonChat.contextManager().register("mcmmo-party", context -> {
-      if ((context.value() instanceof Boolean) && ((Boolean) context.value())) {
-        return this.isInSameParty(context.sender(), context.target());
-      }
+    CarbonEvents.register(ReceiverContextEvent.class, PostOrders.NORMAL, false, event -> {
+      final Context context = event.channel().context(KEY);
 
-      return true;
+      if (context != null && context.isBoolean() && context.asBoolean()) {
+        // TODO: failureMessage
+        event.cancelled(!this.isInSameParty(event.sender(), event.recipient()));
+      }
     });
 
     CarbonEvents.register(ChannelSwitchEvent.class, PostOrders.NORMAL, false, event -> {
-      final Object party = event.channel().context("mcmmo-party");
+      final Context context = event.channel().context(KEY);
 
-      if ((party instanceof Boolean) && ((Boolean) party)) {
+      if (context != null && context.isBoolean() && context.asBoolean()) {
         if (!this.isInParty(event.user())) {
-          event.cancelled(true);
           event.failureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
+          event.cancelled(true);
         }
       }
     });
 
-    CarbonEvents.register(PreChatFormatEvent.class, PostOrders.NORMAL, false, event -> {
-      final Object party = event.channel().context("mcmmo-party");
+    CarbonEvents.register(MessageContextEvent.class, PostOrders.NORMAL, false, event -> {
+      final Context context = event.channel().context(KEY);
 
-      if ((party instanceof Boolean) && ((Boolean) party)) {
-        if (!this.isInParty(event.user())) {
-          event.cancelled(true);
-        }
+      if (context != null && context.isBoolean() && context.asBoolean()) {
+        event.cancelled(!this.isInParty(event.user()));
       }
     });
   }
@@ -61,9 +66,15 @@ public final class mcMMOContext implements Listener {
     }
 
     final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
-    final Object party = user.selectedChannel().context("mcmmo-party");
+    final ChatChannel channel = user.selectedChannel();
 
-    if ((party instanceof Boolean) && ((Boolean) party)) {
+    if (channel == null) {
+      return;
+    }
+
+    final Context context = channel.context(KEY);
+
+    if (context != null && context.isBoolean() && context.asBoolean() && !this.isInParty(user)) {
       user.clearSelectedChannel();
     }
   }
@@ -71,9 +82,15 @@ public final class mcMMOContext implements Listener {
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
     final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
-    final Object party = user.selectedChannel().context("mcmmo-party");
+    final ChatChannel channel = user.selectedChannel();
 
-    if ((party instanceof Boolean) && ((Boolean) party) && !this.isInParty(user)) {
+    if (channel == null) {
+      return;
+    }
+
+    final Context context = channel.context(KEY);
+
+    if (context != null && context.isBoolean() && context.asBoolean() && !this.isInParty(user)) {
       user.clearSelectedChannel();
     }
   }

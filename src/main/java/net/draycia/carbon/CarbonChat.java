@@ -1,32 +1,31 @@
 package net.draycia.carbon;
 
 import dev.jorel.commandapi.CommandAPI;
-import net.draycia.carbon.channels.contexts.impl.DistanceContext;
-import net.draycia.carbon.channels.contexts.impl.EconomyContext;
-import net.draycia.carbon.channels.contexts.impl.TownyContext;
-import net.draycia.carbon.channels.contexts.impl.WorldGuardContext;
-import net.draycia.carbon.channels.contexts.impl.mcMMOContext;
-import net.draycia.carbon.listeners.BukkitChatListener;
-import net.draycia.carbon.listeners.CapsHandler;
-import net.draycia.carbon.listeners.CustomPlaceholderHandler;
-import net.draycia.carbon.listeners.FilterHandler;
-import net.draycia.carbon.listeners.IgnoredPlayerHandler;
-import net.draycia.carbon.listeners.ItemLinkHandler;
-import net.draycia.carbon.listeners.LegacyFormatHandler;
-import net.draycia.carbon.listeners.MuteHandler;
-import net.draycia.carbon.listeners.OfflineNameHandler;
-import net.draycia.carbon.listeners.PingHandler;
-import net.draycia.carbon.listeners.PlaceholderHandler;
-import net.draycia.carbon.listeners.PlayerJoinListener;
-import net.draycia.carbon.listeners.RelationalPlaceholderHandler;
-import net.draycia.carbon.listeners.ShadowMuteHandler;
-import net.draycia.carbon.listeners.UrlLinkHandler;
-import net.draycia.carbon.listeners.UserFormattingHandler;
-import net.draycia.carbon.listeners.WhisperPingHandler;
+import net.draycia.carbon.listeners.contexts.DistanceContext;
+import net.draycia.carbon.listeners.contexts.EconomyContext;
+import net.draycia.carbon.listeners.contexts.TownyContext;
+import net.draycia.carbon.listeners.contexts.WorldGuardContext;
+import net.draycia.carbon.listeners.contexts.mcMMOContext;
+import net.draycia.carbon.listeners.events.BukkitChatListener;
+import net.draycia.carbon.listeners.events.CapsHandler;
+import net.draycia.carbon.listeners.events.CustomPlaceholderHandler;
+import net.draycia.carbon.listeners.contexts.FilterContext;
+import net.draycia.carbon.listeners.events.IgnoredPlayerHandler;
+import net.draycia.carbon.listeners.events.ItemLinkHandler;
+import net.draycia.carbon.listeners.events.LegacyFormatHandler;
+import net.draycia.carbon.listeners.events.MuteHandler;
+import net.draycia.carbon.listeners.events.OfflineNameHandler;
+import net.draycia.carbon.listeners.events.PingHandler;
+import net.draycia.carbon.listeners.events.PlaceholderHandler;
+import net.draycia.carbon.listeners.events.PlayerJoinListener;
+import net.draycia.carbon.listeners.events.RelationalPlaceholderHandler;
+import net.draycia.carbon.listeners.events.ShadowMuteHandler;
+import net.draycia.carbon.listeners.events.UrlLinkHandler;
+import net.draycia.carbon.listeners.events.UserFormattingHandler;
+import net.draycia.carbon.listeners.events.WhisperPingHandler;
 import net.draycia.carbon.managers.AdventureManager;
 import net.draycia.carbon.managers.ChannelManager;
 import net.draycia.carbon.managers.CommandManager;
-import net.draycia.carbon.managers.ContextManager;
 import net.draycia.carbon.messaging.MessageManager;
 import net.draycia.carbon.storage.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
@@ -54,7 +53,6 @@ public final class CarbonChat extends JavaPlugin {
   private CommandManager commandManager;
   private ChannelManager channelManager;
   private AdventureManager adventureManager;
-  private ContextManager contextManager;
 
   private UserService userService;
   private MessageManager messageManager;
@@ -63,7 +61,7 @@ public final class CarbonChat extends JavaPlugin {
   private YamlConfiguration languageConfig;
   private YamlConfiguration commandsConfig;
 
-  private FilterHandler filterHandler;
+  private FilterContext filterContext;
 
   public static final LegacyComponentSerializer LEGACY =
     LegacyComponentSerializer.builder()
@@ -111,7 +109,6 @@ public final class CarbonChat extends JavaPlugin {
 
     // Initialize managers
     this.channelManager = new ChannelManager(this);
-    this.contextManager = new ContextManager();
     this.messageManager = new MessageManager(this);
     this.commandManager = new CommandManager(this);
 
@@ -134,22 +131,6 @@ public final class CarbonChat extends JavaPlugin {
 
     new CarbonPlaceholders(this).register();
 
-    if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
-      this.getServer().getPluginManager().registerEvents(new TownyContext(this), this);
-    }
-
-    if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
-      this.getServer().getPluginManager().registerEvents(new mcMMOContext(this), this);
-    }
-
-    if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-      new WorldGuardContext(this);
-    }
-
-    if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
-      new EconomyContext(this);
-    }
-
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
       this.getLogger().warning("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
     }
@@ -162,8 +143,6 @@ public final class CarbonChat extends JavaPlugin {
 
   private void setupListeners() {
     final PluginManager pluginManager = this.getServer().getPluginManager();
-
-    this.filterHandler = new FilterHandler(this);
 
     // Register chat listeners
     pluginManager.registerEvents(new BukkitChatListener(this), this);
@@ -194,7 +173,7 @@ public final class CarbonChat extends JavaPlugin {
   }
 
   public void reloadFilters() {
-    this.filterHandler.reloadFilters();
+    this.filterContext.reloadFilters();
   }
 
   private void loadModConfig() {
@@ -210,7 +189,25 @@ public final class CarbonChat extends JavaPlugin {
   }
 
   private void registerContexts() {
-    this.contextManager().register("distance", new DistanceContext());
+    this.filterContext = new FilterContext(this);
+
+    if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
+      this.getServer().getPluginManager().registerEvents(new TownyContext(this), this);
+    }
+
+    if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
+      this.getServer().getPluginManager().registerEvents(new mcMMOContext(this), this);
+    }
+
+    if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+      new WorldGuardContext();
+    }
+
+    if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
+      new EconomyContext(this);
+    }
+
+    new DistanceContext();
   }
 
   @NonNull
@@ -256,10 +253,5 @@ public final class CarbonChat extends JavaPlugin {
   @NonNull
   public AdventureManager adventureManager() {
     return this.adventureManager;
-  }
-
-  @NonNull
-  public ContextManager contextManager() {
-    return this.contextManager;
   }
 }
