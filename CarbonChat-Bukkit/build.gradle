@@ -1,0 +1,120 @@
+plugins {
+  id 'checkstyle'
+  id 'java'
+  id 'java-library'
+  id 'maven'
+  id 'maven-publish'
+  id 'com.github.johnrengelman.shadow' version '6.0.0'
+  id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
+}
+
+description = 'CarbonChat-Bukkit'
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+
+  maven { url = 'https://maven.enginehub.org/repo/' }
+  maven { url = 'https://repo.maven.apache.org/maven2' }
+  maven { url = 'https://papermc.io/repo/repository/maven-public/' }
+  maven { url = 'https://oss.sonatype.org/content/groups/public/' }
+  maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+  maven { url = 'https://jitpack.io' }
+  maven { url = 'https://dl.bintray.com/ichbinjoe/public/' }
+  maven { url = 'https://repo.codemc.org/repository/maven-public/' }
+  maven { url = "https://repo.aikar.co/content/groups/aikar/" }
+  maven { url = 'https://raw.githubusercontent.com/JorelAli/CommandAPI/mvn-repo/' }
+}
+
+dependencies {
+  checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
+
+  compile project(":CarbonChat-API")
+
+  // Databases
+  compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'
+  compile 'com.zaxxer:HikariCP:2.4.1'
+
+  // Messaging
+  compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
+  compile('io.lettuce:lettuce-core:6.0.0.M1') {
+    exclude group: 'io.netty'
+  }
+
+  // Commands
+  compile "dev.jorel:commandapi-shade:4.2"
+
+  // Plugins
+  compileOnly('com.gmail.nossr50.mcMMO:mcMMO:2.1.143') {
+    exclude group: 'org.jetbrains', module: 'annotations'
+  }
+  compileOnly 'com.github.TownyAdvanced:Towny:0.96.2.0'
+  compileOnly('com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT') {
+    exclude group: 'org.spigotmc', module: 'spigot-api' // Honestly?
+  }
+  compileOnly 'me.clip:placeholderapi:2.10.9'
+  compileOnly 'com.github.TownyAdvanced:Towny:0.96.1.11'
+  compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+  compileOnly 'com.vexsoftware:nuvotifier-universal:2.6.0'
+  compileOnly 'net.luckperms:api:5.1'
+
+  // Server
+  compileOnly 'com.destroystokyo.paper:paper-api:1.16.2-R0.1-SNAPSHOT'
+}
+
+// Generates plugin.yml automatically
+bukkit {
+  name = project.description
+  version = project.version
+  main = 'net.draycia.carbon.CarbonChat'
+  apiVersion = '1.13'
+  author = 'Draycia'
+  depend = ['PlaceholderAPI', 'Vault']
+  softDepend = ['LuckPerms', 'Towny', 'mcMMO', 'WorldGuard']
+  loadBefore = ["Essentials"]
+  permissions {
+    'carbonchat.channels.global.see' {
+      setDefault("TRUE")
+    }
+
+    'carbonchat.channels.global.use' {
+      setDefault("TRUE")
+    }
+  }
+}
+
+sourceCompatibility = '1.8'
+
+// Set output directory and encoding
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+  options.compilerArgs += ['-Xlint:all']
+}
+
+// Automatically shadowJar when building
+tasks.build.dependsOn tasks.shadowJar
+
+// Output a single jar
+shadowJar {
+  minimize()
+  archiveFileName.set(project.description + "-" + project.property('projectVersion') + ".jar")
+}
+
+jar {
+  archiveFileName.set(project.description + "-" + project.property('projectVersion') + ".jar")
+}
+
+//// Automatically relocate all shaded dependencies
+//import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+//
+//task relocateShadowJar(type: ConfigureShadowRelocation) {
+//  target = tasks.shadowJar
+//  prefix = "net.draycia.carbon.libs" // Default value is "shadow"
+//}
+//
+//tasks.shadowJar.dependsOn tasks.relocateShadowJar
+
+// Cleanup custom output directory on clean task
+clean.doFirst {
+  delete "$rootDir/build/bundled"
+}
