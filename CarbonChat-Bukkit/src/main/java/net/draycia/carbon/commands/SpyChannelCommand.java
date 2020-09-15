@@ -65,7 +65,7 @@ public class SpyChannelCommand {
 
   private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final ChatChannel chatChannel = (ChatChannel) args[0];
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     final String message;
 
@@ -84,7 +84,7 @@ public class SpyChannelCommand {
   }
 
   private void executeWhispers(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     final String message;
 
@@ -102,14 +102,14 @@ public class SpyChannelCommand {
   private void executeEverything(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final Boolean shouldSpy = (Boolean) args[0];
 
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     final String message;
 
     if (shouldSpy) {
       user.spyingWhispers(true);
 
-      for (final ChatChannel channel : this.carbonChat.channelManager().registry().values()) {
+      for (final ChatChannel channel : this.carbonChat.channelManager().registry()) {
         user.channelSettings(channel).spying(true);
       }
 
@@ -117,7 +117,7 @@ public class SpyChannelCommand {
     } else {
       user.spyingWhispers(false);
 
-      for (final ChatChannel channel : this.carbonChat.channelManager().registry().values()) {
+      for (final ChatChannel channel : this.carbonChat.channelManager().registry()) {
         user.channelSettings(channel).spying(false);
       }
 

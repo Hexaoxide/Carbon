@@ -16,10 +16,7 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -84,24 +81,6 @@ public class MySQLUserService implements UserService {
     this.userCache.invalidateAll();
     this.userCache.cleanUp();
     this.database.close();
-  }
-
-  @Override
-  @Nullable
-  public ChatUser wrap(@NonNull final String name) {
-    final Player player = Bukkit.getPlayer(name);
-
-    if (player != null) {
-      return this.wrap(player);
-    }
-
-    return this.wrap(Bukkit.getOfflinePlayer(name));
-  }
-
-  @Override
-  @Nullable
-  public ChatUser wrap(@NonNull final OfflinePlayer player) {
-    return this.wrap(player.getUniqueId());
   }
 
   @Override
@@ -172,7 +151,7 @@ public class MySQLUserService implements UserService {
       user.spyingWhispers(users.<Boolean>get("spyingwhispers"), true);
 
       for (final DbRow channelSetting : channelSettings) {
-        final ChatChannel chatChannel = this.carbonChat.channelManager().registry().channel(channelSetting.getString("channel"));
+        final ChatChannel chatChannel = this.carbonChat.channelManager().registry().get(channelSetting.getString("channel"));
 
         if (chatChannel != null) {
           final UserChannelSettings settings = user.channelSettings(chatChannel);

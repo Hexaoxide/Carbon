@@ -10,6 +10,7 @@ import dev.jorel.commandapi.arguments.StringArgument;
 import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.audience.Audience;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -54,7 +55,7 @@ public class NicknameCommand {
 
   private void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     String nickname = (String) args[0];
-    final ChatUser sender = this.carbonChat.userService().wrap(player);
+    final ChatUser sender = this.carbonChat.userService().wrap(player.getUniqueId());
 
     if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(player.getName())) {
       nickname = null;
@@ -72,7 +73,7 @@ public class NicknameCommand {
 
     sender.sendMessage(this.carbonChat.adventureManager().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
-      "user", sender.offlinePlayer().getName()));
+      "user", Bukkit.getOfflinePlayer(sender.uuid()).getName()));
   }
 
   private void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
@@ -81,7 +82,7 @@ public class NicknameCommand {
     String nickname = (String) args[1];
 
     if (nickname.equalsIgnoreCase("off") ||
-      nickname.equalsIgnoreCase(target.offlinePlayer().getName())) {
+      nickname.equalsIgnoreCase(Bukkit.getOfflinePlayer(target.uuid()).getName())) {
       nickname = null;
     }
 
@@ -97,7 +98,7 @@ public class NicknameCommand {
 
     user.sendMessage(this.carbonChat.adventureManager().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
-      "user", target.offlinePlayer().getName()));
+      "user", Bukkit.getOfflinePlayer(target.uuid()).getName()));
   }
 
 }

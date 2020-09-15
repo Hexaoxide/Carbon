@@ -11,6 +11,7 @@ import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -43,19 +44,21 @@ public class IgnoreCommand {
 
   private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final ChatUser targetUser = (ChatUser) args[0];
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+
+    final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(user.uuid());
 
     if (user.ignoringUser(targetUser)) {
       user.ignoringUser(targetUser, false);
       user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player,
         this.carbonChat.language().getString("not-ignoring-user"),
-        "br", "\n", "player", targetUser.offlinePlayer().getName()));
+        "br", "\n", "player", offlinePlayer.getName()));
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
         final Permission permission = this.carbonChat.permission();
         final String format;
 
-        if (permission.playerHas(null, targetUser.offlinePlayer(), "carbonchat.ignore.exempt")) {
+        if (permission.playerHas(null, offlinePlayer, "carbonchat.ignore.exempt")) {
           format = this.carbonChat.language().getString("ignore-exempt");
         } else {
           user.ignoringUser(targetUser, true);
@@ -63,8 +66,7 @@ public class IgnoreCommand {
         }
 
         final Component message = this.carbonChat.adventureManager().processMessageWithPapi(player, format,
-          "br", "\n", "sender", player.getDisplayName(), "player",
-          targetUser.offlinePlayer().getName());
+          "br", "\n", "sender", player.getDisplayName(), "player", offlinePlayer.getName());
 
         user.sendMessage(message);
       });

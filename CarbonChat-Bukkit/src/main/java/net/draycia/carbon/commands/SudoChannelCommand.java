@@ -11,6 +11,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.CommandSettings;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -70,7 +71,7 @@ public class SudoChannelCommand {
     this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
       this.carbonChat.adventureManager().processMessage(otherMessage, "br", "\n",
         "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name(),
-        "player", user.offlinePlayer().getName()));
+        "player", Bukkit.getOfflinePlayer(user.uuid()).getName()));
   }
 
   private void sendMessageOther(@NonNull final CommandSender sender, @NonNull final ChatUser user,

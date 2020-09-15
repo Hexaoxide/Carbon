@@ -8,9 +8,6 @@ import java.util.UUID;
 public interface UserService {
 
   @Nullable
-  ChatUser wrap(String name);
-
-  @Nullable
   ChatUser wrap(UUID uuid);
 
   @Nullable

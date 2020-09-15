@@ -6,6 +6,7 @@ import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.event.PostOrders;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.regex.Pattern;
@@ -14,12 +15,12 @@ public class ItemLinkHandler {
 
   public ItemLinkHandler() {
     CarbonEvents.register(ChatComponentEvent.class, PostOrders.FIRST, false, event -> {
-      if (!event.sender().online()) {
+      // Handle item linking placeholders
+      final Player player = Bukkit.getPlayer(event.sender().uuid());
+
+      if (player == null) {
         return;
       }
-
-      // Handle item linking placeholders
-      final Player player = event.sender().player();
 
       if (!player.hasPermission("carbonchat.itemlink")) {
         return;

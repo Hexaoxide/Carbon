@@ -44,7 +44,7 @@ public class MessageCommand {
     final ChatUser targetUser = (ChatUser) args[0];
     final String message = (String) args[1];
 
-    final ChatUser sender = this.carbonChat.userService().wrap(player);
+    final ChatUser sender = this.carbonChat.userService().wrap(player.getUniqueId());
 
     targetUser.sendMessage(sender, message);
   }

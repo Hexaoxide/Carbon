@@ -15,6 +15,10 @@ public interface ChatUser extends Audience {
   @Nullable
   String nickname();
 
+  boolean permissible();
+  
+  boolean hasPermission(@NonNull String permission);
+
   default void nickname(@NonNull final String nickname) {
     this.nickname(nickname, false);
   }

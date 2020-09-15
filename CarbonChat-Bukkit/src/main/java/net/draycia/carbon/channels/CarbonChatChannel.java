@@ -1,4 +1,4 @@
-package net.draycia.carbon.channels.impls;
+package net.draycia.carbon.channels;
 
 import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.CarbonChat;
@@ -17,6 +17,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -29,9 +30,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class CarbonChatChannel extends ChatChannel {
-
-  @NonNull
-  private static final Pattern MESSAGE_PATTERN = Pattern.compile("<message>");
 
   @NonNull
   private final String key;
@@ -64,7 +62,7 @@ public class CarbonChatChannel extends ChatChannel {
 
   @Override
   public boolean canPlayerUse(@NonNull final ChatUser user) {
-    return user.player().hasPermission("carbonchat.channels." + this.name() + ".use");
+    return user.permissible() && user.hasPermission("carbonchat.channels." + this.name() + ".use");
   }
 
   @Override
@@ -73,7 +71,7 @@ public class CarbonChatChannel extends ChatChannel {
     final List<ChatUser> audience = new ArrayList<>();
 
     for (final Player player : Bukkit.getOnlinePlayers()) {
-      final ChatUser playerUser = this.carbonChat.userService().wrap(player);
+      final ChatUser playerUser = this.carbonChat.userService().wrap(player.getUniqueId());
 
       if (this.canPlayerSee(playerUser, true)) {
         audience.add(playerUser);
@@ -84,17 +82,19 @@ public class CarbonChatChannel extends ChatChannel {
   }
 
   private void updateUserNickname(@NonNull final ChatUser user) {
-    if (user.online()) {
+    final Player player = Bukkit.getPlayer(user.uuid());
+
+    if (player != null) {
       String nickname = user.nickname();
 
       if (nickname != null) {
         final Component component = this.carbonChat.adventureManager().processMessage(nickname);
         nickname = CarbonChat.LEGACY.serialize(component);
 
-        user.player().setDisplayName(nickname);
+        player.setDisplayName(nickname);
 
         if (this.carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-          user.player().setPlayerListName(nickname);
+          player.setPlayerListName(nickname);
         }
       }
     }
@@ -132,10 +132,12 @@ public class CarbonChatChannel extends ChatChannel {
     if (user.nickname() != null) {
       displayName = user.nickname();
     } else {
-      if (user.online()) {
-        displayName = user.player().getDisplayName();
+      final OfflinePlayer player = Bukkit.getOfflinePlayer(user.uuid());
+
+      if (player.isOnline()) {
+        displayName = player.getPlayer().getDisplayName();
       } else {
-        displayName = user.offlinePlayer().getName();
+        displayName = player.getName();
       }
     }
 
@@ -199,8 +201,10 @@ public class CarbonChatChannel extends ChatChannel {
     // Route message to bungee / discord (if message originates from this server)
     // Use instanceof and not isOnline, if this message originates from another then the instanceof will
     // fail, but isOnline may succeed if the player is online on both servers (somehow).
-    if (user.online() && !fromRemote && (this.bungee() || this.crossServer())) {
-      this.sendMessageToBungee(user.player(), consoleEvent.component());
+    final Player player = Bukkit.getPlayer(user.uuid());
+
+    if (player != null && !fromRemote && this.crossServer()) {
+      this.sendMessageToBungee(player, consoleEvent.component());
     }
 
     return consoleEvent.component();
@@ -232,18 +236,18 @@ public class CarbonChatChannel extends ChatChannel {
   }
 
   private boolean userHasGroup(@NonNull final ChatUser user, @NonNull final String group) {
-    if (user.online()) {
-      if (this.carbonChat.permission().playerInGroup(user.player(), group)) {
+    if (user.permissible()) {
+      if (this.carbonChat.permission().playerInGroup(Bukkit.getPlayer(user.uuid()), group)) {
         return true;
       }
     } else {
-      if (this.carbonChat.permission().playerInGroup(null, user.offlinePlayer(), group)) {
+      if (this.carbonChat.permission().playerInGroup(null, Bukkit.getOfflinePlayer(user.uuid()), group)) {
         return true;
       }
     }
 
-    if (user.online() && this.permissionGroupMatching()) {
-      return user.player().hasPermission("carbonchat.group." + group);
+    if (user.permissible() && this.permissionGroupMatching()) {
+      return user.hasPermission("carbonchat.group." + group);
     }
 
     return false;
@@ -253,10 +257,10 @@ public class CarbonChatChannel extends ChatChannel {
   private String firstFoundUserFormat(@NonNull final ChatUser user) {
     final String[] playerGroups;
 
-    if (user.online()) {
-      playerGroups = this.carbonChat.permission().getPlayerGroups(user.player());
+    if (user.permissible()) {
+      playerGroups = this.carbonChat.permission().getPlayerGroups(Bukkit.getPlayer(user.uuid()));
     } else {
-      playerGroups = this.carbonChat.permission().getPlayerGroups(null, user.offlinePlayer());
+      playerGroups = this.carbonChat.permission().getPlayerGroups(null, Bukkit.getOfflinePlayer(user.uuid()));
     }
 
     for (final String group : playerGroups) {
@@ -274,10 +278,10 @@ public class CarbonChatChannel extends ChatChannel {
   private String primaryGroupFormat(@NonNull final ChatUser user) {
     final String primaryGroup;
 
-    if (user.online()) {
-      primaryGroup = this.carbonChat.permission().getPrimaryGroup(user.player());
+    if (user.permissible()) {
+      primaryGroup = this.carbonChat.permission().getPrimaryGroup(Bukkit.getPlayer(user.uuid()));
     } else {
-      primaryGroup = this.carbonChat.permission().getPrimaryGroup(null, user.offlinePlayer());
+      primaryGroup = this.carbonChat.permission().getPrimaryGroup(null, Bukkit.getOfflinePlayer(user.uuid()));
     }
 
     final String primaryGroupFormat = this.format(primaryGroup);
@@ -326,15 +330,13 @@ public class CarbonChatChannel extends ChatChannel {
 
   @Override
   public boolean canPlayerSee(@NonNull final ChatUser target, final boolean checkSpying) {
-    final Player targetPlayer = target.player();
-
-    if (checkSpying && targetPlayer.hasPermission("carbonchat.spy." + this.name())) {
+    if (checkSpying && target.permissible() && target.hasPermission("carbonchat.spy." + this.name())) {
       if (target.channelSettings(this).spying()) {
         return true;
       }
     }
 
-    if (!targetPlayer.hasPermission("carbonchat.channels." + this.name() + ".see")) {
+    if (!(target.permissible() && target.hasPermission("carbonchat.channels." + this.name() + ".see"))) {
       return false;
     }
 
@@ -346,14 +348,13 @@ public class CarbonChatChannel extends ChatChannel {
   }
 
   public boolean canPlayerSee(@NonNull final ChatUser sender, @NonNull final ChatUser target, final boolean checkSpying) {
-    final Player targetPlayer = target.player();
 
     if (!this.canPlayerSee(target, checkSpying)) {
       return false;
     }
 
     if (this.ignorable()) {
-      return !target.ignoringUser(sender) || targetPlayer.hasPermission("carbonchat.ignore.exempt");
+      return !target.ignoringUser(sender) || (target.permissible() && target.hasPermission("carbonchat.ignore.exempt"));
     }
 
     return true;
@@ -399,12 +400,6 @@ public class CarbonChatChannel extends ChatChannel {
   @Override
   public boolean ignorable() {
     return this.getBoolean("ignorable");
-  }
-
-  @Override
-  @Deprecated
-  public boolean bungee() {
-    return this.getBoolean("should-bungee");
   }
 
   @Override

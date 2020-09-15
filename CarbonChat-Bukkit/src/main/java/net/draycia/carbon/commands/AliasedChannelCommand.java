@@ -49,7 +49,7 @@ public class AliasedChannelCommand {
   }
 
   private void channel(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
       user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, this.chatChannel().cannotUseMessage(),
@@ -64,7 +64,7 @@ public class AliasedChannelCommand {
   }
 
   private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
     final String message = (String) args[0];
 
     final Component component = this.chatChannel().sendMessage(user, message, false);

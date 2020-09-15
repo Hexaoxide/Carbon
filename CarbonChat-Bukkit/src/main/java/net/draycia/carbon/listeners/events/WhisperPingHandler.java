@@ -6,6 +6,7 @@ import net.draycia.carbon.api.events.PrivateMessageEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.event.PostOrders;
+import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class WhisperPingHandler {
@@ -17,7 +18,7 @@ public class WhisperPingHandler {
         return;
       }
 
-      final String senderName = event.sender().offlinePlayer().getName();
+      final String senderName = Bukkit.getOfflinePlayer(event.sender().uuid()).getName();
 
       if (senderName == null || !event.message().contains(senderName)) {
         return;

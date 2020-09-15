@@ -12,6 +12,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -46,12 +47,14 @@ public class MuteCommand {
     final ChatUser user = (ChatUser) args[0];
     final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
 
+    final OfflinePlayer player = Bukkit.getOfflinePlayer(user.uuid());
+
     if (user.shadowMuted()) {
       user.muted(false);
       final String format = this.carbonChat.language().getString("no-longer-muted");
 
       final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
-        "player", user.offlinePlayer().getName());
+        "player", player.getName());
 
       audience.sendMessage(message);
     } else {
@@ -59,7 +62,7 @@ public class MuteCommand {
         final Permission permission = this.carbonChat.permission();
         final String format;
 
-        if (permission.playerHas(null, user.offlinePlayer(), "carbonchat.mute.exempt")) {
+        if (permission.playerHas(null, player, "carbonchat.mute.exempt")) {
           format = this.carbonChat.language().getString("mute-exempt");
         } else {
           user.muted(true);
@@ -67,7 +70,7 @@ public class MuteCommand {
         }
 
         final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
-          "player", user.offlinePlayer().getName());
+          "player", player.getName());
 
         audience.sendMessage(message);
       });

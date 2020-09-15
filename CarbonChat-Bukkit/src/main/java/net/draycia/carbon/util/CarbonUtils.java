@@ -110,8 +110,12 @@ public final class CarbonUtils {
       input = "white";
     }
 
-    if (user != null && user.online()) {
-      input = PlaceholderAPI.setPlaceholders(user.player(), input);
+    if (user != null) {
+      final Player player = Bukkit.getPlayer(user.uuid());
+
+      if (player != null) {
+        input = PlaceholderAPI.setPlaceholders(player, input);
+      }
     }
 
     for (final NamedTextColor namedColor : NamedTextColor.values()) {
@@ -140,7 +144,7 @@ public final class CarbonUtils {
         throw new CustomArgument.CustomArgumentException("Invalid player for input (" + input + ")");
       }
 
-      return carbonChat.userService().wrap(player);
+      return carbonChat.userService().wrap(player.getUniqueId());
       //        }).overrideSuggestions((sender, args) -> {
       //            ArrayList<String> players = new ArrayList<>();
       //
@@ -157,7 +161,7 @@ public final class CarbonUtils {
     return new CustomArgument<>(input -> {
       final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
-      return carbonChat.userService().wrap(input);
+      return carbonChat.userService().wrap(Bukkit.getOfflinePlayer(input).getUniqueId());
       //        }).overrideSuggestions((sender, args) -> {
       //            ArrayList<String> players = new ArrayList<>();
       //
@@ -187,7 +191,7 @@ public final class CarbonUtils {
     return new CustomArgument<>(input -> {
       final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
-      final ChatChannel channel = carbonChat.channelManager().registry().channel(input);
+      final ChatChannel channel = carbonChat.channelManager().registry().get(input);
 
       if (channel == null) {
         throw new CustomArgument.CustomArgumentException("Invalid channel for input (" + input + ")");

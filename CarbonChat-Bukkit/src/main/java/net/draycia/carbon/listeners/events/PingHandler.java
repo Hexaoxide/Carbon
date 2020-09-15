@@ -6,6 +6,7 @@ import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.event.PostOrders;
+import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PingHandler {
@@ -20,7 +21,7 @@ public class PingHandler {
         return;
       }
 
-      final String targetName = event.target().offlinePlayer().getName();
+      final String targetName = Bukkit.getOfflinePlayer(event.target().uuid()).getName();
       final String prefix = carbonChat.getConfig().getString("pings.prefix", "");
       final boolean caseSensitive = carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
 

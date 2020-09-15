@@ -29,7 +29,7 @@ public class BukkitChatListener implements Listener {
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
@@ -44,7 +44,7 @@ public class BukkitChatListener implements Listener {
       event.setCancelled(true);
     }
 
-    for (final ChatChannel entry : this.carbonChat.channelManager().registry().values()) {
+    for (final ChatChannel entry : this.carbonChat.channelManager().registry()) {
       if (entry.messagePrefix() == null || entry.messagePrefix().isEmpty()) {
         continue;
       }
@@ -70,7 +70,7 @@ public class BukkitChatListener implements Listener {
       recipients = new HashSet<>();
 
       for (final Player recipient : event.getRecipients()) {
-        recipients.add(this.carbonChat.userService().wrap(recipient));
+        recipients.add(this.carbonChat.userService().wrap(recipient.getUniqueId()));
       }
     } else {
       recipients = selectedChannel.audiences();

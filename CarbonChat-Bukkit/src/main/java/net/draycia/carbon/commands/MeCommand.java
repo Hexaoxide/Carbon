@@ -52,13 +52,13 @@ public class MeCommand {
     final Component component = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
       "displayname", player.getDisplayName(), "message", message);
 
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     if (user.shadowMuted()) {
       user.sendMessage(component);
     } else {
       for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-        if (this.carbonChat.userService().wrap(onlinePlayer).ignoringUser(user)) {
+        if (this.carbonChat.userService().wrap(onlinePlayer.getUniqueId()).ignoringUser(user)) {
           continue;
         }
 

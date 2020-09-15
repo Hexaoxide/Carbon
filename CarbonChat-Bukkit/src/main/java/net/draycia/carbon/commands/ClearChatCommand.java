@@ -38,7 +38,7 @@ public class ClearChatCommand {
     final Component component = this.carbonChat.adventureManager().processMessage(format, "br", "\n");
 
     for (final Player player : Bukkit.getOnlinePlayers()) {
-      final ChatUser audience = this.carbonChat.userService().wrap(player);
+      final ChatUser audience = this.carbonChat.userService().wrap(player.getUniqueId());
 
       if (player.hasPermission("carbonchat.clearchat.exempt")) {
         final String message = this.carbonChat.language().getString("clear-exempt");

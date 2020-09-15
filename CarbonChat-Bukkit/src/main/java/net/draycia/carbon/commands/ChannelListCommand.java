@@ -12,6 +12,8 @@ import net.draycia.carbon.api.commands.CommandSettings;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -57,8 +59,8 @@ public class ChannelListCommand {
   }
 
   public void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().values().iterator();
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().iterator();
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     this.listAndSend(player, user, allChannels);
   }
@@ -67,13 +69,15 @@ public class ChannelListCommand {
     final Audience cmdSender = this.carbonChat.adventureManager().audiences().audience(sender);
     final ChatUser user = (ChatUser) args[0];
 
-    if (!user.online()) {
+    final OfflinePlayer player = Bukkit.getOfflinePlayer(user.uuid());
+
+    if (!player.isOnline()) {
       final String mustBeOnline = this.carbonChat.language().getString("user-must-be-online");
-      cmdSender.sendMessage(this.carbonChat.adventureManager().processMessage(mustBeOnline, "br", "\n", "player", user.offlinePlayer().getName()));
+      cmdSender.sendMessage(this.carbonChat.adventureManager().processMessage(mustBeOnline, "br", "\n", "player", player.getName()));
       return;
     }
 
-    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().values().iterator();
+    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().iterator();
     this.listAndSend(sender, user, allChannels);
   }
 

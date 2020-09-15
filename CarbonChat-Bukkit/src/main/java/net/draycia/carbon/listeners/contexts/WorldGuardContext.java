@@ -11,8 +11,9 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.ReceiverContextEvent;
-import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.Context;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class WorldGuardContext {
@@ -22,26 +23,38 @@ public final class WorldGuardContext {
 
   public WorldGuardContext() {
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
-      event.cancelled(this.testContext(event.sender(), event.recipient(), event.context(KEY)));
+      final Player senderPlayer = Bukkit.getPlayer(event.sender().uuid());
+      final Player recipientPlayer = Bukkit.getPlayer(event.recipient().uuid());
+
+      if (senderPlayer == null || recipientPlayer == null) {
+        return;
+      }
+
+      event.cancelled(this.testContext(senderPlayer, recipientPlayer, event.context(KEY)));
     });
 
     CarbonEvents.register(MessageContextEvent.class, event -> {
       final Context value = event.channel().context(KEY);
+      final Player player = Bukkit.getPlayer(event.user().uuid());
 
-      if (value != null && (value.isString() || value.isList()) && !this.isInRegionOrRegions(value, event.user())) {
+      if (player == null) {
+        return;
+      }
+
+      if (value != null && (value.isString() || value.isList()) && !this.isInRegionOrRegions(value, player)) {
         event.cancelled(true);
       }
     });
   }
 
-  private boolean isInRegionOrRegions(@NonNull final Context context, @NonNull final ChatUser user) {
+  private boolean isInRegionOrRegions(@NonNull final Context context, @NonNull final Player player) {
     if (context.isString()) {
-      return this.isInRegion(context.asString(), user);
+      return this.isInRegion(context.asString(), player);
     }
 
     if (context.isList()) {
       for (final String region : context.<String>asList()) {
-        if (this.isInRegion(region, user)) {
+        if (this.isInRegion(region, player)) {
           return true;
         }
       }
@@ -50,7 +63,7 @@ public final class WorldGuardContext {
     return false;
   }
 
-  public boolean testContext(@NonNull final ChatUser sender, @NonNull final ChatUser target, @NonNull final Context context) {
+  public boolean testContext(@NonNull final Player sender, @NonNull final Player target, @NonNull final Context context) {
     boolean user1InRegion = false;
     boolean user2InRegion = false;
 
@@ -76,13 +89,9 @@ public final class WorldGuardContext {
     return user1InRegion && user2InRegion;
   }
 
-  public boolean isInSameRegion(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
-    if (!user1.online() || !user2.online()) {
-      return false;
-    }
-
-    final Location user1Location = BukkitAdapter.adapt(user1.player().getLocation());
-    final Location user2Location = BukkitAdapter.adapt(user2.player().getLocation());
+  public boolean isInSameRegion(@NonNull final Player user1, @NonNull final Player user2) {
+    final Location user1Location = BukkitAdapter.adapt(user1.getLocation());
+    final Location user2Location = BukkitAdapter.adapt(user2.getLocation());
 
     final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     final RegionQuery regionQuery = container.createQuery();
@@ -99,16 +108,16 @@ public final class WorldGuardContext {
     return false;
   }
 
-  public boolean isInRegion(@NonNull final String region, @NonNull final ChatUser user) {
+  public boolean isInRegion(@NonNull final String region, @NonNull final Player player) {
     final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-    final World world = BukkitAdapter.adapt(user.player().getWorld());
+    final World world = BukkitAdapter.adapt(player.getWorld());
     final ProtectedRegion protection = container.get(world).getRegion(region);
 
-    return this.isInRegion(protection, user);
+    return this.isInRegion(protection, player);
   }
 
-  public boolean isInRegion(@NonNull final ProtectedRegion region, @NonNull final ChatUser user) {
-    final org.bukkit.Location location = user.player().getLocation();
+  public boolean isInRegion(@NonNull final ProtectedRegion region, @NonNull final Player player) {
+    final org.bukkit.Location location = player.getLocation();
 
     return region.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ());
   }

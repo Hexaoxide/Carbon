@@ -37,10 +37,8 @@ public class FilterContext {
         return;
       }
 
-      if (event.user().online()) {
-        if (event.user().player().hasPermission("carbonchat.filter.exempt")) {
-          return;
-        }
+      if (event.user().permissible() && event.user().hasPermission("carbonchat.filter.exempt")) {
+        return;
       }
 
       if (!this.channelUsesFilter(event.channel())) {

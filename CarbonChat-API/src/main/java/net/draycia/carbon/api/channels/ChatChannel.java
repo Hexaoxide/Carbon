@@ -14,19 +14,47 @@ import java.util.regex.Pattern;
 
 public abstract class ChatChannel implements ForwardingAudience {
 
+  /**
+   * Gets a list of {@link ChatUser}s to send channel messages to.
+   * @return All {@link ChatUser}s that can see messages in this channel.
+   */
   @NonNull
   public abstract List<ChatUser> audiences();
 
+  /**
+   * Gets the {@link TextColor} the supplied {@link ChatUser} has set for this channel.
+   * If none is set, returns this channel's set color with the "color" config option.
+   * @param user The user that may have a color set.
+   * @return The color the user may have set, otherwise the channel's color.
+   */
   @Nullable
   public abstract TextColor channelColor(@NonNull ChatUser user);
 
+  /**
+   * Gets the string format for the specified group.
+   * @param group The group.
+   * @return The string format for the specified group.
+   */
   @Nullable
   public abstract String format(@NonNull String group);
 
+  /**
+   * If this channel is the channel players get when they join for the first time.
+   * Also the fallback channel in case the code is unable to find any given channel.
+   * @return If this is the default channel.
+   */
   public abstract boolean isDefault();
 
+  /**
+   * If this channel can be ignored, such as through the /toggle command.
+   * @return IF this channel can be ignored / toggled.
+   */
   public abstract boolean ignorable();
 
+  /**
+   * If this channel syncs between servers, typically through the messaging service.
+   * @return If this channel syncs between servers, typically through the messaging service.
+   */
   public abstract boolean crossServer();
 
   @NonNull

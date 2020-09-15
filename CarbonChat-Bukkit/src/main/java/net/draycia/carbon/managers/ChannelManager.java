@@ -1,11 +1,12 @@
 package net.draycia.carbon.managers;
 
-import net.draycia.carbon.channels.impls.CarbonChatChannel;
+import net.draycia.carbon.channels.CarbonChatChannel;
 import net.draycia.carbon.CarbonChat;
-import net.draycia.carbon.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelRegisterEvent;
+import net.kyori.registry.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -27,7 +28,7 @@ public class ChannelManager {
 
   public ChannelManager(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
-    this.registry = new ChannelRegistry(carbonChat);
+    this.registry = new ChannelRegistry();
 
     this.reload();
   }
@@ -46,28 +47,24 @@ public class ChannelManager {
     return channel;
   }
 
-  public boolean registerChannel(@NonNull final ChatChannel channel) {
-    final boolean success = this.registry().register(channel.key(), channel);
+  public void registerChannel(@NonNull final ChatChannel channel) {
+    this.registry().register(channel.key(), channel);
 
-    if (success) {
-      if (channel.isDefault() && this.defaultChannelKey == null) {
-        this.carbonChat.getLogger().info("Default channel registered: " + channel.name());
-        this.defaultChannelKey = channel.key();
-      }
-
-      CarbonEvents.post(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
+    if (channel.isDefault() && this.defaultChannelKey == null) {
+      this.carbonChat.getLogger().info("Default channel registered: " + channel.name());
+      this.defaultChannelKey = channel.key();
     }
 
-    return success;
+    CarbonEvents.post(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
   }
 
-  public @NonNull Registry<ChatChannel> registry() {
+  public @NonNull Registry<String, ChatChannel> registry() {
     return this.registry;
   }
 
   public @Nullable ChatChannel defaultChannel() {
     if (this.defaultChannelKey != null) {
-      return this.registry.channel(this.defaultChannelKey);
+      return this.registry.get(this.defaultChannelKey);
     }
 
     return null;
@@ -78,7 +75,7 @@ public class ChannelManager {
       return this.defaultChannel();
     }
 
-    final ChatChannel channel = this.registry.channel(key);
+    final ChatChannel channel = this.registry.get(key);
 
     if (channel == null) {
       return this.defaultChannel();
@@ -88,8 +85,6 @@ public class ChannelManager {
   }
 
   private void reload() {
-    this.registry.clearAll();
-
     for (final String key : this.carbonChat.getConfig().getConfigurationSection("channels").getKeys(false)) {
       final ConfigurationSection section =
         this.carbonChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
@@ -97,17 +92,16 @@ public class ChannelManager {
       final ChatChannel channel = this.loadChannel(key, section);
 
       if (channel != null) {
-        if (this.registerChannel(channel)) {
-          String prefix = channel.messagePrefix();
+        this.registerChannel(channel);
+        String prefix = channel.messagePrefix();
 
-          if (prefix != null && !prefix.trim().isEmpty()) {
-            prefix = "(" + prefix + ") ";
-          } else {
-            prefix = "";
-          }
-
-          this.carbonChat.getLogger().info("Registering channel: " + prefix + channel.name());
+        if (prefix != null && !prefix.trim().isEmpty()) {
+          prefix = "(" + prefix + ") ";
+        } else {
+          prefix = "";
         }
+
+        this.carbonChat.getLogger().info("Registering channel: " + prefix + channel.name());
       }
     }
   }

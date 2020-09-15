@@ -5,6 +5,7 @@ import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.Context;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -38,7 +39,7 @@ public class EconomyContext {
         return;
       }
 
-      final OfflinePlayer player = event.user().offlinePlayer();
+      final OfflinePlayer player = Bukkit.getOfflinePlayer(event.user().uuid());
 
       if (!this.economy.has(player, requiredBal)) {
         event.cancelled(true);
@@ -67,7 +68,7 @@ public class EconomyContext {
         return;
       }
 
-      final OfflinePlayer player = event.user().offlinePlayer();
+      final OfflinePlayer player = Bukkit.getOfflinePlayer(event.user().uuid());
 
       if (!this.economy.has(player, cost)) {
         event.cancelled(true);

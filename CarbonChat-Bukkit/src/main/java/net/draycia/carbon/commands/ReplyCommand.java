@@ -42,7 +42,7 @@ public class ReplyCommand {
   private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
     final String input = (String) args[0];
 
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     if (input.isEmpty()) {
       final String message = this.carbonChat.language().getString("reply-message-blank");

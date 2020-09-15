@@ -48,41 +48,41 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
     if (key.startsWith("can_use_")) {
       final String value = key.replace("can_use_", "");
 
-      final ChatChannel channel = this.carbonChat.channelManager().registry().channel(value);
+      final ChatChannel channel = this.carbonChat.channelManager().registry().get(value);
 
       if (channel == null) {
         return "false";
       }
 
-      final ChatUser user = this.carbonChat.userService().wrap(player);
+      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       return String.valueOf(channel.canPlayerUse(user));
     } else if (key.startsWith("can_see_")) {
       final String value = key.replace("can_see_", "");
 
-      final ChatChannel channel = this.carbonChat.channelManager().registry().channel(value);
+      final ChatChannel channel = this.carbonChat.channelManager().registry().get(value);
 
       if (channel == null) {
         return "false";
       }
 
-      final ChatUser user = this.carbonChat.userService().wrap(player);
+      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       return String.valueOf(channel.canPlayerSee(user, true));
     } else if (key.startsWith("ignoring_channel_")) {
       final String value = key.replace("ignoring_channel_", "");
 
-      final ChatChannel channel = this.carbonChat.channelManager().registry().channel(value);
+      final ChatChannel channel = this.carbonChat.channelManager().registry().get(value);
 
       if (channel == null) {
         return "false";
       }
 
-      final ChatUser user = this.carbonChat.userService().wrap(player);
+      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       return String.valueOf(user.channelSettings(channel).ignored());
     } else if (key.startsWith("selected_channel")) {
-      final ChatChannel channel = this.carbonChat.userService().wrap(player).selectedChannel();
+      final ChatChannel channel = this.carbonChat.userService().wrap(player.getUniqueId()).selectedChannel();
 
       return channel == null ? this.carbonChat.channelManager().defaultChannel().name() : channel.name();
     }

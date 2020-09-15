@@ -53,7 +53,7 @@ public class ChannelCommand {
   }
 
   private void channel(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
     final ChatChannel channel = (ChatChannel) args[0];
 
     if (user.channelSettings(channel).ignored()) {
@@ -69,7 +69,7 @@ public class ChannelCommand {
   }
 
   private void sendMessage(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
     final ChatChannel channel = (ChatChannel) args[0];
     final String message = (String) args[1];
 

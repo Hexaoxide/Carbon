@@ -10,6 +10,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import net.draycia.carbon.CarbonChat;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -53,7 +54,7 @@ public class ToggleCommand {
   }
 
   private void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player);
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
     final ChatChannel channel = (ChatChannel) args[0];
 
     final String message;
@@ -99,6 +100,6 @@ public class ToggleCommand {
     this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
       this.carbonChat.adventureManager().processMessage(otherMessage,
         "br", "\n", "color", "<color:" + channel.channelColor(user).toString() + ">",
-        "channel", channel.name(), "player", user.offlinePlayer().getName()));
+        "channel", channel.name(), "player", Bukkit.getOfflinePlayer(user.uuid()).getName()));
   }
 }

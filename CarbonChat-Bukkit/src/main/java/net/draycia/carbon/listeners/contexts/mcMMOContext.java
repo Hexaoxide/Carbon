@@ -11,6 +11,7 @@ import net.draycia.carbon.api.events.ReceiverContextEvent;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.Context;
 import net.kyori.event.PostOrders;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -65,7 +66,7 @@ public final class mcMMOContext implements Listener {
       return;
     }
 
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
@@ -81,7 +82,7 @@ public final class mcMMOContext implements Listener {
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
@@ -96,15 +97,15 @@ public final class mcMMOContext implements Listener {
   }
 
   public boolean isInParty(@NonNull final ChatUser user) {
-    return PartyAPI.inParty(user.player());
+    return PartyAPI.inParty(Bukkit.getPlayer(user.uuid()));
   }
 
   public boolean isInSameParty(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
-    if (!user1.online() || !user2.online()) {
+    if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }
 
-    return PartyAPI.inSameParty(user1.player(), user2.player());
+    return PartyAPI.inSameParty(Bukkit.getPlayer(user1.uuid()), Bukkit.getPlayer(user2.uuid()));
   }
 
 }

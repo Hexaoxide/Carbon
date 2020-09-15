@@ -13,8 +13,6 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -49,24 +47,6 @@ public class JSONUserService implements UserService {
   public void onDisable() {
     this.userCache.invalidateAll();
     this.userCache.cleanUp();
-  }
-
-  @Override
-  @Nullable
-  public ChatUser wrap(@NonNull final String name) {
-    final Player player = Bukkit.getPlayer(name);
-
-    if (player != null) {
-      return this.wrap(player);
-    }
-
-    return this.wrap(Bukkit.getOfflinePlayer(name));
-  }
-
-  @Override
-  @Nullable
-  public ChatUser wrap(@NonNull final OfflinePlayer player) {
-    return this.wrap(player.getUniqueId());
   }
 
   @Override

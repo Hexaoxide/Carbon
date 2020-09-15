@@ -66,23 +66,6 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  @Nullable
-  public Player player() {
-    return Bukkit.getPlayer(this.uuid);
-  }
-
-  @Override
-  @NonNull
-  public OfflinePlayer offlinePlayer() {
-    return Bukkit.getOfflinePlayer(this.uuid);
-  }
-
-  @Override
-  public boolean online() {
-    return this.offlinePlayer().isOnline();
-  }
-
-  @Override
   @NonNull
   public UUID uuid() {
     return this.uuid;
@@ -95,19 +78,33 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
+  public boolean permissible() {
+    return Bukkit.getPlayer(this.uuid()) != null;
+  }
+
+  @Override
+  public boolean hasPermission(@NonNull final String permission) {
+    return Bukkit.getPlayer(this.uuid()).hasPermission(permission);
+  }
+
+  @Override
   public void nickname(@Nullable String newNickname, final boolean fromRemote) {
     this.nickname = newNickname;
 
-    if (this.online()) {
+    final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
+
+    if (player.isOnline()) {
       if (newNickname != null) {
         final Component component = this.carbonChat.adventureManager().processMessage(this.nickname);
         newNickname = CarbonChat.LEGACY.serialize(component);
       }
 
-      this.player().setDisplayName(newNickname);
+      final Player onlinePlayer = player.getPlayer();
+
+      onlinePlayer.setDisplayName(newNickname);
 
       if (this.carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-        this.player().setPlayerListName(newNickname);
+        onlinePlayer.setPlayerListName(newNickname);
       }
     }
 
@@ -156,8 +153,10 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       });
     }
 
-    if (this.online()) {
-      this.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(this.player(), chatChannel.switchMessage(),
+    final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
+
+    if (player.isOnline()) {
+      this.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player.getPlayer(), chatChannel.switchMessage(),
         "br", "\n",
         "color", "<" + chatChannel.channelColor(this).toString() + ">",
         "channel", chatChannel.name()));
@@ -284,18 +283,20 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     final String toPlayerFormat = this.carbonChat.language().getString("message-to-other");
     final String fromPlayerFormat = this.carbonChat.language().getString("message-from-other");
 
-    String senderName = sender.offlinePlayer().getName();
+    final OfflinePlayer offlineSender = Bukkit.getOfflinePlayer(sender.uuid());
+    String senderName = offlineSender.getName();
     final String senderOfflineName = senderName;
 
-    String targetName = this.offlinePlayer().getName();
-    final String targetOfflineName = targetName;
-
-    if (sender.online()) {
-      senderName = sender.player().getDisplayName();
+    if (offlineSender.isOnline()) {
+      senderName = offlineSender.getPlayer().getDisplayName();
     }
 
-    if (this.online()) {
-      targetName = this.player().getDisplayName();
+    final OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(this.uuid());
+    String targetName = offlineTarget.getName();
+    final String targetOfflineName = targetName;
+
+    if (offlineTarget.isOnline()) {
+      targetName = offlineTarget.getPlayer().getDisplayName();
     }
 
     final Component toPlayerComponent = this.carbonChat.adventureManager().processMessage(toPlayerFormat, "br", "\n",
@@ -316,8 +317,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       return;
     }
 
-    if (this.online()) {
-      if (sender.online()) {
+    if (offlineTarget.isOnline()) {
+      if (offlineSender.isOnline()) {
         sender.sendMessage(toPlayerComponent);
 
         if (sender.shadowMuted()) {
@@ -338,7 +339,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
           this.playSound(Sound.of(key, source, volume, pitch));
         }
       }
-    } else if (sender.online()) {
+    } else if (offlineSender.isOnline()) {
       final String targetNameFinal = targetName;
       final String senderNameFinal = senderName;
 
@@ -357,7 +358,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       }
 
       BungeeChannelApi.of(this.carbonChat).getPlayerList("ALL").thenAccept(list -> {
-        if (!list.contains(this.offlinePlayer().getName())) {
+        final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
+
+        if (!list.contains(player.getName())) {
           final String playerOfflineFormat = this.carbonChat.language().getString("other-player-offline");
 
           final Component playerOfflineComponent = this.carbonChat.adventureManager().processMessage(playerOfflineFormat,
@@ -382,7 +385,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     }
 
     for (final Player player : Bukkit.getOnlinePlayers()) {
-      final ChatUser user = this.carbonChat.userService().wrap(player);
+      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       if (!user.spyingwhispers()) {
         continue;
