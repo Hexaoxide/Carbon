@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class CarbonChatChannel extends ChatChannel {
+public class CarbonChatChannel implements ChatChannel {
 
   @NonNull
   private final String key;
@@ -164,7 +164,7 @@ public class CarbonChatChannel extends ChatChannel {
         "message", formatEvent.message());
 
       if (this.isUserSpying(user, target)) {
-        final String prefix = this.processPlaceholders(user, this.carbonChat.getConfig().getString("spy-prefix"));
+        final String prefix = this.carbonChat.getConfig().getString("spy-prefix");
 
         formatComponent = (TextComponent) MiniMessage.get().parse(prefix, "color",
           targetColor.asHexString()).append(formatComponent);
