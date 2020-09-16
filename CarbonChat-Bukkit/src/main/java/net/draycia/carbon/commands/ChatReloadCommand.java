@@ -4,17 +4,19 @@ import net.draycia.carbon.api.commands.CommandSettings;
 import net.draycia.carbon.util.CommandUtils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChatReloadCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public ChatReloadCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public ChatReloadCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -34,10 +36,18 @@ public class ChatReloadCommand {
     this.carbonChat.reloadConfig();
     this.carbonChat.reloadFilters();
 
-    final Component message = this.carbonChat.adventureManager()
-      .processMessage(this.carbonChat.language().getString("reloaded"), "br", "\n");
+    final Component message = this.carbonChat.messageProcessor()
+      .processMessage(this.carbonChat.translations().reloaded().replace("br", "\n"));
 
-    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(message);
+    final Audience cmdSender;
+
+    if (sender instanceof Player) {
+      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
+    } else {
+      cmdSender = this.carbonChat.messageProcessor().audiences().console();
+    }
+
+    cmdSender.sendMessage(message);
   }
 
 }

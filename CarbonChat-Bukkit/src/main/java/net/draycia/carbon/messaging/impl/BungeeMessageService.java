@@ -4,7 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class BungeeMessageService implements MessageService {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
   @NonNull
   private final BungeeChannelApi api;
@@ -33,7 +33,7 @@ public class BungeeMessageService implements MessageService {
   @NonNull
   private final UUID serverUUID = UUID.randomUUID();
 
-  public BungeeMessageService(@NonNull final CarbonChat carbonChat) {
+  public BungeeMessageService(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     this.carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");

@@ -9,7 +9,8 @@ import net.draycia.carbon.util.CommandUtils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,9 +21,9 @@ import java.util.LinkedHashMap;
 public class ToggleCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public ToggleCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public ToggleCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -71,7 +72,7 @@ public class ToggleCommand {
       message = channel.toggleOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n",
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
   }
 
@@ -94,11 +95,19 @@ public class ToggleCommand {
       otherMessage = channel.toggleOtherOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.adventureManager().processMessage(message, "br", "\n",
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
 
-    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
-      this.carbonChat.adventureManager().processMessage(otherMessage,
+    final Audience cmdSender;
+
+    if (sender instanceof Player) {
+      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
+    } else {
+      cmdSender = this.carbonChat.messageProcessor().audiences().console();
+    }
+
+    cmdSender.sendMessage(
+      this.carbonChat.messageProcessor().processMessage(otherMessage,
         "br", "\n", "color", "<color:" + channel.channelColor(user).toString() + ">",
         "channel", channel.name(), "player", Bukkit.getOfflinePlayer(user.uuid()).getName()));
   }

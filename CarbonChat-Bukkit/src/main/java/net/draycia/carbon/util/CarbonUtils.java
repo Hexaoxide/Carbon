@@ -23,7 +23,7 @@ package net.draycia.carbon.util;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.text.Component;
@@ -136,7 +136,7 @@ public final class CarbonUtils {
   @NonNull
   public static Argument onlineChatUserArgument() {
     return new CustomArgument<>(input -> {
-      final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+      final CarbonChatBukkit carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
       final Player player = Bukkit.getPlayer(input);
 
@@ -159,7 +159,7 @@ public final class CarbonUtils {
   @NonNull
   public static Argument chatUserArgument() {
     return new CustomArgument<>(input -> {
-      final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+      final CarbonChatBukkit carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
       return carbonChat.userService().wrap(Bukkit.getOfflinePlayer(input).getUniqueId());
       //        }).overrideSuggestions((sender, args) -> {
@@ -189,9 +189,9 @@ public final class CarbonUtils {
   @NonNull
   public static Argument channelArgument() {
     return new CustomArgument<>(input -> {
-      final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+      final CarbonChatBukkit carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
-      final ChatChannel channel = carbonChat.channelManager().registry().get(input);
+      final ChatChannel channel = carbonChat.channelRegistry().get(input);
 
       if (channel == null) {
         throw new CustomArgument.CustomArgumentException("Invalid channel for input (" + input + ")");

@@ -4,7 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.CommandSettings;
 import net.draycia.carbon.util.CommandUtils;
@@ -17,9 +17,9 @@ import java.util.LinkedHashMap;
 public class ReplyCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public ReplyCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public ReplyCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -45,8 +45,8 @@ public class ReplyCommand {
     final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     if (input.isEmpty()) {
-      final String message = this.carbonChat.language().getString("reply-message-blank");
-      final Component component = this.carbonChat.adventureManager().processMessage(message, "br", "\n");
+      final String message = this.carbonChat.translations().replyMessageBlank();
+      final Component component = this.carbonChat.messageProcessor().processMessage(message, "br", "\n");
 
       user.sendMessage(component);
 
@@ -54,8 +54,8 @@ public class ReplyCommand {
     }
 
     if (user.replyTarget() == null) {
-      final String message = this.carbonChat.language().getString("no-reply-target");
-      final Component component = this.carbonChat.adventureManager().processMessage(message, "br", "\n");
+      final String message = this.carbonChat.translations().noReplyTarget();
+      final Component component = this.carbonChat.messageProcessor().processMessage(message, "br", "\n");
 
       user.sendMessage(component);
 

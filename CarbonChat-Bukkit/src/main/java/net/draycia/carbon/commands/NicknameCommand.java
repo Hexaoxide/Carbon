@@ -7,7 +7,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
@@ -20,9 +20,9 @@ import java.util.LinkedHashMap;
 public class NicknameCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public NicknameCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public NicknameCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -66,18 +66,25 @@ public class NicknameCommand {
     final String message;
 
     if (nickname == null) {
-      message = this.carbonChat.language().getString("nickname-reset");
+      message = this.carbonChat.translations().nicknameReset();
     } else {
-      message = this.carbonChat.language().getString("nickname-set");
+      message = this.carbonChat.translations().nicknameSet();
     }
 
-    sender.sendMessage(this.carbonChat.adventureManager().processMessage(
+    sender.sendMessage(this.carbonChat.messageProcessor().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
       "user", Bukkit.getOfflinePlayer(sender.uuid()).getName()));
   }
 
   private void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final Audience user = this.carbonChat.adventureManager().audiences().audience(sender);
+    final Audience cmdSender;
+
+    if (sender instanceof Player) {
+      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
+    } else {
+      cmdSender = this.carbonChat.messageProcessor().audiences().console();
+    }
+
     final ChatUser target = (ChatUser) args[0];
     String nickname = (String) args[1];
 
@@ -91,12 +98,12 @@ public class NicknameCommand {
     final String message;
 
     if (nickname == null) {
-      message = this.carbonChat.language().getString("other-nickname-reset");
+      message = this.carbonChat.translations().otherNicknameReset();
     } else {
-      message = this.carbonChat.language().getString("other-nickname-set");
+      message = this.carbonChat.translations().otherNicknameSet();
     }
 
-    user.sendMessage(this.carbonChat.adventureManager().processMessage(
+    cmdSender.sendMessage(this.carbonChat.messageProcessor().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
       "user", Bukkit.getOfflinePlayer(target.uuid()).getName()));
   }

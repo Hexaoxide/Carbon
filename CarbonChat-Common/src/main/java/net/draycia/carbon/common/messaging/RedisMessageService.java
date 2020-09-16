@@ -1,4 +1,4 @@
-package net.draycia.carbon.messaging.impl;
+package net.draycia.carbon.common.messaging;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -7,10 +7,9 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.util.RedisListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Base64;
@@ -40,19 +39,14 @@ public class RedisMessageService implements MessageService {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public RedisMessageService(@NonNull final CarbonChat carbonChat) {
+  public RedisMessageService(@NonNull final CarbonChat carbonChat, @NonNull final RedisCredentials credentials) {
     this.carbonChat = carbonChat;
 
-    final String host = this.carbonChat.getConfig().getString("redis.host");
-    final String password = this.carbonChat.getConfig().getString("redis.password");
-    final int port = this.carbonChat.getConfig().getInt("redis.port");
-    final int database = this.carbonChat.getConfig().getInt("redis.database");
+    final RedisURI.Builder builder = RedisURI.Builder.redis(credentials.host(), credentials.port())
+      .withDatabase(credentials.database());
 
-    final RedisURI.Builder builder = RedisURI.Builder.redis(host, port)
-      .withDatabase(database);
-
-    if (password != null) {
-      builder.withPassword(password.toCharArray());
+    if (credentials.password() != null) {
+      builder.withPassword(credentials.password().toCharArray());
     }
 
     final RedisClient client = RedisClient.create(builder.build());

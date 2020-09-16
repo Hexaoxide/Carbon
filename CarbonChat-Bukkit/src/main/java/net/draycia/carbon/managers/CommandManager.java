@@ -15,17 +15,16 @@ import net.draycia.carbon.commands.SpyChannelCommand;
 import net.draycia.carbon.commands.SudoChannelCommand;
 import net.draycia.carbon.commands.ToggleCommand;
 import net.draycia.carbon.api.commands.CommandSettings;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.commands.ShadowMuteCommand;
-import org.bukkit.configuration.ConfigurationSection;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CommandManager {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public CommandManager(@NonNull final CarbonChat carbonChat) {
+  public CommandManager(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     this.reloadCommands();
@@ -51,10 +50,7 @@ public class CommandManager {
 
   @NonNull
   private CommandSettings commandSettings(@NonNull final String command) {
-    final ConfigurationSection section = this.carbonChat.commandsConfig().getConfigurationSection(command);
-
-    return new CommandSettings(section.getBoolean("enabled"), section.getString("name"),
-      section.getStringList("aliases"));
+    return this.carbonChat.commandSettingsRegistry().get(command);
   }
 
 }

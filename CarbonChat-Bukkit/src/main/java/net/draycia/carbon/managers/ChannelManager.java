@@ -1,7 +1,7 @@
 package net.draycia.carbon.managers;
 
 import net.draycia.carbon.channels.CarbonChatChannel;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
@@ -17,7 +17,7 @@ import java.util.Collections;
 public class ChannelManager {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
   @NonNull
   private final ChannelRegistry registry;
@@ -26,7 +26,7 @@ public class ChannelManager {
   @MonotonicNonNull
   private String defaultChannelKey = null;
 
-  public ChannelManager(@NonNull final CarbonChat carbonChat) {
+  public ChannelManager(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
     this.registry = new ChannelRegistry();
 

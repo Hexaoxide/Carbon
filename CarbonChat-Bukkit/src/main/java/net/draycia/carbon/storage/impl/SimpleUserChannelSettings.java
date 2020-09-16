@@ -1,7 +1,7 @@
 package net.draycia.carbon.storage.impl;
 
 import net.draycia.carbon.api.users.UserChannelSettings;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public class SimpleUserChannelSettings implements UserChannelSettings {
 
   @NonNull
-  private final transient CarbonChat carbonChat;
+  private final transient CarbonChatBukkit carbonChat;
   private boolean spying;
   private boolean ignored;
   @Nullable
@@ -24,14 +24,14 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   private String channel;
 
   private SimpleUserChannelSettings() {
-    this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
   }
 
   public SimpleUserChannelSettings(@NonNull final UUID uuid, @NonNull final String channel) {
     this.uuid = uuid;
     this.channel = channel;
 
-    this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
   }
 
   @NonNull

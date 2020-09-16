@@ -6,7 +6,7 @@ import net.draycia.carbon.util.CommandUtils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
@@ -20,9 +20,9 @@ import java.util.LinkedHashMap;
 public class IgnoreCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public IgnoreCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public IgnoreCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -50,8 +50,8 @@ public class IgnoreCommand {
 
     if (user.ignoringUser(targetUser)) {
       user.ignoringUser(targetUser, false);
-      user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player,
-        this.carbonChat.language().getString("not-ignoring-user"),
+      user.sendMessage(this.carbonChat.messageProcessor().processMessage(
+        this.carbonChat.translations().notIgnoringUser(),
         "br", "\n", "player", offlinePlayer.getName()));
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
@@ -59,13 +59,13 @@ public class IgnoreCommand {
         final String format;
 
         if (permission.playerHas(null, offlinePlayer, "carbonchat.ignore.exempt")) {
-          format = this.carbonChat.language().getString("ignore-exempt");
+          format = this.carbonChat.translations().ignoreExempt();
         } else {
           user.ignoringUser(targetUser, true);
-          format = this.carbonChat.language().getString("ignoring-user");
+          format = this.carbonChat.translations().ignoringUser();
         }
 
-        final Component message = this.carbonChat.adventureManager().processMessageWithPapi(player, format,
+        final Component message = this.carbonChat.messageProcessor().processMessage(format,
           "br", "\n", "sender", player.getDisplayName(), "player", offlinePlayer.getName());
 
         user.sendMessage(message);

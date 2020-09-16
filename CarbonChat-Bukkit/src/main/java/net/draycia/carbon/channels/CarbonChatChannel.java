@@ -1,7 +1,7 @@
 package net.draycia.carbon.channels;
 
 import net.draycia.carbon.util.CarbonUtils;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
@@ -35,19 +35,19 @@ public class CarbonChatChannel implements ChatChannel {
   private final String key;
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
   @Nullable
   private final ConfigurationSection config;
 
-  public CarbonChatChannel(@NonNull final String key, @NonNull final CarbonChat carbonChat, @Nullable final ConfigurationSection config) {
+  public CarbonChatChannel(@NonNull final String key, @NonNull final CarbonChatBukkit carbonChat, @Nullable final ConfigurationSection config) {
     this.key = key;
     this.carbonChat = carbonChat;
     this.config = config;
   }
 
   @NonNull
-  public CarbonChat carbonChat() {
+  public CarbonChatBukkit carbonChat() {
     return this.carbonChat;
   }
 
@@ -88,8 +88,8 @@ public class CarbonChatChannel implements ChatChannel {
       String nickname = user.nickname();
 
       if (nickname != null) {
-        final Component component = this.carbonChat.adventureManager().processMessage(nickname);
-        nickname = CarbonChat.LEGACY.serialize(component);
+        final Component component = this.carbonChat.messageProcessor().processMessage(nickname);
+        nickname = CarbonChatBukkit.LEGACY.serialize(component);
 
         player.setDisplayName(nickname);
 
@@ -155,7 +155,7 @@ public class CarbonChatChannel implements ChatChannel {
 
       final TextColor targetColor = this.channelColor(target);
 
-      TextComponent formatComponent = (TextComponent) this.carbonChat.adventureManager().processMessage(formatEvent.format(),
+      TextComponent formatComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(formatEvent.format(),
         "br", "\n",
         "displayname", displayName,
         "color", "<" + targetColor.asHexString() + ">",
@@ -185,7 +185,7 @@ public class CarbonChatChannel implements ChatChannel {
 
     final TextColor targetColor = this.channelColor(user);
 
-    final TextComponent consoleFormat = (TextComponent) this.carbonChat.adventureManager().processMessage(consoleFormatEvent.format(),
+    final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(consoleFormatEvent.format(),
       "br", "\n",
       "displayname", displayName,
       "color", "<" + targetColor.asHexString() + ">",
@@ -324,7 +324,7 @@ public class CarbonChatChannel implements ChatChannel {
   public void sendMessageToBungee(@NonNull final Player player, @NonNull final Component component) {
     this.carbonChat.messageManager().sendMessage("channel-component", player.getUniqueId(), byteArray -> {
       byteArray.writeUTF(this.key());
-      byteArray.writeUTF(this.carbonChat.adventureManager().audiences().gsonSerializer().serialize(component));
+      byteArray.writeUTF(this.carbonChat.messageProcessor().audiences().gsonSerializer().serialize(component));
     });
   }
 

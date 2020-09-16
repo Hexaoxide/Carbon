@@ -11,7 +11,7 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -20,9 +20,9 @@ import java.util.LinkedHashMap;
 public class SpyChannelCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public SpyChannelCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public SpyChannelCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -73,13 +73,13 @@ public class SpyChannelCommand {
 
     if (settings.spying()) {
       settings.spying(false);
-      message = this.carbonChat.language().getString("spy-toggled-off");
+      message = this.carbonChat.translations().spyToggledOff();
     } else {
       settings.spying(true);
-      message = this.carbonChat.language().getString("spy-toggled-on");
+      message = this.carbonChat.translations().spyToggledOn();
     }
 
-    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n",
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
       "color", "<color:" + chatChannel.channelColor(user).toString() + ">", "channel", chatChannel.name()));
   }
 
@@ -90,13 +90,13 @@ public class SpyChannelCommand {
 
     if (user.spyingwhispers()) {
       user.spyingWhispers(false);
-      message = this.carbonChat.language().getString("spy-whispers-off");
+      message = this.carbonChat.translations().spyWhispersOff();
     } else {
       user.spyingWhispers(true);
-      message = this.carbonChat.language().getString("spy-whispers-on");
+      message = this.carbonChat.translations().spyWhispersOn();
     }
 
-    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n"));
   }
 
   private void executeEverything(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
@@ -109,22 +109,22 @@ public class SpyChannelCommand {
     if (shouldSpy) {
       user.spyingWhispers(true);
 
-      for (final ChatChannel channel : this.carbonChat.channelManager().registry()) {
+      for (final ChatChannel channel : this.carbonChat.channelRegistry()) {
         user.channelSettings(channel).spying(true);
       }
 
-      message = this.carbonChat.language().getString("spy-everything-off");
+      message = this.carbonChat.translations().spyEverythingOff();
     } else {
       user.spyingWhispers(false);
 
-      for (final ChatChannel channel : this.carbonChat.channelManager().registry()) {
+      for (final ChatChannel channel : this.carbonChat.channelRegistry()) {
         user.channelSettings(channel).spying(false);
       }
 
-      message = this.carbonChat.language().getString("spy-everything-on");
+      message = this.carbonChat.translations().spyEverythingOn();
     }
 
-    user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message, "br", "\n"));
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n"));
   }
 
 }

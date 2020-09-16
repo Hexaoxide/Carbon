@@ -1,6 +1,6 @@
 package net.draycia.carbon.listeners.events;
 
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.kyori.adventure.key.Key;
@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PingHandler {
 
-  public PingHandler(@NonNull final CarbonChat carbonChat) {
+  public PingHandler(@NonNull final CarbonChatBukkit carbonChat) {
     CarbonEvents.register(ChatComponentEvent.class, PostOrders.LAST, false, event -> {
       if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
         return;

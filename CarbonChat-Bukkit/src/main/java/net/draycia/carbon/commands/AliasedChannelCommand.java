@@ -4,7 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.text.Component;
@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 public class AliasedChannelCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
   @NonNull
   private final ChatChannel chatChannel;
@@ -24,7 +24,7 @@ public class AliasedChannelCommand {
   @NonNull
   private final String commandName;
 
-  public AliasedChannelCommand(@NonNull final CarbonChat carbonChat, @NonNull final ChatChannel chatChannel) {
+  public AliasedChannelCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final ChatChannel chatChannel) {
     this.carbonChat = carbonChat;
     this.chatChannel = chatChannel;
 
@@ -52,7 +52,7 @@ public class AliasedChannelCommand {
     final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
-      user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, this.chatChannel().cannotUseMessage(),
+      user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
         "br", "\n",
         "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
         "channel", this.chatChannel().name()));
@@ -69,7 +69,7 @@ public class AliasedChannelCommand {
 
     final Component component = this.chatChannel().sendMessage(user, message, false);
 
-    this.carbonChat.adventureManager().audiences().console().sendMessage(component);
+    this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
   }
 
   @NonNull

@@ -1,0 +1,13 @@
+description 'CarbonChat-Common'
+
+dependencies {
+  checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
+
+  compile project(':CarbonChat-API')
+
+  compile('io.lettuce:lettuce-core:6.0.0.M1') {
+    exclude group: 'io.netty'
+  }
+
+  compile 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
+}

@@ -12,7 +12,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
 import net.kyori.adventure.text.format.TextColor;
@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 public class MySQLUserService implements UserService {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
   @NonNull
   private final Database database;
   @NonNull
@@ -38,7 +38,7 @@ public class MySQLUserService implements UserService {
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public MySQLUserService(@NonNull final CarbonChat carbonChat) {
+  public MySQLUserService(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     final ConfigurationSection section = this.carbonChat.getConfig().getConfigurationSection("storage");
@@ -134,7 +134,7 @@ public class MySQLUserService implements UserService {
       final List<DbRow> channelSettings = this.database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
       final List<DbRow> ignoredUsers = this.database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
 
-      final ChatChannel channel = this.carbonChat.channelManager().channelOrDefault(users.getString("channel"));
+      final ChatChannel channel = this.carbonChat.channelRegistry().channelOrDefault(users.getString("channel"));
 
       if (channel != null) {
         user.selectedChannel(channel, true);
@@ -151,7 +151,7 @@ public class MySQLUserService implements UserService {
       user.spyingWhispers(users.<Boolean>get("spyingwhispers"), true);
 
       for (final DbRow channelSetting : channelSettings) {
-        final ChatChannel chatChannel = this.carbonChat.channelManager().registry().get(channelSetting.getString("channel"));
+        final ChatChannel chatChannel = this.carbonChat.channelRegistry().get(channelSetting.getString("channel"));
 
         if (chatChannel != null) {
           final UserChannelSettings settings = user.channelSettings(chatChannel);

@@ -5,7 +5,7 @@ import net.draycia.carbon.util.CommandUtils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.CommandSettings;
@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
 public class ChannelListCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public ChannelListCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public ChannelListCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -59,25 +59,32 @@ public class ChannelListCommand {
   }
 
   public void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().iterator();
+    final Iterator<ChatChannel> allChannels = this.carbonChat.channelRegistry().iterator();
     final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
     this.listAndSend(player, user, allChannels);
   }
 
   public void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final Audience cmdSender = this.carbonChat.adventureManager().audiences().audience(sender);
+    final Audience cmdSender;
+
+    if (sender instanceof Player) {
+      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
+    } else {
+      cmdSender = this.carbonChat.messageProcessor().audiences().console();
+    }
+
     final ChatUser user = (ChatUser) args[0];
 
     final OfflinePlayer player = Bukkit.getOfflinePlayer(user.uuid());
 
     if (!player.isOnline()) {
-      final String mustBeOnline = this.carbonChat.language().getString("user-must-be-online");
-      cmdSender.sendMessage(this.carbonChat.adventureManager().processMessage(mustBeOnline, "br", "\n", "player", player.getName()));
+      final String mustBeOnline = this.carbonChat.translations().userMustBeOnline();
+      cmdSender.sendMessage(this.carbonChat.messageProcessor().processMessage(mustBeOnline, "br", "\n", "player", player.getName()));
       return;
     }
 
-    final Iterator<ChatChannel> allChannels = this.carbonChat.channelManager().registry().iterator();
+    final Iterator<ChatChannel> allChannels = this.carbonChat.channelRegistry().iterator();
     this.listAndSend(sender, user, allChannels);
   }
 
@@ -102,13 +109,19 @@ public class ChannelListCommand {
 
     this.makeList(visibleChannels, availableList);
 
-    final String availableFormat = this.carbonChat.language().getString("available-channels-list");
-    Component availableComponent = this.carbonChat.adventureManager().processMessage(availableFormat, "br", "\n");
+    final String availableFormat = this.carbonChat.translations().availableChannelsList();
+    Component availableComponent = this.carbonChat.messageProcessor().processMessage(availableFormat, "br", "\n");
     availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), ac -> availableList);
 
-    final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
+    final Audience cmdSender;
 
-    audience.sendMessage(availableComponent);
+    if (sender instanceof Player) {
+      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
+    } else {
+      cmdSender = this.carbonChat.messageProcessor().audiences().console();
+    }
+
+    cmdSender.sendMessage(availableComponent);
 
     if (sender.hasPermission("carbonchat.channellist.bypass") && !cannotSee.isEmpty()) {
       final Iterator<ChatChannel> invisibleChannels = cannotSee.iterator();
@@ -116,16 +129,16 @@ public class ChannelListCommand {
 
       this.makeList(invisibleChannels, unavailableList);
 
-      final String unavailableFormat = this.carbonChat.language().getString("unavailable-channels-list");
-      Component unavailableComponent = this.carbonChat.adventureManager().processMessage(unavailableFormat, "br", "\n");
+      final String unavailableFormat = this.carbonChat.translations().unavailableChannelsList();
+      Component unavailableComponent = this.carbonChat.messageProcessor().processMessage(unavailableFormat, "br", "\n");
       unavailableComponent = unavailableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), uac -> unavailableList);
 
-      audience.sendMessage(unavailableComponent);
+      cmdSender.sendMessage(unavailableComponent);
     }
   }
 
   private void makeList(@NonNull final Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
-    final String listSeparator = this.carbonChat.language().getString("channel-list-separator", ", ");
+    final String listSeparator = this.carbonChat.translations().channelListSeparator();
     // TODO: Larry, why did you double assign the listSeparatorComponent?
     final Component listSeparatorComponent = TextComponent.of(listSeparator);
 

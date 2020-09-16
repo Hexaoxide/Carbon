@@ -1,18 +1,13 @@
-package net.draycia.carbon.messaging;
+package net.draycia.carbon.common.messaging;
 
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.messaging.MessageService;
-import net.draycia.carbon.messaging.impl.BungeeMessageService;
 import com.google.common.io.ByteArrayDataOutput;
-import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.messaging.impl.EmptyMessageService;
-import net.draycia.carbon.messaging.impl.RedisMessageService;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
@@ -29,33 +24,10 @@ public class MessageManager {
   @NonNull
   private final GsonComponentSerializer gsonSerializer;
 
-  public MessageManager(@NonNull final CarbonChat carbonChat) {
+  public MessageManager(final @NonNull CarbonChat carbonChat, @NonNull final MessageService messageService) {
     this.carbonChat = carbonChat;
-    this.gsonSerializer = this.carbonChat.adventureManager().audiences().gsonSerializer();
-
-    String messageSystem = this.carbonChat.getConfig().getString("message-system", "none");
-
-    if (messageSystem == null) {
-      messageSystem = "none";
-    }
-
-    switch (messageSystem.toLowerCase()) {
-      case "bungee":
-        this.carbonChat.getLogger().info("Using Bungee Plugin Messaging for message forwarding!");
-        this.messageService = new BungeeMessageService(this.carbonChat);
-        break;
-      case "redis":
-        this.carbonChat.getLogger().info("Using Redis for message forwarding!");
-        this.messageService = new RedisMessageService(this.carbonChat);
-        break;
-      case "none":
-        this.messageService = new EmptyMessageService();
-        break;
-      default:
-        this.carbonChat.getLogger().info("Invalid message service selected! Disabling syncing until next restart!");
-        this.messageService = new EmptyMessageService();
-        break;
-    }
+    this.messageService = messageService;
+    this.gsonSerializer = this.carbonChat.messageProcessor().audiences().gsonSerializer();
 
     this.registerDefaultListeners();
   }
@@ -63,33 +35,21 @@ public class MessageManager {
   private void registerDefaultListeners() {
     this.messageService().registerUserMessageListener("nickname", (user, byteArray) -> {
       final String nickname = byteArray.readUTF();
+      final String message = this.carbonChat.translations().nicknameSet();
 
       user.nickname(nickname, true);
-
-      final Player player = Bukkit.getPlayer(user.uuid());
-
-      if (player != null) {
-        final String message = this.carbonChat.language().getString("nickname-set");
-
-        user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player,
-          message, "nickname", nickname));
-      }
+      user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "nickname", nickname));
     });
 
     this.messageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
+      final String message = this.carbonChat.translations().nicknameReset();
+
       user.nickname(null, true);
-
-      final Player player = Bukkit.getPlayer(user.uuid());
-
-      if (player != null) {
-        final String message = this.carbonChat.language().getString("nickname-reset");
-
-        user.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player, message));
-      }
+      user.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
     });
 
     this.messageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
-      user.selectedChannel(this.carbonChat.channelManager().registry().get(byteArray.readUTF()), true);
+      user.selectedChannel(this.carbonChat.channelRegistry().get(byteArray.readUTF()), true);
     });
 
     this.messageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
@@ -113,27 +73,27 @@ public class MessageManager {
     });
 
     this.messageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelManager().registry().get(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
         .ignoring(byteArray.readBoolean(), true);
     });
 
     this.messageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelManager().registry().get(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
         .spying(byteArray.readBoolean(), true);
     });
 
     this.messageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelManager().registry().get(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
         .color(TextColor.fromHexString(byteArray.readUTF()), true);
     });
 
     this.messageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelManager().registry().get(byteArray.readUTF()))
+      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
         .color(null, true);
     });
 
     this.messageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
-      final ChatChannel channel = this.carbonChat.channelManager().registry().get(byteArray.readUTF());
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
       final ChatUser user = this.carbonChat.userService().wrap(uuid);
 
       if (channel != null) {
@@ -141,7 +101,7 @@ public class MessageManager {
 
         channel.sendComponent(user, component);
 
-        this.carbonChat.adventureManager().audiences().console().sendMessage(component);
+        this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
       }
     });
 

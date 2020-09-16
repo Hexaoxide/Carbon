@@ -1,6 +1,6 @@
 package net.draycia.carbon.listeners.events;
 
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PrivateMessageEvent;
 import net.kyori.adventure.key.Key;
@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class WhisperPingHandler {
 
-  public WhisperPingHandler(@NonNull final CarbonChat carbonChat) {
+  public WhisperPingHandler(@NonNull final CarbonChatBukkit carbonChat) {
 
     CarbonEvents.register(PrivateMessageEvent.class, PostOrders.LAST, false, event -> {
       if (event.sender().uuid().equals(event.target().uuid())) {

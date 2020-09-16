@@ -7,13 +7,14 @@ import net.draycia.carbon.util.CommandUtils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
@@ -21,9 +22,9 @@ import java.util.LinkedHashMap;
 public class MuteCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public MuteCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public MuteCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -45,34 +46,41 @@ public class MuteCommand {
 
   private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
     final ChatUser user = (ChatUser) args[0];
-    final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
+
+    final Audience cmdSender;
+
+    if (sender instanceof Player) {
+      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
+    } else {
+      cmdSender = this.carbonChat.messageProcessor().audiences().console();
+    }
 
     final OfflinePlayer player = Bukkit.getOfflinePlayer(user.uuid());
 
     if (user.shadowMuted()) {
       user.muted(false);
-      final String format = this.carbonChat.language().getString("no-longer-muted");
+      final String format = this.carbonChat.translations().noLongerMuted();
 
-      final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
+      final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
         "player", player.getName());
 
-      audience.sendMessage(message);
+      cmdSender.sendMessage(message);
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
         final Permission permission = this.carbonChat.permission();
         final String format;
 
         if (permission.playerHas(null, player, "carbonchat.mute.exempt")) {
-          format = this.carbonChat.language().getString("mute-exempt");
+          format = this.carbonChat.translations().muteExempt();
         } else {
           user.muted(true);
-          format = this.carbonChat.language().getString("is-now-muted");
+          format = this.carbonChat.translations().nowMuted();
         }
 
-        final Component message = this.carbonChat.adventureManager().processMessage(format, "br", "\n",
+        final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
           "player", player.getName());
 
-        audience.sendMessage(message);
+        cmdSender.sendMessage(message);
       });
     }
   }

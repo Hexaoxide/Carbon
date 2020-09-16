@@ -1,6 +1,6 @@
 package net.draycia.carbon.listeners.events;
 
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -20,7 +20,7 @@ public class UserFormattingHandler {
         this.suppressFormatting(event);
       } else {
         // Swap the &-style codes for minimessage-compatible strings
-        event.message(MiniMessage.get().serialize(CarbonChat.LEGACY.deserialize(event.message())));
+        event.message(MiniMessage.get().serialize(CarbonChatBukkit.LEGACY.deserialize(event.message())));
       }
     });
   }

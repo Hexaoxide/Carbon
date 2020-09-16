@@ -4,7 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.CommandSettings;
@@ -19,9 +19,9 @@ import java.util.LinkedHashMap;
 public class SetColorCommand {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public SetColorCommand(@NonNull final CarbonChat carbonChat, @NonNull final CommandSettings commandSettings) {
+  public SetColorCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
     this.carbonChat = carbonChat;
 
     if (!commandSettings.enabled()) {
@@ -30,7 +30,7 @@ public class SetColorCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    for (final ChatChannel channel : this.carbonChat.channelManager().registry()) {
+    for (final ChatChannel channel : this.carbonChat.channelRegistry()) {
       final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
       arguments.put("channel", new LiteralArgument(channel.key()));
       arguments.put("color", CarbonUtils.textColorArgument());
@@ -44,8 +44,8 @@ public class SetColorCommand {
           final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
           if (!player.hasPermission("carbonchat.setcolor." + channel.key())) {
-            user.sendMessage(carbonChat.adventureManager().processMessageWithPapi(player,
-              this.carbonChat.language().getString("cannot-set-color"),
+            user.sendMessage(carbonChat.messageProcessor().processMessage(
+              this.carbonChat.translations().cannotSetColor(),
               "br", "\n", "input", color.asHexString(),
               "channel", channel.name()));
 
@@ -56,8 +56,8 @@ public class SetColorCommand {
 
           settings.color(color);
 
-          user.sendMessage(carbonChat.adventureManager().processMessageWithPapi(player,
-            this.carbonChat.language().getString("channel-color-set"),
+          user.sendMessage(carbonChat.messageProcessor().processMessage(
+            this.carbonChat.translations().channelColorSet(),
             "br", "\n", "color", "<color:" + color.asHexString() + ">", "channel",
             channel.name(), "hex", color.asHexString()));
         })

@@ -5,7 +5,7 @@ import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.util.FunctionalityConstants;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.PrivateMessageEvent;
@@ -31,7 +31,7 @@ import java.util.UUID;
 public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
   @NonNull
-  private final transient CarbonChat carbonChat;
+  private final transient CarbonChatBukkit carbonChat;
   @NonNull
   private final Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
   @NonNull
@@ -51,7 +51,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   private transient UUID replyTarget = null;
 
   public CarbonChatUser() {
-    this.carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
   }
 
   public CarbonChatUser(@NonNull final UUID uuid) {
@@ -62,7 +62,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   @Override
   @NonNull
   public Iterable<@NonNull ? extends Audience> audiences() {
-    return Collections.singleton(this.carbonChat.adventureManager().audiences().player(this.uuid));
+    return Collections.singleton(this.carbonChat.messageProcessor().audiences().player(this.uuid));
   }
 
   @Override
@@ -95,8 +95,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
     if (player.isOnline()) {
       if (newNickname != null) {
-        final Component component = this.carbonChat.adventureManager().processMessage(this.nickname);
-        newNickname = CarbonChat.LEGACY.serialize(component);
+        final Component component = this.carbonChat.messageProcessor().processMessage(this.nickname);
+        newNickname = CarbonChatBukkit.LEGACY.serialize(component);
       }
 
       final Player onlinePlayer = player.getPlayer();
@@ -127,7 +127,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       return null;
     }
 
-    return this.carbonChat.channelManager().channelOrDefault(this.selectedChannel);
+    return this.carbonChat.channelRegistry().channelOrDefault(this.selectedChannel);
   }
 
   @Override
@@ -139,7 +139,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     CarbonEvents.post(event);
 
     if (event.cancelled()) {
-      this.sendMessage(this.carbonChat.adventureManager().processMessage(event.failureMessage(),
+      this.sendMessage(this.carbonChat.messageProcessor().processMessage(event.failureMessage(),
         "channel", chatChannel.name()));
 
       return;
@@ -156,7 +156,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
     final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
 
     if (player.isOnline()) {
-      this.sendMessage(this.carbonChat.adventureManager().processMessageWithPapi(player.getPlayer(), chatChannel.switchMessage(),
+      this.sendMessage(this.carbonChat.messageProcessor().processMessage(chatChannel.switchMessage(),
         "br", "\n",
         "color", "<" + chatChannel.channelColor(this).toString() + ">",
         "channel", chatChannel.name()));
@@ -165,7 +165,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
   @Override
   public void clearSelectedChannel() {
-    this.selectedChannel(this.carbonChat.channelManager().defaultChannel());
+    this.selectedChannel(this.carbonChat.channelRegistry().defaultChannel());
   }
 
   @Override
@@ -280,8 +280,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       return;
     }
 
-    final String toPlayerFormat = this.carbonChat.language().getString("message-to-other");
-    final String fromPlayerFormat = this.carbonChat.language().getString("message-from-other");
+    final String toPlayerFormat = this.carbonChat.translations().messageToOther();
+    final String fromPlayerFormat = this.carbonChat.translations().messageFromOther();
 
     final OfflinePlayer offlineSender = Bukkit.getOfflinePlayer(sender.uuid());
     String senderName = offlineSender.getName();
@@ -299,12 +299,12 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       targetName = offlineTarget.getPlayer().getDisplayName();
     }
 
-    final Component toPlayerComponent = this.carbonChat.adventureManager().processMessage(toPlayerFormat, "br", "\n",
+    final Component toPlayerComponent = this.carbonChat.messageProcessor().processMessage(toPlayerFormat, "br", "\n",
       "message", message,
       "targetname", targetOfflineName, "sendername", senderOfflineName,
       "target", targetName, "sender", senderName);
 
-    final Component fromPlayerComponent = this.carbonChat.adventureManager().processMessage(fromPlayerFormat, "br", "\n",
+    final Component fromPlayerComponent = this.carbonChat.messageProcessor().processMessage(fromPlayerFormat, "br", "\n",
       "message", message,
       "targetname", targetOfflineName, "sendername", senderOfflineName,
       "target", targetName, "sender", senderName);
@@ -344,9 +344,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
       final String senderNameFinal = senderName;
 
       if (!FunctionalityConstants.HAS_PROXY) {
-        final String playerOfflineFormat = this.carbonChat.language().getString("other-player-offline");
+        final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
-        final Component playerOfflineComponent = this.carbonChat.adventureManager().processMessage(playerOfflineFormat,
+        final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
           "br", "\n",
           "message", message,
           "targetname", targetOfflineName, "sendername", senderOfflineName,
@@ -361,9 +361,9 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
 
         if (!list.contains(player.getName())) {
-          final String playerOfflineFormat = this.carbonChat.language().getString("other-player-offline");
+          final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
-          final Component playerOfflineComponent = this.carbonChat.adventureManager().processMessage(playerOfflineFormat,
+          final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
             "br", "\n",
             "message", message,
             "targetname", targetOfflineName, "sendername", senderOfflineName,
@@ -379,7 +379,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         this.carbonChat.messageManager().sendMessage("whisper-component", sender.uuid(), byteArray -> {
           byteArray.writeLong(this.uuid().getMostSignificantBits());
           byteArray.writeLong(this.uuid().getLeastSignificantBits());
-          byteArray.writeUTF(this.carbonChat.adventureManager().audiences().gsonSerializer().serialize(fromPlayerComponent));
+          byteArray.writeUTF(this.carbonChat.messageProcessor().audiences().gsonSerializer().serialize(fromPlayerComponent));
         });
       });
     }
@@ -395,7 +395,7 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         continue;
       }
 
-      user.sendMessage(this.carbonChat.adventureManager().processMessage(this.carbonChat.language().getString("spy-whispers"),
+      user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.carbonChat.translations().spyWhispers(),
         "br", "\n", "message", message,
         "targetname", targetOfflineName, "sendername", senderOfflineName,
         "target", targetName, "sender", senderName));

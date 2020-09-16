@@ -1,6 +1,6 @@
 package net.draycia.carbon.listeners.contexts;
 
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.Context;
@@ -11,12 +11,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext {
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
   @NonNull
   private final Economy economy;
 
-  public EconomyContext(@NonNull final CarbonChat carbonChat) {
+  public EconomyContext(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
     this.economy = this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 
@@ -44,7 +44,7 @@ public class EconomyContext {
       if (!this.economy.has(player, requiredBal)) {
         event.cancelled(true);
 
-        event.user().sendMessage(this.carbonChat.adventureManager()
+        event.user().sendMessage(this.carbonChat.messageProcessor()
           .processMessage(event.channel().cannotUseMessage()));
       }
     });
@@ -73,7 +73,7 @@ public class EconomyContext {
       if (!this.economy.has(player, cost)) {
         event.cancelled(true);
 
-        event.user().sendMessage(this.carbonChat.adventureManager()
+        event.user().sendMessage(this.carbonChat.messageProcessor()
           .processMessage(event.channel().cannotUseMessage()));
 
         return;

@@ -2,7 +2,7 @@ package net.draycia.carbon.listeners.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
@@ -20,9 +20,9 @@ import java.util.HashSet;
 public class BukkitChatListener implements Listener {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public BukkitChatListener(@NonNull final CarbonChat carbonChat) {
+  public BukkitChatListener(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
@@ -33,18 +33,18 @@ public class BukkitChatListener implements Listener {
     ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
-      if (this.carbonChat.channelManager().defaultChannel() == null) {
+      if (this.carbonChat.channelRegistry().defaultChannel() == null) {
         return;
       }
 
-      channel = this.carbonChat.channelManager().defaultChannel();
+      channel = this.carbonChat.channelRegistry().defaultChannel();
     }
 
     if (channel.shouldCancelChatEvent()) {
       event.setCancelled(true);
     }
 
-    for (final ChatChannel entry : this.carbonChat.channelManager().registry()) {
+    for (final ChatChannel entry : this.carbonChat.channelRegistry()) {
       if (entry.messagePrefix() == null || entry.messagePrefix().isEmpty()) {
         continue;
       }
@@ -89,7 +89,7 @@ public class BukkitChatListener implements Listener {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
         final Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
 
-        this.carbonChat.adventureManager().audiences().console().sendMessage(component);
+        this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
 
         if (this.carbonChat.getConfig().getBoolean("show-tips")) {
           this.carbonChat.getLogger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");

@@ -1,36 +1,14 @@
 plugins {
-  id 'checkstyle'
-  id 'java'
-  id 'java-library'
-  id 'maven'
-  id 'maven-publish'
   id 'com.github.johnrengelman.shadow' version '6.0.0'
   id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
 }
 
 description = 'CarbonChat-Bukkit'
 
-repositories {
-  mavenLocal()
-  mavenCentral()
-
-  maven { url = 'https://maven.enginehub.org/repo/' }
-  maven { url = 'https://repo.maven.apache.org/maven2' }
-  maven { url = 'https://papermc.io/repo/repository/maven-public/' }
-  maven { url = 'https://oss.sonatype.org/content/groups/public/' }
-  maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
-  maven { url = 'https://jitpack.io' }
-  maven { url = 'https://repo.minebench.de/' }
-  maven { url = 'https://dl.bintray.com/ichbinjoe/public/' }
-  maven { url = 'https://repo.codemc.org/repository/maven-public/' }
-  maven { url = "https://repo.aikar.co/content/groups/aikar/" }
-  maven { url = 'https://raw.githubusercontent.com/JorelAli/CommandAPI/mvn-repo/' }
-}
-
 dependencies {
-  checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
+  compile 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
 
-  compile project(":CarbonChat-API")
+  compile project(":CarbonChat-Common")
 
   // Databases
   compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'
@@ -38,9 +16,6 @@ dependencies {
 
   // Messaging
   compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
-  compile('io.lettuce:lettuce-core:6.0.0.M1') {
-    exclude group: 'io.netty'
-  }
 
   // Commands
   compile "dev.jorel:commandapi-shade:4.2"

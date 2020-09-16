@@ -2,7 +2,7 @@ package net.draycia.carbon.listeners.contexts;
 
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
@@ -20,12 +20,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public final class mcMMOContext implements Listener {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
   @NonNull
   private static final String KEY = "mcmmo-party";
 
-  public mcMMOContext(@NonNull final CarbonChat carbonChat) {
+  public mcMMOContext(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, PostOrders.NORMAL, false, event -> {

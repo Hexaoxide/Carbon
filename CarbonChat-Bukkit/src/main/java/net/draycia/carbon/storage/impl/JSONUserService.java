@@ -9,7 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
 import org.bukkit.Bukkit;
@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutionException;
 public class JSONUserService implements UserService {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
   @NonNull
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   @NonNull
@@ -37,7 +37,7 @@ public class JSONUserService implements UserService {
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public JSONUserService(@NonNull final CarbonChat carbonChat) {
+  public JSONUserService(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     Bukkit.getScheduler().scheduleSyncRepeatingTask(carbonChat, this.userCache::cleanUp, 0L, 20 * 60 * 10);

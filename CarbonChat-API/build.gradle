@@ -1,37 +1,17 @@
-plugins {
-  id 'java'
-  id 'checkstyle'
-}
-
 description 'CarbonChat-API'
 
-repositories {
-  mavenLocal()
-  mavenCentral()
-
-  maven { url = 'https://repo.maven.apache.org/maven2' }
-  maven { url = 'https://oss.sonatype.org/content/groups/public/' }
-  maven { url = 'https://repo.minebench.de/' }
-}
-
 dependencies {
-  checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
-
-  compile("org.checkerframework:checker-qual:3.6.1")
+  compile 'org.checkerframework:checker-qual:3.6.1'
 
   compile 'net.kyori:adventure-api:4.0.0-SNAPSHOT'
   compile 'net.kyori:adventure-nbt:4.0.0-SNAPSHOT'
   compile 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
   compile 'net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT'
+
   compile 'de.themoep:minedown-adventure:1.6.1-SNAPSHOT'
 
   compile 'net.kyori:event-api:3.0.0'
   compile 'net.kyori:registry:1.0.0-SNAPSHOT'
-}
 
-checkstyle {
-  def configRoot = new File(rootProject.projectDir, '.checkstyle')
-  toolVersion = '8.34'
-  configDirectory = configRoot
-  configProperties = [basedir: configRoot.getAbsolutePath()]
+  compileOnly 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
 }

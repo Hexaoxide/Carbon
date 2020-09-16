@@ -1,5 +1,12 @@
 package net.draycia.carbon;
 
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.adventure.CarbonTranslations;
+import net.draycia.carbon.api.adventure.MessageProcessor;
+import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.commands.CommandSettingsRegistry;
+import net.draycia.carbon.common.adventure.FormatType;
+import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.listeners.contexts.DistanceContext;
 import net.draycia.carbon.listeners.contexts.EconomyContext;
 import net.draycia.carbon.listeners.contexts.FilterContext;
@@ -22,10 +29,9 @@ import net.draycia.carbon.listeners.events.ShadowMuteHandler;
 import net.draycia.carbon.listeners.events.UrlLinkHandler;
 import net.draycia.carbon.listeners.events.UserFormattingHandler;
 import net.draycia.carbon.listeners.events.WhisperPingHandler;
-import net.draycia.carbon.managers.AdventureManager;
-import net.draycia.carbon.managers.ChannelManager;
+import net.draycia.carbon.common.adventure.AdventureManager;
 import net.draycia.carbon.managers.CommandManager;
-import net.draycia.carbon.messaging.MessageManager;
+import net.draycia.carbon.common.messaging.MessageManager;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
@@ -33,35 +39,39 @@ import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.FunctionalityConstants;
 import net.draycia.carbon.util.Metrics;
 import dev.jorel.commandapi.CommandAPI;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.configurate.BasicConfigurationNode;
+import org.spongepowered.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
+import java.io.IOException;
 
-public final class CarbonChat extends JavaPlugin {
+public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private static final int BSTATS_PLUGIN_ID = 8720;
 
   private Permission permission;
 
   private CommandManager commandManager;
-  private ChannelManager channelManager;
-  private AdventureManager adventureManager;
+
+  private ChannelRegistry channelRegistry;
+  private CommandSettingsRegistry commandSettings;
+  private AdventureManager messageProcessor;
 
   private UserService userService;
   private MessageManager messageManager;
 
-  private YamlConfiguration modConfig;
-  private YamlConfiguration languageConfig;
-  private YamlConfiguration commandsConfig;
-
   private FilterContext filterContext;
+
+  private CarbonTranslations translations;
 
   public static final LegacyComponentSerializer LEGACY =
     LegacyComponentSerializer.builder()
@@ -90,26 +100,17 @@ public final class CarbonChat extends JavaPlugin {
       this.saveResource("moderation.yml", false);
     }
 
-    if (!(new File(this.getDataFolder(), "language.yml").exists())) {
-      this.saveResource("language.yml", false);
-    }
-
-    if (!(new File(this.getDataFolder(), "commands.yml").exists())) {
-      this.saveResource("commands.yml", false);
-    }
-
-    this.loadModConfig();
-    this.loadLanguage();
+    this.reloadConfig();
 
     // Setup Adventure
-    this.adventureManager = new AdventureManager(this);
+    this.messageProcessor = new AdventureManager(BukkitAudiences.create(this), FormatType.MINIMESSAGE); // TODO: get format type from config
 
     // Setup vault and permissions
     this.permission = this.getServer().getServicesManager().getRegistration(Permission.class).getProvider();
 
     // Initialize managers
-    this.channelManager = new ChannelManager(this);
-    this.messageManager = new MessageManager(this);
+    this.channelRegistry = new ChannelRegistry();
+    this.messageManager = new MessageManager(this, new EmptyMessageService()); // TODO: get message service from config
     this.commandManager = new CommandManager(this);
 
     final String storageType = this.getConfig().getString("storage.type");
@@ -169,23 +170,39 @@ public final class CarbonChat extends JavaPlugin {
 
     this.loadModConfig();
     this.loadLanguage();
-    this.loadCommandsConfig();
+    this.loadCommandSettings();
+  }
+
+  private void loadLanguage() {
+    final File languageFile = new File(this.getDataFolder(), "language.yml");
+    final YamlConfigurationLoader languageLoader = YamlConfigurationLoader.builder().setFile(languageFile).build();
+
+    try {
+      final BasicConfigurationNode languageNode = languageLoader.load();
+      this.translations = CarbonTranslations.loadFrom(languageNode);
+      languageLoader.save(languageNode);
+    } catch (final IOException | ObjectMappingException ignored) {
+    }
+  }
+
+  private void loadCommandSettings() {
+    if (!(new File(this.getDataFolder(), "carbon-commands.yml").exists())) {
+      this.saveResource("carbon-commands.yml", false);
+    }
+
+    final File commandSettingsFile = new File(this.getDataFolder(), "carbon-commands.yml");
+    final YamlConfigurationLoader commandSettingsLoader = YamlConfigurationLoader.builder().setFile(commandSettingsFile).build();
+
+    try {
+      final BasicConfigurationNode commandSettingsNode = commandSettingsLoader.load();
+      this.commandSettings = CommandSettingsRegistry.loadFrom(commandSettingsNode);
+      commandSettingsLoader.save(commandSettingsNode);
+    } catch (final IOException | ObjectMappingException ignored) {
+    }
   }
 
   public void reloadFilters() {
     this.filterContext.reloadFilters();
-  }
-
-  private void loadModConfig() {
-    this.modConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "moderation.yml"));
-  }
-
-  private void loadLanguage() {
-    this.languageConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "language.yml"));
-  }
-
-  private void loadCommandsConfig() {
-    this.commandsConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "commands.yml"));
   }
 
   private void registerContexts() {
@@ -211,21 +228,6 @@ public final class CarbonChat extends JavaPlugin {
   }
 
   @NonNull
-  public YamlConfiguration moderationConfig() {
-    return this.modConfig;
-  }
-
-  @NonNull
-  public YamlConfiguration commandsConfig() {
-    return this.commandsConfig;
-  }
-
-  @NonNull
-  public YamlConfiguration language() {
-    return this.languageConfig;
-  }
-
-  @NonNull
   public Permission permission() {
     return this.permission;
   }
@@ -233,11 +235,6 @@ public final class CarbonChat extends JavaPlugin {
   @NonNull
   public CommandManager commandManager() {
     return this.commandManager;
-  }
-
-  @NonNull
-  public ChannelManager channelManager() {
-    return this.channelManager;
   }
 
   @NonNull
@@ -250,8 +247,23 @@ public final class CarbonChat extends JavaPlugin {
     return this.userService;
   }
 
-  @NonNull
-  public AdventureManager adventureManager() {
-    return this.adventureManager;
+  @Override
+  public @NonNull ChannelRegistry channelRegistry() {
+    return this.channelRegistry;
+  }
+
+  @Override
+  public @NonNull CommandSettingsRegistry commandSettingsRegistry() {
+    return this.commandSettings;
+  }
+
+  @Override
+  public @NonNull CarbonTranslations translations() {
+    return this.translations;
+  }
+
+  @Override
+  public @NonNull MessageProcessor messageProcessor() {
+    return this.messageProcessor;
   }
 }

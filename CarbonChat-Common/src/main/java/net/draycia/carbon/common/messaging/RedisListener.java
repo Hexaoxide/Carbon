@@ -1,4 +1,4 @@
-package net.draycia.carbon.util;
+package net.draycia.carbon.common.messaging;
 
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import org.checkerframework.checker.nullness.qual.NonNull;

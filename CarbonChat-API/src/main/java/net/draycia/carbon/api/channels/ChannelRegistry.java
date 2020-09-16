@@ -14,9 +14,16 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
   @NonNull
   private final Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
 
+  @Nullable
+  private ChatChannel defaultChannel = null;
+
   @Override
   public @NonNull ChatChannel register(@NonNull final String key, @NonNull final ChatChannel value) {
     this.registry.putIfAbsent(key, value);
+
+    if (this.defaultChannel == null && value.isDefault()) {
+      this.defaultChannel = value;
+    }
 
     return value;
   }
@@ -24,6 +31,10 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
   @Override
   public @Nullable ChatChannel get(@NonNull final String key) {
     return this.registry.get(key);
+  }
+
+  public @Nullable ChatChannel channelOrDefault(@NonNull final String key) {
+    return this.registry.getOrDefault(key, this.defaultChannel());
   }
 
   @Override
@@ -40,4 +51,9 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
   public @NonNull Iterator<ChatChannel> iterator() {
     return this.registry.values().iterator();
   }
+
+  public @Nullable ChatChannel defaultChannel() {
+    return this.defaultChannel;
+  }
+
 }

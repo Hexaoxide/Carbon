@@ -2,7 +2,7 @@ package net.draycia.carbon.listeners.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -12,9 +12,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class PlayerJoinListener implements Listener {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public PlayerJoinListener(@NonNull final CarbonChat carbonChat) {
+  public PlayerJoinListener(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
@@ -35,11 +35,11 @@ public class PlayerJoinListener implements Listener {
     }
 
     if (channel.equals("DEFAULT")) {
-      user.selectedChannel(this.carbonChat.channelManager().defaultChannel());
+      user.selectedChannel(this.carbonChat.channelRegistry().defaultChannel());
       return;
     }
 
-    final ChatChannel chatChannel = this.carbonChat.channelManager().registry().get(channel);
+    final ChatChannel chatChannel = this.carbonChat.channelRegistry().get(channel);
 
     if (chatChannel != null) {
       user.selectedChannel(chatChannel);

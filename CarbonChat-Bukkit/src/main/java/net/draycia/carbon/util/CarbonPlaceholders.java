@@ -3,7 +3,7 @@ package net.draycia.carbon.util;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.CarbonChatBukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -11,9 +11,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class CarbonPlaceholders extends PlaceholderExpansion {
 
   @NonNull
-  private final CarbonChat carbonChat;
+  private final CarbonChatBukkit carbonChat;
 
-  public CarbonPlaceholders(@NonNull final CarbonChat carbonChat) {
+  public CarbonPlaceholders(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
@@ -48,7 +48,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
     if (key.startsWith("can_use_")) {
       final String value = key.replace("can_use_", "");
 
-      final ChatChannel channel = this.carbonChat.channelManager().registry().get(value);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(value);
 
       if (channel == null) {
         return "false";
@@ -60,7 +60,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
     } else if (key.startsWith("can_see_")) {
       final String value = key.replace("can_see_", "");
 
-      final ChatChannel channel = this.carbonChat.channelManager().registry().get(value);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(value);
 
       if (channel == null) {
         return "false";
@@ -72,7 +72,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
     } else if (key.startsWith("ignoring_channel_")) {
       final String value = key.replace("ignoring_channel_", "");
 
-      final ChatChannel channel = this.carbonChat.channelManager().registry().get(value);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(value);
 
       if (channel == null) {
         return "false";
@@ -84,7 +84,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
     } else if (key.startsWith("selected_channel")) {
       final ChatChannel channel = this.carbonChat.userService().wrap(player.getUniqueId()).selectedChannel();
 
-      return channel == null ? this.carbonChat.channelManager().defaultChannel().name() : channel.name();
+      return channel == null ? this.carbonChat.channelRegistry().defaultChannel().name() : channel.name();
     }
 
     return null;
