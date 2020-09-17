@@ -18,7 +18,7 @@ dependencies {
   compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
 
   // Commands
-  compile "dev.jorel:commandapi-shade:4.2"
+  compile "com.intellectualsites:cloud-paper:1.0-SNAPSHOT"
 
   // Plugins
   compileOnly('com.gmail.nossr50.mcMMO:mcMMO:2.1.143') {
@@ -30,9 +30,10 @@ dependencies {
   }
   compileOnly 'me.clip:placeholderapi:2.10.9'
   compileOnly 'com.github.TownyAdvanced:Towny:0.96.1.11'
-  compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
   compileOnly 'com.vexsoftware:nuvotifier-universal:2.6.0'
+
   compileOnly 'net.luckperms:api:5.1'
+  compileOnly 'com.github.MilkBowl:VaultAPI:1.7' // TODO: remove
 
   // Server
   compileOnly 'com.destroystokyo.paper:paper-api:1.16.2-R0.1-SNAPSHOT'

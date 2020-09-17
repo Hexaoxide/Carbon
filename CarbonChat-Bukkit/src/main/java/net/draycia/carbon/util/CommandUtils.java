@@ -1,7 +1,7 @@
 package net.draycia.carbon.util;
 
 import dev.jorel.commandapi.CommandAPI;
-import net.draycia.carbon.api.commands.CommandSettings;
+import net.draycia.carbon.api.commands.settings.CommandSettings;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class CommandUtils {

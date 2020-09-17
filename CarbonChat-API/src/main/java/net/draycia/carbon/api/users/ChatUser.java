@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.users;
 
+import com.intellectualsites.commands.sender.CommandSender;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -7,26 +8,33 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
-public interface ChatUser extends Audience {
+public interface ChatUser extends Audience, CommandSender {
 
-  @NonNull
-  UUID uuid();
+  @NonNull UUID uuid();
 
-  @Nullable
-  String nickname();
-
+  @Deprecated
   boolean permissible();
-  
+
+  boolean online();
+
+  @Override
   boolean hasPermission(@NonNull String permission);
 
-  default void nickname(@NonNull final String nickname) {
+  @Nullable String nickname();
+
+  default void nickname(@Nullable final String nickname) {
     this.nickname(nickname, false);
   }
 
   void nickname(@Nullable String nickname, boolean fromRemote);
 
-  @Nullable
-  ChatChannel selectedChannel();
+  @Nullable String displayName();
+
+  void displayName(@Nullable String displayName);
+
+  @NonNull String name();
+
+  @Nullable ChatChannel selectedChannel();
 
   default void selectedChannel(@NonNull final ChatChannel channel) {
     this.selectedChannel(channel, false);
@@ -36,8 +44,7 @@ public interface ChatUser extends Audience {
 
   void clearSelectedChannel();
 
-  @NonNull
-  UserChannelSettings channelSettings(@NonNull ChatChannel channel);
+  @NonNull UserChannelSettings channelSettings(@NonNull ChatChannel channel);
 
   boolean spyingwhispers();
 
@@ -63,8 +70,7 @@ public interface ChatUser extends Audience {
 
   void shadowMuted(boolean shadowMuted, boolean fromRemote);
 
-  @Nullable
-  UUID replyTarget();
+  @Nullable UUID replyTarget();
 
   default void replyTarget(@Nullable final UUID target) {
     this.replyTarget(target, false);

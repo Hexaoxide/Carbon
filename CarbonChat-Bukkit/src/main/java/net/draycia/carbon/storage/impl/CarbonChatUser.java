@@ -14,6 +14,7 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -84,7 +85,8 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
 
   @Override
   public boolean hasPermission(@NonNull final String permission) {
-    return Bukkit.getPlayer(this.uuid()).hasPermission(permission);
+    return LuckPermsProvider.get().getUserManager().getUser(this.uuid())
+      .getCachedData().getPermissionData().checkPermission(permission).asBoolean();
   }
 
   @Override
@@ -118,6 +120,29 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
         });
       }
     }
+  }
+
+  @Override
+  public @Nullable String displayName() {
+    final Player player = Bukkit.getPlayer(this.uuid());
+
+    if (player != null) {
+      return player.getDisplayName();
+    }
+
+    return this.name();
+  }
+
+  public void displayName(final @Nullable String displayName) {
+    final Player player = Bukkit.getPlayer(this.uuid());
+
+    if (player != null) {
+      player.setDisplayName(displayName);
+    }
+  }
+
+  public @Nullable String name() {
+    return Bukkit.getOfflinePlayer(this.uuid()).getName();
   }
 
   @Override

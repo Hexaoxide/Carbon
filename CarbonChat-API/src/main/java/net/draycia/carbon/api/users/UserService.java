@@ -22,4 +22,6 @@ public interface UserService {
 
   void validate(@NonNull ChatUser user);
 
+  @NonNull Iterable<@NonNull ChatUser> onlineUsers();
+
 }

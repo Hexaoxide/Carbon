@@ -13,5 +13,7 @@ dependencies {
   compile 'net.kyori:event-api:3.0.0'
   compile 'net.kyori:registry:1.0.0-SNAPSHOT'
 
+  compile 'com.intellectualsites:cloud-core:1.0-SNAPSHOT'
+
   compileOnly 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
 }

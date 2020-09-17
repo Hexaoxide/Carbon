@@ -1,10 +1,14 @@
 package net.draycia.carbon;
 
+import com.intellectualsites.commands.PaperCommandManager;
+import com.intellectualsites.commands.execution.CommandExecutionCoordinator;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.adventure.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.commands.CommandSettingsRegistry;
+import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
+import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.common.adventure.FormatType;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.listeners.contexts.DistanceContext;
@@ -44,6 +48,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -83,6 +88,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public void onLoad() {
+    CarbonChatProvider.register(this);
+
     CommandAPI.onLoad(false);
   }
 
@@ -162,6 +169,25 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     new UrlLinkHandler();
     new UserFormattingHandler();
     new WhisperPingHandler(this);
+  }
+
+  private void setupCommands() {
+    try {
+      final PaperCommandManager<ChatUser> manager = new PaperCommandManager<>(this,
+        CommandExecutionCoordinator
+          .simpleCoordinator(), sender -> {
+        if (sender instanceof Player) {
+          return this.userService().wrap(((Player) sender).getUniqueId());
+        } else {
+          // TODO: weeeeee fix this
+          throw new IllegalArgumentException("Non-players not supported yet!");
+        }
+      });
+
+
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Override

@@ -1,5 +1,10 @@
-package net.draycia.carbon.commands;
+package net.draycia.carbon.common.commands;
 
+import com.intellectualsites.commands.CommandManager;
+import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -9,7 +14,7 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.api.commands.CommandSettings;
+import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -22,16 +27,14 @@ import java.util.LinkedHashMap;
 public class SudoChannelCommand {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
-  public SudoChannelCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
-    this.carbonChat = carbonChat;
+  public SudoChannelCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = CarbonChatProvider.carbonChat();
 
     if (!commandSettings.enabled()) {
       return;
     }
-
-    CommandUtils.handleDuplicateCommands(commandSettings);
 
     final LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
     setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());

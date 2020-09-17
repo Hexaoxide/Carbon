@@ -1,13 +1,18 @@
-package net.draycia.carbon.commands;
+package net.draycia.carbon.common.commands;
 
+import com.intellectualsites.commands.CommandManager;
+import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.api.commands.CommandSettings;
+import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -19,16 +24,14 @@ import java.util.LinkedHashMap;
 public class MeCommand {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
-  public MeCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
-    this.carbonChat = carbonChat;
+  public MeCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = CarbonChatProvider.carbonChat();
 
     if (!commandSettings.enabled()) {
       return;
     }
-
-    CommandUtils.handleDuplicateCommands(commandSettings);
 
     final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("message", new GreedyStringArgument());

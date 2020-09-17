@@ -1,8 +1,14 @@
-package net.draycia.carbon.commands;
+package net.draycia.carbon.common.commands;
 
+import com.intellectualsites.commands.CommandManager;
+import com.intellectualsites.commands.context.CommandContext;
+import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.api.commands.CommandSettings;
+import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
@@ -21,16 +27,14 @@ import java.util.LinkedHashMap;
 public class ToggleCommand {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
-  public ToggleCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
-    this.carbonChat = carbonChat;
+  public ToggleCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = CarbonChatProvider.carbonChat();
 
     if (!commandSettings.enabled()) {
       return;
     }
-
-    CommandUtils.handleDuplicateCommands(commandSettings);
 
     final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("channel", CarbonUtils.channelArgument());
@@ -54,8 +58,8 @@ public class ToggleCommand {
       .register();
   }
 
-  private void executeSelf(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+  private void executeSelf(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser user = context.getSender();
     final ChatChannel channel = (ChatChannel) args[0];
 
     final String message;
@@ -76,9 +80,10 @@ public class ToggleCommand {
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
   }
 
-  private void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = (ChatUser) args[0];
-    final ChatChannel channel = (ChatChannel) args[1];
+  private void executeOther(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser sender = context.getSender();
+    final ChatUser user = context.getRequired("user");
+    final ChatChannel channel = context.getRequired("channel");
 
     final String message;
     final String otherMessage;
@@ -98,17 +103,9 @@ public class ToggleCommand {
     user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
 
-    final Audience cmdSender;
-
-    if (sender instanceof Player) {
-      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
-    } else {
-      cmdSender = this.carbonChat.messageProcessor().audiences().console();
-    }
-
-    cmdSender.sendMessage(
+    sender.sendMessage(
       this.carbonChat.messageProcessor().processMessage(otherMessage,
         "br", "\n", "color", "<color:" + channel.channelColor(user).toString() + ">",
-        "channel", channel.name(), "player", Bukkit.getOfflinePlayer(user.uuid()).getName()));
+        "channel", channel.name(), "player", user.name()));
   }
 }

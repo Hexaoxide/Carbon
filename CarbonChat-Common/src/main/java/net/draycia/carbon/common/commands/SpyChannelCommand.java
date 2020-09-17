@@ -1,8 +1,13 @@
-package net.draycia.carbon.commands;
+package net.draycia.carbon.common.commands;
 
+import com.intellectualsites.commands.CommandManager;
+import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.api.commands.CommandSettings;
+import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.util.CarbonUtils;
 import net.draycia.carbon.util.CommandUtils;
@@ -20,16 +25,14 @@ import java.util.LinkedHashMap;
 public class SpyChannelCommand {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
-  public SpyChannelCommand(@NonNull final CarbonChatBukkit carbonChat, @NonNull final CommandSettings commandSettings) {
-    this.carbonChat = carbonChat;
+  public SpyChannelCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+    this.carbonChat = CarbonChatProvider.carbonChat();
 
     if (!commandSettings.enabled()) {
       return;
     }
-
-    CommandUtils.handleDuplicateCommands(commandSettings);
 
     final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
     channelArguments.put("channel", CarbonUtils.channelArgument());

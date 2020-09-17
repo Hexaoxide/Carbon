@@ -1,22 +1,22 @@
 package net.draycia.carbon.managers;
 
-import net.draycia.carbon.commands.ChannelCommand;
-import net.draycia.carbon.commands.ChannelListCommand;
-import net.draycia.carbon.commands.ChatReloadCommand;
-import net.draycia.carbon.commands.ClearChatCommand;
-import net.draycia.carbon.commands.IgnoreCommand;
-import net.draycia.carbon.commands.MeCommand;
-import net.draycia.carbon.commands.MessageCommand;
-import net.draycia.carbon.commands.MuteCommand;
-import net.draycia.carbon.commands.NicknameCommand;
-import net.draycia.carbon.commands.ReplyCommand;
-import net.draycia.carbon.commands.SetColorCommand;
-import net.draycia.carbon.commands.SpyChannelCommand;
-import net.draycia.carbon.commands.SudoChannelCommand;
-import net.draycia.carbon.commands.ToggleCommand;
-import net.draycia.carbon.api.commands.CommandSettings;
+import net.draycia.carbon.common.commands.ChannelCommand;
+import net.draycia.carbon.common.commands.ChannelListCommand;
+import net.draycia.carbon.common.commands.ChatReloadCommand;
+import net.draycia.carbon.common.commands.ClearChatCommand;
+import net.draycia.carbon.common.commands.IgnoreCommand;
+import net.draycia.carbon.common.commands.MeCommand;
+import net.draycia.carbon.common.commands.MessageCommand;
+import net.draycia.carbon.common.commands.MuteCommand;
+import net.draycia.carbon.common.commands.NicknameCommand;
+import net.draycia.carbon.common.commands.ReplyCommand;
+import net.draycia.carbon.common.commands.SetColorCommand;
+import net.draycia.carbon.common.commands.SpyChannelCommand;
+import net.draycia.carbon.common.commands.SudoChannelCommand;
+import net.draycia.carbon.common.commands.ToggleCommand;
+import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.CarbonChatBukkit;
-import net.draycia.carbon.commands.ShadowMuteCommand;
+import net.draycia.carbon.common.commands.ShadowMuteCommand;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CommandManager {
