@@ -5,6 +5,7 @@ import net.draycia.carbon.channels.ChatChannel;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -81,7 +82,7 @@ public class BukkitChatListener implements Listener {
       final Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
 
       if (!component.equals(TextComponent.empty())) {
-        event.setFormat(CarbonChat.LEGACY.serialize(component)
+        event.setFormat(PlainComponentSerializer.plain().serialize(component)
           .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
       }
     } else {
