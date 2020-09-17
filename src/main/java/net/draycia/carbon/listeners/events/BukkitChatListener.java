@@ -31,6 +31,14 @@ public class BukkitChatListener implements Listener {
     final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer());
     ChatChannel channel = user.selectedChannel();
 
+    if (channel == null) {
+      if (this.carbonChat.channelManager().defaultChannel() == null) {
+        return;
+      }
+
+      channel = this.carbonChat.channelManager().defaultChannel();
+    }
+
     if (channel.shouldCancelChatEvent()) {
       event.setCancelled(true);
     }
