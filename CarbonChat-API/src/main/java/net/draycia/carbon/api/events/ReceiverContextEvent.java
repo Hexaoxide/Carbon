@@ -45,4 +45,5 @@ public class ReceiverContextEvent implements CarbonEvent, Cancellable {
   public @NonNull ChatUser recipient() {
     return this.recipient;
   }
+
 }

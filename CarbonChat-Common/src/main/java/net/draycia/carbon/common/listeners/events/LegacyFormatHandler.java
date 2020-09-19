@@ -1,11 +1,11 @@
-package net.draycia.carbon.listeners.events;
+package net.draycia.carbon.common.listeners.events;
 
+import net.draycia.carbon.api.events.PreChatFormatEvent;
+import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyFormat;
-import net.draycia.carbon.api.events.misc.CarbonEvents;
-import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

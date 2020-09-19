@@ -18,23 +18,22 @@ import net.draycia.carbon.listeners.contexts.TownyContext;
 import net.draycia.carbon.listeners.contexts.WorldGuardContext;
 import net.draycia.carbon.listeners.contexts.mcMMOContext;
 import net.draycia.carbon.listeners.events.BukkitChatListener;
-import net.draycia.carbon.listeners.events.CapsHandler;
-import net.draycia.carbon.listeners.events.CustomPlaceholderHandler;
-import net.draycia.carbon.listeners.events.IgnoredPlayerHandler;
+import net.draycia.carbon.common.listeners.events.CapsHandler;
+import net.draycia.carbon.common.listeners.events.CustomPlaceholderHandler;
+import net.draycia.carbon.common.listeners.events.IgnoredPlayerHandler;
 import net.draycia.carbon.listeners.events.ItemLinkHandler;
-import net.draycia.carbon.listeners.events.LegacyFormatHandler;
-import net.draycia.carbon.listeners.events.MuteHandler;
-import net.draycia.carbon.listeners.events.OfflineNameHandler;
-import net.draycia.carbon.listeners.events.PingHandler;
+import net.draycia.carbon.common.listeners.events.LegacyFormatHandler;
+import net.draycia.carbon.common.listeners.events.MuteHandler;
+import net.draycia.carbon.common.listeners.events.PingHandler;
 import net.draycia.carbon.listeners.events.PlaceholderHandler;
-import net.draycia.carbon.listeners.events.PlayerJoinListener;
+import net.draycia.carbon.common.listeners.events.PlayerJoinListener;
 import net.draycia.carbon.listeners.events.RelationalPlaceholderHandler;
-import net.draycia.carbon.listeners.events.ShadowMuteHandler;
-import net.draycia.carbon.listeners.events.UrlLinkHandler;
-import net.draycia.carbon.listeners.events.UserFormattingHandler;
-import net.draycia.carbon.listeners.events.WhisperPingHandler;
+import net.draycia.carbon.common.listeners.events.ShadowMuteHandler;
+import net.draycia.carbon.common.listeners.events.UrlLinkHandler;
+import net.draycia.carbon.common.listeners.events.UserFormattingHandler;
+import net.draycia.carbon.common.listeners.events.WhisperPingHandler;
 import net.draycia.carbon.common.adventure.AdventureManager;
-import net.draycia.carbon.managers.CommandManager;
+import net.draycia.carbon.common.commands.misc.CommandRegistrar;
 import net.draycia.carbon.common.messaging.MessageManager;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.storage.impl.JSONUserService;
@@ -64,8 +63,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private static final int BSTATS_PLUGIN_ID = 8720;
 
   private Permission permission;
-
-  private CommandManager commandManager;
 
   private ChannelRegistry channelRegistry;
   private CommandSettingsRegistry commandSettings;
@@ -118,7 +115,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     // Initialize managers
     this.channelRegistry = new ChannelRegistry();
     this.messageManager = new MessageManager(this, new EmptyMessageService()); // TODO: get message service from config
-    this.commandManager = new CommandManager(this);
 
     final String storageType = this.getConfig().getString("storage.type");
 
@@ -154,21 +150,21 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     // Register chat listeners
     pluginManager.registerEvents(new BukkitChatListener(this), this);
-    new CapsHandler(this);
-    new CustomPlaceholderHandler(this);
+
+    new CapsHandler();
+    new CustomPlaceholderHandler();
     new IgnoredPlayerHandler();
     new ItemLinkHandler();
     new LegacyFormatHandler();
     new MuteHandler();
-    new OfflineNameHandler();
-    new PingHandler(this);
+    new PingHandler();
     new PlaceholderHandler();
-    pluginManager.registerEvents(new PlayerJoinListener(this), this);
+    new PlayerJoinListener();
     new RelationalPlaceholderHandler();
-    new ShadowMuteHandler(this);
+    new ShadowMuteHandler();
     new UrlLinkHandler();
     new UserFormattingHandler();
-    new WhisperPingHandler(this);
+    new WhisperPingHandler();
   }
 
   private void setupCommands() {
@@ -184,7 +180,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         }
       });
 
-
+      CommandRegistrar.registerCommands(manager);
     } catch (final Exception e) {
       e.printStackTrace();
     }
@@ -259,8 +255,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   @NonNull
-  public CommandManager commandManager() {
-    return this.commandManager;
+  public CommandRegistrar commandManager() {
+    return this.commandRegistrar;
   }
 
   @NonNull

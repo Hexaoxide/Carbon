@@ -4,6 +4,7 @@ import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.components.standard.StringComponent;
 import com.intellectualsites.commands.context.CommandContext;
 import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
@@ -18,8 +19,10 @@ public class ChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChannelCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public ChannelCommand(final @NonNull CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("channel");
 
     if (!commandSettings.enabled()) {
       return;

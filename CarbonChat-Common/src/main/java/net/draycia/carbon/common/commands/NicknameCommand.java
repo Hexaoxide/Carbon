@@ -16,8 +16,10 @@ public class NicknameCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public NicknameCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public NicknameCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("nickname");
 
     if (!commandSettings.enabled()) {
       return;

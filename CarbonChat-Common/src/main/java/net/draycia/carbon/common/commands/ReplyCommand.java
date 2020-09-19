@@ -24,8 +24,10 @@ public class ReplyCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ReplyCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public ReplyCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("reply");
 
     if (!commandSettings.enabled()) {
       return;

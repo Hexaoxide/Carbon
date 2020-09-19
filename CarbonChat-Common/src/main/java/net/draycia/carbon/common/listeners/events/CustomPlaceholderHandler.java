@@ -1,15 +1,16 @@
-package net.draycia.carbon.listeners.events;
+package net.draycia.carbon.common.listeners.events;
 
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.kyori.event.PostOrders;
-import org.bukkit.configuration.ConfigurationSection;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CustomPlaceholderHandler {
 
-  public CustomPlaceholderHandler(@NonNull final CarbonChatBukkit carbonChat) {
+  public CustomPlaceholderHandler() {
+    final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
+
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
       final ConfigurationSection placeholders = carbonChat.getConfig().getConfigurationSection("placeholders");
 

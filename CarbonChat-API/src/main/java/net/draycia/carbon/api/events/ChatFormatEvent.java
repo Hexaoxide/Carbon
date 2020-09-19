@@ -79,4 +79,5 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
   public void message(@NonNull final String message) {
     this.message = message;
   }
+
 }

@@ -3,6 +3,7 @@ package net.draycia.carbon.common.commands;
 import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.context.CommandContext;
 import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ChatUser;
@@ -15,8 +16,10 @@ public class ClearChatCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ClearChatCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public ClearChatCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("clearchat");
 
     if (!commandSettings.enabled()) {
       return;

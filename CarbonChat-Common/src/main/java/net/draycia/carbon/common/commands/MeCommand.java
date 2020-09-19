@@ -26,8 +26,10 @@ public class MeCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public MeCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public MeCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("me");
 
     if (!commandSettings.enabled()) {
       return;

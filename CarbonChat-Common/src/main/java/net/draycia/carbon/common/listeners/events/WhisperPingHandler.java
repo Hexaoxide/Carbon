@@ -1,26 +1,24 @@
-package net.draycia.carbon.listeners.events;
+package net.draycia.carbon.common.listeners.events;
 
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PrivateMessageEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.event.PostOrders;
-import org.bukkit.Bukkit;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class WhisperPingHandler {
 
-  public WhisperPingHandler(@NonNull final CarbonChatBukkit carbonChat) {
+  public WhisperPingHandler() {
+    final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(PrivateMessageEvent.class, PostOrders.LAST, false, event -> {
       if (event.sender().uuid().equals(event.target().uuid())) {
         return;
       }
 
-      final String senderName = Bukkit.getOfflinePlayer(event.sender().uuid()).getName();
-
-      if (senderName == null || !event.message().contains(senderName)) {
+      if (!event.message().contains(event.sender().name())) {
         return;
       }
 

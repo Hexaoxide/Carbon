@@ -3,6 +3,7 @@ package net.draycia.carbon.common.commands;
 import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.context.CommandContext;
 import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
@@ -15,8 +16,10 @@ public class ChatReloadCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChatReloadCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public ChatReloadCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("chatreload");
 
     if (!commandSettings.enabled()) {
       return;

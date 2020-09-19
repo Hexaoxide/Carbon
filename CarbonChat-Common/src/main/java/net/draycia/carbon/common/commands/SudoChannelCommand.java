@@ -29,8 +29,10 @@ public class SudoChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SudoChannelCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public SudoChannelCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("sudochannel");
 
     if (!commandSettings.enabled()) {
       return;

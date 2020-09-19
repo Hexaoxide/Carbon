@@ -23,8 +23,10 @@ public class ChannelListCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChannelListCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public ChannelListCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("channellist");
 
     if (!commandSettings.enabled()) {
       return;

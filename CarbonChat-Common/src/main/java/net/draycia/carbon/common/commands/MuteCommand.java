@@ -29,8 +29,10 @@ public class MuteCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public MuteCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public MuteCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("mute");
 
     if (!commandSettings.enabled()) {
       return;

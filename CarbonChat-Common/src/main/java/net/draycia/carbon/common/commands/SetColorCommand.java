@@ -2,6 +2,7 @@ package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.meta.CommandMeta;
+import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.arguments.Argument;
@@ -25,8 +26,10 @@ public class SetColorCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SetColorCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final CommandSettings commandSettings) {
+  public SetColorCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
+
+    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("setcolor");
 
     if (!commandSettings.enabled()) {
       return;

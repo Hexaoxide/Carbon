@@ -1,14 +1,16 @@
-package net.draycia.carbon.listeners.events;
+package net.draycia.carbon.common.listeners.events;
 
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.kyori.event.PostOrders;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class CapsHandler {
 
-  public CapsHandler(@NonNull final CarbonChatBukkit carbonChat) {
+  public CapsHandler() {
+    final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
+
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
       if (!carbonChat.moderationConfig().getBoolean("caps-protection.enabled")) {
         return;
