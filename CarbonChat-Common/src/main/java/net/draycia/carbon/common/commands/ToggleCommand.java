@@ -29,7 +29,7 @@ public class ToggleCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ToggleCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public ToggleCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("toggle");

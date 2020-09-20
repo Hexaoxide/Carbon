@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.utils;
 
-import com.intellectualsites.commands.components.CommandComponent;
-import com.intellectualsites.commands.components.parser.ComponentParseResult;
+import com.intellectualsites.commands.arguments.CommandArgument;
+import com.intellectualsites.commands.arguments.parser.ArgumentParseResult;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
@@ -13,55 +13,55 @@ public final class CommandUtils {
   }
 
   // TODO: turn this into a proper class that handles suggestions
-  private static final CommandComponent<ChatUser, ChatChannel> commandComponent =
-    CommandComponent.<ChatUser, ChatChannel>ofType(ChatChannel.class, "channel")
+  private static final CommandArgument<ChatUser, ChatChannel> channelArgument =
+    CommandArgument.<ChatUser, ChatChannel>ofType(ChatChannel.class, "channel")
       .asRequired()
       .withParser((c, i) -> {
         final String input = i.peek();
 
         if (input == null) {
-          return ComponentParseResult.failure(new IllegalArgumentException("Channel cannot be null"));
+          return ArgumentParseResult.failure(new IllegalArgumentException("Channel cannot be null"));
         }
 
         final ChatChannel channel = CarbonChatProvider.carbonChat()
           .channelRegistry().get(input);
 
         if (channel != null) {
-          return ComponentParseResult.success(channel);
+          return ArgumentParseResult.success(channel);
         } else {
-          return ComponentParseResult.failure(new IllegalArgumentException("Channel does not exist"));
+          return ArgumentParseResult.failure(new IllegalArgumentException("Channel does not exist"));
         }
       })
       .build();
 
-  public static CommandComponent<ChatUser, ChatChannel> channelComponent() {
-    return commandComponent;
+  public static CommandArgument<ChatUser, ChatChannel> channelArgument() {
+    return channelArgument;
   }
 
   // TODO: turn this into a proper class that handles suggestions
-  private static final CommandComponent<ChatUser, ChatUser> chatUserComponent =
-    CommandComponent.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
+  private static final CommandArgument<ChatUser, ChatUser> chatUserArgument =
+    CommandArgument.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
       .asRequired()
       .withParser((c, i) -> {
         final String input = i.peek();
 
         if (input == null) {
-          return ComponentParseResult.failure(new IllegalArgumentException("Player cannot be null"));
+          return ArgumentParseResult.failure(new IllegalArgumentException("Player cannot be null"));
         }
 
         final ChatUser user = CarbonChatProvider.carbonChat()
           .userService().wrap(null); // TODO: find way to resolve name -> uuid
 
         if (user != null) {
-          return ComponentParseResult.success(user);
+          return ArgumentParseResult.success(user);
         } else {
-          return ComponentParseResult.failure(new IllegalArgumentException("Player does not exist"));
+          return ArgumentParseResult.failure(new IllegalArgumentException("Player does not exist"));
         }
       })
       .build();
 
-  public static CommandComponent<ChatUser, ChatUser> chatUserComponent() {
-    return chatUserComponent;
+  public static CommandArgument<ChatUser, ChatUser> chatUserArgument() {
+    return chatUserArgument;
   }
 
 }

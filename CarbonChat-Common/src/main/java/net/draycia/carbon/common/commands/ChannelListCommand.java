@@ -2,7 +2,6 @@ package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.context.CommandContext;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -23,7 +22,7 @@ public class ChannelListCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChannelListCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public ChannelListCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("channellist");
@@ -46,7 +45,7 @@ public class ChannelListCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // console & player
         .withPermission("carbonchat.channellist.other")
-        .component(CommandUtils.chatUserComponent())
+        .argument(CommandUtils.chatUserArgument())
         .handler(this::toggleOther)
         .build()
     );

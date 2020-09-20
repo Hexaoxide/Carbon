@@ -1,32 +1,21 @@
 package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.meta.CommandMeta;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
-import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.GreedyStringArgument;
-import me.clip.placeholderapi.PlaceholderAPI;
-import net.draycia.carbon.CarbonChatBukkit;
+import com.intellectualsites.commands.arguments.standard.StringArgument;
+import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
-import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.LinkedHashMap;
 
 public class MeCommand {
 
   @NonNull
   private final CarbonChat carbonChat;
 
-  public MeCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public MeCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("me");
@@ -35,39 +24,39 @@ public class MeCommand {
       return;
     }
 
-    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-    channelArguments.put("message", new GreedyStringArgument());
-
-    new CommandAPICommand(commandSettings.name())
-      .withArguments(channelArguments)
-      .withAliases(commandSettings.aliases())
-      .withPermission(CommandPermission.fromString("carbonchat.me"))
-      .executesPlayer(this::execute)
-      .register();
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .withSenderType(ChatUser.class) // console & player
+        .withPermission("carbonchat.me")
+        .argument(StringArgument.<ChatUser>newBuilder("message").greedy().build())
+        .handler(this::message)
+        .build()
+    );
   }
 
-  private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final String message = ((String) args[0]).replace("</pre>", "");
-    String format = PlaceholderAPI.setPlaceholders(player, this.carbonChat.translations().roleplayFormat());
+  private void message(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser user = context.getSender();
 
-    if (!player.hasPermission("carbonchat.me.formatting")) {
+    final String message = context.<String>getRequired("message").replace("</pre>", "");
+    String format = this.carbonChat.translations().roleplayFormat();
+
+    if (!user.hasPermission("carbonchat.me.formatting")) {
       format = format.replace("<message>", "<pre><message></pre>");
     }
 
     final Component component = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
-      "displayname", player.getDisplayName(), "message", message);
-
-    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+      "displayname", user.displayName(), "message", message);
 
     if (user.shadowMuted()) {
       user.sendMessage(component);
     } else {
-      for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-        if (this.carbonChat.userService().wrap(onlinePlayer.getUniqueId()).ignoringUser(user)) {
+      for (final ChatUser onlineUser : this.carbonChat.userService().onlineUsers()) {
+        if (onlineUser.ignoringUser(user)) {
           continue;
         }
 
-        this.carbonChat.messageProcessor().audiences().player(onlinePlayer.getUniqueId()).sendMessage(component);
+        onlineUser.sendMessage(component);
       }
     }
   }

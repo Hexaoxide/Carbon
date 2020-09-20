@@ -1,9 +1,8 @@
 package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.components.standard.StringComponent;
+import com.intellectualsites.commands.arguments.standard.StringArgument;
 import com.intellectualsites.commands.context.CommandContext;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
@@ -16,7 +15,7 @@ public class NicknameCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public NicknameCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public NicknameCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("nickname");
@@ -25,13 +24,14 @@ public class NicknameCommand {
       return;
     }
 
+    // TODO: make this deterministic, has to be Nickname -> User
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.nickname")
-        .component(StringComponent.<ChatUser>newBuilder("nickname").single().build())
-        .handler(this::nicknameOther)
+        .argument(StringArgument.required("nickname"))
+        .handler(this::nicknameSelf)
         .build()
     );
 
@@ -40,20 +40,11 @@ public class NicknameCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.nickname")
-        .component(CommandUtils.chatUserComponent())
-        .component(StringComponent.<ChatUser>newBuilder("nickname").single().build())
+        .argument(CommandUtils.chatUserArgument())
+        .argument(StringArgument.required("nickname"))
         .handler(this::nicknameOther)
         .build()
     );
-
-    selfArguments.put("nickname", new StringArgument());
-
-    new CommandAPICommand(commandSettings.name())
-      .withArguments(selfArguments)
-      .withAliases(commandSettings.aliases())
-      .withPermission(CommandPermission.fromString("carbonchat.nickname"))
-      .executesPlayer(this::executeSelf)
-      .register();
   }
 
   private void nicknameSelf(@NonNull final CommandContext<ChatUser> context) {

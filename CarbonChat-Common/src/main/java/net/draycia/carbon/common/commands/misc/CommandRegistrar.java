@@ -27,7 +27,7 @@ public final class CommandRegistrar {
 
   }
 
-  public static <Meta extends CommandMeta, Manager extends CommandManager<ChatUser, Meta>> void registerCommands(final @NonNull Manager commandManager) {
+  public static void registerCommands(final @NonNull CommandManager<ChatUser> commandManager) {
     new ChannelCommand(commandManager);
     new ChannelListCommand(commandManager);
     new ChatReloadCommand(commandManager);

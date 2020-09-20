@@ -27,7 +27,7 @@ public class SpyChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SpyChannelCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public SpyChannelCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("spy");

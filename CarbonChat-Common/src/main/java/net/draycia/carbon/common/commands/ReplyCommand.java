@@ -1,30 +1,21 @@
 package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.meta.CommandMeta;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
-import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.GreedyStringArgument;
-import net.draycia.carbon.CarbonChatBukkit;
+import com.intellectualsites.commands.arguments.standard.StringArgument;
+import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
-import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.LinkedHashMap;
 
 public class ReplyCommand {
 
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ReplyCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public ReplyCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("reply");
@@ -33,21 +24,20 @@ public class ReplyCommand {
       return;
     }
 
-    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-    arguments.put("message", new GreedyStringArgument());
-
-    new CommandAPICommand(commandSettings.name())
-      .withArguments(arguments)
-      .withAliases(commandSettings.aliases())
-      .withPermission(CommandPermission.fromString("carbonchat.reply"))
-      .executesPlayer(this::execute)
-      .register();
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .withSenderType(ChatUser.class) // player
+        .withPermission("carbonchat.reply")
+        .argument(StringArgument.<ChatUser>newBuilder("message").greedy().build())
+        .handler(this::reply)
+        .build()
+    );
   }
 
-  private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final String input = (String) args[0];
-
-    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+  private void reply(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser user = context.getSender();
+    final String input = context.getRequired("message");
 
     if (input.isEmpty()) {
       final String message = this.carbonChat.translations().replyMessageBlank();

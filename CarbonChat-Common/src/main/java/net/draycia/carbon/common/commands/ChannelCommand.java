@@ -1,10 +1,8 @@
 package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.components.standard.StringComponent;
+import com.intellectualsites.commands.arguments.standard.StringArgument;
 import com.intellectualsites.commands.context.CommandContext;
-import com.intellectualsites.commands.meta.CommandMeta;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
@@ -19,7 +17,7 @@ public class ChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChannelCommand(final @NonNull CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public ChannelCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("channel");
@@ -33,7 +31,7 @@ public class ChannelCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.channel")
-        .component(CommandUtils.channelComponent())
+        .argument(CommandUtils.channelArgument())
         .handler(this::channel)
         .build()
     );
@@ -42,8 +40,8 @@ public class ChannelCommand {
       commandManager.commandBuilder(commandSettings.name())
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.channel.message")
-        .component(CommandUtils.channelComponent())
-        .component(StringComponent.required("message"))
+        .argument(CommandUtils.channelArgument())
+        .argument(StringArgument.required("message"))
         .handler(this::sendMessage)
         .build()
     );

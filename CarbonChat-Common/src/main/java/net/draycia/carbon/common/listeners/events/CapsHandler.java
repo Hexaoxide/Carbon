@@ -12,11 +12,11 @@ public class CapsHandler {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      if (!carbonChat.moderationConfig().getBoolean("caps-protection.enabled")) {
+      if (!carbonChat.moderationSettings().capsProtection().enabled()) {
         return;
       }
 
-      if (!(event.message().length() >= carbonChat.moderationConfig().getInt("caps-protection.minimum-length"))) {
+      if (!(event.message().length() >= carbonChat.moderationSettings().capsProtection().minimumLength())) {
         return;
       }
 
@@ -30,11 +30,11 @@ public class CapsHandler {
 
       final double capsPercentage = (amountOfCaps * 100.0) / event.message().length();
 
-      if (!(capsPercentage >= carbonChat.moderationConfig().getDouble("caps-protection.percent-caps"))) {
+      if (!(capsPercentage >= carbonChat.moderationSettings().capsProtection().percentCaps())) {
         return;
       }
 
-      if (carbonChat.moderationConfig().getBoolean("block-message")) {
+      if (carbonChat.moderationSettings().capsProtection().blockMessage()) {
         event.cancelled(true);
       } else {
         event.message(event.message().toLowerCase());

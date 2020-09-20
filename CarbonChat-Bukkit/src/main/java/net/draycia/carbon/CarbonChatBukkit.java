@@ -1,7 +1,7 @@
 package net.draycia.carbon;
 
-import com.intellectualsites.commands.PaperCommandManager;
 import com.intellectualsites.commands.execution.CommandExecutionCoordinator;
+import com.intellectualsites.commands.paper.PaperCommandManager;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.adventure.CarbonTranslations;
@@ -178,6 +178,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
           // TODO: weeeeee fix this
           throw new IllegalArgumentException("Non-players not supported yet!");
         }
+      }, user -> {
+        return Bukkit.getPlayer(user.uuid());
       });
 
       CommandRegistrar.registerCommands(manager);
@@ -190,8 +192,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   public void reloadConfig() {
     super.reloadConfig();
 
-    this.loadModConfig();
     this.loadLanguage();
+    this.loadModerationSettings();
     this.loadCommandSettings();
   }
 
@@ -208,6 +210,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   private void loadCommandSettings() {
+    // TODO: probably redo this from scratch
     if (!(new File(this.getDataFolder(), "carbon-commands.yml").exists())) {
       this.saveResource("carbon-commands.yml", false);
     }
@@ -221,6 +224,10 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       commandSettingsLoader.save(commandSettingsNode);
     } catch (final IOException | ObjectMappingException ignored) {
     }
+  }
+
+  private void loadModerationSettings() {
+
   }
 
   public void reloadFilters() {
@@ -252,11 +259,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @NonNull
   public Permission permission() {
     return this.permission;
-  }
-
-  @NonNull
-  public CommandRegistrar commandManager() {
-    return this.commandRegistrar;
   }
 
   @NonNull

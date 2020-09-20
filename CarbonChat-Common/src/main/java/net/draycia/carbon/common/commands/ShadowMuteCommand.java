@@ -1,35 +1,21 @@
 package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.meta.CommandMeta;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
+import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
-import net.draycia.carbon.util.CarbonUtils;
-import net.draycia.carbon.util.CommandUtils;
-import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.arguments.Argument;
-import net.draycia.carbon.CarbonChatBukkit;
-import net.kyori.adventure.audience.Audience;
+import net.draycia.carbon.common.utils.CommandUtils;
 import net.kyori.adventure.text.Component;
-import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.LinkedHashMap;
 
 public class ShadowMuteCommand {
 
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ShadowMuteCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager) {
+  public ShadowMuteCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("shadowmute");
@@ -38,55 +24,44 @@ public class ShadowMuteCommand {
       return;
     }
 
-    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-    arguments.put("player", CarbonUtils.chatUserArgument());
-
-    new CommandAPICommand(commandSettings.name())
-      .withArguments(arguments)
-      .withAliases(commandSettings.aliases())
-      .withPermission(CommandPermission.fromString("carbonchat.shadowmute"))
-      .executes(this::execute)
-      .register();
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .withSenderType(ChatUser.class) // player
+        .withPermission("carbonchat.shadowmute")
+        .argument(CommandUtils.chatUserArgument())
+        .handler(this::shadowMute)
+        .build()
+    );
   }
 
-  private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final Audience cmdSender;
-
-    if (sender instanceof Player) {
-      cmdSender = this.carbonChat.userService().wrap(((Player) sender).getUniqueId());
-    } else {
-      cmdSender = this.carbonChat.messageProcessor().audiences().console();
-    }
-
-    final ChatUser user = (ChatUser) args[0];
-
-    final OfflinePlayer player = Bukkit.getOfflinePlayer(user.uuid());
+  private void shadowMute(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser user = context.getSender();
+    final ChatUser target = context.getRequired("user");
 
     if (user.shadowMuted()) {
       user.shadowMuted(false);
       final String format = this.carbonChat.translations().noLongerShadowMuted();
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
-        "player", player.getName());
+        "player", target.name());
 
-      cmdSender.sendMessage(message);
+      user.sendMessage(message);
     } else {
-      Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
-        final Permission permission = this.carbonChat.permission();
-        final String format;
+      // TODO: schedule task because LuckPerms doesn't like sync offline permission checks
+      final String format;
 
-        if (permission.playerHas(null, player, "carbonchat.shadowmute.exempt")) {
-          format = this.carbonChat.translations().shadowMuteExempt();
-        } else {
-          user.shadowMuted(true);
-          format = this.carbonChat.translations().nowShadowMuted();
-        }
+      if (target.hasPermission("carbonchat.mute.exempt")) {
+        format = this.carbonChat.translations().shadowMuteExempt();
+      } else {
+        user.shadowMuted(true);
+        format = this.carbonChat.translations().nowShadowMuted();
+      }
 
-        final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
-          "player", player.getName());
+      final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
+        "player", target.name());
 
-        cmdSender.sendMessage(message);
-      });
+      user.sendMessage(message);
     }
   }
 }

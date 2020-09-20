@@ -4,6 +4,7 @@ import net.draycia.carbon.api.adventure.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
+import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.users.UserService;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -18,6 +19,8 @@ public interface CarbonChat {
       .useUnusualXRepeatedCharacterHexFormat()
       .build();
 
+  void reloadConfig();
+
   @NonNull UserService userService();
 
   @NonNull MessageProcessor messageProcessor();
@@ -27,5 +30,7 @@ public interface CarbonChat {
   @NonNull CommandSettingsRegistry commandSettingsRegistry();
 
   @NonNull CarbonTranslations translations();
+
+  @NonNull ModerationSettings moderationSettings();
 
 }

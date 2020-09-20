@@ -1,14 +1,3 @@
-caps-protection:
-  enabled: true
-  minimum-length: 10
-  percent-caps: 80
-  block-message: false
-
-shadow-mute-prefix: '[SM] '
-
-# If true, muted users will be unable to use /whisper /msg
-mute-stops-whispers: false
-
 filters:
   enabled: true
   case-sensitive: false
@@ -27,9 +16,3 @@ filters:
   # Set to blocked-words: [] if you want to disable the blocked words feature.
   blocked-words:
     - "pineapple doesn't belong on pizza"
-
-clear-chat:
-  # The message sent to clear chat, you probably want to leave this blank
-  message: ""
-  # How many messages will be sent in order to clear chat
-  message-count: 100

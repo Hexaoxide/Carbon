@@ -27,7 +27,7 @@ public class ShadowMuteHandler {
         return;
       }
 
-      final String prefix = carbonChat.moderationConfig().getString("shadow-mute-prefix", "[SM] ");
+      final String prefix = carbonChat.moderationSettings().shadowMutePrefix();
 
       event.format(prefix + event.format());
     });

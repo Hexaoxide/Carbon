@@ -1,9 +1,8 @@
 package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.components.standard.StringComponent;
+import com.intellectualsites.commands.arguments.standard.StringArgument;
 import com.intellectualsites.commands.context.CommandContext;
-import com.intellectualsites.commands.meta.CommandMeta;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -19,7 +18,7 @@ public class AliasedChannelCommand {
 
   private final @NonNull String commandName;
 
-  public AliasedChannelCommand(@NonNull final CommandManager<ChatUser, SimpleCommandMeta> commandManager, @NonNull final ChatChannel chatChannel) {
+  public AliasedChannelCommand(@NonNull final CommandManager<ChatUser> commandManager, @NonNull final ChatChannel chatChannel) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.chatChannel = chatChannel;
     this.commandName = chatChannel.key();
@@ -36,7 +35,7 @@ public class AliasedChannelCommand {
       commandManager.commandBuilder(this.commandName)
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.channel.message")
-        .component(StringComponent.required("message"))
+        .argument(StringArgument.required("message"))
         .handler(this::sendMessage)
         .build()
     );
