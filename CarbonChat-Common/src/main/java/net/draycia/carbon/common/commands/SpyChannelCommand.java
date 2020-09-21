@@ -1,26 +1,17 @@
 package net.draycia.carbon.common.commands;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.meta.CommandMeta;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
+import com.intellectualsites.commands.arguments.StaticArgument;
+import com.intellectualsites.commands.arguments.standard.BooleanArgument;
+import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.UserChannelSettings;
-import net.draycia.carbon.util.CarbonUtils;
-import net.draycia.carbon.util.CommandUtils;
-import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.BooleanArgument;
-import dev.jorel.commandapi.arguments.LiteralArgument;
-import net.draycia.carbon.CarbonChatBukkit;
-import org.bukkit.entity.Player;
+import net.draycia.carbon.common.utils.CommandUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.LinkedHashMap;
 
 public class SpyChannelCommand {
 
@@ -36,41 +27,41 @@ public class SpyChannelCommand {
       return;
     }
 
-    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-    channelArguments.put("channel", CarbonUtils.channelArgument());
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .withSenderType(ChatUser.class) // player
+        .withPermission("carbonchat.spy")
+        .argument(CommandUtils.channelArgument())
+        .handler(this::spyChannel)
+        .build()
+    );
 
-    new CommandAPICommand(commandSettings.name())
-      .withArguments(channelArguments)
-      .withAliases(commandSettings.aliases())
-      .withPermission(CommandPermission.fromString("carbonchat.spy"))
-      .executesPlayer(this::execute)
-      .register();
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .withSenderType(ChatUser.class) // player
+        .withPermission("carbonchat.spy")
+        .argument(StaticArgument.required("whispers"))
+        .handler(this::spyWhispers)
+        .build()
+    );
 
-    final LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
-    whisperArguments.put("channel", new LiteralArgument("whispers"));
-
-    new CommandAPICommand(commandSettings.name())
-      .withArguments(whisperArguments)
-      .withAliases(commandSettings.aliases())
-      .withPermission(CommandPermission.fromString("carbonchat.spy"))
-      .executesPlayer(this::executeWhispers)
-      .register();
-
-    final LinkedHashMap<String, Argument> everythingArguments = new LinkedHashMap<>();
-    everythingArguments.put("channel", new LiteralArgument("*"));
-    everythingArguments.put("should-spy", new BooleanArgument());
-
-    new CommandAPICommand(commandSettings.name())
-      .withArguments(everythingArguments)
-      .withAliases(commandSettings.aliases())
-      .withPermission(CommandPermission.fromString("carbonchat.spy"))
-      .executesPlayer(this::executeEverything) // lul
-      .register();
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .withSenderType(ChatUser.class) // player
+        .withPermission("carbonchat.spy")
+        .argument(StaticArgument.required("*"))
+        .argument(BooleanArgument.required("enabled"))
+        .handler(this::spyEverything)
+        .build()
+    );
   }
 
-  private void execute(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatChannel chatChannel = (ChatChannel) args[0];
-    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+  private void spyChannel(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser user = context.getSender();
+    final ChatChannel chatChannel = context.getRequired("channel");
 
     final String message;
 
@@ -88,8 +79,8 @@ public class SpyChannelCommand {
       "color", "<color:" + chatChannel.channelColor(user).toString() + ">", "channel", chatChannel.name()));
   }
 
-  private void executeWhispers(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+  private void spyWhispers(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser user = context.getSender();
 
     final String message;
 
@@ -104,10 +95,9 @@ public class SpyChannelCommand {
     user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n"));
   }
 
-  private void executeEverything(@NonNull final Player player, @NonNull final Object @NonNull [] args) {
-    final Boolean shouldSpy = (Boolean) args[0];
-
-    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+  private void spyEverything(@NonNull final CommandContext<ChatUser> context) {
+    final ChatUser user = context.getSender();
+    final Boolean shouldSpy = context.getRequired("enabled");
 
     final String message;
 

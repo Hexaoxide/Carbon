@@ -51,6 +51,8 @@ public class CarbonTranslations {
   @Setting private String spyToggledOff = "<gray>You are no longer spying on <color><channel> <gray>chat!";
   @Setting private String spyWhispersOn = "<gray>You are now spying on whispers!";
   @Setting private String spyWhispersOff = "<gray>You are no longer spying on whispers!";
+  @Setting private String spyEverythingOn = "<gray>All spying toggled on!";
+  @Setting private String spyEverythingOff = "<gray>All spying toggled off!";
   @Setting private String nicknameSet = "<green>Your nickname was set to <nickname><reset><green>!";
   @Setting private String nicknameReset = "<green>Your nickname was reset!";
   @Setting private String nowShadowMuted = "<yellow>Player <player> is now shadow muted!";
@@ -156,6 +158,14 @@ public class CarbonTranslations {
 
   public String spyWhispersOff() {
     return this.spyWhispersOff;
+  }
+
+  public String spyEverythingOn() {
+    return this.spyEverythingOn;
+  }
+
+  public String spyEverythingOff() {
+    return this.spyEverythingOff;
   }
 
   public String nicknameSet() {
