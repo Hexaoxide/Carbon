@@ -36,7 +36,7 @@ import net.draycia.carbon.common.adventure.AdventureManager;
 import net.draycia.carbon.common.commands.misc.CommandRegistrar;
 import net.draycia.carbon.common.messaging.MessageManager;
 import net.draycia.carbon.api.users.UserService;
-import net.draycia.carbon.storage.impl.JSONUserService;
+import net.draycia.carbon.common.users.JSONUserService;
 import net.draycia.carbon.storage.impl.MySQLUserService;
 import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.FunctionalityConstants;

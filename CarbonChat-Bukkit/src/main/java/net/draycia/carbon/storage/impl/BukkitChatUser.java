@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class CarbonChatUser implements ChatUser, ForwardingAudience {
+public class BukkitChatUser implements ChatUser, ForwardingAudience {
 
   @NonNull
   private final transient CarbonChatBukkit carbonChat;
@@ -51,11 +51,11 @@ public class CarbonChatUser implements ChatUser, ForwardingAudience {
   @Nullable
   private transient UUID replyTarget = null;
 
-  public CarbonChatUser() {
+  public BukkitChatUser() {
     this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
   }
 
-  public CarbonChatUser(@NonNull final UUID uuid) {
+  public BukkitChatUser(@NonNull final UUID uuid) {
     this();
     this.uuid = uuid;
   }

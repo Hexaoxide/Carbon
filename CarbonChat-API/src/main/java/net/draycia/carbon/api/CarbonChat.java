@@ -9,6 +9,8 @@ import net.draycia.carbon.api.users.UserService;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.nio.file.Path;
+
 public interface CarbonChat {
 
   LegacyComponentSerializer LEGACY =
@@ -20,6 +22,8 @@ public interface CarbonChat {
       .build();
 
   void reloadConfig();
+
+  @NonNull Path dataFolder();
 
   @NonNull UserService userService();
 

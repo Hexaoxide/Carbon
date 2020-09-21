@@ -1,5 +1,6 @@
 package net.draycia.carbon.storage.impl;
 
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import co.aikar.idb.BukkitDB;
@@ -12,7 +13,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
-import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
 import net.kyori.adventure.text.format.TextColor;
@@ -30,15 +30,15 @@ import java.util.concurrent.ExecutionException;
 public class MySQLUserService implements UserService {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
   @NonNull
   private final Database database;
   @NonNull
-  private final LoadingCache<@NonNull UUID, @NonNull CarbonChatUser> userCache = CacheBuilder.newBuilder()
+  private final LoadingCache<@NonNull UUID, @NonNull BukkitChatUser> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public MySQLUserService(@NonNull final CarbonChatBukkit carbonChat) {
+  public MySQLUserService(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     final ConfigurationSection section = this.carbonChat.getConfig().getConfigurationSection("storage");
@@ -115,12 +115,12 @@ public class MySQLUserService implements UserService {
 
   @Override
   public void validate(@NonNull final ChatUser user) {
-    this.userCache.put(user.uuid(), (CarbonChatUser) user);
+    this.userCache.put(user.uuid(), (BukkitChatUser) user);
   }
 
   @NonNull
-  private CarbonChatUser loadUser(@NonNull final UUID uuid) {
-    final CarbonChatUser user = new CarbonChatUser(uuid);
+  private BukkitChatUser loadUser(@NonNull final UUID uuid) {
+    final BukkitChatUser user = new BukkitChatUser(uuid);
 
     try (final DbStatement statement = this.database.query("SELECT * from sc_users WHERE uuid = ?;")) {
       statement.execute(uuid.toString());
@@ -177,8 +177,8 @@ public class MySQLUserService implements UserService {
     return user;
   }
 
-  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull CarbonChatUser> notification) {
-    final CarbonChatUser user = notification.getValue();
+  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull BukkitChatUser> notification) {
+    final BukkitChatUser user = notification.getValue();
 
     this.database.createTransaction(stm -> {
       // Save user general data

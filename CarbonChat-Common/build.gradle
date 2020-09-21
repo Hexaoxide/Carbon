@@ -9,5 +9,7 @@ dependencies {
     exclude group: 'io.netty'
   }
 
+  compileOnly 'com.google.code.gson:gson:2.8.0'
+
   compile 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
 }

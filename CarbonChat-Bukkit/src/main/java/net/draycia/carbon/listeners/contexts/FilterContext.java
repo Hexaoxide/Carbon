@@ -1,5 +1,6 @@
 package net.draycia.carbon.listeners.contexts;
 
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
 public class FilterContext {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
   @NonNull
   private final Map<String, List<@NonNull Pattern>> patternReplacements = new HashMap<>();
@@ -28,12 +29,12 @@ public class FilterContext {
   @NonNull
   private final List<@NonNull Pattern> blockedWords = new ArrayList<>();
 
-  public FilterContext(@NonNull final CarbonChatBukkit carbonChat) {
+  public FilterContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.reloadFilters();
 
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      if (!carbonChat.moderationConfig().getBoolean("filters.enabled")) {
+      if (!carbonChat.moderationSettings().filters().enabled()) {
         return;
       }
 

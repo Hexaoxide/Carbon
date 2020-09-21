@@ -5,23 +5,23 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
-public interface UserService {
+public interface UserService<T extends ChatUser> {
 
   @Nullable
-  ChatUser wrap(UUID uuid);
+  T wrap(UUID uuid);
 
   @Nullable
-  ChatUser wrapIfLoaded(@NonNull UUID uuid);
+  T wrapIfLoaded(@NonNull UUID uuid);
 
   @Nullable
-  ChatUser refreshUser(@NonNull UUID uuid);
+  T refreshUser(@NonNull UUID uuid);
 
   void onDisable();
 
-  void invalidate(@NonNull ChatUser user);
+  void invalidate(@NonNull T user);
 
-  void validate(@NonNull ChatUser user);
+  void validate(@NonNull T user);
 
-  @NonNull Iterable<@NonNull ChatUser> onlineUsers();
+  @NonNull Iterable<@NonNull T> onlineUsers();
 
 }
