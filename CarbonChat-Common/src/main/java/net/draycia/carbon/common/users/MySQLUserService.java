@@ -15,7 +15,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
-import net.draycia.carbon.common.utils.SQLCredentials;
+import net.draycia.carbon.api.config.SQLCredentials;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -43,9 +43,9 @@ public class MySQLUserService<T extends ChatUser> implements UserService<T> {
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public MySQLUserService(final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
-                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
-                          final @NonNull Class<? extends ChatUser> userType) {
+  public MySQLUserService(final @NonNull Class<? extends ChatUser> userType,
+                          final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
+                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier) {
     this.carbonChat = carbonChat;
     this.userType = userType;
     this.supplier = supplier;

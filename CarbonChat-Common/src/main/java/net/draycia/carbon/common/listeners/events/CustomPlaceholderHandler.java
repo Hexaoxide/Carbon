@@ -6,18 +6,16 @@ import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.kyori.event.PostOrders;
 
+import java.util.Map;
+
 public class CustomPlaceholderHandler {
 
   public CustomPlaceholderHandler() {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      final ConfigurationSection placeholders = carbonChat.getConfig().getConfigurationSection("placeholders");
-
-      for (final String key : placeholders.getKeys(false)) {
-        final String value = placeholders.getString(key);
-
-        event.format(event.format().replace("<" + key + ">", value));
+      for (final Map.Entry<String, String> entry : carbonChat.carbonSettings().customPlaceholders().entrySet()) {
+        event.format(event.format().replace("<" + entry.getKey() + ">", entry.getValue()));
       }
     });
   }

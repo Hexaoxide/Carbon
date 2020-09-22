@@ -1,13 +1,12 @@
-package net.draycia.carbon.managers;
+package net.draycia.carbon.common.channels;
 
-import net.draycia.carbon.channels.CarbonChatChannel;
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.config.ChannelSettings;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelRegisterEvent;
 import net.kyori.registry.Registry;
-import org.bukkit.configuration.ConfigurationSection;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -17,7 +16,7 @@ import java.util.Collections;
 public class ChannelManager {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
   @NonNull
   private final ChannelRegistry registry;
@@ -26,19 +25,19 @@ public class ChannelManager {
   @MonotonicNonNull
   private String defaultChannelKey = null;
 
-  public ChannelManager(final @NonNull CarbonChatBukkit carbonChat) {
+  public ChannelManager(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.registry = new ChannelRegistry();
 
     this.reload();
   }
 
-  public @Nullable ChatChannel loadChannel(final @NonNull String key, final @NonNull ConfigurationSection section) {
-    final ChatChannel channel = new CarbonChatChannel(key, this.carbonChat, section);
+  public @Nullable ChatChannel loadChannel(final @NonNull ChannelSettings settings) {
+    final ChatChannel channel = new CarbonChatChannel(this.carbonChat, settings);
 
-    final String name = section.getString("name");
+    final String name = settings.name();
 
-    if (name != null && name.length() > 16) {
+    if (name.length() > 16) {
       this.carbonChat.logger().error("Channel name [" + name + "] too long! Max length: 16.");
       this.carbonChat.logger().error("Skipping channel, please check your settings!");
       return null;
@@ -85,11 +84,8 @@ public class ChannelManager {
   }
 
   private void reload() {
-    for (final String key : this.carbonChat.getConfig().getConfigurationSection("channels").getKeys(false)) {
-      final ConfigurationSection section =
-        this.carbonChat.getConfig().getConfigurationSection("channels").getConfigurationSection(key);
-
-      final ChatChannel channel = this.loadChannel(key, section);
+    for (final ChannelSettings settings : this.carbonChat.carbonSettings().channelSettings()) {
+      final ChatChannel channel = this.loadChannel(settings);
 
       if (channel != null) {
         this.registerChannel(channel);

@@ -1,4 +1,4 @@
-package net.draycia.carbon.storage.impl;
+package net.draycia.carbon.storage;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;

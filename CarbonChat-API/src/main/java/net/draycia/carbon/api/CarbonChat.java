@@ -4,6 +4,7 @@ import net.draycia.carbon.api.adventure.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
+import net.draycia.carbon.api.config.CarbonSettings;
 import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
@@ -20,7 +21,7 @@ public interface CarbonChat {
     LegacyComponentSerializer.builder()
       .extractUrls()
       .hexColors()
-      .character('§')
+      .character(LegacyComponentSerializer.SECTION_CHAR)
       .useUnusualXRepeatedCharacterHexFormat()
       .build();
 
@@ -35,6 +36,8 @@ public interface CarbonChat {
   @NonNull MessageProcessor messageProcessor();
 
   @NonNull MessageService messageService();
+
+  @NonNull CarbonSettings carbonSettings();
 
   @NonNull ChannelRegistry channelRegistry();
 

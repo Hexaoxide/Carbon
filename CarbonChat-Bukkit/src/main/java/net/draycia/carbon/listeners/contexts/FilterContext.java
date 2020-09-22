@@ -2,13 +2,10 @@ package net.draycia.carbon.listeners.contexts;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.Context;
 import net.kyori.event.PostOrders;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
@@ -34,9 +31,9 @@ public class FilterContext {
     this.reloadFilters();
 
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      if (!carbonChat.moderationSettings().filters().enabled()) {
-        return;
-      }
+      //      if (!carbonChat.moderationSettings().filters().enabled()) {
+      //        return;
+      //      }
 
       if (event.user().permissible() && event.user().hasPermission("carbonchat.filter.exempt")) {
         return;
@@ -75,32 +72,32 @@ public class FilterContext {
     this.patternReplacements.clear();
     this.blockedWords.clear();
 
-    final FileConfiguration config = this.carbonChat.moderationConfig();
-    final ConfigurationSection filters = config.getConfigurationSection("filters.filters");
-
-    if (filters != null) {
-      for (final String replacement : filters.getKeys(false)) {
-        final List<Pattern> patterns = new ArrayList<>();
-
-        for (final String word : filters.getStringList(replacement)) {
-          if (this.carbonChat.moderationConfig().getBoolean("filters.case-sensitive")) {
-            patterns.add(Pattern.compile(word));
-          } else {
-            patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
-          }
-        }
-
-        this.patternReplacements.put(replacement, patterns);
-      }
-    }
-
-    for (final String replacement : config.getStringList("filters.blocked-words")) {
-      if (this.carbonChat.moderationConfig().getBoolean("filters.case-sensitive")) {
-        this.blockedWords.add(Pattern.compile(replacement));
-      } else {
-        this.blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
-      }
-    }
+    //    final FileConfiguration config = this.carbonChat.moderationConfig();
+    //    final ConfigurationSection filters = config.getConfigurationSection("filters.filters");
+    //
+    //    if (filters != null) {
+    //      for (final String replacement : filters.getKeys(false)) {
+    //        final List<Pattern> patterns = new ArrayList<>();
+    //
+    //        for (final String word : filters.getStringList(replacement)) {
+    //          if (this.carbonChat.moderationConfig().getBoolean("filters.case-sensitive")) {
+    //            patterns.add(Pattern.compile(word));
+    //          } else {
+    //            patterns.add(Pattern.compile(word, Pattern.CASE_INSENSITIVE));
+    //          }
+    //        }
+    //
+    //        this.patternReplacements.put(replacement, patterns);
+    //      }
+    //    }
+    //
+    //    for (final String replacement : config.getStringList("filters.blocked-words")) {
+    //      if (this.carbonChat.moderationConfig().getBoolean("filters.case-sensitive")) {
+    //        this.blockedWords.add(Pattern.compile(replacement));
+    //      } else {
+    //        this.blockedWords.add(Pattern.compile(replacement, Pattern.CASE_INSENSITIVE));
+    //      }
+    //    }
   }
 
   private boolean channelUsesFilter(final @NonNull ChatChannel chatChannel) {

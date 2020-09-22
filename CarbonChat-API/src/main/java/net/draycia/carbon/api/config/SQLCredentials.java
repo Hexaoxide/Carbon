@@ -1,4 +1,4 @@
-package net.draycia.carbon.common.utils;
+package net.draycia.carbon.api.config;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 

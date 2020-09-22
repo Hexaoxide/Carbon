@@ -70,7 +70,7 @@ public interface ChatChannel extends ForwardingAudience {
 
   @Nullable String messagePrefix();
 
-  @Nullable String aliases();
+  @Nullable List<String> aliases();
 
   @Nullable String switchMessage();
 

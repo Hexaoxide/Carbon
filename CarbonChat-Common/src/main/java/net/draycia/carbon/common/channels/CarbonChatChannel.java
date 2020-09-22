@@ -1,8 +1,8 @@
-package net.draycia.carbon.channels;
+package net.draycia.carbon.common.channels;
 
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.common.channels.ChannelSettings;
-import net.draycia.carbon.util.CarbonUtils;
+import net.draycia.carbon.api.config.ChannelSettings;
+import net.draycia.carbon.common.utils.ColorUtils;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
@@ -30,17 +30,12 @@ import java.util.regex.Pattern;
 public class CarbonChatChannel implements ChatChannel {
 
   @NonNull
-  private final String key;
-
-  @NonNull
   private final CarbonChat carbonChat;
 
   @NonNull
   private final ChannelSettings settings;
 
-  public CarbonChatChannel(final @NonNull String key, final @NonNull CarbonChat carbonChat,
-                           @Nullable final ChannelSettings settings) {
-    this.key = key;
+  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, @Nullable final ChannelSettings settings) {
     this.carbonChat = carbonChat;
     this.settings = settings;
   }
@@ -155,11 +150,11 @@ public class CarbonChatChannel implements ChatChannel {
         "displayname", displayName,
         "color", "<" + targetColor.asHexString() + ">",
         "phase", Long.toString(System.currentTimeMillis() % 25),
-        "server", this.carbonChat.getConfig().getString("server-name", "Server"),
+        "server", this.carbonChat.carbonSettings().serverName(),
         "message", formatEvent.message());
 
       if (this.isUserSpying(user, target)) {
-        final String prefix = this.carbonChat.getConfig().getString("spy-prefix");
+        final String prefix = this.carbonChat.carbonSettings().spyPrefix();
 
         formatComponent = (TextComponent) MiniMessage.get().parse(prefix, "color",
           targetColor.asHexString()).append(formatComponent);
@@ -185,7 +180,7 @@ public class CarbonChatChannel implements ChatChannel {
       "displayname", displayName,
       "color", "<" + targetColor.asHexString() + ">",
       "phase", Long.toString(System.currentTimeMillis() % 25),
-      "server", this.carbonChat.getConfig().getString("server-name", "Server"),
+      "server", this.carbonChat.carbonSettings().serverName(),
       "message", consoleFormatEvent.message());
 
     final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleFormat,
@@ -346,11 +341,13 @@ public class CarbonChatChannel implements ChatChannel {
 
     final String input = this.settings().color();
 
-    final TextColor color = CarbonUtils.parseColor(user, input);
+    final TextColor color = ColorUtils.parseColor(user, input);
 
-    if (color == null && this.carbonChat.getConfig().getBoolean("show-tips")) {
-      this.carbonChat.logger().error("Tip: Channel color found (" + input + ") is invalid!");
-      this.carbonChat.logger().error("Falling back to #FFFFFF");
+    if (color == null) {
+      if (this.carbonChat.carbonSettings().showTips()) {
+        this.carbonChat.logger().error("Tip: Channel color found (" + input + ") is invalid!");
+        this.carbonChat.logger().error("Falling back to #FFFFFF");
+      }
 
       return NamedTextColor.WHITE;
     }
@@ -478,7 +475,7 @@ public class CarbonChatChannel implements ChatChannel {
 
   @Override
   @Nullable
-  public String aliases() {
+  public List<String> aliases() {
     return this.settings().aliases();
   }
 
@@ -491,7 +488,7 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   @NonNull
   public String key() {
-    return this.key;
+    return this.settings().key();
   }
 
 }

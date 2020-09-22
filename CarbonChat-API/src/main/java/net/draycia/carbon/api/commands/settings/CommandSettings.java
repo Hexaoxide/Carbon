@@ -4,7 +4,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
 
-import java.util.List;
 import java.util.Set;
 
 @ConfigSerializable
