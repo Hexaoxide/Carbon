@@ -1,5 +1,5 @@
 ---
-name: 🐞 Bug report
+name: "\U0001F41E Bug report"
 about: Describe a bug in Carbon
 title: "[Bug]"
 labels: unconfirmed bug
