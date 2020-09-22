@@ -47,7 +47,7 @@ public class ChannelCommand {
     );
   }
 
-  private void channel(@NonNull final CommandContext<ChatUser> context) {
+  private void channel(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final ChatChannel channel = context.getRequired("channel");
 
@@ -63,7 +63,7 @@ public class ChannelCommand {
     user.selectedChannel(channel);
   }
 
-  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
+  private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final ChatChannel channel = context.getRequired("channel");
     final String message = context.getRequired("message");

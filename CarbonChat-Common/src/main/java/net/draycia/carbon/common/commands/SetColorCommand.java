@@ -15,7 +15,7 @@ public class SetColorCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SetColorCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public SetColorCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("setcolor");

@@ -15,7 +15,7 @@ public class ReplyCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ReplyCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ReplyCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("reply");
@@ -35,7 +35,7 @@ public class ReplyCommand {
     );
   }
 
-  private void reply(@NonNull final CommandContext<ChatUser> context) {
+  private void reply(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final String input = context.getRequired("message");
 

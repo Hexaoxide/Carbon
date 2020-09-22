@@ -33,7 +33,7 @@ public class BungeeMessageService implements MessageService {
   @NonNull
   private final UUID serverUUID = UUID.randomUUID();
 
-  public BungeeMessageService(@NonNull final CarbonChatBukkit carbonChat) {
+  public BungeeMessageService(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     this.carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
@@ -65,7 +65,7 @@ public class BungeeMessageService implements MessageService {
     });
   }
 
-  private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
+  private void receiveMessage(final @NonNull UUID uuid, final @NonNull String key, final @NonNull ByteArrayDataInput value) {
     final ChatUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
@@ -84,23 +84,23 @@ public class BungeeMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
+  public void registerUserMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
     this.userLoadedListeners.put(key, listener);
   }
 
   @Override
-  public void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
+  public void registerUUIDMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
     this.userNotLoadedListeners.put(key, listener);
   }
 
   @Override
-  public void unregisterMessageListener(@NonNull final String key) {
+  public void unregisterMessageListener(final @NonNull String key) {
     this.userLoadedListeners.remove(key);
     this.userNotLoadedListeners.remove(key);
   }
 
   @Override
-  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid, @NonNull final Consumer<ByteArrayDataOutput> consumer) {
+  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid, final @NonNull Consumer<ByteArrayDataOutput> consumer) {
     final ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
     msg.writeLong(this.serverUUID.getMostSignificantBits());

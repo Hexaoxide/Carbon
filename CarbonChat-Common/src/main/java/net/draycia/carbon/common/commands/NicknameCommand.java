@@ -15,7 +15,7 @@ public class NicknameCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public NicknameCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public NicknameCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("nickname");
@@ -47,7 +47,7 @@ public class NicknameCommand {
     );
   }
 
-  private void nicknameSelf(@NonNull final CommandContext<ChatUser> context) {
+  private void nicknameSelf(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     String nickname = context.getRequired("nickname");
 
@@ -70,7 +70,7 @@ public class NicknameCommand {
       "user", user.name()));
   }
 
-  private void nicknameOther(@NonNull final CommandContext<ChatUser> context) {
+  private void nicknameOther(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser target = context.getRequired("user");
     String nickname = context.getRequired("nickname");
 

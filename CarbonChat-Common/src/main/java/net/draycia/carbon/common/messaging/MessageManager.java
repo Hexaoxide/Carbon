@@ -24,7 +24,7 @@ public class MessageManager {
   @NonNull
   private final GsonComponentSerializer gsonSerializer;
 
-  public MessageManager(final @NonNull CarbonChat carbonChat, @NonNull final MessageService messageService) {
+  public MessageManager(final @NonNull CarbonChat carbonChat, final @NonNull MessageService messageService) {
     this.carbonChat = carbonChat;
     this.messageService = messageService;
     this.gsonSerializer = this.carbonChat.messageProcessor().audiences().gsonSerializer();
@@ -123,8 +123,8 @@ public class MessageManager {
     return this.messageService;
   }
 
-  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid,
-                          @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
+  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid,
+                          final @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
     this.messageService().sendMessage(key, uuid, consumer);
   }
 

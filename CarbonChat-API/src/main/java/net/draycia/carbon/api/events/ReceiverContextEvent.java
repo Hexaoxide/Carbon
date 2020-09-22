@@ -9,9 +9,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ReceiverContextEvent implements CarbonEvent, Cancellable {
 
-  private @NonNull final ChatChannel channel;
-  private @NonNull final ChatUser sender;
-  private @NonNull final ChatUser recipient;
+  private final @NonNull ChatChannel channel;
+  private final @NonNull ChatUser sender;
+  private final @NonNull ChatUser recipient;
   private boolean cancelled = false;
 
   public ReceiverContextEvent(final @NonNull ChatChannel channel, final @NonNull ChatUser sender, final @NonNull ChatUser recipient) {
@@ -20,7 +20,7 @@ public class ReceiverContextEvent implements CarbonEvent, Cancellable {
     this.recipient = recipient;
   }
 
-  public Context context(@NonNull final String key) {
+  public Context context(final @NonNull String key) {
     return this.channel.context(key);
   }
 

@@ -20,9 +20,9 @@ public class PrivateMessageEvent implements CarbonEvent, Cancellable {
   private final String message;
   private boolean cancelled = false;
 
-  public PrivateMessageEvent(@NonNull final ChatUser sender, @NonNull final ChatUser target,
-                             @NonNull final Component senderComponent, @NonNull final Component targetComponent,
-                             @NonNull final String message) {
+  public PrivateMessageEvent(final @NonNull ChatUser sender, final @NonNull ChatUser target,
+                             final @NonNull Component senderComponent, final @NonNull Component targetComponent,
+                             final @NonNull String message) {
 
     this.sender = sender;
     this.target = target;

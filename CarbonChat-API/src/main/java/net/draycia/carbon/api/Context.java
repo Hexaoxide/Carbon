@@ -6,10 +6,10 @@ import java.util.List;
 
 public class Context {
 
-  private @NonNull final String key;
-  private @NonNull final Object value;
+  private final @NonNull String key;
+  private final @NonNull Object value;
 
-  public Context(@NonNull final String key, @NonNull final Object value) {
+  public Context(final @NonNull String key, final @NonNull Object value) {
     this.key = key;
     this.value = value;
   }

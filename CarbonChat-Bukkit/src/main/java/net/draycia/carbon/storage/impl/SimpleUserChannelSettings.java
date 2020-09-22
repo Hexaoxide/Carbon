@@ -24,7 +24,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   @MonotonicNonNull // @NonNull but not initialised in all constructors.
   private String channel;
 
-  public SimpleUserChannelSettings(@NonNull final UUID uuid, @NonNull final String channel) {
+  public SimpleUserChannelSettings(final @NonNull UUID uuid, final @NonNull String channel) {
     this.uuid = uuid;
     this.channel = channel;
   }
@@ -44,7 +44,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     this.spying = spying;
 
     if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("spying-channel", this.uuid, byteArray -> {
+      this.carbonChat.messageService().sendMessage("spying-channel", this.uuid, byteArray -> {
         byteArray.writeUTF(this.channel);
         byteArray.writeBoolean(spying);
       });
@@ -61,7 +61,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     this.ignored = ignored;
 
     if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("ignoring-channel", this.uuid, byteArray -> {
+      this.carbonChat.messageService().sendMessage("ignoring-channel", this.uuid, byteArray -> {
         byteArray.writeUTF(this.channel);
         byteArray.writeBoolean(ignored);
       });
@@ -87,7 +87,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     }
 
     if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("channel-color", this.uuid, byteArray -> {
+      this.carbonChat.messageService().sendMessage("channel-color", this.uuid, byteArray -> {
         byteArray.writeUTF(color.asHexString());
       });
     }

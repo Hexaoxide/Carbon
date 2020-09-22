@@ -32,13 +32,14 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
   private final @NonNull Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private final @NonNull Type userType;
   private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+
   private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public JSONUserService(@NonNull final Class<? extends ChatUser> userType,
-                         @NonNull final CarbonChat carbonChat,
-                         @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier) {
+  public JSONUserService(final @NonNull Class<? extends ChatUser> userType,
+                         final @NonNull CarbonChat carbonChat,
+                         final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier) {
     this.userType = userType;
     this.carbonChat = carbonChat;
     this.supplier = supplier;
@@ -61,7 +62,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
 
   @Override
   @Nullable
-  public T wrap(@NonNull final UUID uuid) {
+  public T wrap(final @NonNull UUID uuid) {
     try {
       return this.userCache.get(uuid);
     } catch (final ExecutionException exception) {
@@ -72,25 +73,25 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
 
   @Override
   @Nullable
-  public T wrapIfLoaded(@NonNull final UUID uuid) {
+  public T wrapIfLoaded(final @NonNull UUID uuid) {
     return this.userCache.getIfPresent(uuid);
   }
 
   @Override
   @Nullable
-  public T refreshUser(@NonNull final UUID uuid) {
+  public T refreshUser(final @NonNull UUID uuid) {
     this.userCache.invalidate(uuid);
 
     return this.wrap(uuid);
   }
 
   @Override
-  public void invalidate(@NonNull final T user) {
+  public void invalidate(final @NonNull T user) {
     this.userCache.invalidate(user.uuid());
   }
 
   @Override
-  public void validate(@NonNull final T user) {
+  public void validate(final @NonNull T user) {
     this.userCache.put(user.uuid(), user);
   }
 
@@ -100,7 +101,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
   }
 
   @Nullable
-  private T loadUser(@NonNull final UUID uuid) {
+  private T loadUser(final @NonNull UUID uuid) {
     final File userFile = new File(this.carbonChat.dataFolder().toFile(), "users/" + uuid.toString() + ".json");
     this.ensureFileExists(userFile);
 
@@ -123,7 +124,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
     return null;
   }
 
-  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull T> notification) {
+  private void saveUser(final @NonNull RemovalNotification<@NonNull UUID, @NonNull T> notification) {
     final File userFile = new File(this.carbonChat.dataFolder().toFile(), "users/" + notification.getKey().toString() + ".json");
     this.ensureFileExists(userFile);
 
@@ -134,7 +135,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
     }
   }
 
-  private void ensureFileExists(@NonNull final File file) {
+  private void ensureFileExists(final @NonNull File file) {
     if (!file.getParentFile().exists()) {
       file.getParentFile().mkdirs();
     }

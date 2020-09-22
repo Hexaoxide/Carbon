@@ -47,7 +47,7 @@ public final class WorldGuardContext {
     });
   }
 
-  private boolean isInRegionOrRegions(@NonNull final Context context, @NonNull final Player player) {
+  private boolean isInRegionOrRegions(final @NonNull Context context, final @NonNull Player player) {
     if (context.isString()) {
       return this.isInRegion(context.asString(), player);
     }
@@ -63,7 +63,7 @@ public final class WorldGuardContext {
     return false;
   }
 
-  public boolean testContext(@NonNull final Player sender, @NonNull final Player target, @NonNull final Context context) {
+  public boolean testContext(final @NonNull Player sender, final @NonNull Player target, final @NonNull Context context) {
     boolean user1InRegion = false;
     boolean user2InRegion = false;
 
@@ -89,7 +89,7 @@ public final class WorldGuardContext {
     return user1InRegion && user2InRegion;
   }
 
-  public boolean isInSameRegion(@NonNull final Player user1, @NonNull final Player user2) {
+  public boolean isInSameRegion(final @NonNull Player user1, final @NonNull Player user2) {
     final Location user1Location = BukkitAdapter.adapt(user1.getLocation());
     final Location user2Location = BukkitAdapter.adapt(user2.getLocation());
 
@@ -108,7 +108,7 @@ public final class WorldGuardContext {
     return false;
   }
 
-  public boolean isInRegion(@NonNull final String region, @NonNull final Player player) {
+  public boolean isInRegion(final @NonNull String region, final @NonNull Player player) {
     final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     final World world = BukkitAdapter.adapt(player.getWorld());
     final ProtectedRegion protection = container.get(world).getRegion(region);
@@ -116,7 +116,7 @@ public final class WorldGuardContext {
     return this.isInRegion(protection, player);
   }
 
-  public boolean isInRegion(@NonNull final ProtectedRegion region, @NonNull final Player player) {
+  public boolean isInRegion(final @NonNull ProtectedRegion region, final @NonNull Player player) {
     final org.bukkit.Location location = player.getLocation();
 
     return region.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ());

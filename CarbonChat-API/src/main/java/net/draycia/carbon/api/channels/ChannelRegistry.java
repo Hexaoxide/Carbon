@@ -18,7 +18,7 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
   private ChatChannel defaultChannel = null;
 
   @Override
-  public @NonNull ChatChannel register(@NonNull final String key, @NonNull final ChatChannel value) {
+  public @NonNull ChatChannel register(final @NonNull String key, final @NonNull ChatChannel value) {
     this.registry.putIfAbsent(key, value);
 
     if (this.defaultChannel == null && value.isDefault()) {
@@ -29,16 +29,16 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
   }
 
   @Override
-  public @Nullable ChatChannel get(@NonNull final String key) {
+  public @Nullable ChatChannel get(final @NonNull String key) {
     return this.registry.get(key);
   }
 
-  public @Nullable ChatChannel channelOrDefault(@NonNull final String key) {
+  public @Nullable ChatChannel channelOrDefault(final @NonNull String key) {
     return this.registry.getOrDefault(key, this.defaultChannel());
   }
 
   @Override
-  public @Nullable String key(@NonNull final ChatChannel value) {
+  public @Nullable String key(final @NonNull ChatChannel value) {
     return null;
   }
 

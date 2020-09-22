@@ -22,13 +22,13 @@ public class BukkitChatListener implements Listener {
   @NonNull
   private final CarbonChatBukkit carbonChat;
 
-  public BukkitChatListener(@NonNull final CarbonChatBukkit carbonChat) {
+  public BukkitChatListener(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-  public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
+  public void onPlayerchat(final @NonNull AsyncPlayerChatEvent event) {
     final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     ChatChannel channel = user.selectedChannel();
 
@@ -92,9 +92,9 @@ public class BukkitChatListener implements Listener {
         this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
 
         if (this.carbonChat.getConfig().getBoolean("show-tips")) {
-          this.carbonChat.getLogger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");
-          this.carbonChat.getLogger().info("Tip: To 'solve' this, do a binary search and see which plugin is triggering");
-          this.carbonChat.getLogger().info("Tip: sync chat events and causing this, and let that plugin author know.");
+          this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");
+          this.carbonChat.logger().info("Tip: To 'solve' this, do a binary search and see which plugin is triggering");
+          this.carbonChat.logger().info("Tip: sync chat events and causing this, and let that plugin author know.");
         }
       });
     }

@@ -66,7 +66,7 @@ public final class CarbonUtils {
   }
 
   @NonNull
-  public static Component createComponent(@NonNull final Player player) {
+  public static Component createComponent(final @NonNull Player player) {
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
       return net.kyori.adventure.text.TextComponent.empty();
     }

@@ -26,32 +26,32 @@ public class ChannelManager {
   @MonotonicNonNull
   private String defaultChannelKey = null;
 
-  public ChannelManager(@NonNull final CarbonChatBukkit carbonChat) {
+  public ChannelManager(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
     this.registry = new ChannelRegistry();
 
     this.reload();
   }
 
-  public @Nullable ChatChannel loadChannel(@NonNull final String key, @NonNull final ConfigurationSection section) {
+  public @Nullable ChatChannel loadChannel(final @NonNull String key, final @NonNull ConfigurationSection section) {
     final ChatChannel channel = new CarbonChatChannel(key, this.carbonChat, section);
 
     final String name = section.getString("name");
 
     if (name != null && name.length() > 16) {
-      this.carbonChat.getLogger().warning("Channel name [" + name + "] too long! Max length: 16.");
-      this.carbonChat.getLogger().warning("Skipping channel, please check your settings!");
+      this.carbonChat.logger().error("Channel name [" + name + "] too long! Max length: 16.");
+      this.carbonChat.logger().error("Skipping channel, please check your settings!");
       return null;
     }
 
     return channel;
   }
 
-  public void registerChannel(@NonNull final ChatChannel channel) {
+  public void registerChannel(final @NonNull ChatChannel channel) {
     this.registry().register(channel.key(), channel);
 
     if (channel.isDefault() && this.defaultChannelKey == null) {
-      this.carbonChat.getLogger().info("Default channel registered: " + channel.name());
+      this.carbonChat.logger().info("Default channel registered: " + channel.name());
       this.defaultChannelKey = channel.key();
     }
 
@@ -101,7 +101,7 @@ public class ChannelManager {
           prefix = "";
         }
 
-        this.carbonChat.getLogger().info("Registering channel: " + prefix + channel.name());
+        this.carbonChat.logger().info("Registering channel: " + prefix + channel.name());
       }
     }
   }

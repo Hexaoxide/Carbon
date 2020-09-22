@@ -5,6 +5,7 @@ import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -33,7 +34,16 @@ public interface ChatChannel extends ForwardingAudience {
    * @param group The group.
    * @return The string format for the specified group.
    */
+  @Nullable String format(@NonNull Group group);
+
+  /**
+   * Gets the string format for the specified group.
+   * @param group The group.
+   * @return The string format for the specified group.
+   */
   @Nullable String format(@NonNull String group);
+
+
 
   /**
    * If this channel is the channel players get when they join for the first time.

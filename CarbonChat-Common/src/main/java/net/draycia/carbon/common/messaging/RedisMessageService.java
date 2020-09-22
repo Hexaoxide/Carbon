@@ -10,6 +10,7 @@ import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.common.utils.RedisCredentials;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Base64;
@@ -39,7 +40,7 @@ public class RedisMessageService implements MessageService {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public RedisMessageService(@NonNull final CarbonChat carbonChat, @NonNull final RedisCredentials credentials) {
+  public RedisMessageService(final @NonNull CarbonChat carbonChat, final @NonNull RedisCredentials credentials) {
     this.carbonChat = carbonChat;
 
     final RedisURI.Builder builder = RedisURI.Builder.redis(credentials.host(), credentials.port())
@@ -72,7 +73,7 @@ public class RedisMessageService implements MessageService {
     });
   }
 
-  private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
+  private void receiveMessage(final @NonNull UUID uuid, final @NonNull String key, final @NonNull ByteArrayDataInput value) {
     final ChatUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
@@ -91,19 +92,19 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
+  public void registerUserMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
     this.userLoadedListeners.put(key, listener);
     this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
+  public void registerUUIDMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
     this.userNotLoadedListeners.put(key, listener);
     this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void unregisterMessageListener(@NonNull final String key) {
+  public void unregisterMessageListener(final @NonNull String key) {
     this.userLoadedListeners.remove(key);
     this.userNotLoadedListeners.remove(key);
 
@@ -111,7 +112,7 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid, @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
+  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid, final @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
     final ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
     msg.writeLong(this.serverUUID.getMostSignificantBits());

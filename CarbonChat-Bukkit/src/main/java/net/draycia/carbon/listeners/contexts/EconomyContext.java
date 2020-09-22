@@ -16,7 +16,7 @@ public class EconomyContext {
   @NonNull
   private final Economy economy;
 
-  public EconomyContext(@NonNull final CarbonChatBukkit carbonChat) {
+  public EconomyContext(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
     this.economy = this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 

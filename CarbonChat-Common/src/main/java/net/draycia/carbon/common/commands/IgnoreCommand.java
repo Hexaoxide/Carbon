@@ -15,7 +15,7 @@ public class IgnoreCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public IgnoreCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public IgnoreCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("ignore");
@@ -35,7 +35,7 @@ public class IgnoreCommand {
     );
   }
 
-  private void ignoreUser(@NonNull final CommandContext<ChatUser> context) {
+  private void ignoreUser(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser sender = context.getSender();
     final ChatUser targetUser = context.getRequired("user");
 

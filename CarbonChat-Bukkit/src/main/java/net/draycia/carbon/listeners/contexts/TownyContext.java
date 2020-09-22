@@ -27,7 +27,7 @@ public final class TownyContext implements Listener {
   @NonNull
   private final CarbonChatBukkit carbonChat;
 
-  public TownyContext(@NonNull final CarbonChatBukkit carbonChat) {
+  public TownyContext(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
@@ -94,7 +94,7 @@ public final class TownyContext implements Listener {
     }
   }
 
-  public boolean isInTown(@NonNull final ChatUser user) {
+  public boolean isInTown(final @NonNull ChatUser user) {
     try {
       return TownyAPI.getInstance().getDataSource().getResident(Bukkit.getPlayer(user.uuid()).getName()).hasTown();
     } catch (final NotRegisteredException exception) {
@@ -104,7 +104,7 @@ public final class TownyContext implements Listener {
     return false;
   }
 
-  public boolean isInSameTown(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
+  public boolean isInSameTown(final @NonNull ChatUser user1, final @NonNull ChatUser user2) {
     if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }

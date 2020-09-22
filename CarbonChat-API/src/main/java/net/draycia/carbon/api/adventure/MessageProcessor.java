@@ -7,7 +7,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface MessageProcessor {
 
-  @NonNull Component processMessage(@Nullable final String input, @NonNull final String @NonNull ... placeholders);
+  @NonNull Component processMessage(@Nullable final String input, final @NonNull String @NonNull ... placeholders);
 
   @NonNull AudienceProvider audiences();
 

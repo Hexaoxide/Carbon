@@ -14,12 +14,12 @@ public class ChannelRegisterEvent implements CarbonEvent {
   @NonNull
   private final Registry<String, ChatChannel> registry;
 
-  public ChannelRegisterEvent(@NonNull final List<@NonNull ChatChannel> registeredChannels, @NonNull final Registry<String, ChatChannel> registry) {
+  public ChannelRegisterEvent(final @NonNull List<@NonNull ChatChannel> registeredChannels, final @NonNull Registry<String, ChatChannel> registry) {
     this.registeredChannels = registeredChannels;
     this.registry = registry;
   }
 
-  public void register(@NonNull final ChatChannel chatChannel) {
+  public void register(final @NonNull ChatChannel chatChannel) {
     this.registry.register(chatChannel.key(), chatChannel);
   }
 

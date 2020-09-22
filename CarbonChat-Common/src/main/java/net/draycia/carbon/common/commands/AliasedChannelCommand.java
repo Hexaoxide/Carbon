@@ -18,7 +18,7 @@ public class AliasedChannelCommand {
 
   private final @NonNull String commandName;
 
-  public AliasedChannelCommand(@NonNull final CommandManager<ChatUser> commandManager, @NonNull final ChatChannel chatChannel) {
+  public AliasedChannelCommand(final @NonNull CommandManager<ChatUser> commandManager, final @NonNull ChatChannel chatChannel) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.chatChannel = chatChannel;
     this.commandName = chatChannel.key();
@@ -41,7 +41,7 @@ public class AliasedChannelCommand {
     );
   }
 
-  private void channel(@NonNull final CommandContext<ChatUser> context) {
+  private void channel(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
@@ -56,7 +56,7 @@ public class AliasedChannelCommand {
     user.selectedChannel(this.chatChannel());
   }
 
-  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
+  private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
     context.<String>get("message").ifPresent(message -> {
       final Component component = this.chatChannel().sendMessage(context.getSender(), message, false);
 

@@ -14,12 +14,12 @@ public class CommandSettings {
   private final boolean enabled;
 
   @Setting
-  private @NonNull final String name;
+  private final @NonNull String name;
 
   @Setting
-  private @NonNull final Set<@NonNull String> aliases;
+  private final @NonNull Set<@NonNull String> aliases;
 
-  public CommandSettings(final boolean enabled, @NonNull final String name, @NonNull final Set<@NonNull String> aliases) {
+  public CommandSettings(final boolean enabled, final @NonNull String name, final @NonNull Set<@NonNull String> aliases) {
     this.enabled = enabled;
     this.name = name;
     this.aliases = aliases;

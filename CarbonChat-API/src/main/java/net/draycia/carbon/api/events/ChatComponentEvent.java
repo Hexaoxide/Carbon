@@ -22,9 +22,9 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
   @NonNull
   private final String originalMessage;
 
-  public ChatComponentEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
-                            @NonNull final ChatChannel chatChannel, @NonNull final TextComponent component,
-                            @NonNull final String originalMessage) {
+  public ChatComponentEvent(final @NonNull ChatUser sender, @Nullable final ChatUser target,
+                            final @NonNull ChatChannel chatChannel, final @NonNull TextComponent component,
+                            final @NonNull String originalMessage) {
 
     this.sender = sender;
     this.target = target;
@@ -58,7 +58,7 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     return this.chatChannel;
   }
 
-  public void channel(@NonNull final ChatChannel chatChannel) {
+  public void channel(final @NonNull ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
@@ -67,7 +67,7 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     return this.component;
   }
 
-  public void component(@NonNull final TextComponent component) {
+  public void component(final @NonNull TextComponent component) {
     this.component = component;
   }
 

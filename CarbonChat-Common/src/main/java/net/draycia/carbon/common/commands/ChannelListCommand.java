@@ -22,7 +22,7 @@ public class ChannelListCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChannelListCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ChannelListCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("channellist");
@@ -51,11 +51,11 @@ public class ChannelListCommand {
     );
   }
 
-  public void toggleSelf(@NonNull final CommandContext<ChatUser> context) {
+  public void toggleSelf(final @NonNull CommandContext<ChatUser> context) {
     this.listAndSend(context.getSender(), context.getSender(), this.carbonChat.channelRegistry().iterator());
   }
 
-  public void toggleOther(@NonNull final CommandContext<ChatUser> context) {
+  public void toggleOther(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser sender = context.getSender();
     final ChatUser user = context.getRequired("user");
 
@@ -69,8 +69,8 @@ public class ChannelListCommand {
     this.listAndSend(sender, user, allChannels);
   }
 
-  private void listAndSend(@NonNull final ChatUser sender, @NonNull final ChatUser user,
-                           @NonNull final Iterator<ChatChannel> allChannels) {
+  private void listAndSend(final @NonNull ChatUser sender, final @NonNull ChatUser user,
+                           final @NonNull Iterator<ChatChannel> allChannels) {
     ChatChannel channel;
     final List<ChatChannel> canSee = new ArrayList<>();
     final List<ChatChannel> cannotSee = new ArrayList<>();
@@ -110,7 +110,7 @@ public class ChannelListCommand {
     }
   }
 
-  private void makeList(@NonNull final Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
+  private void makeList(final @NonNull Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
     final String listSeparator = this.carbonChat.translations().channelListSeparator();
     // TODO: Larry, why did you double assign the listSeparatorComponent?
     final Component listSeparatorComponent = TextComponent.of(listSeparator);

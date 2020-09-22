@@ -19,8 +19,8 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
   @NonNull
   private String message;
 
-  public PreChatFormatEvent(@NonNull final ChatUser user, @NonNull final ChatChannel chatChannel,
-                            @Nullable final String format, @NonNull final String message) {
+  public PreChatFormatEvent(final @NonNull ChatUser user, final @NonNull ChatChannel chatChannel,
+                            @Nullable final String format, final @NonNull String message) {
 
     this.user = user;
     this.chatChannel = chatChannel;
@@ -48,7 +48,7 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
     return this.chatChannel;
   }
 
-  public void channel(@NonNull final ChatChannel chatChannel) {
+  public void channel(final @NonNull ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
@@ -66,7 +66,7 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
     return this.message;
   }
 
-  public void message(@NonNull final String message) {
+  public void message(final @NonNull String message) {
     this.message = message;
   }
 

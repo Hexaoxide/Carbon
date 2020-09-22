@@ -15,7 +15,7 @@ public class MuteCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public MuteCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public MuteCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("mute");
@@ -35,7 +35,7 @@ public class MuteCommand {
     );
   }
 
-  private void mute(@NonNull final CommandContext<ChatUser> context) {
+  private void mute(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final ChatUser target = context.getRequired("user");
 

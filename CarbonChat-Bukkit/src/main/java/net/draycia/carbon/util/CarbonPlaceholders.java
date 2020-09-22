@@ -13,7 +13,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
   @NonNull
   private final CarbonChatBukkit carbonChat;
 
-  public CarbonPlaceholders(@NonNull final CarbonChatBukkit carbonChat) {
+  public CarbonPlaceholders(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
@@ -42,7 +42,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
 
   @Override
   @Nullable
-  public String onPlaceholderRequest(@NonNull final Player player, @NonNull final String identifier) {
+  public String onPlaceholderRequest(final @NonNull Player player, final @NonNull String identifier) {
     final String key = identifier.toLowerCase();
 
     if (key.startsWith("can_use_")) {

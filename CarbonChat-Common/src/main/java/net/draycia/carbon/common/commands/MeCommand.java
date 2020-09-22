@@ -15,7 +15,7 @@ public class MeCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public MeCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public MeCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("me");
@@ -35,7 +35,7 @@ public class MeCommand {
     );
   }
 
-  private void message(@NonNull final CommandContext<ChatUser> context) {
+  private void message(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
 
     final String message = context.<String>getRequired("message").replace("</pre>", "");

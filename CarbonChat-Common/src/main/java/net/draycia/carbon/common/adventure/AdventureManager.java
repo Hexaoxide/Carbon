@@ -17,13 +17,13 @@ public class AdventureManager implements MessageProcessor {
   @NonNull
   private final FormatType formatType;
 
-  public AdventureManager(@NonNull final AudienceProvider provider, @NonNull final FormatType formatType) {
+  public AdventureManager(final @NonNull AudienceProvider provider, final @NonNull FormatType formatType) {
     this.provider = provider;
     this.formatType = formatType;
   }
 
   @Override
-  public @NonNull Component processMessage(@Nullable final String input, @NonNull final String @NonNull ... placeholders) {
+  public @NonNull Component processMessage(@Nullable final String input, final @NonNull String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
       return TextComponent.empty();
     }
@@ -41,7 +41,7 @@ public class AdventureManager implements MessageProcessor {
     }
   }
 
-  private @NonNull Component processMojang(@NonNull String input, @NonNull final String @NonNull ... placeholders) {
+  private @NonNull Component processMojang(@NonNull String input, final @NonNull String @NonNull ... placeholders) {
     for (int i = 0; i < placeholders.length; i += 2) {
       final String placeholder = placeholders[i];
       final String replacement = placeholders[i + 1];

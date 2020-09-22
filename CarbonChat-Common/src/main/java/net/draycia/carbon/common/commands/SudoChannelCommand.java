@@ -17,7 +17,7 @@ public class SudoChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SudoChannelCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public SudoChannelCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("sudochannel");
@@ -50,7 +50,7 @@ public class SudoChannelCommand {
     );
   }
 
-  private void otherChannel(@NonNull final CommandContext<ChatUser> context) {
+  private void otherChannel(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser sender = context.getSender();
     final ChatUser user = context.getRequired("user");
     final ChatChannel channel = context.getRequired("channel");
@@ -69,7 +69,7 @@ public class SudoChannelCommand {
         "player", user.name()));
   }
 
-  private void sendMessageOther(@NonNull final CommandContext<ChatUser> context) {
+  private void sendMessageOther(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getRequired("user");
     final ChatChannel channel = context.getRequired("channel");
     final String message = context.getRequired("message");

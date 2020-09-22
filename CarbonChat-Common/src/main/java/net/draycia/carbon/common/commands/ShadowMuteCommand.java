@@ -15,7 +15,7 @@ public class ShadowMuteCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ShadowMuteCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ShadowMuteCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("shadowmute");
@@ -35,7 +35,7 @@ public class ShadowMuteCommand {
     );
   }
 
-  private void shadowMute(@NonNull final CommandContext<ChatUser> context) {
+  private void shadowMute(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final ChatUser target = context.getRequired("user");
 

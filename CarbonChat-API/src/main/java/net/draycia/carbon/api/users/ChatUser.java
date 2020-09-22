@@ -1,14 +1,16 @@
 package net.draycia.carbon.api.users;
 
-import com.intellectualsites.commands.sender.CommandSender;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
+import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
-public interface ChatUser extends Audience, CommandSender {
+public interface ChatUser extends Audience {
 
   @NonNull UUID uuid();
 
@@ -17,7 +19,6 @@ public interface ChatUser extends Audience, CommandSender {
 
   boolean online();
 
-  @Override
   boolean hasPermission(@NonNull String permission);
 
   @Nullable String nickname();
@@ -36,7 +37,7 @@ public interface ChatUser extends Audience, CommandSender {
 
   @Nullable ChatChannel selectedChannel();
 
-  default void selectedChannel(@NonNull final ChatChannel channel) {
+  default void selectedChannel(final @NonNull ChatChannel channel) {
     this.selectedChannel(channel, false);
   }
 
@@ -45,6 +46,8 @@ public interface ChatUser extends Audience, CommandSender {
   void clearSelectedChannel();
 
   @NonNull UserChannelSettings channelSettings(@NonNull ChatChannel channel);
+
+  @NonNull Map<@NonNull String, @NonNull ? extends UserChannelSettings> channelSettings();
 
   boolean spyingwhispers();
 
@@ -90,22 +93,34 @@ public interface ChatUser extends Audience, CommandSender {
 
   void ignoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote);
 
-  default void ignoringUser(@NonNull final UUID uuid, final boolean ignoring) {
+  default void ignoringUser(final @NonNull UUID uuid, final boolean ignoring) {
     this.ignoringUser(uuid, ignoring, false);
   }
 
-  default boolean ignoringUser(@NonNull final ChatUser user) {
+  default boolean ignoringUser(final @NonNull ChatUser user) {
     return this.ignoringUser(user.uuid());
   }
 
-  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring, final boolean fromRemote) {
+  default void ignoringUser(final @NonNull ChatUser user, final boolean ignoring, final boolean fromRemote) {
     this.ignoringUser(user.uuid(), ignoring, fromRemote);
   }
 
-  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring) {
+  default void ignoringUser(final @NonNull ChatUser user, final boolean ignoring) {
     this.ignoringUser(user.uuid(), ignoring, false);
   }
 
-  void sendMessage(@NonNull final ChatUser sender, @NonNull String message);
+  @NonNull Iterable<ChatUser> ignoredChatUsers();
+
+  @NonNull Iterable<UUID> ignoredUsers();
+
+  boolean hasGroup(@NonNull final String group);
+
+  boolean hasGroup(@NonNull final Group group);
+
+  @NonNull Collection<@NonNull Group> groups();
+
+  @NonNull Group primaryGroup();
+
+  void sendMessage(final @NonNull ChatUser sender, @NonNull String message);
 
 }

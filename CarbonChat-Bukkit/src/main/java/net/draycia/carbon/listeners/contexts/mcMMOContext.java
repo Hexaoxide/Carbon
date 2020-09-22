@@ -25,7 +25,7 @@ public final class mcMMOContext implements Listener {
   @NonNull
   private static final String KEY = "mcmmo-party";
 
-  public mcMMOContext(@NonNull final CarbonChatBukkit carbonChat) {
+  public mcMMOContext(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, PostOrders.NORMAL, false, event -> {
@@ -96,11 +96,11 @@ public final class mcMMOContext implements Listener {
     }
   }
 
-  public boolean isInParty(@NonNull final ChatUser user) {
+  public boolean isInParty(final @NonNull ChatUser user) {
     return PartyAPI.inParty(Bukkit.getPlayer(user.uuid()));
   }
 
-  public boolean isInSameParty(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
+  public boolean isInSameParty(final @NonNull ChatUser user1, final @NonNull ChatUser user2) {
     if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }

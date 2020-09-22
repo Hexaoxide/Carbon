@@ -1,58 +1,65 @@
-package net.draycia.carbon.storage.impl;
+package net.draycia.carbon.common.users;
 
+import co.aikar.idb.DatabaseOptions;
+import co.aikar.idb.PooledDatabaseOptions;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.UserChannelSettings;
-import co.aikar.idb.BukkitDB;
 import co.aikar.idb.DB;
 import co.aikar.idb.Database;
 import co.aikar.idb.DbRow;
 import co.aikar.idb.DbStatement;
-import co.aikar.idb.HikariPooledDatabase;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
+import net.draycia.carbon.common.utils.SQLCredentials;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
-public class MySQLUserService implements UserService {
+public class MySQLUserService<T extends ChatUser> implements UserService<T> {
 
-  @NonNull
-  private final CarbonChat carbonChat;
-  @NonNull
-  private final Database database;
-  @NonNull
-  private final LoadingCache<@NonNull UUID, @NonNull BukkitChatUser> userCache = CacheBuilder.newBuilder()
+  private final @NonNull CarbonChat carbonChat;
+  private final @NonNull Database database;
+  private final @NonNull Type userType;
+  private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+
+  private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public MySQLUserService(@NonNull final CarbonChat carbonChat) {
+  public MySQLUserService(final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
+                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
+                          final @NonNull Class<? extends ChatUser> userType) {
     this.carbonChat = carbonChat;
+    this.userType = userType;
+    this.supplier = supplier;
 
-    final ConfigurationSection section = this.carbonChat.getConfig().getConfigurationSection("storage");
+    final String username = credentials.username();
+    final String password = credentials.password();
+    final String database = credentials.password();
+    final String host = credentials.host();
+    final int port = credentials.port();
 
-    if (section == null) {
-      throw new IllegalStateException("Missing Database Credentials!");
-    }
+    final String hostAndPort = host + ":" + port;
 
-    final String username = section.getString("username", "username");
-    final String password = section.getString("password", "password");
-    final String dbname = section.getString("database", "0");
-    final String hostandport = section.getString("hostname", "hostname") + ":" + section.getString("port", "0");
-
-    this.database = new HikariPooledDatabase(BukkitDB.getRecommendedOptions(carbonChat, username, password, dbname, hostandport));
+    final DatabaseOptions options = DatabaseOptions.builder().mysql(username, password, database, hostAndPort).build();
+    this.database = PooledDatabaseOptions.builder().options(options).createHikariDatabase();
 
     DB.setGlobalDatabase(this.database);
 
@@ -74,6 +81,15 @@ public class MySQLUserService implements UserService {
     } catch (final SQLException exception) {
       exception.printStackTrace();
     }
+
+    final TimerTask timerTask = new TimerTask() {
+      @Override
+      public void run() {
+        MySQLUserService.this.userCache.cleanUp();
+      }
+    };
+
+    new Timer().schedule(timerTask, 0L, 300000L);
   }
 
   @Override
@@ -85,7 +101,7 @@ public class MySQLUserService implements UserService {
 
   @Override
   @Nullable
-  public ChatUser wrap(@NonNull final UUID uuid) {
+  public T wrap(final @NonNull UUID uuid) {
     try {
       return this.userCache.get(uuid);
     } catch (final ExecutionException exception) {
@@ -96,31 +112,42 @@ public class MySQLUserService implements UserService {
 
   @Override
   @Nullable
-  public ChatUser wrapIfLoaded(@NonNull final UUID uuid) {
+  public T wrapIfLoaded(final @NonNull UUID uuid) {
     return this.userCache.getIfPresent(uuid);
   }
 
   @Override
   @Nullable
-  public ChatUser refreshUser(@NonNull final UUID uuid) {
+  public T refreshUser(final @NonNull UUID uuid) {
     this.userCache.invalidate(uuid);
 
     return this.wrap(uuid);
   }
 
   @Override
-  public void invalidate(@NonNull final ChatUser user) {
+  public void invalidate(final @NonNull T user) {
     this.userCache.invalidate(user.uuid());
   }
 
   @Override
-  public void validate(@NonNull final ChatUser user) {
-    this.userCache.put(user.uuid(), (BukkitChatUser) user);
+  public void validate(final @NonNull T user) {
+    this.userCache.put(user.uuid(), user);
   }
 
-  @NonNull
-  private BukkitChatUser loadUser(@NonNull final UUID uuid) {
-    final BukkitChatUser user = new BukkitChatUser(uuid);
+  @Override
+  public @NonNull Iterable<@NonNull T> onlineUsers() {
+    return this.supplier.get();
+  }
+
+  private @Nullable T loadUser(final @NonNull UUID uuid) {
+    final T user;
+
+    try {
+      user = (T) this.userType.getClass().getDeclaredConstructor(UUID.class).newInstance(uuid);
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+      e.printStackTrace();
+      return null;
+    }
 
     try (final DbStatement statement = this.database.query("SELECT * from sc_users WHERE uuid = ?;")) {
       statement.execute(uuid.toString());
@@ -177,8 +204,8 @@ public class MySQLUserService implements UserService {
     return user;
   }
 
-  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull BukkitChatUser> notification) {
-    final BukkitChatUser user = notification.getValue();
+  private void saveUser(final @NonNull RemovalNotification<@NonNull UUID, @NonNull T> notification) {
+    final T user = notification.getValue();
 
     this.database.createTransaction(stm -> {
       // Save user general data
@@ -188,13 +215,13 @@ public class MySQLUserService implements UserService {
         selectedName = user.selectedChannel().key();
       }
 
-      this.carbonChat.getLogger().info("Saving user data!");
+      this.carbonChat.logger().info("Saving user data!");
       stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname) VALUES (?, ?, ?, ?, ?, ?) " +
           "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname =?",
         user.uuid().toString(), selectedName, user.muted(), user.shadowMuted(), user.spyingwhispers(), user.nickname(),
         selectedName, user.muted(), user.shadowMuted(), user.spyingwhispers(), user.nickname());
 
-      this.carbonChat.getLogger().info("Saving user channel settings!");
+      this.carbonChat.logger().info("Saving user channel settings!");
       // Save user channel settings
       for (final Map.Entry<String, ? extends UserChannelSettings> entry : user.channelSettings().entrySet()) {
         final UserChannelSettings value = entry.getValue();
@@ -211,7 +238,7 @@ public class MySQLUserService implements UserService {
           value.spying(), value.ignored(), colorString);
       }
 
-      this.carbonChat.getLogger().info("Saving user ignores!");
+      this.carbonChat.logger().info("Saving user ignores!");
       // Save user ignore list (remove old entries then add new ones)
       // TODO: keep DB up to date with settings as settings are mutated
       stm.executeUpdateQuery("DELETE FROM sc_ignored_users WHERE uuid = ?", user.uuid().toString());

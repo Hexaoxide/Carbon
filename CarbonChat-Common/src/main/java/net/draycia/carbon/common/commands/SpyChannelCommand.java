@@ -18,7 +18,7 @@ public class SpyChannelCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public SpyChannelCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public SpyChannelCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("spy");
@@ -59,7 +59,7 @@ public class SpyChannelCommand {
     );
   }
 
-  private void spyChannel(@NonNull final CommandContext<ChatUser> context) {
+  private void spyChannel(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final ChatChannel chatChannel = context.getRequired("channel");
 
@@ -79,7 +79,7 @@ public class SpyChannelCommand {
       "color", "<color:" + chatChannel.channelColor(user).toString() + ">", "channel", chatChannel.name()));
   }
 
-  private void spyWhispers(@NonNull final CommandContext<ChatUser> context) {
+  private void spyWhispers(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
 
     final String message;
@@ -95,7 +95,7 @@ public class SpyChannelCommand {
     user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n"));
   }
 
-  private void spyEverything(@NonNull final CommandContext<ChatUser> context) {
+  private void spyEverything(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final Boolean shouldSpy = context.getRequired("enabled");
 

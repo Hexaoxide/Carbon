@@ -10,7 +10,7 @@ public final class CommandUtils {
 
   }
 
-  public static void handleDuplicateCommands(@NonNull final CommandSettings settings) {
+  public static void handleDuplicateCommands(final @NonNull CommandSettings settings) {
     CommandAPI.unregister(settings.name());
 
     for (final String command : settings.aliases()) {

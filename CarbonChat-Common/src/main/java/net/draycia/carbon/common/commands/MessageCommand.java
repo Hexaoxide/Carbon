@@ -12,7 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MessageCommand {
 
-  public MessageCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public MessageCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
     final CommandSettings commandSettings = carbonChat.commandSettingsRegistry().get("message");
 
@@ -32,7 +32,7 @@ public class MessageCommand {
     );
   }
 
-  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
+  private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
     context.<ChatUser>getRequired("target")
       .sendMessage(context.getSender(), context.getRequired("message"));
   }

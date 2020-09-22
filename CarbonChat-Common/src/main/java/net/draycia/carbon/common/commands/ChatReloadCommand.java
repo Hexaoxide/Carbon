@@ -14,7 +14,7 @@ public class ChatReloadCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ChatReloadCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ChatReloadCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("chatreload");
@@ -33,7 +33,7 @@ public class ChatReloadCommand {
     );
   }
 
-  private void reloadConfig(@NonNull final CommandContext<ChatUser> context) {
+  private void reloadConfig(final @NonNull CommandContext<ChatUser> context) {
     this.carbonChat.reloadConfig();
 
     final Component message = this.carbonChat.messageProcessor()

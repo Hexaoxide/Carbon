@@ -21,9 +21,9 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
   @NonNull
   private String message;
 
-  public ChatFormatEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
-                         @NonNull final ChatChannel chatChannel, @Nullable final String format,
-                         @NonNull final String message) {
+  public ChatFormatEvent(final @NonNull ChatUser sender, @Nullable final ChatUser target,
+                         final @NonNull ChatChannel chatChannel, @Nullable final String format,
+                         final @NonNull String message) {
 
     this.sender = sender;
     this.target = target;
@@ -58,7 +58,7 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     return this.chatChannel;
   }
 
-  public void channel(@NonNull final ChatChannel chatChannel) {
+  public void channel(final @NonNull ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
@@ -76,7 +76,7 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     return this.message;
   }
 
-  public void message(@NonNull final String message) {
+  public void message(final @NonNull String message) {
     this.message = message;
   }
 

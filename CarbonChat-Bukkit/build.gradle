@@ -10,10 +10,6 @@ dependencies {
 
   compile project(":CarbonChat-Common")
 
-  // Databases
-  compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'
-  compile 'com.zaxxer:HikariCP:2.4.1'
-
   // Messaging
   compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
 

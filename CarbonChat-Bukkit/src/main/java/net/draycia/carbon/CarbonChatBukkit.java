@@ -8,6 +8,8 @@ import net.draycia.carbon.api.adventure.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
+import net.draycia.carbon.api.config.ModerationSettings;
+import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.common.adventure.FormatType;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
@@ -37,7 +39,8 @@ import net.draycia.carbon.common.commands.misc.CommandRegistrar;
 import net.draycia.carbon.common.messaging.MessageManager;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.common.users.JSONUserService;
-import net.draycia.carbon.storage.impl.MySQLUserService;
+import net.draycia.carbon.common.users.MySQLUserService;
+import net.draycia.carbon.storage.impl.BukkitChatUser;
 import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.FunctionalityConstants;
 import net.draycia.carbon.util.Metrics;
@@ -51,12 +54,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.BasicConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
@@ -68,12 +74,14 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private CommandSettingsRegistry commandSettings;
   private AdventureManager messageProcessor;
 
-  private UserService userService;
+  private UserService<BukkitChatUser> userService;
   private MessageManager messageManager;
 
   private FilterContext filterContext;
 
   private CarbonTranslations translations;
+
+  private Logger logger;
 
   public static final LegacyComponentSerializer LEGACY =
     LegacyComponentSerializer.builder()
@@ -92,6 +100,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public void onEnable() {
+    this.logger = LoggerFactory.getLogger(this.getName());
+
     CommandAPI.onEnable(this);
     final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
@@ -119,24 +129,25 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     final String storageType = this.getConfig().getString("storage.type");
 
     if (storageType.equalsIgnoreCase("mysql")) {
-      this.getLogger().info("Enabling MySQL storage!");
+      this.logger().info("Enabling MySQL storage!");
       this.userService = new MySQLUserService(this);
     } else if (storageType.equalsIgnoreCase("json")) {
-      this.getLogger().info("Enabling JSON storage!");
+      this.logger().info("Enabling JSON storage!");
       this.userService = new JSONUserService(this);
     } else {
-      this.getLogger().warning("Invalid storage type selected! Falling back to JSON.");
+      this.logger().error("Invalid storage type selected! Falling back to JSON.");
       this.userService = new JSONUserService(this);
     }
 
     // Setup listeners
+    this.setupCommands();
     this.setupListeners();
     this.registerContexts();
 
     new CarbonPlaceholders(this).register();
 
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
-      this.getLogger().warning("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
+      this.logger().error("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
     }
   }
 
@@ -178,9 +189,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
           // TODO: weeeeee fix this
           throw new IllegalArgumentException("Non-players not supported yet!");
         }
-      }, user -> {
-        return Bukkit.getPlayer(user.uuid());
-      });
+      }, user -> Bukkit.getPlayer(user.uuid()));
 
       CommandRegistrar.registerCommands(manager);
     } catch (final Exception e) {
@@ -267,7 +276,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   @NonNull
-  public UserService userService() {
+  public UserService<BukkitChatUser> userService() {
     return this.userService;
   }
 
@@ -287,7 +296,28 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   @Override
+  public @NonNull ModerationSettings moderationSettings() {
+    return this.moderationSettings;
+  }
+
+  @Override
   public @NonNull MessageProcessor messageProcessor() {
     return this.messageProcessor;
   }
+
+  @Override
+  public @NonNull MessageService messageService() {
+    return this.messageManager().messageService();
+  }
+
+  @Override
+  public @NonNull Logger logger() {
+    return this.logger;
+  }
+
+  @Override
+  public @NonNull Path dataFolder() {
+    return this.getDataFolder().toPath();
+  }
+
 }

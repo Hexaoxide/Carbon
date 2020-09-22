@@ -29,7 +29,7 @@ public class FilterContext {
   @NonNull
   private final List<@NonNull Pattern> blockedWords = new ArrayList<>();
 
-  public FilterContext(@NonNull final CarbonChat carbonChat) {
+  public FilterContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.reloadFilters();
 
@@ -103,7 +103,7 @@ public class FilterContext {
     }
   }
 
-  private boolean channelUsesFilter(@NonNull final ChatChannel chatChannel) {
+  private boolean channelUsesFilter(final @NonNull ChatChannel chatChannel) {
     final Context context = chatChannel.context("filter");
 
     if (context == null) {

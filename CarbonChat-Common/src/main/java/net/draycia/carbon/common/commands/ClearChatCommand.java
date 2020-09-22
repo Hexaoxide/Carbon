@@ -14,7 +14,7 @@ public class ClearChatCommand {
   @NonNull
   private final CarbonChat carbonChat;
 
-  public ClearChatCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ClearChatCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("clearchat");
@@ -33,7 +33,7 @@ public class ClearChatCommand {
     );
   }
 
-  private void clearChat(@NonNull final CommandContext<ChatUser> context) {
+  private void clearChat(final @NonNull CommandContext<ChatUser> context) {
     final String sender = context.getSender().name();
     final String format = this.carbonChat.moderationSettings().clearChat().message();
     final Component component = this.carbonChat.messageProcessor().processMessage(format, "br", "\n");
