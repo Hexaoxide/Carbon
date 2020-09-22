@@ -1,8 +1,6 @@
 package net.draycia.carbon.common.commands.misc;
 
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.meta.CommandMeta;
-import com.intellectualsites.commands.meta.SimpleCommandMeta;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.common.commands.ChannelCommand;
 import net.draycia.carbon.common.commands.ChannelListCommand;

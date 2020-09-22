@@ -24,6 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class JSONUserService<T extends ChatUser> implements UserService<T> {
@@ -32,6 +33,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
   private final @NonNull Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private final @NonNull Type userType;
   private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+  private final @NonNull Function<UUID, T> userFactory;
 
   private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
@@ -39,10 +41,12 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
 
   public JSONUserService(final @NonNull Class<? extends ChatUser> userType,
                          final @NonNull CarbonChat carbonChat,
-                         final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier) {
+                         final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
+                         final @NonNull Function<UUID, T> userFactory) {
     this.userType = userType;
     this.carbonChat = carbonChat;
     this.supplier = supplier;
+    this.userFactory = userFactory;
 
     final TimerTask timerTask = new TimerTask() {
       @Override
@@ -115,13 +119,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
       exception.printStackTrace();
     }
 
-    try {
-      return (T) this.userType.getClass().getDeclaredConstructor(UUID.class).newInstance(uuid);
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-      e.printStackTrace();
-    }
-
-    return null;
+    return this.userFactory.apply(uuid);
   }
 
   private void saveUser(final @NonNull RemovalNotification<@NonNull UUID, @NonNull T> notification) {

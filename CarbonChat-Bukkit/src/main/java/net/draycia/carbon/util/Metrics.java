@@ -193,7 +193,7 @@ public class Metrics {
         }
         // Nevertheless we want our code to run in the Bukkit main thread, so we have to use the Bukkit scheduler
         // Don't be afraid! The connection to the bStats server is still async, only the stats collection is sync ;)
-        Bukkit.getScheduler().runTask(Metrics.this.plugin, () -> Metrics.this.submitData());
+        Bukkit.getScheduler().runTask(Metrics.this.plugin, Metrics.this::submitData);
       }
     }, 1000 * 60 * 5, 1000 * 60 * 30);
     // Submit the data every 30 minutes, first time after 5 minutes to give other plugins enough time to start
@@ -207,7 +207,7 @@ public class Metrics {
    *
    * @return The plugin specific data.
    */
-  public JsonObject getPluginData() {
+  public JsonObject pluginData() {
     final JsonObject data = new JsonObject();
 
     final String pluginName = this.plugin.getDescription().getName();
@@ -219,7 +219,7 @@ public class Metrics {
     final JsonArray customCharts = new JsonArray();
     for (final CustomChart customChart : this.charts) {
       // Add the data of the custom charts
-      final JsonObject chart = customChart.getRequestJsonObject();
+      final JsonObject chart = customChart.requestJsonObject();
       if (chart == null) { // If the chart is null, we skip it
         continue;
       }
@@ -235,7 +235,7 @@ public class Metrics {
    *
    * @return The server specific data.
    */
-  private JsonObject getServerData() {
+  private JsonObject serverData() {
     // Minecraft specific data
     int playerAmount;
     try {
@@ -281,7 +281,7 @@ public class Metrics {
    * Collects the data and sends it afterwards.
    */
   private void submitData() {
-    final JsonObject data = this.getServerData();
+    final JsonObject data = this.serverData();
 
     final JsonArray pluginData = new JsonArray();
     // Search for all other bStats Metrics classes to get their plugin data
@@ -422,11 +422,11 @@ public class Metrics {
       this.chartId = chartId;
     }
 
-    private JsonObject getRequestJsonObject() {
+    private JsonObject requestJsonObject() {
       final JsonObject chart = new JsonObject();
       chart.addProperty("chartId", this.chartId);
       try {
-        final JsonObject data = this.getChartData();
+        final JsonObject data = this.chartData();
         if (data == null) {
           // If the data is null we don't send the chart.
           return null;
@@ -441,7 +441,7 @@ public class Metrics {
       return chart;
     }
 
-    protected abstract JsonObject getChartData() throws Exception;
+    protected abstract JsonObject chartData() throws Exception;
 
   }
 
@@ -464,7 +464,7 @@ public class Metrics {
     }
 
     @Override
-    protected JsonObject getChartData() throws Exception {
+    protected JsonObject chartData() throws Exception {
       final JsonObject data = new JsonObject();
       final String value = this.callable.call();
       if (value == null || value.isEmpty()) {
@@ -495,7 +495,7 @@ public class Metrics {
     }
 
     @Override
-    protected JsonObject getChartData() throws Exception {
+    protected JsonObject chartData() throws Exception {
       final JsonObject data = new JsonObject();
       final JsonObject values = new JsonObject();
       final Map<String, Integer> map = this.callable.call();
@@ -539,7 +539,7 @@ public class Metrics {
     }
 
     @Override
-    public JsonObject getChartData() throws Exception {
+    public JsonObject chartData() throws Exception {
       final JsonObject data = new JsonObject();
       final JsonObject values = new JsonObject();
       final Map<String, Map<String, Integer>> map = this.callable.call();
@@ -588,7 +588,7 @@ public class Metrics {
     }
 
     @Override
-    protected JsonObject getChartData() throws Exception {
+    protected JsonObject chartData() throws Exception {
       final JsonObject data = new JsonObject();
       final int value = this.callable.call();
       if (value == 0) {
@@ -620,7 +620,7 @@ public class Metrics {
     }
 
     @Override
-    protected JsonObject getChartData() throws Exception {
+    protected JsonObject chartData() throws Exception {
       final JsonObject data = new JsonObject();
       final JsonObject values = new JsonObject();
       final Map<String, Integer> map = this.callable.call();
@@ -665,7 +665,7 @@ public class Metrics {
     }
 
     @Override
-    protected JsonObject getChartData() throws Exception {
+    protected JsonObject chartData() throws Exception {
       final JsonObject data = new JsonObject();
       final JsonObject values = new JsonObject();
       final Map<String, Integer> map = this.callable.call();
@@ -703,7 +703,7 @@ public class Metrics {
     }
 
     @Override
-    protected JsonObject getChartData() throws Exception {
+    protected JsonObject chartData() throws Exception {
       final JsonObject data = new JsonObject();
       final JsonObject values = new JsonObject();
       final Map<String, int[]> map = this.callable.call();

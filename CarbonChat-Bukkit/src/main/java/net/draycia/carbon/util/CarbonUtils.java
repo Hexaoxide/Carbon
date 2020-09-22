@@ -20,11 +20,7 @@
  */
 package net.draycia.carbon.util;
 
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.CustomArgument;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.draycia.carbon.CarbonChatBukkit;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,7 +33,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Content;
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -97,40 +92,6 @@ public final class CarbonUtils {
     component.color(ChatColor.WHITE).append("]");
 
     return BungeeCordComponentSerializer.get().deserialize(component.create());
-  }
-
-  @Nullable
-  public static TextColor parseColor(@Nullable final String input) {
-    return parseColor(null, input);
-  }
-
-  @Nullable
-  public static TextColor parseColor(@Nullable final ChatUser user, @Nullable String input) {
-    if (input == null) {
-      input = "white";
-    }
-
-    if (user != null) {
-      final Player player = Bukkit.getPlayer(user.uuid());
-
-      if (player != null) {
-        input = PlaceholderAPI.setPlaceholders(player, input);
-      }
-    }
-
-    for (final NamedTextColor namedColor : NamedTextColor.values()) {
-      if (namedColor.toString().equalsIgnoreCase(input)) {
-        return namedColor;
-      }
-    }
-
-    if (input.contains("&") || input.contains("§")) {
-      input = input.replace("&", "§");
-
-      return LegacyComponentSerializer.legacySection().deserialize(input).color();
-    }
-
-    return TextColor.fromCSSHexString(input);
   }
 
 }

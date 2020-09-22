@@ -20,8 +20,6 @@ import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.List;
@@ -30,25 +28,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class MySQLUserService<T extends ChatUser> implements UserService<T> {
 
   private final @NonNull CarbonChat carbonChat;
   private final @NonNull Database database;
-  private final @NonNull Type userType;
   private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+  private final @NonNull Function<UUID, T> userFactory;
 
   private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public MySQLUserService(final @NonNull Class<? extends ChatUser> userType,
-                          final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
-                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier) {
+  public MySQLUserService(final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
+                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
+                          final @NonNull Function<UUID, T> userFactory) {
     this.carbonChat = carbonChat;
-    this.userType = userType;
     this.supplier = supplier;
+    this.userFactory = userFactory;
 
     final String username = credentials.username();
     final String password = credentials.password();
@@ -140,14 +139,7 @@ public class MySQLUserService<T extends ChatUser> implements UserService<T> {
   }
 
   private @Nullable T loadUser(final @NonNull UUID uuid) {
-    final T user;
-
-    try {
-      user = (T) this.userType.getClass().getDeclaredConstructor(UUID.class).newInstance(uuid);
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-      e.printStackTrace();
-      return null;
-    }
+    final T user = this.userFactory.apply(uuid);
 
     try (final DbStatement statement = this.database.query("SELECT * from sc_users WHERE uuid = ?;")) {
       statement.execute(uuid.toString());

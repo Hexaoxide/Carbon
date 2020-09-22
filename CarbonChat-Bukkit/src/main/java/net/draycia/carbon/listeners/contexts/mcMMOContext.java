@@ -12,6 +12,7 @@ import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.Context;
 import net.kyori.event.PostOrders;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -66,23 +67,16 @@ public final class mcMMOContext implements Listener {
       return;
     }
 
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
-    final ChatChannel channel = user.selectedChannel();
-
-    if (channel == null) {
-      return;
-    }
-
-    final Context context = channel.context(KEY);
-
-    if (context != null && context.isBoolean() && context.asBoolean() && !this.isInParty(user)) {
-      user.clearSelectedChannel();
-    }
+    this.checkContext(event.getPlayer());
   }
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
+    this.checkContext(event.getPlayer());
+  }
+
+  private void checkContext(final Player player) {
+    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
