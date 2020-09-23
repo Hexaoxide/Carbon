@@ -218,13 +218,13 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public void reloadConfig() {
-    this.loadCarbonSettingS();
+    this.loadCarbonSettings();
     this.loadLanguage();
     this.loadModerationSettings();
     this.loadCommandSettings();
   }
 
-  private void loadCarbonSettingS() {
+  private void loadCarbonSettings() {
     final File settingsFile = new File(this.getDataFolder(), "config.yml");
     final YamlConfigurationLoader settingsLoader = YamlConfigurationLoader.builder().setFile(settingsFile).build();
 

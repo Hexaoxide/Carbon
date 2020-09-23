@@ -39,7 +39,7 @@ dependencies {
 bukkit {
   name = project.description
   version = project.version
-  main = 'net.draycia.carbon.CarbonChat'
+  main = 'net.draycia.carbon.CarbonChatBukkit'
   apiVersion = '1.13'
   author = 'Draycia'
   depend = ['PlaceholderAPI', 'Vault']
