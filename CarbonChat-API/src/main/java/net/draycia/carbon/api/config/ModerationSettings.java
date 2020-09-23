@@ -118,7 +118,7 @@ public class ModerationSettings {
   }
 
   @ConfigSerializable
-  public final class Filters {
+  public static class Filters {
 
     @Setting
     private boolean enabled = true;

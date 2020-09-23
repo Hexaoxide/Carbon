@@ -15,6 +15,8 @@ import net.draycia.carbon.api.config.StorageType;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.common.adventure.FormatType;
+import net.draycia.carbon.common.config.KeySerializer;
+import net.draycia.carbon.common.config.SoundSerializer;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.draycia.carbon.common.messaging.RedisMessageService;
@@ -50,7 +52,9 @@ import net.draycia.carbon.storage.BukkitChatUser;
 import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.FunctionalityConstants;
 import net.draycia.carbon.util.Metrics;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -61,6 +65,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.BasicConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -229,7 +234,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private void loadCarbonSettings() {
     final File settingsFile = new File(this.getDataFolder(), "config.yml");
     final YamlConfigurationLoader settingsLoader = YamlConfigurationLoader.builder()
-      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(settingsFile).build();
+      .setDefaultOptions(opts -> {
+        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
+          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
+        });
+      }).setFile(settingsFile).build();
 
     try {
       final BasicConfigurationNode settingsNode = settingsLoader.load();
@@ -243,7 +252,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private void loadLanguage() {
     final File languageFile = new File(this.getDataFolder(), "language.yml");
     final YamlConfigurationLoader languageLoader = YamlConfigurationLoader.builder()
-      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(languageFile).build();
+      .setDefaultOptions(opts -> {
+        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
+          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
+        });
+      }).setFile(languageFile).build();
 
     try {
       final BasicConfigurationNode languageNode = languageLoader.load();
@@ -257,7 +270,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private void loadModerationSettings() {
     final File moderationFile = new File(this.getDataFolder(), "moderation.yml");
     final YamlConfigurationLoader moderationLoader = YamlConfigurationLoader.builder()
-      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(moderationFile).build();
+      .setDefaultOptions(opts -> {
+        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
+          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
+        });
+      }).setFile(moderationFile).build();
 
     try {
       final BasicConfigurationNode moderationNode = moderationLoader.load();
@@ -277,7 +294,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     final YamlConfigurationLoader commandSettingsLoader = YamlConfigurationLoader.builder()
-        .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(carbonCommands).build();
+      .setDefaultOptions(opts -> {
+        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
+          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
+        });
+      }).setFile(carbonCommands).build();
 
     try {
       final BasicConfigurationNode commandSettingsNode = commandSettingsLoader.load();
