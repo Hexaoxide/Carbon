@@ -21,7 +21,7 @@ public class PlayerJoinListener {
         user.nickname(user.nickname());
       }
 
-      final String channel = carbonChat.getConfig().getString("channel-on-join");
+      final String channel = carbonChat.carbonSettings().channelOnJoin();
 
       if (channel == null || channel.isEmpty()) {
         return;

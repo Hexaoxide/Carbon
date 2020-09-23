@@ -14,7 +14,7 @@ public class PingHandler {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(ChatComponentEvent.class, PostOrders.LAST, false, event -> {
-      if (!carbonChat.getConfig().getBoolean("pings.enabled")) {
+      if (!carbonChat.carbonSettings().pings().enabled()) {
         return;
       }
 
@@ -23,8 +23,8 @@ public class PingHandler {
       }
 
       final String targetName = event.target().name();
-      final String prefix = carbonChat.getConfig().getString("pings.prefix", "");
-      final boolean caseSensitive = carbonChat.getConfig().getBoolean("pings.case-sensitive", false);
+      final String prefix = carbonChat.carbonSettings().pings().prefix();
+      final boolean caseSensitive = carbonChat.carbonSettings().pings().caseSensitive();
 
       if (caseSensitive) {
         if (!event.originalMessage().contains(prefix + targetName)) {
@@ -36,10 +36,10 @@ public class PingHandler {
         }
       }
 
-      final Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
-      final Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("pings.source"));
-      final float volume = (float) carbonChat.getConfig().getDouble("pings.volume");
-      final float pitch = (float) carbonChat.getConfig().getDouble("pings.pitch");
+      final Key key = carbonChat.carbonSettings().pings().sound();
+      final Sound.Source source = carbonChat.carbonSettings().pings().source();
+      final float volume = carbonChat.carbonSettings().pings().volume();
+      final float pitch = carbonChat.carbonSettings().pings().pitch();
 
       event.target().playSound(Sound.of(key, source, volume, pitch));
     });

@@ -22,14 +22,14 @@ public class WhisperPingHandler {
         return;
       }
 
-      if (!carbonChat.getConfig().getBoolean("whisper.pings.enabled")) {
+      if (!carbonChat.carbonSettings().whisperPings().enabled()) {
         return;
       }
 
-      final Key key = Key.of(carbonChat.getConfig().getString("whisper.pings.sound"));
-      final Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("whisper.pings.source"));
-      final float volume = (float) carbonChat.getConfig().getDouble("whisper.pings.volume");
-      final float pitch = (float) carbonChat.getConfig().getDouble("whisper.pings.pitch");
+      final Key key = carbonChat.carbonSettings().whisperPings().sound();
+      final Sound.Source source = carbonChat.carbonSettings().whisperPings().source();
+      final float volume = carbonChat.carbonSettings().whisperPings().volume();
+      final float pitch = carbonChat.carbonSettings().whisperPings().pitch();
 
       event.sender().playSound(Sound.of(key, source, volume, pitch));
     });
