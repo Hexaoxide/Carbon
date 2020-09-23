@@ -218,6 +218,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public void reloadConfig() {
+    this.getDataFolder().mkdirs();
+
     this.loadCarbonSettings();
     this.loadLanguage();
     this.loadModerationSettings();
@@ -226,7 +228,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadCarbonSettings() {
     final File settingsFile = new File(this.getDataFolder(), "config.yml");
-    final YamlConfigurationLoader settingsLoader = YamlConfigurationLoader.builder().setFile(settingsFile).build();
+    final YamlConfigurationLoader settingsLoader = YamlConfigurationLoader.builder()
+      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(settingsFile).build();
 
     try {
       final BasicConfigurationNode settingsNode = settingsLoader.load();
@@ -239,7 +242,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadLanguage() {
     final File languageFile = new File(this.getDataFolder(), "language.yml");
-    final YamlConfigurationLoader languageLoader = YamlConfigurationLoader.builder().setFile(languageFile).build();
+    final YamlConfigurationLoader languageLoader = YamlConfigurationLoader.builder()
+      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(languageFile).build();
 
     try {
       final BasicConfigurationNode languageNode = languageLoader.load();
@@ -252,7 +256,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadModerationSettings() {
     final File moderationFile = new File(this.getDataFolder(), "moderation.yml");
-    final YamlConfigurationLoader moderationLoader = YamlConfigurationLoader.builder().setFile(moderationFile).build();
+    final YamlConfigurationLoader moderationLoader = YamlConfigurationLoader.builder()
+      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(moderationFile).build();
 
     try {
       final BasicConfigurationNode moderationNode = moderationLoader.load();
@@ -271,8 +276,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       this.saveResource("carbon-commands.yml", false);
     }
 
-    final YamlConfigurationLoader commandSettingsLoader =
-      YamlConfigurationLoader.builder().setFile(carbonCommands).build();
+    final YamlConfigurationLoader commandSettingsLoader = YamlConfigurationLoader.builder()
+        .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true)).setFile(carbonCommands).build();
 
     try {
       final BasicConfigurationNode commandSettingsNode = commandSettingsLoader.load();
