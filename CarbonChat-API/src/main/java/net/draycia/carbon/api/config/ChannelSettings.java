@@ -3,39 +3,45 @@ package net.draycia.carbon.api.config;
 import net.draycia.carbon.api.Context;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.configurate.objectmapping.Setting;
+import org.spongepowered.configurate.serialize.ConfigSerializable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+@ConfigSerializable
 public class ChannelSettings {
 
-  private String key;
-  private String color;
-  private Map<String, Context> contexts;
-  private Map<String, String> formats;
-  private String defaultFormatName;
-  private boolean isDefault;
-  private boolean ignorable;
-  private boolean crossServer;
-  private boolean honorsRecipientList;
-  private boolean permissionGroupMatching;
-  private List<String> groupOverrides;
-  private String name;
-  private String messagePrefix;
-  private String switchMessage;
-  private List<Pattern> itemLinkPatterns;
-  private String switchOtherMessage;
-  private List<String> aliases;
-  private boolean shouldCancelChatEvent;
-  private boolean primaryGroupOnly;
-  private String cannotUseMessage;
-  private String toggleOtherOffMessage;
-  private String toggleOtherOnMessage;
-  private String toggleOnMessage;
-  private String toggleOffMessage;
-  private String cannotIgnoreMessage;
-  private String switchFailureMessage;
+  @Setting private String key = "channel";
+  @Setting private String color = "#FFFFFF";
+  @Setting private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults
+  @Setting private Map<String, String> formats = new HashMap<>(); // TODO: set defaults
+  @Setting private String defaultFormatName = "default";
+  @Setting private boolean isDefault = false;
+  @Setting private boolean ignorable = true;
+  @Setting private boolean crossServer = true;
+  @Setting private boolean honorsRecipientList = false;
+  @Setting private boolean permissionGroupMatching = false;
+  @Setting private List<String> groupOverrides = new ArrayList<>();
+  @Setting private String name;
+  @Setting private String messagePrefix;
+  @Setting private List<Pattern> itemLinkPatterns = Collections.singletonList(Pattern.compile(Pattern.quote("[item]")));
+  @Setting private List<String> aliases;
+  @Setting private boolean shouldCancelChatEvent = false;
+  @Setting private boolean primaryGroupOnly = false;
+  @Setting private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
+  @Setting private String switchOtherMessage = "<gray><player> <reset><gray>is now in <color><channel> <gray>chat!";
+  @Setting private String switchFailureMessage = "<red>You cannot use channel <channel>!";
+  @Setting private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
+  @Setting private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
+  @Setting private String toggleOtherOnMessage = "<gray><player> <reset><gray>can now see <color><channel> <gray>chat!";
+  @Setting private String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
+  @Setting private String cannotUseMessage = "You cannot use that channel!";
+  @Setting private String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
 
   @NonNull
   public String key() {

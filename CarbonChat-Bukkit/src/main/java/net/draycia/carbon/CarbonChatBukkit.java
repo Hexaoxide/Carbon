@@ -232,7 +232,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       final BasicConfigurationNode settingsNode = settingsLoader.load();
       this.carbonSettings = CarbonSettings.loadFrom(settingsNode);
       settingsLoader.save(settingsNode);
-    } catch (final IOException | ObjectMappingException ignored) {
+    } catch (final IOException | ObjectMappingException exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -244,7 +245,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       final BasicConfigurationNode languageNode = languageLoader.load();
       this.translations = CarbonTranslations.loadFrom(languageNode);
       languageLoader.save(languageNode);
-    } catch (final IOException | ObjectMappingException ignored) {
+    } catch (final IOException | ObjectMappingException exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -256,7 +258,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       final BasicConfigurationNode moderationNode = moderationLoader.load();
       this.moderationSettings = ModerationSettings.loadFrom(moderationNode);
       moderationLoader.save(moderationNode);
-    } catch (final IOException | ObjectMappingException ignored) {
+    } catch (final IOException | ObjectMappingException exception) {
+      exception.printStackTrace();
     }
   }
 
@@ -275,7 +278,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       final BasicConfigurationNode commandSettingsNode = commandSettingsLoader.load();
       this.commandSettings = CommandSettingsRegistry.loadFrom(commandSettingsNode);
       commandSettingsLoader.save(commandSettingsNode);
-    } catch (final IOException | ObjectMappingException ignored) {
+    } catch (final IOException | ObjectMappingException exception) {
+      exception.printStackTrace();
     }
   }
 

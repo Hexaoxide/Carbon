@@ -49,8 +49,7 @@ public class CarbonSettings {
   private @Nullable StorageType storageType = StorageType.JSON;
 
   @Setting(comment = "The credentials used to connect to your database. Requires storageType=MYSQL")
-  private @NonNull SQLCredentials sqlCredentials =
-    new SQLCredentials("username", "password", "db", "localhost", 3306);
+  private @NonNull SQLCredentials sqlCredentials = new SQLCredentials();
 
   @Setting(comment = "Options: NONE, REDIS, BUNGEECORD")
   private @NonNull MessagingType messagingType = MessagingType.NONE;
@@ -62,8 +61,7 @@ public class CarbonSettings {
     "\n" +
     " Note: In order for channels to sync cross server, you'll need to enable is-cross-server for the\n" +
     "   channel as well as this setting.")
-  private @NonNull RedisCredentials redisCredentials =
-    new RedisCredentials("localhost", "", 6379, 0);
+  private @NonNull RedisCredentials redisCredentials = new RedisCredentials();
 
   @Setting(comment = "Used for message formats - custom tags that are replaced in descending order" +
     "\nFor example, in the default config, <group> wil be replaced with <green>%vault_group%")

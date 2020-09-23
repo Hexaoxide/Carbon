@@ -2,20 +2,16 @@ package net.draycia.carbon.api.config;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.configurate.objectmapping.Setting;
+import org.spongepowered.configurate.serialize.ConfigSerializable;
 
+@ConfigSerializable
 public class RedisCredentials {
 
-  private final @NonNull String host;
-  private final @Nullable String password;
-  private final int port;
-  private final int database;
-
-  public RedisCredentials(final @NonNull String host, final @Nullable String password, final int port, final int database) {
-    this.host = host;
-    this.password = password;
-    this.port = port;
-    this.database = database;
-  }
+  @Setting private @NonNull String host = "localhost";
+  @Setting private @Nullable String password = "";
+  @Setting private int port = 6379;
+  @Setting private int database = 0;
 
   public @NonNull String host() {
     return this.host;

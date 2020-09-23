@@ -1,23 +1,17 @@
 package net.draycia.carbon.api.config;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.configurate.objectmapping.Setting;
+import org.spongepowered.configurate.serialize.ConfigSerializable;
 
+@ConfigSerializable
 public class SQLCredentials {
 
-  private final @NonNull String username;
-  private final @NonNull String password;
-  private final @NonNull String database;
-  private final @NonNull String host;
-  private final int port;
-
-  public SQLCredentials(final @NonNull String username, final @NonNull String password,
-                        final @NonNull String database, final @NonNull String host, final int port) {
-    this.username = username;
-    this.password = password;
-    this.database = database;
-    this.host = host;
-    this.port = port;
-  }
+  @Setting private @NonNull String username = "username";
+  @Setting private @NonNull String password = "password";
+  @Setting private @NonNull String database = "database";
+  @Setting private @NonNull String host = "host";
+  @Setting private int port = 3306;
 
   public @NonNull String username() {
     return this.username;
