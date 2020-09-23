@@ -1,10 +1,37 @@
 package net.draycia.carbon.api.config;
 
+import org.spongepowered.configurate.BasicConfigurationNode;
+import org.spongepowered.configurate.objectmapping.ObjectMapper;
+import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 @ConfigSerializable
 public class ModerationSettings {
+
+  private static final ObjectMapper<ModerationSettings> MAPPER;
+
+  static {
+    try {
+      MAPPER = ObjectMapper.forClass(ModerationSettings.class); // We hold on to the instance of our ObjectMapper
+    } catch (final ObjectMappingException e) {
+      throw new ExceptionInInitializerError(e);
+    }
+  }
+
+  public static ModerationSettings loadFrom(final BasicConfigurationNode node) throws ObjectMappingException {
+    return MAPPER.bindToNew().populate(node);
+  }
+
+  public void saveTo(final BasicConfigurationNode node) throws ObjectMappingException {
+    MAPPER.bind(this).serialize(node);
+  }
 
   // TODO: comment this
   @Setting
@@ -81,6 +108,47 @@ public class ModerationSettings {
     public boolean blockMessage() {
       return this.blockMessage;
     }
+  }
+
+  @Setting
+  private Filters filters = new Filters();
+
+  public Filters filters() {
+    return this.filters;
+  }
+
+  @ConfigSerializable
+  public final class Filters {
+
+    @Setting
+    private boolean enabled = true;
+
+    @Setting(comment = "The keys (\"****\" for example) are what the text is replaced with.\n" +
+      "The strings in the lists (\"lag\" etc) are what's replaced.\n" +
+      "Set to filters: {} if you want to disable the filter feature.\n" +
+      "Set the key to \"_\" for the replacement to be blank (remove the filtered pattern).")
+    private Map<String, List<Pattern>> replacements = new HashMap<String, List<Pattern>>() {
+      {
+        this.put("****", Collections.singletonList(Pattern.compile("la[g]+")));
+      }
+    };
+
+    @Setting(comment = "Anything in blocked-words will prevent the message from being sent at all.\n" +
+      "Set to blocked-words: [] if you want to disable the blocked words feature.")
+    private List<Pattern> blockedPatterns = Collections.singletonList(Pattern.compile("pineapple doesn't belong on pizza"));
+
+    public boolean enabled() {
+      return this.enabled;
+    }
+
+    public Map<String, List<Pattern>> replacements() {
+      return this.replacements;
+    }
+
+    public List<Pattern> blockedPatterns() {
+      return this.blockedPatterns;
+    }
+
   }
 
 }

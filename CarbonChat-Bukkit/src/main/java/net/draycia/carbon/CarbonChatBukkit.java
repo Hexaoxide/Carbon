@@ -9,12 +9,15 @@ import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
 import net.draycia.carbon.api.config.CarbonSettings;
+import net.draycia.carbon.api.config.MessagingType;
 import net.draycia.carbon.api.config.ModerationSettings;
+import net.draycia.carbon.api.config.StorageType;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.common.adventure.FormatType;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.api.config.SQLCredentials;
+import net.draycia.carbon.common.messaging.RedisMessageService;
 import net.draycia.carbon.listeners.contexts.DistanceContext;
 import net.draycia.carbon.listeners.contexts.EconomyContext;
 import net.draycia.carbon.listeners.contexts.FilterContext;
@@ -42,6 +45,7 @@ import net.draycia.carbon.common.messaging.MessageManager;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.common.users.JSONUserService;
 import net.draycia.carbon.common.users.MySQLUserService;
+import net.draycia.carbon.messaging.BungeeMessageService;
 import net.draycia.carbon.storage.BukkitChatUser;
 import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.FunctionalityConstants;
@@ -81,8 +85,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private UserService<BukkitChatUser> userService;
   private MessageManager messageManager;
 
-  private FilterContext filterContext;
-
   private CarbonTranslations translations;
 
   private Logger logger;
@@ -104,16 +106,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   public void onEnable() {
     this.logger = LoggerFactory.getLogger(this.getName());
 
+    // Setup metrics
     final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
-
-    // Ensure config is present to be modified by the user
-    if (!(new File(this.getDataFolder(), "config.yml").exists())) {
-      this.saveDefaultConfig();
-    }
-
-    if (!(new File(this.getDataFolder(), "moderation.yml").exists())) {
-      this.saveResource("moderation.yml", false);
-    }
 
     this.reloadConfig();
 
@@ -122,9 +116,23 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     // Initialize managers
     this.channelRegistry = new ChannelRegistry();
-    this.messageManager = new MessageManager(this, new EmptyMessageService()); // TODO: get message service from config
 
-    final CarbonSettings.StorageType storageType = this.carbonSettings().storageType();
+    // Handle messaging service
+    final MessagingType messagingType = this.carbonSettings().messagingType();
+    final MessageService messageService;
+
+    if (messagingType == MessagingType.REDIS) {
+      messageService = new RedisMessageService(this, this.carbonSettings.redisCredentials());
+    } else if (messagingType == MessagingType.BUNGEECORD) {
+      messageService = new BungeeMessageService(this); // TODO: only support this if bukkit
+    } else {
+      messageService = new EmptyMessageService();
+    }
+
+    this.messageManager = new MessageManager(this, messageService);
+
+    // Handle storage service
+    final StorageType storageType = this.carbonSettings().storageType();
 
     final Supplier<Iterable<BukkitChatUser>> supplier = () -> {
       final List<BukkitChatUser> users = new ArrayList<>();
@@ -136,11 +144,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       return users;
     };
 
-    if (storageType == CarbonSettings.StorageType.MYSQL) {
+    if (storageType == StorageType.MYSQL) {
       this.logger().info("Enabling MySQL storage!");
       final SQLCredentials credentials = this.carbonSettings().sqlCredentials();
       this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitChatUser::new);
-    } else if (storageType == CarbonSettings.StorageType.JSON) {
+    } else if (storageType == StorageType.JSON) {
       this.logger().info("Enabling JSON storage!");
       this.userService = new JSONUserService<>(BukkitChatUser.class, this, supplier, BukkitChatUser::new);
     } else {
@@ -153,9 +161,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     this.setupListeners();
     this.registerContexts();
 
+    // Setup PlaceholderAPI placeholders
     new CarbonPlaceholders(this).register();
 
-    if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
+    // Log missing functionality
+    if (this.carbonSettings().showTips() && !FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
       this.logger().error("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
     }
   }
@@ -208,11 +218,22 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public void reloadConfig() {
-    super.reloadConfig();
-
+    this.loadCarbonSettingS();
     this.loadLanguage();
     this.loadModerationSettings();
     this.loadCommandSettings();
+  }
+
+  private void loadCarbonSettingS() {
+    final File settingsFile = new File(this.getDataFolder(), "config.yml");
+    final YamlConfigurationLoader settingsLoader = YamlConfigurationLoader.builder().setFile(settingsFile).build();
+
+    try {
+      final BasicConfigurationNode settingsNode = settingsLoader.load();
+      this.carbonSettings = CarbonSettings.loadFrom(settingsNode);
+      settingsLoader.save(settingsNode);
+    } catch (final IOException | ObjectMappingException ignored) {
+    }
   }
 
   private void loadLanguage() {
@@ -223,6 +244,18 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       final BasicConfigurationNode languageNode = languageLoader.load();
       this.translations = CarbonTranslations.loadFrom(languageNode);
       languageLoader.save(languageNode);
+    } catch (final IOException | ObjectMappingException ignored) {
+    }
+  }
+
+  private void loadModerationSettings() {
+    final File moderationFile = new File(this.getDataFolder(), "moderation.yml");
+    final YamlConfigurationLoader moderationLoader = YamlConfigurationLoader.builder().setFile(moderationFile).build();
+
+    try {
+      final BasicConfigurationNode moderationNode = moderationLoader.load();
+      this.moderationSettings = ModerationSettings.loadFrom(moderationNode);
+      moderationLoader.save(moderationNode);
     } catch (final IOException | ObjectMappingException ignored) {
     }
   }
@@ -246,17 +279,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
   }
 
-  private void loadModerationSettings() {
-
-  }
-
-  public void reloadFilters() {
-    this.filterContext.reloadFilters();
-  }
-
   private void registerContexts() {
-    this.filterContext = new FilterContext(this);
-
     if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
       this.getServer().getPluginManager().registerEvents(new TownyContext(this), this);
     }
@@ -274,6 +297,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     new DistanceContext();
+    new FilterContext(this);
   }
 
   @NonNull

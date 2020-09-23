@@ -10,7 +10,7 @@ import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
-import net.draycia.carbon.common.utils.RedisCredentials;
+import net.draycia.carbon.api.config.RedisCredentials;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Base64;

@@ -1,9 +1,6 @@
 # CarbonChat Docs:
 # https://github.com/Draycia/Chat/wiki
 
-# Set this to false to disable warnings and tips when the plugin thinks there may be configuration issues.
-show-tips: true
-
 # All of the settings under this 'default' section can be applied to each channel individually to override these.
 # These are provided as a way to configure default channel settings.
 default:
@@ -93,19 +90,6 @@ channels:
     is-cross-server: false
     message-prefix: '!'
 
-# Used for message formats - custom tags that are replaced in descending order
-# For example, in the default config, <group> wil be replaced with <green>%vault_group%
-placeholders:
-  prefix: "<gray>[<group><gray>]"
-  group: "<green>%vault_group%"
-
-# Sets the player's channel to the specified channel when they join
-# Set to "" or remove to disable
-# Set to DEFAULT to set the player's channel to the default channel on join
-# Otherwise, set to a channel to set the player's channel to it on join
-# For example, channel-on-join: "global" sets their channel to global on join
-channel-on-join: ""
-
 # Global context options
 contexts:
   Towny:
@@ -113,61 +97,9 @@ contexts:
   mcMMO:
     cancellation-message: '<red>You do not have a party!'
 
-# Used for <server> placeholder in channel formats
-server-name: 'Server'
-
 item-link-placeholders:
   - '[item]'
   - '%item%'
 
-# The prefix shown when spying on a user's message
-spy-prefix: '<color>[SPY] '
-
 # Determines if the player's tab menu name is updated with /nickname
 nicknames-set-tab-name: true
-
-# Plays a sound and highlights the message when someone types your name
-pings:
-  enabled: true
-  case-sensitive: false
-  source: 'PLAYER'
-  sound: 'minecraft:entity.experience_orb.pickup'
-  prefix: '@'
-  volume: 10.0
-  pitch: 1.0
-  # highlight: true # currently disabled and nonfunctional
-
-# Plays a sound when receiving private messages with /whisper /msg
-whisper:
-  pings:
-    enabled: true
-    source: 'PLAYER'
-    sound: 'minecraft:entity.experience_orb.pickup'
-    volume: 10.0
-    pitch: 1.0
-
-# Options:
-# 'JSON' - Uses JSON text files to store player data
-# 'MySQL' - Uses MySQL to store player data
-storage:
-  type: JSON
-  username: 'username'
-  password: 'password'
-  database: 'database'
-  hostname: 'localhost'
-  port: 3306
-
-# Options:
-# 'bungee' - Uses bungee plugin messaging, requires BungeeCord or another proxy which supports it (Velocity!)
-# 'redis' - Uses redis for cross server syncing, does not require a server proxy
-# 'none' - Do not sync anything cross server, this is the default
-#
-# Note: In order for channels to sync cross server, you'll need to enable is-cross-server for the
-#   channel as well as this setting.
-message-system: 'none'
-
-redis:
-  host: 'localhost'
-  port: 6379
-  #password: 'password'
-  database: 0
