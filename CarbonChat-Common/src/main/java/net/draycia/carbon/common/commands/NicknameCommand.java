@@ -24,8 +24,6 @@ public class NicknameCommand {
       return;
     }
 
-    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
-
     // TODO: make this deterministic, has to be Nickname -> User
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

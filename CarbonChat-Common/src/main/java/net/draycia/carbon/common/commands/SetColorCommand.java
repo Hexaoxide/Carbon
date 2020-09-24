@@ -24,8 +24,6 @@ public class SetColorCommand {
       return;
     }
 
-    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
-
     for (final ChatChannel channel : this.carbonChat.channelRegistry()) {
       commandManager.command(
         commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

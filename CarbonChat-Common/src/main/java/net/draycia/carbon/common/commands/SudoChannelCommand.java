@@ -26,8 +26,6 @@ public class SudoChannelCommand {
       return;
     }
 
-    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
-
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
