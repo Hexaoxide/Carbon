@@ -18,11 +18,13 @@ public class ShadowMuteCommand {
   public ShadowMuteCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
-    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("shadowmute");
+    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("shadowmute");
 
     if (!commandSettings.enabled()) {
       return;
     }
+
+    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
 
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

@@ -19,11 +19,13 @@ public class ToggleCommand {
   public ToggleCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
-    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("toggle");
+    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("toggle");
 
     if (!commandSettings.enabled()) {
       return;
     }
+
+    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
 
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

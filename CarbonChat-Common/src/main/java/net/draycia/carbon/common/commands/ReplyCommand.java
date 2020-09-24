@@ -18,11 +18,13 @@ public class ReplyCommand {
   public ReplyCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
-    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("reply");
+    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("reply");
 
     if (!commandSettings.enabled()) {
       return;
     }
+
+    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
 
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

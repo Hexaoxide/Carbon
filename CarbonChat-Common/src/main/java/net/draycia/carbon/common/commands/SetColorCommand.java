@@ -18,11 +18,13 @@ public class SetColorCommand {
   public SetColorCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
-    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("setcolor");
+    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("setcolor");
 
     if (!commandSettings.enabled()) {
       return;
     }
+
+    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
 
     for (final ChatChannel channel : this.carbonChat.channelRegistry()) {
       commandManager.command(

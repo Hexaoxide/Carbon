@@ -1,60 +1,61 @@
-channel:
-  enabled: true
-  name: 'channel'
-  aliases: ['ch', 'switch', 'join']
-channellist:
-  enabled: true
-  name: 'channellist'
-  aliases: ['chlist']
-chatreload:
-  enabled: true
-  name: 'chatreload'
-  aliases: ['creload', 'cr']
-clearchat:
-  enabled: true
-  name: 'clearchat'
-  aliases: ['clear', 'cc']
-ignore:
-  enabled: true
-  name: 'ignore'
-  aliases: ['block']
-me:
-  enabled: true
-  name: 'me'
-  aliases: ['rp']
-message:
-  enabled: true
-  name: 'message'
-  aliases: ['msg', 'whisper', 'w']
-mute:
-  enabled: true
-  name: 'mute'
-  aliases: ['m']
-nickname:
-  enabled: true
-  name: 'nickname'
-  aliases: ['nick']
-reply:
-  enabled: true
-  name: 'reply'
-  aliases: ['r']
-setcolor:
-  enabled: true
-  name: 'setcolor'
-  aliases: ['setcolor']
-shadowmute:
-  enabled: true
-  name: 'shadowmute'
-  aliases: ['sm', 'smute']
-spy:
-  enabled: true
-  name: 'spy'
-  aliases: ['spych', 'spychannel']
-sudochannel:
-  enabled: true
-  name: 'sudochannel'
-  aliases: ['sch', 'sudoch', 'schannel', 'chsudo', 'channelsudo']
-toggle:
-  enabled: true
-  name: 'toggle'
-  aliases: ['togglechannel', 'tch', 'togglech', 'tchannel', 'togglec']
+registry:
+  channel:
+    enabled: true
+    name: channel
+    aliases: [ch, switch, join]
+  channellist:
+    enabled: true
+    name: channellist
+    aliases: [chlist]
+  chatreload:
+    enabled: true
+    name: chatreload
+    aliases: [creload, cr]
+  clearchat:
+    enabled: true
+    name: clearchat
+    aliases: [clear, cc]
+  ignore:
+    enabled: true
+    name: ignore
+    aliases: [block]
+  me:
+    enabled: true
+    name: me
+    aliases: [rp]
+  message:
+    enabled: true
+    name: message
+    aliases: [msg, whisper, w]
+  mute:
+    enabled: true
+    name: mute
+    aliases: [m]
+  nickname:
+    enabled: true
+    name: nickname
+    aliases: [nick]
+  reply:
+    enabled: true
+    name: reply
+    aliases: [r]
+  setcolor:
+    enabled: true
+    name: setcolor
+    aliases: [setcolor]
+  shadowmute:
+    enabled: true
+    name: shadowmute
+    aliases: [sm, smute]
+  spy:
+    enabled: true
+    name: spy
+    aliases: [spych, spychannel]
+  sudochannel:
+    enabled: true
+    name: sudochannel
+    aliases: [sch, sudoch, schannel, chsudo, channelsudo]
+  toggle:
+    enabled: true
+    name: toggle
+    aliases: [togglechannel, tch, togglech, tchannel, togglec]

@@ -12,13 +12,20 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MessageCommand {
 
+  @NonNull
+  private final CarbonChat carbonChat;
+
   public MessageCommand(final @NonNull CommandManager<ChatUser> commandManager) {
+    this.carbonChat = CarbonChatProvider.carbonChat();
+
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
-    final CommandSettings commandSettings = carbonChat.commandSettingsRegistry().get("message");
+    final CommandSettings commandSettings = carbonChat.commandSettings().get("message");
 
     if (!commandSettings.enabled()) {
       return;
     }
+
+    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
 
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

@@ -21,11 +21,13 @@ public class SpyChannelCommand {
   public SpyChannelCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
-    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("spy");
+    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("spy");
 
     if (!commandSettings.enabled()) {
       return;
     }
+
+    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
 
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

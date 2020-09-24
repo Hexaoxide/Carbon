@@ -41,7 +41,7 @@ public interface CarbonChat {
 
   @NonNull ChannelRegistry channelRegistry();
 
-  @NonNull CommandSettingsRegistry commandSettingsRegistry();
+  @NonNull CommandSettingsRegistry commandSettings();
 
   @NonNull CarbonTranslations translations();
 

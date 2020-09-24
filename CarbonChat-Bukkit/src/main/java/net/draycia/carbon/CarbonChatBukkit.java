@@ -66,6 +66,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.BasicConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
@@ -232,12 +233,16 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadCarbonSettings() {
     final File settingsFile = new File(this.getDataFolder(), "config.yml");
+
     final YamlConfigurationLoader settingsLoader = YamlConfigurationLoader.builder()
+      .setNodeStyle(NodeStyle.BLOCK)
       .setDefaultOptions(opts -> {
         return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
           builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
         });
-      }).setFile(settingsFile).build();
+      })
+      .setFile(settingsFile)
+      .build();
 
     try {
       final BasicConfigurationNode settingsNode = settingsLoader.load();
@@ -250,12 +255,16 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadLanguage() {
     final File languageFile = new File(this.getDataFolder(), "language.yml");
+
     final YamlConfigurationLoader languageLoader = YamlConfigurationLoader.builder()
+      .setNodeStyle(NodeStyle.BLOCK)
       .setDefaultOptions(opts -> {
         return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
           builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
         });
-      }).setFile(languageFile).build();
+      })
+      .setFile(languageFile)
+      .build();
 
     try {
       final BasicConfigurationNode languageNode = languageLoader.load();
@@ -268,12 +277,16 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadModerationSettings() {
     final File moderationFile = new File(this.getDataFolder(), "moderation.yml");
+
     final YamlConfigurationLoader moderationLoader = YamlConfigurationLoader.builder()
+      .setNodeStyle(NodeStyle.BLOCK)
       .setDefaultOptions(opts -> {
         return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
           builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
         });
-      }).setFile(moderationFile).build();
+      })
+      .setFile(moderationFile)
+      .build();
 
     try {
       final BasicConfigurationNode moderationNode = moderationLoader.load();
@@ -293,11 +306,10 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     final YamlConfigurationLoader commandSettingsLoader = YamlConfigurationLoader.builder()
-      .setDefaultOptions(opts -> {
-        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
-          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
-        });
-      }).setFile(carbonCommands).build();
+      .setNodeStyle(NodeStyle.BLOCK)
+      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true))
+      .setFile(carbonCommands)
+      .build();
 
     try {
       final BasicConfigurationNode commandSettingsNode = commandSettingsLoader.load();
@@ -345,11 +357,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   @Override
-  public @NonNull CommandSettingsRegistry commandSettingsRegistry() {
-    return this.commandSettings;
-  }
-
-  @Override
   public @NonNull CarbonTranslations translations() {
     return this.translations;
   }
@@ -362,6 +369,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @Override
   public @NonNull CarbonSettings carbonSettings() {
     return this.carbonSettings;
+  }
+
+  @Override
+  public @NonNull CommandSettingsRegistry commandSettings() {
+    return this.commandSettings;
   }
 
   @Override

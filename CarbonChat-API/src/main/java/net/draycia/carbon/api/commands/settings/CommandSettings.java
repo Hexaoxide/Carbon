@@ -10,19 +10,13 @@ import java.util.Set;
 public class CommandSettings {
 
   @Setting
-  private final boolean enabled;
+  private boolean enabled;
 
   @Setting
-  private final @NonNull String name;
+  private @NonNull String name;
 
   @Setting
-  private final @NonNull Set<@NonNull String> aliases;
-
-  public CommandSettings(final boolean enabled, final @NonNull String name, final @NonNull Set<@NonNull String> aliases) {
-    this.enabled = enabled;
-    this.name = name;
-    this.aliases = aliases;
-  }
+  private @NonNull Set<@NonNull String> aliases;
 
   public @NonNull Set<@NonNull String> aliases() {
     return this.aliases;

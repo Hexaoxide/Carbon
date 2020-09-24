@@ -18,11 +18,13 @@ public class NicknameCommand {
   public NicknameCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
-    final CommandSettings commandSettings = this.carbonChat.commandSettingsRegistry().get("nickname");
+    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("nickname");
 
     if (!commandSettings.enabled()) {
       return;
     }
+
+    this.carbonChat.logger().info("Registering command [" + commandSettings.name() + "]");
 
     // TODO: make this deterministic, has to be Nickname -> User
     commandManager.command(
