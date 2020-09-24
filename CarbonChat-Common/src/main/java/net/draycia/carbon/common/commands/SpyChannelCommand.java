@@ -54,7 +54,7 @@ public class SpyChannelCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.spy")
-        .argument(StaticArgument.required("*"))
+        .argument(StaticArgument.required("everything"))
         .argument(BooleanArgument.required("enabled"))
         .handler(this::spyEverything)
         .build()

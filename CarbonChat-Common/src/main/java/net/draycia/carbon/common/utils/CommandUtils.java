@@ -13,8 +13,8 @@ public final class CommandUtils {
   }
 
   // TODO: turn this into a proper class that handles suggestions
-  private static final CommandArgument<ChatUser, ChatChannel> channelArgument =
-    CommandArgument.<ChatUser, ChatChannel>ofType(ChatChannel.class, "channel")
+  public static CommandArgument<ChatUser, ChatChannel> channelArgument() {
+    return CommandArgument.<ChatUser, ChatChannel>ofType(ChatChannel.class, "channel")
       .asRequired()
       .withParser((c, i) -> {
         final String input = i.peek();
@@ -33,14 +33,11 @@ public final class CommandUtils {
         }
       })
       .build();
-
-  public static CommandArgument<ChatUser, ChatChannel> channelArgument() {
-    return channelArgument;
   }
 
   // TODO: turn this into a proper class that handles suggestions
-  private static final CommandArgument<ChatUser, ChatUser> chatUserArgument =
-    CommandArgument.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
+  public static CommandArgument<ChatUser, ChatUser> chatUserArgument() {
+    return CommandArgument.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
       .asRequired()
       .withParser((c, i) -> {
         final String input = i.peek();
@@ -59,9 +56,6 @@ public final class CommandUtils {
         }
       })
       .build();
-
-  public static CommandArgument<ChatUser, ChatUser> chatUserArgument() {
-    return chatUserArgument;
   }
 
 }
