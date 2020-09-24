@@ -77,9 +77,8 @@ tasks.build.dependsOn tasks.shadowJar
 // Output a single jar
 shadowJar {
   minimize()
-  // TODO: set this up for API and all platforms
   archiveFileName.set(project.description + "-" + project.property('projectVersion') + ".jar")
-  destinationDirectory = rootProject.projectDir
+  destinationDirectory = rootProject.getBuildDir()
 }
 
 jar {
