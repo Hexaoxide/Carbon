@@ -8,6 +8,7 @@ import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class CarbonSettings {
   private boolean showTips = true;
 
   @Setting(comment = "")
-  private @NonNull List<@NonNull ChannelSettings> channelSettings; // TODO: unfuck this, it's loaded from file?
+  private @NonNull List<@NonNull ChannelSettings> channelSettings = new ArrayList<>(); // TODO: unfuck this, it's loaded from file?
 
   @Setting(comment = "Options: JSON, MYSQL")
   private @Nullable StorageType storageType = StorageType.JSON;
