@@ -8,12 +8,11 @@ import org.spongepowered.configurate.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public final class ChannelPings {
-  @Setting
-  private boolean enabled = true;
+  @Setting private boolean enabled = true;
   @Setting private @NonNull String prefix = "";
   @Setting private boolean caseSensitive = false;
-  @Setting private @NonNull
-  Key sound = Key.of(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup");
+  @Setting private @NonNull Key sound =
+    Key.of(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup");
   @Setting private Sound.Source source = Sound.Source.PLAYER;
   @Setting private float volume = 10.0F;
   @Setting private float pitch = 1.0F;

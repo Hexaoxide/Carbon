@@ -27,10 +27,10 @@ public class ChannelSettings {
   @Setting private boolean honorsRecipientList = false;
   @Setting private boolean permissionGroupMatching = false;
   @Setting private List<String> groupOverrides = new ArrayList<>();
-  @Setting private String name;
-  @Setting private String messagePrefix;
+  @Setting private String name = null;
+  @Setting private String messagePrefix = "";
   @Setting private List<Pattern> itemLinkPatterns = Collections.singletonList(Pattern.compile(Pattern.quote("[item]")));
-  @Setting private List<String> aliases;
+  @Setting private List<String> aliases = new ArrayList<>();
   @Setting private boolean shouldCancelChatEvent = false;
   @Setting private boolean primaryGroupOnly = false;
   @Setting private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
