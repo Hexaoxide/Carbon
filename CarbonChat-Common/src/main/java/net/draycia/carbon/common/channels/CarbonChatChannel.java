@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.channels;
 
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.config.ChannelSettings;
+import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.common.utils.ColorUtils;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
@@ -33,15 +33,15 @@ public class CarbonChatChannel implements ChatChannel {
   private final CarbonChat carbonChat;
 
   @NonNull
-  private final ChannelSettings settings;
+  private final ChannelOptions options;
 
-  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, @Nullable final ChannelSettings settings) {
+  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, @Nullable final ChannelOptions options) {
     this.carbonChat = carbonChat;
-    this.settings = settings;
+    this.options = options;
   }
   
-  public @NonNull ChannelSettings settings() {
-    return this.settings;
+  public @NonNull ChannelOptions options() {
+    return this.options;
   }
 
   @NonNull
@@ -271,7 +271,7 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   @Nullable
   public String format(final @NonNull String group) {
-    return this.settings().formats().get("formats." + group);
+    return this.options().formats().get("formats." + group);
   }
 
   private boolean isUserSpying(final @NonNull ChatUser sender, final @NonNull ChatUser target) {
@@ -339,7 +339,7 @@ public class CarbonChatChannel implements ChatChannel {
       return userColor;
     }
 
-    final String input = this.settings().color();
+    final String input = this.options().color();
 
     final TextColor color = ColorUtils.parseColor(user, input);
 
@@ -357,114 +357,114 @@ public class CarbonChatChannel implements ChatChannel {
 
   @Nullable
   public String defaultFormatName() {
-    return this.settings().defaultFormatName();
+    return this.options().defaultFormatName();
   }
 
   @Override
   public boolean isDefault() {
-    return this.settings().isDefault();
+    return this.options().isDefault();
   }
 
   @Override
   public boolean ignorable() {
-    return this.settings().ignorable();
+    return this.options().ignorable();
   }
 
   @Override
   public boolean crossServer() {
-    return this.settings().crossServer();
+    return this.options().crossServer();
   }
 
   @Override
   public boolean honorsRecipientList() {
-    return this.settings().honorsRecipientList();
+    return this.options().honorsRecipientList();
   }
 
   @Override
   public boolean permissionGroupMatching() {
-    return this.settings().permissionGroupMatching();
+    return this.options().permissionGroupMatching();
   }
 
   @Override
   @NonNull
   public List<@NonNull String> groupOverrides() {
-    return this.settings().groupOverrides();
+    return this.options().groupOverrides();
   }
 
   @Override
   @NonNull
   public String name() {
-    return this.settings().name();
+    return this.options().name();
   }
 
   @Override
   @Nullable
   public String messagePrefix() {
-    return this.settings().messagePrefix();
+    return this.options().messagePrefix();
   }
 
   @Override
   @Nullable
   public String switchMessage() {
-    return this.settings().switchMessage();
+    return this.options().switchMessage();
   }
 
   @Override
   @Nullable
   public String switchOtherMessage() {
-    return this.settings().switchOtherMessage();
+    return this.options().switchOtherMessage();
   }
 
   @Override
   @Nullable
   public String switchFailureMessage() {
-    return this.settings().switchFailureMessage();
+    return this.options().switchFailureMessage();
   }
 
   @Override
   @Nullable
   public String cannotIgnoreMessage() {
-    return this.settings().cannotIgnoreMessage();
+    return this.options().cannotIgnoreMessage();
   }
 
   @Override
   @Nullable
   public String toggleOffMessage() {
-    return this.settings().toggleOffMessage();
+    return this.options().toggleOffMessage();
   }
 
   @Override
   @Nullable
   public String toggleOnMessage() {
-    return this.settings().toggleOnMessage();
+    return this.options().toggleOnMessage();
   }
 
   @Override
   @Nullable
   public String toggleOtherOnMessage() {
-    return this.settings().toggleOtherOnMessage();
+    return this.options().toggleOtherOnMessage();
   }
 
   @Override
   @Nullable
   public String toggleOtherOffMessage() {
-    return this.settings().toggleOtherOffMessage();
+    return this.options().toggleOtherOffMessage();
   }
 
   @Override
   @Nullable
   public String cannotUseMessage() {
-    return this.settings().cannotUseMessage();
+    return this.options().cannotUseMessage();
   }
 
   @Override
   public boolean primaryGroupOnly() {
-    return this.settings().primaryGroupOnly();
+    return this.options().primaryGroupOnly();
   }
 
   @Override
   public boolean shouldCancelChatEvent() {
-    return this.settings().shouldCancelChatEvent();
+    return this.options().shouldCancelChatEvent();
   }
 
   @Override
@@ -476,19 +476,19 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   @Nullable
   public List<String> aliases() {
-    return this.settings().aliases();
+    return this.options().aliases();
   }
 
   @Override
   @Nullable
   public Context context(final @NonNull String key) {
-    return this.settings().contexts().get(key);
+    return this.options().contexts().get(key);
   }
 
   @Override
   @NonNull
   public String key() {
-    return this.settings().key();
+    return this.options().key();
   }
 
 }

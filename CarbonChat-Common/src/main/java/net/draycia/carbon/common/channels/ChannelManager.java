@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.channels;
 
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.config.ChannelSettings;
+import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
@@ -32,7 +32,7 @@ public class ChannelManager {
     this.reload();
   }
 
-  public @Nullable ChatChannel loadChannel(final @NonNull ChannelSettings settings) {
+  public @Nullable ChatChannel loadChannel(final @NonNull ChannelOptions settings) {
     final ChatChannel channel = new CarbonChatChannel(this.carbonChat, settings);
 
     final String name = settings.name();
@@ -84,8 +84,8 @@ public class ChannelManager {
   }
 
   private void reload() {
-    for (final ChannelSettings settings : this.carbonChat.carbonSettings().channelSettings()) {
-      final ChatChannel channel = this.loadChannel(settings);
+    for (final ChannelOptions options : this.carbonChat.carbonSettings().channelOptions()) {
+      final ChatChannel channel = this.loadChannel(options);
 
       if (channel != null) {
         this.registerChannel(channel);

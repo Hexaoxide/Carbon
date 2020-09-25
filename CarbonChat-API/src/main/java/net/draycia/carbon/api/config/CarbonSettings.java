@@ -108,7 +108,7 @@ public class CarbonSettings {
     return this.showTips;
   }
 
-  public @NonNull List<@NonNull ChannelOptions> channelSettings() {
+  public @NonNull List<@NonNull ChannelOptions> channelOptions() {
     return this.channelSettings;
   }
 
