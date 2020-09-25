@@ -235,67 +235,77 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadCarbonSettings() {
     try {
-      final CommentedConfigurationNode node =
+      final HoconConfigurationLoader loader =
         this.loadConfigFile("config.conf", false);
+      final CommentedConfigurationNode node = loader.load();
 
       this.carbonSettings = CarbonSettings.loadFrom(node);
-    } catch (final ObjectMappingException exception) {
+      loader.save(node);
+    } catch (final ObjectMappingException | IOException exception) {
       exception.printStackTrace();
     }
   }
 
   private void loadLanguage() {
     try {
-      final CommentedConfigurationNode node =
+      final HoconConfigurationLoader loader =
         this.loadConfigFile("language.conf", false);
+      final CommentedConfigurationNode node = loader.load();
 
       this.translations = CarbonTranslations.loadFrom(node);
-    } catch (final ObjectMappingException exception) {
+      loader.save(node);
+    } catch (final ObjectMappingException | IOException exception) {
       exception.printStackTrace();
     }
   }
 
   private void loadModerationSettings() {
     try {
-      final CommentedConfigurationNode node =
+      final HoconConfigurationLoader loader =
         this.loadConfigFile("moderation.conf", false);
+      final CommentedConfigurationNode node = loader.load();
 
       this.moderationSettings = ModerationSettings.loadFrom(node);
-    } catch (final ObjectMappingException exception) {
+      loader.save(node);
+    } catch (final ObjectMappingException | IOException exception) {
       exception.printStackTrace();
     }
   }
 
   private void loadCommandSettings() {
     try {
-      final CommentedConfigurationNode node =
+      final HoconConfigurationLoader loader =
         this.loadConfigFile("carbonCommands.conf", true);
+      final CommentedConfigurationNode node = loader.load();
 
       this.commandSettings = CommandSettingsRegistry.loadFrom(node);
-    } catch (final ObjectMappingException exception) {
+      loader.save(node);
+    } catch (final ObjectMappingException | IOException exception) {
       exception.printStackTrace();
     }
   }
 
   private void loadChannelSettings() {
     try {
-      final CommentedConfigurationNode node =
+      final HoconConfigurationLoader loader =
         this.loadConfigFile("channels.conf", false);
+      final CommentedConfigurationNode node = loader.load();
 
       this.channelSettings = ChannelSettings.loadFrom(node);
-    } catch (final ObjectMappingException exception) {
+      loader.save(node);
+    } catch (final ObjectMappingException | IOException exception) {
       exception.printStackTrace();
     }
   }
 
-  private CommentedConfigurationNode loadConfigFile(final String fileName, final boolean saveResource) {
+  private HoconConfigurationLoader loadConfigFile(final String fileName, final boolean saveResource) {
     final File configFile = new File(this.getDataFolder(), fileName);
 
     if (!(configFile.exists()) && saveResource) {
       this.saveResource(fileName, false);
     }
 
-    final HoconConfigurationLoader configLoader = HoconConfigurationLoader.builder()
+    return HoconConfigurationLoader.builder()
       .setDefaultOptions(opts -> {
         return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
           builder.register(Key.class, KeySerializer.INSTANCE)
@@ -304,17 +314,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       })
       .setFile(configFile)
       .build();
-
-    try {
-      final CommentedConfigurationNode configNode = configLoader.load();
-      configLoader.save(configNode);
-
-      return configNode;
-    } catch (final IOException exception) {
-      exception.printStackTrace();
-    }
-
-    return null;
   }
 
   private void registerContexts() {

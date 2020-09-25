@@ -17,30 +17,30 @@ import java.util.Map;
 public class ChannelOptions {
 
   @Setting private String key = "channel";
-  @Setting private String color = "#FFFFFF";
+  @Setting private String color;
   @Setting private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults
   @Setting private Map<String, String> formats = new HashMap<>(); // TODO: set defaults
-  @Setting private String defaultFormatName = "default";
+  @Setting private String defaultFormatName;
   @Setting private boolean isDefault = false; // primitive because missing = false
-  @Setting private Boolean ignorable = true; // boxed because missing = use defaults
-  @Setting private Boolean crossServer = true;
-  @Setting private Boolean honorsRecipientList = false;
-  @Setting private Boolean permissionGroupMatching = false;
-  @Setting private List<String> groupOverrides = new ArrayList<>();
+  @Setting private Boolean ignorable; // boxed because missing = use defaults
+  @Setting private Boolean crossServer;
+  @Setting private Boolean honorsRecipientList;
+  @Setting private Boolean permissionGroupMatching;
+  @Setting private List<String> groupOverrides;
   @Setting private String name = "";
   @Setting private String messagePrefix = "";
   @Setting private List<String> aliases = new ArrayList<>();
-  @Setting private Boolean shouldCancelChatEvent = false;
-  @Setting private Boolean primaryGroupOnly = false;
-  @Setting private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
-  @Setting private String switchOtherMessage = "<gray><player> <reset><gray>is now in <color><channel> <gray>chat!";
-  @Setting private String switchFailureMessage = "<red>You cannot use channel <channel>!";
-  @Setting private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
-  @Setting private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
-  @Setting private String toggleOtherOnMessage = "<gray><player> <reset><gray>can now see <color><channel> <gray>chat!";
-  @Setting private String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
-  @Setting private String cannotUseMessage = "You cannot use that channel!";
-  @Setting private String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
+  @Setting private Boolean shouldCancelChatEvent;
+  @Setting private Boolean primaryGroupOnly;
+  @Setting private String switchMessage;
+  @Setting private String switchOtherMessage;
+  @Setting private String switchFailureMessage;
+  @Setting private String toggleOnMessage;
+  @Setting private String toggleOffMessage;
+  @Setting private String toggleOtherOnMessage;
+  @Setting private String toggleOtherOffMessage;
+  @Setting private String cannotUseMessage;
+  @Setting private String cannotIgnoreMessage;
   
   private SharedChannelOptions defaultOptions() {
     return CarbonChatProvider.carbonChat().channelSettings().defaultChannelOptions();
