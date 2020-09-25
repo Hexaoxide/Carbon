@@ -470,7 +470,7 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   @NonNull
   public List<@NonNull Pattern> itemLinkPatterns() {
-    return this.settings().itemLinkPatterns();
+    return this.carbonChat.carbonSettings().itemLinkPatterns();
   }
 
   @Override

@@ -5,6 +5,7 @@ import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
 import net.draycia.carbon.api.config.CarbonSettings;
+import net.draycia.carbon.api.config.ChannelSettings;
 import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
@@ -38,6 +39,8 @@ public interface CarbonChat {
   @NonNull MessageService messageService();
 
   @NonNull CarbonSettings carbonSettings();
+
+  @NonNull ChannelSettings channelSettings();
 
   @NonNull ChannelRegistry channelRegistry();
 

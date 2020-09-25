@@ -2,16 +2,18 @@ package net.draycia.carbon.api.config;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.BasicConfigurationNode;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @ConfigSerializable
 public class CarbonSettings {
@@ -26,11 +28,11 @@ public class CarbonSettings {
     }
   }
 
-  public static CarbonSettings loadFrom(final BasicConfigurationNode node) throws ObjectMappingException {
+  public static CarbonSettings loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
     return MAPPER.bindToNew().populate(node);
   }
 
-  public void saveTo(final BasicConfigurationNode node) throws ObjectMappingException {
+  public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
     MAPPER.bind(this).serialize(node);
   }
 
@@ -44,7 +46,7 @@ public class CarbonSettings {
   private boolean showTips = true;
 
   @Setting(comment = "")
-  private @NonNull List<@NonNull ChannelSettings> channelSettings = new ArrayList<>(); // TODO: unfuck this, it's loaded from file?
+  private @NonNull List<@NonNull ChannelOptions> channelSettings = new ArrayList<>(); // TODO: unfuck this, it's loaded from file?
 
   @Setting(comment = "Options: JSON, MYSQL")
   private @Nullable StorageType storageType = StorageType.JSON;
@@ -86,6 +88,14 @@ public class CarbonSettings {
     "\nFor example, channel-on-join: \"global\" sets their channel to global on join")
   private @Nullable String channelOnJoin = "";
 
+  @Setting private List<Pattern> itemLinkPatterns =
+    Collections.singletonList(Pattern.compile(Pattern.quote("[item]")));
+
+  @NonNull
+  public List<@NonNull Pattern> itemLinkPatterns() {
+    return this.itemLinkPatterns;
+  }
+
   public @NonNull String spyPrefix() {
     return this.spyPrefix;
   }
@@ -98,7 +108,7 @@ public class CarbonSettings {
     return this.showTips;
   }
 
-  public @NonNull List<@NonNull ChannelSettings> channelSettings() {
+  public @NonNull List<@NonNull ChannelOptions> channelSettings() {
     return this.channelSettings;
   }
 

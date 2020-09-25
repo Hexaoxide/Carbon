@@ -1,173 +1,52 @@
 package net.draycia.carbon.api.config;
 
-import net.draycia.carbon.api.Context;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.objectmapping.ObjectMapper;
+import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 @ConfigSerializable
 public class ChannelSettings {
 
-  @Setting private String key = "channel";
-  @Setting private String color = "#FFFFFF";
-  @Setting private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults
-  @Setting private Map<String, String> formats = new HashMap<>(); // TODO: set defaults
-  @Setting private String defaultFormatName = "default";
-  @Setting private boolean isDefault = false;
-  @Setting private boolean ignorable = true;
-  @Setting private boolean crossServer = true;
-  @Setting private boolean honorsRecipientList = false;
-  @Setting private boolean permissionGroupMatching = false;
-  @Setting private List<String> groupOverrides = new ArrayList<>();
-  @Setting private String name = null;
-  @Setting private String messagePrefix = "";
-  @Setting private List<Pattern> itemLinkPatterns = Collections.singletonList(Pattern.compile(Pattern.quote("[item]")));
-  @Setting private List<String> aliases = new ArrayList<>();
-  @Setting private boolean shouldCancelChatEvent = false;
-  @Setting private boolean primaryGroupOnly = false;
-  @Setting private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
-  @Setting private String switchOtherMessage = "<gray><player> <reset><gray>is now in <color><channel> <gray>chat!";
-  @Setting private String switchFailureMessage = "<red>You cannot use channel <channel>!";
-  @Setting private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
-  @Setting private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
-  @Setting private String toggleOtherOnMessage = "<gray><player> <reset><gray>can now see <color><channel> <gray>chat!";
-  @Setting private String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
-  @Setting private String cannotUseMessage = "You cannot use that channel!";
-  @Setting private String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
+  private static final ObjectMapper<ChannelSettings> MAPPER;
 
-  @NonNull
-  public String key() {
-    return this.key;
-  }
-
-  @Nullable
-  public String color() {
-    return this.color;
-  }
-
-  @Nullable
-  public Map<String, Context> contexts() {
-    return this.contexts;
-  }
-
-  @Nullable
-  public Map<String, String> formats() {
-    return this.formats;
-  }
-
-  @Nullable
-  public String defaultFormatName() {
-    return this.defaultFormatName;
-  }
-
-  public boolean isDefault() {
-    return this.isDefault;
-  }
-
-  public boolean ignorable() {
-    return this.ignorable;
-  }
-
-  public boolean crossServer() {
-    return this.crossServer;
-  }
-
-  public boolean honorsRecipientList() {
-    return this.honorsRecipientList;
-  }
-
-  public boolean permissionGroupMatching() {
-    return this.permissionGroupMatching;
-  }
-
-  @NonNull
-  public List<@NonNull String> groupOverrides() {
-    return this.groupOverrides;
-  }
-
-  @NonNull
-  public String name() {
-    if (this.name == null) {
-      return this.key;
+  static {
+    try {
+      MAPPER = ObjectMapper.forClass(ChannelSettings.class); // We hold on to the instance of our ObjectMapper
+    } catch (final ObjectMappingException e) {
+      throw new ExceptionInInitializerError(e);
     }
-
-    return this.name;
   }
 
-  @Nullable
-  public String messagePrefix() {
-    return this.messagePrefix;
+  public static ChannelSettings loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
+    return MAPPER.bindToNew().populate(node);
   }
 
-  @Nullable
-  public String switchMessage() {
-    return this.switchMessage;
+  public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
+    MAPPER.bind(this).serialize(node);
   }
 
-  @Nullable
-  public String switchOtherMessage() {
-    return this.switchOtherMessage;
+  @Setting(comment = "All options here act like the defaults for all channels.\nAdding any of these options to any channel overrides the relevant defaults.")
+  private SharedChannelOptions sharedChannelOptions = new SharedChannelOptions();
+
+  @Setting
+  private Map<String, ChannelOptions> channelOptions =
+    Collections.singletonMap("global", ChannelOptions.defaultChannel());
+
+  public SharedChannelOptions defaultChannelOptions() {
+    return this.sharedChannelOptions;
   }
 
-  @Nullable
-  public String switchFailureMessage() {
-    return this.switchFailureMessage;
+  public Map<String, ChannelOptions> channelOptions() {
+    return this.channelOptions;
   }
 
-  @Nullable
-  public String cannotIgnoreMessage() {
-    return this.cannotIgnoreMessage;
-  }
-
-  @Nullable
-  public String toggleOffMessage() {
-    return this.toggleOffMessage;
-  }
-
-  @Nullable
-  public String toggleOnMessage() {
-    return this.toggleOnMessage;
-  }
-
-  @Nullable
-  public String toggleOtherOnMessage() {
-    return this.toggleOtherOnMessage;
-  }
-
-  @Nullable
-  public String toggleOtherOffMessage() {
-    return this.toggleOtherOffMessage;
-  }
-
-  @Nullable
-  public String cannotUseMessage() {
-    return this.cannotUseMessage;
-  }
-
-  public boolean primaryGroupOnly() {
-    return this.primaryGroupOnly;
-  }
-
-  public boolean shouldCancelChatEvent() {
-    return this.shouldCancelChatEvent;
-  }
-
-  @NonNull
-  public List<@NonNull Pattern> itemLinkPatterns() {
-    return this.itemLinkPatterns;
-  }
-
-  @Nullable
-  public List<String> aliases() {
-    return this.aliases;
+  public ChannelOptions channelOptions(final String name) {
+    return this.channelOptions.get(name);
   }
 
 }

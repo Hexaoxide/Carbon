@@ -97,9 +97,5 @@ contexts:
   mcMMO:
     cancellation-message: '<red>You do not have a party!'
 
-item-link-placeholders:
-  - '[item]'
-  - '%item%'
-
 # Determines if the player's tab menu name is updated with /nickname
 nicknames-set-tab-name: true

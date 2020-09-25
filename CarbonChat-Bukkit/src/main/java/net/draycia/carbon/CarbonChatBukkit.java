@@ -9,6 +9,7 @@ import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
 import net.draycia.carbon.api.config.CarbonSettings;
+import net.draycia.carbon.api.config.ChannelSettings;
 import net.draycia.carbon.api.config.MessagingType;
 import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.config.StorageType;
@@ -64,10 +65,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.configurate.BasicConfigurationNode;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.configurate.yaml.NodeStyle;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +86,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private CommandSettingsRegistry commandSettings;
   private ModerationSettings moderationSettings;
   private CarbonSettings carbonSettings;
+  private ChannelSettings channelSettings;
 
   private UserService<BukkitChatUser> userService;
   private MessageManager messageManager;
@@ -228,96 +229,92 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     this.loadCarbonSettings();
     this.loadLanguage();
     this.loadModerationSettings();
+    this.loadChannelSettings();
     this.loadCommandSettings();
   }
 
   private void loadCarbonSettings() {
-    final File settingsFile = new File(this.getDataFolder(), "config.yml");
-
-    final YamlConfigurationLoader settingsLoader = YamlConfigurationLoader.builder()
-      .setNodeStyle(NodeStyle.BLOCK)
-      .setDefaultOptions(opts -> {
-        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
-          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
-        });
-      })
-      .setFile(settingsFile)
-      .build();
-
     try {
-      final BasicConfigurationNode settingsNode = settingsLoader.load();
-      this.carbonSettings = CarbonSettings.loadFrom(settingsNode);
-      settingsLoader.save(settingsNode);
-    } catch (final IOException | ObjectMappingException exception) {
+      final CommentedConfigurationNode node =
+        this.loadConfigFile("config.conf", false);
+
+      this.carbonSettings = CarbonSettings.loadFrom(node);
+    } catch (final ObjectMappingException exception) {
       exception.printStackTrace();
     }
   }
 
   private void loadLanguage() {
-    final File languageFile = new File(this.getDataFolder(), "language.yml");
-
-    final YamlConfigurationLoader languageLoader = YamlConfigurationLoader.builder()
-      .setNodeStyle(NodeStyle.BLOCK)
-      .setDefaultOptions(opts -> {
-        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
-          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
-        });
-      })
-      .setFile(languageFile)
-      .build();
-
     try {
-      final BasicConfigurationNode languageNode = languageLoader.load();
-      this.translations = CarbonTranslations.loadFrom(languageNode);
-      languageLoader.save(languageNode);
-    } catch (final IOException | ObjectMappingException exception) {
+      final CommentedConfigurationNode node =
+        this.loadConfigFile("language.conf", false);
+
+      this.translations = CarbonTranslations.loadFrom(node);
+    } catch (final ObjectMappingException exception) {
       exception.printStackTrace();
     }
   }
 
   private void loadModerationSettings() {
-    final File moderationFile = new File(this.getDataFolder(), "moderation.yml");
-
-    final YamlConfigurationLoader moderationLoader = YamlConfigurationLoader.builder()
-      .setNodeStyle(NodeStyle.BLOCK)
-      .setDefaultOptions(opts -> {
-        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
-          builder.register(Key.class, KeySerializer.INSTANCE).register(Sound.class, SoundSerializer.INSTANCE);
-        });
-      })
-      .setFile(moderationFile)
-      .build();
-
     try {
-      final BasicConfigurationNode moderationNode = moderationLoader.load();
-      this.moderationSettings = ModerationSettings.loadFrom(moderationNode);
-      moderationLoader.save(moderationNode);
-    } catch (final IOException | ObjectMappingException exception) {
+      final CommentedConfigurationNode node =
+        this.loadConfigFile("moderation.conf", false);
+
+      this.moderationSettings = ModerationSettings.loadFrom(node);
+    } catch (final ObjectMappingException exception) {
       exception.printStackTrace();
     }
   }
 
   private void loadCommandSettings() {
-    // TODO: probably redo this from scratch
-    final File carbonCommands = new File(this.getDataFolder(), "carbon-commands.yml");
+    try {
+      final CommentedConfigurationNode node =
+        this.loadConfigFile("carbonCommands.conf", true);
 
-    if (!(carbonCommands.exists())) {
-      this.saveResource("carbon-commands.yml", false);
+      this.commandSettings = CommandSettingsRegistry.loadFrom(node);
+    } catch (final ObjectMappingException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  private void loadChannelSettings() {
+    try {
+      final CommentedConfigurationNode node =
+        this.loadConfigFile("channels.conf", true);
+
+      this.channelSettings = ChannelSettings.loadFrom(node);
+    } catch (final ObjectMappingException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  private CommentedConfigurationNode loadConfigFile(final String fileName, final boolean saveResource) {
+    final File configFile = new File(this.getDataFolder(), fileName);
+
+    if (!(configFile.exists()) && saveResource) {
+      this.saveResource(fileName, false);
     }
 
-    final YamlConfigurationLoader commandSettingsLoader = YamlConfigurationLoader.builder()
-      .setNodeStyle(NodeStyle.BLOCK)
-      .setDefaultOptions(opts -> opts.withShouldCopyDefaults(true))
-      .setFile(carbonCommands)
+    final HoconConfigurationLoader configLoader = HoconConfigurationLoader.builder()
+      .setDefaultOptions(opts -> {
+        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
+          builder.register(Key.class, KeySerializer.INSTANCE)
+            .register(Sound.class, SoundSerializer.INSTANCE);
+        });
+      })
+      .setFile(configFile)
       .build();
 
     try {
-      final BasicConfigurationNode commandSettingsNode = commandSettingsLoader.load();
-      this.commandSettings = CommandSettingsRegistry.loadFrom(commandSettingsNode);
-      commandSettingsLoader.save(commandSettingsNode);
-    } catch (final IOException | ObjectMappingException exception) {
+      final CommentedConfigurationNode configNode = configLoader.load();
+      configLoader.save(configNode);
+
+      return configNode;
+    } catch (final IOException exception) {
       exception.printStackTrace();
     }
+
+    return null;
   }
 
   private void registerContexts() {
@@ -369,6 +366,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @Override
   public @NonNull CarbonSettings carbonSettings() {
     return this.carbonSettings;
+  }
+
+  @Override
+  public @NonNull ChannelSettings channelSettings() {
+    return this.channelSettings;
   }
 
   @Override

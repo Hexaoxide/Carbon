@@ -1,6 +1,6 @@
 package net.draycia.carbon.api.adventure;
 
-import org.spongepowered.configurate.BasicConfigurationNode;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.Setting;
@@ -19,11 +19,11 @@ public class CarbonTranslations {
     }
   }
 
-  public static CarbonTranslations loadFrom(final BasicConfigurationNode node) throws ObjectMappingException {
+  public static CarbonTranslations loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
     return MAPPER.bindToNew().populate(node);
   }
 
-  public void saveTo(final BasicConfigurationNode node) throws ObjectMappingException {
+  public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
     MAPPER.bind(this).serialize(node);
   }
 

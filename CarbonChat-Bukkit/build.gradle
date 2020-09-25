@@ -6,7 +6,7 @@ plugins {
 description = 'CarbonChat-Bukkit'
 
 dependencies {
-  compile 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
+  compile 'org.spongepowered:configurate-hocon:4.0.0-SNAPSHOT'
 
   compile project(":CarbonChat-Common")
 

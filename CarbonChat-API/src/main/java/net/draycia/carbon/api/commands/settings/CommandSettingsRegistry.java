@@ -4,7 +4,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.registry.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.BasicConfigurationNode;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.Setting;
@@ -28,11 +28,11 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
     }
   }
 
-  public static CommandSettingsRegistry loadFrom(final BasicConfigurationNode node) throws ObjectMappingException {
+  public static CommandSettingsRegistry loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
     return MAPPER.bindToNew().populate(node);
   }
 
-  public void saveTo(final BasicConfigurationNode node) throws ObjectMappingException {
+  public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
     MAPPER.bind(this).serialize(node);
   }
 
