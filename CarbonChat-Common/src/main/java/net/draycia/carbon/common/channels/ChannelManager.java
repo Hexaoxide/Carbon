@@ -12,6 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collections;
+import java.util.Map;
 
 public class ChannelManager {
 
@@ -29,6 +30,7 @@ public class ChannelManager {
     this.carbonChat = carbonChat;
     this.registry = new ChannelRegistry();
 
+    this.carbonChat.logger().info("Loading channels!");
     this.reload();
   }
 
@@ -84,8 +86,13 @@ public class ChannelManager {
   }
 
   private void reload() {
-    for (final ChannelOptions options : this.carbonChat.carbonSettings().channelOptions()) {
-      final ChatChannel channel = this.loadChannel(options);
+    this.carbonChat.logger().info("Channels found: " +
+      this.carbonChat.channelSettings().channelOptions().size());
+
+    for (final Map.Entry<String, ChannelOptions> options :
+      this.carbonChat.channelSettings().channelOptions().entrySet()) {
+
+      final ChatChannel channel = this.loadChannel(options.getValue());
 
       if (channel != null) {
         this.registerChannel(channel);

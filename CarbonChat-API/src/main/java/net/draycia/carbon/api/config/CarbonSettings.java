@@ -8,7 +8,6 @@ import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,9 +43,6 @@ public class CarbonSettings {
 
   @Setting(comment = "Set this to false to disable warnings and tips when the plugin thinks there may be configuration issues.")
   private boolean showTips = true;
-
-  @Setting(comment = "")
-  private @NonNull List<@NonNull ChannelOptions> channelSettings = new ArrayList<>(); // TODO: unfuck this, it's loaded from file?
 
   @Setting(comment = "Options: JSON, MYSQL")
   private @Nullable StorageType storageType = StorageType.JSON;
@@ -106,10 +102,6 @@ public class CarbonSettings {
 
   public boolean showTips() {
     return this.showTips;
-  }
-
-  public @NonNull List<@NonNull ChannelOptions> channelOptions() {
-    return this.channelSettings;
   }
 
   public @Nullable StorageType storageType() {
