@@ -41,9 +41,10 @@ public class ChannelOptions {
   @Setting private String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
   @Setting private String cannotUseMessage = "You cannot use that channel!";
   @Setting private String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
-
-  private final SharedChannelOptions defaultOptions =
-    CarbonChatProvider.carbonChat().channelSettings().defaultChannelOptions();
+  
+  private SharedChannelOptions defaultOptions() {
+    return CarbonChatProvider.carbonChat().channelSettings().defaultChannelOptions();
+  }
 
   public static ChannelOptions defaultChannel() {
     final ChannelOptions settings = new ChannelOptions();
@@ -63,7 +64,7 @@ public class ChannelOptions {
   @Nullable
   public String color() {
     if (this.color == null) {
-      return this.defaultOptions.color();
+      return this.defaultOptions().color();
     }
 
     return this.color;
@@ -74,7 +75,7 @@ public class ChannelOptions {
     // TODO: properly implement default context inheritence
     // TODO: perhaps add an option to make it so overriding any context overrides all?
     if (this.contexts == null) {
-      return this.defaultOptions.contexts();
+      return this.defaultOptions().contexts();
     }
 
     return this.contexts;
@@ -85,7 +86,7 @@ public class ChannelOptions {
     // TODO: properly implement default format inheritence
     // TODO: perhaps add an option to make it so overriding any format overrides all?
     if (this.formats == null) {
-      return this.defaultOptions.formats();
+      return this.defaultOptions().formats();
     }
 
     return this.formats;
@@ -94,7 +95,7 @@ public class ChannelOptions {
   @Nullable
   public String defaultFormatName() {
     if (this.defaultFormatName == null || this.defaultFormatName.isEmpty()) {
-      return this.defaultOptions.defaultFormatName();
+      return this.defaultOptions().defaultFormatName();
     }
 
     return this.defaultFormatName;
@@ -106,7 +107,7 @@ public class ChannelOptions {
 
   public Boolean ignorable() {
     if (this.ignorable == null) {
-      return this.defaultOptions.ignorable();
+      return this.defaultOptions().ignorable();
     }
 
     return this.ignorable;
@@ -114,7 +115,7 @@ public class ChannelOptions {
 
   public Boolean crossServer() {
     if (this.crossServer == null) {
-      return this.defaultOptions.crossServer();
+      return this.defaultOptions().crossServer();
     }
 
     return this.crossServer;
@@ -122,7 +123,7 @@ public class ChannelOptions {
 
   public Boolean honorsRecipientList() {
     if (this.honorsRecipientList == null) {
-      return this.defaultOptions.honorsRecipientList();
+      return this.defaultOptions().honorsRecipientList();
     }
 
     return this.honorsRecipientList;
@@ -130,7 +131,7 @@ public class ChannelOptions {
 
   public Boolean permissionGroupMatching() {
     if (this.permissionGroupMatching == null) {
-      return this.defaultOptions.permissionGroupMatching();
+      return this.defaultOptions().permissionGroupMatching();
     }
 
     return this.permissionGroupMatching;
@@ -139,7 +140,7 @@ public class ChannelOptions {
   @NonNull
   public List<@NonNull String> groupOverrides() {
     if (this.groupOverrides == null) {
-      return this.defaultOptions.groupOverrides();
+      return this.defaultOptions().groupOverrides();
     }
 
     return this.groupOverrides;
@@ -162,7 +163,7 @@ public class ChannelOptions {
   @Nullable
   public String switchMessage() {
     if (this.switchMessage == null) {
-      return this.defaultOptions.switchMessage();
+      return this.defaultOptions().switchMessage();
     }
 
     return this.switchMessage;
@@ -171,7 +172,7 @@ public class ChannelOptions {
   @Nullable
   public String switchOtherMessage() {
     if (this.switchOtherMessage == null) {
-      return this.defaultOptions.switchOtherMessage();
+      return this.defaultOptions().switchOtherMessage();
     }
 
     return this.switchOtherMessage;
@@ -180,7 +181,7 @@ public class ChannelOptions {
   @Nullable
   public String switchFailureMessage() {
     if (this.switchFailureMessage == null) {
-      return this.defaultOptions.switchFailureMessage();
+      return this.defaultOptions().switchFailureMessage();
     }
 
     return this.switchFailureMessage;
@@ -189,7 +190,7 @@ public class ChannelOptions {
   @Nullable
   public String cannotIgnoreMessage() {
     if (this.cannotIgnoreMessage == null) {
-      return this.defaultOptions.cannotIgnoreMessage();
+      return this.defaultOptions().cannotIgnoreMessage();
     }
 
     return this.cannotIgnoreMessage;
@@ -198,7 +199,7 @@ public class ChannelOptions {
   @Nullable
   public String toggleOffMessage() {
     if (this.toggleOffMessage == null) {
-      return this.defaultOptions.toggleOffMessage();
+      return this.defaultOptions().toggleOffMessage();
     }
 
     return this.toggleOffMessage;
@@ -207,7 +208,7 @@ public class ChannelOptions {
   @Nullable
   public String toggleOnMessage() {
     if (this.toggleOnMessage == null) {
-      return this.defaultOptions.toggleOnMessage();
+      return this.defaultOptions().toggleOnMessage();
     }
 
     return this.toggleOnMessage;
@@ -216,7 +217,7 @@ public class ChannelOptions {
   @Nullable
   public String toggleOtherOnMessage() {
     if (this.toggleOtherOnMessage == null) {
-      return this.defaultOptions.toggleOtherOnMessage();
+      return this.defaultOptions().toggleOtherOnMessage();
     }
 
     return this.toggleOtherOnMessage;
@@ -225,7 +226,7 @@ public class ChannelOptions {
   @Nullable
   public String toggleOtherOffMessage() {
     if (this.toggleOtherOffMessage == null) {
-      return this.defaultOptions.toggleOtherOffMessage();
+      return this.defaultOptions().toggleOtherOffMessage();
     }
 
     return this.toggleOtherOffMessage;
@@ -234,7 +235,7 @@ public class ChannelOptions {
   @Nullable
   public String cannotUseMessage() {
     if (this.cannotUseMessage == null) {
-      return this.defaultOptions.cannotUseMessage();
+      return this.defaultOptions().cannotUseMessage();
     }
 
     return this.cannotUseMessage;
@@ -242,7 +243,7 @@ public class ChannelOptions {
 
   public Boolean primaryGroupOnly() {
     if (this.primaryGroupOnly == null) {
-      return this.defaultOptions.primaryGroupOnly();
+      return this.defaultOptions().primaryGroupOnly();
     }
 
     return this.primaryGroupOnly;
@@ -250,7 +251,7 @@ public class ChannelOptions {
 
   public Boolean shouldCancelChatEvent() {
     if (this.shouldCancelChatEvent == null) {
-      return this.defaultOptions.shouldCancelChatEvent();
+      return this.defaultOptions().shouldCancelChatEvent();
     }
 
     return this.shouldCancelChatEvent;

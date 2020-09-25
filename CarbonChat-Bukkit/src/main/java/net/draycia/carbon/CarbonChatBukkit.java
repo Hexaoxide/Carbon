@@ -280,7 +280,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private void loadChannelSettings() {
     try {
       final CommentedConfigurationNode node =
-        this.loadConfigFile("channels.conf", true);
+        this.loadConfigFile("channels.conf", false);
 
       this.channelSettings = ChannelSettings.loadFrom(node);
     } catch (final ObjectMappingException exception) {

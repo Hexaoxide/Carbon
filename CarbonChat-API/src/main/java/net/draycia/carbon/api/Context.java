@@ -1,13 +1,16 @@
 package net.draycia.carbon.api;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.configurate.objectmapping.Setting;
+import org.spongepowered.configurate.serialize.ConfigSerializable;
 
 import java.util.List;
 
+@ConfigSerializable
 public class Context {
 
-  private final @NonNull String key;
-  private final @NonNull Object value;
+  @Setting private final @NonNull String key;
+  @Setting private final @NonNull Object value;
 
   public Context(final @NonNull String key, final @NonNull Object value) {
     this.key = key;
