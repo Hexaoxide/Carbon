@@ -33,6 +33,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
   private final @NonNull Type userType;
   private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
   private final @NonNull Function<UUID, T> userFactory;
+  private final @NonNull Function<String, UUID> nameResolver;
 
   private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
@@ -41,11 +42,13 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
   public JSONUserService(final @NonNull Class<? extends ChatUser> userType,
                          final @NonNull CarbonChat carbonChat,
                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
-                         final @NonNull Function<UUID, T> userFactory) {
+                         final @NonNull Function<UUID, T> userFactory,
+                         final @NonNull Function<String, UUID> nameResolver) {
     this.userType = userType;
     this.carbonChat = carbonChat;
     this.supplier = supplier;
     this.userFactory = userFactory;
+    this.nameResolver = nameResolver;
 
     final TimerTask timerTask = new TimerTask() {
       @Override
@@ -54,7 +57,12 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
       }
     };
 
-    new Timer().schedule(timerTask, 0L, 300000L);
+    new Timer().schedule(timerTask, 300000L, 300000L);
+  }
+
+  @Override
+  public UUID resolve(final @NonNull String name) {
+    return this.nameResolver.apply(name);
   }
 
   @Override

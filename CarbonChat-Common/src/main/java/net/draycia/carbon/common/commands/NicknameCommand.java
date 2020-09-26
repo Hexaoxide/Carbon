@@ -24,25 +24,20 @@ public class NicknameCommand {
       return;
     }
 
-    // TODO: make this deterministic, has to be Nickname -> User
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.nickname")
         .argument(StringArgument.required("nickname"))
-        .handler(this::nicknameSelf)
-        .build()
-    );
-
-    commandManager.command(
-      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
-        commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
-        .withPermission("carbonchat.nickname")
-        .argument(CommandUtils.chatUserArgument())
-        .argument(StringArgument.required("nickname"))
-        .handler(this::nicknameOther)
+        .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.nickname.other
+        .handler(context -> {
+          if (context.get("user").isPresent()) {
+            this.nicknameOther(context);
+          } else {
+            this.nicknameSelf(context);
+          }
+        })
         .build()
     );
   }

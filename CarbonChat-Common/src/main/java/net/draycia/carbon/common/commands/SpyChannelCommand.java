@@ -27,6 +27,7 @@ public class SpyChannelCommand {
       return;
     }
 
+    // TODO: Fix
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())

@@ -34,28 +34,25 @@ public class ChannelListCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
-        .withPermission("carbonchat.channellist")
-        .handler(this::toggleSelf)
-        .build()
-    );
-
-    commandManager.command(
-      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
-        commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // console & player
-        .withPermission("carbonchat.channellist.other")
-        .argument(CommandUtils.chatUserArgument())
-        .handler(this::toggleOther)
+        .withPermission("carbonchat.channellist")
+        .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.channellist.other
+        .handler(context -> {
+          if (context.get("user").isPresent()) {
+            this.channelListOther(context);
+          } else {
+            this.channelListSelf(context);
+          }
+        })
         .build()
     );
   }
 
-  public void toggleSelf(final @NonNull CommandContext<ChatUser> context) {
+  public void channelListSelf(final @NonNull CommandContext<ChatUser> context) {
     this.listAndSend(context.getSender(), context.getSender(), this.carbonChat.channelRegistry().iterator());
   }
 
-  public void toggleOther(final @NonNull CommandContext<ChatUser> context) {
+  public void channelListOther(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser sender = context.getSender();
     final ChatUser user = context.getRequired("user");
 

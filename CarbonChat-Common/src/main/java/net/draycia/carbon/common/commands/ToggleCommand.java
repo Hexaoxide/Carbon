@@ -28,21 +28,17 @@ public class ToggleCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
-        .withPermission("carbonchat.toggle")
-        .argument(CommandUtils.channelArgument())
-        .handler(this::toggleSelf)
-        .build()
-    );
-
-    commandManager.command(
-      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
-        commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // player & console
         .withPermission("carbonchat.toggle")
         .argument(CommandUtils.channelArgument())
-        .argument(CommandUtils.chatUserArgument())
-        .handler(this::toggleOther)
+        .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.toggle.other
+        .handler(context -> {
+          if (context.get("user").isPresent()) {
+            this.toggleOther(context);
+          } else {
+            this.toggleSelf(context);
+          }
+        })
         .build()
     );
   }

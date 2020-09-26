@@ -5,6 +5,7 @@ import com.intellectualsites.commands.arguments.parser.ArgumentParseResult;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.UserService;
 
 public final class CommandUtils {
 
@@ -35,6 +36,28 @@ public final class CommandUtils {
       .build();
   }
 
+  public static CommandArgument<ChatUser, ChatUser> optionalChatUserArgument() {
+    return CommandArgument.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
+      .asOptional()
+      .withParser((c, i) -> {
+        final String input = i.peek();
+
+        if (input == null) {
+          return ArgumentParseResult.failure(new IllegalArgumentException("Player cannot be null"));
+        }
+
+        final UserService<?> userService = CarbonChatProvider.carbonChat().userService();
+        final ChatUser user = userService.wrap(userService.resolve(input));
+
+        if (user != null) {
+          return ArgumentParseResult.success(user);
+        } else {
+          return ArgumentParseResult.failure(new IllegalArgumentException("Player does not exist"));
+        }
+      })
+      .build();
+  }
+
   // TODO: turn this into a proper class that handles suggestions
   public static CommandArgument<ChatUser, ChatUser> chatUserArgument() {
     return CommandArgument.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
@@ -46,8 +69,8 @@ public final class CommandUtils {
           return ArgumentParseResult.failure(new IllegalArgumentException("Player cannot be null"));
         }
 
-        final ChatUser user = CarbonChatProvider.carbonChat()
-          .userService().wrap(null); // TODO: find way to resolve name -> uuid
+        final UserService<?> userService = CarbonChatProvider.carbonChat().userService();
+        final ChatUser user = userService.wrap(userService.resolve(input));
 
         if (user != null) {
           return ArgumentParseResult.success(user);

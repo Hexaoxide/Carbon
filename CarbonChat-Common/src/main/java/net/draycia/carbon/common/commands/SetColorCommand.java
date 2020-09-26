@@ -24,6 +24,7 @@ public class SetColorCommand {
       return;
     }
 
+    // TODO: Test and fix
     for (final ChatChannel channel : this.carbonChat.channelRegistry()) {
       commandManager.command(
         commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),

@@ -30,22 +30,17 @@ public class SudoChannelCommand {
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
         .withSenderType(ChatUser.class) // player
-        .withPermission("carbonchat.channel.others")
-        .argument(CommandUtils.chatUserArgument())
-        .argument(CommandUtils.channelArgument())
-        .handler(this::otherChannel)
-        .build()
-    );
-
-    commandManager.command(
-      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
-        commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.channel.others.message")
         .argument(CommandUtils.chatUserArgument())
         .argument(CommandUtils.channelArgument())
-        .argument(StringArgument.<ChatUser>newBuilder("message").greedy().build())
-        .handler(this::sendMessageOther)
+        .argument(StringArgument.<ChatUser>newBuilder("message").greedy().asOptional().build())
+        .handler(context -> {
+          if (context.get("message").isPresent()) {
+            this.sendMessageOther(context);
+          } else {
+            this.otherChannel(context);
+          }
+        })
         .build()
     );
   }
