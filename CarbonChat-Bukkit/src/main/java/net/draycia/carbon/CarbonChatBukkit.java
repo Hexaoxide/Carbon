@@ -83,7 +83,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private static final int BSTATS_PLUGIN_ID = 8720;
 
-  private ChannelRegistry channelRegistry;
+  private ChannelManager channelManager;
   private AdventureManager messageProcessor;
 
   private CommandSettingsRegistry commandSettings;
@@ -124,9 +124,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     this.messageProcessor = new AdventureManager(BukkitAudiences.create(this), FormatType.MINIMESSAGE); // TODO: get format type from config
 
     // Initialize managers
-    this.channelRegistry = new ChannelRegistry();
-
-    new ChannelManager(this);
+    this.channelManager = new ChannelManager(this);
 
     // Handle messaging service
     final MessagingType messagingType = this.carbonSettings().messagingType();
@@ -356,7 +354,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public @NonNull ChannelRegistry channelRegistry() {
-    return this.channelRegistry;
+    return this.channelManager.registry();
   }
 
   @Override

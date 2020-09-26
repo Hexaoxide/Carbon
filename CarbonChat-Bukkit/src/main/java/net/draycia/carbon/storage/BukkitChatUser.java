@@ -57,7 +57,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   private transient UUID replyTarget = null;
 
   public BukkitChatUser() {
-    this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
+    this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat-Bukkit");
   }
 
   public BukkitChatUser(final @NonNull UUID uuid) {
@@ -68,7 +68,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   @Override
   @NonNull
   public Iterable<@NonNull ? extends Audience> audiences() {
-    return Collections.singleton(this);
+    return Collections.singleton(this.carbonChat.messageProcessor().audiences().player(this.uuid()));
   }
 
   @Override
@@ -231,7 +231,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
     return this.ignoredUsers;
   }
 
-  LuckPerms luckPerms = LuckPermsProvider.get();
+  private transient final LuckPerms luckPerms = LuckPermsProvider.get();
 
   @Override
   public boolean hasGroup(final @NonNull String groupName) {

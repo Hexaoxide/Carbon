@@ -6,7 +6,6 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelRegisterEvent;
-import net.kyori.registry.Registry;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -59,7 +58,7 @@ public class ChannelManager {
     CarbonEvents.post(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
   }
 
-  public @NonNull Registry<String, ChatChannel> registry() {
+  public @NonNull ChannelRegistry registry() {
     return this.registry;
   }
 
