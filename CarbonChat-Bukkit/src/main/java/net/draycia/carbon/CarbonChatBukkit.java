@@ -75,6 +75,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
@@ -153,16 +155,18 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       return users;
     };
 
+    final Function<String, UUID> nameResolver = name -> Bukkit.getOfflinePlayer(name).getUniqueId();
+
     if (storageType == StorageType.MYSQL) {
       this.logger().info("Enabling MySQL storage!");
       final SQLCredentials credentials = this.carbonSettings().sqlCredentials();
-      this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitChatUser::new);
+      this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitChatUser::new, nameResolver);
     } else if (storageType == StorageType.JSON) {
       this.logger().info("Enabling JSON storage!");
-      this.userService = new JSONUserService<>(BukkitChatUser.class, this, supplier, BukkitChatUser::new);
+      this.userService = new JSONUserService<>(BukkitChatUser.class, this, supplier, BukkitChatUser::new, nameResolver);
     } else {
       this.logger().error("Invalid storage type selected! Falling back to JSON.");
-      this.userService = new JSONUserService<>(BukkitChatUser.class, this, supplier, BukkitChatUser::new);
+      this.userService = new JSONUserService<>(BukkitChatUser.class, this, supplier, BukkitChatUser::new, nameResolver);
     }
 
     // Setup listeners
