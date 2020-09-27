@@ -11,6 +11,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public interface ChatChannel extends ForwardingAudience {
@@ -112,9 +113,9 @@ public interface ChatChannel extends ForwardingAudience {
 
   boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying);
 
-  @NonNull Component sendMessage(@NonNull ChatUser user, @NonNull String message, boolean fromBungee);
+  @NonNull Map<ChatUser, Component> parseMessage(@NonNull ChatUser user, @NonNull String message, boolean fromBungee);
 
-  @NonNull Component sendMessage(@NonNull ChatUser user, @NonNull Collection<@NonNull ChatUser> recipients, @NonNull String message, boolean fromBungee);
+  @NonNull Map<ChatUser, Component> parseMessage(@NonNull ChatUser user, @NonNull Collection<@NonNull ChatUser> recipients, @NonNull String message, boolean fromBungee);
 
   void sendComponent(@NonNull ChatUser user, @NonNull Component component);
 

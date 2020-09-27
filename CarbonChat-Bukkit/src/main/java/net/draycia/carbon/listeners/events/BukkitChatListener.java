@@ -16,6 +16,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 public class BukkitChatListener implements Listener {
 
@@ -79,17 +80,37 @@ public class BukkitChatListener implements Listener {
     event.getRecipients().clear();
 
     if (event.isAsynchronous()) {
-      final Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
+      final Map<ChatUser, Component> messages =
+        selectedChannel.parseMessage(user, recipients, event.getMessage(), false);
 
-      if (!component.equals(TextComponent.empty())) {
-        event.setFormat(PlainComponentSerializer.plain().serialize(component)
-          .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+      for (final Map.Entry<ChatUser, Component> entry : messages.entrySet()) {
+        if (entry.getValue().equals(TextComponent.empty())) {
+          continue;
+        }
+
+        entry.getKey().sendMessage(entry.getValue());
+
+        if (user.equals(entry.getKey())) {
+          event.setFormat(PlainComponentSerializer.plain().serialize(entry.getValue())
+            .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+        }
       }
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
-        final Component component = selectedChannel.sendMessage(user, recipients, event.getMessage(), false);
+        final Map<ChatUser, Component> messages =
+          selectedChannel.parseMessage(user, recipients, event.getMessage(), false);
 
-        this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
+        for (final Map.Entry<ChatUser, Component> entry : messages.entrySet()) {
+          if (entry.getValue().equals(TextComponent.empty())) {
+            continue;
+          }
+
+          entry.getKey().sendMessage(entry.getValue());
+
+          if (user.equals(entry.getKey())) {
+            this.carbonChat.messageProcessor().audiences().console().sendMessage(entry.getValue());
+          }
+        }
 
         if (this.carbonChat.getConfig().getBoolean("show-tips")) {
           this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");

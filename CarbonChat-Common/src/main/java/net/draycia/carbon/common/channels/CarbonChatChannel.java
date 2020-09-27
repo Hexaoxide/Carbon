@@ -23,7 +23,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -98,7 +101,7 @@ public class CarbonChatChannel implements ChatChannel {
 
   @Override
   @NonNull
-  public Component sendMessage(final @NonNull ChatUser user, final @NonNull Collection<@NonNull ChatUser> recipients, final @NonNull String message, final boolean fromRemote) {
+  public Map<ChatUser, Component> parseMessage(final @NonNull ChatUser user, final @NonNull Collection<@NonNull ChatUser> recipients, final @NonNull String message, final boolean fromRemote) {
     //this.updateUserNickname(user);
 
     final MessageContextEvent event = new MessageContextEvent(this, user);
@@ -106,7 +109,7 @@ public class CarbonChatChannel implements ChatChannel {
     CarbonEvents.post(event);
 
     if (event.cancelled()) {
-      return TextComponent.empty();
+      return Collections.emptyMap();
     }
 
     // Get player's formatting
@@ -120,7 +123,7 @@ public class CarbonChatChannel implements ChatChannel {
     // Return if cancelled or message is emptied
 
     if (preFormatEvent.cancelled() || preFormatEvent.message().trim().isEmpty()) {
-      return TextComponent.empty();
+      return Collections.emptyMap();
     }
 
     final String displayName;
@@ -130,6 +133,8 @@ public class CarbonChatChannel implements ChatChannel {
     } else {
       displayName = user.displayName();
     }
+
+    final Map<ChatUser, Component> users = new HashMap<>();
 
     // Iterate through players who should receive messages in this channel
     for (final ChatUser target : recipients) {
@@ -165,7 +170,7 @@ public class CarbonChatChannel implements ChatChannel {
 
       CarbonEvents.post(newEvent);
 
-      target.sendMessage(newEvent.component());
+      users.put(newEvent.target(), newEvent.component());
     }
 
     final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this, preFormatEvent.format(),
@@ -192,13 +197,13 @@ public class CarbonChatChannel implements ChatChannel {
       this.sendMessageToBungee(user.uuid(), consoleEvent.component());
     }
 
-    return consoleEvent.component();
+    return users;
   }
 
   @Override
   @NonNull
-  public Component sendMessage(final @NonNull ChatUser user, final @NonNull String message, final boolean fromRemote) {
-    return this.sendMessage(user, this.audiences(), message, fromRemote);
+  public Map<ChatUser, Component> parseMessage(final @NonNull ChatUser user, final @NonNull String message, final boolean fromRemote) {
+    return this.parseMessage(user, this.audiences(), message, fromRemote);
   }
 
   @Nullable
