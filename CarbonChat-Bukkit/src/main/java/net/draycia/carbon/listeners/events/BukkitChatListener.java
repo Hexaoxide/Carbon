@@ -97,20 +97,8 @@ public class BukkitChatListener implements Listener {
       }
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
-        final Map<ChatUser, Component> messages =
-          selectedChannel.parseMessage(user, recipients, event.getMessage(), false);
-
-        for (final Map.Entry<ChatUser, Component> entry : messages.entrySet()) {
-          if (entry.getValue().equals(TextComponent.empty())) {
-            continue;
-          }
-
-          entry.getKey().sendMessage(entry.getValue());
-
-          if (user.equals(entry.getKey())) {
-            this.carbonChat.messageProcessor().audiences().console().sendMessage(entry.getValue());
-          }
-        }
+        selectedChannel.sendComponentsAndLog(
+          selectedChannel.parseMessage(user, recipients, event.getMessage(), false));
 
         if (this.carbonChat.getConfig().getBoolean("show-tips")) {
           this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");

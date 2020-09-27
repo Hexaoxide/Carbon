@@ -7,7 +7,6 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class AliasedChannelCommand {
@@ -58,9 +57,8 @@ public class AliasedChannelCommand {
 
   private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
     context.<String>get("message").ifPresent(message -> {
-      final Component component = this.chatChannel().sendMessage(context.getSender(), message, false);
-
-      this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
+      this.chatChannel().sendComponentsAndLog(
+        this.chatChannel().parseMessage(context.getSender(), message, false));
     });
   }
 

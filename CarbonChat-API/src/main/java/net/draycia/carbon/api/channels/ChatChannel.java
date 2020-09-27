@@ -117,6 +117,10 @@ public interface ChatChannel extends ForwardingAudience {
 
   @NonNull Map<ChatUser, Component> parseMessage(@NonNull ChatUser user, @NonNull Collection<@NonNull ChatUser> recipients, @NonNull String message, boolean fromBungee);
 
+  void sendComponents(final @NonNull Map<ChatUser, Component> components);
+
+  void sendComponentsAndLog(final @NonNull Map<ChatUser, Component> components);
+
   void sendComponent(@NonNull ChatUser user, @NonNull Component component);
 
 }

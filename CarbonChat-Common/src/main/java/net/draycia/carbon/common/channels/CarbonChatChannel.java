@@ -2,6 +2,7 @@ package net.draycia.carbon.common.channels;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.config.ChannelOptions;
+import net.draycia.carbon.api.users.ConsoleUser;
 import net.draycia.carbon.common.utils.ColorUtils;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
@@ -188,6 +189,7 @@ public class CarbonChatChannel implements ChatChannel {
       "server", this.carbonChat.carbonSettings().serverName(),
       "message", consoleFormatEvent.message());
 
+    // TODO: add ConsoleUser to users map
     final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleFormat,
       consoleFormatEvent.message());
 
@@ -198,6 +200,32 @@ public class CarbonChatChannel implements ChatChannel {
     }
 
     return users;
+  }
+
+  @Override
+  public void sendComponents(final @NonNull Map<ChatUser, Component> components) {
+    for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
+      if (entry.getValue().equals(TextComponent.empty())) {
+        continue;
+      }
+
+      entry.getKey().sendMessage(entry.getValue());
+    }
+  }
+
+  @Override
+  public void sendComponentsAndLog(final @NonNull Map<ChatUser, Component> components) {
+    for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
+      if (entry.getValue().equals(TextComponent.empty())) {
+        continue;
+      }
+
+      entry.getKey().sendMessage(entry.getValue());
+
+      if (entry instanceof ConsoleUser) {
+        this.carbonChat.messageProcessor().audiences().console().sendMessage(entry.getValue());
+      }
+    }
   }
 
   @Override

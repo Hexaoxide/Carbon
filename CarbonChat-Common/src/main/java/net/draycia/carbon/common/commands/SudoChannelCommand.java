@@ -9,7 +9,6 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.common.utils.CommandUtils;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SudoChannelCommand {
@@ -69,9 +68,7 @@ public class SudoChannelCommand {
     final ChatChannel channel = context.getRequired("channel");
     final String message = context.getRequired("message");
 
-    final Component component = channel.sendMessage(user, message, false);
-
-    this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
+    channel.sendComponentsAndLog(channel.parseMessage(user, message, false));
   }
 
 }
