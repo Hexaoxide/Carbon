@@ -304,7 +304,7 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   @Nullable
   public String format(final @NonNull String group) {
-    return this.options().formats().get("formats." + group);
+    return this.options().format(group);
   }
 
   private boolean isUserSpying(final @NonNull ChatUser sender, final @NonNull ChatUser target) {

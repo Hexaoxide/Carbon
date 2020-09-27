@@ -82,9 +82,22 @@ public class ChannelOptions {
   }
 
   @Nullable
+  public String format(final String key) {
+    if (this.formats == null) {
+      return this.defaultOptions().formats().get(key);
+    }
+
+    final String format = this.formats.get(key);
+
+    if (format != null) {
+      return format;
+    }
+
+    return this.defaultOptions().formats().get(key);
+  }
+
+  @Nullable
   public Map<String, String> formats() {
-    // TODO: properly implement default format inheritence
-    // TODO: perhaps add an option to make it so overriding any format overrides all?
     if (this.formats == null) {
       return this.defaultOptions().formats();
     }
