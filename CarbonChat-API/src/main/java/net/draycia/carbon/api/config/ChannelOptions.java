@@ -71,9 +71,28 @@ public class ChannelOptions {
   }
 
   @Nullable
+  public Context context(final @NonNull String key) {
+    final Context localContext;
+
+    if (this.contexts != null) {
+      localContext = this.contexts.get(key);
+    } else {
+      localContext = null;
+    }
+
+    if (localContext == null) {
+      if (this.defaultOptions().contexts() != null) {
+        return this.defaultOptions().contexts().get(key);
+      } else {
+        return null;
+      }
+    }
+
+    return localContext;
+  }
+
+  @Nullable
   public Map<String, Context> contexts() {
-    // TODO: properly implement default context inheritence
-    // TODO: perhaps add an option to make it so overriding any context overrides all?
     if (this.contexts == null) {
       return this.defaultOptions().contexts();
     }
@@ -82,18 +101,40 @@ public class ChannelOptions {
   }
 
   @Nullable
-  public String format(final String key) {
-    if (this.formats == null) {
-      return this.defaultOptions().formats().get(key);
+  public Map<String, Context> contextsAndDefault() {
+    if (this.contexts == null) {
+      return this.defaultOptions().contexts();
     }
 
-    final String format = this.formats.get(key);
-
-    if (format != null) {
-      return format;
+    if (this.defaultOptions().contexts() == null) {
+      return this.contexts;
     }
 
-    return this.defaultOptions().formats().get(key);
+    final Map<String, Context> contexts = new HashMap<>(this.defaultOptions().contexts());
+    contexts.putAll(this.contexts);
+
+    return contexts;
+  }
+
+  @Nullable
+  public String format(final @NonNull String key) {
+    final String localFormat;
+
+    if (this.formats() != null) {
+      localFormat = this.formats().get(key);
+    } else {
+      localFormat = null;
+    }
+
+    if (localFormat == null) {
+      if (this.defaultOptions().formats() != null) {
+        return this.defaultOptions().formats().get(key);
+      } else {
+        return null;
+      }
+    }
+
+    return localFormat;
   }
 
   @Nullable
@@ -103,6 +144,22 @@ public class ChannelOptions {
     }
 
     return this.formats;
+  }
+
+  @Nullable
+  public Map<String, String> formatsAndDefault() {
+    if (this.formats == null) {
+      return this.defaultOptions().formats();
+    }
+
+    if (this.defaultOptions().formats() == null) {
+      return this.formats;
+    }
+
+    final Map<String, String> formats = new HashMap<>(this.defaultOptions().formats());
+    formats.putAll(this.formats);
+
+    return formats;
   }
 
   @Nullable

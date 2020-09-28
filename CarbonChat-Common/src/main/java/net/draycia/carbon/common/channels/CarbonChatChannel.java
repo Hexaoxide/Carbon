@@ -515,7 +515,7 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   @Nullable
   public Context context(final @NonNull String key) {
-    return this.options().contexts().get(key);
+    return this.options().context(key);
   }
 
   @Override
