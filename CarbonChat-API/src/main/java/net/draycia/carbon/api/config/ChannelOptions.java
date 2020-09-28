@@ -16,31 +16,83 @@ import java.util.Map;
 @ConfigSerializable
 public class ChannelOptions {
 
-  @Setting private String key = "channel";
-  @Setting private String color;
-  @Setting private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults
-  @Setting private Map<String, String> formats = new HashMap<>(); // TODO: set defaults
-  @Setting private String defaultFormatName;
-  @Setting private boolean isDefault = false; // primitive because missing = false
-  @Setting private Boolean ignorable; // boxed because missing = use defaults
-  @Setting private Boolean crossServer;
-  @Setting private Boolean honorsRecipientList;
-  @Setting private Boolean permissionGroupMatching;
-  @Setting private List<String> groupOverrides;
-  @Setting private String name = "";
-  @Setting private String messagePrefix = "";
-  @Setting private List<String> aliases = new ArrayList<>();
-  @Setting private Boolean shouldCancelChatEvent;
-  @Setting private Boolean primaryGroupOnly;
-  @Setting private String switchMessage;
-  @Setting private String switchOtherMessage;
-  @Setting private String switchFailureMessage;
-  @Setting private String toggleOnMessage;
-  @Setting private String toggleOffMessage;
-  @Setting private String toggleOtherOnMessage;
-  @Setting private String toggleOtherOffMessage;
-  @Setting private String cannotUseMessage;
-  @Setting private String cannotIgnoreMessage;
+  @Setting(comment = "What this channel is identified as. This will be what's typed ingame to use the channel.")
+  private String key = "channel";
+  
+  @Setting(comment = "This is what the <color> placeholder will typically be replaced with.\n" +
+    "Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.\n" +
+    "If on a platform that supports PlaceholderAPI, this option will be ran through that as well.\n" +
+    "Note that the <color> placeholder is also used for personal and global user colors.")
+  private String color;
+  
+  @Setting(comment = "The contexts for this channel, ")
+  private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults
+  
+  @Setting(comment = "The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
+  private Map<String, String> formats = new HashMap<>(); // TODO: set defaults
+  
+  @Setting(comment = "The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
+  private String defaultFormatName;
+  
+  @Setting(comment = "")
+  private boolean isDefault = false; // primitive because missing = false
+  
+  @Setting(comment = "")
+  private Boolean ignorable; // boxed because missing = use defaults
+  
+  @Setting(comment = "")
+  private Boolean crossServer;
+  
+  @Setting(comment = "")
+  private Boolean honorsRecipientList;
+  
+  @Setting(comment = "")
+  private Boolean permissionGroupMatching;
+  
+  @Setting(comment = "")
+  private List<String> groupOverrides;
+  
+  @Setting(comment = "")
+  private String name = "";
+  
+  @Setting(comment = "")
+  private String messagePrefix = "";
+  
+  @Setting(comment = "")
+  private List<String> aliases = new ArrayList<>();
+  
+  @Setting(comment = "")
+  private Boolean shouldCancelChatEvent;
+  
+  @Setting(comment = "")
+  private Boolean primaryGroupOnly;
+  
+  @Setting(comment = "")
+  private String switchMessage;
+  
+  @Setting(comment = "")
+  private String switchOtherMessage;
+  
+  @Setting(comment = "")
+  private String switchFailureMessage;
+  
+  @Setting(comment = "")
+  private String toggleOnMessage;
+  
+  @Setting(comment = "")
+  private String toggleOffMessage;
+  
+  @Setting(comment = "")
+  private String toggleOtherOnMessage;
+  
+  @Setting(comment = "")
+  private String toggleOtherOffMessage;
+  
+  @Setting(comment = "")
+  private String cannotUseMessage;
+  
+  @Setting(comment = "")
+  private String cannotIgnoreMessage;
   
   private SharedChannelOptions defaultOptions() {
     return CarbonChatProvider.carbonChat().channelSettings().defaultChannelOptions();
