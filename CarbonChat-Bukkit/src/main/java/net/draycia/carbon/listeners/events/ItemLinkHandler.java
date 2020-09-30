@@ -33,12 +33,12 @@ public class ItemLinkHandler {
       }
 
       for (final Pattern pattern : event.channel().itemLinkPatterns()) {
-        final String patternContent = pattern.toString().replace("\\Q", "").replace("\\E", "");
+        final String patternContent = pattern.toString().replace("\\Q", "")
+          .replace("\\E", "");
 
         if (event.originalMessage().contains(patternContent)) {
-          final TextComponent component = (TextComponent) event.component().replaceFirstText(pattern, input -> {
-            return TextComponent.builder().append(itemComponent);
-          });
+          final TextComponent component = (TextComponent) event.component()
+            .replaceFirstText(pattern, input -> itemComponent);
 
           event.component(component);
           break;

@@ -453,7 +453,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
         this.carbonChat.messageManager().sendMessage("whisper-component", sender.uuid(), byteArray -> {
           byteArray.writeLong(this.uuid().getMostSignificantBits());
           byteArray.writeLong(this.uuid().getLeastSignificantBits());
-          byteArray.writeUTF(this.carbonChat.messageProcessor().audiences().gsonSerializer().serialize(fromPlayerComponent));
+          byteArray.writeUTF(this.carbonChat.gsonSerializer().serialize(fromPlayerComponent));
         });
       });
     }

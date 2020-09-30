@@ -5,6 +5,7 @@ import com.intellectualsites.commands.arguments.standard.StringArgument;
 import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
@@ -45,7 +46,7 @@ public class ChannelCommand {
 
   private void channel(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
-    final ChatChannel channel = context.getRequired("channel");
+    final TextChannel channel = context.getRequired("channel");
 
     if (user.channelSettings(channel).ignored()) {
       user.sendMessage(this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),

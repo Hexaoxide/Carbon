@@ -22,7 +22,7 @@ package net.draycia.carbon.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -86,7 +86,7 @@ public final class CarbonUtils {
 
     component.color(ChatColor.WHITE).append("]");
 
-    return BungeeCordComponentSerializer.get().deserialize(component.create());
+    return BungeeComponentSerializer.get().deserialize(component.create());
   }
 
 }

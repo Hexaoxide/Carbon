@@ -2,8 +2,9 @@ package net.draycia.carbon.listeners.contexts;
 
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.MessageContextEvent;
@@ -21,12 +22,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public final class mcMMOContext implements Listener {
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
   @NonNull
   private static final String KEY = "mcmmo-party";
 
-  public mcMMOContext(final @NonNull CarbonChatBukkit carbonChat) {
+  public mcMMOContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, PostOrders.NORMAL, false, event -> {
@@ -39,11 +40,16 @@ public final class mcMMOContext implements Listener {
     });
 
     CarbonEvents.register(ChannelSwitchEvent.class, PostOrders.NORMAL, false, event -> {
-      final Context context = event.channel().context(KEY);
+      if (!(event.channel() instanceof TextChannel)) {
+        return;
+      }
+
+      final TextChannel channel = (TextChannel) event.channel();
+      final Context context = channel.context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
         if (!this.isInParty(event.user())) {
-          event.failureMessage(carbonChat.getConfig().getString("contexts.mcMMO.cancellation-message"));
+          //event.failureMessage(carbonChat.carbonSettings().getString("contexts.mcMMO.cancellation-message"));
           event.cancelled(true);
         }
       }
@@ -79,11 +85,12 @@ public final class mcMMOContext implements Listener {
     final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
-    if (channel == null) {
+    if (!(channel instanceof TextChannel)) {
       return;
     }
 
-    final Context context = channel.context(KEY);
+    final TextChannel textChannel = (TextChannel) channel;
+    final Context context = textChannel.context(KEY);
 
     if (context != null && context.isBoolean() && context.asBoolean() && !this.isInParty(user)) {
       user.clearSelectedChannel();

@@ -1,13 +1,13 @@
 package net.draycia.carbon.common.messaging;
 
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.messaging.MessageService;
 import com.google.common.io.ByteArrayDataOutput;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
@@ -21,13 +21,9 @@ public class MessageManager {
   @NonNull
   private final MessageService messageService;
 
-  @NonNull
-  private final GsonComponentSerializer gsonSerializer;
-
   public MessageManager(final @NonNull CarbonChat carbonChat, final @NonNull MessageService messageService) {
     this.carbonChat = carbonChat;
     this.messageService = messageService;
-    this.gsonSerializer = this.carbonChat.messageProcessor().audiences().gsonSerializer();
 
     this.registerDefaultListeners();
   }
@@ -96,10 +92,10 @@ public class MessageManager {
       final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
       final ChatUser user = this.carbonChat.userService().wrap(uuid);
 
-      if (channel != null) {
-        final Component component = this.gsonSerializer.deserialize(byteArray.readUTF());
+      if (channel instanceof TextChannel) {
+        final Component component = this.carbonChat.gsonSerializer().deserialize(byteArray.readUTF());
 
-        channel.sendComponent(user, component);
+        ((TextChannel) channel).sendComponent(user, component);
 
         this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
       }
@@ -113,7 +109,7 @@ public class MessageManager {
 
       if (!target.ignoringUser(uuid)) {
         target.replyTarget(uuid);
-        target.sendMessage(this.gsonSerializer.deserialize(message));
+        target.sendMessage(this.carbonChat.gsonSerializer().deserialize(message));
       }
     });
   }

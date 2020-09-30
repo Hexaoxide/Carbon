@@ -21,8 +21,10 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
   public @NonNull ChatChannel register(final @NonNull String key, final @NonNull ChatChannel value) {
     this.registry.putIfAbsent(key, value);
 
-    if (this.defaultChannel == null && value.isDefault()) {
-      this.defaultChannel = value;
+    if (value instanceof TextChannel) {
+      if (this.defaultChannel == null && ((TextChannel) value).isDefault()) {
+        this.defaultChannel = value;
+      }
     }
 
     return value;
