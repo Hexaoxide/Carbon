@@ -9,53 +9,53 @@ import org.spongepowered.configurate.serialize.ConfigSerializable;
 public class WhisperOptions {
 
   @Setting(comment = "Plays a sound when receiving private messages with /whisper /msg")
-  private @NonNull WhisperPings whisperPings = new WhisperPings();
+  private @NonNull WhisperPings pings = new WhisperPings();
 
   @Setting(comment = "")
-  private String switchMessage;
+  private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
 
   @Setting(comment = "")
-  private String switchOtherMessage;
+  private String switchOtherMessage = "<gray><player> <reset><gray>is now in <color><channel> <gray>chat!";
 
   @Setting(comment = "")
-  private String switchFailureMessage;
+  private String switchFailureMessage = "<red>You cannot use channel <channel>!";
 
   @Setting(comment = "")
-  private String toggleOnMessage;
+  private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
 
   @Setting(comment = "")
-  private String toggleOffMessage;
+  private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
 
   @Setting(comment = "")
-  private String toggleOtherOnMessage;
+  private String toggleOtherOnMessage = "<gray><player> <reset><gray>can now see <color><channel> <gray>chat!";
 
   @Setting(comment = "")
-  private String toggleOtherOffMessage;
+  private String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
 
   @Setting(comment = "")
-  private String cannotUseMessage;
+  private String cannotUseMessage = "You cannot use that channel!";
 
   @Setting(comment = "")
-  private String cannotIgnoreMessage;
+  private String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
 
   @Setting(comment = "")
-  private String senderFormat;
+  private String senderFormat = "<gold>[<white>Me <gray>-> <white><receiver><gold>] <message>";
 
   @Setting(comment = "")
-  private String receiverFormat;
+  private String receiverFormat = "<gold>[<white><sender> <gray>-> <white>Me<gold>] <message>";
 
   @Setting(comment = "")
-  private String consoleFormat;
+  private String consoleFormat = "<gold>[<white><sender> <gray>-> <white><receiver><gold>] <message>";
 
   @Setting(comment = "")
-  private boolean logToConsole;
+  private boolean logToConsole = true;
 
   public boolean logToConsole() {
     return this.logToConsole;
   }
 
-  public @NonNull WhisperPings whisperPings() {
-    return this.whisperPings;
+  public @NonNull WhisperPings pings() {
+    return this.pings;
   }
 
   @Nullable
