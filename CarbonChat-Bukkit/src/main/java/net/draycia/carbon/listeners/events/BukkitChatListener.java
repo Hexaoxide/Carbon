@@ -5,7 +5,6 @@ import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -76,7 +75,7 @@ public class BukkitChatListener implements Listener {
         selectedChannel.parseMessage(user, event.getMessage(), false);
 
       for (final Map.Entry<ChatUser, Component> entry : messages.entrySet()) {
-        if (entry.getValue().equals(TextComponent.empty())) {
+        if (entry.getValue().equals(Component.empty())) {
           continue;
         }
 

@@ -405,12 +405,12 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
         this.replyTarget(sender);
 
         if (this.carbonChat.getConfig().getBoolean("pings.on-whisper")) {
-          final Key key = Key.of(this.carbonChat.getConfig().getString("pings.sound"));
+          final Key key = Key.key(this.carbonChat.getConfig().getString("pings.sound"));
           final Sound.Source source = Sound.Source.valueOf(this.carbonChat.getConfig().getString("pings.source"));
           final float volume = (float) this.carbonChat.getConfig().getDouble("pings.volume");
           final float pitch = (float) this.carbonChat.getConfig().getDouble("pings.pitch");
 
-          this.playSound(Sound.of(key, source, volume, pitch));
+          this.playSound(Sound.sound(key, source, volume, pitch));
         }
       }
     } else if (offlineSender.isOnline()) {

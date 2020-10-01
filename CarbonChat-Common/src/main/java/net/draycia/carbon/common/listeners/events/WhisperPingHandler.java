@@ -22,14 +22,14 @@ public class WhisperPingHandler {
         return;
       }
 
-      if (!carbonChat.carbonSettings().whisperPings().enabled()) {
+      if (!carbonChat.carbonSettings().whisperOptions().pings().enabled()) {
         return;
       }
 
-      final Key key = carbonChat.carbonSettings().whisperPings().sound();
-      final Sound.Source source = carbonChat.carbonSettings().whisperPings().source();
-      final float volume = carbonChat.carbonSettings().whisperPings().volume();
-      final float pitch = carbonChat.carbonSettings().whisperPings().pitch();
+      final Key key = carbonChat.carbonSettings().whisperOptions().pings().sound();
+      final Sound.Source source = carbonChat.carbonSettings().whisperOptions().pings().source();
+      final float volume = carbonChat.carbonSettings().whisperOptions().pings().volume();
+      final float pitch = carbonChat.carbonSettings().whisperOptions().pings().pitch();
 
       event.sender().playSound(Sound.of(key, source, volume, pitch));
     });
