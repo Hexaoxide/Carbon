@@ -1,11 +1,15 @@
 package net.draycia.carbon.api.config;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class WhisperOptions {
+
+  @Setting(comment = "Plays a sound when receiving private messages with /whisper /msg")
+  private @NonNull WhisperPings whisperPings = new WhisperPings();
 
   @Setting(comment = "")
   private String switchMessage;
@@ -48,6 +52,10 @@ public class WhisperOptions {
 
   public boolean logToConsole() {
     return this.logToConsole;
+  }
+
+  public @NonNull WhisperPings whisperPings() {
+    return this.whisperPings;
   }
 
   @Nullable
