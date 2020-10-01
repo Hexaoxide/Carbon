@@ -344,7 +344,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public boolean spyingwhispers() {
+  public boolean spyingWhispers() {
     return this.spyingWhispers;
   }
 
@@ -461,7 +461,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
     for (final Player player : Bukkit.getOnlinePlayers()) {
       final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
-      if (!user.spyingwhispers()) {
+      if (!user.spyingWhispers()) {
         continue;
       }
 

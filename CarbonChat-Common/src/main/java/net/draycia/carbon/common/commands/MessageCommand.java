@@ -7,8 +7,11 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.common.channels.CarbonWhisperChannel;
 import net.draycia.carbon.common.utils.CommandUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.Optional;
 
 public class MessageCommand {
 
@@ -31,15 +34,22 @@ public class MessageCommand {
         .withSenderType(ChatUser.class) // player
         .withPermission("carbonchat.message")
         .argument(CommandUtils.chatUserArgument())
-        .argument(StringArgument.<ChatUser>newBuilder("message").greedy().build())
+        .argument(StringArgument.<ChatUser>newBuilder("message").greedy().asOptional().build())
         .handler(this::sendMessage)
         .build()
     );
   }
 
   private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
-    context.<ChatUser>getRequired("target")
-      .sendMessage(context.getSender(), context.getRequired("message"));
+    final ChatUser sender = context.getSender();
+    final ChatUser receiver = context.getRequired("target");
+    final Optional<String> message = context.get("message");
+
+    if (message.isPresent()) {
+      receiver.sendMessage(sender, message.get());
+    } else {
+      sender.selectedChannel(new CarbonWhisperChannel(sender, receiver));
+    }
   }
 
 }

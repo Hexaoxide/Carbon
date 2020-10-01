@@ -71,11 +71,16 @@ public class CarbonSettings {
     }
   };
 
+  // TODO: make ChannelPings a part of ChannelOptions
   @Setting(comment = "Plays a sound and highlights the message when someone types your name")
   private @NonNull ChannelPings channelPings = new ChannelPings();
 
+  // TODO: make WhisperPings a part of WhisperOptions
   @Setting(comment = "Plays a sound when receiving private messages with /whisper /msg")
   private @NonNull WhisperPings whisperPings = new WhisperPings();
+
+  @Setting(comment = "")
+  private @NonNull WhisperOptions whisperOptions = new WhisperOptions();
 
   @Setting(comment = "Sets the player's channel to the specified channel when they join" +
     "\nSet to \"\" or remove to disable" +
@@ -134,6 +139,10 @@ public class CarbonSettings {
 
   public @NonNull WhisperPings whisperPings() {
     return this.whisperPings;
+  }
+
+  public @NonNull WhisperOptions whisperOptions() {
+    return this.whisperOptions;
   }
 
 }
