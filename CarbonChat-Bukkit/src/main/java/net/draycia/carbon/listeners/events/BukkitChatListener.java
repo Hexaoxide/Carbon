@@ -91,11 +91,11 @@ public class BukkitChatListener implements Listener {
         selectedChannel.sendComponentsAndLog(
           selectedChannel.parseMessage(user, event.getMessage(), false));
 
-        if (this.carbonChat.getConfig().getBoolean("show-tips")) {
-          this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");
-          this.carbonChat.logger().info("Tip: To 'solve' this, do a binary search and see which plugin is triggering");
-          this.carbonChat.logger().info("Tip: sync chat events and causing this, and let that plugin author know.");
-        }
+        //        if (this.carbonChat.getConfig().getBoolean("show-tips")) {
+        //          this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");
+        //          this.carbonChat.logger().info("Tip: To 'solve' this, do a binary search and see which plugin is triggering");
+        //          this.carbonChat.logger().info("Tip: sync chat events and causing this, and let that plugin author know.");
+        //        }
       });
     }
   }

@@ -205,7 +205,7 @@ public class CarbonChatChannel implements TextChannel {
   @Override
   public void sendComponents(final @NonNull Map<ChatUser, Component> components) {
     for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
-      if (entry.getValue().equals(TextComponent.empty())) {
+      if (entry.getValue().equals(Component.empty())) {
         continue;
       }
 
@@ -216,7 +216,7 @@ public class CarbonChatChannel implements TextChannel {
   @Override
   public void sendComponentsAndLog(final @NonNull Map<ChatUser, Component> components) {
     for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
-      if (entry.getValue().equals(TextComponent.empty())) {
+      if (entry.getValue().equals(Component.empty())) {
         continue;
       }
 

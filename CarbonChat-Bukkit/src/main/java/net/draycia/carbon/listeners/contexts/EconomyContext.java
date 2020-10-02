@@ -36,7 +36,7 @@ public class EconomyContext {
       final Double requiredBal;
 
       if (context.isNumber()) {
-        requiredBal = context.asNumber().doubleValue();;
+        requiredBal = context.asNumber().doubleValue();
       } else {
         return;
       }

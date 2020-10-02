@@ -63,7 +63,7 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
       throw new ObjectMappingException("A name and source are required to deserialize a Sound");
     }
 
-    return Sound.of(name, source, volume, pitch);
+    return Sound.sound(name, source, volume, pitch);
   }
 
   @Override
@@ -72,10 +72,11 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
       value.setValue(null);
       return;
     }
+
     value.getNode(NAME).setValue(KeySerializer.INSTANCE.type(), obj.name());
     value.getNode(SOURCE).setValue(SOURCE_TYPE, obj.source());
     value.getNode(VOLUME).setValue(obj.volume());
     value.getNode(PITCH).setValue(obj.pitch());
-
   }
+
 }

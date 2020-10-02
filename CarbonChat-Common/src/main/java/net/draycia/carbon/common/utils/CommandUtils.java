@@ -23,7 +23,7 @@ public final class CommandUtils {
     return CommandArgument.<ChatUser, TextChannel>ofType(TextChannel.class, "channel")
       .asRequired()
       .withParser((c, i) -> {
-        final String input = i.peek();
+        final String input = i.poll();
 
         if (input == null) {
           // TODO: make exception messages configurable
@@ -60,7 +60,7 @@ public final class CommandUtils {
   }
 
   private static @NonNull ArgumentParseResult<ChatUser> parse(final CommandContext<ChatUser> c, final Queue<String> i) {
-    final String input = i.peek();
+    final String input = i.poll();
 
     if (input == null) {
       return ArgumentParseResult.failure(new IllegalArgumentException("Player cannot be null"));

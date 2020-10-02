@@ -11,8 +11,6 @@ import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.PrivateMessageEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -45,13 +43,16 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   @MonotonicNonNull // @NonNull but not initialised in all constructors.
   private UUID uuid;
   @Nullable
-  private String selectedChannel = null;
+  private String selectedChannelKey = null;
   private boolean muted = false;
   private boolean shadowMuted = false;
   private boolean spyingWhispers = false;
 
   @Nullable
   private String nickname = null;
+
+  @Nullable
+  private transient ChatChannel selectedChannel = null;
 
   @Nullable
   private transient UUID replyTarget = null;
@@ -115,9 +116,9 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
 
       onlinePlayer.setDisplayName(newNickname);
 
-      if (this.carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-        onlinePlayer.setPlayerListName(newNickname);
-      }
+      //      if (this.carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
+      //        onlinePlayer.setPlayerListName(newNickname);
+      //      }
     }
 
     if (!fromRemote) {
@@ -158,11 +159,15 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   @Override
   @Nullable
   public ChatChannel selectedChannel() {
-    if (this.selectedChannel == null) {
-      return null;
+    if (this.selectedChannel != null) {
+      return this.selectedChannel;
     }
 
-    return this.carbonChat.channelRegistry().channelOrDefault(this.selectedChannel);
+    if (this.selectedChannelKey != null) {
+      return this.carbonChat.channelRegistry().channelOrDefault(this.selectedChannelKey);
+    }
+
+    return null;
   }
 
   @Override
@@ -180,7 +185,8 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
       return;
     }
 
-    this.selectedChannel = chatChannel.key();
+    this.selectedChannelKey = chatChannel.key();
+    this.selectedChannel = chatChannel;
 
     if (!fromRemote) {
       this.carbonChat.messageManager().sendMessage("selected-channel", this.uuid(), byteArray -> {
@@ -354,8 +360,8 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
       return;
     }
 
-    final String toPlayerFormat = this.carbonChat.translations().messageToOther();
-    final String fromPlayerFormat = this.carbonChat.translations().messageFromOther();
+    final String toPlayerFormat = this.carbonChat.carbonSettings().whisperOptions().senderFormat();
+    final String fromPlayerFormat = this.carbonChat.carbonSettings().whisperOptions().receiverFormat();
 
     final OfflinePlayer offlineSender = Bukkit.getOfflinePlayer(sender.uuid());
     String senderName = offlineSender.getName();
@@ -403,15 +409,6 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
 
         sender.replyTarget(this);
         this.replyTarget(sender);
-
-        if (this.carbonChat.getConfig().getBoolean("pings.on-whisper")) {
-          final Key key = Key.key(this.carbonChat.getConfig().getString("pings.sound"));
-          final Sound.Source source = Sound.Source.valueOf(this.carbonChat.getConfig().getString("pings.source"));
-          final float volume = (float) this.carbonChat.getConfig().getDouble("pings.volume");
-          final float pitch = (float) this.carbonChat.getConfig().getDouble("pings.pitch");
-
-          this.playSound(Sound.sound(key, source, volume, pitch));
-        }
       }
     } else if (offlineSender.isOnline()) {
       final String targetNameFinal = targetName;

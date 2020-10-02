@@ -4,7 +4,7 @@ import com.intellectualsites.commands.execution.CommandExecutionCoordinator;
 import com.intellectualsites.commands.paper.PaperCommandManager;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.adventure.CarbonTranslations;
+import net.draycia.carbon.api.config.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;

@@ -42,7 +42,15 @@ public class MessageCommand {
 
   private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
     final ChatUser sender = context.getSender();
-    final ChatUser receiver = context.getRequired("target");
+    final ChatUser receiver = context.getRequired("user");
+
+    if (sender.equals(receiver)) {
+      final String message = this.carbonChat.translations().cannotWhisperSelf();
+      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+
+      return;
+    }
+
     final Optional<String> message = context.get("message");
 
     if (message.isPresent()) {

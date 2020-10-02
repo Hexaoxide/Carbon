@@ -6,7 +6,6 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -31,7 +30,7 @@ public class AdventureManager implements MessageProcessor {
   @Override
   public @NonNull Component processMessage(@Nullable final String input, final @NonNull String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
-      return TextComponent.empty();
+      return Component.empty();
     }
 
     switch (this.formatType) {

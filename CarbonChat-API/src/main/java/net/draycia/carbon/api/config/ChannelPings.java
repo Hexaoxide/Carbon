@@ -12,7 +12,7 @@ public final class ChannelPings {
   @Setting private @NonNull String prefix = "";
   @Setting private boolean caseSensitive = false;
   @Setting private @NonNull Key sound =
-    Key.of(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup");
+    Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup");
   @Setting private Sound.Source source = Sound.Source.PLAYER;
   @Setting private float volume = 10.0F;
   @Setting private float pitch = 1.0F;

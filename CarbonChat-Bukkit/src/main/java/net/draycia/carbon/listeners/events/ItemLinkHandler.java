@@ -28,7 +28,7 @@ public class ItemLinkHandler {
 
       final Component itemComponent = CarbonUtils.createComponent(player);
 
-      if (itemComponent.equals(TextComponent.empty())) {
+      if (itemComponent.equals(Component.empty())) {
         return;
       }
 

@@ -61,14 +61,13 @@ public class CarbonWhisperChannel implements WhisperChannel {
                                                         @NonNull final Collection<@NonNull ChatUser> recipients,
                                                         @NonNull final String message, final boolean fromRemote) {
     // TODO: extract to method, this is just the same thing but twice
-
     final Map<ChatUser, Component> result = new HashMap<>();
 
     // Formats
     final String senderFormat = this.senderFormat();
     final String receiverFormat = this.receiverFormat();
 
-    final ChatFormatEvent senderFormatEvent = new ChatFormatEvent(user, user, this, senderFormat, message);
+    final ChatFormatEvent senderFormatEvent = new ChatFormatEvent(this.sender, this.sender, this, senderFormat, message);
 
     CarbonEvents.post(senderFormatEvent);
 
@@ -76,7 +75,7 @@ public class CarbonWhisperChannel implements WhisperChannel {
       return Collections.emptyMap();
     }
 
-    final ChatFormatEvent receiverFormatEvent = new ChatFormatEvent(user, this.audience, this, receiverFormat, message);
+    final ChatFormatEvent receiverFormatEvent = new ChatFormatEvent(this.sender, this.audience, this, receiverFormat, message);
 
     CarbonEvents.post(receiverFormatEvent);
 
@@ -87,18 +86,18 @@ public class CarbonWhisperChannel implements WhisperChannel {
     // Display names
     final String senderName;
 
-    if (user.nickname() != null) {
-      senderName = user.nickname();
+    if (this.sender.nickname() != null) {
+      senderName = this.sender.nickname();
     } else {
-      senderName = user.displayName();
+      senderName = this.sender.displayName();
     }
 
     final String receiverName;
 
-    if (user.nickname() != null) {
-      receiverName = user.nickname();
+    if (this.audience.nickname() != null) {
+      receiverName = this.audience.nickname();
     } else {
-      receiverName = user.displayName();
+      receiverName = this.audience.displayName();
     }
 
     // Components
@@ -113,12 +112,12 @@ public class CarbonWhisperChannel implements WhisperChannel {
       "server", this.carbonChat.carbonSettings().serverName(),
       "message", senderFormatEvent.message());
 
-    final ChatComponentEvent senderComponentEvent = new ChatComponentEvent(user, this.audience, this,
+    final ChatComponentEvent senderComponentEvent = new ChatComponentEvent(this.sender, this.sender, this,
       senderComponent, senderFormatEvent.message());
 
     CarbonEvents.post(senderComponentEvent);
 
-    result.put(senderComponentEvent.target(), senderComponentEvent.component());
+    result.put(this.sender, senderComponentEvent.component());
 
     final TextComponent receiverComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(
       receiverFormatEvent.format(),
@@ -131,14 +130,16 @@ public class CarbonWhisperChannel implements WhisperChannel {
       "server", this.carbonChat.carbonSettings().serverName(),
       "message", senderFormatEvent.message());
 
-    final ChatComponentEvent receiverComponentEvent = new ChatComponentEvent(user, this.audience, this,
+    final ChatComponentEvent receiverComponentEvent = new ChatComponentEvent(this.sender, this.audience, this,
       receiverComponent, receiverFormatEvent.message());
 
     CarbonEvents.post(receiverComponentEvent);
 
-    result.put(receiverComponentEvent.target(), receiverComponentEvent.component());
+    result.put(this.audience, receiverComponentEvent.component());
 
-    final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this,
+    System.out.println(this.sender.equals(this.audience));
+
+    final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(this.sender, null, this,
       this.consoleFormat(), message);
 
     CarbonEvents.post(consoleFormatEvent);
@@ -155,10 +156,12 @@ public class CarbonWhisperChannel implements WhisperChannel {
       "message", senderFormatEvent.message());
 
     // TODO: add ConsoleUser to users map
-    final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleFormat,
+    final ChatComponentEvent consoleEvent = new ChatComponentEvent(this.sender, null, this, consoleFormat,
       consoleFormatEvent.message());
 
     CarbonEvents.post(consoleEvent);
+
+    System.out.println(result.size());
 
     return result;
   }

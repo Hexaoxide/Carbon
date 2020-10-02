@@ -1,6 +1,6 @@
 package net.draycia.carbon.api;
 
-import net.draycia.carbon.api.adventure.CarbonTranslations;
+import net.draycia.carbon.api.config.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;

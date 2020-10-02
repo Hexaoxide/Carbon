@@ -58,13 +58,13 @@ public final class CarbonUtils {
   @NonNull
   public static Component createComponent(final @NonNull Player player) {
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
-      return net.kyori.adventure.text.TextComponent.empty();
+      return net.kyori.adventure.text.Component.empty();
     }
 
     final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
     if (itemStack.getType().isAir()) {
-      return net.kyori.adventure.text.TextComponent.empty();
+      return net.kyori.adventure.text.Component.empty();
     }
 
     final Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
