@@ -103,6 +103,8 @@ public class ChannelOptions {
     settings.key = "global";
     settings.isDefault = true;
     settings.name = "Global";
+    settings.color = "#FFFFFF";
+    settings.defaultFormatName = "default";
     settings.formats = Collections.singletonMap("default", "<color><<displayname><reset><color>> <message>");
 
     return settings;

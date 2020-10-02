@@ -1,21 +1,18 @@
 package net.draycia.carbon.listeners.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 
 public class BukkitChatListener implements Listener {
@@ -41,18 +38,24 @@ public class BukkitChatListener implements Listener {
       channel = this.carbonChat.channelRegistry().defaultChannel();
     }
 
-    if (channel.shouldCancelChatEvent()) {
-      event.setCancelled(true);
-    }
+    //    if (channel.shouldCancelChatEvent()) {
+    //      event.setCancelled(true);
+    //    }
 
     for (final ChatChannel entry : this.carbonChat.channelRegistry()) {
-      if (entry.messagePrefix() == null || entry.messagePrefix().isEmpty()) {
+      if (!(entry instanceof TextChannel)) {
         continue;
       }
 
-      if (event.getMessage().startsWith(entry.messagePrefix())) {
+      final TextChannel textChannel = (TextChannel) entry;
+
+      if (textChannel.messagePrefix() == null || textChannel.messagePrefix().isEmpty()) {
+        continue;
+      }
+
+      if (event.getMessage().startsWith(textChannel.messagePrefix())) {
         if (entry.canPlayerUse(user)) {
-          event.setMessage(event.getMessage().substring(entry.messagePrefix().length()));
+          event.setMessage(event.getMessage().substring(textChannel.messagePrefix().length()));
           channel = entry;
           break;
         }
@@ -65,26 +68,14 @@ public class BukkitChatListener implements Listener {
       return;
     }
 
-    final Collection<ChatUser> recipients;
-
-    if (selectedChannel.honorsRecipientList()) {
-      recipients = new HashSet<>();
-
-      for (final Player recipient : event.getRecipients()) {
-        recipients.add(this.carbonChat.userService().wrap(recipient.getUniqueId()));
-      }
-    } else {
-      recipients = selectedChannel.audiences();
-    }
-
     event.getRecipients().clear();
 
     if (event.isAsynchronous()) {
       final Map<ChatUser, Component> messages =
-        selectedChannel.parseMessage(user, recipients, event.getMessage(), false);
+        selectedChannel.parseMessage(user, event.getMessage(), false);
 
       for (final Map.Entry<ChatUser, Component> entry : messages.entrySet()) {
-        if (entry.getValue().equals(TextComponent.empty())) {
+        if (entry.getValue().equals(Component.empty())) {
           continue;
         }
 
@@ -98,13 +89,13 @@ public class BukkitChatListener implements Listener {
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
         selectedChannel.sendComponentsAndLog(
-          selectedChannel.parseMessage(user, recipients, event.getMessage(), false));
+          selectedChannel.parseMessage(user, event.getMessage(), false));
 
-        if (this.carbonChat.getConfig().getBoolean("show-tips")) {
-          this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");
-          this.carbonChat.logger().info("Tip: To 'solve' this, do a binary search and see which plugin is triggering");
-          this.carbonChat.logger().info("Tip: sync chat events and causing this, and let that plugin author know.");
-        }
+        //        if (this.carbonChat.getConfig().getBoolean("show-tips")) {
+        //          this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");
+        //          this.carbonChat.logger().info("Tip: To 'solve' this, do a binary search and see which plugin is triggering");
+        //          this.carbonChat.logger().info("Tip: sync chat events and causing this, and let that plugin author know.");
+        //        }
       });
     }
   }

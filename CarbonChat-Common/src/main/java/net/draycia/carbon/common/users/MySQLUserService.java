@@ -218,8 +218,8 @@ public class MySQLUserService<T extends ChatUser> implements UserService<T> {
       this.carbonChat.logger().info("Saving user data!");
       stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname) VALUES (?, ?, ?, ?, ?, ?) " +
           "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname =?",
-        user.uuid().toString(), selectedName, user.muted(), user.shadowMuted(), user.spyingwhispers(), user.nickname(),
-        selectedName, user.muted(), user.shadowMuted(), user.spyingwhispers(), user.nickname());
+        user.uuid().toString(), selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(),
+        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname());
 
       this.carbonChat.logger().info("Saving user channel settings!");
       // Save user channel settings

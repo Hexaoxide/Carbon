@@ -5,7 +5,7 @@ import com.intellectualsites.commands.arguments.standard.StringArgument;
 import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -13,11 +13,11 @@ public class AliasedChannelCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
-  private final @NonNull ChatChannel chatChannel;
+  private final @NonNull TextChannel chatChannel;
 
   private final @NonNull String commandName;
 
-  public AliasedChannelCommand(final @NonNull CommandManager<ChatUser> commandManager, final @NonNull ChatChannel chatChannel) {
+  public AliasedChannelCommand(final @NonNull CommandManager<ChatUser> commandManager, final @NonNull TextChannel chatChannel) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.chatChannel = chatChannel;
     this.commandName = chatChannel.key();
@@ -62,7 +62,7 @@ public class AliasedChannelCommand {
     });
   }
 
-  public @NonNull ChatChannel chatChannel() {
+  public @NonNull TextChannel chatChannel() {
     return this.chatChannel;
   }
 

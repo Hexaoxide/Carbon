@@ -85,7 +85,7 @@ public class SpyChannelCommand {
 
     final String message;
 
-    if (user.spyingwhispers()) {
+    if (user.spyingWhispers()) {
       user.spyingWhispers(false);
       message = this.carbonChat.translations().spyWhispersOff();
     } else {

@@ -1,6 +1,6 @@
 package net.draycia.carbon.api;
 
-import net.draycia.carbon.api.adventure.CarbonTranslations;
+import net.draycia.carbon.api.config.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
@@ -10,6 +10,7 @@ import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserService;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
@@ -49,5 +50,7 @@ public interface CarbonChat {
   @NonNull CarbonTranslations translations();
 
   @NonNull ModerationSettings moderationSettings();
+
+  @NonNull GsonComponentSerializer gsonSerializer();
 
 }

@@ -1,10 +1,10 @@
 package net.draycia.carbon.common.channels;
 
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.users.ConsoleUser;
 import net.draycia.carbon.common.utils.ColorUtils;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.draycia.carbon.api.events.ChatFormatEvent;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class CarbonChatChannel implements ChatChannel {
+public class CarbonChatChannel implements TextChannel {
 
   @NonNull
   private final CarbonChat carbonChat;
@@ -205,7 +205,7 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   public void sendComponents(final @NonNull Map<ChatUser, Component> components) {
     for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
-      if (entry.getValue().equals(TextComponent.empty())) {
+      if (entry.getValue().equals(Component.empty())) {
         continue;
       }
 
@@ -216,7 +216,7 @@ public class CarbonChatChannel implements ChatChannel {
   @Override
   public void sendComponentsAndLog(final @NonNull Map<ChatUser, Component> components) {
     for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
-      if (entry.getValue().equals(TextComponent.empty())) {
+      if (entry.getValue().equals(Component.empty())) {
         continue;
       }
 
@@ -327,7 +327,7 @@ public class CarbonChatChannel implements ChatChannel {
   public void sendMessageToBungee(final @NonNull UUID uuid, final @NonNull Component component) {
     this.carbonChat.messageService().sendMessage("channel-component", uuid, byteArray -> {
       byteArray.writeUTF(this.key());
-      byteArray.writeUTF(this.carbonChat.messageProcessor().audiences().gsonSerializer().serialize(component));
+      byteArray.writeUTF(this.carbonChat.gsonSerializer().serialize(component));
     });
   }
 
@@ -495,10 +495,10 @@ public class CarbonChatChannel implements ChatChannel {
     return this.options().primaryGroupOnly();
   }
 
-  @Override
-  public boolean shouldCancelChatEvent() {
-    return this.options().shouldCancelChatEvent();
-  }
+  //  @Override
+  //  public boolean shouldCancelChatEvent() {
+  //    return this.options().shouldCancelChatEvent();
+  //  }
 
   @Override
   @NonNull

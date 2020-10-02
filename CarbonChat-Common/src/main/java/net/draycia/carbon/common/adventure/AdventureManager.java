@@ -1,10 +1,11 @@
 package net.draycia.carbon.common.adventure;
 
 import de.themoep.minedown.adventure.MineDown;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -15,17 +16,21 @@ public class AdventureManager implements MessageProcessor {
   private final AudienceProvider provider;
 
   @NonNull
+  private final CarbonChat carbonChat;
+
+  @NonNull
   private final FormatType formatType;
 
   public AdventureManager(final @NonNull AudienceProvider provider, final @NonNull FormatType formatType) {
     this.provider = provider;
     this.formatType = formatType;
+    this.carbonChat = CarbonChatProvider.carbonChat();
   }
 
   @Override
   public @NonNull Component processMessage(@Nullable final String input, final @NonNull String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
-      return TextComponent.empty();
+      return Component.empty();
     }
 
     switch (this.formatType) {
@@ -49,7 +54,7 @@ public class AdventureManager implements MessageProcessor {
       input = input.replace("<" + placeholder + ">", replacement);
     }
 
-    return this.audiences().gsonSerializer().deserialize(input);
+    return this.carbonChat.gsonSerializer().deserialize(input);
   }
 
   @Override

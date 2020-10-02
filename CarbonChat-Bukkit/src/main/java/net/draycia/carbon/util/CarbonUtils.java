@@ -22,7 +22,7 @@ package net.draycia.carbon.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -58,13 +58,13 @@ public final class CarbonUtils {
   @NonNull
   public static Component createComponent(final @NonNull Player player) {
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
-      return net.kyori.adventure.text.TextComponent.empty();
+      return net.kyori.adventure.text.Component.empty();
     }
 
     final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
     if (itemStack.getType().isAir()) {
-      return net.kyori.adventure.text.TextComponent.empty();
+      return net.kyori.adventure.text.Component.empty();
     }
 
     final Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
@@ -86,7 +86,7 @@ public final class CarbonUtils {
 
     component.color(ChatColor.WHITE).append("]");
 
-    return BungeeCordComponentSerializer.get().deserialize(component.create());
+    return BungeeComponentSerializer.get().deserialize(component.create());
   }
 
 }

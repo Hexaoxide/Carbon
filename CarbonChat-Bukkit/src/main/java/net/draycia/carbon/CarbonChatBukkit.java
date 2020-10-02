@@ -4,7 +4,7 @@ import com.intellectualsites.commands.execution.CommandExecutionCoordinator;
 import com.intellectualsites.commands.paper.PaperCommandManager;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.adventure.CarbonTranslations;
+import net.draycia.carbon.api.config.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
@@ -24,7 +24,7 @@ import net.draycia.carbon.api.config.SQLCredentials;
 import net.draycia.carbon.common.messaging.RedisMessageService;
 import net.draycia.carbon.listeners.contexts.DistanceContext;
 import net.draycia.carbon.listeners.contexts.EconomyContext;
-import net.draycia.carbon.listeners.contexts.FilterContext;
+import net.draycia.carbon.common.contexts.FilterContext;
 import net.draycia.carbon.listeners.contexts.TownyContext;
 import net.draycia.carbon.listeners.contexts.WorldGuardContext;
 import net.draycia.carbon.listeners.contexts.mcMMOContext;
@@ -57,6 +57,8 @@ import net.draycia.carbon.util.Metrics;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -121,7 +123,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     this.reloadConfig();
 
     // Setup Adventure
-    this.messageProcessor = new AdventureManager(BukkitAudiences.create(this), FormatType.MINIMESSAGE); // TODO: get format type from config
+    final BukkitAudiences audiences = BukkitAudiences.create(this);
+    this.messageProcessor = new AdventureManager(audiences, FormatType.MINIMESSAGE); // TODO: get format type from config
 
     // Initialize managers
     this.channelManager = new ChannelManager(this);
@@ -400,6 +403,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @Override
   public @NonNull Path dataFolder() {
     return this.getDataFolder().toPath();
+  }
+
+  @Override
+  public @NonNull GsonComponentSerializer gsonSerializer() {
+    return BukkitComponentSerializer.gson();
   }
 
 }

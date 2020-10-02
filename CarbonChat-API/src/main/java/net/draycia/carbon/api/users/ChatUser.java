@@ -49,7 +49,7 @@ public interface ChatUser extends Audience {
 
   @NonNull Map<@NonNull String, @NonNull ? extends UserChannelSettings> channelSettings();
 
-  boolean spyingwhispers();
+  boolean spyingWhispers();
 
   default void spyingWhispers(final boolean spyingWhispers) {
     this.spyingWhispers(spyingWhispers, false);

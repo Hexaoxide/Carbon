@@ -41,7 +41,7 @@ public class PingHandler {
       final float volume = carbonChat.carbonSettings().channelPings().volume();
       final float pitch = carbonChat.carbonSettings().channelPings().pitch();
 
-      event.target().playSound(Sound.of(key, source, volume, pitch));
+      event.target().playSound(Sound.sound(key, source, volume, pitch));
     });
   }
 

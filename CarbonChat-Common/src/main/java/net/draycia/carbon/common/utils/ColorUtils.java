@@ -19,8 +19,8 @@ public final class ColorUtils {
 
   @Nullable
   public static TextColor parseColor(@Nullable final ChatUser user, @Nullable String input) {
-    if (input == null) {
-      input = "white";
+    if (input == null || input.isEmpty()) {
+      return NamedTextColor.WHITE;
     }
 
     // TODO: find out way to do this

@@ -30,7 +30,8 @@ public class ChannelSettings {
     MAPPER.bind(this).serialize(node);
   }
 
-  @Setting(comment = "All options here act like the defaults for all channels.\nAdding any of these options to any channel overrides the relevant defaults.")
+  @Setting(comment = "All options here act like the defaults for all channels.\n" +
+    "Adding any of these options to any channel overrides the relevant defaults.")
   private SharedChannelOptions sharedChannelOptions = new SharedChannelOptions();
 
   @Setting

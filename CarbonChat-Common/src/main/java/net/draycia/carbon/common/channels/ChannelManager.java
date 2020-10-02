@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.channels;
 
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -50,9 +51,11 @@ public class ChannelManager {
   public void registerChannel(final @NonNull ChatChannel channel) {
     this.registry().register(channel.key(), channel);
 
-    if (channel.isDefault() && this.defaultChannelKey == null) {
-      this.carbonChat.logger().info("Default channel registered: " + channel.name());
-      this.defaultChannelKey = channel.key();
+    if (channel instanceof TextChannel) {
+      if (((TextChannel) channel).isDefault() && this.defaultChannelKey == null) {
+        this.carbonChat.logger().info("Default channel registered: " + channel.name());
+        this.defaultChannelKey = channel.key();
+      }
     }
 
     CarbonEvents.post(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
@@ -95,7 +98,11 @@ public class ChannelManager {
 
       if (channel != null) {
         this.registerChannel(channel);
-        String prefix = channel.messagePrefix();
+        String prefix = null;
+
+        if (channel instanceof TextChannel) {
+          prefix = ((TextChannel) channel).messagePrefix();
+        }
 
         if (prefix != null && !prefix.trim().isEmpty()) {
           prefix = "(" + prefix + ") ";

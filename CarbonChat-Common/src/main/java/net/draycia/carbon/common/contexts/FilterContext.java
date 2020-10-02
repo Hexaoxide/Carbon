@@ -1,7 +1,8 @@
-package net.draycia.carbon.listeners.contexts;
+package net.draycia.carbon.common.contexts;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.Context;
@@ -26,7 +27,7 @@ public class FilterContext {
         return;
       }
 
-      if (event.user().permissible() && event.user().hasPermission("carbonchat.filter.exempt")) {
+      if (event.user().hasPermission("carbonchat.filter.exempt")) {
         return;
       }
 
@@ -62,13 +63,17 @@ public class FilterContext {
   }
 
   private boolean channelUsesFilter(final @NonNull ChatChannel chatChannel) {
-    final Context context = chatChannel.context("filter");
+    if (chatChannel instanceof TextChannel) {
+      final Context context = ((TextChannel) chatChannel).context("filter");
 
-    if (context == null) {
-      return false;
+      if (context == null) {
+        return false;
+      }
+
+      return context.isBoolean() && context.asBoolean();
     }
 
-    return context.isBoolean() && context.asBoolean();
+    return false;
   }
 
 }

@@ -4,8 +4,9 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.MessageContextEvent;
@@ -25,9 +26,9 @@ public final class TownyContext implements Listener {
   private static final String KEY = "towny-town";
 
   @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final CarbonChat carbonChat;
 
-  public TownyContext(final @NonNull CarbonChatBukkit carbonChat) {
+  public TownyContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
@@ -39,11 +40,16 @@ public final class TownyContext implements Listener {
     });
 
     CarbonEvents.register(ChannelSwitchEvent.class, event -> {
-      final Context context = event.channel().context(KEY);
+      if (!(event.channel() instanceof TextChannel)) {
+        return;
+      }
+
+      final TextChannel channel = (TextChannel) event.channel();
+      final Context context = channel.context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
         if (!this.isInTown(event.user())) {
-          event.failureMessage(carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
+          //event.failureMessage(carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
           event.cancelled(true);
         }
       }
@@ -67,11 +73,12 @@ public final class TownyContext implements Listener {
     final ChatUser user = this.carbonChat.userService().wrap(Bukkit.getPlayer(name).getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
-    if (channel == null) {
+    if (!(channel instanceof TextChannel)) {
       return;
     }
 
-    final Context context = channel.context(KEY);
+    final TextChannel textChannel = (TextChannel) channel;
+    final Context context = textChannel.context(KEY);
 
     if (context != null && context.isBoolean() && context.asBoolean()) {
       user.clearSelectedChannel();
@@ -83,11 +90,12 @@ public final class TownyContext implements Listener {
     final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
-    if (channel == null) {
+    if (!(channel instanceof TextChannel)) {
       return;
     }
 
-    final Context context = channel.context(KEY);
+    final TextChannel textChannel = (TextChannel) channel;
+    final Context context = textChannel.context(KEY);
 
     if (context != null && context.isBoolean() && context.asBoolean() && !this.isInTown(user)) {
       user.clearSelectedChannel();

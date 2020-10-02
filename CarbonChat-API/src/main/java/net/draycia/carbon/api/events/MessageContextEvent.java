@@ -1,6 +1,6 @@
 package net.draycia.carbon.api.events;
 
-import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.Context;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
@@ -9,11 +9,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MessageContextEvent implements CarbonEvent, Cancellable {
 
-  private final @NonNull ChatChannel channel;
+  private final @NonNull TextChannel channel;
   private final @NonNull ChatUser user;
   private boolean cancelled = false;
 
-  public MessageContextEvent(final @NonNull ChatChannel channel, final @NonNull ChatUser user) {
+  public MessageContextEvent(final @NonNull TextChannel channel, final @NonNull ChatUser user) {
     this.channel = channel;
     this.user = user;
   }
@@ -32,7 +32,7 @@ public class MessageContextEvent implements CarbonEvent, Cancellable {
     return this.channel.context(key);
   }
 
-  public @NonNull ChatChannel channel() {
+  public @NonNull TextChannel channel() {
     return this.channel;
   }
 

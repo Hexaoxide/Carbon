@@ -4,8 +4,6 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PrivateMessageEvent;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.event.PostOrders;
 
 public class WhisperPingHandler {
@@ -22,16 +20,9 @@ public class WhisperPingHandler {
         return;
       }
 
-      if (!carbonChat.carbonSettings().whisperPings().enabled()) {
-        return;
+      if (carbonChat.carbonSettings().whisperOptions().pings().enabled()) {
+        event.target().playSound(carbonChat.carbonSettings().whisperOptions().pings().sound());
       }
-
-      final Key key = carbonChat.carbonSettings().whisperPings().sound();
-      final Sound.Source source = carbonChat.carbonSettings().whisperPings().source();
-      final float volume = carbonChat.carbonSettings().whisperPings().volume();
-      final float pitch = carbonChat.carbonSettings().whisperPings().pitch();
-
-      event.sender().playSound(Sound.of(key, source, volume, pitch));
     });
   }
 

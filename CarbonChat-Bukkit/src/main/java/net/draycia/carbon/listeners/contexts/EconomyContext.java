@@ -1,6 +1,7 @@
 package net.draycia.carbon.listeners.contexts;
 
 import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.Context;
@@ -21,7 +22,12 @@ public class EconomyContext {
     this.economy = this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 
     CarbonEvents.register(PreChatFormatEvent.class, event -> {
-      final Context context = event.channel().context("vault-balance");
+      if (!(event.channel() instanceof TextChannel)) {
+        return;
+      }
+
+      final TextChannel channel = (TextChannel) event.channel();
+      final Context context = channel.context("vault-balance");
 
       if (context == null) {
         return;
@@ -30,7 +36,7 @@ public class EconomyContext {
       final Double requiredBal;
 
       if (context.isNumber()) {
-        requiredBal = context.asNumber().doubleValue();;
+        requiredBal = context.asNumber().doubleValue();
       } else {
         return;
       }
@@ -50,7 +56,12 @@ public class EconomyContext {
     });
 
     CarbonEvents.register(PreChatFormatEvent.class, event -> {
-      final Context context = event.channel().context("vault-cost");
+      if (!(event.channel() instanceof TextChannel)) {
+        return;
+      }
+
+      final TextChannel channel = (TextChannel) event.channel();
+      final Context context = channel.context("vault-cost");
 
       if (context == null) {
         return;

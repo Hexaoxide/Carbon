@@ -8,29 +8,22 @@ import org.spongepowered.configurate.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public final class WhisperPings {
+
   @Setting private boolean enabled = true;
-  @Setting private @NonNull Key sound = Key.of(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup");
-  @Setting private Sound.Source source = Sound.Source.PLAYER;
-  @Setting private float volume = 10.0F;
-  @Setting private float pitch = 1.0F;
+
+  @Setting private @NonNull Sound sound = Sound.sound(
+    Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup"),
+    Sound.Source.PLAYER,
+    10.0F,
+    1.0F
+  );
 
   public boolean enabled() {
     return this.enabled;
   }
 
-  public Key sound() {
+  public Sound sound() {
     return this.sound;
   }
 
-  public Sound.Source source() {
-    return this.source;
-  }
-
-  public float volume() {
-    return this.volume;
-  }
-
-  public float pitch() {
-    return this.pitch;
-  }
 }

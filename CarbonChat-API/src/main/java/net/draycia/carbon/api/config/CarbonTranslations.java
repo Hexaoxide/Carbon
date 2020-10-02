@@ -1,4 +1,4 @@
-package net.draycia.carbon.api.adventure;
+package net.draycia.carbon.api.config;
 
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
@@ -28,8 +28,6 @@ public class CarbonTranslations {
   }
 
   @Setting private String reloaded = "<yellow>Chat config has been reloaded!";
-  @Setting private String messageToOther = "<green>[<gray>Me <gold>-> <gray><target><reset><green>] <message>";
-  @Setting private String messageFromOther = "<green>[<gray><sender><reset> <gold>-> <gray>Me<green>] <message>";
   @Setting private String otherPlayerOffline = "<red>That player is offline!";
   @Setting private String spyWhispers = "<yellow>Spy [<gray><sender><reset> <gold>-> <gray><target><reset><yellow>] <message>";
   @Setting private String noReplyTarget = "<red>You have no one to reply to!";
@@ -63,17 +61,10 @@ public class CarbonTranslations {
   @Setting private String muteExempt = "<red>Player <player> is exempt from being muted!";
   @Setting private String clearNotify = "<yellow>Chat has been cleared by <player>.";
   @Setting private String clearExempt = "<yellow>You were exempt from the clear due to your permissions!";
+  @Setting private String cannotWhisperSelf = "<yellow>You cannot whisper yourself!";
 
   public String reloaded() {
     return this.reloaded;
-  }
-
-  public String messageToOther() {
-    return this.messageToOther;
-  }
-
-  public String messageFromOther() {
-    return this.messageFromOther;
   }
 
   public String otherPlayerOffline() {
@@ -206,6 +197,10 @@ public class CarbonTranslations {
 
   public String clearExempt() {
     return this.clearExempt;
+  }
+
+  public String cannotWhisperSelf() {
+    return this.cannotWhisperSelf;
   }
 
 }
