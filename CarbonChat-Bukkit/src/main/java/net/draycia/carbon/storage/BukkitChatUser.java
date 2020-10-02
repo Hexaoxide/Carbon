@@ -3,6 +3,7 @@ package net.draycia.carbon.storage;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
+import net.draycia.carbon.common.channels.CarbonWhisperChannel;
 import net.draycia.carbon.util.FunctionalityConstants;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import net.draycia.carbon.CarbonChatBukkit;
@@ -164,6 +165,13 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
     }
 
     if (this.selectedChannelKey != null) {
+      if (this.selectedChannelKey.equals("whisper") && this.replyTarget != null) {
+        this.selectedChannel = new CarbonWhisperChannel(this,
+          this.carbonChat.userService().wrap(this.replyTarget));
+
+        return this.selectedChannel;
+      }
+
       return this.carbonChat.channelRegistry().channelOrDefault(this.selectedChannelKey);
     }
 
