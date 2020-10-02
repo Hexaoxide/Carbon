@@ -34,37 +34,38 @@ public class ChannelOptions {
   @Setting(comment = "The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
   private String defaultFormatName;
   
-  @Setting(comment = "")
+  @Setting(comment = "If this channel is the default channel players join in.\n" +
+    "Also used as a fallback in case the player's selected channel cannot be found.")
   private boolean isDefault = false; // primitive because missing = false
   
-  @Setting(comment = "")
+  @Setting(comment = "If this channel can be ignored / hidden with the /ignore command")
   private Boolean ignorable; // boxed because missing = use defaults
   
-  @Setting(comment = "")
+  @Setting(comment = "If this channel syncs to other servers (cross-server chat), requires a messaging system setup")
   private Boolean crossServer;
   
-  @Setting(comment = "")
+  @Setting(comment = "If this channel should respect the bukkit recipient list, you normally shouldn't touch this")
   private Boolean honorsRecipientList;
   
-  @Setting(comment = "")
+  @Setting(comment = "If players with the permission carbonchat.group.groupname are considered to have the group groupname")
   private Boolean permissionGroupMatching;
   
-  @Setting(comment = "")
+  @Setting(comment = "A custom (ordered) list of group priorities")
   private List<String> groupOverrides;
   
-  @Setting(comment = "")
+  @Setting(comment = "The display name of this channel, supports minimessage. Used in command feedback")
   private String name = "";
   
-  @Setting(comment = "")
+  @Setting(comment = "If the player's chat message starts with whatever this is set to, the player speaks in this channel instead of their selected one")
   private String messagePrefix = "";
   
-  @Setting(comment = "")
+  @Setting(comment = "The command aliases for this channel")
   private List<String> aliases = new ArrayList<>();
   
-  @Setting(comment = "")
+  @Setting(comment = "If the bukkit chat event should be cancelled, you probably don't want to change this")
   private Boolean shouldCancelChatEvent;
   
-  @Setting(comment = "")
+  @Setting(comment = "If the player's format should be decided by their primary group only")
   private Boolean primaryGroupOnly;
   
   @Setting(comment = "")
