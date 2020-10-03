@@ -11,18 +11,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class ChatComponentEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
-  @NonNull
-  private final ChatUser sender;
+  private final @NonNull ChatUser sender;
   @Nullable
   private final ChatUser target;
   @NonNull
   private ChatChannel chatChannel;
   @NonNull
   private TextComponent component;
-  @NonNull
-  private final String originalMessage;
+  private final @NonNull String originalMessage;
 
-  public ChatComponentEvent(final @NonNull ChatUser sender, @Nullable final ChatUser target,
+  public ChatComponentEvent(final @NonNull ChatUser sender, final @Nullable ChatUser target,
                             final @NonNull ChatChannel chatChannel, final @NonNull TextComponent component,
                             final @NonNull String originalMessage) {
 
@@ -48,8 +46,7 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     return this.sender;
   }
 
-  @Nullable
-  public ChatUser target() {
+  public @Nullable ChatUser target() {
     return this.target;
   }
 

@@ -35,23 +35,19 @@ public class SharedChannelOptions {
   @Setting private String cannotUseMessage = "You cannot use that channel!";
   @Setting private String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
 
-  @Nullable
-  public String color() {
+  public @Nullable String color() {
     return this.color;
   }
 
-  @Nullable
-  public Map<String, Context> contexts() {
+  public @Nullable Map<String, Context> contexts() {
     return this.contexts;
   }
 
-  @Nullable
-  public Map<String, String> formats() {
+  public @Nullable Map<String, String> formats() {
     return this.formats;
   }
 
-  @Nullable
-  public String defaultFormatName() {
+  public @Nullable String defaultFormatName() {
     return this.defaultFormatName;
   }
 
@@ -76,48 +72,39 @@ public class SharedChannelOptions {
     return this.groupOverrides;
   }
 
-  @Nullable
-  public String switchMessage() {
+  public @Nullable String switchMessage() {
     return this.switchMessage;
   }
 
-  @Nullable
-  public String switchOtherMessage() {
+  public @Nullable String switchOtherMessage() {
     return this.switchOtherMessage;
   }
 
-  @Nullable
-  public String switchFailureMessage() {
+  public @Nullable String switchFailureMessage() {
     return this.switchFailureMessage;
   }
 
-  @Nullable
-  public String cannotIgnoreMessage() {
+  public @Nullable String cannotIgnoreMessage() {
     return this.cannotIgnoreMessage;
   }
 
-  @Nullable
-  public String toggleOffMessage() {
+  public @Nullable String toggleOffMessage() {
     return this.toggleOffMessage;
   }
 
-  @Nullable
-  public String toggleOnMessage() {
+  public @Nullable String toggleOnMessage() {
     return this.toggleOnMessage;
   }
 
-  @Nullable
-  public String toggleOtherOnMessage() {
+  public @Nullable String toggleOtherOnMessage() {
     return this.toggleOtherOnMessage;
   }
 
-  @Nullable
-  public String toggleOtherOffMessage() {
+  public @Nullable String toggleOtherOffMessage() {
     return this.toggleOtherOffMessage;
   }
 
-  @Nullable
-  public String cannotUseMessage() {
+  public @Nullable String cannotUseMessage() {
     return this.cannotUseMessage;
   }
 

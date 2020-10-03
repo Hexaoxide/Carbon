@@ -74,7 +74,7 @@ public class CarbonSettings {
   @Setting(comment = "Plays a sound and highlights the message when someone types your name")
   private @NonNull ChannelPings channelPings = new ChannelPings();
 
-  @Setting(comment = "")
+  @Setting(comment = "Various options relating to the /whisper command")
   private @NonNull WhisperOptions whisperOptions = new WhisperOptions();
 
   @Setting(comment = "Sets the player's channel to the specified channel when they join" +
@@ -84,7 +84,8 @@ public class CarbonSettings {
     "\nFor example, channel-on-join: \"global\" sets their channel to global on join")
   private @Nullable String channelOnJoin = "";
 
-  @Setting private List<Pattern> itemLinkPatterns =
+  @Setting(comment = "The list of regex patterns to show items in chat")
+  private List<Pattern> itemLinkPatterns =
     Collections.singletonList(Pattern.compile(Pattern.quote("[item]")));
 
   @NonNull

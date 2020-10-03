@@ -15,8 +15,7 @@ import java.util.Optional;
 
 public class MessageCommand {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public MessageCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();

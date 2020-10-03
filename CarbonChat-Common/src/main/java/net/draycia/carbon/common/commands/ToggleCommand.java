@@ -13,8 +13,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ToggleCommand {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public ToggleCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();

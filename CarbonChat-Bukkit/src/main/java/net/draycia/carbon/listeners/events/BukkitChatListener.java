@@ -17,8 +17,7 @@ import java.util.Map;
 
 public class BukkitChatListener implements Listener {
 
-  @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final @NonNull CarbonChatBukkit carbonChat;
 
   public BukkitChatListener(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;

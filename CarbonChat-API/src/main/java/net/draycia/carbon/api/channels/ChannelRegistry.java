@@ -11,8 +11,7 @@ import java.util.Set;
 
 public class ChannelRegistry implements Registry<String, ChatChannel> {
 
-  @NonNull
-  private final Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
 
   @Nullable
   private ChatChannel defaultChannel = null;

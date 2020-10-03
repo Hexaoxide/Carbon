@@ -21,8 +21,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class mcMMOContext implements Listener {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   @NonNull
   private static final String KEY = "mcmmo-party";

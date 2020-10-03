@@ -25,8 +25,7 @@ public final class TownyContext implements Listener {
   @NonNull
   private static final String KEY = "towny-town";
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public TownyContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;

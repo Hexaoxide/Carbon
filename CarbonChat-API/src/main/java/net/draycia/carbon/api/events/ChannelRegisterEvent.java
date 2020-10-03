@@ -9,10 +9,8 @@ import java.util.List;
 
 public class ChannelRegisterEvent implements CarbonEvent {
 
-  @NonNull
-  private final List<@NonNull ChatChannel> registeredChannels;
-  @NonNull
-  private final Registry<String, ChatChannel> registry;
+  private final @NonNull List<@NonNull ChatChannel> registeredChannels;
+  private final @NonNull Registry<String, ChatChannel> registry;
 
   public ChannelRegisterEvent(final @NonNull List<@NonNull ChatChannel> registeredChannels, final @NonNull Registry<String, ChatChannel> registry) {
     this.registeredChannels = registeredChannels;

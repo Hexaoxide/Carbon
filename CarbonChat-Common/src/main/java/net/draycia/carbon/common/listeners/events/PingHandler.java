@@ -4,8 +4,6 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.event.PostOrders;
 
 public class PingHandler {
@@ -36,12 +34,7 @@ public class PingHandler {
         }
       }
 
-      final Key key = carbonChat.carbonSettings().channelPings().sound();
-      final Sound.Source source = carbonChat.carbonSettings().channelPings().source();
-      final float volume = carbonChat.carbonSettings().channelPings().volume();
-      final float pitch = carbonChat.carbonSettings().channelPings().pitch();
-
-      event.target().playSound(Sound.sound(key, source, volume, pitch));
+      event.target().playSound(carbonChat.carbonSettings().channelPings().sound());
     });
   }
 

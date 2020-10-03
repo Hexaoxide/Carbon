@@ -33,13 +33,11 @@ import java.util.regex.Pattern;
 
 public class CarbonChatChannel implements TextChannel {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  @NonNull
-  private final ChannelOptions options;
+  private final @NonNull ChannelOptions options;
 
-  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, @Nullable final ChannelOptions options) {
+  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, final @Nullable ChannelOptions options) {
     this.carbonChat = carbonChat;
     this.options = options;
   }
@@ -234,8 +232,7 @@ public class CarbonChatChannel implements TextChannel {
     return this.parseMessage(user, this.audiences(), message, fromRemote);
   }
 
-  @Nullable
-  public String format(final @NonNull ChatUser user) {
+  public @Nullable String format(final @NonNull ChatUser user) {
     for (final String group : this.groupOverrides()) {
       if (this.userHasGroup(user, group)) {
         final String format = this.format(group);
@@ -296,14 +293,12 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  @Nullable
-  public String format(final @NonNull Group group) {
+  public @Nullable String format(final @NonNull Group group) {
     return this.format(group.getName());
   }
 
   @Override
-  @Nullable
-  public String format(final @NonNull String group) {
+  public @Nullable String format(final @NonNull String group) {
     return this.options().format(group);
   }
 
@@ -364,8 +359,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  @Nullable
-  public TextColor channelColor(final @NonNull ChatUser user) {
+  public @Nullable TextColor channelColor(final @NonNull ChatUser user) {
     final TextColor userColor = user.channelSettings(this).color();
 
     if (userColor != null) {
@@ -388,8 +382,7 @@ public class CarbonChatChannel implements TextChannel {
     return color;
   }
 
-  @Nullable
-  public String defaultFormatName() {
+  public @Nullable String defaultFormatName() {
     return this.options().defaultFormatName();
   }
 
@@ -431,62 +424,52 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  @Nullable
-  public String messagePrefix() {
+  public @Nullable String messagePrefix() {
     return this.options().messagePrefix();
   }
 
   @Override
-  @Nullable
-  public String switchMessage() {
+  public @Nullable String switchMessage() {
     return this.options().switchMessage();
   }
 
   @Override
-  @Nullable
-  public String switchOtherMessage() {
+  public @Nullable String switchOtherMessage() {
     return this.options().switchOtherMessage();
   }
 
   @Override
-  @Nullable
-  public String switchFailureMessage() {
+  public @Nullable String switchFailureMessage() {
     return this.options().switchFailureMessage();
   }
 
   @Override
-  @Nullable
-  public String cannotIgnoreMessage() {
+  public @Nullable String cannotIgnoreMessage() {
     return this.options().cannotIgnoreMessage();
   }
 
   @Override
-  @Nullable
-  public String toggleOffMessage() {
+  public @Nullable String toggleOffMessage() {
     return this.options().toggleOffMessage();
   }
 
   @Override
-  @Nullable
-  public String toggleOnMessage() {
+  public @Nullable String toggleOnMessage() {
     return this.options().toggleOnMessage();
   }
 
   @Override
-  @Nullable
-  public String toggleOtherOnMessage() {
+  public @Nullable String toggleOtherOnMessage() {
     return this.options().toggleOtherOnMessage();
   }
 
   @Override
-  @Nullable
-  public String toggleOtherOffMessage() {
+  public @Nullable String toggleOtherOffMessage() {
     return this.options().toggleOtherOffMessage();
   }
 
   @Override
-  @Nullable
-  public String cannotUseMessage() {
+  public @Nullable String cannotUseMessage() {
     return this.options().cannotUseMessage();
   }
 
@@ -507,14 +490,12 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  @Nullable
-  public List<String> aliases() {
+  public @Nullable List<String> aliases() {
     return this.options().aliases();
   }
 
   @Override
-  @Nullable
-  public Context context(final @NonNull String key) {
+  public @Nullable Context context(final @NonNull String key) {
     return this.options().context(key);
   }
 

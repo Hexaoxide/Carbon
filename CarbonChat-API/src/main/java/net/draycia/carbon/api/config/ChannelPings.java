@@ -8,14 +8,23 @@ import org.spongepowered.configurate.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public final class ChannelPings {
-  @Setting private boolean enabled = true;
-  @Setting private @NonNull String prefix = "";
-  @Setting private boolean caseSensitive = false;
-  @Setting private @NonNull Key sound =
-    Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup");
-  @Setting private Sound.Source source = Sound.Source.PLAYER;
-  @Setting private float volume = 10.0F;
-  @Setting private float pitch = 1.0F;
+
+  @Setting(comment = "Determines if this feature is enabled")
+  private boolean enabled = true;
+
+  @Setting(comment = "The text that pings must begin with. A prefix of '@' means you have to type '@Player' to ping Player")
+  private @NonNull String prefix = "";
+
+  @Setting(comment = "If player names are case sensitive, if true you must type Player to ping Player, 'player' will not work")
+  private boolean caseSensitive = false;
+
+  @Setting(comment = "The sound played to the pinged player")
+  private @NonNull Sound sound = Sound.sound(
+    Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup"),
+    Sound.Source.PLAYER,
+    10.0F,
+    1.0F
+  );
 
   public boolean enabled() {
     return this.enabled;
@@ -29,19 +38,8 @@ public final class ChannelPings {
     return this.caseSensitive;
   }
 
-  public Key sound() {
+  public Sound sound() {
     return this.sound;
   }
 
-  public Sound.Source source() {
-    return this.source;
-  }
-
-  public float volume() {
-    return this.volume;
-  }
-
-  public float pitch() {
-    return this.pitch;
-  }
 }

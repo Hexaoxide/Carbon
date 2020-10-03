@@ -23,7 +23,7 @@ public interface ChatUser extends Audience {
 
   @Nullable String nickname();
 
-  default void nickname(@Nullable final String nickname) {
+  default void nickname(final @Nullable String nickname) {
     this.nickname(nickname, false);
   }
 
@@ -75,17 +75,17 @@ public interface ChatUser extends Audience {
 
   @Nullable UUID replyTarget();
 
-  default void replyTarget(@Nullable final UUID target) {
+  default void replyTarget(final @Nullable UUID target) {
     this.replyTarget(target, false);
   }
 
-  default void replyTarget(@Nullable final ChatUser user) {
+  default void replyTarget(final @Nullable ChatUser user) {
     this.replyTarget(user.uuid(), false);
   }
 
   void replyTarget(@Nullable UUID target, boolean fromRemote);
 
-  default void replyTarget(@Nullable final ChatUser user, final boolean fromRemote) {
+  default void replyTarget(final @Nullable ChatUser user, final boolean fromRemote) {
     this.replyTarget(user.uuid(), fromRemote);
   }
 
@@ -113,13 +113,13 @@ public interface ChatUser extends Audience {
 
   @NonNull Iterable<UUID> ignoredUsers();
 
-  boolean hasGroup(@NonNull final String group);
+  boolean hasGroup(final @NonNull String group);
 
-  boolean hasGroup(@NonNull final Group group);
+  boolean hasGroup(final @NonNull Group group);
 
   @NonNull Collection<@NonNull Group> groups();
 
-  @NonNull Group primaryGroup();
+  @Nullable Group primaryGroup();
 
   void sendMessage(final @NonNull ChatUser sender, @NonNull String message);
 

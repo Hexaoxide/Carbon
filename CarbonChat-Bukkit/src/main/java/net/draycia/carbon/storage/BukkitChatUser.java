@@ -30,32 +30,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BukkitChatUser implements ChatUser, ForwardingAudience {
 
-  @NonNull
-  private final transient CarbonChatBukkit carbonChat;
-  @NonNull
-  private final Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
-  @NonNull
-  private final List<@NonNull UUID> ignoredUsers = new ArrayList<>();
-  @MonotonicNonNull // @NonNull but not initialised in all constructors.
-  private UUID uuid;
-  @Nullable
-  private String selectedChannelKey = null;
+  private final @NonNull transient CarbonChatBukkit carbonChat;
+  private final @NonNull Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
+  private final @NonNull List<@NonNull UUID> ignoredUsers = new ArrayList<>();
+  private @MonotonicNonNull UUID uuid;
   private boolean muted = false;
   private boolean shadowMuted = false;
   private boolean spyingWhispers = false;
+  private @Nullable String nickname = null;
+  private @Nullable UUID replyTarget = null;
 
-  @Nullable
-  private String nickname = null;
-
-  @Nullable
-  private transient ChatChannel selectedChannel = null;
-
-  @Nullable
-  private transient UUID replyTarget = null;
+  private @Nullable String selectedChannelKey = null;
+  private transient @Nullable ChatChannel selectedChannel = null;
 
   public BukkitChatUser() {
     this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat-Bukkit");
@@ -84,8 +75,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  @Nullable
-  public String nickname() {
+  public @Nullable String nickname() {
     return this.nickname;
   }
 
@@ -152,13 +142,12 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
     }
   }
 
-  public @Nullable String name() {
-    return Bukkit.getOfflinePlayer(this.uuid()).getName();
+  public @NonNull String name() {
+    return Objects.requireNonNull(Bukkit.getOfflinePlayer(this.uuid()).getName());
   }
 
   @Override
-  @Nullable
-  public ChatChannel selectedChannel() {
+  public @Nullable ChatChannel selectedChannel() {
     if (this.selectedChannel != null) {
       return this.selectedChannel;
     }
@@ -308,13 +297,12 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  @Nullable
-  public UUID replyTarget() {
+  public @Nullable UUID replyTarget() {
     return this.replyTarget;
   }
 
   @Override
-  public void replyTarget(@Nullable final UUID target, final boolean fromRemote) {
+  public void replyTarget(final @Nullable UUID target, final boolean fromRemote) {
     this.replyTarget = target;
 
     if (!fromRemote) {

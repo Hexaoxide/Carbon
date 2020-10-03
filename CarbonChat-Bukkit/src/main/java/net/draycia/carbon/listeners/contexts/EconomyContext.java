@@ -11,11 +11,9 @@ import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext {
-  @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final @NonNull CarbonChatBukkit carbonChat;
 
-  @NonNull
-  private final Economy economy;
+  private final @NonNull Economy economy;
 
   public EconomyContext(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
