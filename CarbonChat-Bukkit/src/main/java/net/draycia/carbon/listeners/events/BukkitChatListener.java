@@ -2,6 +2,8 @@ package net.draycia.carbon.listeners.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
+import net.draycia.carbon.api.events.UserEvent;
+import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
@@ -11,6 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
@@ -26,6 +30,9 @@ public class BukkitChatListener implements Listener {
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
+    // TODO: Move most of this to Common handling
+    // TODO: ChatMessageEvent that's called at the start of this
+    // TODO: Obtain a component (for console usage) from that event, or another
     final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     ChatChannel channel = user.selectedChannel();
 
@@ -97,6 +104,22 @@ public class BukkitChatListener implements Listener {
         //        }
       });
     }
+  }
+
+  @EventHandler
+  public void onPlayerJoin(final PlayerJoinEvent event) {
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
+    final UserEvent.Join joinEvent = new UserEvent.Join(user);
+
+    CarbonEvents.post(joinEvent);
+  }
+
+  @EventHandler
+  public void onPlayerLeave(final PlayerQuitEvent event) {
+    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
+    final UserEvent.Leave leaveEvent = new UserEvent.Leave(user);
+
+    CarbonEvents.post(leaveEvent);
   }
 
 }
