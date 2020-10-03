@@ -56,6 +56,11 @@ public class MessageCommand {
       receiver.sendMessage(sender, message.get());
     } else {
       sender.selectedChannel(new CarbonWhisperChannel(sender, receiver));
+
+      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(
+        this.carbonChat.carbonSettings().whisperOptions().nowWhisperingPlayer(),
+        "player", receiver.name()
+      ));
     }
   }
 

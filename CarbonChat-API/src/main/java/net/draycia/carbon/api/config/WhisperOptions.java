@@ -63,6 +63,10 @@ public class WhisperOptions {
 
   @Setting
   @Comment("")
+  private String nowWhisperingPlayer = "<white>You are now whispering <green><player><white>!";
+
+  @Setting
+  @Comment("")
   private boolean logToConsole = true;
 
   public boolean logToConsole() {
@@ -119,6 +123,10 @@ public class WhisperOptions {
 
   public @Nullable String cannotUseMessage() {
     return this.cannotUseMessage;
+  }
+
+  public @Nullable String nowWhisperingPlayer() {
+    return this.nowWhisperingPlayer;
   }
 
 }
