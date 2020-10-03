@@ -17,12 +17,12 @@ public interface WhisperChannel extends ChatChannel, ForwardingAudience.Single {
 
   @Override
   default @NonNull String name() {
-    return "Party";
+    return "Whisper";
   }
 
   @Override
   default @NonNull String key() {
-    return "party";
+    return "whisper";
   }
 
 }

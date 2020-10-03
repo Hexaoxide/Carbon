@@ -137,8 +137,6 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
     result.put(this.audience, receiverComponentEvent.component());
 
-    System.out.println(this.sender.equals(this.audience));
-
     final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(this.sender, null, this,
       this.consoleFormat(), message);
 
@@ -161,7 +159,8 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
     CarbonEvents.post(consoleEvent);
 
-    System.out.println(result.size());
+    this.sender.replyTarget(this.audience);
+    this.audience.replyTarget(this.sender);
 
     return result;
   }
