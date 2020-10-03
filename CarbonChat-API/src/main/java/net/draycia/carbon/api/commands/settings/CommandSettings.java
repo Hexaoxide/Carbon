@@ -2,8 +2,8 @@ package net.draycia.carbon.api.commands.settings;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.configurate.objectmapping.Setting;
-import org.spongepowered.configurate.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.Set;
 

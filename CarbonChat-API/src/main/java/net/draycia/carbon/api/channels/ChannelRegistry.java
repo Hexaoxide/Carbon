@@ -53,7 +53,7 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
     return this.registry.values().iterator();
   }
 
-  public @Nullable ChatChannel defaultChannel() {
+  public @MonotonicNonNull ChatChannel defaultChannel() {
     return this.defaultChannel;
   }
 

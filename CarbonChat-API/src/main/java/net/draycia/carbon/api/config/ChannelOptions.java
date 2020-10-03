@@ -4,8 +4,9 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.Context;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.objectmapping.Setting;
-import org.spongepowered.configurate.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,83 +17,108 @@ import java.util.Map;
 @ConfigSerializable
 public class ChannelOptions {
 
-  @Setting(comment = "What this channel is identified as. This will be what's typed ingame to use the channel.")
+  @Setting
+  @Comment("What this channel is identified as. This will be what's typed ingame to use the channel.")
   private String key = "channel";
   
-  @Setting(comment = "This is what the <color> placeholder will typically be replaced with.\n" +
+  @Setting
+  @Comment("This is what the <color> placeholder will typically be replaced with.\n" +
     "Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.\n" +
     "If on a platform that supports PlaceholderAPI, this option will be ran through that as well.\n" +
     "Note that the <color> placeholder is also used for personal and global user colors.")
   private String color;
   
-  @Setting(comment = "The contexts for this channel, ")
+  @Setting
+  @Comment("The contexts for this channel, ")
   private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults
   
-  @Setting(comment = "The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
+  @Setting
+  @Comment("The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
   private Map<String, String> formats = new HashMap<>(); // TODO: set defaults
   
-  @Setting(comment = "The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
+  @Setting
+  @Comment("The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
   private String defaultFormatName;
   
-  @Setting(comment = "If this channel is the default channel players join in.\n" +
+  @Setting
+  @Comment("If this channel is the default channel players join in.\n" +
     "Also used as a fallback in case the player's selected channel cannot be found.")
   private boolean isDefault = false; // primitive because missing = false
   
-  @Setting(comment = "If this channel can be ignored / hidden with the /ignore command")
+  @Setting
+  @Comment("If this channel can be ignored / hidden with the /ignore command")
   private Boolean ignorable; // boxed because missing = use defaults
   
-  @Setting(comment = "If this channel syncs to other servers (cross-server chat), requires a messaging system setup")
+  @Setting
+  @Comment("If this channel syncs to other servers (cross-server chat), requires a messaging system setup")
   private Boolean crossServer;
   
-  @Setting(comment = "If this channel should respect the bukkit recipient list, you normally shouldn't touch this")
+  @Setting
+  @Comment("If this channel should respect the bukkit recipient list, you normally shouldn't touch this")
   private Boolean honorsRecipientList;
   
-  @Setting(comment = "If players with the permission carbonchat.group.groupname are considered to have the group groupname")
+  @Setting
+  @Comment("If players with the permission carbonchat.group.groupname are considered to have the group groupname")
   private Boolean permissionGroupMatching;
   
-  @Setting(comment = "A custom (ordered) list of group priorities")
+  @Setting
+  @Comment("A custom (ordered) list of group priorities")
   private List<String> groupOverrides;
   
-  @Setting(comment = "The display name of this channel, supports minimessage. Used in command feedback")
+  @Setting
+  @Comment("The display name of this channel, supports minimessage. Used in command feedback")
   private String name = "";
   
-  @Setting(comment = "If the player's chat message starts with whatever this is set to, the player speaks in this channel instead of their selected one")
+  @Setting
+  @Comment("If the player's chat message starts with whatever this is set to, the player speaks in this channel instead of their selected one")
   private String messagePrefix = "";
   
-  @Setting(comment = "The command aliases for this channel")
+  @Setting
+  @Comment("The command aliases for this channel")
   private List<String> aliases = new ArrayList<>();
   
-  @Setting(comment = "If the bukkit chat event should be cancelled, you probably don't want to change this")
+  @Setting
+  @Comment("If the bukkit chat event should be cancelled, you probably don't want to change this")
   private Boolean shouldCancelChatEvent;
   
-  @Setting(comment = "If the player's format should be decided by their primary group only")
+  @Setting
+  @Comment("If the player's format should be decided by their primary group only")
   private Boolean primaryGroupOnly;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String switchMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String switchOtherMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String switchFailureMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String toggleOnMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String toggleOffMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String toggleOtherOnMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String toggleOtherOffMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String cannotUseMessage;
   
-  @Setting(comment = "")
+  @Setting
+  @Comment("")
   private String cannotIgnoreMessage;
   
   private SharedChannelOptions defaultOptions() {

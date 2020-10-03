@@ -1,10 +1,11 @@
 package net.draycia.carbon.api.config;
 
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.configurate.objectmapping.Setting;
-import org.spongepowered.configurate.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,21 +17,22 @@ public class ChannelSettings {
 
   static {
     try {
-      MAPPER = ObjectMapper.forClass(ChannelSettings.class); // We hold on to the instance of our ObjectMapper
+      MAPPER = ObjectMapper.factory().get(ChannelSettings.class);
     } catch (final ObjectMappingException e) {
       throw new ExceptionInInitializerError(e);
     }
   }
 
   public static ChannelSettings loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
-    return MAPPER.bindToNew().populate(node);
+    return MAPPER.load(node);
   }
 
   public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
-    MAPPER.bind(this).serialize(node);
+    MAPPER.save(this, node);
   }
 
-  @Setting(comment = "All options here act like the defaults for all channels.\n" +
+  @Setting
+  @Comment("All options here act like the defaults for all channels.\n" +
     "Adding any of these options to any channel overrides the relevant defaults.")
   private SharedChannelOptions sharedChannelOptions = new SharedChannelOptions();
 

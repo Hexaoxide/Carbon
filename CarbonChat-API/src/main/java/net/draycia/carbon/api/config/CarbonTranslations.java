@@ -1,10 +1,10 @@
 package net.draycia.carbon.api.config;
 
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.configurate.objectmapping.Setting;
-import org.spongepowered.configurate.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public class CarbonTranslations {
@@ -13,21 +13,22 @@ public class CarbonTranslations {
 
   static {
     try {
-      MAPPER = ObjectMapper.forClass(CarbonTranslations.class); // We hold on to the instance of our ObjectMapper
+      MAPPER = ObjectMapper.factory().get(CarbonTranslations.class);
     } catch (final ObjectMappingException e) {
       throw new ExceptionInInitializerError(e);
     }
   }
 
   public static CarbonTranslations loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
-    return MAPPER.bindToNew().populate(node);
+    return MAPPER.load(node);
   }
 
   public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
-    MAPPER.bind(this).serialize(node);
+    MAPPER.save(this, node);
   }
 
-  @Setting private String reloaded = "<yellow>Chat config has been reloaded!";
+  @Setting
+  private String reloaded = "<yellow>Chat config has been reloaded!";
   @Setting private String otherPlayerOffline = "<red>That player is offline!";
   @Setting private String spyWhispers = "<yellow>Spy [<gray><sender><reset> <gold>-> <gray><target><reset><yellow>] <message>";
   @Setting private String noReplyTarget = "<red>You have no one to reply to!";

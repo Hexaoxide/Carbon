@@ -5,10 +5,10 @@ import net.kyori.registry.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.configurate.objectmapping.Setting;
-import org.spongepowered.configurate.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,26 +18,26 @@ import java.util.Set;
 @ConfigSerializable
 public class CommandSettingsRegistry implements Registry<String, CommandSettings> {
 
+  @Setting
+  private @NonNull final Map<@NonNull String, @NonNull CommandSettings> registry = new HashMap<>();
+
   private static final ObjectMapper<CommandSettingsRegistry> MAPPER;
 
   static {
     try {
-      MAPPER = ObjectMapper.forClass(CommandSettingsRegistry.class); // We hold on to the instance of our ObjectMapper
+      MAPPER = ObjectMapper.factory().get(CommandSettingsRegistry.class);
     } catch (final ObjectMappingException e) {
       throw new ExceptionInInitializerError(e);
     }
   }
 
   public static CommandSettingsRegistry loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
-    return MAPPER.bindToNew().populate(node);
+    return MAPPER.load(node);
   }
 
   public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
-    MAPPER.bind(this).serialize(node);
+    MAPPER.save(this, node);
   }
-
-  @Setting
-  private @NonNull final Map<@NonNull String, @NonNull CommandSettings> registry = new HashMap<>();
 
   @Override
   public @NonNull CommandSettings register(@NonNull final String key, @NonNull final CommandSettings value) {

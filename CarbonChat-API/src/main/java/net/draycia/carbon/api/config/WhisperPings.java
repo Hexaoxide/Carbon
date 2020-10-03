@@ -3,8 +3,8 @@ package net.draycia.carbon.api.config;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.configurate.objectmapping.Setting;
-import org.spongepowered.configurate.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public final class WhisperPings {

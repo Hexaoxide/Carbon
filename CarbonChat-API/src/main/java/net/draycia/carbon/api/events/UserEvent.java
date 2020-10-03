@@ -14,7 +14,7 @@ public class UserEvent implements CarbonEvent, Cancellable {
     this.user = user;
   }
 
-  public ChatUser user() {
+  public @NonNull ChatUser user() {
     return this.user;
   }
 

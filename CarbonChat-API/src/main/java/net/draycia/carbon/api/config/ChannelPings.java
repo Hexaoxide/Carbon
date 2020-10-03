@@ -3,22 +3,27 @@ package net.draycia.carbon.api.config;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.configurate.objectmapping.Setting;
-import org.spongepowered.configurate.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 public final class ChannelPings {
 
-  @Setting(comment = "Determines if this feature is enabled")
+  @Setting
+  @Comment("Determines if this feature is enabled")
   private boolean enabled = true;
 
-  @Setting(comment = "The text that pings must begin with. A prefix of '@' means you have to type '@Player' to ping Player")
+  @Setting
+  @Comment("The text that pings must begin with. A prefix of '@' means you have to type '@Player' to ping Player")
   private @NonNull String prefix = "";
 
-  @Setting(comment = "If player names are case sensitive, if true you must type Player to ping Player, 'player' will not work")
+  @Setting
+  @Comment("If player names are case sensitive, if true you must type Player to ping Player, 'player' will not work")
   private boolean caseSensitive = false;
 
-  @Setting(comment = "The sound played to the pinged player")
+  @Setting
+  @Comment("The sound played to the pinged player")
   private @NonNull Sound sound = Sound.sound(
     Key.key(Key.MINECRAFT_NAMESPACE, "entity.experience_orb.pickup"),
     Sound.Source.PLAYER,
