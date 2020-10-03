@@ -11,11 +11,11 @@ import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext {
-  private final @NonNull CarbonChatBukkit carbonChat;
+  private @NonNull final CarbonChatBukkit carbonChat;
 
-  private final @NonNull Economy economy;
+  private @NonNull final Economy economy;
 
-  public EconomyContext(final @NonNull CarbonChatBukkit carbonChat) {
+  public EconomyContext(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
     this.economy = this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 

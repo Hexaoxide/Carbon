@@ -9,10 +9,10 @@ import java.util.List;
 @ConfigSerializable
 public class Context {
 
-  @Setting private final @NonNull String key;
-  @Setting private final @NonNull Object value;
+  @Setting private @NonNull final String key;
+  @Setting private @NonNull final Object value;
 
-  public Context(final @NonNull String key, final @NonNull Object value) {
+  public Context(@NonNull final String key, @NonNull final Object value) {
     this.key = key;
     this.value = value;
   }

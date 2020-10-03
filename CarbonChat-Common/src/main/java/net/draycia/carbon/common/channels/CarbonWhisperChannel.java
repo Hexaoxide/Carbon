@@ -24,12 +24,12 @@ import java.util.regex.Pattern;
 
 public class CarbonWhisperChannel implements WhisperChannel {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  private final @NonNull ChatUser sender;
-  private final @NonNull ChatUser audience;
+  private @NonNull final ChatUser sender;
+  private @NonNull final ChatUser audience;
 
-  public CarbonWhisperChannel(final @NonNull ChatUser sender, final @NonNull ChatUser audience) {
+  public CarbonWhisperChannel(@NonNull final ChatUser sender, @NonNull final ChatUser audience) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.sender = sender;
     this.audience = audience;
@@ -46,20 +46,20 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @Nullable TextColor channelColor(final @NonNull ChatUser user) {
+  public @Nullable TextColor channelColor(@NonNull final ChatUser user) {
     return NamedTextColor.WHITE;
   }
 
   @Override
-  public @NonNull Map<ChatUser, Component> parseMessage(final @NonNull ChatUser user, final @NonNull String message,
+  public @NonNull Map<ChatUser, Component> parseMessage(@NonNull final ChatUser user, @NonNull final String message,
                                                         final boolean fromRemote) {
     return this.parseMessage(user, Collections.singleton(this.audience()), message, fromRemote);
   }
 
   @Override
-  public @NonNull Map<ChatUser, Component> parseMessage(final @NonNull ChatUser user,
-                                                        final @NonNull Collection<@NonNull ChatUser> recipients,
-                                                        final @NonNull String message, final boolean fromRemote) {
+  public @NonNull Map<ChatUser, Component> parseMessage(@NonNull final ChatUser user,
+                                                        @NonNull final Collection<@NonNull ChatUser> recipients,
+                                                        @NonNull final String message, final boolean fromRemote) {
     // TODO: extract to method, this is just the same thing but twice
     final Map<ChatUser, Component> result = new HashMap<>();
 
@@ -167,29 +167,29 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public boolean canPlayerUse(final @NonNull ChatUser user) {
+  public boolean canPlayerUse(@NonNull final ChatUser user) {
     return user.equals(this.sender);
   }
 
   @Override
-  public boolean canPlayerSee(final @NonNull ChatUser sender, final @NonNull ChatUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(@NonNull final ChatUser sender, @NonNull final ChatUser target, final boolean checkSpying) {
     return (checkSpying && target.spyingWhispers()) || (sender.equals(this.sender) && target.equals(this.audience));
   }
 
   @Override
-  public boolean canPlayerSee(final @NonNull ChatUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(@NonNull final ChatUser target, final boolean checkSpying) {
     return false;
   }
 
   @Override
-  public void sendComponents(final @NonNull Map<ChatUser, Component> components) {
+  public void sendComponents(@NonNull final Map<ChatUser, Component> components) {
     for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(entry.getValue());
     }
   }
 
   @Override
-  public void sendComponentsAndLog(final @NonNull Map<ChatUser, Component> components) {
+  public void sendComponentsAndLog(@NonNull final Map<ChatUser, Component> components) {
     for (final Map.Entry<ChatUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(entry.getValue());
 

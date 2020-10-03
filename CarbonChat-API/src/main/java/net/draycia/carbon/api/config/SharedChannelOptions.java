@@ -67,8 +67,7 @@ public class SharedChannelOptions {
     return this.permissionGroupMatching;
   }
 
-  @NonNull
-  public List<@NonNull String> groupOverrides() {
+  public @NonNull List<@NonNull String> groupOverrides() {
     return this.groupOverrides;
   }
 

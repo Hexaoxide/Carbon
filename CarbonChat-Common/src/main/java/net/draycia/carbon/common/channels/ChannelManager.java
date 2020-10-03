@@ -16,15 +16,15 @@ import java.util.Map;
 
 public class ChannelManager {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  private final @NonNull ChannelRegistry registry;
+  private @NonNull final ChannelRegistry registry;
 
   @Nullable
   @MonotonicNonNull
   private String defaultChannelKey = null;
 
-  public ChannelManager(final @NonNull CarbonChat carbonChat) {
+  public ChannelManager(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.registry = new ChannelRegistry();
 
@@ -32,7 +32,7 @@ public class ChannelManager {
     this.reload();
   }
 
-  public @Nullable ChatChannel loadChannel(final @NonNull ChannelOptions settings) {
+  public @Nullable ChatChannel loadChannel(@NonNull final ChannelOptions settings) {
     final ChatChannel channel = new CarbonChatChannel(this.carbonChat, settings);
 
     final String name = settings.name();
@@ -46,7 +46,7 @@ public class ChannelManager {
     return channel;
   }
 
-  public void registerChannel(final @NonNull ChatChannel channel) {
+  public void registerChannel(@NonNull final ChatChannel channel) {
     this.registry().register(channel.key(), channel);
 
     if (channel instanceof TextChannel) {
@@ -71,7 +71,7 @@ public class ChannelManager {
     return null;
   }
 
-  public @Nullable ChatChannel channelOrDefault(final @Nullable String key) {
+  public @Nullable ChatChannel channelOrDefault(@Nullable final String key) {
     if (key == null) {
       return this.defaultChannel();
     }

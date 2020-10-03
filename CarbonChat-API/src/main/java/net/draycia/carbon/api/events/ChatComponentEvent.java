@@ -11,18 +11,15 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class ChatComponentEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
-  private final @NonNull ChatUser sender;
-  @Nullable
-  private final ChatUser target;
-  @NonNull
-  private ChatChannel chatChannel;
-  @NonNull
-  private TextComponent component;
-  private final @NonNull String originalMessage;
+  private @NonNull final ChatUser sender;
+  private @NonNull final ChatUser target;
+  private @NonNull ChatChannel chatChannel;
+  private @NonNull TextComponent component;
+  private @NonNull final String originalMessage;
 
-  public ChatComponentEvent(final @NonNull ChatUser sender, final @Nullable ChatUser target,
-                            final @NonNull ChatChannel chatChannel, final @NonNull TextComponent component,
-                            final @NonNull String originalMessage) {
+  public ChatComponentEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
+                            @NonNull final ChatChannel chatChannel, @NonNull final TextComponent component,
+                            @NonNull final String originalMessage) {
 
     this.sender = sender;
     this.target = target;
@@ -41,8 +38,7 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     this.isCancelled = cancelled;
   }
 
-  @NonNull
-  public ChatUser sender() {
+  public @NonNull ChatUser sender() {
     return this.sender;
   }
 
@@ -50,26 +46,23 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     return this.target;
   }
 
-  @NonNull
-  public ChatChannel channel() {
+  public @NonNull ChatChannel channel() {
     return this.chatChannel;
   }
 
-  public void channel(final @NonNull ChatChannel chatChannel) {
+  public void channel(@NonNull final ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
-  @NonNull
-  public TextComponent component() {
+  public @NonNull TextComponent component() {
     return this.component;
   }
 
-  public void component(final @NonNull TextComponent component) {
+  public void component(@NonNull final TextComponent component) {
     this.component = component;
   }
 
-  @NonNull
-  public String originalMessage() {
+  public @NonNull String originalMessage() {
     return this.originalMessage;
   }
 

@@ -14,9 +14,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChannelCommand {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  public ChannelCommand(final @NonNull CommandManager<ChatUser> commandManager) {
+  public ChannelCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("channel");
@@ -43,7 +43,7 @@ public class ChannelCommand {
     );
   }
 
-  private void channel(final @NonNull CommandContext<ChatUser> context) {
+  private void channel(@NonNull final CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final TextChannel channel = context.getRequired("channel");
 
@@ -59,7 +59,7 @@ public class ChannelCommand {
     user.selectedChannel(channel);
   }
 
-  private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
+  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
     final ChatChannel channel = context.getRequired("channel");
     final String message = context.getRequired("message");
 

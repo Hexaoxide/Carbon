@@ -15,11 +15,11 @@ import java.util.function.Consumer;
 
 public class MessageManager {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  private final @NonNull MessageService messageService;
+  private @NonNull final MessageService messageService;
 
-  public MessageManager(final @NonNull CarbonChat carbonChat, final @NonNull MessageService messageService) {
+  public MessageManager(@NonNull final CarbonChat carbonChat, @NonNull final MessageService messageService) {
     this.carbonChat = carbonChat;
     this.messageService = messageService;
 
@@ -112,13 +112,12 @@ public class MessageManager {
     });
   }
 
-  @NonNull
-  public MessageService messageService() {
+  public @NonNull MessageService messageService() {
     return this.messageService;
   }
 
-  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid,
-                          final @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
+  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid,
+                          @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
     this.messageService().sendMessage(key, uuid, consumer);
   }
 

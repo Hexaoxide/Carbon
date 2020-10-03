@@ -88,8 +88,7 @@ public class CarbonSettings {
   private List<Pattern> itemLinkPatterns =
     Collections.singletonList(Pattern.compile(Pattern.quote("[item]")));
 
-  @NonNull
-  public List<@NonNull Pattern> itemLinkPatterns() {
+  public @NonNull List<@NonNull Pattern> itemLinkPatterns() {
     return this.itemLinkPatterns;
   }
 

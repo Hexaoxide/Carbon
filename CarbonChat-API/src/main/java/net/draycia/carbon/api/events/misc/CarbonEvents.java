@@ -14,11 +14,11 @@ public final class CarbonEvents {
 
   private static final SimpleEventBus<CarbonEvent> EVENT_BUS = new SimpleEventBus<>(CarbonEvent.class);
 
-  public static <T extends CarbonEvent> void register(final @NonNull Class<T> clazz, final @NonNull EventSubscriber<T> subscriber) {
+  public static <T extends CarbonEvent> void register(@NonNull final Class<T> clazz, @NonNull final EventSubscriber<T> subscriber) {
     EVENT_BUS.register(clazz, subscriber);
   }
 
-  public static <T extends CarbonEvent> void register(final @NonNull Class<T> clazz, final int priority, final boolean consumeCancelled, final @NonNull Consumer<T> consumer) {
+  public static <T extends CarbonEvent> void register(@NonNull final Class<T> clazz, final int priority, final boolean consumeCancelled, @NonNull final Consumer<T> consumer) {
     EVENT_BUS.register(clazz, new EventSubscriber<T>() {
       @Override
       public int postOrder() {
@@ -31,17 +31,17 @@ public final class CarbonEvents {
       }
 
       @Override
-      public void invoke(final @NonNull T event) {
+      public void invoke(@NonNull final T event) {
         consumer.accept(event);
       }
     });
   }
 
-  public static void unregister(final @NonNull EventSubscriber<? super CarbonEvent> subscriber) {
+  public static void unregister(@NonNull final EventSubscriber<? super CarbonEvent> subscriber) {
     EVENT_BUS.unregister(subscriber);
   }
 
-  public static PostResult post(final @NonNull CarbonEvent event) {
+  public static PostResult post(@NonNull final CarbonEvent event) {
     return EVENT_BUS.post(event);
   }
 

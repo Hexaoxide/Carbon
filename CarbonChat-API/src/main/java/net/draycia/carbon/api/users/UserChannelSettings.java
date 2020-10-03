@@ -24,7 +24,7 @@ public interface UserChannelSettings {
   @Nullable
   TextColor color();
 
-  default void color(final @Nullable TextColor color) {
+  default void color(@Nullable final TextColor color) {
     this.color(color, false);
   }
 

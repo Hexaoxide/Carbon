@@ -12,11 +12,11 @@ public final class ColorUtils {
 
   }
 
-  public @Nullable static TextColor parseColor(final @Nullable String input) {
+  public @Nullable static TextColor parseColor(@Nullable final String input) {
     return parseColor(null, input);
   }
 
-  public @Nullable static TextColor parseColor(final @Nullable ChatUser user, @Nullable String input) {
+  public @Nullable static TextColor parseColor(@Nullable final ChatUser user, @Nullable String input) {
     if (input == null || input.isEmpty()) {
       return NamedTextColor.WHITE;
     }

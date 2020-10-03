@@ -23,7 +23,7 @@ public interface ChatUser extends Audience {
 
   @Nullable String nickname();
 
-  default void nickname(final @Nullable String nickname) {
+  default void nickname(@Nullable final String nickname) {
     this.nickname(nickname, false);
   }
 
@@ -37,7 +37,7 @@ public interface ChatUser extends Audience {
 
   @Nullable ChatChannel selectedChannel();
 
-  default void selectedChannel(final @NonNull ChatChannel channel) {
+  default void selectedChannel(@NonNull final ChatChannel channel) {
     this.selectedChannel(channel, false);
   }
 
@@ -75,17 +75,17 @@ public interface ChatUser extends Audience {
 
   @Nullable UUID replyTarget();
 
-  default void replyTarget(final @Nullable UUID target) {
+  default void replyTarget(@Nullable final UUID target) {
     this.replyTarget(target, false);
   }
 
-  default void replyTarget(final @Nullable ChatUser user) {
+  default void replyTarget(@Nullable final ChatUser user) {
     this.replyTarget(user.uuid(), false);
   }
 
   void replyTarget(@Nullable UUID target, boolean fromRemote);
 
-  default void replyTarget(final @Nullable ChatUser user, final boolean fromRemote) {
+  default void replyTarget(@Nullable final ChatUser user, final boolean fromRemote) {
     this.replyTarget(user.uuid(), fromRemote);
   }
 
@@ -93,19 +93,19 @@ public interface ChatUser extends Audience {
 
   void ignoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote);
 
-  default void ignoringUser(final @NonNull UUID uuid, final boolean ignoring) {
+  default void ignoringUser(@NonNull final UUID uuid, final boolean ignoring) {
     this.ignoringUser(uuid, ignoring, false);
   }
 
-  default boolean ignoringUser(final @NonNull ChatUser user) {
+  default boolean ignoringUser(@NonNull final ChatUser user) {
     return this.ignoringUser(user.uuid());
   }
 
-  default void ignoringUser(final @NonNull ChatUser user, final boolean ignoring, final boolean fromRemote) {
+  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring, final boolean fromRemote) {
     this.ignoringUser(user.uuid(), ignoring, fromRemote);
   }
 
-  default void ignoringUser(final @NonNull ChatUser user, final boolean ignoring) {
+  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring) {
     this.ignoringUser(user.uuid(), ignoring, false);
   }
 
@@ -113,14 +113,14 @@ public interface ChatUser extends Audience {
 
   @NonNull Iterable<UUID> ignoredUsers();
 
-  boolean hasGroup(final @NonNull String group);
+  boolean hasGroup(@NonNull final String group);
 
-  boolean hasGroup(final @NonNull Group group);
+  boolean hasGroup(@NonNull final Group group);
 
   @NonNull Collection<@NonNull Group> groups();
 
   @Nullable Group primaryGroup();
 
-  void sendMessage(final @NonNull ChatUser sender, @NonNull String message);
+  void sendMessage(@NonNull final ChatUser sender, @NonNull String message);
 
 }

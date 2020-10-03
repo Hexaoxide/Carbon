@@ -9,25 +9,22 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class ChannelSwitchEvent implements CarbonEvent, Cancellable {
 
-  private final @NonNull ChatChannel channel;
-  private final @NonNull ChatUser user;
-  @Nullable
-  private String failureMessage;
+  private @NonNull final ChatChannel channel;
+  private @NonNull final ChatUser user;
+  private @NonNull String failureMessage;
   private boolean cancelled = false;
 
-  public ChannelSwitchEvent(final @NonNull ChatChannel channel, final @NonNull ChatUser user, final @Nullable String failureMessage) {
+  public ChannelSwitchEvent(@NonNull final ChatChannel channel, @NonNull final ChatUser user, @Nullable final String failureMessage) {
     this.channel = channel;
     this.user = user;
     this.failureMessage = failureMessage;
   }
 
-  @NonNull
-  public ChatUser user() {
+  public @NonNull ChatUser user() {
     return this.user;
   }
 
-  @NonNull
-  public ChatChannel channel() {
+  public @NonNull ChatChannel channel() {
     return this.channel;
   }
 
@@ -35,7 +32,7 @@ public class ChannelSwitchEvent implements CarbonEvent, Cancellable {
     return this.failureMessage;
   }
 
-  public void failureMessage(final @Nullable String failureMessage) {
+  public void failureMessage(@Nullable final String failureMessage) {
     this.failureMessage = failureMessage;
   }
 

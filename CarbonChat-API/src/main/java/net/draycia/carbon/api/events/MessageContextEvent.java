@@ -9,11 +9,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MessageContextEvent implements CarbonEvent, Cancellable {
 
-  private final @NonNull TextChannel channel;
-  private final @NonNull ChatUser user;
+  private @NonNull final TextChannel channel;
+  private @NonNull final ChatUser user;
   private boolean cancelled = false;
 
-  public MessageContextEvent(final @NonNull TextChannel channel, final @NonNull ChatUser user) {
+  public MessageContextEvent(@NonNull final TextChannel channel, @NonNull final ChatUser user) {
     this.channel = channel;
     this.user = user;
   }
@@ -28,7 +28,7 @@ public class MessageContextEvent implements CarbonEvent, Cancellable {
     this.cancelled = cancelled;
   }
 
-  public Context context(final @NonNull String key) {
+  public Context context(@NonNull final String key) {
     return this.channel.context(key);
   }
 

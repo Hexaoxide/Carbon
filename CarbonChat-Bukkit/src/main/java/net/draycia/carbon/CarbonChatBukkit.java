@@ -345,13 +345,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     new FilterContext(this);
   }
 
-  @NonNull
-  public MessageManager messageManager() {
+  public @NonNull MessageManager messageManager() {
     return this.messageManager;
   }
 
-  @NonNull
-  public UserService<BukkitChatUser> userService() {
+  public @NonNull UserService<BukkitChatUser> userService() {
     return this.userService;
   }
 

@@ -10,16 +10,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class PreChatFormatEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
-  private final @NonNull ChatUser user;
-  @NonNull
-  private ChatChannel chatChannel;
-  @Nullable
-  private String format;
-  @NonNull
-  private String message;
+  private @NonNull final ChatUser user;
+  private @NonNull ChatChannel chatChannel;
+  private @NonNull String format;
+  private @NonNull String message;
 
-  public PreChatFormatEvent(final @NonNull ChatUser user, final @NonNull ChatChannel chatChannel,
-                            final @Nullable String format, final @NonNull String message) {
+  public PreChatFormatEvent(@NonNull final ChatUser user, @NonNull final ChatChannel chatChannel,
+                            @Nullable final String format, @NonNull final String message) {
 
     this.user = user;
     this.chatChannel = chatChannel;
@@ -37,17 +34,15 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
     this.isCancelled = cancelled;
   }
 
-  @NonNull
-  public ChatUser user() {
+  public @NonNull ChatUser user() {
     return this.user;
   }
 
-  @NonNull
-  public ChatChannel channel() {
+  public @NonNull ChatChannel channel() {
     return this.chatChannel;
   }
 
-  public void channel(final @NonNull ChatChannel chatChannel) {
+  public void channel(@NonNull final ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
@@ -55,16 +50,15 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
     return this.format;
   }
 
-  public void format(final @Nullable String format) {
+  public void format(@Nullable final String format) {
     this.format = format;
   }
 
-  @NonNull
-  public String message() {
+  public @NonNull String message() {
     return this.message;
   }
 
-  public void message(final @NonNull String message) {
+  public void message(@NonNull final String message) {
     this.message = message;
   }
 

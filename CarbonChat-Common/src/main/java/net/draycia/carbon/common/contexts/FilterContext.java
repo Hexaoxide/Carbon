@@ -16,9 +16,9 @@ import java.util.regex.Pattern;
 
 public class FilterContext {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  public FilterContext(final @NonNull CarbonChat carbonChat) {
+  public FilterContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
@@ -61,7 +61,7 @@ public class FilterContext {
     });
   }
 
-  private boolean channelUsesFilter(final @NonNull ChatChannel chatChannel) {
+  private boolean channelUsesFilter(@NonNull final ChatChannel chatChannel) {
     if (chatChannel instanceof TextChannel) {
       final Context context = ((TextChannel) chatChannel).context("filter");
 

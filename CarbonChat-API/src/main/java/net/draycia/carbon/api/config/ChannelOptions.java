@@ -111,8 +111,7 @@ public class ChannelOptions {
     return settings;
   }
 
-  @NonNull
-  public String key() {
+  public @NonNull String key() {
     return this.key;
   }
 
@@ -124,7 +123,7 @@ public class ChannelOptions {
     return this.color;
   }
 
-  public @Nullable Context context(final @NonNull String key) {
+  public @Nullable Context context(@NonNull final String key) {
     final Context localContext;
 
     if (this.contexts != null) {
@@ -167,7 +166,7 @@ public class ChannelOptions {
     return contexts;
   }
 
-  public @Nullable String format(final @NonNull String key) {
+  public @Nullable String format(@NonNull final String key) {
     final String localFormat;
 
     if (this.formats() != null) {
@@ -254,8 +253,7 @@ public class ChannelOptions {
     return this.permissionGroupMatching;
   }
 
-  @NonNull
-  public List<@NonNull String> groupOverrides() {
+  public @NonNull List<@NonNull String> groupOverrides() {
     if (this.groupOverrides == null) {
       return this.defaultOptions().groupOverrides();
     }
@@ -263,8 +261,7 @@ public class ChannelOptions {
     return this.groupOverrides;
   }
 
-  @NonNull
-  public String name() {
+  public @NonNull String name() {
     if (this.name == null) {
       return this.key;
     }

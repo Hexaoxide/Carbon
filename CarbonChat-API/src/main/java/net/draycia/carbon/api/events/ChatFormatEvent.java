@@ -10,19 +10,15 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class ChatFormatEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
-  private final @NonNull ChatUser sender;
-  @Nullable
-  private final ChatUser target;
-  @NonNull
-  private ChatChannel chatChannel;
-  @Nullable
-  private String format;
-  @NonNull
-  private String message;
+  private @NonNull final ChatUser sender;
+  private @NonNull final ChatUser target;
+  private @NonNull ChatChannel chatChannel;
+  private @NonNull String format;
+  private @NonNull String message;
 
-  public ChatFormatEvent(final @NonNull ChatUser sender, final @Nullable ChatUser target,
-                         final @NonNull ChatChannel chatChannel, final @Nullable String format,
-                         final @NonNull String message) {
+  public ChatFormatEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
+                         @NonNull final ChatChannel chatChannel, @Nullable final String format,
+                         @NonNull final String message) {
 
     this.sender = sender;
     this.target = target;
@@ -42,8 +38,7 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     this.isCancelled = cancelled;
   }
 
-  @NonNull
-  public ChatUser sender() {
+  public @NonNull ChatUser sender() {
     return this.sender;
   }
 
@@ -51,12 +46,11 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     return this.target;
   }
 
-  @NonNull
-  public ChatChannel channel() {
+  public @NonNull ChatChannel channel() {
     return this.chatChannel;
   }
 
-  public void channel(final @NonNull ChatChannel chatChannel) {
+  public void channel(@NonNull final ChatChannel chatChannel) {
     this.chatChannel = chatChannel;
   }
 
@@ -64,16 +58,15 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     return this.format;
   }
 
-  public void format(final @Nullable String format) {
+  public void format(@Nullable final String format) {
     this.format = format;
   }
 
-  @NonNull
-  public String message() {
+  public @NonNull String message() {
     return this.message;
   }
 
-  public void message(final @NonNull String message) {
+  public void message(@NonNull final String message) {
     this.message = message;
   }
 

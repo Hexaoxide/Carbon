@@ -35,9 +35,9 @@ public interface ChatChannel extends Audience {
 
   boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying);
 
-  void sendComponents(final @NonNull Map<ChatUser, Component> components);
+  void sendComponents(@NonNull final Map<ChatUser, Component> components);
 
-  void sendComponentsAndLog(final @NonNull Map<ChatUser, Component> components);
+  void sendComponentsAndLog(@NonNull final Map<ChatUser, Component> components);
 
   @NonNull String name();
 

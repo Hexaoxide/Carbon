@@ -10,27 +10,24 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class CarbonPlaceholders extends PlaceholderExpansion {
 
-  private final @NonNull CarbonChatBukkit carbonChat;
+  private @NonNull final CarbonChatBukkit carbonChat;
 
-  public CarbonPlaceholders(final @NonNull CarbonChatBukkit carbonChat) {
+  public CarbonPlaceholders(@NonNull final CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   @Override
-  @NonNull
-  public String getIdentifier() {
+  public @NonNull String getIdentifier() {
     return "carbonchat";
   }
 
   @Override
-  @NonNull
-  public String getAuthor() {
+  public @NonNull String getAuthor() {
     return "Draycia (Vicarious#0001)";
   }
 
   @Override
-  @NonNull
-  public String getVersion() {
+  public @NonNull String getVersion() {
     return "1.0.0";
   }
 
@@ -40,7 +37,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
   }
 
   @Override
-  public @Nullable String onPlaceholderRequest(final @NonNull Player player, final @NonNull String identifier) {
+  public @Nullable String onPlaceholderRequest(@NonNull final Player player, @NonNull final String identifier) {
     final String key = identifier.toLowerCase();
 
     if (key.startsWith("can_use_")) {

@@ -37,26 +37,26 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
   }
 
   @Setting
-  private final @NonNull Map<@NonNull String, @NonNull CommandSettings> registry = new HashMap<>();
+  private @NonNull final Map<@NonNull String, @NonNull CommandSettings> registry = new HashMap<>();
 
   @Override
-  public @NonNull CommandSettings register(final @NonNull String key, final @NonNull CommandSettings value) {
+  public @NonNull CommandSettings register(@NonNull final String key, @NonNull final CommandSettings value) {
     this.registry.put(key, value);
 
     return value;
   }
 
   @Override
-  public @Nullable CommandSettings get(final @NonNull String key) {
+  public @Nullable CommandSettings get(@NonNull final String key) {
     return this.registry.get(key);
   }
 
-  public @Nullable CommandSettings get(final @NonNull ChatChannel channel) {
+  public @Nullable CommandSettings get(@NonNull final ChatChannel channel) {
     return this.get(channel.key());
   }
 
   @Override
-  public @Nullable String key(final @NonNull CommandSettings value) {
+  public @Nullable String key(@NonNull final CommandSettings value) {
     return null;
   }
 

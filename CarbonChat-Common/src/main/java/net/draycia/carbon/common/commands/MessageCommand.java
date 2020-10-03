@@ -15,9 +15,9 @@ import java.util.Optional;
 
 public class MessageCommand {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  public MessageCommand(final @NonNull CommandManager<ChatUser> commandManager) {
+  public MessageCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
@@ -39,7 +39,7 @@ public class MessageCommand {
     );
   }
 
-  private void sendMessage(final @NonNull CommandContext<ChatUser> context) {
+  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
     final ChatUser sender = context.getSender();
     final ChatUser receiver = context.getRequired("user");
 

@@ -12,9 +12,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ShadowMuteCommand {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  public ShadowMuteCommand(final @NonNull CommandManager<ChatUser> commandManager) {
+  public ShadowMuteCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("shadowmute");
@@ -34,7 +34,7 @@ public class ShadowMuteCommand {
     );
   }
 
-  private void shadowMute(final @NonNull CommandContext<ChatUser> context) {
+  private void shadowMute(@NonNull final CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
     final ChatUser target = context.getRequired("user");
 

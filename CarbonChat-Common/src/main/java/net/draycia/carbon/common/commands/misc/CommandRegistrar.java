@@ -25,7 +25,7 @@ public final class CommandRegistrar {
 
   }
 
-  public static void registerCommands(final @NonNull CommandManager<ChatUser> commandManager) {
+  public static void registerCommands(@NonNull final CommandManager<ChatUser> commandManager) {
     new ChannelCommand(commandManager);
     new ChannelListCommand(commandManager);
     new ChatReloadCommand(commandManager);

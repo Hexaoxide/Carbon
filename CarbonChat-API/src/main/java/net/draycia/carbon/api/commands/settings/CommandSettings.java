@@ -23,8 +23,7 @@ public class CommandSettings {
     return this.aliases;
   }
 
-  @NonNull
-  public String name() {
+  public @NonNull String name() {
     return this.name;
   }
 

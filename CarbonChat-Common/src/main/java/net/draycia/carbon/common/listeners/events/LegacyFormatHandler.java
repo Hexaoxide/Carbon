@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class LegacyFormatHandler {
 
-  private final @NonNull Pattern pattern =
+  private @NonNull final Pattern pattern =
     Pattern.compile("[§&]x[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])");
 
   public LegacyFormatHandler() {

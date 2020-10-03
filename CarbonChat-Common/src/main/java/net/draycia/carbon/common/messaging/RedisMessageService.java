@@ -22,19 +22,19 @@ import java.util.function.Consumer;
 
 public class RedisMessageService implements MessageService {
 
-  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
-  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
-  private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
+  private @NonNull final RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
 
-  private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
+  private @NonNull final RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
 
-  private final @NonNull UUID serverUUID = UUID.randomUUID();
+  private @NonNull final UUID serverUUID = UUID.randomUUID();
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  public RedisMessageService(final @NonNull CarbonChat carbonChat, final @NonNull RedisCredentials credentials) {
+  public RedisMessageService(@NonNull final CarbonChat carbonChat, @NonNull final RedisCredentials credentials) {
     this.carbonChat = carbonChat;
 
     final RedisURI.Builder builder = RedisURI.Builder.redis(credentials.host(), credentials.port())
@@ -67,7 +67,7 @@ public class RedisMessageService implements MessageService {
     });
   }
 
-  private void receiveMessage(final @NonNull UUID uuid, final @NonNull String key, final @NonNull ByteArrayDataInput value) {
+  private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
     final ChatUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
@@ -86,19 +86,19 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
+  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
     this.userLoadedListeners.put(key, listener);
     this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void registerUUIDMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
+  public void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
     this.userNotLoadedListeners.put(key, listener);
     this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void unregisterMessageListener(final @NonNull String key) {
+  public void unregisterMessageListener(@NonNull final String key) {
     this.userLoadedListeners.remove(key);
     this.userNotLoadedListeners.remove(key);
 
@@ -106,7 +106,7 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid, final @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
+  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid, @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
     final ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
     msg.writeLong(this.serverUUID.getMostSignificantBits());

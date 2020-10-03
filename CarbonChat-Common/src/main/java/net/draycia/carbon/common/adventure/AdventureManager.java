@@ -12,20 +12,20 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AdventureManager implements MessageProcessor {
 
-  private final @NonNull AudienceProvider provider;
+  private @NonNull final AudienceProvider provider;
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  private final @NonNull FormatType formatType;
+  private @NonNull final FormatType formatType;
 
-  public AdventureManager(final @NonNull AudienceProvider provider, final @NonNull FormatType formatType) {
+  public AdventureManager(@NonNull final AudienceProvider provider, @NonNull final FormatType formatType) {
     this.provider = provider;
     this.formatType = formatType;
     this.carbonChat = CarbonChatProvider.carbonChat();
   }
 
   @Override
-  public @NonNull Component processMessage(final @Nullable String input, final @NonNull String @NonNull ... placeholders) {
+  public @NonNull Component processMessage(@Nullable final String input, @NonNull final String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
       return Component.empty();
     }
@@ -43,7 +43,7 @@ public class AdventureManager implements MessageProcessor {
     }
   }
 
-  private @NonNull Component processMojang(@NonNull String input, final @NonNull String @NonNull ... placeholders) {
+  private @NonNull Component processMojang(@NonNull String input, @NonNull final String @NonNull ... placeholders) {
     for (int i = 0; i < placeholders.length; i += 2) {
       final String placeholder = placeholders[i];
       final String replacement = placeholders[i + 1];

@@ -13,22 +13,22 @@ import java.util.function.Consumer;
 public class EmptyMessageService implements MessageService {
 
   @Override
-  public void registerUserMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
+  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
     // do nothing
   }
 
   @Override
-  public void registerUUIDMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
+  public void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
     // do nothing
   }
 
   @Override
-  public void unregisterMessageListener(final @NonNull String key) {
+  public void unregisterMessageListener(@NonNull final String key) {
     // do nothing
   }
 
   @Override
-  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid, final @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
+  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid, @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
     // do nothing
   }
 

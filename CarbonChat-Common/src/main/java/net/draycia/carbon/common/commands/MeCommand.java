@@ -12,9 +12,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MeCommand {
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  public MeCommand(final @NonNull CommandManager<ChatUser> commandManager) {
+  public MeCommand(@NonNull final CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("me");
@@ -34,7 +34,7 @@ public class MeCommand {
     );
   }
 
-  private void message(final @NonNull CommandContext<ChatUser> context) {
+  private void message(@NonNull final CommandContext<ChatUser> context) {
     final ChatUser user = context.getSender();
 
     final String message = context.<String>getRequired("message").replace("</pre>", "");

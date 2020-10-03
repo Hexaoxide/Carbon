@@ -22,12 +22,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class TownyContext implements Listener {
 
-  @NonNull
-  private static final String KEY = "towny-town";
+  private @NonNull static final String KEY = "towny-town";
 
-  private final @NonNull CarbonChat carbonChat;
+  private @NonNull final CarbonChat carbonChat;
 
-  public TownyContext(final @NonNull CarbonChat carbonChat) {
+  public TownyContext(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
@@ -101,7 +100,7 @@ public final class TownyContext implements Listener {
     }
   }
 
-  public boolean isInTown(final @NonNull ChatUser user) {
+  public boolean isInTown(@NonNull final ChatUser user) {
     try {
       return TownyAPI.getInstance().getDataSource().getResident(Bukkit.getPlayer(user.uuid()).getName()).hasTown();
     } catch (final NotRegisteredException exception) {
@@ -111,7 +110,7 @@ public final class TownyContext implements Listener {
     return false;
   }
 
-  public boolean isInSameTown(final @NonNull ChatUser user1, final @NonNull ChatUser user2) {
+  public boolean isInSameTown(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
     if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }

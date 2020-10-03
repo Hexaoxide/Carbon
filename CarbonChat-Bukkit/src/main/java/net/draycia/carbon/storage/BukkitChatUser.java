@@ -35,9 +35,9 @@ import java.util.UUID;
 
 public class BukkitChatUser implements ChatUser, ForwardingAudience {
 
-  private final @NonNull transient CarbonChatBukkit carbonChat;
-  private final @NonNull Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
-  private final @NonNull List<@NonNull UUID> ignoredUsers = new ArrayList<>();
+  private @NonNull final transient CarbonChatBukkit carbonChat;
+  private @NonNull final Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
+  private @NonNull final List<@NonNull UUID> ignoredUsers = new ArrayList<>();
   private @MonotonicNonNull UUID uuid;
   private boolean muted = false;
   private boolean shadowMuted = false;
@@ -52,14 +52,13 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
     this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat-Bukkit");
   }
 
-  public BukkitChatUser(final @NonNull UUID uuid) {
+  public BukkitChatUser(@NonNull final UUID uuid) {
     this();
     this.uuid = uuid;
   }
 
   @Override
-  @NonNull
-  public Iterable<@NonNull ? extends Audience> audiences() {
+  public @NonNull Iterable<@NonNull ? extends Audience> audiences() {
     return Collections.singleton(this.carbonChat.messageProcessor().audiences().player(this.uuid()));
   }
 
@@ -69,8 +68,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  @NonNull
-  public UUID uuid() {
+  public @NonNull UUID uuid() {
     return this.uuid;
   }
 
@@ -85,7 +83,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public boolean hasPermission(final @NonNull String permission) {
+  public boolean hasPermission(@NonNull final String permission) {
     return LuckPermsProvider.get().getUserManager().getUser(this.uuid())
       .getCachedData().getPermissionData().checkPermission(permission).asBoolean();
   }
@@ -134,7 +132,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
     return this.name();
   }
 
-  public void displayName(final @Nullable String displayName) {
+  public void displayName(@Nullable final String displayName) {
     final Player player = Bukkit.getPlayer(this.uuid());
 
     if (player != null) {
@@ -160,7 +158,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public void selectedChannel(final @NonNull ChatChannel chatChannel, final boolean fromRemote) {
+  public void selectedChannel(@NonNull final ChatChannel chatChannel, final boolean fromRemote) {
     final String failureMessage = chatChannel.switchFailureMessage();
 
     final ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
@@ -199,12 +197,12 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public boolean ignoringUser(final @NonNull UUID uuid) {
+  public boolean ignoringUser(@NonNull final UUID uuid) {
     return this.ignoredUsers.contains(uuid);
   }
 
   @Override
-  public void ignoringUser(final @NonNull UUID uuid, final boolean ignoring, final boolean fromRemote) {
+  public void ignoringUser(@NonNull final UUID uuid, final boolean ignoring, final boolean fromRemote) {
     if (ignoring) {
       this.ignoredUsers.add(uuid);
     } else {
@@ -221,20 +219,19 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  @NonNull
-  public Iterable<@NonNull UUID> ignoredUsers() {
+  public @NonNull Iterable<@NonNull UUID> ignoredUsers() {
     return this.ignoredUsers;
   }
 
   private transient final LuckPerms luckPerms = LuckPermsProvider.get();
 
   @Override
-  public boolean hasGroup(final @NonNull String groupName) {
+  public boolean hasGroup(@NonNull final String groupName) {
     return this.hasGroup(this.luckPerms.getGroupManager().getGroup(groupName));
   }
 
   @Override
-  public boolean hasGroup(final @NonNull Group group) {
+  public boolean hasGroup(@NonNull final Group group) {
     return this.groups().contains(group);
   }
 
@@ -253,8 +250,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  @NonNull
-  public Iterable<@NonNull ChatUser> ignoredChatUsers() {
+  public @NonNull Iterable<@NonNull ChatUser> ignoredChatUsers() {
     final List<ChatUser> users = new ArrayList<>();
 
     for (final UUID uuid : this.ignoredUsers) {
@@ -302,7 +298,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public void replyTarget(final @Nullable UUID target, final boolean fromRemote) {
+  public void replyTarget(@Nullable final UUID target, final boolean fromRemote) {
     this.replyTarget = target;
 
     if (!fromRemote) {
@@ -314,15 +310,13 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  @NonNull
-  public UserChannelSettings channelSettings(final @NonNull ChatChannel channel) {
+  public @NonNull UserChannelSettings channelSettings(@NonNull final ChatChannel channel) {
     return this.channelSettings.computeIfAbsent(channel.key(), name -> {
       return new SimpleUserChannelSettings(this.uuid, channel.key());
     });
   }
 
-  @NonNull
-  public Map<@NonNull String, @NonNull ? extends UserChannelSettings> channelSettings() {
+  public @NonNull Map<@NonNull String, @NonNull ? extends UserChannelSettings> channelSettings() {
     return this.channelSettings;
   }
 
@@ -343,7 +337,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public void sendMessage(final @NonNull ChatUser sender, final @NonNull String message) {
+  public void sendMessage(@NonNull final ChatUser sender, @NonNull final String message) {
     if (this.ignoringUser(sender) || sender.ignoringUser(this)) {
       return;
     }
