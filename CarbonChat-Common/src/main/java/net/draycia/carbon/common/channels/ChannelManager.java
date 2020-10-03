@@ -16,11 +16,9 @@ import java.util.Map;
 
 public class ChannelManager {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  @NonNull
-  private final ChannelRegistry registry;
+  private final @NonNull ChannelRegistry registry;
 
   @Nullable
   @MonotonicNonNull
@@ -73,7 +71,7 @@ public class ChannelManager {
     return null;
   }
 
-  public @Nullable ChatChannel channelOrDefault(@Nullable final String key) {
+  public @Nullable ChatChannel channelOrDefault(final @Nullable String key) {
     if (key == null) {
       return this.defaultChannel();
     }

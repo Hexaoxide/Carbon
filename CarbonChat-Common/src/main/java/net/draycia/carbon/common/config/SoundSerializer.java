@@ -49,7 +49,7 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
   }
 
   @Override
-  public @Nullable Sound deserialize(@NonNull final Type type, @NonNull final ConfigurationNode value) throws ObjectMappingException {
+  public @Nullable Sound deserialize(final @NonNull Type type, final @NonNull ConfigurationNode value) throws ObjectMappingException {
     if (value.isEmpty()) {
       return null;
     }
@@ -67,7 +67,7 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
   }
 
   @Override
-  public void serialize(@NonNull final Type type, @Nullable final Sound obj, @NonNull final ConfigurationNode value) throws ObjectMappingException {
+  public void serialize(final @NonNull Type type, final @Nullable Sound obj, final @NonNull ConfigurationNode value) throws ObjectMappingException {
     if (obj == null) {
       value.setValue(null);
       return;

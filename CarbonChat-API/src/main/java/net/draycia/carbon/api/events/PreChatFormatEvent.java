@@ -10,8 +10,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class PreChatFormatEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
-  @NonNull
-  private final ChatUser user;
+  private final @NonNull ChatUser user;
   @NonNull
   private ChatChannel chatChannel;
   @Nullable
@@ -20,7 +19,7 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
   private String message;
 
   public PreChatFormatEvent(final @NonNull ChatUser user, final @NonNull ChatChannel chatChannel,
-                            @Nullable final String format, final @NonNull String message) {
+                            final @Nullable String format, final @NonNull String message) {
 
     this.user = user;
     this.chatChannel = chatChannel;
@@ -52,12 +51,11 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
     this.chatChannel = chatChannel;
   }
 
-  @Nullable
-  public String format() {
+  public @Nullable String format() {
     return this.format;
   }
 
-  public void format(@Nullable final String format) {
+  public void format(final @Nullable String format) {
     this.format = format;
   }
 

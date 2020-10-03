@@ -15,11 +15,9 @@ import java.util.function.Consumer;
 
 public class MessageManager {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  @NonNull
-  private final MessageService messageService;
+  private final @NonNull MessageService messageService;
 
   public MessageManager(final @NonNull CarbonChat carbonChat, final @NonNull MessageService messageService) {
     this.carbonChat = carbonChat;

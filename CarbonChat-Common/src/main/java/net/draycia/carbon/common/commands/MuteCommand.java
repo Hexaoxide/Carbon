@@ -12,8 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MuteCommand {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public MuteCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();

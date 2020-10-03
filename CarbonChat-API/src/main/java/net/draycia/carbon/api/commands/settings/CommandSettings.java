@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.commands.settings;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.objectmapping.Setting;
 import org.spongepowered.configurate.serialize.ConfigSerializable;
@@ -13,10 +14,10 @@ public class CommandSettings {
   private boolean enabled;
 
   @Setting
-  private @NonNull String name;
+  private @MonotonicNonNull String name;
 
   @Setting
-  private @NonNull Set<@NonNull String> aliases;
+  private @MonotonicNonNull Set<@NonNull String> aliases;
 
   public @NonNull Set<@NonNull String> aliases() {
     return this.aliases;

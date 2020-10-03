@@ -72,8 +72,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
   }
 
   @Override
-  @Nullable
-  public T wrap(final @NonNull UUID uuid) {
+  public @Nullable T wrap(final @NonNull UUID uuid) {
     try {
       return this.userCache.get(uuid);
     } catch (final ExecutionException exception) {
@@ -83,14 +82,12 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
   }
 
   @Override
-  @Nullable
-  public T wrapIfLoaded(final @NonNull UUID uuid) {
+  public @Nullable T wrapIfLoaded(final @NonNull UUID uuid) {
     return this.userCache.getIfPresent(uuid);
   }
 
   @Override
-  @Nullable
-  public T refreshUser(final @NonNull UUID uuid) {
+  public @Nullable T refreshUser(final @NonNull UUID uuid) {
     this.userCache.invalidate(uuid);
 
     return this.wrap(uuid);

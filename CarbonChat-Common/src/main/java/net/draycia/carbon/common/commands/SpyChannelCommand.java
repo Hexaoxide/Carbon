@@ -15,8 +15,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SpyChannelCommand {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public SpyChannelCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();

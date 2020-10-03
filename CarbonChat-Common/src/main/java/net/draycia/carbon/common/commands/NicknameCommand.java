@@ -12,8 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class NicknameCommand {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public NicknameCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();

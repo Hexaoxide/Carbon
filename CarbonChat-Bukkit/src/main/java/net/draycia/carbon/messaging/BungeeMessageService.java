@@ -18,20 +18,15 @@ import java.util.function.Consumer;
 
 public class BungeeMessageService implements MessageService {
 
-  @NonNull
-  private final CarbonChatBukkit carbonChat;
+  private final @NonNull CarbonChatBukkit carbonChat;
 
-  @NonNull
-  private final BungeeChannelApi api;
+  private final @NonNull BungeeChannelApi api;
 
-  @NonNull
-  private final Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
-  @NonNull
-  private final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
-  @NonNull
-  private final UUID serverUUID = UUID.randomUUID();
+  private final @NonNull UUID serverUUID = UUID.randomUUID();
 
   public BungeeMessageService(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;

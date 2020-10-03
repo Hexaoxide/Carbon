@@ -11,8 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChatReloadCommand {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public ChatReloadCommand(final @NonNull CommandManager<ChatUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();

@@ -116,8 +116,7 @@ public class ChannelOptions {
     return this.key;
   }
 
-  @Nullable
-  public String color() {
+  public @Nullable String color() {
     if (this.color == null) {
       return this.defaultOptions().color();
     }
@@ -125,8 +124,7 @@ public class ChannelOptions {
     return this.color;
   }
 
-  @Nullable
-  public Context context(final @NonNull String key) {
+  public @Nullable Context context(final @NonNull String key) {
     final Context localContext;
 
     if (this.contexts != null) {
@@ -146,8 +144,7 @@ public class ChannelOptions {
     return localContext;
   }
 
-  @Nullable
-  public Map<String, Context> contexts() {
+  public @Nullable Map<String, Context> contexts() {
     if (this.contexts == null) {
       return this.defaultOptions().contexts();
     }
@@ -155,8 +152,7 @@ public class ChannelOptions {
     return this.contexts;
   }
 
-  @Nullable
-  public Map<String, Context> contextsAndDefault() {
+  public @Nullable Map<String, Context> contextsAndDefault() {
     if (this.contexts == null) {
       return this.defaultOptions().contexts();
     }
@@ -171,8 +167,7 @@ public class ChannelOptions {
     return contexts;
   }
 
-  @Nullable
-  public String format(final @NonNull String key) {
+  public @Nullable String format(final @NonNull String key) {
     final String localFormat;
 
     if (this.formats() != null) {
@@ -192,8 +187,7 @@ public class ChannelOptions {
     return localFormat;
   }
 
-  @Nullable
-  public Map<String, String> formats() {
+  public @Nullable Map<String, String> formats() {
     if (this.formats == null) {
       return this.defaultOptions().formats();
     }
@@ -201,8 +195,7 @@ public class ChannelOptions {
     return this.formats;
   }
 
-  @Nullable
-  public Map<String, String> formatsAndDefault() {
+  public @Nullable Map<String, String> formatsAndDefault() {
     if (this.formats == null) {
       return this.defaultOptions().formats();
     }
@@ -217,8 +210,7 @@ public class ChannelOptions {
     return formats;
   }
 
-  @Nullable
-  public String defaultFormatName() {
+  public @Nullable String defaultFormatName() {
     if (this.defaultFormatName == null || this.defaultFormatName.isEmpty()) {
       return this.defaultOptions().defaultFormatName();
     }
@@ -280,13 +272,11 @@ public class ChannelOptions {
     return this.name;
   }
 
-  @Nullable
-  public String messagePrefix() {
+  public @Nullable String messagePrefix() {
     return this.messagePrefix;
   }
 
-  @Nullable
-  public String switchMessage() {
+  public @Nullable String switchMessage() {
     if (this.switchMessage == null) {
       return this.defaultOptions().switchMessage();
     }
@@ -294,8 +284,7 @@ public class ChannelOptions {
     return this.switchMessage;
   }
 
-  @Nullable
-  public String switchOtherMessage() {
+  public @Nullable String switchOtherMessage() {
     if (this.switchOtherMessage == null) {
       return this.defaultOptions().switchOtherMessage();
     }
@@ -303,8 +292,7 @@ public class ChannelOptions {
     return this.switchOtherMessage;
   }
 
-  @Nullable
-  public String switchFailureMessage() {
+  public @Nullable String switchFailureMessage() {
     if (this.switchFailureMessage == null) {
       return this.defaultOptions().switchFailureMessage();
     }
@@ -312,8 +300,7 @@ public class ChannelOptions {
     return this.switchFailureMessage;
   }
 
-  @Nullable
-  public String cannotIgnoreMessage() {
+  public @Nullable String cannotIgnoreMessage() {
     if (this.cannotIgnoreMessage == null) {
       return this.defaultOptions().cannotIgnoreMessage();
     }
@@ -321,8 +308,7 @@ public class ChannelOptions {
     return this.cannotIgnoreMessage;
   }
 
-  @Nullable
-  public String toggleOffMessage() {
+  public @Nullable String toggleOffMessage() {
     if (this.toggleOffMessage == null) {
       return this.defaultOptions().toggleOffMessage();
     }
@@ -330,8 +316,7 @@ public class ChannelOptions {
     return this.toggleOffMessage;
   }
 
-  @Nullable
-  public String toggleOnMessage() {
+  public @Nullable String toggleOnMessage() {
     if (this.toggleOnMessage == null) {
       return this.defaultOptions().toggleOnMessage();
     }
@@ -339,8 +324,7 @@ public class ChannelOptions {
     return this.toggleOnMessage;
   }
 
-  @Nullable
-  public String toggleOtherOnMessage() {
+  public @Nullable String toggleOtherOnMessage() {
     if (this.toggleOtherOnMessage == null) {
       return this.defaultOptions().toggleOtherOnMessage();
     }
@@ -348,8 +332,7 @@ public class ChannelOptions {
     return this.toggleOtherOnMessage;
   }
 
-  @Nullable
-  public String toggleOtherOffMessage() {
+  public @Nullable String toggleOtherOffMessage() {
     if (this.toggleOtherOffMessage == null) {
       return this.defaultOptions().toggleOtherOffMessage();
     }
@@ -357,8 +340,7 @@ public class ChannelOptions {
     return this.toggleOtherOffMessage;
   }
 
-  @Nullable
-  public String cannotUseMessage() {
+  public @Nullable String cannotUseMessage() {
     if (this.cannotUseMessage == null) {
       return this.defaultOptions().cannotUseMessage();
     }
@@ -382,8 +364,7 @@ public class ChannelOptions {
     return this.shouldCancelChatEvent;
   }
 
-  @Nullable
-  public List<String> aliases() {
+  public @Nullable List<String> aliases() {
     return this.aliases;
   }
 

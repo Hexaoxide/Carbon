@@ -16,8 +16,7 @@ import java.util.regex.Pattern;
 
 public class FilterContext {
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public FilterContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;

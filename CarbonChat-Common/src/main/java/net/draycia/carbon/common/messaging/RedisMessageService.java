@@ -22,23 +22,17 @@ import java.util.function.Consumer;
 
 public class RedisMessageService implements MessageService {
 
-  @NonNull
-  private final Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
-  @NonNull
-  private final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
-  @NonNull
-  private final RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
+  private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
 
-  @NonNull
-  private final RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
+  private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
 
-  @NonNull
-  private final UUID serverUUID = UUID.randomUUID();
+  private final @NonNull UUID serverUUID = UUID.randomUUID();
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
   public RedisMessageService(final @NonNull CarbonChat carbonChat, final @NonNull RedisCredentials credentials) {
     this.carbonChat = carbonChat;

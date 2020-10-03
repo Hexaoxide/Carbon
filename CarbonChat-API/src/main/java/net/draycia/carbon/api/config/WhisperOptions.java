@@ -58,63 +58,51 @@ public class WhisperOptions {
     return this.pings;
   }
 
-  @Nullable
-  public String consoleFormat() {
+  public @Nullable String consoleFormat() {
     return this.consoleFormat;
   }
 
-  @Nullable
-  public String senderFormat() {
+  public @Nullable String senderFormat() {
     return this.senderFormat;
   }
 
-  @Nullable
-  public String receiverFormat() {
+  public @Nullable String receiverFormat() {
     return this.receiverFormat;
   }
 
-  @Nullable
-  public String switchMessage() {
+  public @Nullable String switchMessage() {
     return this.switchMessage;
   }
 
-  @Nullable
-  public String switchOtherMessage() {
+  public @Nullable String switchOtherMessage() {
     return this.switchOtherMessage;
   }
 
-  @Nullable
-  public String switchFailureMessage() {
+  public @Nullable String switchFailureMessage() {
     return this.switchFailureMessage;
   }
 
-  @Nullable
-  public String cannotIgnoreMessage() {
+  public @Nullable String cannotIgnoreMessage() {
     return this.cannotIgnoreMessage;
   }
 
-  @Nullable
-  public String toggleOffMessage() {
+  public @Nullable String toggleOffMessage() {
     return this.toggleOffMessage;
   }
 
-  @Nullable
-  public String toggleOnMessage() {
+  public @Nullable String toggleOnMessage() {
     return this.toggleOnMessage;
   }
 
-  @Nullable
-  public String toggleOtherOnMessage() {
+  public @Nullable String toggleOtherOnMessage() {
     return this.toggleOtherOnMessage;
   }
 
-  @Nullable
-  public String toggleOtherOffMessage() {
+  public @Nullable String toggleOtherOffMessage() {
     return this.toggleOtherOffMessage;
   }
 
-  @Nullable
-  public String cannotUseMessage() {
+  public @Nullable String cannotUseMessage() {
     return this.cannotUseMessage;
   }
 

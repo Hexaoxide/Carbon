@@ -12,14 +12,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AdventureManager implements MessageProcessor {
 
-  @NonNull
-  private final AudienceProvider provider;
+  private final @NonNull AudienceProvider provider;
 
-  @NonNull
-  private final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  @NonNull
-  private final FormatType formatType;
+  private final @NonNull FormatType formatType;
 
   public AdventureManager(final @NonNull AudienceProvider provider, final @NonNull FormatType formatType) {
     this.provider = provider;
@@ -28,7 +25,7 @@ public class AdventureManager implements MessageProcessor {
   }
 
   @Override
-  public @NonNull Component processMessage(@Nullable final String input, final @NonNull String @NonNull ... placeholders) {
+  public @NonNull Component processMessage(final @Nullable String input, final @NonNull String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
       return Component.empty();
     }
