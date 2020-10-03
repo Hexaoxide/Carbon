@@ -25,6 +25,7 @@ import net.draycia.carbon.common.messaging.RedisMessageService;
 import net.draycia.carbon.listeners.contexts.DistanceContext;
 import net.draycia.carbon.listeners.contexts.EconomyContext;
 import net.draycia.carbon.common.contexts.FilterContext;
+import net.draycia.carbon.listeners.contexts.PAPIContext;
 import net.draycia.carbon.listeners.contexts.TownyContext;
 import net.draycia.carbon.listeners.contexts.WorldGuardContext;
 import net.draycia.carbon.listeners.contexts.mcMMOContext;
@@ -343,6 +344,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     new DistanceContext();
     new FilterContext(this);
+    new PAPIContext();
   }
 
   public @NonNull MessageManager messageManager() {
