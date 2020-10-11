@@ -64,7 +64,7 @@ public class ChannelListCommand {
   }
 
   public void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final Audience cmdSender = this.carbonChat.adventureManager().audiences().audience(sender);
+    final Audience cmdSender = this.carbonChat.adventureManager().audiences().sender(sender);
     final ChatUser user = (ChatUser) args[0];
 
     if (!user.online()) {
@@ -102,7 +102,7 @@ public class ChannelListCommand {
     Component availableComponent = this.carbonChat.adventureManager().processMessage(availableFormat, "br", "\n");
     availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), ac -> availableList);
 
-    final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
+    final Audience audience = this.carbonChat.adventureManager().audiences().sender(sender);
 
     audience.sendMessage(availableComponent);
 

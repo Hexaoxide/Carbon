@@ -96,7 +96,7 @@ public class ToggleCommand {
     user.sendMessage(this.carbonChat.adventureManager().processMessage(message, "br", "\n",
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
 
-    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(
+    this.carbonChat.adventureManager().audiences().sender(sender).sendMessage(
       this.carbonChat.adventureManager().processMessage(otherMessage,
         "br", "\n", "color", "<color:" + channel.channelColor(user).toString() + ">",
         "channel", channel.name(), "player", user.offlinePlayer().getName()));

@@ -37,7 +37,7 @@ public class ChatReloadCommand {
     final Component message = this.carbonChat.adventureManager()
       .processMessage(this.carbonChat.language().getString("reloaded"), "br", "\n");
 
-    this.carbonChat.adventureManager().audiences().audience(sender).sendMessage(message);
+    this.carbonChat.adventureManager().audiences().sender(sender).sendMessage(message);
   }
 
 }

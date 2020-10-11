@@ -30,7 +30,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyFormat;
 import net.md_5.bungee.api.ChatColor;
@@ -61,7 +61,7 @@ public final class CarbonUtils {
   static {
     final List<String> colorList = new ArrayList<>();
 
-    for (final NamedTextColor color : NamedTextColor.values()) {
+    for (final NamedTextColor color : NamedTextColor.NAMES.values()) {
       colorList.add(color.toString());
     }
 
@@ -99,7 +99,7 @@ public final class CarbonUtils {
 
     component.color(ChatColor.WHITE).append("]");
 
-    return BungeeCordComponentSerializer.get().deserialize(component.create());
+    return BungeeComponentSerializer.get().deserialize(component.create());
   }
 
   @Nullable
@@ -117,7 +117,7 @@ public final class CarbonUtils {
       input = PlaceholderAPI.setPlaceholders(user.player(), input);
     }
 
-    for (final NamedTextColor namedColor : NamedTextColor.values()) {
+    for (final NamedTextColor namedColor : NamedTextColor.NAMES.values()) {
       if (namedColor.toString().equalsIgnoreCase(input)) {
         return namedColor;
       }
@@ -139,7 +139,7 @@ public final class CarbonUtils {
     Pattern.compile("[§&]#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])");
 
   @NonNull
-  public static String translateAlternateColors(@NonNull String input) {
+  public static String translateAlternateColors(@NonNull final String input) {
     // TODO: check if MiniMessage or MineDown
     String output = input;
 

@@ -76,7 +76,7 @@ public class NicknameCommand {
   }
 
   private void executeOther(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
-    final Audience user = this.carbonChat.adventureManager().audiences().audience(sender);
+    final Audience user = this.carbonChat.adventureManager().audiences().sender(sender);
     final ChatUser target = (ChatUser) args[0];
     String nickname = (String) args[1];
 

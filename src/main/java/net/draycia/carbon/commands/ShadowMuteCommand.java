@@ -44,7 +44,7 @@ public class ShadowMuteCommand {
 
   private void execute(@NonNull final CommandSender sender, @NonNull final Object @NonNull [] args) {
     final ChatUser user = (ChatUser) args[0];
-    final Audience audience = this.carbonChat.adventureManager().audiences().audience(sender);
+    final Audience audience = this.carbonChat.adventureManager().audiences().sender(sender);
 
     if (user.shadowMuted()) {
       user.shadowMuted(false);

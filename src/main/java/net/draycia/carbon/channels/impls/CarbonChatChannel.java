@@ -16,6 +16,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -320,7 +321,7 @@ public class CarbonChatChannel extends ChatChannel {
   public void sendMessageToBungee(@NonNull final Player player, @NonNull final Component component) {
     this.carbonChat.messageManager().sendMessage("channel-component", player.getUniqueId(), byteArray -> {
       byteArray.writeUTF(this.key());
-      byteArray.writeUTF(this.carbonChat.adventureManager().audiences().gsonSerializer().serialize(component));
+      byteArray.writeUTF(BukkitComponentSerializer.gson().serialize(component));
     });
   }
 

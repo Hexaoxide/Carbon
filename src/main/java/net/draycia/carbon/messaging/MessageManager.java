@@ -9,6 +9,7 @@ import net.draycia.carbon.messaging.impl.RedisMessageService;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -28,7 +29,7 @@ public class MessageManager {
 
   public MessageManager(@NonNull final CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
-    this.gsonSerializer = this.carbonChat.adventureManager().audiences().gsonSerializer();
+    this.gsonSerializer = BukkitComponentSerializer.gson();
 
     String messageSystem = this.carbonChat.getConfig().getString("message-system", "none");
 

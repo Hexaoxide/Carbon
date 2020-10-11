@@ -8,6 +8,7 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -41,7 +42,7 @@ public class AdventureManager {
       return TextComponent.empty();
     }
 
-    String format = CarbonUtils.translateAlternateColors(input);
+    final String format = CarbonUtils.translateAlternateColors(input);
 
     switch (this.carbonChat.language().getString("formatting.type", "minimessage").toLowerCase()) {
       case "minedown":
@@ -67,7 +68,7 @@ public class AdventureManager {
       input = input.replace("<" + placeholder + ">", replacement);
     }
 
-    return this.audiences().gsonSerializer().deserialize(input);
+    return BukkitComponentSerializer.gson().deserialize(input);
   }
 
   @NonNull

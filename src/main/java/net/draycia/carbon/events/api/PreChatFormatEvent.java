@@ -5,7 +5,6 @@ import net.draycia.carbon.events.CarbonEvent;
 import net.draycia.carbon.storage.ChatUser;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class PreChatFormatEvent implements CarbonEvent, Cancellable {
 
