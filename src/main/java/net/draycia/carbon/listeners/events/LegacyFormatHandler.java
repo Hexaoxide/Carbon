@@ -16,10 +16,16 @@ public class LegacyFormatHandler {
   private final @NonNull Pattern pattern =
     Pattern.compile("[§&]x[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])");
 
+  private final @NonNull Pattern altPattern =
+     Pattern.compile("[§&]#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])");
+
   public LegacyFormatHandler() {
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
       // Legacy RGB
       event.format(this.pattern.matcher(event.format()).replaceAll("<#$1$2$3$4$5$6>"));
+
+      // Alternate RGB, TAB (neznamy) && KiteBoard
+      event.format(this.altPattern.matcher(event.format()).replaceAll("<#$1$2$3$4$5$6>"));
 
       // Legacy Colors
       for (final char c : "0123456789abcdef".toCharArray()) {
