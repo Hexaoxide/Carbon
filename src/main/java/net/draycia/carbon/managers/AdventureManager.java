@@ -3,6 +3,7 @@ package net.draycia.carbon.managers;
 import de.themoep.minedown.adventure.MineDown;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.CarbonChat;
+import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -40,18 +41,20 @@ public class AdventureManager {
       return TextComponent.empty();
     }
 
+    String format = CarbonUtils.translateAlternateColors(input);
+
     switch (this.carbonChat.language().getString("formatting.type", "minimessage").toLowerCase()) {
       case "minedown":
-        return MineDown.parse(input, placeholders);
+        return MineDown.parse(format, placeholders);
       case "mojang":
       case "mojangson":
       case "json":
-        return this.processMojang(input, placeholders);
+        return this.processMojang(format, placeholders);
       case "minimessage-markdown":
-        return MiniMessage.markdown().parse(input, placeholders);
+        return MiniMessage.markdown().parse(format, placeholders);
       case "minimessage":
       default:
-        return MiniMessage.get().parse(input, placeholders);
+        return MiniMessage.get().parse(format, placeholders);
     }
   }
 

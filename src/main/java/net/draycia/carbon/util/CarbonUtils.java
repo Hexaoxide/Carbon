@@ -29,8 +29,10 @@ import net.draycia.carbon.storage.ChatUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyFormat;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -46,6 +48,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public final class CarbonUtils {
 
@@ -127,6 +130,42 @@ public final class CarbonUtils {
     }
 
     return TextColor.fromCSSHexString(input);
+  }
+
+  private static final @NonNull Pattern spigotLegacyRGB =
+    Pattern.compile("[§&]x[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])");
+
+  private static final @NonNull Pattern pluginRGB =
+    Pattern.compile("[§&]#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])");
+
+  @NonNull
+  public static String translateAlternateColors(@NonNull String input) {
+    // TODO: check if MiniMessage or MineDown
+    String output = input;
+
+    // Legacy RGB
+    output = spigotLegacyRGB.matcher(output).replaceAll("<#$1$2$3$4$5$6>");
+
+    // Alternate RGB, TAB (neznamy) && KiteBoard
+    output = pluginRGB.matcher(output).replaceAll("<#$1$2$3$4$5$6>");
+
+    // Legacy Colors
+    for (final char c : "0123456789abcdef".toCharArray()) {
+      final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
+      final TextColor color = format.color();
+
+      output = output.replaceAll("[§&]" + c, "<" + color.asHexString() + ">");
+    }
+
+    // Legacy Formatting
+    for (final char c : "klmno".toCharArray()) {
+      final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
+      final TextDecoration decoration = format.decoration();
+
+      output = output.replaceAll("[§&]" + c, "<" + decoration.name() + ">");
+    }
+
+    return output;
   }
 
   @NonNull

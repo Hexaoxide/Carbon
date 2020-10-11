@@ -2,6 +2,7 @@ package net.draycia.carbon.listeners.events;
 
 import net.draycia.carbon.events.CarbonEvents;
 import net.draycia.carbon.events.api.PreChatFormatEvent;
+import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -21,27 +22,7 @@ public class LegacyFormatHandler {
 
   public LegacyFormatHandler() {
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      // Legacy RGB
-      event.format(this.pattern.matcher(event.format()).replaceAll("<#$1$2$3$4$5$6>"));
-
-      // Alternate RGB, TAB (neznamy) && KiteBoard
-      event.format(this.altPattern.matcher(event.format()).replaceAll("<#$1$2$3$4$5$6>"));
-
-      // Legacy Colors
-      for (final char c : "0123456789abcdef".toCharArray()) {
-        final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
-        final TextColor color = format.color();
-
-        event.format(event.format().replaceAll("[§&]" + c, "<" + color.asHexString() + ">"));
-      }
-
-      // Legacy Formatting
-      for (final char c : "klmno".toCharArray()) {
-        final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
-        final TextDecoration decoration = format.decoration();
-
-        event.format(event.format().replaceAll("[§&]" + c, "<" + decoration.name() + ">"));
-      }
+      event.format(CarbonUtils.translateAlternateColors(event.format()));
     });
   }
 
