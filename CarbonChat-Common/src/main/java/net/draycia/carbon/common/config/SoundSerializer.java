@@ -54,10 +54,10 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
       return null;
     }
 
-    final Key name = value.getNode(NAME).getValue(KeySerializer.INSTANCE.type());
-    final Sound.Source source = (Sound.Source) value.getNode(SOURCE).getValue(SOURCE_TYPE); // unsure about this
-    final float volume = value.getNode(VOLUME).getFloat(1.0f);
-    final float pitch = value.getNode(PITCH).getFloat(1.0f);
+    final Key name = value.node(NAME).get(KeySerializer.INSTANCE.type());
+    final Sound.Source source = (Sound.Source) value.node(SOURCE).get(SOURCE_TYPE); // unsure about this
+    final float volume = value.node(VOLUME).getFloat(1.0f);
+    final float pitch = value.node(PITCH).getFloat(1.0f);
 
     if (name == null || source == null) {
       throw new ObjectMappingException("A name and source are required to deserialize a Sound");
@@ -69,14 +69,14 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
   @Override
   public void serialize(@NonNull final Type type, @Nullable final Sound obj, @NonNull final ConfigurationNode value) throws ObjectMappingException {
     if (obj == null) {
-      value.setValue(null);
+      value.set(null);
       return;
     }
 
-    value.getNode(NAME).setValue(KeySerializer.INSTANCE.type(), obj.name());
-    value.getNode(SOURCE).setValue(SOURCE_TYPE, obj.source());
-    value.getNode(VOLUME).setValue(obj.volume());
-    value.getNode(PITCH).setValue(obj.pitch());
+    value.node(NAME).set(KeySerializer.INSTANCE.type(), obj.name());
+    value.node(SOURCE).set(SOURCE_TYPE, obj.source());
+    value.node(VOLUME).set(obj.volume());
+    value.node(PITCH).set(obj.pitch());
   }
 
 }

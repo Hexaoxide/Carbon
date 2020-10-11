@@ -48,7 +48,7 @@ public final class CarbonUtils {
   static {
     final List<String> colorList = new ArrayList<>();
 
-    for (final NamedTextColor color : NamedTextColor.values()) {
+    for (final NamedTextColor color : NamedTextColor.NAMES.values()) {
       colorList.add(color.toString());
     }
 

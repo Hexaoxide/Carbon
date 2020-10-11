@@ -315,13 +315,13 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     return HoconConfigurationLoader.builder()
-      .setDefaultOptions(opts -> {
-        return opts.withShouldCopyDefaults(true).withSerializers(builder -> {
+      .defaultOptions(opts -> {
+        return opts.shouldCopyDefaults(true).serializers(builder -> {
           builder.register(Key.class, KeySerializer.INSTANCE)
             .register(Sound.class, SoundSerializer.INSTANCE);
         });
       })
-      .setFile(configFile)
+      .file(configFile)
       .build();
   }
 
