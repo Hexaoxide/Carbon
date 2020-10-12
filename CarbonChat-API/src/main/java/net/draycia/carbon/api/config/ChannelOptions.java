@@ -86,39 +86,39 @@ public class ChannelOptions {
   private Boolean primaryGroupOnly;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when switching to this channel")
   private String switchMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when forcing other players to switch to this channel")
   private String switchOtherMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when you're unable to switch to a channel")
   private String switchFailureMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when you are now able to see messages in a channel")
   private String toggleOnMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when you can no longer see messages in a channel")
   private String toggleOffMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when you toggle another player's channel visibility on")
   private String toggleOtherOnMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when you toggle another player's channel visibility off")
   private String toggleOtherOffMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when you cannot speak in a channel")
   private String cannotUseMessage;
   
   @Setting
-  @Comment("")
+  @Comment("The message that's sent when you attempt to ignore a channel but are unable to do so")
   private String cannotIgnoreMessage;
   
   private SharedChannelOptions defaultOptions() {

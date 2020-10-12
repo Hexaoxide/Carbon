@@ -66,12 +66,12 @@ public class WhisperOptions {
   private String nowWhisperingPlayer = "<white>You are now whispering <green><player><white>!";
 
   @Setting
-  @Comment("")
-  private @NonNull String senderToggledOff = "";
+  @Comment("The message that's sent when attempting to message someone when you have whispers toggled off.")
+  private @NonNull String senderToggledOff = "<red>You have whispers toggled off!";
 
   @Setting
-  @Comment("")
-  private @NonNull String receiverToggledOff = "";
+  @Comment("The message that's sent when attempting to message someone who has whispers toggled off.")
+  private @NonNull String receiverToggledOff = "<red><receiver> <red>has whispers toggled off!";
 
   @Setting
   @Comment("")
