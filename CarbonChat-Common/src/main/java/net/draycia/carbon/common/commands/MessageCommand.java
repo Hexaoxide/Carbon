@@ -5,8 +5,11 @@ import com.intellectualsites.commands.arguments.standard.StringArgument;
 import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.config.ChannelSettings;
 import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.channels.CarbonWhisperChannel;
 import net.draycia.carbon.common.utils.CommandUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -47,6 +50,24 @@ public class MessageCommand {
       final String message = this.carbonChat.translations().cannotWhisperSelf();
       sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
 
+      return;
+    }
+
+    final ChatChannel senderWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
+    final UserChannelSettings senderSettings = sender.channelSettings(senderWhisperChannel);
+
+    if (senderSettings.ignored()) {
+      final String message = this.carbonChat.carbonSettings().whisperOptions().senderToggledOff();
+      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+      return;
+    }
+
+    final ChatChannel receiverWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
+    final UserChannelSettings receiverSettings = sender.channelSettings(receiverWhisperChannel);
+
+    if (receiverSettings.ignored()) {
+      final String message = this.carbonChat.carbonSettings().whisperOptions().receiverToggledOff();
+      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
       return;
     }
 

@@ -67,6 +67,14 @@ public class WhisperOptions {
 
   @Setting
   @Comment("")
+  private @NonNull String senderToggledOff = "";
+
+  @Setting
+  @Comment("")
+  private @NonNull String receiverToggledOff = "";
+
+  @Setting
+  @Comment("")
   private boolean logToConsole = true;
 
   public boolean logToConsole() {
@@ -127,6 +135,14 @@ public class WhisperOptions {
 
   public @Nullable String nowWhisperingPlayer() {
     return this.nowWhisperingPlayer;
+  }
+
+  public @NonNull String senderToggledOff() {
+    return this.senderToggledOff;
+  }
+
+  public @Nullable String receiverToggledOff() {
+    return this.receiverToggledOff;
   }
 
 }
