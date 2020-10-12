@@ -193,7 +193,6 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
 
     if (player.isOnline()) {
       this.sendMessage(this.carbonChat.messageProcessor().processMessage(chatChannel.switchMessage(),
-        "br", "\n",
         "color", "<" + chatChannel.channelColor(this).toString() + ">",
         "channel", chatChannel.name()));
     }
@@ -369,14 +368,12 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
       targetName = offlineTarget.getPlayer().getDisplayName();
     }
 
-    final Component toPlayerComponent = this.carbonChat.messageProcessor().processMessage(toPlayerFormat, "br", "\n",
-      "message", message,
-      "targetname", targetOfflineName, "sendername", senderOfflineName,
+    final Component toPlayerComponent = this.carbonChat.messageProcessor().processMessage(toPlayerFormat,
+      "message", message, "targetname", targetOfflineName, "sendername", senderOfflineName,
       "target", targetName, "sender", senderName);
 
-    final Component fromPlayerComponent = this.carbonChat.messageProcessor().processMessage(fromPlayerFormat, "br", "\n",
-      "message", message,
-      "targetname", targetOfflineName, "sendername", senderOfflineName,
+    final Component fromPlayerComponent = this.carbonChat.messageProcessor().processMessage(fromPlayerFormat,
+      "message", message, "targetname", targetOfflineName, "sendername", senderOfflineName,
       "target", targetName, "sender", senderName);
 
     final PrivateMessageEvent event = new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message);
@@ -408,7 +405,6 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
         final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
         final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-          "br", "\n",
           "message", message,
           "targetname", targetOfflineName, "sendername", senderOfflineName,
           "target", targetNameFinal, "sender", senderNameFinal);
@@ -425,7 +421,6 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
           final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
           final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-            "br", "\n",
             "message", message,
             "targetname", targetOfflineName, "sendername", senderOfflineName,
             "target", targetNameFinal, "sender", senderNameFinal);
@@ -457,8 +452,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
       }
 
       user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.carbonChat.translations().spyWhispers(),
-        "br", "\n", "message", message,
-        "targetname", targetOfflineName, "sendername", senderOfflineName,
+        "message", message, "targetname", targetOfflineName, "sendername", senderOfflineName,
         "target", targetName, "sender", senderName));
     }
   }

@@ -147,11 +147,9 @@ public class CarbonChatChannel implements TextChannel {
       final TextColor targetColor = this.channelColor(target);
 
       TextComponent formatComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(formatEvent.format(),
-        "br", "\n",
         "displayname", displayName,
         "color", "<" + targetColor.asHexString() + ">",
         "phase", Long.toString(System.currentTimeMillis() % 25),
-        "server", this.carbonChat.carbonSettings().serverName(),
         "message", formatEvent.message());
 
       if (this.isUserSpying(user, target)) {
@@ -177,11 +175,9 @@ public class CarbonChatChannel implements TextChannel {
     final TextColor targetColor = this.channelColor(user);
 
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(consoleFormatEvent.format(),
-      "br", "\n",
       "displayname", displayName,
       "color", "<" + targetColor.asHexString() + ">",
       "phase", Long.toString(System.currentTimeMillis() % 25),
-      "server", this.carbonChat.carbonSettings().serverName(),
       "message", consoleFormatEvent.message());
 
     // TODO: add ConsoleUser to users map

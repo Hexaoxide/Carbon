@@ -57,7 +57,7 @@ public class ChannelListCommand {
 
     if (!user.online()) {
       final String mustBeOnline = this.carbonChat.translations().userMustBeOnline();
-      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(mustBeOnline, "br", "\n", "player", user.name()));
+      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(mustBeOnline, "player", user.name()));
       return;
     }
 

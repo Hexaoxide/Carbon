@@ -53,11 +53,11 @@ public class SudoChannelCommand {
     final String message = channel.switchMessage();
     final String otherMessage = channel.switchOtherMessage();
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
 
     sender.sendMessage(
-      this.carbonChat.messageProcessor().processMessage(otherMessage, "br", "\n",
+      this.carbonChat.messageProcessor().processMessage(otherMessage,
         "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name(),
         "player", user.name()));
   }

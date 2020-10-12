@@ -42,8 +42,7 @@ public class IgnoreCommand {
       sender.ignoringUser(targetUser, false);
 
       sender.sendMessage(this.carbonChat.messageProcessor().processMessage(
-        this.carbonChat.translations().notIgnoringUser(),
-        "br", "\n", "player", targetUser.displayName()));
+        this.carbonChat.translations().notIgnoringUser(), "player", targetUser.displayName()));
     } else {
       // TODO: schedule task because sync permission checks
       final String format;
@@ -56,7 +55,7 @@ public class IgnoreCommand {
       }
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
-        "br", "\n", "sender", sender.displayName(), "player", targetUser.displayName());
+        "sender", sender.displayName(), "player", targetUser.displayName());
 
       sender.sendMessage(message);
     }

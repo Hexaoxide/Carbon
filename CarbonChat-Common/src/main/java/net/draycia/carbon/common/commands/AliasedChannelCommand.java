@@ -45,7 +45,6 @@ public class AliasedChannelCommand {
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
       user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
-        "br", "\n",
         "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
         "channel", this.chatChannel().name()));
 

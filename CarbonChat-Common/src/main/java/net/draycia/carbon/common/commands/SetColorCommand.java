@@ -37,8 +37,7 @@ public class SetColorCommand {
 
             if (!user.hasPermission("carbonchat.setcolor." + channel.key())) {
               user.sendMessage(this.carbonChat.messageProcessor().processMessage(
-                this.carbonChat.translations().cannotSetColor(),
-                "br", "\n", "input", color.asHexString(),
+                this.carbonChat.translations().cannotSetColor(), "input", color.asHexString(),
                 "channel", channel.name()));
 
               return;
@@ -50,7 +49,7 @@ public class SetColorCommand {
 
             user.sendMessage(this.carbonChat.messageProcessor().processMessage(
               this.carbonChat.translations().channelColorSet(),
-              "br", "\n", "color", "<color:" + color.asHexString() + ">", "channel",
+              "color", "<color:" + color.asHexString() + ">", "channel",
               channel.name(), "hex", color.asHexString()));
           }).build()
       );

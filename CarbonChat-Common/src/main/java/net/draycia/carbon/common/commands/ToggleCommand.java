@@ -60,7 +60,7 @@ public class ToggleCommand {
       message = channel.toggleOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
   }
 
@@ -84,12 +84,12 @@ public class ToggleCommand {
       otherMessage = channel.toggleOtherOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
 
     sender.sendMessage(
       this.carbonChat.messageProcessor().processMessage(otherMessage,
-        "br", "\n", "color", "<color:" + channel.channelColor(user).toString() + ">",
+        "color", "<color:" + channel.channelColor(user).toString() + ">",
         "channel", channel.name(), "player", user.name()));
   }
 }

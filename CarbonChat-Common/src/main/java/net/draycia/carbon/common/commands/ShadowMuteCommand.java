@@ -42,7 +42,7 @@ public class ShadowMuteCommand {
       user.shadowMuted(false);
       final String format = this.carbonChat.translations().noLongerShadowMuted();
 
-      final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
+      final Component message = this.carbonChat.messageProcessor().processMessage(format,
         "player", target.name());
 
       user.sendMessage(message);
@@ -57,7 +57,7 @@ public class ShadowMuteCommand {
         format = this.carbonChat.translations().nowShadowMuted();
       }
 
-      final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
+      final Component message = this.carbonChat.messageProcessor().processMessage(format,
         "player", target.name());
 
       user.sendMessage(message);

@@ -4,6 +4,7 @@ import de.themoep.minedown.adventure.MineDown;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.adventure.MessageProcessor;
+import net.draycia.carbon.common.utils.ColorUtils;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -30,16 +31,21 @@ public class AdventureManager implements MessageProcessor {
       return Component.empty();
     }
 
+    final String format = ColorUtils.translateAlternateColors(input)
+      .replace("\\n", "\n")
+      .replace("<br>", "\n")
+      .replace("<server>", this.carbonChat.carbonSettings().serverName());
+
     switch (this.formatType) {
       case MINEDOWN:
-        return MineDown.parse(input, placeholders);
+        return MineDown.parse(format, placeholders);
       case MOJANG:
-        return this.processMojang(input, placeholders);
+        return this.processMojang(format, placeholders);
       case MINIMESSAGE_MARKDOWN:
-        return MiniMessage.markdown().parse(input, placeholders);
+        return MiniMessage.markdown().parse(format, placeholders);
       case MINIMESSAGE:
       default:
-        return MiniMessage.get().parse(input, placeholders);
+        return MiniMessage.get().parse(format, placeholders);
     }
   }
 

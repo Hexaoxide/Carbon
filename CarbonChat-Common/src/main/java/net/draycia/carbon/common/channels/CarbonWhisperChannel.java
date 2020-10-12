@@ -103,13 +103,11 @@ public class CarbonWhisperChannel implements WhisperChannel {
     // Components
     final TextComponent senderComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(
       senderFormatEvent.format(),
-      "br", "\n",
       "senderdisplayname", senderName,
       "sender", this.sender.name(),
       "receiverdisplayname", receiverName,
       "receiver", this.audience.name(),
       "phase", Long.toString(System.currentTimeMillis() % 25),
-      "server", this.carbonChat.carbonSettings().serverName(),
       "message", senderFormatEvent.message());
 
     final ChatComponentEvent senderComponentEvent = new ChatComponentEvent(this.sender, this.sender, this,
@@ -121,13 +119,11 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
     final TextComponent receiverComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(
       receiverFormatEvent.format(),
-      "br", "\n",
       "senderdisplayname", senderName,
       "sender", this.sender.name(),
       "receiverdisplayname", receiverName,
       "receiver", this.audience.name(),
       "phase", Long.toString(System.currentTimeMillis() % 25),
-      "server", this.carbonChat.carbonSettings().serverName(),
       "message", senderFormatEvent.message());
 
     final ChatComponentEvent receiverComponentEvent = new ChatComponentEvent(this.sender, this.audience, this,
@@ -144,13 +140,11 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(
       consoleFormatEvent.format(),
-      "br", "\n",
       "senderdisplayname", senderName,
       "sender", this.sender.name(),
       "receiverdisplayname", receiverName,
       "receiver", this.audience.name(),
       "phase", Long.toString(System.currentTimeMillis() % 25),
-      "server", this.carbonChat.carbonSettings().serverName(),
       "message", senderFormatEvent.message());
 
     // TODO: add ConsoleUser to users map

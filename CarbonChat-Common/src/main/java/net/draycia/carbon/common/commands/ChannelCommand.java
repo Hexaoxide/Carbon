@@ -49,7 +49,6 @@ public class ChannelCommand {
 
     if (user.channelSettings(channel).ignored()) {
       user.sendMessage(this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),
-        "br", "\n",
         "color", "<" + channel.channelColor(user).toString() + ">",
         "channel", channel.name()));
 

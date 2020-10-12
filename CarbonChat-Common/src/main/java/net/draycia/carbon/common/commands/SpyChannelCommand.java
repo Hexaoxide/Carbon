@@ -75,7 +75,7 @@ public class SpyChannelCommand {
       message = this.carbonChat.translations().spyToggledOn();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n",
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
       "color", "<color:" + chatChannel.channelColor(user).toString() + ">", "channel", chatChannel.name()));
   }
 
@@ -92,7 +92,7 @@ public class SpyChannelCommand {
       message = this.carbonChat.translations().spyWhispersOn();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n"));
+    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
   }
 
   private void spyEverything(@NonNull final CommandContext<ChatUser> context) {

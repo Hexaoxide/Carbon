@@ -42,7 +42,7 @@ public class MuteCommand {
       user.muted(false);
       final String format = this.carbonChat.translations().noLongerMuted();
 
-      final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
+      final Component message = this.carbonChat.messageProcessor().processMessage(format,
         "player", target.name());
 
       user.sendMessage(message);
@@ -57,7 +57,7 @@ public class MuteCommand {
         format = this.carbonChat.translations().nowMuted();
       }
 
-      final Component message = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
+      final Component message = this.carbonChat.messageProcessor().processMessage(format,
         "player", target.name());
 
       user.sendMessage(message);

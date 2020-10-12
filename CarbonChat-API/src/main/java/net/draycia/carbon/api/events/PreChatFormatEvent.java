@@ -5,7 +5,6 @@ import net.draycia.carbon.api.users.ChatUser;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class PreChatFormatEvent implements CarbonEvent, Cancellable {
 
@@ -16,7 +15,7 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
   private @NonNull String message;
 
   public PreChatFormatEvent(@NonNull final ChatUser user, @NonNull final ChatChannel chatChannel,
-                            @Nullable final String format, @NonNull final String message) {
+                            @NonNull final String format, @NonNull final String message) {
 
     this.user = user;
     this.chatChannel = chatChannel;
@@ -46,11 +45,11 @@ public class PreChatFormatEvent implements CarbonEvent, Cancellable {
     this.chatChannel = chatChannel;
   }
 
-  public @Nullable String format() {
+  public @NonNull String format() {
     return this.format;
   }
 
-  public void format(@Nullable final String format) {
+  public void format(@NonNull final String format) {
     this.format = format;
   }
 

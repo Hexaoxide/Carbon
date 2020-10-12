@@ -44,7 +44,7 @@ public class MeCommand {
       format = format.replace("<message>", "<pre><message></pre>");
     }
 
-    final Component component = this.carbonChat.messageProcessor().processMessage(format, "br", "\n",
+    final Component component = this.carbonChat.messageProcessor().processMessage(format,
       "displayname", user.displayName(), "message", message);
 
     if (user.shadowMuted()) {
