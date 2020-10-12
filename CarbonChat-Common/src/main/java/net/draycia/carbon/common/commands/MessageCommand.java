@@ -53,22 +53,24 @@ public class MessageCommand {
       return;
     }
 
-    final ChatChannel senderWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
-    final UserChannelSettings senderSettings = sender.channelSettings(senderWhisperChannel);
+    if (!sender.hasPermission("carbonchat.msgtoggle.bypass")) {
+      final ChatChannel senderWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
+      final UserChannelSettings senderSettings = sender.channelSettings(senderWhisperChannel);
 
-    if (senderSettings.ignored()) {
-      final String message = this.carbonChat.carbonSettings().whisperOptions().senderToggledOff();
-      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
-      return;
-    }
+      if (senderSettings.ignored()) {
+        final String message = this.carbonChat.carbonSettings().whisperOptions().senderToggledOff();
+        sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+        return;
+      }
 
-    final ChatChannel receiverWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
-    final UserChannelSettings receiverSettings = sender.channelSettings(receiverWhisperChannel);
+      final ChatChannel receiverWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
+      final UserChannelSettings receiverSettings = sender.channelSettings(receiverWhisperChannel);
 
-    if (receiverSettings.ignored()) {
-      final String message = this.carbonChat.carbonSettings().whisperOptions().receiverToggledOff();
-      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
-      return;
+      if (receiverSettings.ignored()) {
+        final String message = this.carbonChat.carbonSettings().whisperOptions().receiverToggledOff();
+        sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+        return;
+      }
     }
 
     final Optional<String> message = context.get("message");
