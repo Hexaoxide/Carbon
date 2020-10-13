@@ -4,6 +4,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.users.ConsoleUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.ColorUtils;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
@@ -51,7 +52,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public boolean testContext(@NonNull final CarbonUser sender, @NonNull final CarbonUser target) {
+  public boolean testContext(@NonNull final PlayerUser sender, @NonNull final PlayerUser target) {
     final ReceiverContextEvent event = new ReceiverContextEvent(this, sender, target);
 
     CarbonEvents.post(event);
@@ -60,15 +61,15 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public boolean canPlayerUse(@NonNull final CarbonUser user) {
-    return user.permissible() && user.hasPermission("carbonchat.channels." + this.name() + ".use");
+  public boolean canPlayerUse(@NonNull final PlayerUser user) {
+    return user.hasPermission("carbonchat.channels." + this.name() + ".use");
   }
 
   @Override
-  public @NonNull List<@NonNull CarbonUser> audiences() {
-    final List<CarbonUser> audience = new ArrayList<>();
+  public @NonNull List<@NonNull PlayerUser> audiences() {
+    final List<PlayerUser> audience = new ArrayList<>();
 
-    for (final CarbonUser user : this.carbonChat.userService().onlineUsers()) {
+    for (final PlayerUser user : this.carbonChat.userService().onlineUsers()) {
       if (this.canPlayerSee(user, true)) {
         audience.add(user);
       }
@@ -97,7 +98,7 @@ public class CarbonChatChannel implements TextChannel {
   //  }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final CarbonUser user, @NonNull final Collection<@NonNull CarbonUser> recipients, @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final Collection<@NonNull PlayerUser> recipients, @NonNull final String message, final boolean fromRemote) {
     //this.updateUserNickname(user);
 
     final MessageContextEvent event = new MessageContextEvent(this, user);
@@ -130,10 +131,10 @@ public class CarbonChatChannel implements TextChannel {
       displayName = user.displayName();
     }
 
-    final Map<CarbonUser, Component> users = new HashMap<>();
+    final Map<PlayerUser, Component> users = new HashMap<>();
 
     // Iterate through players who should receive messages in this channel
-    for (final CarbonUser target : recipients) {
+    for (final PlayerUser target : recipients) {
       // Call second format event. Used for relational stuff (placeholders etc)
       final ChatFormatEvent formatEvent = new ChatFormatEvent(user, target, this, preFormatEvent.format(), preFormatEvent.message());
 
@@ -194,8 +195,8 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public void sendComponents(@NonNull final Map<CarbonUser, Component> components) {
-    for (final Map.Entry<CarbonUser, Component> entry : components.entrySet()) {
+  public void sendComponents(@NonNull final Map<? extends CarbonUser, Component> components) {
+    for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       if (entry.getValue().equals(Component.empty())) {
         continue;
       }
@@ -205,8 +206,8 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public void sendComponentsAndLog(@NonNull final Map<CarbonUser, Component> components) {
-    for (final Map.Entry<CarbonUser, Component> entry : components.entrySet()) {
+  public void sendComponentsAndLog(@NonNull final Map<? extends CarbonUser, Component> components) {
+    for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       if (entry.getValue().equals(Component.empty())) {
         continue;
       }
@@ -220,11 +221,11 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final CarbonUser user, @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message, final boolean fromRemote) {
     return this.parseMessage(user, this.audiences(), message, fromRemote);
   }
 
-  public @Nullable String format(@NonNull final CarbonUser user) {
+  public @Nullable String format(@NonNull final PlayerUser user) {
     for (final String group : this.groupOverrides()) {
       if (this.userHasGroup(user, group)) {
         final String format = this.format(group);
@@ -242,7 +243,7 @@ public class CarbonChatChannel implements TextChannel {
     }
   }
 
-  private boolean userHasGroup(@NonNull final CarbonUser user, @NonNull final String group) {
+  private boolean userHasGroup(@NonNull final PlayerUser user, @NonNull final String group) {
     if (user.hasGroup(group)) {
       return true;
     }
@@ -254,7 +255,7 @@ public class CarbonChatChannel implements TextChannel {
     return false;
   }
 
-  private @NonNull String firstFoundUserFormat(@NonNull final CarbonUser user) {
+  private @NonNull String firstFoundUserFormat(@NonNull final PlayerUser user) {
     for (final Group group : user.groups()) {
       final String groupFormat = this.format(group);
 
@@ -266,7 +267,7 @@ public class CarbonChatChannel implements TextChannel {
     return this.defaultFormat();
   }
 
-  private @NonNull String primaryGroupFormat(@NonNull final CarbonUser user) {
+  private @NonNull String primaryGroupFormat(@NonNull final PlayerUser user) {
     final Group primaryGroup = user.primaryGroup();
     final String primaryGroupFormat = this.format(primaryGroup);
 
@@ -291,7 +292,7 @@ public class CarbonChatChannel implements TextChannel {
     return this.options().format(group);
   }
 
-  private boolean isUserSpying(@NonNull final CarbonUser sender, @NonNull final CarbonUser target) {
+  private boolean isUserSpying(@NonNull final PlayerUser sender, @NonNull final PlayerUser target) {
     if (!this.canPlayerSee(sender, target, false)) {
       return target.channelSettings(this).spying();
     }
@@ -300,8 +301,8 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public void sendComponent(@NonNull final CarbonUser player, @NonNull final Component component) {
-    for (final CarbonUser user : this.audiences()) {
+  public void sendComponent(@NonNull final PlayerUser player, @NonNull final Component component) {
+    for (final PlayerUser user : this.audiences()) {
       if (!user.ignoringUser(player)) {
         user.sendMessage(component);
       }
@@ -316,14 +317,14 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final CarbonUser target, final boolean checkSpying) {
-    if (checkSpying && target.permissible() && target.hasPermission("carbonchat.spy." + this.name())) {
+  public boolean canPlayerSee(@NonNull final PlayerUser target, final boolean checkSpying) {
+    if (checkSpying && target.hasPermission("carbonchat.spy." + this.name())) {
       if (target.channelSettings(this).spying()) {
         return true;
       }
     }
 
-    if (!(target.permissible() && target.hasPermission("carbonchat.channels." + this.name() + ".see"))) {
+    if (!(target.hasPermission("carbonchat.channels." + this.name() + ".see"))) {
       return false;
     }
 
@@ -334,14 +335,14 @@ public class CarbonChatChannel implements TextChannel {
     return true;
   }
 
-  public boolean canPlayerSee(@NonNull final CarbonUser sender, @NonNull final CarbonUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(@NonNull final PlayerUser sender, @NonNull final PlayerUser target, final boolean checkSpying) {
 
     if (!this.canPlayerSee(target, checkSpying)) {
       return false;
     }
 
     if (this.ignorable()) {
-      return !target.ignoringUser(sender) || (target.permissible() && target.hasPermission("carbonchat.ignore.exempt"));
+      return !target.ignoringUser(sender) || target.hasPermission("carbonchat.ignore.exempt");
     }
 
     return true;
@@ -349,10 +350,12 @@ public class CarbonChatChannel implements TextChannel {
 
   @Override
   public @Nullable TextColor channelColor(@NonNull final CarbonUser user) {
-    final TextColor userColor = user.channelSettings(this).color();
+    if (user instanceof PlayerUser) {
+      final TextColor userColor = ((PlayerUser) user).channelSettings(this).color();
 
-    if (userColor != null) {
-      return userColor;
+      if (userColor != null) {
+        return userColor;
+      }
     }
 
     final String input = this.options().color();

@@ -11,7 +11,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SpyChannelCommand {
@@ -33,7 +33,7 @@ public class SpyChannelCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.spy")
-        .argument(CommandUtils.channelArgument())
+        .argument(ChannelArgument.requiredChannelArgument())
         .handler(this::spyChannel)
         .build()
     );
@@ -61,7 +61,7 @@ public class SpyChannelCommand {
   }
 
   private void spyChannel(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel chatChannel = context.getRequired("channel");
 
     final String message;
@@ -81,7 +81,7 @@ public class SpyChannelCommand {
   }
 
   private void spyWhispers(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
 
     final String message;
 
@@ -97,7 +97,7 @@ public class SpyChannelCommand {
   }
 
   private void spyEverything(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
     final Boolean shouldSpy = context.getRequired("enabled");
 
     final String message;

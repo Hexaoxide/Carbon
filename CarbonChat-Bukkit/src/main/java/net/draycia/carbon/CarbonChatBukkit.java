@@ -223,11 +223,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         if (sender instanceof Player) {
           return this.userService().wrap(((Player) sender).getUniqueId());
         } else {
-          return new BukkitConsoleUser((ConsoleCommandSender)sender);
+          return new BukkitConsoleUser((ConsoleCommandSender) sender);
         }
       }, user -> {
         if (user instanceof PlayerUser) {
-          return Bukkit.getPlayer(((PlayerUser)user).uuid());
+          return Bukkit.getPlayer(((PlayerUser) user).uuid());
         } else {
           return Bukkit.getConsoleSender();
         }

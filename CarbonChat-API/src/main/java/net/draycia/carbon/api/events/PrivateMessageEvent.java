@@ -1,21 +1,21 @@
 package net.draycia.carbon.api.events;
 
-import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PrivateMessageEvent implements CarbonEvent, Cancellable {
 
-  private @NonNull final CarbonUser sender;
-  private @NonNull final CarbonUser target;
+  private @NonNull final PlayerUser sender;
+  private @NonNull final PlayerUser target;
   private @NonNull final Component senderComponent;
   private @NonNull final Component targetComponent;
   private @NonNull final String message;
   private boolean cancelled = false;
 
-  public PrivateMessageEvent(@NonNull final CarbonUser sender, @NonNull final CarbonUser target,
+  public PrivateMessageEvent(@NonNull final PlayerUser sender, @NonNull final PlayerUser target,
                              @NonNull final Component senderComponent, @NonNull final Component targetComponent,
                              @NonNull final String message) {
 
@@ -36,11 +36,11 @@ public class PrivateMessageEvent implements CarbonEvent, Cancellable {
     this.cancelled = cancelled;
   }
 
-  public @NonNull CarbonUser sender() {
+  public @NonNull PlayerUser sender() {
     return this.sender;
   }
 
-  public @NonNull CarbonUser target() {
+  public @NonNull PlayerUser target() {
     return this.target;
   }
 

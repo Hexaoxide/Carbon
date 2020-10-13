@@ -9,6 +9,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
+import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import net.draycia.carbon.common.utils.CommandUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -30,7 +31,7 @@ public class ToggleCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.toggle")
-        .argument(CommandUtils.channelArgument())
+        .argument(ChannelArgument.requiredChannelArgument())
         .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.toggle.other
         .handler(context -> {
           if (context.get("user").isPresent()) {
@@ -44,7 +45,7 @@ public class ToggleCommand {
   }
 
   private void toggleSelf(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel channel = context.getRequired("channel");
 
     final String message;

@@ -44,7 +44,7 @@ public class MsgToggleCommand {
   }
 
   private void toggleSelf(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
 
     final String message;

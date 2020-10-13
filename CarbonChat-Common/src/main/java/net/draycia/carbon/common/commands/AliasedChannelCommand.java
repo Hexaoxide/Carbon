@@ -39,10 +39,12 @@ public class AliasedChannelCommand {
         .handler(this::sendMessage)
         .build()
     );
+
+    // TODO: don't register same command twice lol
   }
 
   private void channel(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
       user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
@@ -58,7 +60,7 @@ public class AliasedChannelCommand {
   private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
     context.<String>get("message").ifPresent(message -> {
       this.chatChannel().sendComponentsAndLog(
-        this.chatChannel().parseMessage(context.getSender(), message, false));
+        this.chatChannel().parseMessage((PlayerUser) context.getSender(), message, false));
     });
   }
 

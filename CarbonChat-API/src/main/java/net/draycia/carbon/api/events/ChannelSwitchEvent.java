@@ -1,7 +1,6 @@
 package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.Cancellable;

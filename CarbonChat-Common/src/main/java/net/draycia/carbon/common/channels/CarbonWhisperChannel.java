@@ -8,6 +8,7 @@ import net.draycia.carbon.api.events.ChatFormatEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.ConsoleUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -26,22 +27,22 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
   private @NonNull final CarbonChat carbonChat;
 
-  private @NonNull final CarbonUser sender;
-  private @NonNull final CarbonUser audience;
+  private @NonNull final PlayerUser sender;
+  private @NonNull final PlayerUser audience;
 
-  public CarbonWhisperChannel(@NonNull final CarbonUser sender, @NonNull final CarbonUser audience) {
+  public CarbonWhisperChannel(@NonNull final PlayerUser sender, @NonNull final PlayerUser audience) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.sender = sender;
     this.audience = audience;
   }
 
   @Override
-  public @NonNull CarbonUser sender() {
+  public @NonNull PlayerUser sender() {
     return this.sender;
   }
 
   @Override
-  public @NonNull CarbonUser audience() {
+  public @NonNull PlayerUser audience() {
     return this.audience;
   }
 
@@ -51,17 +52,17 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final CarbonUser user, @NonNull final String message,
+  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message,
                                                           final boolean fromRemote) {
     return this.parseMessage(user, Collections.singleton(this.audience()), message, fromRemote);
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final CarbonUser user,
-                                                          @NonNull final Collection<@NonNull CarbonUser> recipients,
+  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user,
+                                                          @NonNull final Collection<@NonNull PlayerUser> recipients,
                                                           @NonNull final String message, final boolean fromRemote) {
     // TODO: extract to method, this is just the same thing but twice
-    final Map<CarbonUser, Component> result = new HashMap<>();
+    final Map<PlayerUser, Component> result = new HashMap<>();
 
     // Formats
     final String senderFormat = this.senderFormat();
@@ -160,30 +161,30 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public boolean canPlayerUse(@NonNull final CarbonUser user) {
+  public boolean canPlayerUse(@NonNull final PlayerUser user) {
     return user.equals(this.sender);
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final CarbonUser sender, @NonNull final CarbonUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(@NonNull final PlayerUser sender, @NonNull final PlayerUser target, final boolean checkSpying) {
     return (checkSpying && target.spyingWhispers()) || (sender.equals(this.sender) && target.equals(this.audience));
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final CarbonUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(@NonNull final PlayerUser target, final boolean checkSpying) {
     return false;
   }
 
   @Override
-  public void sendComponents(@NonNull final Map<CarbonUser, Component> components) {
-    for (final Map.Entry<CarbonUser, Component> entry : components.entrySet()) {
+  public void sendComponents(@NonNull final Map<? extends CarbonUser, Component> components) {
+    for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(entry.getValue());
     }
   }
 
   @Override
-  public void sendComponentsAndLog(@NonNull final Map<CarbonUser, Component> components) {
-    for (final Map.Entry<CarbonUser, Component> entry : components.entrySet()) {
+  public void sendComponentsAndLog(@NonNull final Map<? extends CarbonUser, Component> components) {
+    for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(entry.getValue());
 
       if (entry.getKey() instanceof ConsoleUser) {

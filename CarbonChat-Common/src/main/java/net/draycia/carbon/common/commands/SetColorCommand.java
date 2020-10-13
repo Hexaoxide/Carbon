@@ -34,7 +34,7 @@ public class SetColorCommand {
           // TODO: colorArgument
           //.argument(CommandUtils.colorArgument())
           .handler(context -> {
-            final PlayerUser user = (PlayerUser)context.getSender();
+            final PlayerUser user = (PlayerUser) context.getSender();
             final TextColor color = context.getRequired("color");
 
             if (!user.hasPermission("carbonchat.setcolor." + channel.key())) {

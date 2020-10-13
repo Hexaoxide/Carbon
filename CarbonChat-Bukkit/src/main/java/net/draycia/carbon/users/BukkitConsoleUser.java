@@ -29,7 +29,7 @@ public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience {
 
   @Override
   public @NonNull Iterable<? extends Audience> audiences() {
-    return audience;
+    return this.audience;
   }
 
   @Override

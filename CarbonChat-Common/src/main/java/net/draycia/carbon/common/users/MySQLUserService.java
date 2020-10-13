@@ -4,6 +4,7 @@ import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import co.aikar.idb.DB;
 import co.aikar.idb.Database;
@@ -13,7 +14,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
-import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.kyori.adventure.text.format.TextColor;
@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MySQLUserService<T extends CarbonUser> implements UserService<T> {
+public class MySQLUserService<T extends PlayerUser> implements UserService<T> {
 
   private @NonNull final CarbonChat carbonChat;
   private @NonNull final Database database;

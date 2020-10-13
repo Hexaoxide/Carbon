@@ -36,7 +36,7 @@ public class MeCommand {
   }
 
   private void message(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
 
     final String message = context.<String>getRequired("message").replace("</pre>", "");
     String format = this.carbonChat.translations().roleplayFormat();

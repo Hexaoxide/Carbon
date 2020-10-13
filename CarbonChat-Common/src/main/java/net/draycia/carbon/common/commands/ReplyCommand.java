@@ -36,7 +36,7 @@ public class ReplyCommand {
   }
 
   private void reply(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
     final String input = context.getRequired("message");
 
     if (input.isEmpty()) {

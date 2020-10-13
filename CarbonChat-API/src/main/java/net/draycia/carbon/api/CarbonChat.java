@@ -8,7 +8,6 @@ import net.draycia.carbon.api.config.CarbonSettings;
 import net.draycia.carbon.api.config.ChannelSettings;
 import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.messaging.MessageService;
-import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserService;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;

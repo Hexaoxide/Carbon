@@ -8,6 +8,8 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.users.PlayerUser;
+import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import net.draycia.carbon.common.utils.CommandUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -30,7 +32,7 @@ public class SudoChannelCommand {
         .withSenderType(CarbonUser.class) // player
         .withPermission("carbonchat.channel.others.message")
         .argument(CommandUtils.chatUserArgument())
-        .argument(CommandUtils.channelArgument())
+        .argument(ChannelArgument.requiredChannelArgument())
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(context -> {
           if (context.get("message").isPresent()) {
@@ -63,7 +65,7 @@ public class SudoChannelCommand {
   }
 
   private void sendMessageOther(@NonNull final CommandContext<CarbonUser> context) {
-    final CarbonUser user = context.getRequired("user");
+    final PlayerUser user = context.getRequired("user");
     final ChatChannel channel = context.getRequired("channel");
     final String message = context.getRequired("message");
 

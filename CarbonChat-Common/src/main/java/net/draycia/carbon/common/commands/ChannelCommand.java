@@ -10,7 +10,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChannelCommand {
@@ -31,7 +31,7 @@ public class ChannelCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.channel")
-        .argument(CommandUtils.channelArgument())
+        .argument(ChannelArgument.requiredChannelArgument())
         .argument(StringArgument.optional("message")) // carbonchat.channel.message
         .handler(context -> {
           if (context.get("message").isPresent()) {
@@ -45,7 +45,7 @@ public class ChannelCommand {
   }
 
   private void channel(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
     final TextChannel channel = context.getRequired("channel");
 
     if (user.channelSettings(channel).ignored()) {
@@ -63,7 +63,8 @@ public class ChannelCommand {
     final ChatChannel channel = context.getRequired("channel");
     final String message = context.getRequired("message");
 
-    channel.sendComponentsAndLog(channel.parseMessage(context.getSender(), message, false));
+    channel.sendComponentsAndLog(channel.parseMessage((PlayerUser) context.getSender(),
+      message, false));
   }
 
 }

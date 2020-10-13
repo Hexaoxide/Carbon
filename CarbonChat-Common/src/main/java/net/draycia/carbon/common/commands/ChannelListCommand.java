@@ -50,7 +50,7 @@ public class ChannelListCommand {
   }
 
   public void channelListSelf(@NonNull final CommandContext<CarbonUser> context) {
-    this.listAndSend(context.getSender(), context.getSender(), this.carbonChat.channelRegistry().iterator());
+    this.listAndSend(context.getSender(), (PlayerUser) context.getSender(), this.carbonChat.channelRegistry().iterator());
   }
 
   public void channelListOther(@NonNull final CommandContext<CarbonUser> context) {
@@ -67,7 +67,7 @@ public class ChannelListCommand {
     this.listAndSend(sender, user, allChannels);
   }
 
-  private void listAndSend(@NonNull final CarbonUser sender, @NonNull final CarbonUser user,
+  private void listAndSend(@NonNull final CarbonUser sender, @NonNull final PlayerUser user,
                            @NonNull final Iterator<ChatChannel> allChannels) {
     ChatChannel channel;
     final List<ChatChannel> canSee = new ArrayList<>();

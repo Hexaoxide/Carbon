@@ -2,7 +2,7 @@ package net.draycia.carbon.api.messaging;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 public interface MessageService {
 
-  void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull CarbonUser, @NonNull ByteArrayDataInput> listener);
+  void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull PlayerUser, @NonNull ByteArrayDataInput> listener);
 
   void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener);
 

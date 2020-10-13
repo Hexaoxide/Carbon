@@ -1,6 +1,7 @@
 package net.draycia.carbon.api.channels;
 
 import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -23,21 +24,21 @@ public interface ChatChannel extends Audience {
   @Nullable TextColor channelColor(@NonNull CarbonUser user);
 
   @NonNull
-  Map<CarbonUser, Component> parseMessage(@NonNull CarbonUser user, @NonNull String message, boolean fromRemote);
+  Map<PlayerUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull String message, boolean fromRemote);
 
   @NonNull
-  Map<CarbonUser, Component> parseMessage(@NonNull CarbonUser user, @NonNull Collection<@NonNull CarbonUser> recipients,
+  Map<PlayerUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull Collection<@NonNull PlayerUser> recipients,
                                           @NonNull String message, boolean fromRemote);
 
-  boolean canPlayerUse(@NonNull CarbonUser user);
+  boolean canPlayerUse(@NonNull PlayerUser user);
 
-  boolean canPlayerSee(@NonNull CarbonUser sender, @NonNull CarbonUser target, boolean checkSpying);
+  boolean canPlayerSee(@NonNull PlayerUser sender, @NonNull PlayerUser target, boolean checkSpying);
 
-  boolean canPlayerSee(@NonNull CarbonUser target, boolean checkSpying);
+  boolean canPlayerSee(@NonNull PlayerUser target, boolean checkSpying);
 
-  void sendComponents(@NonNull final Map<CarbonUser, Component> components);
+  void sendComponents(@NonNull final Map<? extends CarbonUser, Component> components);
 
-  void sendComponentsAndLog(@NonNull final Map<CarbonUser, Component> components);
+  void sendComponentsAndLog(@NonNull final Map<? extends CarbonUser, Component> components);
 
   @NonNull String name();
 

@@ -36,7 +36,7 @@ public class IgnoreCommand {
   }
 
   private void ignoreUser(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser sender = (PlayerUser)context.getSender();
+    final PlayerUser sender = (PlayerUser) context.getSender();
     final PlayerUser targetUser = context.getRequired("user");
 
     if (sender.ignoringUser(targetUser)) {

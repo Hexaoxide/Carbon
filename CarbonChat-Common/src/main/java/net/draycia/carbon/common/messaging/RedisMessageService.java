@@ -9,8 +9,8 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.messaging.MessageService;
-import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.config.RedisCredentials;
+import net.draycia.carbon.api.users.PlayerUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Base64;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 public class RedisMessageService implements MessageService {
 
-  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull CarbonUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull PlayerUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
   private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
@@ -68,10 +68,10 @@ public class RedisMessageService implements MessageService {
   }
 
   private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
-    final CarbonUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
+    final PlayerUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
-      for (final Map.Entry<String, BiConsumer<CarbonUser, ByteArrayDataInput>> listener : this.userLoadedListeners.entrySet()) {
+      for (final Map.Entry<String, BiConsumer<PlayerUser, ByteArrayDataInput>> listener : this.userLoadedListeners.entrySet()) {
         if (key.equals(listener.getKey())) {
           listener.getValue().accept(user, value);
         }
@@ -86,7 +86,7 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull CarbonUser, @NonNull ByteArrayDataInput> listener) {
+  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull PlayerUser, @NonNull ByteArrayDataInput> listener) {
     this.userLoadedListeners.put(key, listener);
     this.subscribeSync.subscribe(key);
   }

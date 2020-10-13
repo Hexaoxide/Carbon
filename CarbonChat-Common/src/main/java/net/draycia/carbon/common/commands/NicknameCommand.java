@@ -44,7 +44,7 @@ public class NicknameCommand {
   }
 
   private void nicknameSelf(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = (PlayerUser)context.getSender();
+    final PlayerUser user = (PlayerUser) context.getSender();
     String nickname = context.getRequired("nickname");
 
     if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(user.name())) {

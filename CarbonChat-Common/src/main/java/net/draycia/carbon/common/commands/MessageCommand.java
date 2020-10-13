@@ -43,7 +43,7 @@ public class MessageCommand {
   }
 
   private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser sender = (PlayerUser)context.getSender();
+    final PlayerUser sender = (PlayerUser) context.getSender();
     final PlayerUser receiver = context.getRequired("user");
 
     if (sender.equals(receiver)) {
