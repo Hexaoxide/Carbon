@@ -1,6 +1,6 @@
 package net.draycia.carbon.api.channels;
 
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -15,29 +15,29 @@ import java.util.regex.Pattern;
 public interface ChatChannel extends Audience {
 
   /**
-   * Gets the {@link TextColor} the supplied {@link ChatUser} has set for this channel.
+   * Gets the {@link TextColor} the supplied {@link CarbonUser} has set for this channel.
    * If none is set, returns this channel's set color with the "color" config option.
    * @param user The user that may have a color set.
    * @return The color the user may have set, otherwise the channel's color.
    */
-  @Nullable TextColor channelColor(@NonNull ChatUser user);
+  @Nullable TextColor channelColor(@NonNull CarbonUser user);
 
   @NonNull
-  Map<ChatUser, Component> parseMessage(@NonNull ChatUser user, @NonNull String message, boolean fromRemote);
+  Map<CarbonUser, Component> parseMessage(@NonNull CarbonUser user, @NonNull String message, boolean fromRemote);
 
   @NonNull
-  Map<ChatUser, Component> parseMessage(@NonNull ChatUser user, @NonNull Collection<@NonNull ChatUser> recipients,
-                                        @NonNull String message, boolean fromRemote);
+  Map<CarbonUser, Component> parseMessage(@NonNull CarbonUser user, @NonNull Collection<@NonNull CarbonUser> recipients,
+                                          @NonNull String message, boolean fromRemote);
 
-  boolean canPlayerUse(@NonNull ChatUser user);
+  boolean canPlayerUse(@NonNull CarbonUser user);
 
-  boolean canPlayerSee(@NonNull ChatUser sender, @NonNull ChatUser target, boolean checkSpying);
+  boolean canPlayerSee(@NonNull CarbonUser sender, @NonNull CarbonUser target, boolean checkSpying);
 
-  boolean canPlayerSee(@NonNull ChatUser target, boolean checkSpying);
+  boolean canPlayerSee(@NonNull CarbonUser target, boolean checkSpying);
 
-  void sendComponents(@NonNull final Map<ChatUser, Component> components);
+  void sendComponents(@NonNull final Map<CarbonUser, Component> components);
 
-  void sendComponentsAndLog(@NonNull final Map<ChatUser, Component> components);
+  void sendComponentsAndLog(@NonNull final Map<CarbonUser, Component> components);
 
   @NonNull String name();
 

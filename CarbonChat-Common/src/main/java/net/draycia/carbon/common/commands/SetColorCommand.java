@@ -4,8 +4,9 @@ import com.intellectualsites.commands.CommandManager;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -14,7 +15,7 @@ public class SetColorCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public SetColorCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public SetColorCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("setcolor");
@@ -28,11 +29,12 @@ public class SetColorCommand {
       commandManager.command(
         commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
           commandManager.createDefaultCommandMeta())
-          .withSenderType(ChatUser.class) // player
+          .withSenderType(PlayerUser.class) // player
           .withPermission("carbonchat.setcolor")
+          // TODO: colorArgument
           //.argument(CommandUtils.colorArgument())
           .handler(context -> {
-            final ChatUser user = context.getSender();
+            final PlayerUser user = (PlayerUser)context.getSender();
             final TextColor color = context.getRequired("color");
 
             if (!user.hasPermission("carbonchat.setcolor." + channel.key())) {

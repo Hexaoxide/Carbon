@@ -31,7 +31,7 @@ dependencies {
   compileOnly 'com.vexsoftware:nuvotifier-universal:2.6.0'
 
   compileOnly 'net.luckperms:api:5.1'
-  compileOnly 'com.github.MilkBowl:VaultAPI:1.7' // TODO: remove
+  compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
 
   // Server
   compileOnly 'com.destroystokyo.paper:paper-api:1.16.2-R0.1-SNAPSHOT'

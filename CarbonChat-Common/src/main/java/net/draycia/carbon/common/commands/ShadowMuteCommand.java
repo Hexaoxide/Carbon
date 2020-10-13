@@ -4,8 +4,9 @@ import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -14,7 +15,7 @@ public class ShadowMuteCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public ShadowMuteCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ShadowMuteCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("shadowmute");
@@ -26,7 +27,7 @@ public class ShadowMuteCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
+        .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.shadowmute")
         .argument(CommandUtils.chatUserArgument())
         .handler(this::shadowMute)
@@ -34,12 +35,12 @@ public class ShadowMuteCommand {
     );
   }
 
-  private void shadowMute(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser user = context.getSender();
-    final ChatUser target = context.getRequired("user");
+  private void shadowMute(@NonNull final CommandContext<CarbonUser> context) {
+    final CarbonUser user = context.getSender();
+    final PlayerUser target = context.getRequired("user");
 
-    if (user.shadowMuted()) {
-      user.shadowMuted(false);
+    if (target.shadowMuted()) {
+      target.shadowMuted(false);
       final String format = this.carbonChat.translations().noLongerShadowMuted();
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
@@ -53,7 +54,7 @@ public class ShadowMuteCommand {
       if (target.hasPermission("carbonchat.mute.exempt")) {
         format = this.carbonChat.translations().shadowMuteExempt();
       } else {
-        user.shadowMuted(true);
+        target.shadowMuted(true);
         format = this.carbonChat.translations().nowShadowMuted();
       }
 

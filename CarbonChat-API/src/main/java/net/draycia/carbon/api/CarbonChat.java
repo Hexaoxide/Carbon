@@ -8,7 +8,8 @@ import net.draycia.carbon.api.config.CarbonSettings;
 import net.draycia.carbon.api.config.ChannelSettings;
 import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.messaging.MessageService;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserService;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -33,7 +34,7 @@ public interface CarbonChat {
 
   @NonNull Path dataFolder();
 
-  @NonNull <T extends ChatUser> UserService<T> userService();
+  @NonNull <T extends PlayerUser> UserService<T> userService();
 
   @NonNull MessageProcessor messageProcessor();
 

@@ -1,7 +1,6 @@
 package net.draycia.carbon.api.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -10,16 +9,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-public interface ChatUser extends Audience {
+public interface PlayerUser extends CarbonUser {
 
   @NonNull UUID uuid();
 
-  @Deprecated
-  boolean permissible();
-
   boolean online();
-
-  boolean hasPermission(@NonNull String permission);
 
   @Nullable String nickname();
 
@@ -32,18 +26,6 @@ public interface ChatUser extends Audience {
   @Nullable String displayName();
 
   void displayName(@Nullable String displayName);
-
-  @NonNull String name();
-
-  @Nullable ChatChannel selectedChannel();
-
-  default void selectedChannel(@NonNull final ChatChannel channel) {
-    this.selectedChannel(channel, false);
-  }
-
-  void selectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
-
-  void clearSelectedChannel();
 
   @NonNull UserChannelSettings channelSettings(@NonNull ChatChannel channel);
 
@@ -79,13 +61,13 @@ public interface ChatUser extends Audience {
     this.replyTarget(target, false);
   }
 
-  default void replyTarget(@Nullable final ChatUser user) {
+  default void replyTarget(@Nullable final PlayerUser user) {
     this.replyTarget(user.uuid(), false);
   }
 
   void replyTarget(@Nullable UUID target, boolean fromRemote);
 
-  default void replyTarget(@Nullable final ChatUser user, final boolean fromRemote) {
+  default void replyTarget(@Nullable final PlayerUser user, final boolean fromRemote) {
     this.replyTarget(user.uuid(), fromRemote);
   }
 
@@ -97,19 +79,19 @@ public interface ChatUser extends Audience {
     this.ignoringUser(uuid, ignoring, false);
   }
 
-  default boolean ignoringUser(@NonNull final ChatUser user) {
+  default boolean ignoringUser(@NonNull final PlayerUser user) {
     return this.ignoringUser(user.uuid());
   }
 
-  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring, final boolean fromRemote) {
+  default void ignoringUser(@NonNull final PlayerUser user, final boolean ignoring, final boolean fromRemote) {
     this.ignoringUser(user.uuid(), ignoring, fromRemote);
   }
 
-  default void ignoringUser(@NonNull final ChatUser user, final boolean ignoring) {
+  default void ignoringUser(@NonNull final PlayerUser user, final boolean ignoring) {
     this.ignoringUser(user.uuid(), ignoring, false);
   }
 
-  @NonNull Iterable<ChatUser> ignoredChatUsers();
+  @NonNull Iterable<CarbonUser> ignoredChatUsers();
 
   @NonNull Iterable<UUID> ignoredUsers();
 
@@ -121,6 +103,6 @@ public interface ChatUser extends Audience {
 
   @Nullable Group primaryGroup();
 
-  void sendMessage(@NonNull final ChatUser sender, @NonNull String message);
+  void sendMessage(@NonNull final PlayerUser sender, @NonNull String message);
 
 }

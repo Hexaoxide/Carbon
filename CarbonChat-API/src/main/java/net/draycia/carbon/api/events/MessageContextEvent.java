@@ -1,19 +1,20 @@
 package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.channels.TextChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.Context;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MessageContextEvent implements CarbonEvent, Cancellable {
 
   private @NonNull final TextChannel channel;
-  private @NonNull final ChatUser user;
+  private @NonNull final PlayerUser user;
   private boolean cancelled = false;
 
-  public MessageContextEvent(@NonNull final TextChannel channel, @NonNull final ChatUser user) {
+  public MessageContextEvent(@NonNull final TextChannel channel, @NonNull final PlayerUser user) {
     this.channel = channel;
     this.user = user;
   }
@@ -36,7 +37,7 @@ public class MessageContextEvent implements CarbonEvent, Cancellable {
     return this.channel;
   }
 
-  public @NonNull ChatUser user() {
+  public @NonNull PlayerUser user() {
     return this.user;
   }
 

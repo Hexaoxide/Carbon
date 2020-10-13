@@ -8,7 +8,8 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -16,7 +17,7 @@ public class ChannelCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public ChannelCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ChannelCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("channel");
@@ -28,7 +29,7 @@ public class ChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
+        .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.channel")
         .argument(CommandUtils.channelArgument())
         .argument(StringArgument.optional("message")) // carbonchat.channel.message
@@ -43,8 +44,8 @@ public class ChannelCommand {
     );
   }
 
-  private void channel(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser user = context.getSender();
+  private void channel(@NonNull final CommandContext<CarbonUser> context) {
+    final PlayerUser user = (PlayerUser)context.getSender();
     final TextChannel channel = context.getRequired("channel");
 
     if (user.channelSettings(channel).ignored()) {
@@ -58,7 +59,7 @@ public class ChannelCommand {
     user.selectedChannel(channel);
   }
 
-  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
+  private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
     final ChatChannel channel = context.getRequired("channel");
     final String message = context.getRequired("message");
 

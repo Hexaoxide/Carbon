@@ -1,4 +1,4 @@
 package net.draycia.carbon.api.users;
 
-public interface ConsoleUser extends ChatUser {
+public interface ConsoleUser extends CarbonUser {
 }

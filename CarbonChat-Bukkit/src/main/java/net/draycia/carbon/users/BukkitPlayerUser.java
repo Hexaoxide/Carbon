@@ -1,7 +1,8 @@
-package net.draycia.carbon.storage;
+package net.draycia.carbon.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.channels.CarbonWhisperChannel;
 import net.draycia.carbon.util.FunctionalityConstants;
@@ -34,7 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class BukkitChatUser implements ChatUser, ForwardingAudience {
+public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
 
   private @NonNull final transient CarbonChatBukkit carbonChat;
   private @NonNull final Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
@@ -49,11 +50,11 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   private @Nullable String selectedChannelKey = null;
   private transient @Nullable ChatChannel selectedChannel = null;
 
-  public BukkitChatUser() {
+  public BukkitPlayerUser() {
     this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat-Bukkit");
   }
 
-  public BukkitChatUser(@NonNull final UUID uuid) {
+  public BukkitPlayerUser(@NonNull final UUID uuid) {
     this();
     this.uuid = uuid;
   }
@@ -76,11 +77,6 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   @Override
   public @Nullable String nickname() {
     return this.nickname;
-  }
-
-  @Override
-  public boolean permissible() {
-    return Bukkit.getPlayer(this.uuid()) != null;
   }
 
   @Override
@@ -257,8 +253,8 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public @NonNull Iterable<@NonNull ChatUser> ignoredChatUsers() {
-    final List<ChatUser> users = new ArrayList<>();
+  public @NonNull Iterable<@NonNull CarbonUser> ignoredChatUsers() {
+    final List<CarbonUser> users = new ArrayList<>();
 
     for (final UUID uuid : this.ignoredUsers) {
       users.add(this.carbonChat.userService().wrap(uuid));
@@ -344,7 +340,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
   }
 
   @Override
-  public void sendMessage(@NonNull final ChatUser sender, @NonNull final String message) {
+  public void sendMessage(@NonNull final PlayerUser sender, @NonNull final String message) {
     if (this.ignoringUser(sender) || sender.ignoringUser(this)) {
       return;
     }
@@ -441,7 +437,7 @@ public class BukkitChatUser implements ChatUser, ForwardingAudience {
     }
 
     for (final Player player : Bukkit.getOnlinePlayers()) {
-      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+      final PlayerUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       if (!user.spyingWhispers()) {
         continue;

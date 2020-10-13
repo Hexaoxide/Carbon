@@ -6,7 +6,8 @@ import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.TextChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class AliasedChannelCommand {
@@ -17,14 +18,14 @@ public class AliasedChannelCommand {
 
   private @NonNull final String commandName;
 
-  public AliasedChannelCommand(@NonNull final CommandManager<ChatUser> commandManager, @NonNull final TextChannel chatChannel) {
+  public AliasedChannelCommand(@NonNull final CommandManager<CarbonUser> commandManager, @NonNull final TextChannel chatChannel) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.chatChannel = chatChannel;
     this.commandName = chatChannel.key();
 
     commandManager.command(
       commandManager.commandBuilder(this.commandName)
-        .withSenderType(ChatUser.class) // player
+        .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.channel")
         .handler(this::channel)
         .build()
@@ -32,7 +33,7 @@ public class AliasedChannelCommand {
 
     commandManager.command(
       commandManager.commandBuilder(this.commandName)
-        .withSenderType(ChatUser.class) // player
+        .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.channel.message")
         .argument(StringArgument.required("message"))
         .handler(this::sendMessage)
@@ -40,8 +41,8 @@ public class AliasedChannelCommand {
     );
   }
 
-  private void channel(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser user = context.getSender();
+  private void channel(@NonNull final CommandContext<CarbonUser> context) {
+    final PlayerUser user = (PlayerUser)context.getSender();
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
       user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
@@ -54,7 +55,7 @@ public class AliasedChannelCommand {
     user.selectedChannel(this.chatChannel());
   }
 
-  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
+  private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
     context.<String>get("message").ifPresent(message -> {
       this.chatChannel().sendComponentsAndLog(
         this.chatChannel().parseMessage(context.getSender(), message, false));

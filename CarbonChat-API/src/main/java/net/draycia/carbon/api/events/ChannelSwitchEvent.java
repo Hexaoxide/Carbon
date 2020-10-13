@@ -1,8 +1,9 @@
 package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -10,17 +11,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class ChannelSwitchEvent implements CarbonEvent, Cancellable {
 
   private @NonNull final ChatChannel channel;
-  private @NonNull final ChatUser user;
+  private @NonNull final PlayerUser user;
   private @NonNull String failureMessage;
   private boolean cancelled = false;
 
-  public ChannelSwitchEvent(@NonNull final ChatChannel channel, @NonNull final ChatUser user, @Nullable final String failureMessage) {
+  public ChannelSwitchEvent(@NonNull final ChatChannel channel, @NonNull final PlayerUser user, @Nullable final String failureMessage) {
     this.channel = channel;
     this.user = user;
     this.failureMessage = failureMessage;
   }
 
-  public @NonNull ChatUser user() {
+  public @NonNull PlayerUser user() {
     return this.user;
   }
 

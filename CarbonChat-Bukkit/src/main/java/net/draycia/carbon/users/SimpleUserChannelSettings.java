@@ -1,8 +1,8 @@
-package net.draycia.carbon.storage;
+package net.draycia.carbon.users;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -27,7 +27,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
     this.channel = channel;
   }
 
-  private @NonNull ChatUser user() {
+  private @NonNull CarbonUser user() {
     return this.carbonChat.userService().wrap(this.uuid);
   }
 

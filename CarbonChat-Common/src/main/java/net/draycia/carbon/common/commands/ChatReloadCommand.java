@@ -5,7 +5,7 @@ import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -13,7 +13,7 @@ public class ChatReloadCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public ChatReloadCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ChatReloadCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("chatreload");
@@ -25,14 +25,14 @@ public class ChatReloadCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player & console
+        .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.reload")
         .handler(this::reloadConfig)
         .build()
     );
   }
 
-  private void reloadConfig(@NonNull final CommandContext<ChatUser> context) {
+  private void reloadConfig(@NonNull final CommandContext<CarbonUser> context) {
     this.carbonChat.reloadConfig();
 
     final Component message = this.carbonChat.messageProcessor()

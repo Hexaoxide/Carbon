@@ -13,7 +13,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.kyori.adventure.text.format.TextColor;
@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MySQLUserService<T extends ChatUser> implements UserService<T> {
+public class MySQLUserService<T extends CarbonUser> implements UserService<T> {
 
   private @NonNull final CarbonChat carbonChat;
   private @NonNull final Database database;

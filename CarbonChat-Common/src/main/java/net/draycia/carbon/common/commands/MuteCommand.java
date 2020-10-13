@@ -4,8 +4,9 @@ import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -14,7 +15,7 @@ public class MuteCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public MuteCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public MuteCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("mute");
@@ -26,7 +27,7 @@ public class MuteCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
+        .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.mute")
         .argument(CommandUtils.chatUserArgument())
         .handler(this::mute)
@@ -34,16 +35,16 @@ public class MuteCommand {
     );
   }
 
-  private void mute(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser user = context.getSender();
-    final ChatUser target = context.getRequired("user");
+  private void mute(@NonNull final CommandContext<CarbonUser> context) {
+    final CarbonUser user = context.getSender();
+    final PlayerUser target = context.getRequired("user");
 
-    if (user.muted()) {
-      user.muted(false);
+    if (target.muted()) {
+      target.muted(false);
       final String format = this.carbonChat.translations().noLongerMuted();
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
-        "player", target.name());
+        "player", target.name(), "sender", user.name());
 
       user.sendMessage(message);
     } else {
@@ -53,12 +54,12 @@ public class MuteCommand {
       if (target.hasPermission("carbonchat.mute.exempt")) {
         format = this.carbonChat.translations().muteExempt();
       } else {
-        user.muted(true);
+        target.muted(true);
         format = this.carbonChat.translations().nowMuted();
       }
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
-        "player", target.name());
+        "player", target.name(), "sender", user.name());
 
       user.sendMessage(message);
     }

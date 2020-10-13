@@ -1,6 +1,6 @@
 package net.draycia.carbon.common.utils;
 
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -21,7 +21,7 @@ public final class ColorUtils {
     return parseColor(null, input);
   }
 
-  public @Nullable static TextColor parseColor(@Nullable final ChatUser user, @Nullable String input) {
+  public @Nullable static TextColor parseColor(@Nullable final CarbonUser user, @Nullable String input) {
     if (input == null || input.isEmpty()) {
       return NamedTextColor.WHITE;
     }

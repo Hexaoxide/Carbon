@@ -9,8 +9,9 @@ import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.ReceiverContextEvent;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.PostOrders;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -80,7 +81,7 @@ public final class mcMMOContext implements Listener {
   }
 
   private void checkContext(final Player player) {
-    final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+    final PlayerUser user = this.carbonChat.userService().wrap(player.getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
     if (!(channel instanceof TextChannel)) {
@@ -95,11 +96,11 @@ public final class mcMMOContext implements Listener {
     }
   }
 
-  public boolean isInParty(@NonNull final ChatUser user) {
+  public boolean isInParty(@NonNull final PlayerUser user) {
     return PartyAPI.inParty(Bukkit.getPlayer(user.uuid()));
   }
 
-  public boolean isInSameParty(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
+  public boolean isInSameParty(@NonNull final PlayerUser user1, @NonNull final PlayerUser user2) {
     if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }

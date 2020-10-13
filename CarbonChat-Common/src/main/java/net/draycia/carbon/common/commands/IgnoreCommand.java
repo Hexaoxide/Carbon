@@ -5,7 +5,8 @@ import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -14,7 +15,7 @@ public class IgnoreCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public IgnoreCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public IgnoreCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("ignore");
@@ -26,7 +27,7 @@ public class IgnoreCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // console & player
+        .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.ignore")
         .argument(CommandUtils.chatUserArgument())
         .handler(this::ignoreUser)
@@ -34,9 +35,9 @@ public class IgnoreCommand {
     );
   }
 
-  private void ignoreUser(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser sender = context.getSender();
-    final ChatUser targetUser = context.getRequired("user");
+  private void ignoreUser(@NonNull final CommandContext<CarbonUser> context) {
+    final PlayerUser sender = (PlayerUser)context.getSender();
+    final PlayerUser targetUser = context.getRequired("user");
 
     if (sender.ignoringUser(targetUser)) {
       sender.ignoringUser(targetUser, false);

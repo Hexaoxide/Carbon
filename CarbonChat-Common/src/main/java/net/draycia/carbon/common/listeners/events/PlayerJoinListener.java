@@ -5,7 +5,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.UserEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 
 public class PlayerJoinListener {
 
@@ -13,7 +13,7 @@ public class PlayerJoinListener {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(UserEvent.Join.class, event -> {
-      final ChatUser user = event.user();
+      final CarbonUser user = event.user();
 
       carbonChat.userService().validate(user);
 

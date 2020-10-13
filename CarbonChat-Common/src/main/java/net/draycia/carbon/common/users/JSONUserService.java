@@ -9,7 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.UserService;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class JSONUserService<T extends ChatUser> implements UserService<T> {
+public class JSONUserService<T extends CarbonUser> implements UserService<T> {
 
   private @NonNull final CarbonChat carbonChat;
   private @NonNull final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -39,7 +39,7 @@ public class JSONUserService<T extends ChatUser> implements UserService<T> {
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public JSONUserService(@NonNull final Class<? extends ChatUser> userType,
+  public JSONUserService(@NonNull final Class<? extends CarbonUser> userType,
                          @NonNull final CarbonChat carbonChat,
                          @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier,
                          @NonNull final Function<UUID, T> userFactory,

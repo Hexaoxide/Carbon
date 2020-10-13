@@ -5,7 +5,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
-public interface UserService<T extends ChatUser> {
+public interface UserService<T extends PlayerUser> {
 
   @Nullable
   UUID resolve(String name);

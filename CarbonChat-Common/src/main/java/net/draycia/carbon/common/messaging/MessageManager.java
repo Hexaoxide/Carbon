@@ -5,7 +5,7 @@ import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.messaging.MessageService;
 import com.google.common.io.ByteArrayDataOutput;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -88,7 +88,7 @@ public class MessageManager {
 
     this.messageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
       final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
-      final ChatUser user = this.carbonChat.userService().wrap(uuid);
+      final CarbonUser user = this.carbonChat.userService().wrap(uuid);
 
       if (channel instanceof TextChannel) {
         final Component component = this.carbonChat.gsonSerializer().deserialize(byteArray.readUTF());
@@ -102,7 +102,7 @@ public class MessageManager {
     this.messageService().registerUUIDMessageListener("whisper-component", (uuid, byteArray) -> {
       final UUID recipient = new UUID(byteArray.readLong(), byteArray.readLong());
 
-      final ChatUser target = this.carbonChat.userService().wrap(recipient);
+      final CarbonUser target = this.carbonChat.userService().wrap(recipient);
       final String message = byteArray.readUTF();
 
       if (!target.ignoringUser(uuid)) {

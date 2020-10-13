@@ -14,7 +14,8 @@ import net.draycia.carbon.api.config.MessagingType;
 import net.draycia.carbon.api.config.ModerationSettings;
 import net.draycia.carbon.api.config.StorageType;
 import net.draycia.carbon.api.messaging.MessageService;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.adventure.FormatType;
 import net.draycia.carbon.common.channels.ChannelManager;
 import net.draycia.carbon.common.config.KeySerializer;
@@ -51,7 +52,8 @@ import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.common.users.JSONUserService;
 import net.draycia.carbon.common.users.MySQLUserService;
 import net.draycia.carbon.messaging.BungeeMessageService;
-import net.draycia.carbon.storage.BukkitChatUser;
+import net.draycia.carbon.users.BukkitPlayerUser;
+import net.draycia.carbon.users.BukkitConsoleUser;
 import net.draycia.carbon.util.CarbonPlaceholders;
 import net.draycia.carbon.util.FunctionalityConstants;
 import net.draycia.carbon.util.Metrics;
@@ -63,6 +65,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -94,7 +97,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private CarbonSettings carbonSettings;
   private ChannelSettings channelSettings;
 
-  private UserService<BukkitChatUser> userService;
+  private UserService<BukkitPlayerUser> userService;
   private MessageManager messageManager;
 
   private CarbonTranslations translations;
@@ -147,8 +150,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     // Handle storage service
     final StorageType storageType = this.carbonSettings().storageType();
 
-    final Supplier<Iterable<BukkitChatUser>> supplier = () -> {
-      final List<BukkitChatUser> users = new ArrayList<>();
+    final Supplier<Iterable<BukkitPlayerUser>> supplier = () -> {
+      final List<BukkitPlayerUser> users = new ArrayList<>();
 
       for (final Player player : Bukkit.getOnlinePlayers()) {
         users.add(this.userService.wrap(player.getUniqueId()));
@@ -162,13 +165,13 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     if (storageType == StorageType.MYSQL) {
       this.logger().info("Enabling MySQL storage!");
       final SQLCredentials credentials = this.carbonSettings().sqlCredentials();
-      this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitChatUser::new, nameResolver);
+      this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitPlayerUser::new, nameResolver);
     } else if (storageType == StorageType.JSON) {
       this.logger().info("Enabling JSON storage!");
-      this.userService = new JSONUserService<>(BukkitChatUser.class, this, supplier, BukkitChatUser::new, nameResolver);
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new, nameResolver);
     } else {
       this.logger().error("Invalid storage type selected! Falling back to JSON.");
-      this.userService = new JSONUserService<>(BukkitChatUser.class, this, supplier, BukkitChatUser::new, nameResolver);
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new, nameResolver);
     }
 
     // Setup listeners
@@ -214,16 +217,21 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void setupCommands() {
     try {
-      final PaperCommandManager<ChatUser> manager = new PaperCommandManager<>(this,
+      final PaperCommandManager<CarbonUser> manager = new PaperCommandManager<>(this,
         CommandExecutionCoordinator
           .simpleCoordinator(), sender -> {
         if (sender instanceof Player) {
           return this.userService().wrap(((Player) sender).getUniqueId());
         } else {
-          // TODO: weeeeee fix this
-          throw new IllegalArgumentException("Non-players not supported yet!");
+          return new BukkitConsoleUser((ConsoleCommandSender)sender);
         }
-      }, user -> Bukkit.getPlayer(user.uuid()));
+      }, user -> {
+        if (user instanceof PlayerUser) {
+          return Bukkit.getPlayer(((PlayerUser)user).uuid());
+        } else {
+          return Bukkit.getConsoleSender();
+        }
+      });
 
       CommandRegistrar.registerCommands(manager);
     } catch (final Exception e) {
@@ -351,7 +359,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     return this.messageManager;
   }
 
-  public @NonNull UserService<BukkitChatUser> userService() {
+  public @NonNull UserService<BukkitPlayerUser> userService() {
     return this.userService;
   }
 

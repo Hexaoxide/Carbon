@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands.misc;
 
 import com.intellectualsites.commands.CommandManager;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.common.commands.ChannelCommand;
 import net.draycia.carbon.common.commands.ChannelListCommand;
 import net.draycia.carbon.common.commands.ChatReloadCommand;
@@ -25,7 +25,7 @@ public final class CommandRegistrar {
 
   }
 
-  public static void registerCommands(@NonNull final CommandManager<ChatUser> commandManager) {
+  public static void registerCommands(@NonNull final CommandManager<CarbonUser> commandManager) {
     new ChannelCommand(commandManager);
     new ChannelListCommand(commandManager);
     new ChatReloadCommand(commandManager);

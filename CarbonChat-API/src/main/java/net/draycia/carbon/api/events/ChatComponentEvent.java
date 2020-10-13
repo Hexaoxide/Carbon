@@ -1,7 +1,7 @@
 package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.event.Cancellable;
@@ -11,13 +11,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class ChatComponentEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
-  private @NonNull final ChatUser sender;
-  private @NonNull final ChatUser target;
+  private @NonNull final CarbonUser sender;
+  private @NonNull final CarbonUser target;
   private @NonNull ChatChannel chatChannel;
   private @NonNull TextComponent component;
   private @NonNull final String originalMessage;
 
-  public ChatComponentEvent(@NonNull final ChatUser sender, @Nullable final ChatUser target,
+  public ChatComponentEvent(@NonNull final CarbonUser sender, @Nullable final CarbonUser target,
                             @NonNull final ChatChannel chatChannel, @NonNull final TextComponent component,
                             @NonNull final String originalMessage) {
 
@@ -38,11 +38,11 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     this.isCancelled = cancelled;
   }
 
-  public @NonNull ChatUser sender() {
+  public @NonNull CarbonUser sender() {
     return this.sender;
   }
 
-  public @Nullable ChatUser target() {
+  public @Nullable CarbonUser target() {
     return this.target;
   }
 

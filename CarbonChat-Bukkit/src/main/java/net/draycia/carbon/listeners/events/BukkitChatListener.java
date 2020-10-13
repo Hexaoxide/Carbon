@@ -4,7 +4,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.UserEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
@@ -33,7 +33,7 @@ public class BukkitChatListener implements Listener {
     // TODO: Move most of this to Common handling
     // TODO: ChatMessageEvent that's called at the start of this
     // TODO: Obtain a component (for console usage) from that event, or another
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
+    final CarbonUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
@@ -77,10 +77,10 @@ public class BukkitChatListener implements Listener {
     event.getRecipients().clear();
 
     if (event.isAsynchronous()) {
-      final Map<ChatUser, Component> messages =
+      final Map<CarbonUser, Component> messages =
         selectedChannel.parseMessage(user, event.getMessage(), false);
 
-      for (final Map.Entry<ChatUser, Component> entry : messages.entrySet()) {
+      for (final Map.Entry<CarbonUser, Component> entry : messages.entrySet()) {
         if (entry.getValue().equals(Component.empty())) {
           continue;
         }
@@ -108,7 +108,7 @@ public class BukkitChatListener implements Listener {
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
+    final CarbonUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     final UserEvent.Join joinEvent = new UserEvent.Join(user);
 
     CarbonEvents.post(joinEvent);
@@ -116,7 +116,7 @@ public class BukkitChatListener implements Listener {
 
   @EventHandler
   public void onPlayerLeave(final PlayerQuitEvent event) {
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
+    final CarbonUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     final UserEvent.Leave leaveEvent = new UserEvent.Leave(user);
 
     CarbonEvents.post(leaveEvent);

@@ -6,7 +6,7 @@ import com.google.common.io.ByteStreams;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.messaging.MessageService;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -22,7 +22,7 @@ public class BungeeMessageService implements MessageService {
 
   private @NonNull final BungeeChannelApi api;
 
-  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull CarbonUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
   private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
@@ -61,10 +61,10 @@ public class BungeeMessageService implements MessageService {
   }
 
   private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
-    final ChatUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
+    final CarbonUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
-      for (final Map.Entry<String, BiConsumer<ChatUser, ByteArrayDataInput>> listener : this.userLoadedListeners.entrySet()) {
+      for (final Map.Entry<String, BiConsumer<CarbonUser, ByteArrayDataInput>> listener : this.userLoadedListeners.entrySet()) {
         if (key.equals(listener.getKey())) {
           listener.getValue().accept(user, value);
         }
@@ -79,7 +79,7 @@ public class BungeeMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull ChatUser, @NonNull ByteArrayDataInput> listener) {
+  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull CarbonUser, @NonNull ByteArrayDataInput> listener) {
     this.userLoadedListeners.put(key, listener);
   }
 

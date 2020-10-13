@@ -1,7 +1,7 @@
 package net.draycia.carbon.util;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.draycia.carbon.CarbonChatBukkit;
 import org.bukkit.entity.Player;
@@ -49,7 +49,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
         return "false";
       }
 
-      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+      final CarbonUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       return String.valueOf(channel.canPlayerUse(user));
     } else if (key.startsWith("can_see_")) {
@@ -61,7 +61,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
         return "false";
       }
 
-      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+      final CarbonUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       return String.valueOf(channel.canPlayerSee(user, true));
     } else if (key.startsWith("ignoring_channel_")) {
@@ -73,7 +73,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
         return "false";
       }
 
-      final ChatUser user = this.carbonChat.userService().wrap(player.getUniqueId());
+      final CarbonUser user = this.carbonChat.userService().wrap(player.getUniqueId());
 
       return String.valueOf(user.channelSettings(channel).ignored());
     } else if (key.startsWith("selected_channel")) {

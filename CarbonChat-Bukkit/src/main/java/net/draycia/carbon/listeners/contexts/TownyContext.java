@@ -11,8 +11,9 @@ import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.ReceiverContextEvent;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.PostOrders;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -68,7 +69,7 @@ public final class TownyContext implements Listener {
   @EventHandler
   public void onResidentRemove(final TownRemoveResidentEvent event) {
     final String name = event.getResident().getName();
-    final ChatUser user = this.carbonChat.userService().wrap(Bukkit.getPlayer(name).getUniqueId());
+    final CarbonUser user = this.carbonChat.userService().wrap(Bukkit.getPlayer(name).getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
     if (!(channel instanceof TextChannel)) {
@@ -85,7 +86,7 @@ public final class TownyContext implements Listener {
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final ChatUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
+    final PlayerUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
     if (!(channel instanceof TextChannel)) {
@@ -100,7 +101,7 @@ public final class TownyContext implements Listener {
     }
   }
 
-  public boolean isInTown(@NonNull final ChatUser user) {
+  public boolean isInTown(@NonNull final PlayerUser user) {
     try {
       return TownyAPI.getInstance().getDataSource().getResident(Bukkit.getPlayer(user.uuid()).getName()).hasTown();
     } catch (final NotRegisteredException exception) {
@@ -110,7 +111,7 @@ public final class TownyContext implements Listener {
     return false;
   }
 
-  public boolean isInSameTown(@NonNull final ChatUser user1, @NonNull final ChatUser user2) {
+  public boolean isInSameTown(@NonNull final PlayerUser user1, @NonNull final PlayerUser user2) {
     if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }

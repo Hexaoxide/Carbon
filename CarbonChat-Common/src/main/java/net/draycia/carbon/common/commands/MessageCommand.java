@@ -7,8 +7,8 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
-import net.draycia.carbon.api.config.ChannelSettings;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.channels.CarbonWhisperChannel;
 import net.draycia.carbon.common.utils.CommandUtils;
@@ -20,7 +20,7 @@ public class MessageCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public MessageCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public MessageCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
@@ -33,18 +33,18 @@ public class MessageCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player
+        .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.message")
         .argument(CommandUtils.chatUserArgument())
-        .argument(StringArgument.<ChatUser>newBuilder("message").greedy().asOptional().build())
+        .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(this::sendMessage)
         .build()
     );
   }
 
-  private void sendMessage(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser sender = context.getSender();
-    final ChatUser receiver = context.getRequired("user");
+  private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
+    final PlayerUser sender = (PlayerUser)context.getSender();
+    final PlayerUser receiver = context.getRequired("user");
 
     if (sender.equals(receiver)) {
       final String message = this.carbonChat.translations().cannotWhisperSelf();

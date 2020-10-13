@@ -1,7 +1,7 @@
 package net.draycia.carbon.api.channels;
 
 import net.draycia.carbon.api.Context;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
@@ -14,7 +14,7 @@ import java.util.List;
 public interface TextChannel extends ChatChannel, ForwardingAudience {
 
   @Override
-  @NonNull List<@NonNull ChatUser> audiences();
+  @NonNull List<@NonNull CarbonUser> audiences();
 
   /**
    * Gets the string format for the specified group.
@@ -53,12 +53,12 @@ public interface TextChannel extends ChatChannel, ForwardingAudience {
 
   boolean permissionGroupMatching();
 
-  boolean testContext(@NonNull ChatUser sender, @NonNull ChatUser target);
+  boolean testContext(@NonNull CarbonUser sender, @NonNull CarbonUser target);
 
   @Nullable Context context(@NonNull String key);
 
   @NonNull List<@NonNull String> groupOverrides();
 
-  void sendComponent(@NonNull ChatUser user, @NonNull Component component);
+  void sendComponent(@NonNull CarbonUser user, @NonNull Component component);
 
 }

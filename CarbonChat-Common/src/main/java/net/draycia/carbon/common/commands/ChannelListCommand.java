@@ -5,8 +5,9 @@ import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -21,7 +22,7 @@ public class ChannelListCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public ChannelListCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ChannelListCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("channellist");
@@ -33,8 +34,9 @@ public class ChannelListCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // console & player
+        .withSenderType(CarbonUser.class) // console & player
         .withPermission("carbonchat.channellist")
+        // TODO: make this return a PlayerUser
         .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.channellist.other
         .handler(context -> {
           if (context.get("user").isPresent()) {
@@ -47,13 +49,13 @@ public class ChannelListCommand {
     );
   }
 
-  public void channelListSelf(@NonNull final CommandContext<ChatUser> context) {
+  public void channelListSelf(@NonNull final CommandContext<CarbonUser> context) {
     this.listAndSend(context.getSender(), context.getSender(), this.carbonChat.channelRegistry().iterator());
   }
 
-  public void channelListOther(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser sender = context.getSender();
-    final ChatUser user = context.getRequired("user");
+  public void channelListOther(@NonNull final CommandContext<CarbonUser> context) {
+    final CarbonUser sender = context.getSender();
+    final PlayerUser user = context.getRequired("user");
 
     if (!user.online()) {
       final String mustBeOnline = this.carbonChat.translations().userMustBeOnline();
@@ -65,7 +67,7 @@ public class ChannelListCommand {
     this.listAndSend(sender, user, allChannels);
   }
 
-  private void listAndSend(@NonNull final ChatUser sender, @NonNull final ChatUser user,
+  private void listAndSend(@NonNull final CarbonUser sender, @NonNull final CarbonUser user,
                            @NonNull final Iterator<ChatChannel> allChannels) {
     ChatChannel channel;
     final List<ChatChannel> canSee = new ArrayList<>();

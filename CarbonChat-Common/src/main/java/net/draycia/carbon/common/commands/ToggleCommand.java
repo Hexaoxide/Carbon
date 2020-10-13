@@ -5,8 +5,9 @@ import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.utils.CommandUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -15,7 +16,7 @@ public class ToggleCommand {
 
   private @NonNull final CarbonChat carbonChat;
 
-  public ToggleCommand(@NonNull final CommandManager<ChatUser> commandManager) {
+  public ToggleCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("toggle");
@@ -27,14 +28,14 @@ public class ToggleCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(ChatUser.class) // player & console
+        .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.toggle")
         .argument(CommandUtils.channelArgument())
         .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.toggle.other
         .handler(context -> {
           if (context.get("user").isPresent()) {
             this.toggleOther(context);
-          } else {
+          } else if (context.getSender() instanceof PlayerUser) {
             this.toggleSelf(context);
           }
         })
@@ -42,8 +43,8 @@ public class ToggleCommand {
     );
   }
 
-  private void toggleSelf(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser user = context.getSender();
+  private void toggleSelf(@NonNull final CommandContext<CarbonUser> context) {
+    final PlayerUser user = (PlayerUser)context.getSender();
     final ChatChannel channel = context.getRequired("channel");
 
     final String message;
@@ -64,9 +65,9 @@ public class ToggleCommand {
       "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
   }
 
-  private void toggleOther(@NonNull final CommandContext<ChatUser> context) {
-    final ChatUser sender = context.getSender();
-    final ChatUser user = context.getRequired("user");
+  private void toggleOther(@NonNull final CommandContext<CarbonUser> context) {
+    final CarbonUser sender = context.getSender();
+    final PlayerUser user = context.getRequired("user");
     final ChatChannel channel = context.getRequired("channel");
 
     final String message;

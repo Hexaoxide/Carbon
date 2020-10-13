@@ -6,7 +6,7 @@ import com.intellectualsites.commands.context.CommandContext;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
-import net.draycia.carbon.api.users.ChatUser;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.UserService;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -19,8 +19,8 @@ public final class CommandUtils {
   }
 
   // TODO: turn this into a proper class that handles suggestions
-  public static CommandArgument<ChatUser, TextChannel> channelArgument() {
-    return CommandArgument.<ChatUser, TextChannel>ofType(TextChannel.class, "channel")
+  public static CommandArgument<CarbonUser, TextChannel> channelArgument() {
+    return CommandArgument.<CarbonUser, TextChannel>ofType(TextChannel.class, "channel")
       .asRequired()
       .withParser((c, i) -> {
         final String input = i.poll();
@@ -44,22 +44,22 @@ public final class CommandUtils {
       .build();
   }
 
-  public static CommandArgument<ChatUser, ChatUser> optionalChatUserArgument() {
-    return CommandArgument.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
+  public static CommandArgument<CarbonUser, CarbonUser> optionalChatUserArgument() {
+    return CommandArgument.<CarbonUser, CarbonUser>ofType(CarbonUser.class, "user")
       .asOptional()
       .withParser(CommandUtils::parse)
       .build();
   }
 
   // TODO: turn this into a proper class that handles suggestions
-  public static CommandArgument<ChatUser, ChatUser> chatUserArgument() {
-    return CommandArgument.<ChatUser, ChatUser>ofType(ChatUser.class, "user")
+  public static CommandArgument<CarbonUser, CarbonUser> chatUserArgument() {
+    return CommandArgument.<CarbonUser, CarbonUser>ofType(CarbonUser.class, "user")
       .asRequired()
       .withParser(CommandUtils::parse)
       .build();
   }
 
-  private static @NonNull ArgumentParseResult<ChatUser> parse(final CommandContext<ChatUser> c, final Queue<String> i) {
+  private static @NonNull ArgumentParseResult<CarbonUser> parse(final CommandContext<CarbonUser> c, final Queue<String> i) {
     final String input = i.poll();
 
     if (input == null) {
@@ -67,7 +67,7 @@ public final class CommandUtils {
     }
 
     final UserService<?> userService = CarbonChatProvider.carbonChat().userService();
-    final ChatUser user = userService.wrap(userService.resolve(input));
+    final CarbonUser user = userService.wrap(userService.resolve(input));
 
     if (user != null) {
       return ArgumentParseResult.success(user);
