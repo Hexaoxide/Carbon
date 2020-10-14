@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.channels;
 
+import net.kyori.registry.DefaultedRegistry;
 import net.kyori.registry.Registry;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -10,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class ChannelRegistry implements Registry<String, ChatChannel> {
+public class ChannelRegistry implements Registry<String, ChatChannel>, DefaultedRegistry<String, ChatChannel> {
 
   private @NonNull final Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
 
@@ -34,10 +35,6 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
     return this.registry.get(key);
   }
 
-  public @Nullable ChatChannel channelOrDefault(@NonNull final String key) {
-    return this.registry.getOrDefault(key, this.defaultChannel());
-  }
-
   @Override
   public @Nullable String key(@NonNull final ChatChannel value) {
     return null;
@@ -57,4 +54,13 @@ public class ChannelRegistry implements Registry<String, ChatChannel> {
     return this.defaultChannel;
   }
 
+  @Override
+  public @NonNull String defaultKey() {
+    return this.defaultChannel.key();
+  }
+
+  @Override
+  public @NonNull ChatChannel getOrDefault(@NonNull final String key) {
+    return this.registry.getOrDefault(key, this.defaultChannel());
+  }
 }

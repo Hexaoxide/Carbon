@@ -14,6 +14,7 @@ import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.events.ReceiverContextEvent;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.Context;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -201,7 +202,8 @@ public class CarbonChatChannel implements TextChannel {
         continue;
       }
 
-      entry.getKey().sendMessage(entry.getValue());
+      // TODO: pass in Identity sender?
+      entry.getKey().sendMessage(Identity.nil(), entry.getValue());
     }
   }
 
@@ -212,10 +214,12 @@ public class CarbonChatChannel implements TextChannel {
         continue;
       }
 
-      entry.getKey().sendMessage(entry.getValue());
+      // TODO: pass in Identifiable sender?
+      entry.getKey().sendMessage(Identity.nil(), entry.getValue());
 
       if (entry instanceof ConsoleUser) {
-        this.carbonChat.messageProcessor().audiences().console().sendMessage(entry.getValue());
+        this.carbonChat.messageProcessor().audiences().console()
+          .sendMessage(Identity.nil(), entry.getValue());
       }
     }
   }
@@ -304,7 +308,7 @@ public class CarbonChatChannel implements TextChannel {
   public void sendComponent(@NonNull final PlayerUser player, @NonNull final Component component) {
     for (final PlayerUser user : this.audiences()) {
       if (!user.ignoringUser(player)) {
-        user.sendMessage(component);
+        user.sendMessage(Identity.identity(player.uuid()), component);
       }
     }
   }

@@ -158,7 +158,7 @@ public class MySQLUserService<T extends PlayerUser> implements UserService<T> {
       final List<DbRow> channelSettings = this.database.getResults("SELECT * from sc_channel_settings WHERE uuid = ?;", uuid.toString());
       final List<DbRow> ignoredUsers = this.database.getResults("SELECT * from sc_ignored_users WHERE uuid = ?;", uuid.toString());
 
-      final ChatChannel channel = this.carbonChat.channelRegistry().channelOrDefault(users.getString("channel"));
+      final ChatChannel channel = this.carbonChat.channelRegistry().getOrDefault(users.getString("channel"));
 
       if (channel != null) {
         user.selectedChannel(channel, true);

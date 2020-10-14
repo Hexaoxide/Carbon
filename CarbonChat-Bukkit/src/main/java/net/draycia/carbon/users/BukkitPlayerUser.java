@@ -155,7 +155,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
         return this.selectedChannel;
       }
 
-      return this.carbonChat.channelRegistry().channelOrDefault(this.selectedChannelKey);
+      return this.carbonChat.channelRegistry().getOrDefault(this.selectedChannelKey);
     }
 
     return null;
