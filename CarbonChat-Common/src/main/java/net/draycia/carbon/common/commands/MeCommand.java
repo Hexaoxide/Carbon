@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.arguments.standard.StringArgument;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonUser;
@@ -28,8 +28,8 @@ public class MeCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.me")
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.me")
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().build())
         .handler(this::message)
         .build()
@@ -39,7 +39,7 @@ public class MeCommand {
   private void message(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
 
-    final String message = context.<String>getRequired("message").replace("</pre>", "");
+    final String message = context.<String>get("message").replace("</pre>", "");
     String format = this.carbonChat.translations().roleplayFormat();
 
     if (!user.hasPermission("carbonchat.me.formatting")) {

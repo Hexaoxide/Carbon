@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
@@ -28,8 +28,8 @@ public class IgnoreCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.ignore")
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.ignore")
         .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .handler(this::ignoreUser)
         .build()
@@ -38,7 +38,7 @@ public class IgnoreCommand {
 
   private void ignoreUser(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser sender = (PlayerUser) context.getSender();
-    final PlayerUser targetUser = context.getRequired("user");
+    final PlayerUser targetUser = context.get("user");
 
     if (sender.ignoringUser(targetUser)) {
       sender.ignoringUser(targetUser, false);

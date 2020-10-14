@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -35,12 +35,12 @@ public class ChannelListCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // console & player
-        .withPermission("carbonchat.channellist")
+        .senderType(CarbonUser.class) // console & player
+        .permission("carbonchat.channellist")
         // TODO: make this return a PlayerUser
         .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.channellist.other
         .handler(context -> {
-          if (context.get("user").isPresent()) {
+          if (context.getOptional("user").isPresent()) {
             this.channelListOther(context);
           } else {
             this.channelListSelf(context);
@@ -56,7 +56,7 @@ public class ChannelListCommand {
 
   public void channelListOther(@NonNull final CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
-    final PlayerUser user = context.getRequired("user");
+    final PlayerUser user = context.get("user");
 
     if (!user.online()) {
       final String mustBeOnline = this.carbonChat.translations().userMustBeOnline();

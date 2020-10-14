@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -30,12 +30,12 @@ public class ToggleCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player & console
-        .withPermission("carbonchat.toggle")
+        .senderType(CarbonUser.class) // player & console
+        .permission("carbonchat.toggle")
         .argument(ChannelArgument.requiredChannelArgument())
         .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.toggle.other
         .handler(context -> {
-          if (context.get("user").isPresent()) {
+          if (context.getOptional("user").isPresent()) {
             this.toggleOther(context);
           } else if (context.getSender() instanceof PlayerUser) {
             this.toggleSelf(context);
@@ -47,7 +47,7 @@ public class ToggleCommand {
 
   private void toggleSelf(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
-    final ChatChannel channel = context.getRequired("channel");
+    final ChatChannel channel = context.get("channel");
 
     final String message;
 
@@ -70,8 +70,8 @@ public class ToggleCommand {
 
   private void toggleOther(@NonNull final CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
-    final PlayerUser user = context.getRequired("user");
-    final ChatChannel channel = context.getRequired("channel");
+    final PlayerUser user = context.get("user");
+    final ChatChannel channel = context.get("channel");
 
     final String message;
     final String otherMessage;

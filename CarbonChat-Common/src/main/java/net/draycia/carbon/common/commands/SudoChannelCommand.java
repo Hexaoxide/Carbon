@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.arguments.standard.StringArgument;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -30,13 +30,13 @@ public class SudoChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player & console
-        .withPermission("carbonchat.channel.others.message")
+        .senderType(CarbonUser.class) // player & console
+        .permission("carbonchat.channel.others.message")
         .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .argument(ChannelArgument.requiredChannelArgument())
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(context -> {
-          if (context.get("message").isPresent()) {
+          if (context.getOptional("message").isPresent()) {
             this.sendMessageOther(context);
           } else {
             this.otherChannel(context);
@@ -48,8 +48,8 @@ public class SudoChannelCommand {
 
   private void otherChannel(@NonNull final CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
-    final CarbonUser user = context.getRequired("user");
-    final ChatChannel channel = context.getRequired("channel");
+    final CarbonUser user = context.get("user");
+    final ChatChannel channel = context.get("channel");
 
     user.selectedChannel(channel);
 
@@ -66,9 +66,9 @@ public class SudoChannelCommand {
   }
 
   private void sendMessageOther(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser user = context.getRequired("user");
-    final ChatChannel channel = context.getRequired("channel");
-    final String message = context.getRequired("message");
+    final PlayerUser user = context.get("user");
+    final ChatChannel channel = context.get("channel");
+    final String message = context.get("message");
 
     channel.sendComponentsAndLog(channel.parseMessage(user, message, false));
   }

@@ -1,6 +1,6 @@
 package net.draycia.carbon.common.commands.misc;
 
-import com.intellectualsites.commands.CommandManager;
+import cloud.commandframework.CommandManager;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.common.commands.ChannelCommand;
 import net.draycia.carbon.common.commands.ChannelListCommand;

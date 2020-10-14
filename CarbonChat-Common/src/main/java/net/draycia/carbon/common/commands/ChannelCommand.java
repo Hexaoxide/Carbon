@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.arguments.standard.StringArgument;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.TextChannel;
@@ -30,12 +30,12 @@ public class ChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.channel")
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.channel")
         .argument(ChannelArgument.requiredChannelArgument())
         .argument(StringArgument.optional("message")) // carbonchat.channel.message
         .handler(context -> {
-          if (context.get("message").isPresent()) {
+          if (context.getOptional("message").isPresent()) {
             this.sendMessage(context);
           } else {
             this.channel(context);
@@ -47,7 +47,7 @@ public class ChannelCommand {
 
   private void channel(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
-    final TextChannel channel = context.getRequired("channel");
+    final TextChannel channel = context.get("channel");
 
     if (user.channelSettings(channel).ignored()) {
       user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),
@@ -61,8 +61,8 @@ public class ChannelCommand {
   }
 
   private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
-    final ChatChannel channel = context.getRequired("channel");
-    final String message = context.getRequired("message");
+    final ChatChannel channel = context.get("channel");
+    final String message = context.get("message");
 
     channel.sendComponentsAndLog(channel.parseMessage((PlayerUser) context.getSender(),
       message, false));

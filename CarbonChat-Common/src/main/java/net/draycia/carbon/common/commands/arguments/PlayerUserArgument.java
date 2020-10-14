@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands.arguments;
 
-import com.intellectualsites.commands.arguments.CommandArgument;
-import com.intellectualsites.commands.arguments.parser.ArgumentParseResult;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.arguments.CommandArgument;
+import cloud.commandframework.arguments.parser.ArgumentParseResult;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.PlayerUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -22,7 +22,7 @@ public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> 
   }
 
   private static <C> ArgumentParseResult<PlayerUser> parser(final @NonNull CommandContext<C> commandContext,
-                                                             final @NonNull Queue<String> inputs) {
+                                                            final @NonNull Queue<String> inputs) {
     final String input = inputs.poll();
 
     if (input == null) {

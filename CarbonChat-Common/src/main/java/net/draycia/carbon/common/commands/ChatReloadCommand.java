@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
@@ -26,8 +26,8 @@ public class ChatReloadCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player & console
-        .withPermission("carbonchat.reload")
+        .senderType(CarbonUser.class) // player & console
+        .permission("carbonchat.reload")
         .handler(this::reloadConfig)
         .build()
     );

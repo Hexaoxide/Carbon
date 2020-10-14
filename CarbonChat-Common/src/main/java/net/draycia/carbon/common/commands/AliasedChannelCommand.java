@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.arguments.standard.StringArgument;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.TextChannel;
@@ -27,11 +27,11 @@ public class AliasedChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(this.commandName,
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.channel") // carbonchat.channel.message
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.channel") // carbonchat.channel.message
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(context -> {
-          if (context.get("message").isPresent()) {
+          if (context.getOptional("message").isPresent()) {
             this.sendMessage(context);
           } else {
             this.channel(context);
@@ -56,7 +56,7 @@ public class AliasedChannelCommand {
   }
 
   private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
-    context.<String>get("message").ifPresent(message -> {
+    context.<String>getOptional("message").ifPresent(message -> {
       this.chatChannel().sendComponentsAndLog(
         this.chatChannel().parseMessage((PlayerUser) context.getSender(), message, false));
     });

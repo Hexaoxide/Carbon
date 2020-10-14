@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonUser;
@@ -28,8 +28,8 @@ public class MuteCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player & console
-        .withPermission("carbonchat.mute")
+        .senderType(CarbonUser.class) // player & console
+        .permission("carbonchat.mute")
         .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .handler(this::mute)
         .build()
@@ -38,7 +38,7 @@ public class MuteCommand {
 
   private void mute(@NonNull final CommandContext<CarbonUser> context) {
     final CarbonUser user = context.getSender();
-    final PlayerUser target = context.getRequired("user");
+    final PlayerUser target = context.get("user");
 
     if (target.muted()) {
       target.muted(false);

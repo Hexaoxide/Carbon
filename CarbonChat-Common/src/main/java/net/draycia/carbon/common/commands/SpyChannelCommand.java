@@ -1,9 +1,9 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.arguments.StaticArgument;
-import com.intellectualsites.commands.arguments.standard.BooleanArgument;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.StaticArgument;
+import cloud.commandframework.arguments.standard.BooleanArgument;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -32,8 +32,8 @@ public class SpyChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.spy")
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.spy")
         .argument(ChannelArgument.requiredChannelArgument())
         .handler(this::spyChannel)
         .build()
@@ -42,9 +42,9 @@ public class SpyChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.spy")
-        .argument(StaticArgument.required("whispers"))
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.spy")
+        .argument(StaticArgument.of("whispers"))
         .handler(this::spyWhispers)
         .build()
     );
@@ -52,10 +52,10 @@ public class SpyChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.spy")
-        .argument(StaticArgument.required("everything"))
-        .argument(BooleanArgument.required("enabled"))
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.spy")
+        .argument(StaticArgument.of("everything"))
+        .argument(BooleanArgument.of("enabled"))
         .handler(this::spyEverything)
         .build()
     );
@@ -63,7 +63,7 @@ public class SpyChannelCommand {
 
   private void spyChannel(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
-    final ChatChannel chatChannel = context.getRequired("channel");
+    final ChatChannel chatChannel = context.get("channel");
 
     final String message;
 
@@ -100,7 +100,7 @@ public class SpyChannelCommand {
 
   private void spyEverything(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
-    final Boolean shouldSpy = context.getRequired("enabled");
+    final Boolean shouldSpy = context.get("enabled");
 
     final String message;
 

@@ -1,7 +1,7 @@
 package net.draycia.carbon;
 
-import com.intellectualsites.commands.execution.CommandExecutionCoordinator;
-import com.intellectualsites.commands.paper.PaperCommandManager;
+import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.paper.PaperCommandManager;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.config.CarbonTranslations;

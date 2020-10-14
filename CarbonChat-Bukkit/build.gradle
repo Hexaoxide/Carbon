@@ -16,7 +16,7 @@ dependencies {
   compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
 
   // Commands
-  compile "com.intellectualsites:cloud-paper:1.0-SNAPSHOT"
+  compile "cloud.commandframework:cloud-paper:1.0.1"
 
   // Plugins
   compileOnly('com.gmail.nossr50.mcMMO:mcMMO:2.1.143') {

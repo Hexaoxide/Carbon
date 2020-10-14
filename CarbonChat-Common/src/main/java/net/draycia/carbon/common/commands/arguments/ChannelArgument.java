@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands.arguments;
 
-import com.intellectualsites.commands.arguments.CommandArgument;
-import com.intellectualsites.commands.arguments.parser.ArgumentParseResult;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.arguments.CommandArgument;
+import cloud.commandframework.arguments.parser.ArgumentParseResult;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;

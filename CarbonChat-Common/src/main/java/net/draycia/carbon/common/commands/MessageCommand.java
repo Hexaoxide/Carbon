@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.arguments.standard.StringArgument;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -34,8 +34,8 @@ public class MessageCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.message")
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.message")
         .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(this::sendMessage)
@@ -45,7 +45,7 @@ public class MessageCommand {
 
   private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser sender = (PlayerUser) context.getSender();
-    final PlayerUser receiver = context.getRequired("user");
+    final PlayerUser receiver = context.get("user");
 
     if (sender.equals(receiver)) {
       final String message = this.carbonChat.translations().cannotWhisperSelf();
@@ -74,7 +74,7 @@ public class MessageCommand {
       }
     }
 
-    final Optional<String> message = context.get("message");
+    final Optional<String> message = context.getOptional("message");
 
     if (message.isPresent()) {
       receiver.sendMessage(sender, message.get());

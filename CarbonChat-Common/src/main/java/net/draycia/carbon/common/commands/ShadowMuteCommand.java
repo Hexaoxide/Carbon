@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonUser;
@@ -28,8 +28,8 @@ public class ShadowMuteCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player & console
-        .withPermission("carbonchat.shadowmute")
+        .senderType(CarbonUser.class) // player & console
+        .permission("carbonchat.shadowmute")
         .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .handler(this::shadowMute)
         .build()
@@ -38,7 +38,7 @@ public class ShadowMuteCommand {
 
   private void shadowMute(@NonNull final CommandContext<CarbonUser> context) {
     final CarbonUser user = context.getSender();
-    final PlayerUser target = context.getRequired("user");
+    final PlayerUser target = context.get("user");
 
     if (target.shadowMuted()) {
       target.shadowMuted(false);

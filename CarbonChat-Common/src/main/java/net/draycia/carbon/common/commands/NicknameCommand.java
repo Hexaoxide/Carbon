@@ -1,8 +1,8 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.arguments.standard.StringArgument;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
@@ -28,12 +28,12 @@ public class NicknameCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player & console
-        .withPermission("carbonchat.nickname")
-        .argument(StringArgument.required("nickname"))
+        .senderType(CarbonUser.class) // player & console
+        .permission("carbonchat.nickname")
+        .argument(StringArgument.of("nickname"))
         .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.nickname.other
         .handler(context -> {
-          if (context.get("user").isPresent()) {
+          if (context.getOptional("user").isPresent()) {
             this.nicknameOther(context);
           } else if (context.getSender() instanceof PlayerUser) {
             // TODO: better handling of this
@@ -46,7 +46,7 @@ public class NicknameCommand {
 
   private void nicknameSelf(@NonNull final CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
-    String nickname = context.getRequired("nickname");
+    String nickname = context.get("nickname");
 
     if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(user.name())) {
       nickname = null;
@@ -68,8 +68,8 @@ public class NicknameCommand {
   }
 
   private void nicknameOther(@NonNull final CommandContext<CarbonUser> context) {
-    final PlayerUser target = context.getRequired("user");
-    String nickname = context.getRequired("nickname");
+    final PlayerUser target = context.get("user");
+    String nickname = context.get("nickname");
 
     if (nickname.equalsIgnoreCase("off") ||
       nickname.equalsIgnoreCase(target.name())) {

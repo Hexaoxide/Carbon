@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.commands;
 
-import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.context.CommandContext;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -29,11 +29,11 @@ public class MsgToggleCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player & console
-        .withPermission("carbonchat.msgtoggle")
+        .senderType(CarbonUser.class) // player & console
+        .permission("carbonchat.msgtoggle")
         .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.msgtoggle.other
         .handler(context -> {
-          if (context.get("user").isPresent()) {
+          if (context.getOptional("user").isPresent()) {
             this.toggleOther(context);
           } else if (context.getSender() instanceof PlayerUser) {
             // TODO: better handling of this
@@ -67,7 +67,7 @@ public class MsgToggleCommand {
 
   private void toggleOther(@NonNull final CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
-    final PlayerUser user = context.getRequired("user");
+    final PlayerUser user = context.get("user");
     final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
 
     final String message;
