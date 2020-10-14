@@ -8,7 +8,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -31,7 +31,7 @@ public class NicknameCommand {
         .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.nickname")
         .argument(StringArgument.required("nickname"))
-        .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.nickname.other
+        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.nickname.other
         .handler(context -> {
           if (context.get("user").isPresent()) {
             this.nicknameOther(context);

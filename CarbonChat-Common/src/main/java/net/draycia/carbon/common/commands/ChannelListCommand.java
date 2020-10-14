@@ -8,7 +8,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -38,7 +38,7 @@ public class ChannelListCommand {
         .withSenderType(CarbonUser.class) // console & player
         .withPermission("carbonchat.channellist")
         // TODO: make this return a PlayerUser
-        .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.channellist.other
+        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.channellist.other
         .handler(context -> {
           if (context.get("user").isPresent()) {
             this.channelListOther(context);

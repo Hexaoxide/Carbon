@@ -9,7 +9,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -31,7 +31,7 @@ public class MsgToggleCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.msgtoggle")
-        .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.msgtoggle.other
+        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.msgtoggle.other
         .handler(context -> {
           if (context.get("user").isPresent()) {
             this.toggleOther(context);

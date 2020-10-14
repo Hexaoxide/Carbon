@@ -10,7 +10,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -33,7 +33,7 @@ public class ToggleCommand {
         .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.toggle")
         .argument(ChannelArgument.requiredChannelArgument())
-        .argument(CommandUtils.optionalChatUserArgument()) // carbonchat.toggle.other
+        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.toggle.other
         .handler(context -> {
           if (context.get("user").isPresent()) {
             this.toggleOther(context);

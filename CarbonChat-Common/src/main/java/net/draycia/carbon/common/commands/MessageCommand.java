@@ -11,7 +11,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.channels.CarbonWhisperChannel;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -36,7 +36,7 @@ public class MessageCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.message")
-        .argument(CommandUtils.chatUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(this::sendMessage)
         .build()

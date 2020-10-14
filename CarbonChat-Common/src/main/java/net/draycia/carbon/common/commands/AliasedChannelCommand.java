@@ -25,23 +25,20 @@ public class AliasedChannelCommand {
     this.commandName = chatChannel.key();
 
     commandManager.command(
-      commandManager.commandBuilder(this.commandName)
+      commandManager.commandBuilder(this.commandName,
+        commandManager.createDefaultCommandMeta())
         .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.channel")
-        .handler(this::channel)
-        .build()
+        .withPermission("carbonchat.channel") // carbonchat.channel.message
+        .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
+        .handler(context -> {
+          if (context.get("message").isPresent()) {
+            this.sendMessage(context);
+          } else {
+            this.channel(context);
+          }
+        })
+        .build() // TODO: use chain to register two executors
     );
-
-    commandManager.command(
-      commandManager.commandBuilder(this.commandName)
-        .withSenderType(PlayerUser.class) // player
-        .withPermission("carbonchat.channel.message")
-        .argument(StringArgument.required("message"))
-        .handler(this::sendMessage)
-        .build()
-    );
-
-    // TODO: don't register same command twice lol
   }
 
   private void channel(@NonNull final CommandContext<CarbonUser> context) {

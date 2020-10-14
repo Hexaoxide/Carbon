@@ -10,7 +10,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -30,9 +30,9 @@ public class SudoChannelCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .withSenderType(CarbonUser.class) // player
+        .withSenderType(CarbonUser.class) // player & console
         .withPermission("carbonchat.channel.others.message")
-        .argument(CommandUtils.chatUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .argument(ChannelArgument.requiredChannelArgument())
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(context -> {

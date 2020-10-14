@@ -1,0 +1,64 @@
+package net.draycia.carbon.common.commands.arguments;
+
+import com.intellectualsites.commands.arguments.CommandArgument;
+import com.intellectualsites.commands.arguments.parser.ArgumentParseResult;
+import com.intellectualsites.commands.context.CommandContext;
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.users.PlayerUser;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.List;
+import java.util.Queue;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> {
+
+  private PlayerUserArgument(final boolean required) {
+    super(required, "channel", PlayerUserArgument::parser,
+      "",
+      PlayerUser.class, PlayerUserArgument::suggestions);
+  }
+
+  private static <C> ArgumentParseResult<PlayerUser> parser(final @NonNull CommandContext<C> commandContext,
+                                                             final @NonNull Queue<String> inputs) {
+    final String input = inputs.poll();
+
+    if (input == null) {
+      // TODO: make exception messages configurable
+      return ArgumentParseResult.failure(new IllegalArgumentException("Player not found!"));
+    }
+
+    final UUID uuid = CarbonChatProvider.carbonChat().userService().resolve(input);
+
+    if (uuid == null) {
+      return ArgumentParseResult.failure(new IllegalArgumentException("Player not found!"));
+    }
+
+    final PlayerUser user = CarbonChatProvider.carbonChat().userService().wrap(uuid);
+
+    if (user == null) {
+      return ArgumentParseResult.failure(new IllegalArgumentException("Player not found!"));
+    }
+
+    return ArgumentParseResult.success(user);
+  }
+
+  private static <C> List<String> suggestions(final @NonNull CommandContext<C> commandContext,
+                                              final @NonNull String input) {
+    return StreamSupport
+      .stream(CarbonChatProvider.carbonChat().userService().onlineUsers().spliterator(), false)
+      .map(PlayerUser::name)
+      .collect(Collectors.toList());
+  }
+
+  public static <C> PlayerUserArgument<C> requiredPlayerUserArgument() {
+    return new PlayerUserArgument<>(true);
+  }
+
+  public static <C> PlayerUserArgument<C> optionalPlayerUserArgument() {
+    return new PlayerUserArgument<>(false);
+  }
+
+}

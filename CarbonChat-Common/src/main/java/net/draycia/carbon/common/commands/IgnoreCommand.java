@@ -7,7 +7,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.draycia.carbon.common.utils.CommandUtils;
+import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -30,7 +30,7 @@ public class IgnoreCommand {
         commandManager.createDefaultCommandMeta())
         .withSenderType(PlayerUser.class) // player
         .withPermission("carbonchat.ignore")
-        .argument(CommandUtils.chatUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument())
         .handler(this::ignoreUser)
         .build()
     );

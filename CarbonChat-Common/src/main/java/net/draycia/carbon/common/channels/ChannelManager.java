@@ -96,6 +96,7 @@ public class ChannelManager {
 
       if (channel != null) {
         this.registerChannel(channel);
+        // TODO: register AliasedChannelCommand for each channel
         String prefix = null;
 
         if (channel instanceof TextChannel) {
