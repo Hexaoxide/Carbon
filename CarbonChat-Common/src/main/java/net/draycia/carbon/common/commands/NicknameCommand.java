@@ -9,6 +9,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class NicknameCommand {
@@ -61,7 +62,7 @@ public class NicknameCommand {
       message = this.carbonChat.translations().nicknameSet();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
       "user", user.name(), "sender", context.getSender().name()));
   }
@@ -85,7 +86,7 @@ public class NicknameCommand {
       message = this.carbonChat.translations().otherNicknameSet();
     }
 
-    context.getSender().sendMessage(this.carbonChat.messageProcessor().processMessage(
+    context.getSender().sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
       message, "nickname", nickname == null ? "" : nickname,
       "user", target.name(), "sender", context.getSender().name()));
   }

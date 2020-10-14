@@ -8,6 +8,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -46,7 +47,7 @@ public class ShadowMuteCommand {
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
         "player", target.name());
 
-      user.sendMessage(message);
+      user.sendMessage(Identity.nil(), message);
     } else {
       // TODO: schedule task because LuckPerms doesn't like sync offline permission checks
       final String format;
@@ -61,7 +62,7 @@ public class ShadowMuteCommand {
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
         "player", target.name());
 
-      user.sendMessage(message);
+      user.sendMessage(Identity.nil(), message);
     }
   }
 }

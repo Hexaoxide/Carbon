@@ -50,7 +50,7 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
 
   @Override
   public @Nullable Sound deserialize(@NonNull final Type type, @NonNull final ConfigurationNode value) throws ObjectMappingException {
-    if (value.isEmpty()) {
+    if (value.empty()) {
       return null;
     }
 

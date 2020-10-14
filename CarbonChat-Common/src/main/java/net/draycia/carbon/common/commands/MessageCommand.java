@@ -12,6 +12,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.channels.CarbonWhisperChannel;
 import net.draycia.carbon.common.utils.CommandUtils;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class MessageCommand {
 
     if (sender.equals(receiver)) {
       final String message = this.carbonChat.translations().cannotWhisperSelf();
-      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+      sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
 
       return;
     }
@@ -59,7 +60,7 @@ public class MessageCommand {
 
       if (senderSettings.ignored()) {
         final String message = this.carbonChat.carbonSettings().whisperOptions().senderToggledOff();
-        sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+        sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
         return;
       }
 
@@ -68,7 +69,7 @@ public class MessageCommand {
 
       if (receiverSettings.ignored()) {
         final String message = this.carbonChat.carbonSettings().whisperOptions().receiverToggledOff();
-        sender.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+        sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
         return;
       }
     }
@@ -80,7 +81,7 @@ public class MessageCommand {
     } else {
       sender.selectedChannel(new CarbonWhisperChannel(sender, receiver));
 
-      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(
+      sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
         this.carbonChat.carbonSettings().whisperOptions().nowWhisperingPlayer(),
         "player", receiver.name()
       ));

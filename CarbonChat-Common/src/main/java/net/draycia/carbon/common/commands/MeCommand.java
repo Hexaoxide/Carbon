@@ -8,6 +8,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -49,14 +50,14 @@ public class MeCommand {
       "displayname", user.displayName(), "message", message);
 
     if (user.shadowMuted()) {
-      user.sendMessage(component);
+      user.sendMessage(Identity.identity(user.uuid()), component);
     } else {
       for (final PlayerUser onlineUser : this.carbonChat.userService().onlineUsers()) {
         if (onlineUser.ignoringUser(user)) {
           continue;
         }
 
-        onlineUser.sendMessage(component);
+        onlineUser.sendMessage(Identity.identity(user.uuid()), component);
       }
     }
   }

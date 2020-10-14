@@ -6,6 +6,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.CarbonUser;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -38,7 +39,7 @@ public class ChatReloadCommand {
     final Component message = this.carbonChat.messageProcessor()
       .processMessage(this.carbonChat.translations().reloaded().replace("br", "\n"));
 
-    context.getSender().sendMessage(message);
+    context.getSender().sendMessage(Identity.nil(), message);
   }
 
 }

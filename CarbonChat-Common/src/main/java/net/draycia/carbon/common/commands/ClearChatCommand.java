@@ -6,6 +6,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -40,16 +41,18 @@ public class ClearChatCommand {
     for (final CarbonUser user : this.carbonChat.userService().onlineUsers()) {
       if (user.hasPermission("carbonchat.clearchat.exempt")) {
         final String message = this.carbonChat.translations().clearExempt();
-        user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "player", sender));
+        user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
+          .processMessage(message, "player", sender));
       } else {
         for (int i = 0; i < this.carbonChat.moderationSettings().clearChat().messageCount(); i++) {
-          user.sendMessage(component);
+          user.sendMessage(Identity.nil(), component);
         }
       }
 
       if (user.hasPermission("carbonchat.clearchat.notify")) {
         final String message = this.carbonChat.translations().clearNotify();
-        user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "player", sender));
+        user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
+          .processMessage(message, "player", sender));
       }
     }
   }

@@ -10,6 +10,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.utils.CommandUtils;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MsgToggleCommand {
@@ -61,7 +62,7 @@ public class MsgToggleCommand {
       message = channel.toggleOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
   }
 
   private void toggleOther(@NonNull final CommandContext<CarbonUser> context) {
@@ -84,9 +85,9 @@ public class MsgToggleCommand {
       otherMessage = channel.toggleOtherOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
 
-    sender.sendMessage(this.carbonChat.messageProcessor().processMessage(otherMessage,
+    sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(otherMessage,
       "player", user.name()));
   }
 }

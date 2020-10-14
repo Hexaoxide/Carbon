@@ -6,6 +6,7 @@ import net.draycia.carbon.api.messaging.MessageService;
 import com.google.common.io.ByteArrayDataOutput;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -32,14 +33,15 @@ public class MessageManager {
       final String message = this.carbonChat.translations().nicknameSet();
 
       user.nickname(nickname, true);
-      user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "nickname", nickname));
+      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
+        .processMessage(message, "nickname", nickname));
     });
 
     this.messageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
       final String message = this.carbonChat.translations().nicknameReset();
 
       user.nickname(null, true);
-      user.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
     });
 
     this.messageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
@@ -95,7 +97,7 @@ public class MessageManager {
 
         ((TextChannel) channel).sendComponent(user, component);
 
-        this.carbonChat.messageProcessor().audiences().console().sendMessage(component);
+        this.carbonChat.messageProcessor().audiences().console().sendMessage(Identity.identity(uuid), component);
       }
     });
 
@@ -107,7 +109,7 @@ public class MessageManager {
 
       if (!target.ignoringUser(uuid)) {
         target.replyTarget(uuid);
-        target.sendMessage(this.carbonChat.gsonSerializer().deserialize(message));
+        target.sendMessage(Identity.identity(uuid), this.carbonChat.gsonSerializer().deserialize(message));
       }
     });
   }

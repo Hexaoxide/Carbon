@@ -6,6 +6,7 @@ import net.draycia.carbon.api.events.UserEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.CarbonChatBukkit;
 import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.Bukkit;
@@ -85,7 +86,7 @@ public class BukkitChatListener implements Listener {
           continue;
         }
 
-        entry.getKey().sendMessage(entry.getValue());
+        entry.getKey().sendMessage(Identity.identity(event.getPlayer().getUniqueId()), entry.getValue());
 
         if (user.equals(entry.getKey())) {
           event.setFormat(PlainComponentSerializer.plain().serialize(entry.getValue())

@@ -8,6 +8,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -38,7 +39,7 @@ public class SetColorCommand {
             final TextColor color = context.getRequired("color");
 
             if (!user.hasPermission("carbonchat.setcolor." + channel.key())) {
-              user.sendMessage(this.carbonChat.messageProcessor().processMessage(
+              user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
                 this.carbonChat.translations().cannotSetColor(), "input", color.asHexString(),
                 "channel", channel.name()));
 
@@ -49,7 +50,7 @@ public class SetColorCommand {
 
             settings.color(color);
 
-            user.sendMessage(this.carbonChat.messageProcessor().processMessage(
+            user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
               this.carbonChat.translations().channelColorSet(),
               "color", "<color:" + color.asHexString() + ">", "channel",
               channel.name(), "hex", color.asHexString()));

@@ -11,6 +11,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import net.draycia.carbon.common.utils.CommandUtils;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ToggleCommand {
@@ -62,8 +63,9 @@ public class ToggleCommand {
       message = channel.toggleOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
-      "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
+      "color", "<color:" + channel.channelColor(user).toString() + ">",
+      "channel", channel.name()));
   }
 
   private void toggleOther(@NonNull final CommandContext<CarbonUser> context) {
@@ -86,11 +88,11 @@ public class ToggleCommand {
       otherMessage = channel.toggleOtherOnMessage();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
-      "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
+      "color", "<color:" + channel.channelColor(user).toString() + ">",
+      "channel", channel.name()));
 
-    sender.sendMessage(
-      this.carbonChat.messageProcessor().processMessage(otherMessage,
+    sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(otherMessage,
         "color", "<color:" + channel.channelColor(user).toString() + ">",
         "channel", channel.name(), "player", user.name()));
   }

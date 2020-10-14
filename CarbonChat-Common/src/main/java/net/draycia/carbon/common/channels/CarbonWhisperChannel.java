@@ -9,6 +9,7 @@ import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.ConsoleUser;
 import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -178,17 +179,18 @@ public class CarbonWhisperChannel implements WhisperChannel {
   @Override
   public void sendComponents(@NonNull final Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
-      entry.getKey().sendMessage(entry.getValue());
+      entry.getKey().sendMessage(Identity.nil(), entry.getValue());
     }
   }
 
   @Override
   public void sendComponentsAndLog(@NonNull final Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
-      entry.getKey().sendMessage(entry.getValue());
+      entry.getKey().sendMessage(Identity.nil(), entry.getValue());
 
       if (entry.getKey() instanceof ConsoleUser) {
-        this.carbonChat.messageProcessor().audiences().console().sendMessage(entry.getValue());
+        this.carbonChat.messageProcessor().audiences().console()
+          .sendMessage(Identity.nil(), entry.getValue());
       }
     }
   }

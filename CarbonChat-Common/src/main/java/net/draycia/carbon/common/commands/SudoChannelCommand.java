@@ -11,6 +11,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import net.draycia.carbon.common.utils.CommandUtils;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SudoChannelCommand {
@@ -55,13 +56,13 @@ public class SudoChannelCommand {
     final String message = channel.switchMessage();
     final String otherMessage = channel.switchOtherMessage();
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
-      "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name()));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
+      "color", "<color:" + channel.channelColor(user).toString() + ">",
+      "channel", channel.name()));
 
-    sender.sendMessage(
-      this.carbonChat.messageProcessor().processMessage(otherMessage,
-        "color", "<color:" + channel.channelColor(user).toString() + ">", "channel", channel.name(),
-        "player", user.name()));
+    sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(otherMessage,
+        "color", "<color:" + channel.channelColor(user).toString() + ">",
+        "channel", channel.name(), "player", user.name()));
   }
 
   private void sendMessageOther(@NonNull final CommandContext<CarbonUser> context) {

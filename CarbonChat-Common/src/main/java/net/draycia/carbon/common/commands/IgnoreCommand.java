@@ -8,6 +8,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.CommandUtils;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -42,7 +43,7 @@ public class IgnoreCommand {
     if (sender.ignoringUser(targetUser)) {
       sender.ignoringUser(targetUser, false);
 
-      sender.sendMessage(this.carbonChat.messageProcessor().processMessage(
+      sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
         this.carbonChat.translations().notIgnoringUser(), "player", targetUser.displayName()));
     } else {
       // TODO: schedule task because sync permission checks
@@ -58,7 +59,7 @@ public class IgnoreCommand {
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
         "sender", sender.displayName(), "player", targetUser.displayName());
 
-      sender.sendMessage(message);
+      sender.sendMessage(Identity.nil(), message);
     }
   }
 

@@ -8,6 +8,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class AliasedChannelCommand {
@@ -47,7 +48,7 @@ public class AliasedChannelCommand {
     final PlayerUser user = (PlayerUser) context.getSender();
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
-      user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
+      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
         "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
         "channel", this.chatChannel().name()));
 

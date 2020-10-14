@@ -11,6 +11,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChannelCommand {
@@ -49,7 +50,7 @@ public class ChannelCommand {
     final TextChannel channel = context.getRequired("channel");
 
     if (user.channelSettings(channel).ignored()) {
-      user.sendMessage(this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),
+      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),
         "color", "<" + channel.channelColor(user).toString() + ">",
         "channel", channel.name()));
 

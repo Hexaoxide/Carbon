@@ -12,6 +12,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SpyChannelCommand {
@@ -76,8 +77,9 @@ public class SpyChannelCommand {
       message = this.carbonChat.translations().spyToggledOn();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message,
-      "color", "<color:" + chatChannel.channelColor(user).toString() + ">", "channel", chatChannel.name()));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
+      "color", "<color:" + chatChannel.channelColor(user).toString() + ">",
+      "channel", chatChannel.name()));
   }
 
   private void spyWhispers(@NonNull final CommandContext<CarbonUser> context) {
@@ -93,7 +95,7 @@ public class SpyChannelCommand {
       message = this.carbonChat.translations().spyWhispersOn();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
   }
 
   private void spyEverything(@NonNull final CommandContext<CarbonUser> context) {
@@ -120,7 +122,8 @@ public class SpyChannelCommand {
       message = this.carbonChat.translations().spyEverythingOn();
     }
 
-    user.sendMessage(this.carbonChat.messageProcessor().processMessage(message, "br", "\n"));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
+      .processMessage(message, "br", "\n"));
   }
 
 }

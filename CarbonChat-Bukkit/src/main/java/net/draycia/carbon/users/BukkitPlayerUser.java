@@ -13,6 +13,7 @@ import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.PrivateMessageEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -170,7 +171,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
     CarbonEvents.post(event);
 
     if (event.cancelled()) {
-      this.sendMessage(this.carbonChat.messageProcessor().processMessage(event.failureMessage(),
+      this.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(event.failureMessage(),
         "channel", chatChannel.name()));
 
       return;
@@ -188,7 +189,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
     final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
 
     if (player.isOnline()) {
-      this.sendMessage(this.carbonChat.messageProcessor().processMessage(chatChannel.switchMessage(),
+      this.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(chatChannel.switchMessage(),
         "color", "<" + chatChannel.channelColor(this).toString() + ">",
         "channel", chatChannel.name()));
     }
@@ -382,13 +383,13 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
 
     if (offlineTarget.isOnline()) {
       if (offlineSender.isOnline()) {
-        sender.sendMessage(toPlayerComponent);
+        sender.sendMessage(Identity.identity(sender.uuid()), toPlayerComponent);
 
         if (sender.shadowMuted()) {
           return;
         }
 
-        this.sendMessage(fromPlayerComponent);
+        this.sendMessage(Identity.identity(sender.uuid()), fromPlayerComponent);
 
         sender.replyTarget(this);
         this.replyTarget(sender);
@@ -405,7 +406,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
           "targetname", targetOfflineName, "sendername", senderOfflineName,
           "target", targetNameFinal, "sender", senderNameFinal);
 
-        sender.sendMessage(playerOfflineComponent);
+        sender.sendMessage(Identity.nil(), playerOfflineComponent);
 
         return;
       }
@@ -421,12 +422,12 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
             "targetname", targetOfflineName, "sendername", senderOfflineName,
             "target", targetNameFinal, "sender", senderNameFinal);
 
-          sender.sendMessage(playerOfflineComponent);
+          sender.sendMessage(Identity.nil(), playerOfflineComponent);
 
           return;
         }
 
-        sender.sendMessage(toPlayerComponent);
+        sender.sendMessage(Identity.identity(sender.uuid()), toPlayerComponent);
 
         this.carbonChat.messageManager().sendMessage("whisper-component", sender.uuid(), byteArray -> {
           byteArray.writeLong(this.uuid().getMostSignificantBits());
@@ -447,9 +448,10 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
         continue;
       }
 
-      user.sendMessage(this.carbonChat.messageProcessor().processMessage(this.carbonChat.translations().spyWhispers(),
-        "message", message, "targetname", targetOfflineName, "sendername", senderOfflineName,
-        "target", targetName, "sender", senderName));
+      user.sendMessage(Identity.identity(sender.uuid()), this.carbonChat.messageProcessor()
+        .processMessage(this.carbonChat.translations().spyWhispers(), "message", message,
+          "targetname", targetOfflineName, "sendername", senderOfflineName, "target", targetName,
+          "sender", senderName));
     }
   }
 }

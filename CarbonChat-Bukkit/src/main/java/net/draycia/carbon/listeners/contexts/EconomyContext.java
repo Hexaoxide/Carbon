@@ -5,6 +5,7 @@ import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.Context;
+import net.kyori.adventure.identity.Identity;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -48,7 +49,7 @@ public class EconomyContext {
       if (!this.economy.has(player, requiredBal)) {
         event.cancelled(true);
 
-        event.user().sendMessage(this.carbonChat.messageProcessor()
+        event.user().sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
           .processMessage(event.channel().cannotUseMessage()));
       }
     });
@@ -82,7 +83,7 @@ public class EconomyContext {
       if (!this.economy.has(player, cost)) {
         event.cancelled(true);
 
-        event.user().sendMessage(this.carbonChat.messageProcessor()
+        event.user().sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
           .processMessage(event.channel().cannotUseMessage()));
 
         return;
