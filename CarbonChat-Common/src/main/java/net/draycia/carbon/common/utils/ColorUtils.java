@@ -1,6 +1,10 @@
 package net.draycia.carbon.common.utils;
 
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.common.adventure.AdventureManager;
+import net.draycia.carbon.common.adventure.FormatType;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -27,6 +31,7 @@ public final class ColorUtils {
     }
 
     // TODO: find out way to do this
+    // TODO: add parsePlaceholders() to PlayerUser class
 
     //    if (user != null) {
     //      final Player player = Bukkit.getPlayer(user.uuid());
@@ -62,26 +67,40 @@ public final class ColorUtils {
     // TODO: check if MiniMessage or MineDown
     String output = input;
 
-    // Legacy RGB
-    output = spigotLegacyRGB.matcher(output).replaceAll("<#$1$2$3$4$5$6>");
+    String hexReplacement = "<#$1$2$3$4$5$6>";
+    boolean legacyCapable = false;
 
-    // Alternate RGB, TAB (neznamy) && KiteBoard
-    output = pluginRGB.matcher(output).replaceAll("<#$1$2$3$4$5$6>");
+    final MessageProcessor messageProcessor = CarbonChatProvider.carbonChat().messageProcessor();
 
-    // Legacy Colors
-    for (final char c : "0123456789abcdef".toCharArray()) {
-      final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
-      final TextColor color = format.color();
-
-      output = output.replaceAll("[§&]" + c, "<" + color.asHexString() + ">");
+    if (messageProcessor instanceof AdventureManager) {
+      if (((AdventureManager) messageProcessor).formatType() == FormatType.MINEDOWN) {
+        hexReplacement = "&#$1$2$3$4$5$6&";
+        legacyCapable = true;
+      }
     }
 
-    // Legacy Formatting
-    for (final char c : "klmno".toCharArray()) {
-      final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
-      final TextDecoration decoration = format.decoration();
+    // Legacy RGB
+    output = spigotLegacyRGB.matcher(output).replaceAll(hexReplacement);
 
-      output = output.replaceAll("[§&]" + c, "<" + decoration.name() + ">");
+    // Alternate RGB, TAB (neznamy) && KiteBoard
+    output = pluginRGB.matcher(output).replaceAll(hexReplacement);
+
+    if (!legacyCapable) {
+      // Legacy Colors
+      for (final char c : "0123456789abcdef".toCharArray()) {
+        final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
+        final TextColor color = format.color();
+
+        output = output.replaceAll("[§&]" + c, "<" + color.asHexString() + ">");
+      }
+
+      // Legacy Formatting
+      for (final char c : "klmno".toCharArray()) {
+        final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
+        final TextDecoration decoration = format.decoration();
+
+        output = output.replaceAll("[§&]" + c, "<" + decoration.name() + ">");
+      }
     }
 
     return output;

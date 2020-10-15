@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @ConfigSerializable
-public class CarbonSettings {
+public final class CarbonSettings {
 
   private static final ObjectMapper<CarbonSettings> MAPPER;
 

@@ -5,7 +5,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
-public class SQLCredentials {
+public final class SQLCredentials {
 
   @Setting private @NonNull String username = "username";
   @Setting private @NonNull String password = "password";

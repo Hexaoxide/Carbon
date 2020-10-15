@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @ConfigSerializable
-public class ChannelSettings {
+public final class ChannelSettings {
 
   private static final ObjectMapper<ChannelSettings> MAPPER;
 

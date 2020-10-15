@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @ConfigSerializable
-public class ChannelOptions {
+public final class ChannelOptions {
 
   @Setting
   @Comment("What this channel is identified as. This will be what's typed ingame to use the channel.")

@@ -31,7 +31,7 @@ public class PAPIContext {
       final String[] pieces = context.asString().split("=");
 
       if (pieces.length != 2) {
-        return; // TODO: maybe alert of misconfiguration?
+        return;
       }
 
       final Player receiver = Bukkit.getPlayer(event.recipient().uuid());
@@ -59,7 +59,7 @@ public class PAPIContext {
       final String[] pieces = context.asString().split("=");
 
       if (pieces.length != 2) {
-        return; // TODO: maybe alert of misconfiguration?
+        return;
       }
 
       final Player receiver = Bukkit.getPlayer(event.user().uuid());

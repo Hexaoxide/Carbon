@@ -6,6 +6,7 @@ import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
+import net.draycia.carbon.api.config.ExceptionMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public final class ChannelArgument<C> extends CommandArgument<C, TextChannel> {
 
   private ChannelArgument(final boolean required) {
     super(required, "channel", ChannelArgument::parser,
-      CarbonChatProvider.carbonChat().channelRegistry().defaultChannel().key(),
+      CarbonChatProvider.carbonChat().channelRegistry().defaultValue().key(),
       TextChannel.class, ChannelArgument::suggestions);
   }
 
@@ -24,9 +25,10 @@ public final class ChannelArgument<C> extends CommandArgument<C, TextChannel> {
                                                              final @NonNull Queue<String> inputs) {
     final String input = inputs.poll();
 
+    final ExceptionMessages exceptions = CarbonChatProvider.carbonChat().translations().exceptionMessages();
+
     if (input == null) {
-      // TODO: make exception messages configurable
-      return ArgumentParseResult.failure(new IllegalArgumentException("Channel cannot be null"));
+      return ArgumentParseResult.failure(new IllegalArgumentException(exceptions.channelNotFound()));
     }
 
     final ChatChannel channel = CarbonChatProvider.carbonChat()
@@ -35,9 +37,9 @@ public final class ChannelArgument<C> extends CommandArgument<C, TextChannel> {
     if (channel instanceof TextChannel) {
       return ArgumentParseResult.success((TextChannel) channel);
     } else if (channel != null) {
-      return ArgumentParseResult.failure(new IllegalArgumentException("Channel is not public!"));
+      return ArgumentParseResult.failure(new IllegalArgumentException(exceptions.channelNotPublic()));
     } else {
-      return ArgumentParseResult.failure(new IllegalArgumentException("Channel does not exist"));
+      return ArgumentParseResult.failure(new IllegalArgumentException(exceptions.channelNotFound()));
     }
   }
 

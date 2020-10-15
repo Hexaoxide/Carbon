@@ -28,7 +28,7 @@ public class PlayerJoinListener {
       }
 
       if (channel.equals("DEFAULT")) {
-        user.selectedChannel(carbonChat.channelRegistry().defaultChannel());
+        user.selectedChannel(carbonChat.channelRegistry().defaultValue());
         return;
       }
 

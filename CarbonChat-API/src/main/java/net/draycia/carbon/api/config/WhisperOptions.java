@@ -7,7 +7,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
-public class WhisperOptions {
+public final class WhisperOptions {
 
   @Setting
   @Comment("Plays a sound when receiving private messages with /whisper /msg")

@@ -79,7 +79,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
     } else if (key.startsWith("selected_channel")) {
       final ChatChannel channel = this.carbonChat.userService().wrap(player.getUniqueId()).selectedChannel();
 
-      return channel == null ? this.carbonChat.channelRegistry().defaultChannel().name() : channel.name();
+      return channel == null ? this.carbonChat.channelRegistry().defaultValue().name() : channel.name();
     }
 
     return null;

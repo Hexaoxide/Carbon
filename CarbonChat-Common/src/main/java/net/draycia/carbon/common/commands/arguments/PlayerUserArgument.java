@@ -25,21 +25,23 @@ public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> 
                                                             final @NonNull Queue<String> inputs) {
     final String input = inputs.poll();
 
+    final String playerNotFound = CarbonChatProvider.carbonChat().translations().exceptionMessages()
+      .playerNotFound();
+
     if (input == null) {
-      // TODO: make exception messages configurable
-      return ArgumentParseResult.failure(new IllegalArgumentException("Player not found!"));
+      return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
     }
 
     final UUID uuid = CarbonChatProvider.carbonChat().userService().resolve(input);
 
     if (uuid == null) {
-      return ArgumentParseResult.failure(new IllegalArgumentException("Player not found!"));
+      return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
     }
 
     final PlayerUser user = CarbonChatProvider.carbonChat().userService().wrap(uuid);
 
     if (user == null) {
-      return ArgumentParseResult.failure(new IllegalArgumentException("Player not found!"));
+      return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
     }
 
     return ArgumentParseResult.success(user);

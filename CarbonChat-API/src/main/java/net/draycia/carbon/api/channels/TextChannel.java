@@ -10,7 +10,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
 
-// TODO: rename this to something that's less... weird?
 public interface TextChannel extends ChatChannel, ForwardingAudience {
 
   @Override

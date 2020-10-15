@@ -38,11 +38,11 @@ public class BukkitChatListener implements Listener {
     ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
-      if (this.carbonChat.channelRegistry().defaultChannel() == null) {
+      if (this.carbonChat.channelRegistry().defaultValue() == null) {
         return;
       }
 
-      channel = this.carbonChat.channelRegistry().defaultChannel();
+      channel = this.carbonChat.channelRegistry().defaultValue();
     }
 
     //    if (channel.shouldCancelChatEvent()) {

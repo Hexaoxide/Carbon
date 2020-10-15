@@ -37,7 +37,6 @@ public class ChannelListCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.channellist")
-        // TODO: make this return a PlayerUser
         .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.channellist.other
         .handler(context -> {
           if (context.getOptional("user").isPresent()) {
@@ -114,7 +113,6 @@ public class ChannelListCommand {
 
   private void makeList(@NonNull final Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
     final String listSeparator = this.carbonChat.translations().channelListSeparator();
-    // TODO: Larry, why did you double assign the listSeparatorComponent?
     final Component listSeparatorComponent = Component.text(listSeparator);
 
     while (iterator.hasNext()) {

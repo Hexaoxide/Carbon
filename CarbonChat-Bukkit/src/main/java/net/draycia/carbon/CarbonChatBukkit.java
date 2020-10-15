@@ -1,5 +1,6 @@
 package net.draycia.carbon;
 
+import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.draycia.carbon.api.CarbonChat;
@@ -91,16 +92,14 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private ChannelManager channelManager;
   private AdventureManager messageProcessor;
-
   private CommandSettingsRegistry commandSettings;
   private ModerationSettings moderationSettings;
   private CarbonSettings carbonSettings;
   private ChannelSettings channelSettings;
-
   private UserService<BukkitPlayerUser> userService;
   private MessageManager messageManager;
-
   private CarbonTranslations translations;
+  private CommandManager<CarbonUser> commandManager;
 
   private Logger logger;
 
@@ -391,6 +390,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @Override
   public @NonNull CommandSettingsRegistry commandSettings() {
     return this.commandSettings;
+  }
+
+  @Override
+  public @NonNull CommandManager<CarbonUser> commandManager() {
+    return this.commandManager;
   }
 
   @Override

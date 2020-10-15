@@ -182,7 +182,7 @@ public class CarbonChatChannel implements TextChannel {
       "phase", Long.toString(System.currentTimeMillis() % 25),
       "message", consoleFormatEvent.message());
 
-    // TODO: add ConsoleUser to users map
+    // TODO: add ConsoleUser to users map. Requires "users" to be CarbonUser and not PlayerUser.
     final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleFormat,
       consoleFormatEvent.message());
 

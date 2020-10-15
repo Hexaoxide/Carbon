@@ -7,7 +7,7 @@ import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
-public class CarbonTranslations {
+public final class CarbonTranslations {
 
   private static final ObjectMapper<CarbonTranslations> MAPPER;
 
@@ -27,8 +27,9 @@ public class CarbonTranslations {
     MAPPER.save(this, node);
   }
 
-  @Setting
-  private String reloaded = "<yellow>Chat config has been reloaded!";
+  private ExceptionMessages exceptionMessages = new ExceptionMessages();
+
+  @Setting private String reloaded = "<yellow>Chat config has been reloaded!";
   @Setting private String otherPlayerOffline = "<red>That player is offline!";
   @Setting private String spyWhispers = "<yellow>Spy [<gray><sender><reset> <gold>-> <gray><target><reset><yellow>] <message>";
   @Setting private String noReplyTarget = "<red>You have no one to reply to!";
@@ -63,6 +64,10 @@ public class CarbonTranslations {
   @Setting private String clearNotify = "<yellow>Chat has been cleared by <player>.";
   @Setting private String clearExempt = "<yellow>You were exempt from the clear due to your permissions!";
   @Setting private String cannotWhisperSelf = "<yellow>You cannot whisper yourself!";
+
+  public ExceptionMessages exceptionMessages() {
+    return this.exceptionMessages;
+  }
 
   public String reloaded() {
     return this.reloaded;

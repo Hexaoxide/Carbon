@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @ConfigSerializable
-public class ModerationSettings {
+public final class ModerationSettings {
 
   private static final ObjectMapper<ModerationSettings> MAPPER;
 
@@ -34,8 +34,8 @@ public class ModerationSettings {
     MAPPER.save(this, node);
   }
 
-  // TODO: comment this
   @Setting
+  @Comment("The text that's prepended to someone else's shadowmuted messages.")
   private String shadowMutePrefix = "[SM] ";
 
   public String shadowMutePrefix() {
@@ -86,19 +86,19 @@ public class ModerationSettings {
   @ConfigSerializable
   public static class CapsProtection {
     @Setting
-  @Comment("If caps protection is enabled")
+    @Comment("If caps protection is enabled")
     private boolean enabled = true;
 
     @Setting
-  @Comment("The minimum message length for caps protection to activate")
+    @Comment("The minimum message length for caps protection to activate")
     private int minimumLength = 10;
 
     @Setting
-  @Comment("The amount of letters in the message for it to trigger the protection")
+    @Comment("The amount of letters in the message for it to trigger the protection")
     private float percentCaps = 0.80F;
 
     @Setting
-  @Comment("If true, stops message from sending. If false, simply changes the message to lowercase")
+    @Comment("If true, stops message from sending. If false, simply changes the message to lowercase")
     private boolean blockMessage = false;
 
     public boolean enabled() {
@@ -127,12 +127,11 @@ public class ModerationSettings {
 
   @ConfigSerializable
   public static class Filters {
-
     @Setting
     private boolean enabled = true;
 
     @Setting
-  @Comment("The keys (\"****\" for example) are what the text is replaced with.\n" +
+    @Comment("The keys (\"****\" for example) are what the text is replaced with.\n" +
       "The strings in the lists (\"lag\" etc) are what's replaced.\n" +
       "Set to filters: {} if you want to disable the filter feature.\n" +
       "Set the key to \"_\" for the replacement to be blank (remove the filtered pattern).")
@@ -143,7 +142,7 @@ public class ModerationSettings {
     };
 
     @Setting
-  @Comment("Anything in blocked-words will prevent the message from being sent at all.\n" +
+    @Comment("Anything in blocked-words will prevent the message from being sent at all.\n" +
       "Set to blocked-words: [] if you want to disable the blocked words feature.")
     private List<Pattern> blockedPatterns = Collections.singletonList(Pattern.compile("pineapple doesn't belong on pizza"));
 
@@ -158,7 +157,6 @@ public class ModerationSettings {
     public List<Pattern> blockedPatterns() {
       return this.blockedPatterns;
     }
-
   }
 
 }

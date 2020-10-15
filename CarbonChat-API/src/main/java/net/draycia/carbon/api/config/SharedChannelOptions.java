@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @ConfigSerializable
-public class SharedChannelOptions {
+public final class SharedChannelOptions {
 
   @Setting private String color = "#FFFFFF";
   @Setting private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults

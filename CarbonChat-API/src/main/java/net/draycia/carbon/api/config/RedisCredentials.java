@@ -6,7 +6,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
-public class RedisCredentials {
+public final class RedisCredentials {
 
   @Setting private @NonNull String host = "localhost";
   @Setting private @Nullable String password = "";

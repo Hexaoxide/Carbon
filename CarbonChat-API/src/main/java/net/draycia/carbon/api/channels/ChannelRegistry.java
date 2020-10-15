@@ -1,6 +1,6 @@
 package net.draycia.carbon.api.channels;
 
-import net.kyori.registry.DefaultedRegistry;
+import net.draycia.carbon.api.DefaultedKeyValueRegistry;
 import net.kyori.registry.Registry;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class ChannelRegistry implements Registry<String, ChatChannel>, DefaultedRegistry<String, ChatChannel> {
+public class ChannelRegistry implements Registry<String, ChatChannel>, DefaultedKeyValueRegistry<String, ChatChannel> {
 
   private @NonNull final Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
 
@@ -37,6 +37,12 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
 
   @Override
   public @Nullable String key(@NonNull final ChatChannel value) {
+    for (final Map.Entry<String, ChatChannel> entry : this.registry.entrySet()) {
+      if (entry.getValue().equals(value)) {
+        return entry.getKey();
+      }
+    }
+
     return null;
   }
 
@@ -50,17 +56,18 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
     return this.registry.values().iterator();
   }
 
-  public @MonotonicNonNull ChatChannel defaultChannel() {
-    return this.defaultChannel;
-  }
-
   @Override
   public @NonNull String defaultKey() {
     return this.defaultChannel.key();
   }
 
   @Override
+  public @NonNull ChatChannel defaultValue() {
+    return this.defaultChannel;
+  }
+
+  @Override
   public @NonNull ChatChannel getOrDefault(@NonNull final String key) {
-    return this.registry.getOrDefault(key, this.defaultChannel());
+    return this.registry.getOrDefault(key, this.defaultValue());
   }
 }

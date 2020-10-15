@@ -197,7 +197,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
 
   @Override
   public void clearSelectedChannel() {
-    this.selectedChannel(this.carbonChat.channelRegistry().defaultChannel());
+    this.selectedChannel(this.carbonChat.channelRegistry().defaultValue());
   }
 
   @Override

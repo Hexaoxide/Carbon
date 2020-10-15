@@ -60,6 +60,10 @@ public class AdventureManager implements MessageProcessor {
     return this.carbonChat.gsonSerializer().deserialize(input);
   }
 
+  public FormatType formatType() {
+    return this.formatType;
+  }
+
   @Override
   public @NonNull AudienceProvider audiences() {
     return this.provider;
