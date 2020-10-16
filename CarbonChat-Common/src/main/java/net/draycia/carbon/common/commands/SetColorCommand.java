@@ -32,7 +32,7 @@ public class SetColorCommand {
           commandManager.createDefaultCommandMeta())
           .senderType(PlayerUser.class) // player
           .permission("carbonchat.setcolor")
-          // TODO: colorArgument
+          // TODO: colorArgument (cloud 1.1.0-SNAPSHOT)
           //.argument(CommandUtils.colorArgument())
           .handler(context -> {
             final PlayerUser user = (PlayerUser) context.getSender();

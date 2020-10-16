@@ -31,6 +31,8 @@ public class ClearChatCommand {
         .handler(this::clearChat)
         .build()
     );
+
+    // TODO: /clearchat [player]
   }
 
   private void clearChat(@NonNull final CommandContext<CarbonUser> context) {

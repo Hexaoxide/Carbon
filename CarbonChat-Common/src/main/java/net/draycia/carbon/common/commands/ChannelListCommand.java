@@ -37,14 +37,17 @@ public class ChannelListCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.channellist")
-        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.channellist.other
-        .handler(context -> {
-          if (context.getOptional("user").isPresent()) {
-            this.channelListOther(context);
-          } else {
-            this.channelListSelf(context);
-          }
-        })
+        .handler(this::channelListSelf)
+        .build()
+    );
+
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .senderType(CarbonUser.class) // console & player
+        .permission("carbonchat.channellist.others")
+        .argument(PlayerUserArgument.requiredPlayerUserArgument()) // carbonchat.channellist.other
+        .handler(this::channelListOther)
         .build()
     );
   }

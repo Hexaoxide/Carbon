@@ -29,17 +29,19 @@ public class MsgToggleCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .senderType(CarbonUser.class) // player & console
+        .senderType(PlayerUser.class) // player
         .permission("carbonchat.msgtoggle")
-        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.msgtoggle.other
-        .handler(context -> {
-          if (context.getOptional("user").isPresent()) {
-            this.toggleOther(context);
-          } else if (context.getSender() instanceof PlayerUser) {
-            // TODO: better handling of this
-            this.toggleSelf(context);
-          }
-        })
+        .handler(this::toggleSelf)
+        .build()
+    );
+
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .senderType(CarbonUser.class) // console & player
+        .permission("carbonchat.msgtoggle.others")
+        .argument(PlayerUserArgument.requiredPlayerUserArgument()) // carbonchat.channellist.other
+        .handler(this::toggleOther)
         .build()
     );
   }

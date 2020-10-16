@@ -28,16 +28,19 @@ public class AliasedChannelCommand {
       commandManager.commandBuilder(this.commandName,
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
-        .permission("carbonchat.channel") // carbonchat.channel.message
-        .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
-        .handler(context -> {
-          if (context.getOptional("message").isPresent()) {
-            this.sendMessage(context);
-          } else {
-            this.channel(context);
-          }
-        })
-        .build() // TODO: use chain to register two executors
+        .permission("carbonchat.channel")
+        .handler(this::channel)
+        .build()
+    );
+
+    commandManager.command(
+      commandManager.commandBuilder(this.commandName,
+        commandManager.createDefaultCommandMeta())
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.channel.message")
+        .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().build())
+        .handler(this::sendMessage)
+        .build()
     );
   }
 

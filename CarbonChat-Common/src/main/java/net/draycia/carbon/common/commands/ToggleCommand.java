@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.commands;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -30,17 +31,21 @@ public class ToggleCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .senderType(CarbonUser.class) // player & console
+        .senderType(PlayerUser.class) // player
         .permission("carbonchat.toggle")
         .argument(ChannelArgument.requiredChannelArgument())
+        .handler(this::toggleSelf)
+        .build()
+    );
+
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .senderType(CarbonUser.class) // console & player
+        .permission("carbonchat.toggle.others")
+        .argument(ChannelArgument.requiredChannelArgument())
         .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.toggle.other
-        .handler(context -> {
-          if (context.getOptional("user").isPresent()) {
-            this.toggleOther(context);
-          } else if (context.getSender() instanceof PlayerUser) {
-            this.toggleSelf(context);
-          }
-        })
+        .handler(this::toggleOther)
         .build()
     );
   }

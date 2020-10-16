@@ -33,14 +33,18 @@ public class ChannelCommand {
         .senderType(PlayerUser.class) // player
         .permission("carbonchat.channel")
         .argument(ChannelArgument.requiredChannelArgument())
-        .argument(StringArgument.optional("message")) // carbonchat.channel.message
-        .handler(context -> {
-          if (context.getOptional("message").isPresent()) {
-            this.sendMessage(context);
-          } else {
-            this.channel(context);
-          }
-        })
+        .handler(this::channel)
+        .build()
+    );
+
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .senderType(PlayerUser.class) // player
+        .permission("carbonchat.channel.message")
+        .argument(ChannelArgument.requiredChannelArgument())
+        .argument(StringArgument.of("message")) // carbonchat.channel.message
+        .handler(this::sendMessage)
         .build()
     );
   }

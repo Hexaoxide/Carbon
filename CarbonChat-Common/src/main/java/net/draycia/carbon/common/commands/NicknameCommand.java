@@ -28,18 +28,21 @@ public class NicknameCommand {
     commandManager.command(
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
-        .senderType(CarbonUser.class) // player & console
+        .senderType(PlayerUser.class) // player
         .permission("carbonchat.nickname")
         .argument(StringArgument.of("nickname"))
-        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.nickname.other
-        .handler(context -> {
-          if (context.getOptional("user").isPresent()) {
-            this.nicknameOther(context);
-          } else if (context.getSender() instanceof PlayerUser) {
-            // TODO: better handling of this
-            this.nicknameSelf(context);
-          }
-        })
+        .handler(this::nicknameSelf)
+        .build()
+    );
+
+    commandManager.command(
+      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+        commandManager.createDefaultCommandMeta())
+        .senderType(CarbonUser.class) // console & player
+        .permission("carbonchat.nickname.others")
+        .argument(StringArgument.of("nickname"))
+        .argument(PlayerUserArgument.requiredPlayerUserArgument()) // carbonchat.channellist.other
+        .handler(this::nicknameOther)
         .build()
     );
   }
