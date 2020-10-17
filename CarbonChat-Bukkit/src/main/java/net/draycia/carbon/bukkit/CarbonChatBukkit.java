@@ -127,7 +127,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     // Setup Adventure
     final BukkitAudiences audiences = BukkitAudiences.create(this);
-    this.messageProcessor = new AdventureManager(audiences, FormatType.MINIMESSAGE); // TODO: get format type from config
+    this.messageProcessor = new AdventureManager(audiences, this.carbonSettings.getFormatType()); // TODO: get format type from config
 
     // Initialize managers
     this.channelManager = new ChannelManager(this);
