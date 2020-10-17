@@ -75,7 +75,7 @@ public class SudoChannelCommand {
     final ChatChannel channel = context.get("channel");
     final String message = context.get("message");
 
-    channel.sendComponentsAndLog(channel.parseMessage(user, message, false));
+    channel.sendComponentsAndLog(user.identity(), channel.parseMessage(user, message, false));
   }
 
 }

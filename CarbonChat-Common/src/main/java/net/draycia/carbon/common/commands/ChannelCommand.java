@@ -68,7 +68,7 @@ public class ChannelCommand {
     final ChatChannel channel = context.get("channel");
     final String message = context.get("message");
 
-    channel.sendComponentsAndLog(channel.parseMessage((PlayerUser) context.getSender(),
+    channel.sendComponentsAndLog(context.getSender().identity(), channel.parseMessage((PlayerUser) context.getSender(),
       message, false));
   }
 

@@ -196,30 +196,30 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public void sendComponents(@NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponents(@NonNull final Identity identity,
+                             @NonNull final Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       if (entry.getValue().equals(Component.empty())) {
         continue;
       }
 
-      // TODO: pass in Identity sender?
-      entry.getKey().sendMessage(Identity.nil(), entry.getValue());
+      entry.getKey().sendMessage(identity, entry.getValue());
     }
   }
 
   @Override
-  public void sendComponentsAndLog(@NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponentsAndLog(@NonNull final Identity identity,
+                                   @NonNull final Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       if (entry.getValue().equals(Component.empty())) {
         continue;
       }
 
-      // TODO: pass in Identifiable sender?
-      entry.getKey().sendMessage(Identity.nil(), entry.getValue());
+      entry.getKey().sendMessage(identity, entry.getValue());
 
       if (entry instanceof ConsoleUser) {
         this.carbonChat.messageProcessor().audiences().console()
-          .sendMessage(Identity.nil(), entry.getValue());
+          .sendMessage(identity, entry.getValue());
       }
     }
   }
@@ -308,7 +308,7 @@ public class CarbonChatChannel implements TextChannel {
   public void sendComponent(@NonNull final PlayerUser player, @NonNull final Component component) {
     for (final PlayerUser user : this.audiences()) {
       if (!user.ignoringUser(player)) {
-        user.sendMessage(Identity.identity(player.uuid()), component);
+        user.sendMessage(player.identity(), component);
       }
     }
   }

@@ -61,6 +61,7 @@ public class AliasedChannelCommand {
   private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
     context.<String>getOptional("message").ifPresent(message -> {
       this.chatChannel().sendComponentsAndLog(
+        context.getSender().identity(),
         this.chatChannel().parseMessage((PlayerUser) context.getSender(), message, false));
     });
   }

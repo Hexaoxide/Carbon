@@ -2,10 +2,11 @@ package net.draycia.carbon.api.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identified;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public interface CarbonUser extends Audience {
+public interface CarbonUser extends Audience, Identified {
 
   boolean hasPermission(@NonNull String permission);
 

@@ -86,7 +86,7 @@ public class BukkitChatListener implements Listener {
           continue;
         }
 
-        entry.getKey().sendMessage(Identity.identity(event.getPlayer().getUniqueId()), entry.getValue());
+        entry.getKey().sendMessage(user.identity(), entry.getValue());
 
         if (user.equals(entry.getKey())) {
           event.setFormat(PlainComponentSerializer.plain().serialize(entry.getValue())
@@ -95,7 +95,7 @@ public class BukkitChatListener implements Listener {
       }
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
-        selectedChannel.sendComponentsAndLog(
+        selectedChannel.sendComponentsAndLog(user.identity(),
           selectedChannel.parseMessage(user, event.getMessage(), false));
 
         //        if (this.carbonChat.getConfig().getBoolean("show-tips")) {

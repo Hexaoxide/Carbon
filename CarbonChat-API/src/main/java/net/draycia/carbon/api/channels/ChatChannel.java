@@ -3,6 +3,7 @@ package net.draycia.carbon.api.channels;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -36,9 +37,11 @@ public interface ChatChannel extends Audience {
 
   boolean canPlayerSee(@NonNull PlayerUser target, boolean checkSpying);
 
-  void sendComponents(@NonNull final Map<? extends CarbonUser, Component> components);
+  void sendComponents(@NonNull final Identity identity,
+                      @NonNull final Map<? extends CarbonUser, Component> components);
 
-  void sendComponentsAndLog(@NonNull final Map<? extends CarbonUser, Component> components);
+  void sendComponentsAndLog(@NonNull final Identity identity,
+                            @NonNull final Map<? extends CarbonUser, Component> components);
 
   @NonNull String name();
 

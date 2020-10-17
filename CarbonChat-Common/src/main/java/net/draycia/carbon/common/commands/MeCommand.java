@@ -50,14 +50,14 @@ public class MeCommand {
       "displayname", user.displayName(), "message", message);
 
     if (user.shadowMuted()) {
-      user.sendMessage(Identity.identity(user.uuid()), component);
+      user.sendMessage(user.identity(), component);
     } else {
       for (final PlayerUser onlineUser : this.carbonChat.userService().onlineUsers()) {
         if (onlineUser.ignoringUser(user)) {
           continue;
         }
 
-        onlineUser.sendMessage(Identity.identity(user.uuid()), component);
+        onlineUser.sendMessage(user.identity(), component);
       }
     }
   }

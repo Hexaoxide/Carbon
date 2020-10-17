@@ -51,12 +51,17 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   private transient @Nullable ChatChannel selectedChannel = null;
 
   public BukkitPlayerUser() {
-    this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat-Bukkit");
+    this.carbonChat = (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
   }
 
   public BukkitPlayerUser(@NonNull final UUID uuid) {
     this();
     this.uuid = uuid;
+  }
+
+  @Override
+  public @NonNull Identity identity() {
+    return Identity.identity(this.uuid());
   }
 
   @Override
@@ -382,13 +387,13 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
     if (offlineTarget.isOnline()) {
       if (offlineSender.isOnline()) {
-        sender.sendMessage(Identity.identity(sender.uuid()), toPlayerComponent);
+        sender.sendMessage(sender.identity(), toPlayerComponent);
 
         if (sender.shadowMuted()) {
           return;
         }
 
-        this.sendMessage(Identity.identity(sender.uuid()), fromPlayerComponent);
+        this.sendMessage(sender.identity(), fromPlayerComponent);
 
         sender.replyTarget(this);
         this.replyTarget(sender);
@@ -426,7 +431,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
           return;
         }
 
-        sender.sendMessage(Identity.identity(sender.uuid()), toPlayerComponent);
+        sender.sendMessage(sender.identity(), toPlayerComponent);
 
         this.carbonChat.messageManager().sendMessage("whisper-component", sender.uuid(), byteArray -> {
           byteArray.writeLong(this.uuid().getMostSignificantBits());
@@ -447,7 +452,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
         continue;
       }
 
-      user.sendMessage(Identity.identity(sender.uuid()), this.carbonChat.messageProcessor()
+      user.sendMessage(sender.identity(), this.carbonChat.messageProcessor()
         .processMessage(this.carbonChat.translations().spyWhispers(), "message", message,
           "targetname", targetOfflineName, "sendername", senderOfflineName, "target", targetName,
           "sender", senderName));
