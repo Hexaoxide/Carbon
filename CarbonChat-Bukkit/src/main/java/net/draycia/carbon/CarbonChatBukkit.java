@@ -216,7 +216,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void setupCommands() {
     try {
-      final PaperCommandManager<CarbonUser> manager = new PaperCommandManager<>(this,
+      this.commandManager = new PaperCommandManager<>(this,
         CommandExecutionCoordinator
           .simpleCoordinator(), sender -> {
         if (sender instanceof Player) {
@@ -232,7 +232,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         }
       });
 
-      CommandRegistrar.registerCommands(manager);
+      CommandRegistrar.registerCommands(this.commandManager);
     } catch (final Exception e) {
       e.printStackTrace();
     }
