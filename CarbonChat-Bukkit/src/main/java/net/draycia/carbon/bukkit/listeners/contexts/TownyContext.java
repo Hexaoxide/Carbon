@@ -1,4 +1,4 @@
-package net.draycia.carbon.listeners.contexts;
+package net.draycia.carbon.bukkit.listeners.contexts;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;

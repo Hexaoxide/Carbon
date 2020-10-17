@@ -1,10 +1,10 @@
-package net.draycia.carbon.messaging;
+package net.draycia.carbon.bukkit.messaging;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.PlayerUser;
 import org.bukkit.entity.Player;

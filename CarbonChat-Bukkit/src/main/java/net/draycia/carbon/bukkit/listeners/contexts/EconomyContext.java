@@ -1,6 +1,6 @@
-package net.draycia.carbon.listeners.contexts;
+package net.draycia.carbon.bukkit.listeners.contexts;
 
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;

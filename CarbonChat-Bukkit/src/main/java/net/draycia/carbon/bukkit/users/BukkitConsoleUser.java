@@ -1,4 +1,4 @@
-package net.draycia.carbon.users;
+package net.draycia.carbon.bukkit.users;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;

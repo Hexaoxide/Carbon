@@ -1,13 +1,13 @@
-package net.draycia.carbon.users;
+package net.draycia.carbon.bukkit.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.channels.CarbonWhisperChannel;
-import net.draycia.carbon.util.FunctionalityConstants;
+import net.draycia.carbon.bukkit.util.FunctionalityConstants;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.PrivateMessageEvent;

@@ -1,4 +1,4 @@
-package net.draycia.carbon.util;
+package net.draycia.carbon.bukkit.util;
 
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;

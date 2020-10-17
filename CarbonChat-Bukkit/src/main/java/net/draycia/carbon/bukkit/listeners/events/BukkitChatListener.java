@@ -1,10 +1,10 @@
-package net.draycia.carbon.listeners.events;
+package net.draycia.carbon.bukkit.listeners.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.UserEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;

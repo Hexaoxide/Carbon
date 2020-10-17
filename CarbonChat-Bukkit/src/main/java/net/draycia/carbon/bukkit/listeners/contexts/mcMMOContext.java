@@ -1,4 +1,4 @@
-package net.draycia.carbon.listeners.contexts;
+package net.draycia.carbon.bukkit.listeners.contexts;
 
 import com.gmail.nossr50.api.PartyAPI;
 import com.gmail.nossr50.events.party.McMMOPartyChangeEvent;

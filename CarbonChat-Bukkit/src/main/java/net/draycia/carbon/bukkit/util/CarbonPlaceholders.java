@@ -1,8 +1,8 @@
-package net.draycia.carbon.util;
+package net.draycia.carbon.bukkit.util;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.draycia.carbon.CarbonChatBukkit;
+import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.users.PlayerUser;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;

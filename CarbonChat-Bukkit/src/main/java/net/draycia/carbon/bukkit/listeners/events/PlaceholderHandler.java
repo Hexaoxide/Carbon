@@ -1,4 +1,4 @@
-package net.draycia.carbon.listeners.events;
+package net.draycia.carbon.bukkit.listeners.events;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.api.events.misc.CarbonEvents;

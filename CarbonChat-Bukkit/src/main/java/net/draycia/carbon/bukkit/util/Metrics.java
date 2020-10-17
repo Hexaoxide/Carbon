@@ -1,4 +1,4 @@
-package net.draycia.carbon.util;
+package net.draycia.carbon.bukkit.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
