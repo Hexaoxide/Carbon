@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.config;
 
+import net.draycia.carbon.api.adventure.FormatType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -59,6 +60,10 @@ public final class CarbonSettings {
   @Setting
   @Comment("Options: NONE, REDIS, BUNGEECORD")
   private @NonNull MessagingType messagingType = MessagingType.NONE;
+
+  @Setting
+  @Comment("Options: MOJANG, MINIMESSAGE_MARKDOWN, MINIMESSAGE, MINEDOWN")
+  private @NonNull FormatType formatType = FormatType.MOJANG;
 
   @Setting
   @Comment(" Options:\n" +
@@ -149,4 +154,7 @@ public final class CarbonSettings {
     return this.whisperOptions;
   }
 
+  public @NonNull FormatType getFormatType() {
+    return formatType;
+  }
 }
