@@ -29,13 +29,15 @@ public final class ChannelOptions {
   private String color;
   
   @Setting
-  @Comment("The contexts for this channel, ")
-  private Map<String, Context> contexts = new HashMap<>(); // TODO: set defaults
+  @Comment("The contexts for this channel, which can modify the behaviour of channels and how/when players can use them.")
+  private Map<String, Context> contexts = new HashMap<>();
   
   @Setting
   @Comment("The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
-  private Map<String, String> formats = new HashMap<>(); // TODO: set defaults
-  
+  private Map<String, String> formats = new HashMap<String, String>() {{
+    put("default", "<color><<displayname><reset><color>> <message>");
+  }};
+
   @Setting
   @Comment("The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
   private String defaultFormatName;

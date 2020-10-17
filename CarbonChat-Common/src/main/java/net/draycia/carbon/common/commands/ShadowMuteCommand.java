@@ -49,7 +49,6 @@ public class ShadowMuteCommand {
 
       user.sendMessage(Identity.nil(), message);
     } else {
-      // TODO: schedule task because LuckPerms doesn't like sync offline permission checks
       final String format;
 
       if (target.hasPermission("carbonchat.mute.exempt")) {

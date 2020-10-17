@@ -62,7 +62,6 @@ public class CarbonWhisperChannel implements WhisperChannel {
   public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user,
                                                           @NonNull final Collection<@NonNull PlayerUser> recipients,
                                                           @NonNull final String message, final boolean fromRemote) {
-    // TODO: extract to method, this is just the same thing but twice
     final Map<PlayerUser, Component> result = new HashMap<>();
 
     // Formats

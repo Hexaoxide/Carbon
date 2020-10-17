@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.commands;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.StaticArgument;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -25,13 +26,14 @@ public class SetColorCommand {
       return;
     }
 
-    // TODO: Test and fix
     for (final ChatChannel channel : this.carbonChat.channelRegistry()) {
       commandManager.command(
         commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
           commandManager.createDefaultCommandMeta())
           .senderType(PlayerUser.class) // player
           .permission("carbonchat.setcolor")
+          .argument(StaticArgument.of(channel.key()))
+          // TODO: register command for each channel with the channel key as a literal, with permission
           // TODO: colorArgument (cloud 1.1.0-SNAPSHOT)
           //.argument(CommandUtils.colorArgument())
           .handler(context -> {

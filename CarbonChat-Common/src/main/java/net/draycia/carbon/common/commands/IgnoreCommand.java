@@ -46,7 +46,6 @@ public class IgnoreCommand {
       sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
         this.carbonChat.translations().notIgnoringUser(), "player", targetUser.displayName()));
     } else {
-      // TODO: schedule task because sync permission checks
       final String format;
 
       if (sender.hasPermission("carbonchat.ignore.exempt")) {
