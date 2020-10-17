@@ -27,6 +27,8 @@ public interface PlayerUser extends CarbonUser {
 
   void displayName(@Nullable String displayName);
 
+  @NonNull String parsePlaceholders(@NonNull String input);
+
   @NonNull UserChannelSettings channelSettings(@NonNull ChatChannel channel);
 
   @NonNull Map<@NonNull String, @NonNull ? extends UserChannelSettings> channelSettings();

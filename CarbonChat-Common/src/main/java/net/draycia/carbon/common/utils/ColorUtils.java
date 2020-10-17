@@ -3,6 +3,7 @@ package net.draycia.carbon.common.utils;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.adventure.AdventureManager;
 import net.draycia.carbon.api.adventure.FormatType;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -26,20 +27,13 @@ public final class ColorUtils {
   }
 
   public @Nullable static TextColor parseColor(@Nullable final CarbonUser user, @Nullable String input) {
+    if (user instanceof PlayerUser) {
+      input = ((PlayerUser) user).parsePlaceholders(input);
+    }
+
     if (input == null || input.isEmpty()) {
       return NamedTextColor.WHITE;
     }
-
-    // TODO: find out way to do this
-    // TODO: add parsePlaceholders() to PlayerUser class
-
-    //    if (user != null) {
-    //      final Player player = Bukkit.getPlayer(user.uuid());
-    //
-    //      if (player != null) {
-    //        input = PlaceholderAPI.setPlaceholders(player, input);
-    //      }
-    //    }
 
     for (final NamedTextColor namedColor : NamedTextColor.NAMES.values()) {
       if (namedColor.toString().equalsIgnoreCase(input)) {
@@ -73,7 +67,7 @@ public final class ColorUtils {
     final MessageProcessor messageProcessor = CarbonChatProvider.carbonChat().messageProcessor();
 
     if (messageProcessor instanceof AdventureManager) {
-      if (((AdventureManager) messageProcessor).formatType() == FormatType.MINEDOWN) {
+      if (messageProcessor.formatType() == FormatType.MINEDOWN) {
         hexReplacement = "&#$1$2$3$4$5$6&";
         legacyCapable = true;
       }

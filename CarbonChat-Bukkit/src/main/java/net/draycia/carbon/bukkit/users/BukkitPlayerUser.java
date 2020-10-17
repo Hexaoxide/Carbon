@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit.users;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
@@ -67,6 +68,17 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   @Override
   public @NonNull Audience audience() {
     return this.carbonChat.messageProcessor().audiences().player(this.uuid());
+  }
+
+  @Override
+  public @NonNull String parsePlaceholders(@NonNull final String input) {
+    final Player player = Bukkit.getPlayer(this.uuid());
+
+    if (player == null) {
+      return input;
+    }
+
+    return PlaceholderAPI.setPlaceholders(player, input);
   }
 
   @Override

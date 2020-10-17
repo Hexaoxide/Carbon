@@ -15,7 +15,7 @@ dependencies {
   compile 'net.kyori:adventure-text-serializer-legacy:4.1.1'
   compile 'net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT'
 
-  compile 'de.themoep:minedown-adventure:1.6.1-SNAPSHOT'
+  compile 'de.themoep:minedown-adventure:1.6.2-SNAPSHOT'
 
   compile 'net.kyori:event-api:3.0.0'
   compile 'net.kyori:registry:1.0.0-SNAPSHOT'

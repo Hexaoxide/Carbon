@@ -6,7 +6,6 @@ import net.draycia.carbon.api.events.UserEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.Bukkit;
