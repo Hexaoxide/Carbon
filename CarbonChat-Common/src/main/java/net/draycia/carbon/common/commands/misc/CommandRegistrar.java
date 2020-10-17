@@ -1,7 +1,11 @@
 package net.draycia.carbon.common.commands.misc;
 
 import cloud.commandframework.CommandManager;
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.common.commands.AliasedChannelCommand;
 import net.draycia.carbon.common.commands.ChannelCommand;
 import net.draycia.carbon.common.commands.ChannelListCommand;
 import net.draycia.carbon.common.commands.ChatReloadCommand;
@@ -41,6 +45,12 @@ public final class CommandRegistrar {
     new SpyChannelCommand(commandManager);
     new SudoChannelCommand(commandManager);
     new ToggleCommand(commandManager);
+
+    for (final ChatChannel channel : CarbonChatProvider.carbonChat().channelRegistry()) {
+      if (channel instanceof TextChannel) {
+        new AliasedChannelCommand(commandManager, (TextChannel) channel);
+      }
+    }
   }
 
 }

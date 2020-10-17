@@ -7,12 +7,12 @@ description 'CarbonChat-API'
 dependencies {
   compile 'org.checkerframework:checker-qual:3.6.1'
 
-  compile 'net.kyori:adventure-api:4.0.0'
-  compile 'net.kyori:adventure-nbt:4.0.0-SNAPSHOT'
+  compile 'net.kyori:adventure-api:4.1.1'
+  compile 'net.kyori:adventure-nbt:4.1.1'
   compile 'net.kyori:adventure-platform-api:4.0.0-SNAPSHOT'
-  compile 'net.kyori:adventure-text-serializer-plain:4.0.0-SNAPSHOT'
-  compile 'net.kyori:adventure-text-serializer-gson:4.0.0-SNAPSHOT'
-  compile 'net.kyori:adventure-text-serializer-legacy:4.0.0-SNAPSHOT'
+  compile 'net.kyori:adventure-text-serializer-plain:4.1.1'
+  compile 'net.kyori:adventure-text-serializer-gson:4.1.1'
+  compile 'net.kyori:adventure-text-serializer-legacy:4.1.1'
   compile 'net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT'
 
   compile 'de.themoep:minedown-adventure:1.6.1-SNAPSHOT'

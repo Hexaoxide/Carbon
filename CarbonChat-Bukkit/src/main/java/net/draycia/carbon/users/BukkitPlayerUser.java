@@ -29,14 +29,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
+public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   private @NonNull final transient CarbonChatBukkit carbonChat;
   private @NonNull final Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
@@ -61,8 +60,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience {
   }
 
   @Override
-  public @NonNull Iterable<@NonNull ? extends Audience> audiences() {
-    return Collections.singleton(this.carbonChat.messageProcessor().audiences().player(this.uuid()));
+  public @NonNull Audience audience() {
+    return this.carbonChat.messageProcessor().audiences().player(this.uuid());
   }
 
   @Override

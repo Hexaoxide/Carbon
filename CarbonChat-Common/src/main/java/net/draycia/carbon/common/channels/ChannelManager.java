@@ -7,7 +7,6 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelRegisterEvent;
-import net.draycia.carbon.common.commands.AliasedChannelCommand;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -101,7 +100,6 @@ public class ChannelManager {
 
         if (channel instanceof TextChannel) {
           prefix = ((TextChannel) channel).messagePrefix();
-          new AliasedChannelCommand(this.carbonChat.commandManager(), (TextChannel) channel);
         }
 
         if (prefix != null && !prefix.trim().isEmpty()) {

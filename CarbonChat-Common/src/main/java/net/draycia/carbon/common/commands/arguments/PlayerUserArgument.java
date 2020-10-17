@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> {
 
   private PlayerUserArgument(final boolean required) {
-    super(required, "channel", PlayerUserArgument::parser,
+    super(required, "user", PlayerUserArgument::parser,
       "",
       PlayerUser.class, PlayerUserArgument::suggestions);
   }
