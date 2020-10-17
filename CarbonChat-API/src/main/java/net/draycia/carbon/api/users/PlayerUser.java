@@ -107,4 +107,14 @@ public interface PlayerUser extends CarbonUser {
 
   void sendMessage(@NonNull final PlayerUser sender, @NonNull String message);
 
+  @Nullable ChatChannel selectedChannel();
+
+  default void selectedChannel(@NonNull final ChatChannel channel) {
+    this.selectedChannel(channel, false);
+  }
+
+  void selectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
+
+  void clearSelectedChannel();
+
 }

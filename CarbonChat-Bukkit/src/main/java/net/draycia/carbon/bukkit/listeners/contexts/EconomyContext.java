@@ -50,7 +50,7 @@ public class EconomyContext {
         event.cancelled(true);
 
         event.user().sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-          .processMessage(event.channel().cannotUseMessage()));
+          .processMessage(this.carbonChat.translations().contextMessages().vaultBalanceNotEnough()));
       }
     });
 
@@ -84,7 +84,7 @@ public class EconomyContext {
         event.cancelled(true);
 
         event.user().sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-          .processMessage(event.channel().cannotUseMessage()));
+          .processMessage(this.carbonChat.translations().contextMessages().vaultCostNotEnough()));
 
         return;
       }

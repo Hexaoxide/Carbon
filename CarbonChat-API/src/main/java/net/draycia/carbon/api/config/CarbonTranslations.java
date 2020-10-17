@@ -28,6 +28,7 @@ public final class CarbonTranslations {
   }
 
   private ExceptionMessages exceptionMessages = new ExceptionMessages();
+  private ContextMessages contextMessages = new ContextMessages();
 
   @Setting private String reloaded = "<yellow>Chat config has been reloaded!";
   @Setting private String otherPlayerOffline = "<red>That player is offline!";
@@ -67,6 +68,10 @@ public final class CarbonTranslations {
 
   public ExceptionMessages exceptionMessages() {
     return this.exceptionMessages;
+  }
+
+  public ContextMessages contextMessages() {
+    return this.contextMessages;
   }
 
   public String reloaded() {

@@ -30,9 +30,6 @@ public class BukkitChatListener implements Listener {
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
-    // TODO: Move most of this to Common handling
-    // TODO: ChatMessageEvent that's called at the start of this
-    // TODO: Obtain a component (for console usage) from that event, or another
     final PlayerUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     ChatChannel channel = user.selectedChannel();
 

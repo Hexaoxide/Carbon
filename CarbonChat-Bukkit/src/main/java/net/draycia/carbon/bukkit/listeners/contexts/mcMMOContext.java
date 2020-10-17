@@ -32,7 +32,6 @@ public final class mcMMOContext implements Listener {
       final Context context = event.channel().context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
-        // TODO: failureMessage
         event.cancelled(!this.isInSameParty(event.sender(), event.recipient()));
       }
     });
@@ -47,7 +46,7 @@ public final class mcMMOContext implements Listener {
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
         if (!this.isInParty(event.user())) {
-          //event.failureMessage(carbonChat.carbonSettings().getString("contexts.mcMMO.cancellation-message"));
+          event.failureMessage(this.carbonChat.translations().contextMessages().mcmmoPartyNotInParty());
           event.cancelled(true);
         }
       }
@@ -57,6 +56,9 @@ public final class mcMMOContext implements Listener {
       final Context context = event.channel().context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
+        event.user().sendMessage(this.carbonChat.messageProcessor().processMessage(
+          this.carbonChat.translations().contextMessages().mcmmoPartyNotInParty()));
+
         event.cancelled(!this.isInParty(event.user()));
       }
     });

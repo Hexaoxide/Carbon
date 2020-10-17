@@ -48,18 +48,20 @@ public final class TownyContext implements Listener {
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
         if (!this.isInTown(event.user())) {
-          //event.failureMessage(carbonChat.getConfig().getString("contexts.Towny.cancellation-message"));
+          event.failureMessage(this.carbonChat.translations().contextMessages().townyTownNotInTown());
           event.cancelled(true);
         }
       }
     });
 
     CarbonEvents.register(MessageContextEvent.class, PostOrders.NORMAL, false, event -> {
-      // TODO: event.setFailureMessage
       final Context context = event.channel().context(KEY);
 
       if (context != null && context.isBoolean() && context.asBoolean()) {
         if (!this.isInTown(event.user())) {
+          event.user().sendMessage(this.carbonChat.messageProcessor().processMessage(
+            this.carbonChat.translations().contextMessages().townyTownNotInTown()));
+
           event.cancelled(!this.isInTown(event.user()));
         }
       }
@@ -69,7 +71,7 @@ public final class TownyContext implements Listener {
   @EventHandler
   public void onResidentRemove(final TownRemoveResidentEvent event) {
     final String name = event.getResident().getName();
-    final CarbonUser user = this.carbonChat.userService().wrap(Bukkit.getPlayer(name).getUniqueId());
+    final PlayerUser user = this.carbonChat.userService().wrap(Bukkit.getPlayer(name).getUniqueId());
     final ChatChannel channel = user.selectedChannel();
 
     if (!(channel instanceof TextChannel)) {

@@ -1,6 +1,5 @@
 package net.draycia.carbon.bukkit.users;
 
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ConsoleUser;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -10,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single {
 
@@ -40,22 +38,6 @@ public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single
   @Override
   public @NonNull String name() {
     return "Console";
-  }
-
-  @Override
-  public @Nullable ChatChannel selectedChannel() {
-    // TODO: stub
-    return null;
-  }
-
-  @Override
-  public void selectedChannel(@NonNull final ChatChannel channel, final boolean fromRemote) {
-    // TODO: stub
-  }
-
-  @Override
-  public void clearSelectedChannel() {
-    // TODO: stub
   }
 
 }
