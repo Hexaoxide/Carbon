@@ -21,8 +21,8 @@ public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> 
       PlayerUser.class, PlayerUserArgument::suggestions);
   }
 
-  private static <C> ArgumentParseResult<PlayerUser> parser(final @NonNull CommandContext<C> commandContext,
-                                                            final @NonNull Queue<String> inputs) {
+  private static <C> ArgumentParseResult<PlayerUser> parser(@NonNull final CommandContext<C> commandContext,
+                                                            @NonNull final Queue<String> inputs) {
     final String input = inputs.poll();
 
     final String playerNotFound = CarbonChatProvider.carbonChat().translations().exceptionMessages()
@@ -47,8 +47,8 @@ public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> 
     return ArgumentParseResult.success(user);
   }
 
-  private static <C> List<String> suggestions(final @NonNull CommandContext<C> commandContext,
-                                              final @NonNull String input) {
+  private static <C> List<String> suggestions(@NonNull final CommandContext<C> commandContext,
+                                              @NonNull final String input) {
     return StreamSupport
       .stream(CarbonChatProvider.carbonChat().userService().onlineUsers().spliterator(), false)
       .map(PlayerUser::name)

@@ -56,10 +56,10 @@ public final class ColorUtils {
     return TextColor.fromCSSHexString(input);
   }
 
-  private static final @NonNull Pattern spigotLegacyRGB =
+  private static @NonNull final Pattern spigotLegacyRGB =
     Pattern.compile("[§&]x[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])");
 
-  private static final @NonNull Pattern pluginRGB =
+  private static @NonNull final Pattern pluginRGB =
     Pattern.compile("[§&]#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])");
 
   @NonNull

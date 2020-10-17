@@ -17,10 +17,10 @@ import java.util.Collections;
 
 public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience {
 
-  private final @NonNull CarbonChat carbonChat;
-  private final @NonNull Iterable<Audience> audience;
+  private @NonNull final CarbonChat carbonChat;
+  private @NonNull final Iterable<Audience> audience;
 
-  public BukkitConsoleUser(final @NonNull ConsoleCommandSender sender) {
+  public BukkitConsoleUser(@NonNull final ConsoleCommandSender sender) {
     final Plugin plugin = Bukkit.getPluginManager().getPlugin("CarbonChat-Bukkit");
 
     this.carbonChat = CarbonChatProvider.carbonChat();
