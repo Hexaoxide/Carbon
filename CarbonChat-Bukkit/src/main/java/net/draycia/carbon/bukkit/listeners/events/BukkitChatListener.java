@@ -4,6 +4,8 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.UserEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.ConsoleUser;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.text.Component;
@@ -74,19 +76,19 @@ public class BukkitChatListener implements Listener {
     event.getRecipients().clear();
 
     if (event.isAsynchronous()) {
-      final Map<PlayerUser, Component> messages =
+      final Map<CarbonUser, Component> messages =
         selectedChannel.parseMessage(user, event.getMessage(), false);
 
-      for (final Map.Entry<PlayerUser, Component> entry : messages.entrySet()) {
+      for (final Map.Entry<CarbonUser, Component> entry : messages.entrySet()) {
         if (entry.getValue().equals(Component.empty())) {
           continue;
         }
 
-        entry.getKey().sendMessage(user.identity(), entry.getValue());
-
-        if (user.equals(entry.getKey())) {
+        if (user instanceof ConsoleUser) {
           event.setFormat(PlainComponentSerializer.plain().serialize(entry.getValue())
             .replaceAll("(?:[^%]|\\A)%(?:[^%]|\\z)", "%%"));
+        } else {
+          entry.getKey().sendMessage(user.identity(), entry.getValue());
         }
       }
     } else {

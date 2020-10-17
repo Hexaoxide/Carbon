@@ -11,7 +11,6 @@ import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.ReceiverContextEvent;
-import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.Context;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.PostOrders;

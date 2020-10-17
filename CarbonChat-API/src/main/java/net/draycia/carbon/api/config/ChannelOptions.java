@@ -35,8 +35,8 @@ public final class ChannelOptions {
   @Setting
   @Comment("The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
   private Map<String, String> formats = new HashMap<String, String>() {{
-    put("default", "<color><<displayname><reset><color>> <message>");
-  }};
+      put("default", "<color><<displayname><reset><color>> <message>");
+    }};
 
   @Setting
   @Comment("The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")

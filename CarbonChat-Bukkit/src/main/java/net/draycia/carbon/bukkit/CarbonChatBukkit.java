@@ -164,13 +164,16 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     if (storageType == StorageType.MYSQL) {
       this.logger().info("Enabling MySQL storage!");
       final SQLCredentials credentials = this.carbonSettings().sqlCredentials();
-      this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitPlayerUser::new, nameResolver);
+      this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitPlayerUser::new,
+        nameResolver, BukkitConsoleUser::new);
     } else if (storageType == StorageType.JSON) {
       this.logger().info("Enabling JSON storage!");
-      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new, nameResolver);
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new,
+        nameResolver, BukkitConsoleUser::new);
     } else {
       this.logger().error("Invalid storage type selected! Falling back to JSON.");
-      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new, nameResolver);
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new,
+        nameResolver, BukkitConsoleUser::new);
     }
 
     // Setup listeners

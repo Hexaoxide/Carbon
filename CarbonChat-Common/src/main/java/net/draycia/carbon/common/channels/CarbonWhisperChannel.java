@@ -53,16 +53,16 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message,
+  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message,
                                                           final boolean fromRemote) {
     return this.parseMessage(user, Collections.singleton(this.audience()), message, fromRemote);
   }
 
   @Override
-  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user,
+  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user,
                                                           @NonNull final Collection<@NonNull PlayerUser> recipients,
                                                           @NonNull final String message, final boolean fromRemote) {
-    final Map<PlayerUser, Component> result = new HashMap<>();
+    final Map<CarbonUser, Component> result = new HashMap<>();
 
     // Formats
     final String senderFormat = this.senderFormat();
@@ -148,11 +148,14 @@ public class CarbonWhisperChannel implements WhisperChannel {
       "phase", Long.toString(System.currentTimeMillis() % 25),
       "message", senderFormatEvent.message());
 
-    // TODO: add ConsoleUser to users map
     final ChatComponentEvent consoleEvent = new ChatComponentEvent(this.sender, null, this, consoleFormat,
       consoleFormatEvent.message());
 
     CarbonEvents.post(consoleEvent);
+
+    if (!consoleEvent.cancelled()) {
+      result.put(this.carbonChat.userService().consoleUser(), consoleEvent.component());
+    }
 
     this.sender.replyTarget(this.audience);
     this.audience.replyTarget(this.sender);

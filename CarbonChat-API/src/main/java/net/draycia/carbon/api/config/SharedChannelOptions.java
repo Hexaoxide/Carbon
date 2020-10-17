@@ -17,9 +17,9 @@ public final class SharedChannelOptions {
   @Setting private String color = "#FFFFFF";
   @Setting private Map<String, Context> contexts = new HashMap<>();
   @Setting private Map<String, String> formats = new HashMap<String, String>() {{
-    put("default", "<color><<displayname><reset><color>> <message>");
-    put("staff", "<#00CED1>[Staff] <color><<displayname><reset><color>> <message>");
-  }};
+      put("default", "<color><<displayname><reset><color>> <message>");
+      put("staff", "<#00CED1>[Staff] <color><<displayname><reset><color>> <message>");
+    }};
   @Setting private String defaultFormatName = "default";
   @Setting private boolean ignorable = true;
   @Setting private boolean crossServer = true;

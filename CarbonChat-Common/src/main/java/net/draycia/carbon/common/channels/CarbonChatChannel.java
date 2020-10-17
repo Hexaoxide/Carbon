@@ -99,7 +99,7 @@ public class CarbonChatChannel implements TextChannel {
   //  }
 
   @Override
-  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final Collection<@NonNull PlayerUser> recipients, @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final Collection<@NonNull PlayerUser> recipients, @NonNull final String message, final boolean fromRemote) {
     //this.updateUserNickname(user);
 
     final MessageContextEvent event = new MessageContextEvent(this, user);
@@ -132,7 +132,7 @@ public class CarbonChatChannel implements TextChannel {
       displayName = user.displayName();
     }
 
-    final Map<PlayerUser, Component> users = new HashMap<>();
+    final Map<CarbonUser, Component> users = new HashMap<>();
 
     // Iterate through players who should receive messages in this channel
     for (final PlayerUser target : recipients) {
@@ -182,11 +182,14 @@ public class CarbonChatChannel implements TextChannel {
       "phase", Long.toString(System.currentTimeMillis() % 25),
       "message", consoleFormatEvent.message());
 
-    // TODO: add ConsoleUser to users map. Requires "users" to be CarbonUser and not PlayerUser.
     final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleFormat,
       consoleFormatEvent.message());
 
     CarbonEvents.post(consoleEvent);
+
+    if (!consoleEvent.cancelled()) {
+      users.put(this.carbonChat.userService().consoleUser(), consoleEvent.component());
+    }
 
     if (user.online() && !fromRemote && this.crossServer()) {
       this.sendMessageToBungee(user.uuid(), consoleEvent.component());
@@ -225,7 +228,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @NonNull Map<PlayerUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message, final boolean fromRemote) {
     return this.parseMessage(user, this.audiences(), message, fromRemote);
   }
 

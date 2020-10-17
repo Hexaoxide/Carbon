@@ -25,10 +25,10 @@ public interface ChatChannel extends Audience {
   @Nullable TextColor channelColor(@NonNull CarbonUser user);
 
   @NonNull
-  Map<PlayerUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull String message, boolean fromRemote);
+  Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull String message, boolean fromRemote);
 
   @NonNull
-  Map<PlayerUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull Collection<@NonNull PlayerUser> recipients,
+  Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull Collection<@NonNull PlayerUser> recipients,
                                           @NonNull String message, boolean fromRemote);
 
   boolean canPlayerUse(@NonNull PlayerUser user);

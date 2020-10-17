@@ -10,6 +10,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.ConsoleUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserService;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -27,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class JSONUserService<T extends PlayerUser> implements UserService<T> {
+public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implements UserService<T> {
 
   private @NonNull final CarbonChat carbonChat;
   private @NonNull final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -35,6 +36,7 @@ public class JSONUserService<T extends PlayerUser> implements UserService<T> {
   private @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier;
   private @NonNull final Function<UUID, T> userFactory;
   private @NonNull final Function<String, UUID> nameResolver;
+  private @NonNull final Supplier<C> consoleFactory;
 
   private @NonNull final LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
@@ -44,12 +46,14 @@ public class JSONUserService<T extends PlayerUser> implements UserService<T> {
                          @NonNull final CarbonChat carbonChat,
                          @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier,
                          @NonNull final Function<UUID, T> userFactory,
-                         @NonNull final Function<String, UUID> nameResolver) {
+                         @NonNull final Function<String, UUID> nameResolver,
+                         @NonNull final Supplier<C> consoleFactory) {
     this.userType = userType;
     this.carbonChat = carbonChat;
     this.supplier = supplier;
     this.userFactory = userFactory;
     this.nameResolver = nameResolver;
+    this.consoleFactory = consoleFactory;
 
     final TimerTask timerTask = new TimerTask() {
       @Override
@@ -80,6 +84,11 @@ public class JSONUserService<T extends PlayerUser> implements UserService<T> {
       exception.printStackTrace();
       return null;
     }
+  }
+
+  @Override
+  public @Nullable C consoleUser() {
+    return this.consoleFactory.get();
   }
 
   @Override

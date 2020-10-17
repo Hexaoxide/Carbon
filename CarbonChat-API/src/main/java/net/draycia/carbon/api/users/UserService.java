@@ -13,6 +13,9 @@ public interface UserService<T extends PlayerUser> {
   @Nullable
   T wrap(UUID uuid);
 
+  @Nullable // Maybe NonNull?
+  <C extends ConsoleUser> C consoleUser();
+
   @Nullable
   T wrapIfLoaded(@NonNull UUID uuid);
 

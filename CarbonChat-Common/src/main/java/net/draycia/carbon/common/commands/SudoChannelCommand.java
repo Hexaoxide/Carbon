@@ -53,7 +53,7 @@ public class SudoChannelCommand {
 
   private void otherChannel(@NonNull final CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
-    final CarbonUser user = context.get("user");
+    final PlayerUser user = context.get("user");
     final ChatChannel channel = context.get("channel");
 
     user.selectedChannel(channel);

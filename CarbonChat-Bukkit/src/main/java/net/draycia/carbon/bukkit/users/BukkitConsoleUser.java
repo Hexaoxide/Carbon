@@ -20,6 +20,10 @@ public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single
     this.audience = BukkitAudiences.create(plugin).sender(sender);
   }
 
+  public BukkitConsoleUser() {
+    this(Bukkit.getConsoleSender());
+  }
+
   @Override
   public @NonNull Identity identity() {
     return Identity.nil();
