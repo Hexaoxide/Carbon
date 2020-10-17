@@ -3,6 +3,7 @@ package net.draycia.carbon.common.adventure;
 import de.themoep.minedown.adventure.MineDown;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.adventure.FormatType;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.common.utils.ColorUtils;
 import net.kyori.adventure.platform.AudienceProvider;
@@ -60,7 +61,8 @@ public class AdventureManager implements MessageProcessor {
     return this.carbonChat.gsonSerializer().deserialize(input);
   }
 
-  public FormatType formatType() {
+  @Override
+  public @NonNull FormatType formatType() {
     return this.formatType;
   }
 

@@ -1,4 +1,4 @@
-package net.draycia.carbon.common.adventure;
+package net.draycia.carbon.api.adventure;
 
 public enum FormatType {
   MOJANG,

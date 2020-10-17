@@ -4,7 +4,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.common.adventure.AdventureManager;
-import net.draycia.carbon.common.adventure.FormatType;
+import net.draycia.carbon.api.adventure.FormatType;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;

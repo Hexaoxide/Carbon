@@ -17,7 +17,7 @@ import net.draycia.carbon.api.config.StorageType;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.draycia.carbon.common.adventure.FormatType;
+import net.draycia.carbon.api.adventure.FormatType;
 import net.draycia.carbon.common.channels.ChannelManager;
 import net.draycia.carbon.common.config.KeySerializer;
 import net.draycia.carbon.common.config.SoundSerializer;
