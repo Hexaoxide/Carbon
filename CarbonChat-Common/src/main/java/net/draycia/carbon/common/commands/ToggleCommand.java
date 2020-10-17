@@ -1,7 +1,6 @@
 package net.draycia.carbon.common.commands;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
