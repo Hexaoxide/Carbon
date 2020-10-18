@@ -3,9 +3,9 @@ package net.draycia.carbon.api.config;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
-import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,16 +21,16 @@ public final class ModerationSettings {
   static {
     try {
       MAPPER = ObjectMapper.factory().get(ModerationSettings.class);
-    } catch (final ObjectMappingException e) {
+    } catch (final SerializationException e) {
       throw new ExceptionInInitializerError(e);
     }
   }
 
-  public static ModerationSettings loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
+  public static ModerationSettings loadFrom(final CommentedConfigurationNode node) throws SerializationException {
     return MAPPER.load(node);
   }
 
-  public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
+  public void saveTo(final CommentedConfigurationNode node) throws SerializationException {
     MAPPER.save(this, node);
   }
 

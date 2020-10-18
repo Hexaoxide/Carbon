@@ -7,8 +7,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
-import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,16 +26,16 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
   static {
     try {
       MAPPER = ObjectMapper.factory().get(CommandSettingsRegistry.class);
-    } catch (final ObjectMappingException e) {
+    } catch (final SerializationException e) {
       throw new ExceptionInInitializerError(e);
     }
   }
 
-  public static CommandSettingsRegistry loadFrom(final CommentedConfigurationNode node) throws ObjectMappingException {
+  public static CommandSettingsRegistry loadFrom(final CommentedConfigurationNode node) throws SerializationException {
     return MAPPER.load(node);
   }
 
-  public void saveTo(final CommentedConfigurationNode node) throws ObjectMappingException {
+  public void saveTo(final CommentedConfigurationNode node) throws SerializationException {
     MAPPER.save(this, node);
   }
 

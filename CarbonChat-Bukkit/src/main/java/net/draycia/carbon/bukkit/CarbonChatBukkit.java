@@ -74,11 +74,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
-import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -260,7 +259,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
       this.carbonSettings = CarbonSettings.loadFrom(node);
       loader.save(node);
-    } catch (final ObjectMappingException | IOException exception) {
+    } catch (final ConfigurateException exception) {
       exception.printStackTrace();
     }
   }
@@ -273,7 +272,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
       this.translations = CarbonTranslations.loadFrom(node);
       loader.save(node);
-    } catch (final ObjectMappingException | IOException exception) {
+    } catch (final ConfigurateException exception) {
       exception.printStackTrace();
     }
   }
@@ -286,7 +285,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
       this.moderationSettings = ModerationSettings.loadFrom(node);
       loader.save(node);
-    } catch (final ObjectMappingException | IOException exception) {
+    } catch (final ConfigurateException exception) {
       exception.printStackTrace();
     }
   }
@@ -299,7 +298,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
       this.commandSettings = CommandSettingsRegistry.loadFrom(node);
       loader.save(node);
-    } catch (final ObjectMappingException | IOException exception) {
+    } catch (final ConfigurateException exception) {
       exception.printStackTrace();
     }
   }
@@ -312,7 +311,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
       this.channelSettings = ChannelSettings.loadFrom(node);
       loader.save(node);
-    } catch (final ObjectMappingException | IOException exception) {
+    } catch (final ConfigurateException exception) {
       exception.printStackTrace();
     }
   }

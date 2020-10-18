@@ -27,8 +27,8 @@ import java.lang.reflect.Type;
 import java.util.function.Predicate;
 import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
-import org.spongepowered.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.configurate.serialize.ScalarSerializer;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 public final class KeySerializer extends ScalarSerializer<Key> {
   public static final KeySerializer INSTANCE = new KeySerializer();
@@ -38,15 +38,15 @@ public final class KeySerializer extends ScalarSerializer<Key> {
   }
 
   @Override
-  public Key deserialize(final Type type, final Object obj) throws ObjectMappingException {
+  public Key deserialize(final Type type, final Object obj) throws SerializationException {
     if (!(obj instanceof CharSequence)) {
-      throw new ObjectMappingException("Invalid type presented to serializer: " + type);
+      throw new SerializationException("Invalid type presented to serializer: " + type);
     }
 
     try {
       return Key.key(obj.toString());
     } catch(final InvalidKeyException ex) {
-      throw new ObjectMappingException(ex);
+      throw new SerializationException(ex);
     }
   }
 

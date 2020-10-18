@@ -29,7 +29,7 @@ import net.kyori.adventure.sound.Sound;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.lang.reflect.Type;
@@ -49,7 +49,7 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
   }
 
   @Override
-  public @Nullable Sound deserialize(@NonNull final Type type, @NonNull final ConfigurationNode value) throws ObjectMappingException {
+  public @Nullable Sound deserialize(@NonNull final Type type, @NonNull final ConfigurationNode value) throws SerializationException {
     if (value.empty()) {
       return null;
     }
@@ -60,14 +60,14 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
     final float pitch = value.node(PITCH).getFloat(1.0f);
 
     if (name == null || source == null) {
-      throw new ObjectMappingException("A name and source are required to deserialize a Sound");
+      throw new SerializationException("A name and source are required to deserialize a Sound");
     }
 
     return Sound.sound(name, source, volume, pitch);
   }
 
   @Override
-  public void serialize(@NonNull final Type type, @Nullable final Sound obj, @NonNull final ConfigurationNode value) throws ObjectMappingException {
+  public void serialize(@NonNull final Type type, @Nullable final Sound obj, @NonNull final ConfigurationNode value) throws SerializationException {
     if (obj == null) {
       value.set(null);
       return;
