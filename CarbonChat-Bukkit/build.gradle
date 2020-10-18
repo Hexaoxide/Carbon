@@ -40,7 +40,7 @@ dependencies {
 // Generates plugin.yml automatically
 bukkit {
   name = "CarbonChat"
-  version = project.version
+  version = rootProject.version
   main = 'net.draycia.carbon.bukkit.CarbonChatBukkit'
   apiVersion = '1.13'
   author = 'Draycia'
