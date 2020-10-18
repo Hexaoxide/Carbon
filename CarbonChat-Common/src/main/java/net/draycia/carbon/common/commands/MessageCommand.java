@@ -55,7 +55,7 @@ public class MessageCommand {
     }
 
     if (!sender.hasPermission("carbonchat.msgtoggle.bypass")) {
-      final ChatChannel senderWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
+      final ChatChannel senderWhisperChannel = new CarbonWhisperChannel(sender, receiver);
       final UserChannelSettings senderSettings = sender.channelSettings(senderWhisperChannel);
 
       if (senderSettings.ignored()) {
@@ -64,7 +64,7 @@ public class MessageCommand {
         return;
       }
 
-      final ChatChannel receiverWhisperChannel = this.carbonChat.channelRegistry().get("whisper");
+      final ChatChannel receiverWhisperChannel = new CarbonWhisperChannel(receiver, sender);
       final UserChannelSettings receiverSettings = sender.channelSettings(receiverWhisperChannel);
 
       if (receiverSettings.ignored()) {

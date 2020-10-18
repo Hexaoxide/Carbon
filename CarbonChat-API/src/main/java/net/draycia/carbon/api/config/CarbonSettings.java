@@ -153,7 +153,7 @@ public final class CarbonSettings {
     return this.whisperOptions;
   }
 
-  public @NonNull FormatType getFormatType() {
-    return formatType;
+  public @NonNull FormatType formatType() {
+    return this.formatType;
   }
 }

@@ -25,7 +25,6 @@ import net.draycia.carbon.api.config.StorageType;
 import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.draycia.carbon.api.adventure.FormatType;
 import net.draycia.carbon.common.channels.ChannelManager;
 import net.draycia.carbon.common.config.KeySerializer;
 import net.draycia.carbon.common.config.SoundSerializer;
@@ -126,7 +125,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     // Setup Adventure
     final BukkitAudiences audiences = BukkitAudiences.create(this);
-    this.messageProcessor = new AdventureManager(audiences, this.carbonSettings.getFormatType());
+    this.messageProcessor = new AdventureManager(audiences, this.carbonSettings.formatType());
 
     // Initialize managers
     this.channelManager = new ChannelManager(this);
