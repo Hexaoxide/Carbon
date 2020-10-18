@@ -102,7 +102,7 @@ public final class CarbonSettings {
   private @Nullable String channelOnJoin = "";
 
   @Setting
-  @Comment("The list of regex patterns to show items in chat")
+  @Comment("The list of regex patterns to show items in chat. '\\\\Q' and '\\\\E' just denote that the content isn't regex.")
   private List<Pattern> itemLinkPatterns =
     Collections.singletonList(Pattern.compile(Pattern.quote("[item]")));
 
