@@ -58,7 +58,12 @@ public final class CarbonSettings {
   private @NonNull SQLCredentials sqlCredentials = new SQLCredentials();
 
   @Setting
-  @Comment("Options: NONE, REDIS, BUNGEECORD")
+  @Comment("Options: NONE, REDIS, BUNGEECORD\n" +
+    " 'BUNGEE' - Uses bungee plugin messaging, requires BungeeCord or another proxy which supports it (Velocity!)\n" +
+    " 'REDIS' - Uses redis for cross server syncing, does not require a server proxy\n" +
+    " 'NONE' - Do not sync anything cross server, this is the default\n" +
+    "Note: In order for channels to sync cross server, you'll need to enable is-cross-server for the\n" +
+    "   channel as well as this setting.")
   private @NonNull MessagingType messagingType = MessagingType.NONE;
 
   @Setting
@@ -66,13 +71,7 @@ public final class CarbonSettings {
   private @NonNull FormatType formatType = FormatType.MOJANG;
 
   @Setting
-  @Comment(" Options:\n" +
-    " 'bungee' - Uses bungee plugin messaging, requires BungeeCord or another proxy which supports it (Velocity!)\n" +
-    " 'redis' - Uses redis for cross server syncing, does not require a server proxy\n" +
-    " 'none' - Do not sync anything cross server, this is the default\n" +
-    "\n" +
-    " Note: In order for channels to sync cross server, you'll need to enable is-cross-server for the\n" +
-    "   channel as well as this setting.")
+  @Comment("The credentials necessary to connect to your redis server")
   private @NonNull RedisCredentials redisCredentials = new RedisCredentials();
 
   @Setting
