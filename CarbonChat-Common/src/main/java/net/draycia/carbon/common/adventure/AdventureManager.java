@@ -52,7 +52,7 @@ public class AdventureManager implements MessageProcessor {
     }
   }
 
-  private @NonNull Component processMojang(@NonNull String input) {
+  private @NonNull Component processMojang(@NonNull final String input) {
     return this.carbonChat.gsonSerializer().deserialize(input);
   }
 
