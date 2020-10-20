@@ -14,7 +14,7 @@ public class UrlLinkHandler {
     // TODO: permission to make links clickable, maybe?
     CarbonEvents.register(ChatFormatEvent.class, PostOrders.NORMAL, true, event -> {
       event.message(URL_PATTERN.matcher(event.message()).replaceAll("<click:open_url:'$1'>$1</click>"));
-      event.format(URL_PATTERN.matcher(event.format()).replaceAll("<click:open_url:'$1'>$1</click>"));
+      // Reminder: Do not use this on event.format(), this breaks hover events when they contain URLs
     });
   }
 
