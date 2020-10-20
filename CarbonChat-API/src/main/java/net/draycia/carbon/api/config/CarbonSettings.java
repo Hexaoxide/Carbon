@@ -68,7 +68,7 @@ public final class CarbonSettings {
 
   @Setting
   @Comment("Options: MOJANG, MINIMESSAGE_MARKDOWN, MINIMESSAGE, MINEDOWN")
-  private @NonNull FormatType formatType = FormatType.MOJANG;
+  private @NonNull FormatType formatType = FormatType.MINIMESSAGE;
 
   @Setting
   @Comment("The credentials necessary to connect to your redis server")

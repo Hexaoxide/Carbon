@@ -32,25 +32,31 @@ public class AdventureManager implements MessageProcessor {
       return Component.empty();
     }
 
-    final String format = ColorUtils.translateAlternateColors(input)
+    String format = ColorUtils.translateAlternateColors(input)
       .replace("\\n", "\n")
       .replace("<br>", "\n")
       .replace("<server>", this.carbonChat.carbonSettings().serverName());
 
+    format = this.processPlaceholders(format, placeholders);
+
     switch (this.formatType) {
       case MINEDOWN:
-        return MineDown.parse(format, placeholders);
+        return MineDown.parse(format);
       case MOJANG:
-        return this.processMojang(format, placeholders);
+        return this.processMojang(format);
       case MINIMESSAGE_MARKDOWN:
-        return MiniMessage.markdown().parse(format, placeholders);
+        return MiniMessage.markdown().parse(format);
       case MINIMESSAGE:
       default:
-        return MiniMessage.get().parse(format, placeholders);
+        return MiniMessage.get().parse(format);
     }
   }
 
-  private @NonNull Component processMojang(@NonNull String input, @NonNull final String @NonNull ... placeholders) {
+  private @NonNull Component processMojang(@NonNull String input) {
+    return this.carbonChat.gsonSerializer().deserialize(input);
+  }
+
+  private @NonNull String processPlaceholders(@NonNull String input, @NonNull final String @NonNull ... placeholders) {
     for (int i = 0; i < placeholders.length; i += 2) {
       final String placeholder = placeholders[i];
       final String replacement = placeholders[i + 1];
@@ -58,7 +64,7 @@ public class AdventureManager implements MessageProcessor {
       input = input.replace("<" + placeholder + ">", replacement);
     }
 
-    return this.carbonChat.gsonSerializer().deserialize(input);
+    return input;
   }
 
   @Override

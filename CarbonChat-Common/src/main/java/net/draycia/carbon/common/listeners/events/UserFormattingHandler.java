@@ -1,6 +1,5 @@
 package net.draycia.carbon.common.listeners.events;
 
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -13,15 +12,13 @@ public class UserFormattingHandler {
       if (!event.user().hasPermission("carbonchat.formatting") &&
         !event.user().hasPermission("carbonchat.channels." + event.channel().key() + ".formatting")) {
         this.suppressFormatting(event);
-      } else {
-        // Swap the &-style codes for minimessage-compatible strings
-        event.message(MiniMessage.get().serialize(CarbonChat.LEGACY.deserialize(event.message())));
       }
+      // TODO: convert ALL color code formats
     });
   }
 
   private void suppressFormatting(final PreChatFormatEvent event) {
-    event.format(event.format().replace("<message>", "<pre><message></pre>"));
+    event.message(MiniMessage.get().escapeTokens(event.message()));
   }
 
 }

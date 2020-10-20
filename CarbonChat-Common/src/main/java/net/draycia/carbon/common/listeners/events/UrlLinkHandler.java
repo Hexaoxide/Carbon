@@ -1,23 +1,20 @@
 package net.draycia.carbon.common.listeners.events;
 
+import net.draycia.carbon.api.events.ChatFormatEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
-import net.draycia.carbon.api.events.ChatComponentEvent;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.event.PostOrders;
 
 import java.util.regex.Pattern;
 
 public class UrlLinkHandler {
 
-  private static final Pattern URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
+  private static final Pattern URL_PATTERN = Pattern.compile("((?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?)");
 
   public UrlLinkHandler() {
-    CarbonEvents.register(ChatComponentEvent.class, PostOrders.NORMAL, true, event -> {
-      final TextComponent newComponent = (TextComponent) event.component()
-        .replaceText(URL_PATTERN, url -> url.clickEvent(ClickEvent.openUrl(url.content())));
-
-      event.component(newComponent);
+    // TODO: permission to make links clickable, maybe?
+    CarbonEvents.register(ChatFormatEvent.class, PostOrders.NORMAL, true, event -> {
+      event.message(URL_PATTERN.matcher(event.message()).replaceAll("<click:open_url:'$1'>$1</click>"));
+      event.format(URL_PATTERN.matcher(event.format()).replaceAll("<click:open_url:'$1'>$1</click>"));
     });
   }
 
