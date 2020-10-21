@@ -20,16 +20,16 @@ public class ChannelManager {
 
   private final @NonNull ChannelRegistry registry;
 
-  @Nullable
-  @MonotonicNonNull
-  private String defaultChannelKey = null;
+  private @MonotonicNonNull String defaultChannelKey = null;
 
+  @SuppressWarnings("method.invocation.invalid")
   public ChannelManager(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
     this.registry = new ChannelRegistry();
 
     this.carbonChat.logger().info("Loading channels!");
-    this.reload();
+
+    this.loadChannels();
   }
 
   public @Nullable ChatChannel loadChannel(final @NonNull ChannelOptions settings) {
@@ -85,7 +85,7 @@ public class ChannelManager {
     return channel;
   }
 
-  private void reload() {
+  private void loadChannels() {
     this.carbonChat.logger().info("Channels found: " +
       this.carbonChat.channelSettings().channelOptions().size());
 

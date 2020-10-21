@@ -16,12 +16,13 @@ public class ClearChatCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public ClearChatCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("clearchat");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 

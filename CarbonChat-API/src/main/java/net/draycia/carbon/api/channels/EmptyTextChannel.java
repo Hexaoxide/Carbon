@@ -5,6 +5,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -89,8 +90,8 @@ public class EmptyTextChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable TextColor channelColor(final @NonNull CarbonUser user) {
-    return null;
+  public @NonNull TextColor channelColor(final @NonNull CarbonUser user) {
+    return NamedTextColor.WHITE;
   }
 
   @Override

@@ -1,7 +1,6 @@
 package net.draycia.carbon.api.config;
 
 import com.google.common.collect.ImmutableMap;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.Context;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -126,13 +125,7 @@ public final class ChannelOptions {
   private String cannotIgnoreMessage;
   
   private @NonNull SharedChannelOptions defaultOptions() {
-    final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
-
-    if (carbonChat == null) {
-      throw new IllegalStateException("CarbonChat not initialized!");
-    }
-
-    return carbonChat.channelSettings().defaultChannelOptions();
+    return CarbonChatProvider.carbonChat().channelSettings().defaultChannelOptions();
   }
 
   public static ChannelOptions defaultChannel() {

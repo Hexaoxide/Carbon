@@ -38,6 +38,7 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   private final @NonNull Function<String, UUID> nameResolver;
   private final @NonNull Supplier<C> consoleFactory;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
@@ -147,8 +148,14 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   }
 
   private void ensureFileExists(final @NonNull File file) {
-    if (!file.getParentFile().exists()) {
-      file.getParentFile().mkdirs();
+    final File parentFile = file.getParentFile();
+
+    if (parentFile == null) {
+      throw new IllegalStateException("Parent file not present!");
+    }
+
+    if (!parentFile.exists()) {
+      parentFile.mkdirs();
     }
 
     if (!file.exists()) {

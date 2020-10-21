@@ -19,6 +19,7 @@ public class AliasedChannelCommand {
 
   private final @NonNull String commandName;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public AliasedChannelCommand(final @NonNull CommandManager<CarbonUser> commandManager, final @NonNull TextChannel chatChannel) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.chatChannel = chatChannel;

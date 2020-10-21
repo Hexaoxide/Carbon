@@ -16,12 +16,13 @@ public class IgnoreCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public IgnoreCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("ignore");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 

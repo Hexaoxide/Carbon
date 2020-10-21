@@ -14,7 +14,11 @@ public final class CarbonChatProvider {
     CarbonChatProvider.instance = carbonChat;
   }
 
-  public static @Nullable CarbonChat carbonChat() {
+  public static @NonNull CarbonChat carbonChat() {
+    if (CarbonChatProvider.instance == null) {
+      throw new IllegalStateException("CarbonChat not initialized!"); // LuckPerms design go brrrr
+    }
+
     return CarbonChatProvider.instance;
   }
 

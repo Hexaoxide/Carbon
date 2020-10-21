@@ -18,6 +18,7 @@ public class FilterContext {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("method.invocation.invalid")
   public FilterContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 

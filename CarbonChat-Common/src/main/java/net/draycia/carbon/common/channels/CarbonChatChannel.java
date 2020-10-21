@@ -39,7 +39,7 @@ public class CarbonChatChannel implements TextChannel {
 
   private final @NonNull ChannelOptions options;
 
-  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, final @Nullable ChannelOptions options) {
+  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, final @NonNull ChannelOptions options) {
     this.carbonChat = carbonChat;
     this.options = options;
   }
@@ -124,13 +124,7 @@ public class CarbonChatChannel implements TextChannel {
       return Collections.emptyMap();
     }
 
-    final String displayName;
-
-    if (user.nickname() != null) {
-      displayName = user.nickname();
-    } else {
-      displayName = user.displayName();
-    }
+    String displayName = user.nickname();
 
     final Map<CarbonUser, Component> users = new HashMap<>();
 
@@ -166,9 +160,14 @@ public class CarbonChatChannel implements TextChannel {
 
       CarbonEvents.post(newEvent);
 
-      users.put(newEvent.target(), newEvent.component());
+      final PlayerUser targetUser = newEvent.target();
+
+      if (targetUser != null) {
+        users.put(targetUser, newEvent.component());
+      }
     }
 
+    // TODO: ChatFormatEvent ConsoleUser support for target, specify ConsoleUser as target
     final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this, preFormatEvent.format(),
       preFormatEvent.message());
 
@@ -188,7 +187,11 @@ public class CarbonChatChannel implements TextChannel {
     CarbonEvents.post(consoleEvent);
 
     if (!consoleEvent.cancelled()) {
-      users.put(this.carbonChat.userService().consoleUser(), consoleEvent.component());
+      final ConsoleUser consoleUser = this.carbonChat.userService().consoleUser();
+
+      if (consoleUser != null) {
+        users.put(consoleUser, consoleEvent.component());
+      }
     }
 
     if (user.online() && !fromRemote && this.crossServer()) {
@@ -232,7 +235,7 @@ public class CarbonChatChannel implements TextChannel {
     return this.parseMessage(user, this.audiences(), message, fromRemote);
   }
 
-  public @Nullable String format(final @NonNull PlayerUser user) {
+  public @NonNull String format(final @NonNull PlayerUser user) {
     for (final String group : this.groupOverrides()) {
       if (this.userHasGroup(user, group)) {
         final String format = this.format(group);
@@ -276,6 +279,11 @@ public class CarbonChatChannel implements TextChannel {
 
   private @NonNull String primaryGroupFormat(final @NonNull PlayerUser user) {
     final Group primaryGroup = user.primaryGroup();
+
+    if (primaryGroup == null) {
+      return this.defaultFormat();
+    }
+
     final String primaryGroupFormat = this.format(primaryGroup);
 
     if (primaryGroupFormat != null) {
@@ -286,7 +294,19 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   private @NonNull String defaultFormat() {
-    return this.format(this.defaultFormatName());
+    final String defaultFormatName = this.defaultFormatName();
+
+    if (defaultFormatName == null) {
+      return "<<displayname>> <message>";
+    }
+
+    final String defaultFormat = this.format(defaultFormatName);
+
+    if (defaultFormat == null) {
+      return "<<displayname>> <message>";
+    }
+
+    return defaultFormat;
   }
 
   @Override
@@ -356,7 +376,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable TextColor channelColor(final @NonNull CarbonUser user) {
+  public @NonNull TextColor channelColor(final @NonNull CarbonUser user) {
     if (user instanceof PlayerUser) {
       final TextColor userColor = ((PlayerUser) user).channelSettings(this).color();
 
@@ -367,18 +387,22 @@ public class CarbonChatChannel implements TextChannel {
 
     final String input = this.options().color();
 
-    final TextColor color = ColorUtils.parseColor(user, input);
+    if (input != null) {
+      final TextColor color = ColorUtils.parseColor(user, input);
 
-    if (color == null) {
-      if (this.carbonChat.carbonSettings().showTips()) {
-        this.carbonChat.logger().error("Tip: Channel color found (" + input + ") is invalid!");
-        this.carbonChat.logger().error("Falling back to #FFFFFF");
+      if (color == null) {
+        if (this.carbonChat.carbonSettings().showTips()) {
+          this.carbonChat.logger().error("Tip: Channel color found (" + input + ") is invalid!");
+          this.carbonChat.logger().error("Falling back to #FFFFFF");
+        }
+
+        return NamedTextColor.WHITE;
       }
 
-      return NamedTextColor.WHITE;
+      return color;
     }
 
-    return color;
+    return NamedTextColor.WHITE;
   }
 
   public @Nullable String defaultFormatName() {

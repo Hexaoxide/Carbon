@@ -18,12 +18,13 @@ public class SetColorCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public SetColorCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("setcolor");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 

@@ -19,12 +19,13 @@ public class SpyChannelCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public SpyChannelCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("spy");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 

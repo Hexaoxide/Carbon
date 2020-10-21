@@ -17,12 +17,13 @@ public class MsgToggleCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public MsgToggleCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("msgtoggle");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -50,6 +51,10 @@ public class MsgToggleCommand {
     final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
 
+    if (channel == null) {
+      throw new IllegalArgumentException("Whisper channel not found!");
+    }
+
     final String message;
 
     final UserChannelSettings settings = user.channelSettings(channel);
@@ -71,6 +76,10 @@ public class MsgToggleCommand {
     final CarbonUser sender = context.getSender();
     final PlayerUser user = context.get("user");
     final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
+
+    if (channel == null) {
+      throw new IllegalArgumentException("Whisper channel not found!");
+    }
 
     final String message;
     final String otherMessage;

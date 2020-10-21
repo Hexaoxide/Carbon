@@ -41,6 +41,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   private final @NonNull Function<String, UUID> nameResolver;
   private final @NonNull Supplier<C> consoleFactory;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
@@ -210,6 +211,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     return user;
   }
 
+  @SuppressWarnings("argument.type.incompatible")
   private void saveUser(final @NonNull RemovalNotification<@NonNull UUID, @NonNull T> notification) {
     final T user = notification.getValue();
 
@@ -217,8 +219,10 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
       // Save user general data
       String selectedName = null;
 
-      if (user.selectedChannel() != null) {
-        selectedName = user.selectedChannel().key();
+      final ChatChannel channel = user.selectedChannel();
+
+      if (channel != null) {
+        selectedName = channel.key();
       }
 
       this.carbonChat.logger().info("Saving user data!");
@@ -233,9 +237,10 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
         final UserChannelSettings value = entry.getValue();
 
         String colorString = null;
+        final TextColor color = value.color();
 
-        if (value.color() != null) {
-          colorString = value.color().asHexString();
+        if (color != null) {
+          colorString = color.asHexString();
         }
 
         stm.executeUpdateQuery("INSERT INTO sc_channel_settings (uuid, channel, spying, ignored, color) VALUES (?, ?, ?, ?, ?) " +

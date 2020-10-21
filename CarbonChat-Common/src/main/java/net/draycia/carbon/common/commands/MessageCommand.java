@@ -21,13 +21,14 @@ public class MessageCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public MessageCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
     final CommandSettings commandSettings = carbonChat.commandSettings().get("message");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 

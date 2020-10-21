@@ -15,7 +15,7 @@ public interface PlayerUser extends CarbonUser {
 
   boolean online();
 
-  @Nullable String nickname();
+  @NonNull String nickname();
 
   default void nickname(final @Nullable String nickname) {
     this.nickname(nickname, false);
@@ -23,9 +23,11 @@ public interface PlayerUser extends CarbonUser {
 
   void nickname(@Nullable String nickname, boolean fromRemote);
 
-  @Nullable String displayName();
+  @NonNull String displayName();
 
   void displayName(@Nullable String displayName);
+
+  @NonNull String name();
 
   @NonNull String parsePlaceholders(@NonNull String input);
 

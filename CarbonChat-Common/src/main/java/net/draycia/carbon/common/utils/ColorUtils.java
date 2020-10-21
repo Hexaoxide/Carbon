@@ -22,16 +22,16 @@ public final class ColorUtils {
 
   }
 
-  public @Nullable static TextColor parseColor(final @Nullable String input) {
+  public static @Nullable TextColor parseColor(final @NonNull String input) {
     return parseColor(null, input);
   }
 
-  public @Nullable static TextColor parseColor(final @Nullable CarbonUser user, @Nullable String input) {
+  public static @Nullable TextColor parseColor(final @Nullable CarbonUser user, @NonNull String input) {
     if (user instanceof PlayerUser) {
       input = ((PlayerUser) user).parsePlaceholders(input);
     }
 
-    if (input == null || input.isEmpty()) {
+    if (input.isEmpty()) {
       return NamedTextColor.WHITE;
     }
 
@@ -56,8 +56,7 @@ public final class ColorUtils {
   private static final @NonNull Pattern pluginRGB =
     Pattern.compile("[§&]#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])");
 
-  @NonNull
-  public static String translateAlternateColors(final @NonNull String input) {
+  public static @NonNull String translateAlternateColors(final @NonNull String input) {
     // TODO: check if MiniMessage or MineDown
     String output = input;
 
@@ -83,17 +82,27 @@ public final class ColorUtils {
       // Legacy Colors
       for (final char c : "0123456789abcdef".toCharArray()) {
         final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
-        final TextColor color = format.color();
 
-        output = output.replaceAll("[§&]" + c, "<" + color.asHexString() + ">");
+        if (format != null) {
+          final TextColor color = format.color();
+
+          if (color != null) {
+            output = output.replaceAll("[§&]" + c, "<" + color.asHexString() + ">");
+          }
+        }
       }
 
       // Legacy Formatting
       for (final char c : "klmno".toCharArray()) {
         final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
-        final TextDecoration decoration = format.decoration();
 
-        output = output.replaceAll("[§&]" + c, "<" + decoration.name() + ">");
+        if (format != null) {
+          final TextDecoration decoration = format.decoration();
+
+          if (decoration != null) {
+            output = output.replaceAll("[§&]" + c, "<" + decoration.name() + ">");
+          }
+        }
       }
     }
 

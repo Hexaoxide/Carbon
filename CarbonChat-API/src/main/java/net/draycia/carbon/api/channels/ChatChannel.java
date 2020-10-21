@@ -22,7 +22,7 @@ public interface ChatChannel extends Audience {
    * @param user The user that may have a color set.
    * @return The color the user may have set, otherwise the channel's color.
    */
-  @Nullable TextColor channelColor(@NonNull CarbonUser user);
+  @NonNull TextColor channelColor(@NonNull CarbonUser user);
 
   @NonNull
   Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull String message, boolean fromRemote);

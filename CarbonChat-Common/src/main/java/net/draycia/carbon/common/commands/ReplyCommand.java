@@ -12,16 +12,19 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.UUID;
+
 public class ReplyCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("methodref.receiver.bound.invalid")
   public ReplyCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("reply");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -49,7 +52,9 @@ public class ReplyCommand {
       return;
     }
 
-    if (user.replyTarget() == null) {
+    final UUID replyTarget = user.replyTarget();
+
+    if (replyTarget == null) {
       final String message = this.carbonChat.translations().noReplyTarget();
       final Component component = this.carbonChat.messageProcessor().processMessage(message, "br", "\n");
 
@@ -58,9 +63,11 @@ public class ReplyCommand {
       return;
     }
 
-    final PlayerUser targetUser = this.carbonChat.userService().wrap(user.replyTarget());
+    final PlayerUser targetUser = this.carbonChat.userService().wrap(replyTarget);
 
-    targetUser.sendMessage(user, input);
+    if (targetUser != null) {
+      targetUser.sendMessage(user, input);
+    }
   }
 
 }

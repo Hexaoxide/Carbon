@@ -34,14 +34,17 @@ public class RedisMessageService implements MessageService {
 
   private final @NonNull CarbonChat carbonChat;
 
+  @SuppressWarnings("method.invocation.invalid")
   public RedisMessageService(final @NonNull CarbonChat carbonChat, final @NonNull RedisCredentials credentials) {
     this.carbonChat = carbonChat;
 
     final RedisURI.Builder builder = RedisURI.Builder.redis(credentials.host(), credentials.port())
       .withDatabase(credentials.database());
 
-    if (credentials.password() != null) {
-      builder.withPassword(credentials.password().toCharArray());
+    final String password = credentials.password();
+
+    if (password != null) {
+      builder.withPassword(password.toCharArray());
     }
 
     final RedisClient client = RedisClient.create(builder.build());

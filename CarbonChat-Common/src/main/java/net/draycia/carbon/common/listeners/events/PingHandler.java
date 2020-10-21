@@ -4,6 +4,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
+import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.PostOrders;
 
 public class PingHandler {
@@ -16,11 +17,13 @@ public class PingHandler {
         return;
       }
 
-      if (event.target() == null) {
+      final PlayerUser target = event.target();
+
+      if (target == null) {
         return;
       }
 
-      final String targetName = event.target().name();
+      final String targetName = target.name();
       final String prefix = carbonChat.carbonSettings().channelPings().prefix();
       final boolean caseSensitive = carbonChat.carbonSettings().channelPings().caseSensitive();
 
@@ -34,7 +37,7 @@ public class PingHandler {
         }
       }
 
-      event.target().playSound(carbonChat.carbonSettings().channelPings().sound());
+      target.playSound(carbonChat.carbonSettings().channelPings().sound());
     });
   }
 

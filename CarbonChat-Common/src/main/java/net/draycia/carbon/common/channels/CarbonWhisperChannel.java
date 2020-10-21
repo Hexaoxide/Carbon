@@ -48,7 +48,7 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @Nullable TextColor channelColor(final @NonNull CarbonUser user) {
+  public @NonNull TextColor channelColor(final @NonNull CarbonUser user) {
     return NamedTextColor.WHITE;
   }
 
@@ -68,6 +68,14 @@ public class CarbonWhisperChannel implements WhisperChannel {
     final String senderFormat = this.senderFormat();
     final String receiverFormat = this.receiverFormat();
 
+    if (senderFormat == null) {
+      throw new IllegalArgumentException("Sender format (whispers) not found!");
+    }
+
+    if (receiverFormat == null) {
+      throw new IllegalArgumentException("Receiver format (whispers) not found!");
+    }
+
     final ChatFormatEvent senderFormatEvent = new ChatFormatEvent(this.sender, this.sender, this, senderFormat, message);
 
     CarbonEvents.post(senderFormatEvent);
@@ -85,21 +93,8 @@ public class CarbonWhisperChannel implements WhisperChannel {
     }
 
     // Display names
-    final String senderName;
-
-    if (this.sender.nickname() != null) {
-      senderName = this.sender.nickname();
-    } else {
-      senderName = this.sender.displayName();
-    }
-
-    final String receiverName;
-
-    if (this.audience.nickname() != null) {
-      receiverName = this.audience.nickname();
-    } else {
-      receiverName = this.audience.displayName();
-    }
+    final String senderName = this.sender.nickname();
+    final String receiverName = this.audience.nickname();
 
     // Components
     final TextComponent senderComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(
@@ -134,27 +129,35 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
     result.put(this.audience, receiverComponentEvent.component());
 
-    final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(this.sender, null, this,
-      this.consoleFormat(), message);
+    final String consoleFormatString = this.consoleFormat();
 
-    CarbonEvents.post(consoleFormatEvent);
+    if (consoleFormatString != null) {
+      final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(this.sender, null, this,
+        consoleFormatString, message);
 
-    final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(
-      consoleFormatEvent.format(),
-      "senderdisplayname", senderName,
-      "sender", this.sender.name(),
-      "receiverdisplayname", receiverName,
-      "receiver", this.audience.name(),
-      "phase", Long.toString(System.currentTimeMillis() % 25),
-      "message", senderFormatEvent.message());
+      CarbonEvents.post(consoleFormatEvent);
 
-    final ChatComponentEvent consoleEvent = new ChatComponentEvent(this.sender, null, this, consoleFormat,
-      consoleFormatEvent.message());
+      final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(
+        consoleFormatEvent.format(),
+        "senderdisplayname", senderName,
+        "sender", this.sender.name(),
+        "receiverdisplayname", receiverName,
+        "receiver", this.audience.name(),
+        "phase", Long.toString(System.currentTimeMillis() % 25),
+        "message", senderFormatEvent.message());
 
-    CarbonEvents.post(consoleEvent);
+      final ChatComponentEvent consoleEvent = new ChatComponentEvent(this.sender, null, this, consoleFormat,
+        consoleFormatEvent.message());
 
-    if (!consoleEvent.cancelled()) {
-      result.put(this.carbonChat.userService().consoleUser(), consoleEvent.component());
+      CarbonEvents.post(consoleEvent);
+
+      if (!consoleEvent.cancelled()) {
+        final ConsoleUser consoleUser = this.carbonChat.userService().consoleUser();
+
+        if (consoleUser != null) {
+          result.put(consoleUser, consoleEvent.component());
+        }
+      }
     }
 
     this.sender.replyTarget(this.audience);

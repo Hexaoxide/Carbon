@@ -49,9 +49,9 @@ public final class SoundSerializer implements TypeSerializer<Sound> {
   }
 
   @Override
-  public @Nullable Sound deserialize(final @NonNull Type type, final @NonNull ConfigurationNode value) throws SerializationException {
+  public @NonNull Sound deserialize(final @NonNull Type type, final @NonNull ConfigurationNode value) throws SerializationException {
     if (value.empty()) {
-      return null;
+      throw new SerializationException("Value not found for sound!");
     }
 
     final Key name = value.node(NAME).get(KeySerializer.INSTANCE.type());
