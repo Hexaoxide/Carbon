@@ -12,7 +12,7 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
   private final @NonNull PlayerUser sender;
-  private final @NonNull PlayerUser target;
+  private final @Nullable PlayerUser target;
   private @NonNull ChatChannel chatChannel;
   private @NonNull TextComponent component;
   private final @NonNull String originalMessage;

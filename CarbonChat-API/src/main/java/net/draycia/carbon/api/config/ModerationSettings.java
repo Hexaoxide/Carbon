@@ -8,7 +8,6 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -135,11 +134,8 @@ public final class ModerationSettings {
       "The strings in the lists (\"lag\" etc) are what's replaced.\n" +
       "Set to filters: {} if you want to disable the filter feature.\n" +
       "Set the key to \"_\" for the replacement to be blank (remove the filtered pattern).")
-    private Map<String, List<Pattern>> replacements = new HashMap<String, List<Pattern>>() {
-      {
-        this.put("****", Collections.singletonList(Pattern.compile("la[g]+")));
-      }
-    };
+    private Map<String, List<Pattern>> replacements =
+      Collections.singletonMap("****", Collections.singletonList(Pattern.compile("la[g]+")));
 
     @Setting
     @Comment("Anything in blocked-words will prevent the message from being sent at all.\n" +

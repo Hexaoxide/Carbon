@@ -41,7 +41,7 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
 
   @Override
   public @NonNull CommandSettings register(final @NonNull String key, final @NonNull CommandSettings value) {
-    this.registry.put(key, value);
+    this.registry.putIfAbsent(key, value);
 
     return value;
   }
@@ -62,7 +62,7 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
 
   @Override
   public @NonNull Set<String> keySet() {
-    return this.registry.keySet();
+    return (Set<String>) this.registry.keySet(); // https://github.com/typetools/checker-framework/issues/3638
   }
 
   @Override

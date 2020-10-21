@@ -11,13 +11,13 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
   private final @NonNull PlayerUser sender;
-  private final @NonNull PlayerUser target;
+  private final @Nullable PlayerUser target;
   private @NonNull ChatChannel chatChannel;
   private @NonNull String format;
   private @NonNull String message;
 
   public ChatFormatEvent(final @NonNull PlayerUser sender, final @Nullable PlayerUser target,
-                         final @NonNull ChatChannel chatChannel, final @Nullable String format,
+                         final @NonNull ChatChannel chatChannel, final @NonNull String format,
                          final @NonNull String message) {
 
     this.sender = sender;
@@ -58,7 +58,7 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     return this.format;
   }
 
-  public void format(final @Nullable String format) {
+  public void format(final @NonNull String format) {
     this.format = format;
   }
 

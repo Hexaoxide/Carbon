@@ -64,13 +64,21 @@ public interface PlayerUser extends CarbonUser {
   }
 
   default void replyTarget(final @Nullable PlayerUser user) {
-    this.replyTarget(user.uuid(), false);
+    if (user == null) {
+      this.replyTarget((UUID) null, false);
+    } else {
+      this.replyTarget(user.uuid(), false);
+    }
   }
 
   void replyTarget(@Nullable UUID target, boolean fromRemote);
 
   default void replyTarget(final @Nullable PlayerUser user, final boolean fromRemote) {
-    this.replyTarget(user.uuid(), fromRemote);
+    if (user == null) {
+      this.replyTarget((UUID) null, fromRemote);
+    } else {
+      this.replyTarget(user.uuid(), fromRemote);
+    }
   }
 
   boolean ignoringUser(@NonNull UUID uuid);

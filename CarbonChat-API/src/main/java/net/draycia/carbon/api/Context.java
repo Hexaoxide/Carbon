@@ -68,7 +68,7 @@ public class Context {
       final Object value = list.get(0);
 
       if (value != null) {
-        return list.get(0).getClass().isAssignableFrom(type);
+        return value.getClass().isAssignableFrom(type);
       }
     }
 
