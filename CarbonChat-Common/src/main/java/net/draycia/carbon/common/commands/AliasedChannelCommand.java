@@ -13,13 +13,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class AliasedChannelCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  private @NonNull final TextChannel chatChannel;
+  private final @NonNull TextChannel chatChannel;
 
-  private @NonNull final String commandName;
+  private final @NonNull String commandName;
 
-  public AliasedChannelCommand(@NonNull final CommandManager<CarbonUser> commandManager, @NonNull final TextChannel chatChannel) {
+  public AliasedChannelCommand(final @NonNull CommandManager<CarbonUser> commandManager, final @NonNull TextChannel chatChannel) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.chatChannel = chatChannel;
     this.commandName = chatChannel.key();
@@ -44,7 +44,7 @@ public class AliasedChannelCommand {
     );
   }
 
-  private void channel(@NonNull final CommandContext<CarbonUser> context) {
+  private void channel(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
 
     if (user.channelSettings(this.chatChannel()).ignored()) {
@@ -58,7 +58,7 @@ public class AliasedChannelCommand {
     user.selectedChannel(this.chatChannel());
   }
 
-  private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
+  private void sendMessage(final @NonNull CommandContext<CarbonUser> context) {
     context.<String>getOptional("message").ifPresent(message -> {
       this.chatChannel().sendComponentsAndLog(
         context.getSender().identity(),

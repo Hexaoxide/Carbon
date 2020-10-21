@@ -21,8 +21,8 @@ public final class ChannelArgument<C> extends CommandArgument<C, TextChannel> {
       TextChannel.class, ChannelArgument::suggestions);
   }
 
-  private static <C> ArgumentParseResult<TextChannel> parser(@NonNull final CommandContext<C> commandContext,
-                                                             @NonNull final Queue<String> inputs) {
+  private static <C> ArgumentParseResult<TextChannel> parser(final @NonNull CommandContext<C> commandContext,
+                                                             final @NonNull Queue<String> inputs) {
     final String input = inputs.poll();
 
     final ExceptionMessages exceptions = CarbonChatProvider.carbonChat().translations().exceptionMessages();
@@ -43,8 +43,8 @@ public final class ChannelArgument<C> extends CommandArgument<C, TextChannel> {
     }
   }
 
-  private static <C> List<String> suggestions(@NonNull final CommandContext<C> commandContext,
-                                              @NonNull final String input) {
+  private static <C> List<String> suggestions(final @NonNull CommandContext<C> commandContext,
+                                              final @NonNull String input) {
     return CarbonChatProvider.carbonChat().channelRegistry().stream()
       .map(ChatChannel::key).collect(Collectors.toList());
   }

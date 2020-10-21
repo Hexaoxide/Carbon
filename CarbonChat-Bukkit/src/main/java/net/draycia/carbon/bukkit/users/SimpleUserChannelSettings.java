@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class SimpleUserChannelSettings implements UserChannelSettings {
 
-  private @NonNull final transient CarbonChat carbonChat = CarbonChatProvider.carbonChat();
+  private final @NonNull transient CarbonChat carbonChat = CarbonChatProvider.carbonChat();
   private boolean spying;
   private boolean ignored;
   private @NonNull String color;
@@ -22,7 +22,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   @MonotonicNonNull // @NonNull but not initialised in all constructors.
   private String channel;
 
-  public SimpleUserChannelSettings(@NonNull final UUID uuid, @NonNull final String channel) {
+  public SimpleUserChannelSettings(final @NonNull UUID uuid, final @NonNull String channel) {
     this.uuid = uuid;
     this.channel = channel;
   }
@@ -75,7 +75,7 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public void color(@Nullable final TextColor color, final boolean fromRemote) {
+  public void color(final @Nullable TextColor color, final boolean fromRemote) {
     if (color == null) {
       this.color = null;
     } else {

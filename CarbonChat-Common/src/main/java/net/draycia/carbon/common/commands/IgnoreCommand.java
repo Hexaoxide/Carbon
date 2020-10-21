@@ -14,9 +14,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class IgnoreCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public IgnoreCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  public IgnoreCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("ignore");
@@ -36,7 +36,7 @@ public class IgnoreCommand {
     );
   }
 
-  private void ignoreUser(@NonNull final CommandContext<CarbonUser> context) {
+  private void ignoreUser(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser sender = (PlayerUser) context.getSender();
     final PlayerUser targetUser = context.get("user");
 

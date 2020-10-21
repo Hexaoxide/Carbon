@@ -16,9 +16,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ToggleCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public ToggleCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  public ToggleCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("toggle");
@@ -49,7 +49,7 @@ public class ToggleCommand {
     );
   }
 
-  private void toggleSelf(@NonNull final CommandContext<CarbonUser> context) {
+  private void toggleSelf(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel channel = context.get("channel");
 
@@ -72,7 +72,7 @@ public class ToggleCommand {
       "channel", channel.name()));
   }
 
-  private void toggleOther(@NonNull final CommandContext<CarbonUser> context) {
+  private void toggleOther(final @NonNull CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
     final PlayerUser user = context.get("user");
     final ChatChannel channel = context.get("channel");

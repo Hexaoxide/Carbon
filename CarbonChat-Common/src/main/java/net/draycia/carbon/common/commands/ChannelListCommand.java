@@ -21,9 +21,9 @@ import java.util.regex.Pattern;
 
 public class ChannelListCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public ChannelListCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  public ChannelListCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("channellist");
@@ -52,11 +52,11 @@ public class ChannelListCommand {
     );
   }
 
-  public void channelListSelf(@NonNull final CommandContext<CarbonUser> context) {
+  public void channelListSelf(final @NonNull CommandContext<CarbonUser> context) {
     this.listAndSend(context.getSender(), (PlayerUser) context.getSender(), this.carbonChat.channelRegistry().iterator());
   }
 
-  public void channelListOther(@NonNull final CommandContext<CarbonUser> context) {
+  public void channelListOther(final @NonNull CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
     final PlayerUser user = context.get("user");
 
@@ -73,8 +73,8 @@ public class ChannelListCommand {
     this.listAndSend(sender, user, allChannels);
   }
 
-  private void listAndSend(@NonNull final CarbonUser sender, @NonNull final PlayerUser user,
-                           @NonNull final Iterator<ChatChannel> allChannels) {
+  private void listAndSend(final @NonNull CarbonUser sender, final @NonNull PlayerUser user,
+                           final @NonNull Iterator<ChatChannel> allChannels) {
     ChatChannel channel;
     final List<ChatChannel> canSee = new ArrayList<>();
     final List<ChatChannel> cannotSee = new ArrayList<>();
@@ -114,7 +114,7 @@ public class ChannelListCommand {
     }
   }
 
-  private void makeList(@NonNull final Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
+  private void makeList(final @NonNull Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
     final String listSeparator = this.carbonChat.translations().channelListSeparator();
     final Component listSeparatorComponent = Component.text(listSeparator);
 

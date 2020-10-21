@@ -21,11 +21,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class mcMMOContext implements Listener {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  private @NonNull static final String KEY = "mcmmo-party";
+  private final static @NonNull String KEY = "mcmmo-party";
 
-  public mcMMOContext(@NonNull final CarbonChat carbonChat) {
+  public mcMMOContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, PostOrders.NORMAL, false, event -> {
@@ -97,11 +97,11 @@ public final class mcMMOContext implements Listener {
     }
   }
 
-  public boolean isInParty(@NonNull final PlayerUser user) {
+  public boolean isInParty(final @NonNull PlayerUser user) {
     return PartyAPI.inParty(Bukkit.getPlayer(user.uuid()));
   }
 
-  public boolean isInSameParty(@NonNull final PlayerUser user1, @NonNull final PlayerUser user2) {
+  public boolean isInSameParty(final @NonNull PlayerUser user1, final @NonNull PlayerUser user2) {
     if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }

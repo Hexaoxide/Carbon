@@ -10,7 +10,7 @@ public final class CarbonChatProvider {
 
   private static CarbonChat instance;
 
-  public static void register(@NonNull final CarbonChat carbonChat) {
+  public static void register(final @NonNull CarbonChat carbonChat) {
     CarbonChatProvider.instance = carbonChat;
   }
 

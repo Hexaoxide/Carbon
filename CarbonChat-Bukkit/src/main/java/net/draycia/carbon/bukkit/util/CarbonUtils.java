@@ -39,7 +39,7 @@ import java.util.List;
 
 public final class CarbonUtils {
 
-  private static @NonNull final String @NonNull [] colors;
+  private static final @NonNull String @NonNull [] colors;
 
   private CarbonUtils() {
 
@@ -55,7 +55,7 @@ public final class CarbonUtils {
     colors = colorList.toArray(new String[0]);
   }
 
-  public @NonNull static Component createComponent(@NonNull final Player player) {
+  public static @NonNull Component createComponent(final @NonNull Player player) {
     if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
       return net.kyori.adventure.text.Component.empty();
     }

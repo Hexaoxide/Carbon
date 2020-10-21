@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class DistanceContext {
 
-  private @NonNull static final String KEY = "distance";
+  private final static @NonNull String KEY = "distance";
 
   public DistanceContext() {
     CarbonEvents.register(ReceiverContextEvent.class, PostOrders.NORMAL, false, event -> {

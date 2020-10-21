@@ -26,12 +26,12 @@ import java.util.regex.Pattern;
 
 public class CarbonWhisperChannel implements WhisperChannel {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  private @NonNull final PlayerUser sender;
-  private @NonNull final PlayerUser audience;
+  private final @NonNull PlayerUser sender;
+  private final @NonNull PlayerUser audience;
 
-  public CarbonWhisperChannel(@NonNull final PlayerUser sender, @NonNull final PlayerUser audience) {
+  public CarbonWhisperChannel(final @NonNull PlayerUser sender, final @NonNull PlayerUser audience) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.sender = sender;
     this.audience = audience;
@@ -48,20 +48,20 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @Nullable TextColor channelColor(@NonNull final CarbonUser user) {
+  public @Nullable TextColor channelColor(final @NonNull CarbonUser user) {
     return NamedTextColor.WHITE;
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message,
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull String message,
                                                           final boolean fromRemote) {
     return this.parseMessage(user, Collections.singleton(this.audience()), message, fromRemote);
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user,
-                                                          @NonNull final Collection<@NonNull PlayerUser> recipients,
-                                                          @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user,
+                                                          final @NonNull Collection<@NonNull PlayerUser> recipients,
+                                                          final @NonNull String message, final boolean fromRemote) {
     final Map<CarbonUser, Component> result = new HashMap<>();
 
     // Formats
@@ -164,31 +164,31 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public boolean canPlayerUse(@NonNull final PlayerUser user) {
+  public boolean canPlayerUse(final @NonNull PlayerUser user) {
     return user.equals(this.sender);
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final PlayerUser sender, @NonNull final PlayerUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(final @NonNull PlayerUser sender, final @NonNull PlayerUser target, final boolean checkSpying) {
     return (checkSpying && target.spyingWhispers()) || (sender.equals(this.sender) && target.equals(this.audience));
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final PlayerUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(final @NonNull PlayerUser target, final boolean checkSpying) {
     return false;
   }
 
   @Override
-  public void sendComponents(@NonNull final Identity identity,
-                             @NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponents(final @NonNull Identity identity,
+                             final @NonNull Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(identity, entry.getValue());
     }
   }
 
   @Override
-  public void sendComponentsAndLog(@NonNull final Identity identity,
-                                   @NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponentsAndLog(final @NonNull Identity identity,
+                                   final @NonNull Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(Identity.nil(), entry.getValue());
 

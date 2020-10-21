@@ -7,10 +7,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class UserEvent implements CarbonEvent, Cancellable {
 
-  private @NonNull final PlayerUser user;
+  private final @NonNull PlayerUser user;
   private boolean cancelled = false;
 
-  public UserEvent(@NonNull final PlayerUser user) {
+  public UserEvent(final @NonNull PlayerUser user) {
     this.user = user;
   }
 
@@ -29,13 +29,13 @@ public class UserEvent implements CarbonEvent, Cancellable {
   }
 
   public static class Join extends UserEvent {
-    public Join(@NonNull final PlayerUser user) {
+    public Join(final @NonNull PlayerUser user) {
       super(user);
     }
   }
 
   public static class Leave extends UserEvent {
-    public Leave(@NonNull final PlayerUser user) {
+    public Leave(final @NonNull PlayerUser user) {
       super(user);
     }
   }

@@ -14,9 +14,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class NicknameCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public NicknameCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  public NicknameCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("nickname");
@@ -47,7 +47,7 @@ public class NicknameCommand {
     );
   }
 
-  private void nicknameSelf(@NonNull final CommandContext<CarbonUser> context) {
+  private void nicknameSelf(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
     String nickname = context.get("nickname");
 
@@ -70,7 +70,7 @@ public class NicknameCommand {
       "user", user.name(), "sender", context.getSender().name()));
   }
 
-  private void nicknameOther(@NonNull final CommandContext<CarbonUser> context) {
+  private void nicknameOther(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser target = context.get("user");
     String nickname = context.get("nickname");
 

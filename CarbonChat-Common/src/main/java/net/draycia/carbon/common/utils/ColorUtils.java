@@ -22,11 +22,11 @@ public final class ColorUtils {
 
   }
 
-  public @Nullable static TextColor parseColor(@Nullable final String input) {
+  public @Nullable static TextColor parseColor(final @Nullable String input) {
     return parseColor(null, input);
   }
 
-  public @Nullable static TextColor parseColor(@Nullable final CarbonUser user, @Nullable String input) {
+  public @Nullable static TextColor parseColor(final @Nullable CarbonUser user, @Nullable String input) {
     if (user instanceof PlayerUser) {
       input = ((PlayerUser) user).parsePlaceholders(input);
     }
@@ -50,14 +50,14 @@ public final class ColorUtils {
     return TextColor.fromCSSHexString(input);
   }
 
-  private static @NonNull final Pattern spigotLegacyRGB =
+  private static final @NonNull Pattern spigotLegacyRGB =
     Pattern.compile("[§&]x[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])");
 
-  private static @NonNull final Pattern pluginRGB =
+  private static final @NonNull Pattern pluginRGB =
     Pattern.compile("[§&]#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])");
 
   @NonNull
-  public static String translateAlternateColors(@NonNull final String input) {
+  public static String translateAlternateColors(final @NonNull String input) {
     // TODO: check if MiniMessage or MineDown
     String output = input;
 

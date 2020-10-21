@@ -8,16 +8,16 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PrivateMessageEvent implements CarbonEvent, Cancellable {
 
-  private @NonNull final PlayerUser sender;
-  private @NonNull final PlayerUser target;
-  private @NonNull final Component senderComponent;
-  private @NonNull final Component targetComponent;
-  private @NonNull final String message;
+  private final @NonNull PlayerUser sender;
+  private final @NonNull PlayerUser target;
+  private final @NonNull Component senderComponent;
+  private final @NonNull Component targetComponent;
+  private final @NonNull String message;
   private boolean cancelled = false;
 
-  public PrivateMessageEvent(@NonNull final PlayerUser sender, @NonNull final PlayerUser target,
-                             @NonNull final Component senderComponent, @NonNull final Component targetComponent,
-                             @NonNull final String message) {
+  public PrivateMessageEvent(final @NonNull PlayerUser sender, final @NonNull PlayerUser target,
+                             final @NonNull Component senderComponent, final @NonNull Component targetComponent,
+                             final @NonNull String message) {
 
     this.sender = sender;
     this.target = target;

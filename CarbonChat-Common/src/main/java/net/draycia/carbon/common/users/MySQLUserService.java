@@ -34,22 +34,22 @@ import java.util.function.Supplier;
 
 public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> implements UserService<T> {
 
-  private @NonNull final CarbonChat carbonChat;
-  private @NonNull final Database database;
-  private @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier;
-  private @NonNull final Function<UUID, T> userFactory;
-  private @NonNull final Function<String, UUID> nameResolver;
-  private @NonNull final Supplier<C> consoleFactory;
+  private final @NonNull CarbonChat carbonChat;
+  private final @NonNull Database database;
+  private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+  private final @NonNull Function<UUID, T> userFactory;
+  private final @NonNull Function<String, UUID> nameResolver;
+  private final @NonNull Supplier<C> consoleFactory;
 
-  private @NonNull final LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
+  private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public MySQLUserService(@NonNull final CarbonChat carbonChat, @NonNull final SQLCredentials credentials,
-                          @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier,
-                          @NonNull final Function<UUID, T> userFactory,
-                          @NonNull final Function<String, UUID> nameResolver,
-                          @NonNull final Supplier<C> consoleFactory) {
+  public MySQLUserService(final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
+                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
+                          final @NonNull Function<UUID, T> userFactory,
+                          final @NonNull Function<String, UUID> nameResolver,
+                          final @NonNull Supplier<C> consoleFactory) {
     this.carbonChat = carbonChat;
     this.supplier = supplier;
     this.userFactory = userFactory;
@@ -99,7 +99,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   }
 
   @Override
-  public UUID resolve(@NonNull final String name) {
+  public UUID resolve(final @NonNull String name) {
     return this.nameResolver.apply(name);
   }
 
@@ -111,7 +111,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   }
 
   @Override
-  public @Nullable T wrap(@NonNull final UUID uuid) {
+  public @Nullable T wrap(final @NonNull UUID uuid) {
     try {
       return this.userCache.get(uuid);
     } catch (final ExecutionException exception) {
@@ -126,24 +126,24 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   }
 
   @Override
-  public @Nullable T wrapIfLoaded(@NonNull final UUID uuid) {
+  public @Nullable T wrapIfLoaded(final @NonNull UUID uuid) {
     return this.userCache.getIfPresent(uuid);
   }
 
   @Override
-  public @Nullable T refreshUser(@NonNull final UUID uuid) {
+  public @Nullable T refreshUser(final @NonNull UUID uuid) {
     this.userCache.invalidate(uuid);
 
     return this.wrap(uuid);
   }
 
   @Override
-  public void invalidate(@NonNull final T user) {
+  public void invalidate(final @NonNull T user) {
     this.userCache.invalidate(user.uuid());
   }
 
   @Override
-  public void validate(@NonNull final T user) {
+  public void validate(final @NonNull T user) {
     this.userCache.put(user.uuid(), user);
   }
 
@@ -152,7 +152,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     return this.supplier.get();
   }
 
-  private @Nullable T loadUser(@NonNull final UUID uuid) {
+  private @Nullable T loadUser(final @NonNull UUID uuid) {
     final T user = this.userFactory.apply(uuid);
 
     try (final DbStatement statement = this.database.query("SELECT * from sc_users WHERE uuid = ?;")) {
@@ -210,7 +210,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     return user;
   }
 
-  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull T> notification) {
+  private void saveUser(final @NonNull RemovalNotification<@NonNull UUID, @NonNull T> notification) {
     final T user = notification.getValue();
 
     this.database.createTransaction(stm -> {

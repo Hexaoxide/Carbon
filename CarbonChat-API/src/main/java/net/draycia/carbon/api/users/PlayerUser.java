@@ -17,7 +17,7 @@ public interface PlayerUser extends CarbonUser {
 
   @Nullable String nickname();
 
-  default void nickname(@Nullable final String nickname) {
+  default void nickname(final @Nullable String nickname) {
     this.nickname(nickname, false);
   }
 
@@ -59,17 +59,17 @@ public interface PlayerUser extends CarbonUser {
 
   @Nullable UUID replyTarget();
 
-  default void replyTarget(@Nullable final UUID target) {
+  default void replyTarget(final @Nullable UUID target) {
     this.replyTarget(target, false);
   }
 
-  default void replyTarget(@Nullable final PlayerUser user) {
+  default void replyTarget(final @Nullable PlayerUser user) {
     this.replyTarget(user.uuid(), false);
   }
 
   void replyTarget(@Nullable UUID target, boolean fromRemote);
 
-  default void replyTarget(@Nullable final PlayerUser user, final boolean fromRemote) {
+  default void replyTarget(final @Nullable PlayerUser user, final boolean fromRemote) {
     this.replyTarget(user.uuid(), fromRemote);
   }
 
@@ -77,19 +77,19 @@ public interface PlayerUser extends CarbonUser {
 
   void ignoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote);
 
-  default void ignoringUser(@NonNull final UUID uuid, final boolean ignoring) {
+  default void ignoringUser(final @NonNull UUID uuid, final boolean ignoring) {
     this.ignoringUser(uuid, ignoring, false);
   }
 
-  default boolean ignoringUser(@NonNull final PlayerUser user) {
+  default boolean ignoringUser(final @NonNull PlayerUser user) {
     return this.ignoringUser(user.uuid());
   }
 
-  default void ignoringUser(@NonNull final PlayerUser user, final boolean ignoring, final boolean fromRemote) {
+  default void ignoringUser(final @NonNull PlayerUser user, final boolean ignoring, final boolean fromRemote) {
     this.ignoringUser(user.uuid(), ignoring, fromRemote);
   }
 
-  default void ignoringUser(@NonNull final PlayerUser user, final boolean ignoring) {
+  default void ignoringUser(final @NonNull PlayerUser user, final boolean ignoring) {
     this.ignoringUser(user.uuid(), ignoring, false);
   }
 
@@ -97,19 +97,19 @@ public interface PlayerUser extends CarbonUser {
 
   @NonNull Iterable<UUID> ignoredUsers();
 
-  boolean hasGroup(@NonNull final String group);
+  boolean hasGroup(final @NonNull String group);
 
-  boolean hasGroup(@NonNull final Group group);
+  boolean hasGroup(final @NonNull Group group);
 
   @NonNull Collection<@NonNull Group> groups();
 
   @Nullable Group primaryGroup();
 
-  void sendMessage(@NonNull final PlayerUser sender, @NonNull String message);
+  void sendMessage(final @NonNull PlayerUser sender, @NonNull String message);
 
   @Nullable ChatChannel selectedChannel();
 
-  default void selectedChannel(@NonNull final ChatChannel channel) {
+  default void selectedChannel(final @NonNull ChatChannel channel) {
     this.selectedChannel(channel, false);
   }
 

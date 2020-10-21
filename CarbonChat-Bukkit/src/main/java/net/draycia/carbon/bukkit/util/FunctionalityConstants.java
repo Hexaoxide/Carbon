@@ -29,7 +29,7 @@ public final class FunctionalityConstants {
 
   }
 
-  private static boolean noThrow(@NonNull final ThrowingRunnable runnable) {
+  private static boolean noThrow(final @NonNull ThrowingRunnable runnable) {
     try {
       runnable.run();
       return true;

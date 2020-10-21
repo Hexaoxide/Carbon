@@ -23,15 +23,15 @@ import java.util.Map;
 
 public class BukkitChatListener implements Listener {
 
-  private @NonNull final CarbonChatBukkit carbonChat;
+  private final @NonNull CarbonChatBukkit carbonChat;
 
-  public BukkitChatListener(@NonNull final CarbonChatBukkit carbonChat) {
+  public BukkitChatListener(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-  public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
+  public void onPlayerchat(final @NonNull AsyncPlayerChatEvent event) {
     final PlayerUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     ChatChannel channel = user.selectedChannel();
 

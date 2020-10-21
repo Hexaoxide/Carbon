@@ -14,20 +14,20 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AdventureManager implements MessageProcessor {
 
-  private @NonNull final AudienceProvider provider;
+  private final @NonNull AudienceProvider provider;
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  private @NonNull final FormatType formatType;
+  private final @NonNull FormatType formatType;
 
-  public AdventureManager(@NonNull final AudienceProvider provider, @NonNull final FormatType formatType) {
+  public AdventureManager(final @NonNull AudienceProvider provider, final @NonNull FormatType formatType) {
     this.provider = provider;
     this.formatType = formatType;
     this.carbonChat = CarbonChatProvider.carbonChat();
   }
 
   @Override
-  public @NonNull Component processMessage(@Nullable final String input, @NonNull final String @NonNull ... placeholders) {
+  public @NonNull Component processMessage(final @Nullable String input, final @NonNull String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
       return Component.empty();
     }
@@ -52,11 +52,11 @@ public class AdventureManager implements MessageProcessor {
     }
   }
 
-  private @NonNull Component processMojang(@NonNull final String input) {
+  private @NonNull Component processMojang(final @NonNull String input) {
     return this.carbonChat.gsonSerializer().deserialize(input);
   }
 
-  private @NonNull String processPlaceholders(@NonNull String input, @NonNull final String @NonNull ... placeholders) {
+  private @NonNull String processPlaceholders(@NonNull String input, final @NonNull String @NonNull ... placeholders) {
     for (int i = 0; i < placeholders.length; i += 2) {
       final String placeholder = placeholders[i];
       final String replacement = placeholders[i + 1];

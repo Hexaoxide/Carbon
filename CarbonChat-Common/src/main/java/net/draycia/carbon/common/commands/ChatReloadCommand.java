@@ -12,9 +12,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChatReloadCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public ChatReloadCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  public ChatReloadCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("chatreload");
@@ -33,7 +33,7 @@ public class ChatReloadCommand {
     );
   }
 
-  private void reloadConfig(@NonNull final CommandContext<CarbonUser> context) {
+  private void reloadConfig(final @NonNull CommandContext<CarbonUser> context) {
     this.carbonChat.reloadConfig();
 
     final Component message = this.carbonChat.messageProcessor()

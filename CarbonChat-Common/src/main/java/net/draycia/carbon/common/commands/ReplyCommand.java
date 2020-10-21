@@ -14,9 +14,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ReplyCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public ReplyCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  public ReplyCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("reply");
@@ -36,7 +36,7 @@ public class ReplyCommand {
     );
   }
 
-  private void reply(@NonNull final CommandContext<CarbonUser> context) {
+  private void reply(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
     final String input = context.get("message");
 

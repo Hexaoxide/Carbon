@@ -151,7 +151,7 @@ public final class ChannelOptions {
     return this.color;
   }
 
-  public @Nullable Context context(@NonNull final String key) {
+  public @Nullable Context context(final @NonNull String key) {
     final Context localContext;
 
     if (this.contexts != null) {
@@ -194,7 +194,7 @@ public final class ChannelOptions {
     return contexts;
   }
 
-  public @Nullable String format(@NonNull final String key) {
+  public @Nullable String format(final @NonNull String key) {
     final String localFormat;
 
     if (this.formats() != null) {
