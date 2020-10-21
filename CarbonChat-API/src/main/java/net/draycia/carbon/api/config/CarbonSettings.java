@@ -11,9 +11,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 @ConfigSerializable
@@ -75,16 +73,6 @@ public final class CarbonSettings {
   private @NonNull RedisCredentials redisCredentials = new RedisCredentials();
 
   @Setting
-  @Comment("Used for message formats - custom tags that are replaced in descending order" +
-    "\nFor example, in the default config, <group> wil be replaced with <green>%vault_group%")
-  private @NonNull Map<@Nullable String, @NonNull String> customPlaceholders = new HashMap<String, String>() {
-    {
-      this.put("prefix", "<gray>[<group><gray>]");
-      this.put("group", "<green>%vault_group%");
-    }
-  };
-
-  @Setting
   @Comment("Plays a sound and highlights the message when someone types your name")
   private @NonNull ChannelPings channelPings = new ChannelPings();
 
@@ -135,10 +123,6 @@ public final class CarbonSettings {
 
   public @NonNull RedisCredentials redisCredentials() {
     return this.redisCredentials;
-  }
-
-  public Map<String, String> customPlaceholders() {
-    return this.customPlaceholders;
   }
 
   public @Nullable String channelOnJoin() {

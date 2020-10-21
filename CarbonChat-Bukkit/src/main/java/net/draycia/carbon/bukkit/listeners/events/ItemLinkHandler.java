@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit.listeners.events;
 
+import net.draycia.carbon.api.events.ChatFormatEvent;
 import net.draycia.carbon.bukkit.util.CarbonUtils;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
@@ -33,16 +34,19 @@ public class ItemLinkHandler {
       }
 
       for (final Pattern pattern : event.channel().itemLinkPatterns()) {
-        final String patternContent = pattern.toString().replace("\\Q", "")
-          .replace("\\E", "");
-
-        if (event.originalMessage().contains(patternContent)) {
+        if (pattern.matcher(event.originalMessage()).find()) {
           final TextComponent component = (TextComponent) event.component()
             .replaceFirstText(pattern, input -> itemComponent);
-
           event.component(component);
+
           break;
         }
+      }
+    });
+
+    CarbonEvents.register(ChatFormatEvent.class, PostOrders.EARLY, false, event -> {
+      for (final Pattern pattern : event.channel().itemLinkPatterns()) {
+        event.message(pattern.matcher(event.message()).replaceAll("<white>$1</white>"));
       }
     });
   }

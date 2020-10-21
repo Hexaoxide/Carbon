@@ -14,7 +14,7 @@ public class CustomPlaceholderHandler {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      for (final Map.Entry<String, String> entry : carbonChat.carbonSettings().customPlaceholders().entrySet()) {
+      for (final Map.Entry<String, String> entry : carbonChat.channelSettings().customPlaceholders().entrySet()) {
         event.format(event.format().replace("<" + entry.getKey() + ">", entry.getValue()));
       }
     });
