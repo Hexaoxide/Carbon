@@ -17,11 +17,10 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   private boolean spying;
   private boolean ignored;
   private @NonNull String color;
-  @MonotonicNonNull // @NonNull but not initialised in all constructors.
-  private UUID uuid;
-  @MonotonicNonNull // @NonNull but not initialised in all constructors.
-  private String channel;
+  private @NonNull UUID uuid;
+  private @NonNull String channel;
 
+  @SuppressWarnings("initialization.fields.uninitialized")
   public SimpleUserChannelSettings(final @NonNull UUID uuid, final @NonNull String channel) {
     this.uuid = uuid;
     this.channel = channel;

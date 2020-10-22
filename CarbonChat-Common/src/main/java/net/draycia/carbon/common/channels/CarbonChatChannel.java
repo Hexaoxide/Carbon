@@ -450,47 +450,47 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable String switchMessage() {
+  public @NonNull String switchMessage() {
     return this.options().switchMessage();
   }
 
   @Override
-  public @Nullable String switchOtherMessage() {
+  public @NonNull String switchOtherMessage() {
     return this.options().switchOtherMessage();
   }
 
   @Override
-  public @Nullable String switchFailureMessage() {
+  public @NonNull String switchFailureMessage() {
     return this.options().switchFailureMessage();
   }
 
   @Override
-  public @Nullable String cannotIgnoreMessage() {
+  public @NonNull String cannotIgnoreMessage() {
     return this.options().cannotIgnoreMessage();
   }
 
   @Override
-  public @Nullable String toggleOffMessage() {
+  public @NonNull String toggleOffMessage() {
     return this.options().toggleOffMessage();
   }
 
   @Override
-  public @Nullable String toggleOnMessage() {
+  public @NonNull String toggleOnMessage() {
     return this.options().toggleOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOnMessage() {
+  public @NonNull String toggleOtherOnMessage() {
     return this.options().toggleOtherOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOffMessage() {
+  public @NonNull String toggleOtherOffMessage() {
     return this.options().toggleOtherOffMessage();
   }
 
   @Override
-  public @Nullable String cannotUseMessage() {
+  public @NonNull String cannotUseMessage() {
     return this.options().cannotUseMessage();
   }
 

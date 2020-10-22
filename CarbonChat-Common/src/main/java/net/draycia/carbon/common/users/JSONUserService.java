@@ -78,12 +78,11 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   }
 
   @Override
-  public @Nullable T wrap(final @NonNull UUID uuid) {
+  public @NonNull T wrap(final @NonNull UUID uuid) {
     try {
       return this.userCache.get(uuid);
     } catch (final ExecutionException exception) {
-      exception.printStackTrace();
-      return null;
+      throw new IllegalStateException(exception);
     }
   }
 

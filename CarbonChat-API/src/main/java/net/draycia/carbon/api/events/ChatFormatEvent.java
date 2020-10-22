@@ -54,7 +54,7 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     this.chatChannel = chatChannel;
   }
 
-  public @Nullable String format() {
+  public @NonNull String format() {
     return this.format;
   }
 

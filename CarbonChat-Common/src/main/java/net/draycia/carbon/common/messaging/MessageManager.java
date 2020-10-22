@@ -69,6 +69,10 @@ public class MessageManager {
       user.replyTarget(new UUID(byteArray.readLong(), byteArray.readLong()), true);
     });
 
+    this.messageService().registerUserMessageListener("reply-target-reset", (user, byteArray) -> {
+      user.replyTarget((UUID) null, true);
+    });
+
     this.messageService().registerUserMessageListener("ignoring-user", (user, byteArray) -> {
       user.ignoringUser(new UUID(byteArray.readLong(), byteArray.readLong()), byteArray.readBoolean(), true);
     });

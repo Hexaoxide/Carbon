@@ -112,12 +112,11 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   }
 
   @Override
-  public @Nullable T wrap(final @NonNull UUID uuid) {
+  public @NonNull T wrap(final @NonNull UUID uuid) {
     try {
       return this.userCache.get(uuid);
     } catch (final ExecutionException exception) {
-      exception.printStackTrace();
-      return null;
+      throw new IllegalStateException(exception);
     }
   }
 
@@ -170,9 +169,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
 
       final ChatChannel channel = this.carbonChat.channelRegistry().getOrDefault(users.getString("channel"));
 
-      if (channel != null) {
-        user.selectedChannel(channel, true);
-      }
+      user.selectedChannel(channel, true);
 
       final String nickname = users.getString("nickname");
 

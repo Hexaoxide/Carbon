@@ -150,47 +150,47 @@ public class EmptyTextChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable String switchMessage() {
-    return null;
+  public @NonNull String switchMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String switchOtherMessage() {
-    return null;
+  public @NonNull String switchOtherMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String switchFailureMessage() {
-    return null;
+  public @NonNull String switchFailureMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String cannotIgnoreMessage() {
-    return null;
+  public @NonNull String cannotIgnoreMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String toggleOffMessage() {
-    return null;
+  public @NonNull String toggleOffMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String toggleOnMessage() {
-    return null;
+  public @NonNull String toggleOnMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String toggleOtherOnMessage() {
-    return null;
+  public @NonNull String toggleOtherOnMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String toggleOtherOffMessage() {
-    return null;
+  public @NonNull String toggleOtherOffMessage() {
+    return "";
   }
 
   @Override
-  public @Nullable String cannotUseMessage() {
-    return null;
+  public @NonNull String cannotUseMessage() {
+    return "";
   }
 }

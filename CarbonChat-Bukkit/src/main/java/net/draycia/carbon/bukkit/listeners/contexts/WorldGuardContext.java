@@ -5,6 +5,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
@@ -29,7 +30,13 @@ public final class WorldGuardContext {
         return;
       }
 
-      event.cancelled(this.testContext(senderPlayer, recipientPlayer, event.context(KEY)));
+      final Context context = event.context(KEY);
+
+      if (context == null) {
+        return;
+      }
+
+      event.cancelled(this.testContext(senderPlayer, recipientPlayer, context));
     });
 
     CarbonEvents.register(MessageContextEvent.class, event -> {
@@ -110,7 +117,17 @@ public final class WorldGuardContext {
   public boolean isInRegion(final @NonNull String region, final @NonNull Player player) {
     final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     final World world = BukkitAdapter.adapt(player.getWorld());
-    final ProtectedRegion protection = container.get(world).getRegion(region);
+    final RegionManager regionManager = container.get(world);
+
+    if (regionManager == null) {
+      return false;
+    }
+
+    final ProtectedRegion protection = regionManager.getRegion(region);
+
+    if (protection == null) {
+      return false;
+    }
 
     return this.isInRegion(protection, player);
   }

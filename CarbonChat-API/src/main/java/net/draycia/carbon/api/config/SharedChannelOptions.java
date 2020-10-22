@@ -3,7 +3,6 @@ package net.draycia.carbon.api.config;
 import com.google.common.collect.ImmutableMap;
 import net.draycia.carbon.api.Context;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
@@ -15,42 +14,42 @@ import java.util.Map;
 @ConfigSerializable
 public final class SharedChannelOptions {
 
-  @Setting private String color = "#FFFFFF";
-  @Setting private Map<String, Context> contexts = new HashMap<>();
-  @Setting private Map<String, String> formats =
+  @Setting private @NonNull String color = "#FFFFFF";
+  @Setting private @NonNull Map<String, Context> contexts = new HashMap<>();
+  @Setting private @NonNull Map<@NonNull String, @NonNull String> formats =
     ImmutableMap.of("default", "<color><<displayname><reset><color>> <message>",
       "staff", "<#00CED1>[Staff] <color><<displayname><reset><color>> <message>");
-  @Setting private String defaultFormatName = "default";
+  @Setting private @NonNull String defaultFormatName = "default";
   @Setting private boolean ignorable = true;
   @Setting private boolean crossServer = true;
   @Setting private boolean honorsRecipientList = false;
   @Setting private boolean permissionGroupMatching = false;
-  @Setting private List<String> groupOverrides = new ArrayList<>();
+  @Setting private @NonNull List<String> groupOverrides = new ArrayList<>();
   @Setting private boolean shouldCancelChatEvent = false;
   @Setting private boolean primaryGroupOnly = false;
-  @Setting private String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
-  @Setting private String switchOtherMessage = "<gray><player> <reset><gray>is now in <color><channel> <gray>chat!";
-  @Setting private String switchFailureMessage = "<red>You cannot use channel <channel>!";
-  @Setting private String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
-  @Setting private String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
-  @Setting private String toggleOtherOnMessage = "<gray><player> <reset><gray>can now see <color><channel> <gray>chat!";
-  @Setting private String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
-  @Setting private String cannotUseMessage = "You cannot use that channel!";
-  @Setting private String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
+  @Setting private @NonNull String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
+  @Setting private @NonNull String switchOtherMessage = "<gray><player> <reset><gray>is now in <color><channel> <gray>chat!";
+  @Setting private @NonNull String switchFailureMessage = "<red>You cannot use channel <channel>!";
+  @Setting private @NonNull String toggleOnMessage = "<gray>You can now see <color><channel> <gray>chat!";
+  @Setting private @NonNull String toggleOffMessage = "<gray>You can no longer see <color><channel> <gray>chat!";
+  @Setting private @NonNull String toggleOtherOnMessage = "<gray><player> <reset><gray>can now see <color><channel> <gray>chat!";
+  @Setting private @NonNull String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
+  @Setting private @NonNull String cannotUseMessage = "You cannot use that channel!";
+  @Setting private @NonNull String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
 
-  public @Nullable String color() {
+  public @NonNull String color() {
     return this.color;
   }
 
-  public @Nullable Map<String, Context> contexts() {
+  public @NonNull Map<String, Context> contexts() {
     return this.contexts;
   }
 
-  public @Nullable Map<String, String> formats() {
+  public @NonNull Map<String, String> formats() {
     return this.formats;
   }
 
-  public @Nullable String defaultFormatName() {
+  public @NonNull String defaultFormatName() {
     return this.defaultFormatName;
   }
 
@@ -74,39 +73,39 @@ public final class SharedChannelOptions {
     return this.groupOverrides;
   }
 
-  public @Nullable String switchMessage() {
+  public @NonNull String switchMessage() {
     return this.switchMessage;
   }
 
-  public @Nullable String switchOtherMessage() {
+  public @NonNull String switchOtherMessage() {
     return this.switchOtherMessage;
   }
 
-  public @Nullable String switchFailureMessage() {
+  public @NonNull String switchFailureMessage() {
     return this.switchFailureMessage;
   }
 
-  public @Nullable String cannotIgnoreMessage() {
+  public @NonNull String cannotIgnoreMessage() {
     return this.cannotIgnoreMessage;
   }
 
-  public @Nullable String toggleOffMessage() {
+  public @NonNull String toggleOffMessage() {
     return this.toggleOffMessage;
   }
 
-  public @Nullable String toggleOnMessage() {
+  public @NonNull String toggleOnMessage() {
     return this.toggleOnMessage;
   }
 
-  public @Nullable String toggleOtherOnMessage() {
+  public @NonNull String toggleOtherOnMessage() {
     return this.toggleOtherOnMessage;
   }
 
-  public @Nullable String toggleOtherOffMessage() {
+  public @NonNull String toggleOtherOffMessage() {
     return this.toggleOtherOffMessage;
   }
 
-  public @Nullable String cannotUseMessage() {
+  public @NonNull String cannotUseMessage() {
     return this.cannotUseMessage;
   }
 

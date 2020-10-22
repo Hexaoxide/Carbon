@@ -235,47 +235,47 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @Nullable String switchMessage() {
+  public @NonNull String switchMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().switchMessage();
   }
 
   @Override
-  public @Nullable String switchOtherMessage() {
+  public @NonNull String switchOtherMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().switchOtherMessage();
   }
 
   @Override
-  public @Nullable String switchFailureMessage() {
+  public @NonNull String switchFailureMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().switchFailureMessage();
   }
 
   @Override
-  public @Nullable String cannotIgnoreMessage() {
+  public @NonNull String cannotIgnoreMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().cannotIgnoreMessage();
   }
 
   @Override
-  public @Nullable String toggleOffMessage() {
+  public @NonNull String toggleOffMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOffMessage();
   }
 
   @Override
-  public @Nullable String toggleOnMessage() {
+  public @NonNull String toggleOnMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOnMessage() {
+  public @NonNull String toggleOtherOnMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOtherOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOffMessage() {
+  public @NonNull String toggleOtherOffMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOtherOffMessage();
   }
 
   @Override
-  public @Nullable String cannotUseMessage() {
+  public @NonNull String cannotUseMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().cannotUseMessage();
   }
 }

@@ -37,7 +37,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
   }
 
   @Override
-  public @Nullable String onPlaceholderRequest(final @NonNull Player player, final @NonNull String identifier) {
+  public @NonNull String onPlaceholderRequest(final @NonNull Player player, final @NonNull String identifier) {
     final String key = identifier.toLowerCase();
 
     if (key.startsWith("can_use_")) {
@@ -82,7 +82,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
       return channel == null ? this.carbonChat.channelRegistry().defaultValue().name() : channel.name();
     }
 
-    return null;
+    return "";
   }
 
 }

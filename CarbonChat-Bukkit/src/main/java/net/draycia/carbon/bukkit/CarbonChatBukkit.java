@@ -84,6 +84,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@SuppressWarnings("initialization.fields.uninitialized")
 public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private static final int BSTATS_PLUGIN_ID = 8720;
@@ -147,7 +148,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     // Handle storage service
     final StorageType storageType = this.carbonSettings().storageType();
 
-    final Supplier<Iterable<BukkitPlayerUser>> supplier = () -> {
+    final Supplier<@NonNull Iterable<@NonNull BukkitPlayerUser>> supplier = () -> {
       final List<BukkitPlayerUser> users = new ArrayList<>();
 
       for (final Player player : Bukkit.getOnlinePlayers()) {
@@ -215,6 +216,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     new WhisperPingHandler();
   }
 
+  @SuppressWarnings("return.type.incompatible")
   private void setupCommands() {
     try {
       this.commandManager = new PaperCommandManager<>(this,

@@ -7,7 +7,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,22 +54,22 @@ public interface ChatChannel extends Audience {
 
   @NonNull List<@NonNull Pattern> itemLinkPatterns();
 
-  @Nullable String switchMessage();
+  @NonNull String switchMessage();
 
-  @Nullable String switchOtherMessage();
+  @NonNull String switchOtherMessage();
 
-  @Nullable String switchFailureMessage();
+  @NonNull String switchFailureMessage();
 
-  @Nullable String cannotIgnoreMessage();
+  @NonNull String cannotIgnoreMessage();
 
-  @Nullable String toggleOffMessage();
+  @NonNull String toggleOffMessage();
 
-  @Nullable String toggleOnMessage();
+  @NonNull String toggleOnMessage();
 
-  @Nullable String toggleOtherOnMessage();
+  @NonNull String toggleOtherOnMessage();
 
-  @Nullable String toggleOtherOffMessage();
+  @NonNull String toggleOtherOffMessage();
 
-  @Nullable String cannotUseMessage();
+  @NonNull String cannotUseMessage();
 
 }

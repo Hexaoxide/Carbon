@@ -17,6 +17,10 @@ public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single
   public BukkitConsoleUser(final @NonNull ConsoleCommandSender sender) {
     final Plugin plugin = Bukkit.getPluginManager().getPlugin("CarbonChat");
 
+    if (plugin == null) {
+      throw new IllegalArgumentException("CarbonChat plugin cannot be found!");
+    }
+
     this.audience = BukkitAudiences.create(plugin).sender(sender);
   }
 

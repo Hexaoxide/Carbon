@@ -9,6 +9,7 @@ import net.kyori.adventure.identity.Identity;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class EconomyContext {
@@ -18,7 +19,15 @@ public class EconomyContext {
 
   public EconomyContext(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
-    this.economy = this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+
+    final RegisteredServiceProvider<Economy> provider =
+      this.carbonChat.getServer().getServicesManager().getRegistration(Economy.class);
+
+    if (provider == null) {
+      throw new IllegalArgumentException("Economy provider not found!");
+    }
+
+    this.economy = provider.getProvider();
 
     CarbonEvents.register(PreChatFormatEvent.class, event -> {
       if (!(event.channel() instanceof TextChannel)) {

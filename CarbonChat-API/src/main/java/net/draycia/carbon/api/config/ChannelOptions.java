@@ -318,7 +318,7 @@ public final class ChannelOptions {
     return this.messagePrefix;
   }
 
-  public @Nullable String switchMessage() {
+  public @NonNull String switchMessage() {
     if (this.switchMessage == null) {
       return this.defaultOptions().switchMessage();
     }
@@ -326,7 +326,7 @@ public final class ChannelOptions {
     return this.switchMessage;
   }
 
-  public @Nullable String switchOtherMessage() {
+  public @NonNull String switchOtherMessage() {
     if (this.switchOtherMessage == null) {
       return this.defaultOptions().switchOtherMessage();
     }
@@ -334,7 +334,7 @@ public final class ChannelOptions {
     return this.switchOtherMessage;
   }
 
-  public @Nullable String switchFailureMessage() {
+  public @NonNull String switchFailureMessage() {
     if (this.switchFailureMessage == null) {
       return this.defaultOptions().switchFailureMessage();
     }
@@ -342,7 +342,7 @@ public final class ChannelOptions {
     return this.switchFailureMessage;
   }
 
-  public @Nullable String cannotIgnoreMessage() {
+  public @NonNull String cannotIgnoreMessage() {
     if (this.cannotIgnoreMessage == null) {
       return this.defaultOptions().cannotIgnoreMessage();
     }
@@ -350,7 +350,7 @@ public final class ChannelOptions {
     return this.cannotIgnoreMessage;
   }
 
-  public @Nullable String toggleOffMessage() {
+  public @NonNull String toggleOffMessage() {
     if (this.toggleOffMessage == null) {
       return this.defaultOptions().toggleOffMessage();
     }
@@ -358,7 +358,7 @@ public final class ChannelOptions {
     return this.toggleOffMessage;
   }
 
-  public @Nullable String toggleOnMessage() {
+  public @NonNull String toggleOnMessage() {
     if (this.toggleOnMessage == null) {
       return this.defaultOptions().toggleOnMessage();
     }
@@ -366,7 +366,7 @@ public final class ChannelOptions {
     return this.toggleOnMessage;
   }
 
-  public @Nullable String toggleOtherOnMessage() {
+  public @NonNull String toggleOtherOnMessage() {
     if (this.toggleOtherOnMessage == null) {
       return this.defaultOptions().toggleOtherOnMessage();
     }
@@ -374,7 +374,7 @@ public final class ChannelOptions {
     return this.toggleOtherOnMessage;
   }
 
-  public @Nullable String toggleOtherOffMessage() {
+  public @NonNull String toggleOtherOffMessage() {
     if (this.toggleOtherOffMessage == null) {
       return this.defaultOptions().toggleOtherOffMessage();
     }
@@ -382,7 +382,7 @@ public final class ChannelOptions {
     return this.toggleOtherOffMessage;
   }
 
-  public @Nullable String cannotUseMessage() {
+  public @NonNull String cannotUseMessage() {
     if (this.cannotUseMessage == null) {
       return this.defaultOptions().cannotUseMessage();
     }
