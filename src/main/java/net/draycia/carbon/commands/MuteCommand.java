@@ -46,7 +46,7 @@ public class MuteCommand {
     final ChatUser user = (ChatUser) args[0];
     final Audience audience = this.carbonChat.adventureManager().audiences().sender(sender);
 
-    if (user.shadowMuted()) {
+    if (user.muted()) {
       user.muted(false);
       final String format = this.carbonChat.language().getString("no-longer-muted");
 
