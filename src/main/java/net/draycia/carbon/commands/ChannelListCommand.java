@@ -94,7 +94,7 @@ public class ChannelListCommand {
     }
 
     final Iterator<ChatChannel> visibleChannels = canSee.iterator();
-    final TextComponent.Builder availableList = TextComponent.builder("");
+    final TextComponent.Builder availableList = Component.text();
 
     this.makeList(visibleChannels, availableList);
 
@@ -108,7 +108,7 @@ public class ChannelListCommand {
 
     if (sender.hasPermission("carbonchat.channellist.bypass") && !cannotSee.isEmpty()) {
       final Iterator<ChatChannel> invisibleChannels = cannotSee.iterator();
-      final TextComponent.Builder unavailableList = TextComponent.builder("");
+      final TextComponent.Builder unavailableList = Component.text();
 
       this.makeList(invisibleChannels, unavailableList);
 
@@ -123,10 +123,10 @@ public class ChannelListCommand {
   private void makeList(@NonNull final Iterator<@NonNull ChatChannel> iterator, final TextComponent.@NonNull Builder list) {
     final String listSeparator = this.carbonChat.language().getString("channel-list-separator", ", ");
     // TODO: Larry, why did you double assign the listSeparatorComponent?
-    final Component listSeparatorComponent = TextComponent.of(listSeparator);
+    final Component listSeparatorComponent = Component.text(listSeparator);
 
     while (iterator.hasNext()) {
-      list.append(TextComponent.of(iterator.next().name()));
+      list.append(Component.text(iterator.next().name()));
 
       if (iterator.hasNext()) {
         list.append(listSeparatorComponent);

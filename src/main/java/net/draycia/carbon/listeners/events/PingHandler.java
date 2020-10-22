@@ -38,12 +38,12 @@ public class PingHandler {
         }
       }
 
-      final Key key = Key.of(carbonChat.getConfig().getString("pings.sound"));
+      final Key key = Key.key(carbonChat.getConfig().getString("pings.sound"));
       final Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("pings.source"));
       final float volume = (float) carbonChat.getConfig().getDouble("pings.volume");
       final float pitch = (float) carbonChat.getConfig().getDouble("pings.pitch");
 
-      event.target().playSound(Sound.of(key, source, volume, pitch));
+      event.target().playSound(Sound.sound(key, source, volume, pitch));
     });
   }
 

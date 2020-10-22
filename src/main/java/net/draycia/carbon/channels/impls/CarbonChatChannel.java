@@ -111,7 +111,7 @@ public class CarbonChatChannel extends ChatChannel {
     CarbonEvents.post(event);
 
     if (event.cancelled()) {
-      return TextComponent.empty();
+      return Component.empty();
     }
 
     // Get player's formatting
@@ -125,7 +125,7 @@ public class CarbonChatChannel extends ChatChannel {
     // Return if cancelled or message is emptied
 
     if (preFormatEvent.cancelled() || preFormatEvent.message().trim().isEmpty()) {
-      return TextComponent.empty();
+      return Component.empty();
     }
 
     final String displayName;

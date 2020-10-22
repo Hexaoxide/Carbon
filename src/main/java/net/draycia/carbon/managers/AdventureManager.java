@@ -6,7 +6,6 @@ import net.draycia.carbon.CarbonChat;
 import net.draycia.carbon.util.CarbonUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
 import org.bukkit.entity.Player;
@@ -30,7 +29,7 @@ public class AdventureManager {
   public Component processMessageWithPapi(@NonNull final Player player, @Nullable final String input,
                                           @NonNull final String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
-      return TextComponent.empty();
+      return Component.empty();
     }
 
     return this.processMessage(PlaceholderAPI.setPlaceholders(player, input), placeholders);
@@ -39,7 +38,7 @@ public class AdventureManager {
   @NonNull
   public Component processMessage(@Nullable final String input, @NonNull final String @NonNull ... placeholders) {
     if (input == null || input.trim().isEmpty()) {
-      return TextComponent.empty();
+      return Component.empty();
     }
 
     final String format = CarbonUtils.translateAlternateColors(input);

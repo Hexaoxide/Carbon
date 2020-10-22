@@ -27,7 +27,7 @@ public class ItemLinkHandler {
 
       final Component itemComponent = CarbonUtils.createComponent(player);
 
-      if (itemComponent.equals(TextComponent.empty())) {
+      if (itemComponent.equals(Component.empty())) {
         return;
       }
 
@@ -36,7 +36,7 @@ public class ItemLinkHandler {
 
         if (event.originalMessage().contains(patternContent)) {
           final TextComponent component = (TextComponent) event.component().replaceFirstText(pattern, input -> {
-            return TextComponent.builder().append(itemComponent);
+            return Component.text().append(itemComponent);
           });
 
           event.component(component);

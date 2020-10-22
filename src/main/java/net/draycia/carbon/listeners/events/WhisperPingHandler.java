@@ -27,12 +27,12 @@ public class WhisperPingHandler {
         return;
       }
 
-      final Key key = Key.of(carbonChat.getConfig().getString("whisper.pings.sound"));
+      final Key key = Key.key(carbonChat.getConfig().getString("whisper.pings.sound"));
       final Sound.Source source = Sound.Source.valueOf(carbonChat.getConfig().getString("whisper.pings.source"));
       final float volume = (float) carbonChat.getConfig().getDouble("whisper.pings.volume");
       final float pitch = (float) carbonChat.getConfig().getDouble("whisper.pings.pitch");
 
-      event.sender().playSound(Sound.of(key, source, volume, pitch));
+      event.sender().playSound(Sound.sound(key, source, volume, pitch));
     });
   }
 
