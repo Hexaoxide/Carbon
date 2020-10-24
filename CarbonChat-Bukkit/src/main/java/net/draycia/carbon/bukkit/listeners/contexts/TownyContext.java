@@ -22,11 +22,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class TownyContext implements Listener {
 
-  private @NonNull static final String KEY = "towny-town";
+  private final static @NonNull String KEY = "towny-town";
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public TownyContext(@NonNull final CarbonChat carbonChat) {
+  public TownyContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
@@ -69,8 +69,7 @@ public final class TownyContext implements Listener {
 
   @EventHandler
   public void onResidentRemove(final TownRemoveResidentEvent event) {
-    final String name = event.getResident().getName();
-    final PlayerUser user = this.carbonChat.userService().wrap(Bukkit.getPlayer(name).getUniqueId());
+    final PlayerUser user = this.carbonChat.userService().wrap(event.getResident().getUUID());
     final ChatChannel channel = user.selectedChannel();
 
     if (!(channel instanceof TextChannel)) {
@@ -102,9 +101,9 @@ public final class TownyContext implements Listener {
     }
   }
 
-  public boolean isInTown(@NonNull final PlayerUser user) {
+  public boolean isInTown(final @NonNull PlayerUser user) {
     try {
-      return TownyAPI.getInstance().getDataSource().getResident(Bukkit.getPlayer(user.uuid()).getName()).hasTown();
+      return TownyAPI.getInstance().getDataSource().getResident(user.name()).hasTown();
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();
     }
@@ -112,16 +111,16 @@ public final class TownyContext implements Listener {
     return false;
   }
 
-  public boolean isInSameTown(@NonNull final PlayerUser user1, @NonNull final PlayerUser user2) {
+  public boolean isInSameTown(final @NonNull PlayerUser user1, final @NonNull PlayerUser user2) {
     if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
       return false;
     }
 
     try {
-      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(Bukkit.getPlayer(user1.uuid()).getName());
+      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.name());
 
       if (resident.hasTown()) {
-        return resident.getTown().hasResident(Bukkit.getPlayer(user2.uuid()).getName());
+        return resident.getTown().hasResident(user2.name());
       }
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();

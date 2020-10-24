@@ -6,13 +6,12 @@ import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.users.PlayerUser;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class CarbonPlaceholders extends PlaceholderExpansion {
 
-  private @NonNull final CarbonChatBukkit carbonChat;
+  private final @NonNull CarbonChatBukkit carbonChat;
 
-  public CarbonPlaceholders(@NonNull final CarbonChatBukkit carbonChat) {
+  public CarbonPlaceholders(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
@@ -37,7 +36,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
   }
 
   @Override
-  public @Nullable String onPlaceholderRequest(@NonNull final Player player, @NonNull final String identifier) {
+  public @NonNull String onPlaceholderRequest(final @NonNull Player player, final @NonNull String identifier) {
     final String key = identifier.toLowerCase();
 
     if (key.startsWith("can_use_")) {
@@ -82,7 +81,7 @@ public class CarbonPlaceholders extends PlaceholderExpansion {
       return channel == null ? this.carbonChat.channelRegistry().defaultValue().name() : channel.name();
     }
 
-    return null;
+    return "";
   }
 
 }

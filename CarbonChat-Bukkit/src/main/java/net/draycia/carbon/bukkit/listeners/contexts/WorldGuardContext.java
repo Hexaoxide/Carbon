@@ -5,6 +5,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
@@ -18,7 +19,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class WorldGuardContext {
 
-  private @NonNull static final String KEY = "worldguard-region";
+  private final static @NonNull String KEY = "worldguard-region";
 
   public WorldGuardContext() {
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
@@ -29,7 +30,13 @@ public final class WorldGuardContext {
         return;
       }
 
-      event.cancelled(this.testContext(senderPlayer, recipientPlayer, event.context(KEY)));
+      final Context context = event.context(KEY);
+
+      if (context == null) {
+        return;
+      }
+
+      event.cancelled(this.testContext(senderPlayer, recipientPlayer, context));
     });
 
     CarbonEvents.register(MessageContextEvent.class, event -> {
@@ -46,7 +53,7 @@ public final class WorldGuardContext {
     });
   }
 
-  private boolean isInRegionOrRegions(@NonNull final Context context, @NonNull final Player player) {
+  private boolean isInRegionOrRegions(final @NonNull Context context, final @NonNull Player player) {
     if (context.isString()) {
       return this.isInRegion(context.asString(), player);
     }
@@ -62,7 +69,7 @@ public final class WorldGuardContext {
     return false;
   }
 
-  public boolean testContext(@NonNull final Player sender, @NonNull final Player target, @NonNull final Context context) {
+  public boolean testContext(final @NonNull Player sender, final @NonNull Player target, final @NonNull Context context) {
     boolean user1InRegion = false;
     boolean user2InRegion = false;
 
@@ -88,7 +95,7 @@ public final class WorldGuardContext {
     return user1InRegion && user2InRegion;
   }
 
-  public boolean isInSameRegion(@NonNull final Player user1, @NonNull final Player user2) {
+  public boolean isInSameRegion(final @NonNull Player user1, final @NonNull Player user2) {
     final Location user1Location = BukkitAdapter.adapt(user1.getLocation());
     final Location user2Location = BukkitAdapter.adapt(user2.getLocation());
 
@@ -107,15 +114,25 @@ public final class WorldGuardContext {
     return false;
   }
 
-  public boolean isInRegion(@NonNull final String region, @NonNull final Player player) {
+  public boolean isInRegion(final @NonNull String region, final @NonNull Player player) {
     final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     final World world = BukkitAdapter.adapt(player.getWorld());
-    final ProtectedRegion protection = container.get(world).getRegion(region);
+    final RegionManager regionManager = container.get(world);
+
+    if (regionManager == null) {
+      return false;
+    }
+
+    final ProtectedRegion protection = regionManager.getRegion(region);
+
+    if (protection == null) {
+      return false;
+    }
 
     return this.isInRegion(protection, player);
   }
 
-  public boolean isInRegion(@NonNull final ProtectedRegion region, @NonNull final Player player) {
+  public boolean isInRegion(final @NonNull ProtectedRegion region, final @NonNull Player player) {
     final org.bukkit.Location location = player.getLocation();
 
     return region.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ());

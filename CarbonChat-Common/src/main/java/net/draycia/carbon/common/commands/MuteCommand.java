@@ -14,14 +14,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MuteCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public MuteCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public MuteCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("mute");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -36,7 +37,7 @@ public class MuteCommand {
     );
   }
 
-  private void mute(@NonNull final CommandContext<CarbonUser> context) {
+  private void mute(final @NonNull CommandContext<CarbonUser> context) {
     final CarbonUser user = context.getSender();
     final PlayerUser target = context.get("user");
 

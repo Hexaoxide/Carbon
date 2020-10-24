@@ -26,12 +26,12 @@ import java.util.regex.Pattern;
 
 public class CarbonWhisperChannel implements WhisperChannel {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  private @NonNull final PlayerUser sender;
-  private @NonNull final PlayerUser audience;
+  private final @NonNull PlayerUser sender;
+  private final @NonNull PlayerUser audience;
 
-  public CarbonWhisperChannel(@NonNull final PlayerUser sender, @NonNull final PlayerUser audience) {
+  public CarbonWhisperChannel(final @NonNull PlayerUser sender, final @NonNull PlayerUser audience) {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.sender = sender;
     this.audience = audience;
@@ -48,25 +48,33 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @Nullable TextColor channelColor(@NonNull final CarbonUser user) {
+  public @NonNull TextColor channelColor(final @NonNull CarbonUser user) {
     return NamedTextColor.WHITE;
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message,
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull String message,
                                                           final boolean fromRemote) {
     return this.parseMessage(user, Collections.singleton(this.audience()), message, fromRemote);
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user,
-                                                          @NonNull final Collection<@NonNull PlayerUser> recipients,
-                                                          @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user,
+                                                          final @NonNull Collection<@NonNull PlayerUser> recipients,
+                                                          final @NonNull String message, final boolean fromRemote) {
     final Map<CarbonUser, Component> result = new HashMap<>();
 
     // Formats
     final String senderFormat = this.senderFormat();
     final String receiverFormat = this.receiverFormat();
+
+    if (senderFormat == null) {
+      throw new IllegalArgumentException("Sender format (whispers) not found!");
+    }
+
+    if (receiverFormat == null) {
+      throw new IllegalArgumentException("Receiver format (whispers) not found!");
+    }
 
     final ChatFormatEvent senderFormatEvent = new ChatFormatEvent(this.sender, this.sender, this, senderFormat, message);
 
@@ -85,21 +93,8 @@ public class CarbonWhisperChannel implements WhisperChannel {
     }
 
     // Display names
-    final String senderName;
-
-    if (this.sender.nickname() != null) {
-      senderName = this.sender.nickname();
-    } else {
-      senderName = this.sender.displayName();
-    }
-
-    final String receiverName;
-
-    if (this.audience.nickname() != null) {
-      receiverName = this.audience.nickname();
-    } else {
-      receiverName = this.audience.displayName();
-    }
+    final String senderName = this.sender.nickname();
+    final String receiverName = this.audience.nickname();
 
     // Components
     final TextComponent senderComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(
@@ -134,27 +129,35 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
     result.put(this.audience, receiverComponentEvent.component());
 
-    final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(this.sender, null, this,
-      this.consoleFormat(), message);
+    final String consoleFormatString = this.consoleFormat();
 
-    CarbonEvents.post(consoleFormatEvent);
+    if (consoleFormatString != null) {
+      final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(this.sender, null, this,
+        consoleFormatString, message);
 
-    final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(
-      consoleFormatEvent.format(),
-      "senderdisplayname", senderName,
-      "sender", this.sender.name(),
-      "receiverdisplayname", receiverName,
-      "receiver", this.audience.name(),
-      "phase", Long.toString(System.currentTimeMillis() % 25),
-      "message", senderFormatEvent.message());
+      CarbonEvents.post(consoleFormatEvent);
 
-    final ChatComponentEvent consoleEvent = new ChatComponentEvent(this.sender, null, this, consoleFormat,
-      consoleFormatEvent.message());
+      final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(
+        consoleFormatEvent.format(),
+        "senderdisplayname", senderName,
+        "sender", this.sender.name(),
+        "receiverdisplayname", receiverName,
+        "receiver", this.audience.name(),
+        "phase", Long.toString(System.currentTimeMillis() % 25),
+        "message", senderFormatEvent.message());
 
-    CarbonEvents.post(consoleEvent);
+      final ChatComponentEvent consoleEvent = new ChatComponentEvent(this.sender, null, this, consoleFormat,
+        consoleFormatEvent.message());
 
-    if (!consoleEvent.cancelled()) {
-      result.put(this.carbonChat.userService().consoleUser(), consoleEvent.component());
+      CarbonEvents.post(consoleEvent);
+
+      if (!consoleEvent.cancelled()) {
+        final ConsoleUser consoleUser = this.carbonChat.userService().consoleUser();
+
+        if (consoleUser != null) {
+          result.put(consoleUser, consoleEvent.component());
+        }
+      }
     }
 
     this.sender.replyTarget(this.audience);
@@ -164,31 +167,31 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public boolean canPlayerUse(@NonNull final PlayerUser user) {
+  public boolean canPlayerUse(final @NonNull PlayerUser user) {
     return user.equals(this.sender);
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final PlayerUser sender, @NonNull final PlayerUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(final @NonNull PlayerUser sender, final @NonNull PlayerUser target, final boolean checkSpying) {
     return (checkSpying && target.spyingWhispers()) || (sender.equals(this.sender) && target.equals(this.audience));
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final PlayerUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(final @NonNull PlayerUser target, final boolean checkSpying) {
     return false;
   }
 
   @Override
-  public void sendComponents(@NonNull final Identity identity,
-                             @NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponents(final @NonNull Identity identity,
+                             final @NonNull Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(identity, entry.getValue());
     }
   }
 
   @Override
-  public void sendComponentsAndLog(@NonNull final Identity identity,
-                                   @NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponentsAndLog(final @NonNull Identity identity,
+                                   final @NonNull Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       entry.getKey().sendMessage(Identity.nil(), entry.getValue());
 
@@ -232,47 +235,47 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @Nullable String switchMessage() {
+  public @NonNull String switchMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().switchMessage();
   }
 
   @Override
-  public @Nullable String switchOtherMessage() {
+  public @NonNull String switchOtherMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().switchOtherMessage();
   }
 
   @Override
-  public @Nullable String switchFailureMessage() {
+  public @NonNull String switchFailureMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().switchFailureMessage();
   }
 
   @Override
-  public @Nullable String cannotIgnoreMessage() {
+  public @NonNull String cannotIgnoreMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().cannotIgnoreMessage();
   }
 
   @Override
-  public @Nullable String toggleOffMessage() {
+  public @NonNull String toggleOffMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOffMessage();
   }
 
   @Override
-  public @Nullable String toggleOnMessage() {
+  public @NonNull String toggleOnMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOnMessage() {
+  public @NonNull String toggleOtherOnMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOtherOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOffMessage() {
+  public @NonNull String toggleOtherOffMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().toggleOtherOffMessage();
   }
 
   @Override
-  public @Nullable String cannotUseMessage() {
+  public @NonNull String cannotUseMessage() {
     return this.carbonChat.carbonSettings().whisperOptions().cannotUseMessage();
   }
 }

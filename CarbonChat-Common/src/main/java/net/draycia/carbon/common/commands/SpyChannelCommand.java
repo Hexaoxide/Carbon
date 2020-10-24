@@ -17,14 +17,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SpyChannelCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public SpyChannelCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public SpyChannelCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("spy");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -60,7 +61,7 @@ public class SpyChannelCommand {
     );
   }
 
-  private void spyChannel(@NonNull final CommandContext<CarbonUser> context) {
+  private void spyChannel(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel chatChannel = context.get("channel");
 
@@ -81,7 +82,7 @@ public class SpyChannelCommand {
       "channel", chatChannel.name()));
   }
 
-  private void spyWhispers(@NonNull final CommandContext<CarbonUser> context) {
+  private void spyWhispers(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
 
     final String message;
@@ -97,7 +98,7 @@ public class SpyChannelCommand {
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
   }
 
-  private void spyEverything(@NonNull final CommandContext<CarbonUser> context) {
+  private void spyEverything(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
     final Boolean shouldSpy = context.get("enabled");
 

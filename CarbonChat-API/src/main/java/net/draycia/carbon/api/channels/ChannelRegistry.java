@@ -2,7 +2,6 @@ package net.draycia.carbon.api.channels;
 
 import net.draycia.carbon.api.DefaultedKeyValueRegistry;
 import net.kyori.registry.Registry;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -13,16 +12,16 @@ import java.util.Set;
 
 public class ChannelRegistry implements Registry<String, ChatChannel>, DefaultedKeyValueRegistry<String, ChatChannel> {
 
-  private @NonNull final Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull ChatChannel> registry = new HashMap<>();
 
-  private @MonotonicNonNull ChatChannel defaultChannel = null;
+  private @NonNull ChatChannel defaultChannel = new EmptyTextChannel();
 
   @Override
-  public @NonNull ChatChannel register(@NonNull final String key, @NonNull final ChatChannel value) {
+  public @NonNull ChatChannel register(final @NonNull String key, final @NonNull ChatChannel value) {
     this.registry.putIfAbsent(key, value);
 
     if (value instanceof TextChannel) {
-      if (this.defaultChannel == null && ((TextChannel) value).isDefault()) {
+      if (this.defaultChannel instanceof EmptyTextChannel && ((TextChannel) value).isDefault()) {
         this.defaultChannel = value;
       }
     }
@@ -31,12 +30,12 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
   }
 
   @Override
-  public @Nullable ChatChannel get(@NonNull final String key) {
+  public @Nullable ChatChannel get(final @NonNull String key) {
     return this.registry.get(key);
   }
 
   @Override
-  public @Nullable String key(@NonNull final ChatChannel value) {
+  public @Nullable String key(final @NonNull ChatChannel value) {
     for (final Map.Entry<String, ChatChannel> entry : this.registry.entrySet()) {
       if (entry.getValue().equals(value)) {
         return entry.getKey();
@@ -48,7 +47,7 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
 
   @Override
   public @NonNull Set<String> keySet() {
-    return this.registry.keySet();
+    return (Set<String>) this.registry.keySet(); // https://github.com/typetools/checker-framework/issues/3638
   }
 
   @Override
@@ -67,7 +66,7 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
   }
 
   @Override
-  public @NonNull ChatChannel getOrDefault(@NonNull final String key) {
+  public @NonNull ChatChannel getOrDefault(final @NonNull String key) {
     return this.registry.getOrDefault(key, this.defaultValue());
   }
 }

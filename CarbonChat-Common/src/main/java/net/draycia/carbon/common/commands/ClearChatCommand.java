@@ -14,14 +14,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ClearChatCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public ClearChatCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public ClearChatCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("clearchat");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -45,7 +46,7 @@ public class ClearChatCommand {
     );
   }
 
-  private void clearChat(@NonNull final CommandContext<CarbonUser> context) {
+  private void clearChat(final @NonNull CommandContext<CarbonUser> context) {
     final String sender = context.getSender().name();
     final String format = this.carbonChat.moderationSettings().clearChat().message();
     final Component component = this.carbonChat.messageProcessor().processMessage(format, "br", "\n");
@@ -55,7 +56,7 @@ public class ClearChatCommand {
     }
   }
 
-  private void clearChatPlayer(@NonNull final CommandContext<CarbonUser> context) {
+  private void clearChatPlayer(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser target = context.get("user");
     final String sender = context.getSender().name();
     final String format = this.carbonChat.moderationSettings().clearChat().message();
@@ -64,7 +65,7 @@ public class ClearChatCommand {
     this.clearUserChat(target, component, sender);
   }
 
-  private void clearUserChat(@NonNull final CarbonUser user, @NonNull final Component component, @NonNull final String sender) {
+  private void clearUserChat(final @NonNull CarbonUser user, final @NonNull Component component, final @NonNull String sender) {
     if (user.hasPermission("carbonchat.clearchat.exempt")) {
       final String message = this.carbonChat.translations().clearExempt();
       user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()

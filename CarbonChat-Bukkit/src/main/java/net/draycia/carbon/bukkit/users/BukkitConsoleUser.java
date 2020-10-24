@@ -12,10 +12,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single {
 
-  private @NonNull final Audience audience;
+  private final @NonNull Audience audience;
 
-  public BukkitConsoleUser(@NonNull final ConsoleCommandSender sender) {
+  public BukkitConsoleUser(final @NonNull ConsoleCommandSender sender) {
     final Plugin plugin = Bukkit.getPluginManager().getPlugin("CarbonChat");
+
+    if (plugin == null) {
+      throw new IllegalArgumentException("CarbonChat plugin cannot be found!");
+    }
 
     this.audience = BukkitAudiences.create(plugin).sender(sender);
   }
@@ -35,7 +39,7 @@ public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single
   }
 
   @Override
-  public boolean hasPermission(@NonNull final String permission) {
+  public boolean hasPermission(final @NonNull String permission) {
     return true;
   }
 

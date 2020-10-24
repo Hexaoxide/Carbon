@@ -6,14 +6,15 @@ import net.draycia.carbon.api.events.misc.CarbonEvent;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class MessageContextEvent implements CarbonEvent, Cancellable {
 
-  private @NonNull final TextChannel channel;
-  private @NonNull final PlayerUser user;
+  private final @NonNull TextChannel channel;
+  private final @NonNull PlayerUser user;
   private boolean cancelled = false;
 
-  public MessageContextEvent(@NonNull final TextChannel channel, @NonNull final PlayerUser user) {
+  public MessageContextEvent(final @NonNull TextChannel channel, final @NonNull PlayerUser user) {
     this.channel = channel;
     this.user = user;
   }
@@ -28,7 +29,7 @@ public class MessageContextEvent implements CarbonEvent, Cancellable {
     this.cancelled = cancelled;
   }
 
-  public Context context(@NonNull final String key) {
+  public @Nullable Context context(final @NonNull String key) {
     return this.channel.context(key);
   }
 

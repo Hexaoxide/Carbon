@@ -10,7 +10,7 @@ public interface UserService<T extends PlayerUser> {
   @Nullable
   UUID resolve(String name);
 
-  @Nullable
+  @NonNull
   T wrap(UUID uuid);
 
   @Nullable // Maybe NonNull?

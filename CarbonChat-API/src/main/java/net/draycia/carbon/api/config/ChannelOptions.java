@@ -1,7 +1,9 @@
 package net.draycia.carbon.api.config;
 
+import com.google.common.collect.ImmutableMap;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.Context;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
@@ -15,32 +17,31 @@ import java.util.List;
 import java.util.Map;
 
 @ConfigSerializable
+@SuppressWarnings("initialization.fields.uninitialized")
 public final class ChannelOptions {
 
   @Setting
   @Comment("What this channel is identified as. This will be what's typed ingame to use the channel.")
-  private String key = "channel";
+  private @NonNull String key = "channel";
   
   @Setting
   @Comment("This is what the <color> placeholder will typically be replaced with.\n" +
     "Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.\n" +
     "If on a platform that supports PlaceholderAPI, this option will be ran through that as well.\n" +
     "Note that the <color> placeholder is also used for personal and global user colors.")
-  private String color;
+  private @Nullable String color = NamedTextColor.WHITE.asHexString();
   
   @Setting
   @Comment("The contexts for this channel, which can modify the behaviour of channels and how/when players can use them.")
-  private Map<String, Context> contexts = new HashMap<>();
+  private @Nullable Map<@NonNull String, @NonNull Context> contexts = new HashMap<>();
   
   @Setting
   @Comment("The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
-  private Map<String, String> formats = new HashMap<String, String>() {{
-      put("default", "<color><<displayname><reset><color>> <message>");
-    }};
+  private @Nullable Map<String, String> formats = ImmutableMap.of("default", "<color><<displayname><reset><color>> <message>");
 
   @Setting
   @Comment("The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
-  private String defaultFormatName;
+  private @Nullable String defaultFormatName;
   
   @Setting
   @Comment("If this channel is the default channel players join in.\n" +
@@ -123,7 +124,7 @@ public final class ChannelOptions {
   @Comment("The message that's sent when you attempt to ignore a channel but are unable to do so")
   private String cannotIgnoreMessage;
   
-  private SharedChannelOptions defaultOptions() {
+  private @NonNull SharedChannelOptions defaultOptions() {
     return CarbonChatProvider.carbonChat().channelSettings().defaultChannelOptions();
   }
 
@@ -151,7 +152,7 @@ public final class ChannelOptions {
     return this.color;
   }
 
-  public @Nullable Context context(@NonNull final String key) {
+  public @Nullable Context context(final @NonNull String key) {
     final Context localContext;
 
     if (this.contexts != null) {
@@ -161,8 +162,10 @@ public final class ChannelOptions {
     }
 
     if (localContext == null) {
-      if (this.defaultOptions().contexts() != null) {
-        return this.defaultOptions().contexts().get(key);
+      final Map<String, Context> defaultContexts = this.defaultOptions().contexts();
+
+      if (defaultContexts != null) {
+        return defaultContexts.get(key);
       } else {
         return null;
       }
@@ -184,28 +187,37 @@ public final class ChannelOptions {
       return this.defaultOptions().contexts();
     }
 
-    if (this.defaultOptions().contexts() == null) {
+    final Map<String, Context> defaultContexts = this.defaultOptions().contexts();
+
+    if (defaultContexts == null) {
       return this.contexts;
     }
 
-    final Map<String, Context> contexts = new HashMap<>(this.defaultOptions().contexts());
-    contexts.putAll(this.contexts);
+    final Map<String, Context> contexts = new HashMap<>(defaultContexts);
+
+    if (this.contexts != null) {
+      contexts.putAll(this.contexts);
+    }
 
     return contexts;
   }
 
-  public @Nullable String format(@NonNull final String key) {
+  public @Nullable String format(final @NonNull String key) {
     final String localFormat;
 
-    if (this.formats() != null) {
-      localFormat = this.formats().get(key);
+    final Map<String, String> localFormats = this.formats();
+
+    if (localFormats != null) {
+      localFormat = localFormats.get(key);
     } else {
       localFormat = null;
     }
 
     if (localFormat == null) {
-      if (this.defaultOptions().formats() != null) {
-        return this.defaultOptions().formats().get(key);
+      final Map<String, String> defaultFormats = this.defaultOptions().formats();
+
+      if (defaultFormats != null) {
+        return defaultFormats.get(key);
       } else {
         return null;
       }
@@ -214,7 +226,7 @@ public final class ChannelOptions {
     return localFormat;
   }
 
-  public @Nullable Map<String, String> formats() {
+  public @Nullable Map<@NonNull String, @NonNull String> formats() {
     if (this.formats == null) {
       return this.defaultOptions().formats();
     }
@@ -222,17 +234,22 @@ public final class ChannelOptions {
     return this.formats;
   }
 
-  public @Nullable Map<String, String> formatsAndDefault() {
+  public @Nullable Map<@NonNull String, @NonNull String> formatsAndDefault() {
     if (this.formats == null) {
       return this.defaultOptions().formats();
     }
 
-    if (this.defaultOptions().formats() == null) {
+    final Map<String, String> defaultFormats = this.defaultOptions().formats();
+
+    if (defaultFormats == null) {
       return this.formats;
     }
 
-    final Map<String, String> formats = new HashMap<>(this.defaultOptions().formats());
-    formats.putAll(this.formats);
+    final Map<String, String> formats = new HashMap<>(defaultFormats);
+
+    if (this.formats != null) {
+      formats.putAll(this.formats);
+    }
 
     return formats;
   }
@@ -301,7 +318,7 @@ public final class ChannelOptions {
     return this.messagePrefix;
   }
 
-  public @Nullable String switchMessage() {
+  public @NonNull String switchMessage() {
     if (this.switchMessage == null) {
       return this.defaultOptions().switchMessage();
     }
@@ -309,7 +326,7 @@ public final class ChannelOptions {
     return this.switchMessage;
   }
 
-  public @Nullable String switchOtherMessage() {
+  public @NonNull String switchOtherMessage() {
     if (this.switchOtherMessage == null) {
       return this.defaultOptions().switchOtherMessage();
     }
@@ -317,7 +334,7 @@ public final class ChannelOptions {
     return this.switchOtherMessage;
   }
 
-  public @Nullable String switchFailureMessage() {
+  public @NonNull String switchFailureMessage() {
     if (this.switchFailureMessage == null) {
       return this.defaultOptions().switchFailureMessage();
     }
@@ -325,7 +342,7 @@ public final class ChannelOptions {
     return this.switchFailureMessage;
   }
 
-  public @Nullable String cannotIgnoreMessage() {
+  public @NonNull String cannotIgnoreMessage() {
     if (this.cannotIgnoreMessage == null) {
       return this.defaultOptions().cannotIgnoreMessage();
     }
@@ -333,7 +350,7 @@ public final class ChannelOptions {
     return this.cannotIgnoreMessage;
   }
 
-  public @Nullable String toggleOffMessage() {
+  public @NonNull String toggleOffMessage() {
     if (this.toggleOffMessage == null) {
       return this.defaultOptions().toggleOffMessage();
     }
@@ -341,7 +358,7 @@ public final class ChannelOptions {
     return this.toggleOffMessage;
   }
 
-  public @Nullable String toggleOnMessage() {
+  public @NonNull String toggleOnMessage() {
     if (this.toggleOnMessage == null) {
       return this.defaultOptions().toggleOnMessage();
     }
@@ -349,7 +366,7 @@ public final class ChannelOptions {
     return this.toggleOnMessage;
   }
 
-  public @Nullable String toggleOtherOnMessage() {
+  public @NonNull String toggleOtherOnMessage() {
     if (this.toggleOtherOnMessage == null) {
       return this.defaultOptions().toggleOtherOnMessage();
     }
@@ -357,7 +374,7 @@ public final class ChannelOptions {
     return this.toggleOtherOnMessage;
   }
 
-  public @Nullable String toggleOtherOffMessage() {
+  public @NonNull String toggleOtherOffMessage() {
     if (this.toggleOtherOffMessage == null) {
       return this.defaultOptions().toggleOtherOffMessage();
     }
@@ -365,7 +382,7 @@ public final class ChannelOptions {
     return this.toggleOtherOffMessage;
   }
 
-  public @Nullable String cannotUseMessage() {
+  public @NonNull String cannotUseMessage() {
     if (this.cannotUseMessage == null) {
       return this.defaultOptions().cannotUseMessage();
     }

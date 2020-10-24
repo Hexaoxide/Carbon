@@ -6,7 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.Field;
 
-@SuppressWarnings("ResultOfMethodCallIgnored") // This is a common pattern in this class.
+@SuppressWarnings({"ResultOfMethodCallIgnored", "argument.type.incompatible"})
 public final class FunctionalityConstants {
 
   public static final boolean HAS_HOVER_EVENT_METHOD = noThrow(() -> ItemFactory.class.getMethod("hoverContentOf", ItemStack.class));
@@ -29,7 +29,7 @@ public final class FunctionalityConstants {
 
   }
 
-  private static boolean noThrow(@NonNull final ThrowingRunnable runnable) {
+  private static boolean noThrow(final @NonNull ThrowingRunnable runnable) {
     try {
       runnable.run();
       return true;

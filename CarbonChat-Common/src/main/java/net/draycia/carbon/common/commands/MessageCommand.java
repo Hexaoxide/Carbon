@@ -19,15 +19,16 @@ import java.util.Optional;
 
 public class MessageCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public MessageCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public MessageCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
     final CommandSettings commandSettings = carbonChat.commandSettings().get("message");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -43,7 +44,7 @@ public class MessageCommand {
     );
   }
 
-  private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
+  private void sendMessage(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser sender = (PlayerUser) context.getSender();
     final PlayerUser receiver = context.get("user");
 

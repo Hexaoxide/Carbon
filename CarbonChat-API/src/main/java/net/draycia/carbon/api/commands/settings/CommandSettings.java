@@ -1,23 +1,23 @@
 package net.draycia.carbon.api.commands.settings;
 
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
+import java.util.Collections;
 import java.util.Set;
 
 @ConfigSerializable
 public class CommandSettings {
 
   @Setting
-  private boolean enabled;
+  private boolean enabled = true;
 
   @Setting
-  private @MonotonicNonNull String name;
+  private @NonNull String name = "command";
 
   @Setting
-  private @MonotonicNonNull Set<@NonNull String> aliases;
+  private @NonNull Set<@NonNull String> aliases = Collections.emptySet();
 
   public @NonNull Set<@NonNull String> aliases() {
     return this.aliases;

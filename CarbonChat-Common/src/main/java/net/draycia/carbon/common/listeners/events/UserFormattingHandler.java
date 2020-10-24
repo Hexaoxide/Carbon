@@ -7,6 +7,7 @@ import net.kyori.event.PostOrders;
 
 public class UserFormattingHandler {
 
+  @SuppressWarnings("method.invocation.invalid")
   public UserFormattingHandler() {
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
       if (!event.user().hasPermission("carbonchat.formatting") &&

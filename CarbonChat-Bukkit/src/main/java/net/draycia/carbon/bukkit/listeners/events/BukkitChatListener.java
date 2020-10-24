@@ -23,23 +23,19 @@ import java.util.Map;
 
 public class BukkitChatListener implements Listener {
 
-  private @NonNull final CarbonChatBukkit carbonChat;
+  private final @NonNull CarbonChatBukkit carbonChat;
 
-  public BukkitChatListener(@NonNull final CarbonChatBukkit carbonChat) {
+  public BukkitChatListener(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
   // Chat messages
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-  public void onPlayerchat(@NonNull final AsyncPlayerChatEvent event) {
+  public void onPlayerChat(final @NonNull AsyncPlayerChatEvent event) {
     final PlayerUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
     ChatChannel channel = user.selectedChannel();
 
     if (channel == null) {
-      if (this.carbonChat.channelRegistry().defaultValue() == null) {
-        return;
-      }
-
       channel = this.carbonChat.channelRegistry().defaultValue();
     }
 
@@ -53,14 +49,15 @@ public class BukkitChatListener implements Listener {
       }
 
       final TextChannel textChannel = (TextChannel) entry;
+      final String prefix = textChannel.messagePrefix();
 
-      if (textChannel.messagePrefix() == null || textChannel.messagePrefix().isEmpty()) {
+      if (prefix == null || prefix.isEmpty()) {
         continue;
       }
 
-      if (event.getMessage().startsWith(textChannel.messagePrefix())) {
+      if (event.getMessage().startsWith(prefix)) {
         if (entry.canPlayerUse(user)) {
-          event.setMessage(event.getMessage().substring(textChannel.messagePrefix().length()));
+          event.setMessage(event.getMessage().substring(prefix.length()));
           channel = entry;
           break;
         }

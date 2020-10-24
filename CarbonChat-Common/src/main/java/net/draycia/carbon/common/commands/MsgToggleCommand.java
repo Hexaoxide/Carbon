@@ -15,14 +15,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MsgToggleCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public MsgToggleCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public MsgToggleCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("msgtoggle");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -46,9 +47,13 @@ public class MsgToggleCommand {
     );
   }
 
-  private void toggleSelf(@NonNull final CommandContext<CarbonUser> context) {
+  private void toggleSelf(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
+
+    if (channel == null) {
+      throw new IllegalArgumentException("Whisper channel not found!");
+    }
 
     final String message;
 
@@ -67,10 +72,14 @@ public class MsgToggleCommand {
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
   }
 
-  private void toggleOther(@NonNull final CommandContext<CarbonUser> context) {
+  private void toggleOther(final @NonNull CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
     final PlayerUser user = context.get("user");
     final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
+
+    if (channel == null) {
+      throw new IllegalArgumentException("Whisper channel not found!");
+    }
 
     final String message;
     final String otherMessage;

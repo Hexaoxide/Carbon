@@ -13,14 +13,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MeCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public MeCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public MeCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("me");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -35,7 +36,7 @@ public class MeCommand {
     );
   }
 
-  private void message(@NonNull final CommandContext<CarbonUser> context) {
+  private void message(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
 
     final String message = context.<String>get("message").replace("</pre>", "");

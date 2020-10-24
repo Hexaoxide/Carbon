@@ -35,11 +35,11 @@ import java.util.regex.Pattern;
 
 public class CarbonChatChannel implements TextChannel {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  private @NonNull final ChannelOptions options;
+  private final @NonNull ChannelOptions options;
 
-  public CarbonChatChannel(@NonNull final CarbonChat carbonChat, @Nullable final ChannelOptions options) {
+  public CarbonChatChannel(final @NonNull CarbonChat carbonChat, final @NonNull ChannelOptions options) {
     this.carbonChat = carbonChat;
     this.options = options;
   }
@@ -53,7 +53,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public boolean testContext(@NonNull final PlayerUser sender, @NonNull final PlayerUser target) {
+  public boolean testContext(final @NonNull PlayerUser sender, final @NonNull PlayerUser target) {
     final ReceiverContextEvent event = new ReceiverContextEvent(this, sender, target);
 
     CarbonEvents.post(event);
@@ -62,7 +62,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public boolean canPlayerUse(@NonNull final PlayerUser user) {
+  public boolean canPlayerUse(final @NonNull PlayerUser user) {
     return user.hasPermission("carbonchat.channels." + this.name() + ".use");
   }
 
@@ -79,7 +79,7 @@ public class CarbonChatChannel implements TextChannel {
     return audience;
   }
 
-  //  private void updateUserNickname(@NonNull final ChatUser user) {
+  //  private void updateUserNickname(final @NonNull ChatUser user) {
   //    final Player player = Bukkit.getPlayer(user.uuid());
   //
   //    if (player != null) {
@@ -99,7 +99,7 @@ public class CarbonChatChannel implements TextChannel {
   //  }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final Collection<@NonNull PlayerUser> recipients, @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull Collection<@NonNull PlayerUser> recipients, final @NonNull String message, final boolean fromRemote) {
     //this.updateUserNickname(user);
 
     final MessageContextEvent event = new MessageContextEvent(this, user);
@@ -124,13 +124,7 @@ public class CarbonChatChannel implements TextChannel {
       return Collections.emptyMap();
     }
 
-    final String displayName;
-
-    if (user.nickname() != null) {
-      displayName = user.nickname();
-    } else {
-      displayName = user.displayName();
-    }
+    final String displayName = user.nickname();
 
     final Map<CarbonUser, Component> users = new HashMap<>();
 
@@ -166,9 +160,14 @@ public class CarbonChatChannel implements TextChannel {
 
       CarbonEvents.post(newEvent);
 
-      users.put(newEvent.target(), newEvent.component());
+      final PlayerUser targetUser = newEvent.target();
+
+      if (targetUser != null) {
+        users.put(targetUser, newEvent.component());
+      }
     }
 
+    // TODO: ChatFormatEvent ConsoleUser support for target, specify ConsoleUser as target
     final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this, preFormatEvent.format(),
       preFormatEvent.message());
 
@@ -188,7 +187,11 @@ public class CarbonChatChannel implements TextChannel {
     CarbonEvents.post(consoleEvent);
 
     if (!consoleEvent.cancelled()) {
-      users.put(this.carbonChat.userService().consoleUser(), consoleEvent.component());
+      final ConsoleUser consoleUser = this.carbonChat.userService().consoleUser();
+
+      if (consoleUser != null) {
+        users.put(consoleUser, consoleEvent.component());
+      }
     }
 
     if (user.online() && !fromRemote && this.crossServer()) {
@@ -199,8 +202,8 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public void sendComponents(@NonNull final Identity identity,
-                             @NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponents(final @NonNull Identity identity,
+                             final @NonNull Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       if (entry.getValue().equals(Component.empty())) {
         continue;
@@ -211,8 +214,8 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public void sendComponentsAndLog(@NonNull final Identity identity,
-                                   @NonNull final Map<? extends CarbonUser, Component> components) {
+  public void sendComponentsAndLog(final @NonNull Identity identity,
+                                   final @NonNull Map<? extends CarbonUser, Component> components) {
     for (final Map.Entry<? extends CarbonUser, Component> entry : components.entrySet()) {
       if (entry.getValue().equals(Component.empty())) {
         continue;
@@ -228,11 +231,11 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(@NonNull final PlayerUser user, @NonNull final String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull String message, final boolean fromRemote) {
     return this.parseMessage(user, this.audiences(), message, fromRemote);
   }
 
-  public @Nullable String format(@NonNull final PlayerUser user) {
+  public @NonNull String format(final @NonNull PlayerUser user) {
     for (final String group : this.groupOverrides()) {
       if (this.userHasGroup(user, group)) {
         final String format = this.format(group);
@@ -250,7 +253,7 @@ public class CarbonChatChannel implements TextChannel {
     }
   }
 
-  private boolean userHasGroup(@NonNull final PlayerUser user, @NonNull final String group) {
+  private boolean userHasGroup(final @NonNull PlayerUser user, final @NonNull String group) {
     if (user.hasGroup(group)) {
       return true;
     }
@@ -262,7 +265,7 @@ public class CarbonChatChannel implements TextChannel {
     return false;
   }
 
-  private @NonNull String firstFoundUserFormat(@NonNull final PlayerUser user) {
+  private @NonNull String firstFoundUserFormat(final @NonNull PlayerUser user) {
     for (final Group group : user.groups()) {
       final String groupFormat = this.format(group);
 
@@ -274,8 +277,13 @@ public class CarbonChatChannel implements TextChannel {
     return this.defaultFormat();
   }
 
-  private @NonNull String primaryGroupFormat(@NonNull final PlayerUser user) {
+  private @NonNull String primaryGroupFormat(final @NonNull PlayerUser user) {
     final Group primaryGroup = user.primaryGroup();
+
+    if (primaryGroup == null) {
+      return this.defaultFormat();
+    }
+
     final String primaryGroupFormat = this.format(primaryGroup);
 
     if (primaryGroupFormat != null) {
@@ -286,20 +294,32 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   private @NonNull String defaultFormat() {
-    return this.format(this.defaultFormatName());
+    final String defaultFormatName = this.defaultFormatName();
+
+    if (defaultFormatName == null) {
+      return "<<displayname>> <message>";
+    }
+
+    final String defaultFormat = this.format(defaultFormatName);
+
+    if (defaultFormat == null) {
+      return "<<displayname>> <message>";
+    }
+
+    return defaultFormat;
   }
 
   @Override
-  public @Nullable String format(@NonNull final Group group) {
+  public @Nullable String format(final @NonNull Group group) {
     return this.format(group.getName());
   }
 
   @Override
-  public @Nullable String format(@NonNull final String group) {
+  public @Nullable String format(final @NonNull String group) {
     return this.options().format(group);
   }
 
-  private boolean isUserSpying(@NonNull final PlayerUser sender, @NonNull final PlayerUser target) {
+  private boolean isUserSpying(final @NonNull PlayerUser sender, final @NonNull PlayerUser target) {
     if (!this.canPlayerSee(sender, target, false)) {
       return target.channelSettings(this).spying();
     }
@@ -308,7 +328,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public void sendComponent(@NonNull final PlayerUser player, @NonNull final Component component) {
+  public void sendComponent(final @NonNull PlayerUser player, final @NonNull Component component) {
     for (final PlayerUser user : this.audiences()) {
       if (!user.ignoringUser(player)) {
         user.sendMessage(player.identity(), component);
@@ -316,7 +336,7 @@ public class CarbonChatChannel implements TextChannel {
     }
   }
 
-  public void sendMessageToBungee(@NonNull final UUID uuid, @NonNull final Component component) {
+  public void sendMessageToBungee(final @NonNull UUID uuid, final @NonNull Component component) {
     this.carbonChat.messageService().sendMessage("channel-component", uuid, byteArray -> {
       byteArray.writeUTF(this.key());
       byteArray.writeUTF(this.carbonChat.gsonSerializer().serialize(component));
@@ -324,7 +344,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public boolean canPlayerSee(@NonNull final PlayerUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(final @NonNull PlayerUser target, final boolean checkSpying) {
     if (checkSpying && target.hasPermission("carbonchat.spy." + this.name())) {
       if (target.channelSettings(this).spying()) {
         return true;
@@ -342,7 +362,7 @@ public class CarbonChatChannel implements TextChannel {
     return true;
   }
 
-  public boolean canPlayerSee(@NonNull final PlayerUser sender, @NonNull final PlayerUser target, final boolean checkSpying) {
+  public boolean canPlayerSee(final @NonNull PlayerUser sender, final @NonNull PlayerUser target, final boolean checkSpying) {
 
     if (!this.canPlayerSee(target, checkSpying)) {
       return false;
@@ -356,7 +376,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable TextColor channelColor(@NonNull final CarbonUser user) {
+  public @NonNull TextColor channelColor(final @NonNull CarbonUser user) {
     if (user instanceof PlayerUser) {
       final TextColor userColor = ((PlayerUser) user).channelSettings(this).color();
 
@@ -367,18 +387,22 @@ public class CarbonChatChannel implements TextChannel {
 
     final String input = this.options().color();
 
-    final TextColor color = ColorUtils.parseColor(user, input);
+    if (input != null) {
+      final TextColor color = ColorUtils.parseColor(user, input);
 
-    if (color == null) {
-      if (this.carbonChat.carbonSettings().showTips()) {
-        this.carbonChat.logger().error("Tip: Channel color found (" + input + ") is invalid!");
-        this.carbonChat.logger().error("Falling back to #FFFFFF");
+      if (color == null) {
+        if (this.carbonChat.carbonSettings().showTips()) {
+          this.carbonChat.logger().error("Tip: Channel color found (" + input + ") is invalid!");
+          this.carbonChat.logger().error("Falling back to #FFFFFF");
+        }
+
+        return NamedTextColor.WHITE;
       }
 
-      return NamedTextColor.WHITE;
+      return color;
     }
 
-    return color;
+    return NamedTextColor.WHITE;
   }
 
   public @Nullable String defaultFormatName() {
@@ -426,47 +450,47 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable String switchMessage() {
+  public @NonNull String switchMessage() {
     return this.options().switchMessage();
   }
 
   @Override
-  public @Nullable String switchOtherMessage() {
+  public @NonNull String switchOtherMessage() {
     return this.options().switchOtherMessage();
   }
 
   @Override
-  public @Nullable String switchFailureMessage() {
+  public @NonNull String switchFailureMessage() {
     return this.options().switchFailureMessage();
   }
 
   @Override
-  public @Nullable String cannotIgnoreMessage() {
+  public @NonNull String cannotIgnoreMessage() {
     return this.options().cannotIgnoreMessage();
   }
 
   @Override
-  public @Nullable String toggleOffMessage() {
+  public @NonNull String toggleOffMessage() {
     return this.options().toggleOffMessage();
   }
 
   @Override
-  public @Nullable String toggleOnMessage() {
+  public @NonNull String toggleOnMessage() {
     return this.options().toggleOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOnMessage() {
+  public @NonNull String toggleOtherOnMessage() {
     return this.options().toggleOtherOnMessage();
   }
 
   @Override
-  public @Nullable String toggleOtherOffMessage() {
+  public @NonNull String toggleOtherOffMessage() {
     return this.options().toggleOtherOffMessage();
   }
 
   @Override
-  public @Nullable String cannotUseMessage() {
+  public @NonNull String cannotUseMessage() {
     return this.options().cannotUseMessage();
   }
 
@@ -491,7 +515,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable Context context(@NonNull final String key) {
+  public @Nullable Context context(final @NonNull String key) {
     return this.options().context(key);
   }
 

@@ -22,26 +22,29 @@ import java.util.function.Consumer;
 
 public class RedisMessageService implements MessageService {
 
-  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull PlayerUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull PlayerUser, @NonNull ByteArrayDataInput>> userLoadedListeners = new HashMap<>();
 
-  private @NonNull final Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput>> userNotLoadedListeners = new HashMap<>();
 
-  private @NonNull final RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
+  private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
 
-  private @NonNull final RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
+  private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
 
-  private @NonNull final UUID serverUUID = UUID.randomUUID();
+  private final @NonNull UUID serverUUID = UUID.randomUUID();
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public RedisMessageService(@NonNull final CarbonChat carbonChat, @NonNull final RedisCredentials credentials) {
+  @SuppressWarnings("method.invocation.invalid")
+  public RedisMessageService(final @NonNull CarbonChat carbonChat, final @NonNull RedisCredentials credentials) {
     this.carbonChat = carbonChat;
 
     final RedisURI.Builder builder = RedisURI.Builder.redis(credentials.host(), credentials.port())
       .withDatabase(credentials.database());
 
-    if (credentials.password() != null) {
-      builder.withPassword(credentials.password().toCharArray());
+    final String password = credentials.password();
+
+    if (password != null) {
+      builder.withPassword(password.toCharArray());
     }
 
     final RedisClient client = RedisClient.create(builder.build());
@@ -67,7 +70,7 @@ public class RedisMessageService implements MessageService {
     });
   }
 
-  private void receiveMessage(@NonNull final UUID uuid, @NonNull final String key, @NonNull final ByteArrayDataInput value) {
+  private void receiveMessage(final @NonNull UUID uuid, final @NonNull String key, final @NonNull ByteArrayDataInput value) {
     final PlayerUser user = this.carbonChat.userService().wrapIfLoaded(uuid);
 
     if (user != null) {
@@ -86,19 +89,19 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void registerUserMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull PlayerUser, @NonNull ByteArrayDataInput> listener) {
+  public void registerUserMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull PlayerUser, @NonNull ByteArrayDataInput> listener) {
     this.userLoadedListeners.put(key, listener);
     this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void registerUUIDMessageListener(@NonNull final String key, @NonNull final BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
+  public void registerUUIDMessageListener(final @NonNull String key, final @NonNull BiConsumer<@NonNull UUID, @NonNull ByteArrayDataInput> listener) {
     this.userNotLoadedListeners.put(key, listener);
     this.subscribeSync.subscribe(key);
   }
 
   @Override
-  public void unregisterMessageListener(@NonNull final String key) {
+  public void unregisterMessageListener(final @NonNull String key) {
     this.userLoadedListeners.remove(key);
     this.userNotLoadedListeners.remove(key);
 
@@ -106,7 +109,7 @@ public class RedisMessageService implements MessageService {
   }
 
   @Override
-  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid, @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
+  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid, final @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
     final ByteArrayDataOutput msg = ByteStreams.newDataOutput();
 
     msg.writeLong(this.serverUUID.getMostSignificantBits());

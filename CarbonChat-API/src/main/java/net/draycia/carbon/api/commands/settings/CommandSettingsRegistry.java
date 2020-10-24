@@ -19,7 +19,7 @@ import java.util.Set;
 public class CommandSettingsRegistry implements Registry<String, CommandSettings> {
 
   @Setting
-  private @NonNull final Map<@NonNull String, @NonNull CommandSettings> registry = new HashMap<>();
+  private final @NonNull Map<@NonNull String, @NonNull CommandSettings> registry = new HashMap<>();
 
   private static final ObjectMapper<CommandSettingsRegistry> MAPPER;
 
@@ -40,29 +40,29 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
   }
 
   @Override
-  public @NonNull CommandSettings register(@NonNull final String key, @NonNull final CommandSettings value) {
-    this.registry.put(key, value);
+  public @NonNull CommandSettings register(final @NonNull String key, final @NonNull CommandSettings value) {
+    this.registry.putIfAbsent(key, value);
 
     return value;
   }
 
   @Override
-  public @Nullable CommandSettings get(@NonNull final String key) {
+  public @Nullable CommandSettings get(final @NonNull String key) {
     return this.registry.get(key);
   }
 
-  public @Nullable CommandSettings get(@NonNull final ChatChannel channel) {
+  public @Nullable CommandSettings get(final @NonNull ChatChannel channel) {
     return this.get(channel.key());
   }
 
   @Override
-  public @Nullable String key(@NonNull final CommandSettings value) {
+  public @Nullable String key(final @NonNull CommandSettings value) {
     return null;
   }
 
   @Override
   public @NonNull Set<String> keySet() {
-    return this.registry.keySet();
+    return (Set<String>) this.registry.keySet(); // https://github.com/typetools/checker-framework/issues/3638
   }
 
   @Override

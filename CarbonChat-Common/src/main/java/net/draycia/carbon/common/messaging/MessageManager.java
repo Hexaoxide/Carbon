@@ -16,11 +16,12 @@ import java.util.function.Consumer;
 
 public class MessageManager {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  private @NonNull final MessageService messageService;
+  private final @NonNull MessageService messageService;
 
-  public MessageManager(@NonNull final CarbonChat carbonChat, @NonNull final MessageService messageService) {
+  @SuppressWarnings("method.invocation.invalid")
+  public MessageManager(final @NonNull CarbonChat carbonChat, final @NonNull MessageService messageService) {
     this.carbonChat = carbonChat;
     this.messageService = messageService;
 
@@ -45,7 +46,11 @@ public class MessageManager {
     });
 
     this.messageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
-      user.selectedChannel(this.carbonChat.channelRegistry().get(byteArray.readUTF()), true);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
+
+      if (channel != null) {
+        user.selectedChannel(channel, true);
+      }
     });
 
     this.messageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
@@ -64,35 +69,55 @@ public class MessageManager {
       user.replyTarget(new UUID(byteArray.readLong(), byteArray.readLong()), true);
     });
 
+    this.messageService().registerUserMessageListener("reply-target-reset", (user, byteArray) -> {
+      user.replyTarget((UUID) null, true);
+    });
+
     this.messageService().registerUserMessageListener("ignoring-user", (user, byteArray) -> {
       user.ignoringUser(new UUID(byteArray.readLong(), byteArray.readLong()), byteArray.readBoolean(), true);
     });
 
     this.messageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
-        .ignoring(byteArray.readBoolean(), true);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
+
+      if (channel != null) {
+        user.channelSettings(channel)
+          .ignoring(byteArray.readBoolean(), true);
+      }
     });
 
     this.messageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
-        .spying(byteArray.readBoolean(), true);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
+
+      if (channel != null) {
+        user.channelSettings(channel)
+          .spying(byteArray.readBoolean(), true);
+      }
     });
 
     this.messageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
-        .color(TextColor.fromHexString(byteArray.readUTF()), true);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
+
+      if (channel != null) {
+        user.channelSettings(channel)
+          .color(TextColor.fromHexString(byteArray.readUTF()), true);
+      }
     });
 
     this.messageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
-      user.channelSettings(this.carbonChat.channelRegistry().get(byteArray.readUTF()))
-        .color(null, true);
+      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
+
+      if (channel != null) {
+        user.channelSettings(channel)
+          .color(null, true);
+      }
     });
 
     this.messageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
       final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
       final PlayerUser user = this.carbonChat.userService().wrap(uuid);
 
-      if (channel instanceof TextChannel) {
+      if (user != null && channel instanceof TextChannel) {
         final Component component = this.carbonChat.gsonSerializer().deserialize(byteArray.readUTF());
 
         ((TextChannel) channel).sendComponent(user, component);
@@ -107,9 +132,11 @@ public class MessageManager {
       final PlayerUser target = this.carbonChat.userService().wrap(recipient);
       final String message = byteArray.readUTF();
 
-      if (!target.ignoringUser(uuid)) {
-        target.replyTarget(uuid);
-        target.sendMessage(Identity.identity(uuid), this.carbonChat.gsonSerializer().deserialize(message));
+      if (target != null) {
+        if (!target.ignoringUser(uuid)) {
+          target.replyTarget(uuid);
+          target.sendMessage(Identity.identity(uuid), this.carbonChat.gsonSerializer().deserialize(message));
+        }
       }
     });
   }
@@ -118,8 +145,8 @@ public class MessageManager {
     return this.messageService;
   }
 
-  public void sendMessage(@NonNull final String key, @NonNull final UUID uuid,
-                          @NonNull final Consumer<@NonNull ByteArrayDataOutput> consumer) {
+  public void sendMessage(final @NonNull String key, final @NonNull UUID uuid,
+                          final @NonNull Consumer<@NonNull ByteArrayDataOutput> consumer) {
     this.messageService().sendMessage(key, uuid, consumer);
   }
 

@@ -12,9 +12,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PAPIContext {
 
-  private @NonNull static final String KEY = "placeholder";
-  private @NonNull static final String SENDER = "-sender";
-  private @NonNull static final String RECEIVER = "-receiver";
+  private final static @NonNull String KEY = "placeholder";
+  private final static @NonNull String SENDER = "-sender";
+  private final static @NonNull String RECEIVER = "-receiver";
 
   public PAPIContext() {
     CarbonEvents.register(ReceiverContextEvent.class, PostOrders.NORMAL, false, event -> {

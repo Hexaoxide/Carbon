@@ -7,7 +7,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +21,7 @@ public interface ChatChannel extends Audience {
    * @param user The user that may have a color set.
    * @return The color the user may have set, otherwise the channel's color.
    */
-  @Nullable TextColor channelColor(@NonNull CarbonUser user);
+  @NonNull TextColor channelColor(@NonNull CarbonUser user);
 
   @NonNull
   Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull String message, boolean fromRemote);
@@ -37,11 +36,11 @@ public interface ChatChannel extends Audience {
 
   boolean canPlayerSee(@NonNull PlayerUser target, boolean checkSpying);
 
-  void sendComponents(@NonNull final Identity identity,
-                      @NonNull final Map<? extends CarbonUser, Component> components);
+  void sendComponents(final @NonNull Identity identity,
+                      final @NonNull Map<? extends CarbonUser, Component> components);
 
-  void sendComponentsAndLog(@NonNull final Identity identity,
-                            @NonNull final Map<? extends CarbonUser, Component> components);
+  void sendComponentsAndLog(final @NonNull Identity identity,
+                            final @NonNull Map<? extends CarbonUser, Component> components);
 
   @NonNull String name();
 
@@ -55,22 +54,22 @@ public interface ChatChannel extends Audience {
 
   @NonNull List<@NonNull Pattern> itemLinkPatterns();
 
-  @Nullable String switchMessage();
+  @NonNull String switchMessage();
 
-  @Nullable String switchOtherMessage();
+  @NonNull String switchOtherMessage();
 
-  @Nullable String switchFailureMessage();
+  @NonNull String switchFailureMessage();
 
-  @Nullable String cannotIgnoreMessage();
+  @NonNull String cannotIgnoreMessage();
 
-  @Nullable String toggleOffMessage();
+  @NonNull String toggleOffMessage();
 
-  @Nullable String toggleOnMessage();
+  @NonNull String toggleOnMessage();
 
-  @Nullable String toggleOtherOnMessage();
+  @NonNull String toggleOtherOnMessage();
 
-  @Nullable String toggleOtherOffMessage();
+  @NonNull String toggleOtherOffMessage();
 
-  @Nullable String cannotUseMessage();
+  @NonNull String cannotUseMessage();
 
 }

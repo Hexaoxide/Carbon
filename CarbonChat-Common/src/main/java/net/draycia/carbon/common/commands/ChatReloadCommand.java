@@ -12,14 +12,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChatReloadCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public ChatReloadCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public ChatReloadCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("chatreload");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -33,7 +34,7 @@ public class ChatReloadCommand {
     );
   }
 
-  private void reloadConfig(@NonNull final CommandContext<CarbonUser> context) {
+  private void reloadConfig(final @NonNull CommandContext<CarbonUser> context) {
     this.carbonChat.reloadConfig();
 
     final Component message = this.carbonChat.messageProcessor()

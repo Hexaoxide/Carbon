@@ -16,14 +16,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChannelCommand {
 
-  private @NonNull final CarbonChat carbonChat;
+  private final @NonNull CarbonChat carbonChat;
 
-  public ChannelCommand(@NonNull final CommandManager<CarbonUser> commandManager) {
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  public ChannelCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
     final CommandSettings commandSettings = this.carbonChat.commandSettings().get("channel");
 
-    if (!commandSettings.enabled()) {
+    if (commandSettings == null || !commandSettings.enabled()) {
       return;
     }
 
@@ -49,7 +50,7 @@ public class ChannelCommand {
     );
   }
 
-  private void channel(@NonNull final CommandContext<CarbonUser> context) {
+  private void channel(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
     final TextChannel channel = context.get("channel");
 
@@ -64,7 +65,7 @@ public class ChannelCommand {
     user.selectedChannel(channel);
   }
 
-  private void sendMessage(@NonNull final CommandContext<CarbonUser> context) {
+  private void sendMessage(final @NonNull CommandContext<CarbonUser> context) {
     final ChatChannel channel = context.get("channel");
     final String message = context.get("message");
 

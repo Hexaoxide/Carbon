@@ -30,24 +30,25 @@ import java.util.function.Supplier;
 
 public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implements UserService<T> {
 
-  private @NonNull final CarbonChat carbonChat;
-  private @NonNull final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-  private @NonNull final Type userType;
-  private @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier;
-  private @NonNull final Function<UUID, T> userFactory;
-  private @NonNull final Function<String, UUID> nameResolver;
-  private @NonNull final Supplier<C> consoleFactory;
+  private final @NonNull CarbonChat carbonChat;
+  private final @NonNull Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private final @NonNull Type userType;
+  private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+  private final @NonNull Function<UUID, T> userFactory;
+  private final @NonNull Function<String, UUID> nameResolver;
+  private final @NonNull Supplier<C> consoleFactory;
 
-  private @NonNull final LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
+  @SuppressWarnings("methodref.receiver.bound.invalid")
+  private final @NonNull LoadingCache<@NonNull UUID, @NonNull T> userCache = CacheBuilder.newBuilder()
     .removalListener(this::saveUser)
     .build(CacheLoader.from(this::loadUser));
 
-  public JSONUserService(@NonNull final Class<? extends CarbonUser> userType,
-                         @NonNull final CarbonChat carbonChat,
-                         @NonNull final Supplier<@NonNull Iterable<@NonNull T>> supplier,
-                         @NonNull final Function<UUID, T> userFactory,
-                         @NonNull final Function<String, UUID> nameResolver,
-                         @NonNull final Supplier<C> consoleFactory) {
+  public JSONUserService(final @NonNull Class<? extends CarbonUser> userType,
+                         final @NonNull CarbonChat carbonChat,
+                         final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
+                         final @NonNull Function<UUID, T> userFactory,
+                         final @NonNull Function<String, UUID> nameResolver,
+                         final @NonNull Supplier<C> consoleFactory) {
     this.userType = userType;
     this.carbonChat = carbonChat;
     this.supplier = supplier;
@@ -66,7 +67,7 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   }
 
   @Override
-  public UUID resolve(@NonNull final String name) {
+  public UUID resolve(final @NonNull String name) {
     return this.nameResolver.apply(name);
   }
 
@@ -77,12 +78,11 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   }
 
   @Override
-  public @Nullable T wrap(@NonNull final UUID uuid) {
+  public @NonNull T wrap(final @NonNull UUID uuid) {
     try {
       return this.userCache.get(uuid);
     } catch (final ExecutionException exception) {
-      exception.printStackTrace();
-      return null;
+      throw new IllegalStateException(exception);
     }
   }
 
@@ -92,24 +92,24 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   }
 
   @Override
-  public @Nullable T wrapIfLoaded(@NonNull final UUID uuid) {
+  public @Nullable T wrapIfLoaded(final @NonNull UUID uuid) {
     return this.userCache.getIfPresent(uuid);
   }
 
   @Override
-  public @Nullable T refreshUser(@NonNull final UUID uuid) {
+  public @Nullable T refreshUser(final @NonNull UUID uuid) {
     this.userCache.invalidate(uuid);
 
     return this.wrap(uuid);
   }
 
   @Override
-  public void invalidate(@NonNull final T user) {
+  public void invalidate(final @NonNull T user) {
     this.userCache.invalidate(user.uuid());
   }
 
   @Override
-  public void validate(@NonNull final T user) {
+  public void validate(final @NonNull T user) {
     this.userCache.put(user.uuid(), user);
   }
 
@@ -118,7 +118,7 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
     return this.supplier.get();
   }
 
-  private @NonNull T loadUser(@NonNull final UUID uuid) {
+  private @NonNull T loadUser(final @NonNull UUID uuid) {
     final File userFile = new File(this.carbonChat.dataFolder().toFile(), "users/" + uuid.toString() + ".json");
     this.ensureFileExists(userFile);
 
@@ -135,7 +135,7 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
     return this.userFactory.apply(uuid);
   }
 
-  private void saveUser(@NonNull final RemovalNotification<@NonNull UUID, @NonNull T> notification) {
+  private void saveUser(final @NonNull RemovalNotification<@NonNull UUID, @NonNull T> notification) {
     final File userFile = new File(this.carbonChat.dataFolder().toFile(), "users/" + notification.getKey().toString() + ".json");
     this.ensureFileExists(userFile);
 
@@ -146,9 +146,15 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
     }
   }
 
-  private void ensureFileExists(@NonNull final File file) {
-    if (!file.getParentFile().exists()) {
-      file.getParentFile().mkdirs();
+  private void ensureFileExists(final @NonNull File file) {
+    final File parentFile = file.getParentFile();
+
+    if (parentFile == null) {
+      throw new IllegalStateException("Parent file not present!");
+    }
+
+    if (!parentFile.exists()) {
+      parentFile.mkdirs();
     }
 
     if (!file.exists()) {

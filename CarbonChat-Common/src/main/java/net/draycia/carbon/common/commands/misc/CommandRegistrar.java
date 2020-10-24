@@ -29,7 +29,7 @@ public final class CommandRegistrar {
 
   }
 
-  public static void registerCommands(@NonNull final CommandManager<CarbonUser> commandManager) {
+  public static void registerCommands(final @NonNull CommandManager<CarbonUser> commandManager) {
     new ChannelCommand(commandManager);
     new ChannelListCommand(commandManager);
     new ChatReloadCommand(commandManager);
