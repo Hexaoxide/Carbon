@@ -69,6 +69,10 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   @Override
   public @NonNull Identity identity() {
+    if (this.hasPermission("carbonchat.hideidentity")) {
+      return Identity.nil();
+    }
+
     return Identity.identity(this.uuid());
   }
 
