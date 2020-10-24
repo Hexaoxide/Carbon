@@ -148,7 +148,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     // Handle storage service
     final StorageType storageType = this.carbonSettings().storageType();
 
-    final Supplier<@NonNull Iterable<@NonNull BukkitPlayerUser>> supplier = () -> {
+    final Supplier<Iterable<BukkitPlayerUser>> supplier = () -> {
       final List<BukkitPlayerUser> users = new ArrayList<>();
 
       for (final Player player : Bukkit.getOnlinePlayers()) {

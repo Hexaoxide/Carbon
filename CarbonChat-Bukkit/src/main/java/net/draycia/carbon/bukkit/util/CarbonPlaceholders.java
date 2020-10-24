@@ -6,7 +6,6 @@ import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.users.PlayerUser;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class CarbonPlaceholders extends PlaceholderExpansion {
 

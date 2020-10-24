@@ -98,15 +98,24 @@ public final class mcMMOContext implements Listener {
   }
 
   public boolean isInParty(final @NonNull PlayerUser user) {
-    return PartyAPI.inParty(Bukkit.getPlayer(user.uuid()));
-  }
+    final Player player = Bukkit.getPlayer(user.uuid());
 
-  public boolean isInSameParty(final @NonNull PlayerUser user1, final @NonNull PlayerUser user2) {
-    if (Bukkit.getPlayer(user1.uuid()) == null || Bukkit.getPlayer(user2.uuid()) == null) {
+    if (player == null) {
       return false;
     }
 
-    return PartyAPI.inSameParty(Bukkit.getPlayer(user1.uuid()), Bukkit.getPlayer(user2.uuid()));
+    return PartyAPI.inParty(player);
+  }
+
+  public boolean isInSameParty(final @NonNull PlayerUser user1, final @NonNull PlayerUser user2) {
+    final Player player1 = Bukkit.getPlayer(user1.uuid());
+    final Player player2 = Bukkit.getPlayer(user2.uuid());
+
+    if (player1 == null || player2 == null) {
+      return false;
+    }
+
+    return PartyAPI.inSameParty(player1, player2);
   }
 
 }

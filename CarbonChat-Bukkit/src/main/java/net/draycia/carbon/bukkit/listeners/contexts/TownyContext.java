@@ -69,8 +69,7 @@ public final class TownyContext implements Listener {
 
   @EventHandler
   public void onResidentRemove(final TownRemoveResidentEvent event) {
-    final String name = event.getResident().getName();
-    final PlayerUser user = this.carbonChat.userService().wrap(Bukkit.getPlayer(name).getUniqueId());
+    final PlayerUser user = this.carbonChat.userService().wrap(event.getResident().getUUID());
     final ChatChannel channel = user.selectedChannel();
 
     if (!(channel instanceof TextChannel)) {
@@ -104,7 +103,7 @@ public final class TownyContext implements Listener {
 
   public boolean isInTown(final @NonNull PlayerUser user) {
     try {
-      return TownyAPI.getInstance().getDataSource().getResident(Bukkit.getPlayer(user.uuid()).getName()).hasTown();
+      return TownyAPI.getInstance().getDataSource().getResident(user.name()).hasTown();
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();
     }
@@ -118,10 +117,10 @@ public final class TownyContext implements Listener {
     }
 
     try {
-      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(Bukkit.getPlayer(user1.uuid()).getName());
+      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.name());
 
       if (resident.hasTown()) {
-        return resident.getTown().hasResident(Bukkit.getPlayer(user2.uuid()).getName());
+        return resident.getTown().hasResident(user2.name());
       }
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();

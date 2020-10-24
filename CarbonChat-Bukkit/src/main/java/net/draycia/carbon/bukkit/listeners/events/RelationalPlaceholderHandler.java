@@ -3,7 +3,6 @@ package net.draycia.carbon.bukkit.listeners.events;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatFormatEvent;
-import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.PostOrders;
 import org.bukkit.Bukkit;

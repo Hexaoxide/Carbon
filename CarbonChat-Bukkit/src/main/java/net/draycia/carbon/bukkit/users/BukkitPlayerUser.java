@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
@@ -101,17 +100,22 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   @Override
   public @NonNull String nickname() {
-    if (this.nickname == null) {
-      return this.name();
+    if (this.nickname != null) {
+      return this.nickname();
     }
 
-    return this.nickname;
+    return this.displayName();
   }
 
   @Override
   public boolean hasPermission(final @NonNull String permission) {
-    return LuckPermsProvider.get().getUserManager().getUser(this.uuid())
-      .getCachedData().getPermissionData().checkPermission(permission).asBoolean();
+    final User user = LuckPermsProvider.get().getUserManager().getUser(this.uuid());
+
+    if (user == null) {
+      return false;
+    }
+
+    return user.getCachedData().getPermissionData().checkPermission(permission).asBoolean();
   }
 
   @Override
@@ -138,12 +142,14 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     }
 
     if (!fromRemote) {
-      if (this.nickname == null) {
+      final String nick = this.nickname;
+
+      if (nick == null) {
         this.carbonChat.messageManager().sendMessage("nickname-reset", this.uuid(), byteArray -> {
         });
       } else {
         this.carbonChat.messageManager().sendMessage("nickname", this.uuid(), byteArray -> {
-          byteArray.writeUTF(this.nickname);
+          byteArray.writeUTF(nick);
         });
       }
     }
@@ -169,10 +175,18 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   public @NonNull String name() {
-    return Objects.requireNonNull(Bukkit.getOfflinePlayer(this.uuid()).getName());
+    final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
+    final String name = player.getName();
+
+    if (name != null) {
+      return name;
+    }
+
+    return this.uuid.toString();
   }
 
   @Override
+  @SuppressWarnings("argument.type.incompatible")
   public @Nullable ChatChannel selectedChannel() {
     if (this.selectedChannel != null) {
       return this.selectedChannel;
@@ -399,28 +413,16 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     final String fromPlayerFormat = this.carbonChat.carbonSettings().whisperOptions().receiverFormat();
 
     final OfflinePlayer offlineSender = Bukkit.getOfflinePlayer(sender.uuid());
-    String senderName = sender.nickname();
-    final String senderOfflineName = senderName;
-
-    if (offlineSender.isOnline()) {
-      senderName = offlineSender.getPlayer().getDisplayName();
-    }
+    final String senderName = sender.nickname();
 
     final OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(this.uuid());
-    String targetName = offlineTarget.getName();
-    final String targetOfflineName = targetName;
-
-    if (offlineTarget.isOnline()) {
-      targetName = offlineTarget.getPlayer().getDisplayName();
-    }
+    final String targetName = this.nickname();
 
     final Component toPlayerComponent = this.carbonChat.messageProcessor().processMessage(toPlayerFormat,
-      "message", message, "targetname", targetOfflineName, "sendername", senderOfflineName,
-      "target", targetName, "sender", senderName);
+      "message", message, "target", targetName, "sender", senderName);
 
     final Component fromPlayerComponent = this.carbonChat.messageProcessor().processMessage(fromPlayerFormat,
-      "message", message, "targetname", targetOfflineName, "sendername", senderOfflineName,
-      "target", targetName, "sender", senderName);
+      "message", message, "target", targetName, "sender", senderName);
 
     final PrivateMessageEvent event = new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message);
 
@@ -451,9 +453,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
         final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
         final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-          "message", message,
-          "targetname", targetOfflineName, "sendername", senderOfflineName,
-          "target", targetNameFinal, "sender", senderNameFinal);
+          "message", message, "target", targetNameFinal, "sender", senderNameFinal);
 
         sender.sendMessage(Identity.nil(), playerOfflineComponent);
 
@@ -462,14 +462,13 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
       BungeeChannelApi.of(this.carbonChat).getPlayerList("ALL").thenAccept(list -> {
         final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
+        final String name = player.getName();
 
-        if (!list.contains(player.getName())) {
+        if (name == null || !list.contains(name)) {
           final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
           final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-            "message", message,
-            "targetname", targetOfflineName, "sendername", senderOfflineName,
-            "target", targetNameFinal, "sender", senderNameFinal);
+            "message", message, "target", targetNameFinal, "sender", senderNameFinal);
 
           sender.sendMessage(Identity.nil(), playerOfflineComponent);
 
@@ -499,8 +498,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
       user.sendMessage(sender.identity(), this.carbonChat.messageProcessor()
         .processMessage(this.carbonChat.translations().spyWhispers(), "message", message,
-          "targetname", targetOfflineName, "sendername", senderOfflineName, "target", targetName,
-          "sender", senderName));
+          "target", targetName, "sender", senderName));
     }
   }
 }

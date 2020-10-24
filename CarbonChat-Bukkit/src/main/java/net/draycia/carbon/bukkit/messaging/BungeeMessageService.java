@@ -28,6 +28,7 @@ public class BungeeMessageService implements MessageService {
 
   private final @NonNull UUID serverUUID = UUID.randomUUID();
 
+  @SuppressWarnings("method.invocation.invalid")
   public BungeeMessageService(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 

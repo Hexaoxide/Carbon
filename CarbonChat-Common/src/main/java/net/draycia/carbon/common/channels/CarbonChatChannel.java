@@ -124,7 +124,7 @@ public class CarbonChatChannel implements TextChannel {
       return Collections.emptyMap();
     }
 
-    String displayName = user.nickname();
+    final String displayName = user.nickname();
 
     final Map<CarbonUser, Component> users = new HashMap<>();
 
