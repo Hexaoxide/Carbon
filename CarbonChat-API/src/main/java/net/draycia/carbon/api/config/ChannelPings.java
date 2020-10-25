@@ -31,6 +31,10 @@ public final class ChannelPings {
     1.0F
   );
 
+  @Setting
+  @Comment("The way players will see the ping")
+  private @NonNull String display = "<bold><red><ping></red><bold>";
+
   public boolean enabled() {
     return this.enabled;
   }
@@ -45,6 +49,10 @@ public final class ChannelPings {
 
   public Sound sound() {
     return this.sound;
+  }
+
+  public String display() {
+    return this.display;
   }
 
 }
