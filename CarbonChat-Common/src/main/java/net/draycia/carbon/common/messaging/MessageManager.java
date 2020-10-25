@@ -129,14 +129,27 @@ public class MessageManager {
     this.messageService().registerUUIDMessageListener("whisper-component", (uuid, byteArray) -> {
       final UUID recipient = new UUID(byteArray.readLong(), byteArray.readLong());
 
+      final PlayerUser sender = this.carbonChat.userService().wrap(uuid);
       final PlayerUser target = this.carbonChat.userService().wrap(recipient);
       final String message = byteArray.readUTF();
 
-      if (target != null) {
-        if (!target.ignoringUser(uuid)) {
-          target.replyTarget(uuid);
-          target.sendMessage(Identity.identity(uuid), this.carbonChat.gsonSerializer().deserialize(message));
+      if (!target.ignoringUser(uuid)) {
+        target.replyTarget(uuid);
+        target.sendMessage(Identity.identity(uuid), this.carbonChat.gsonSerializer().deserialize(message));
+      }
+
+      for (final PlayerUser user : this.carbonChat.userService().onlineUsers()) {
+        if (!user.spyingWhispers()) {
+          continue;
         }
+
+        if (user.equals(target) || user.uuid().equals(uuid)) {
+          continue;
+        }
+
+        user.sendMessage(sender, this.carbonChat.messageProcessor()
+          .processMessage(this.carbonChat.translations().spyWhispers(), "message", message,
+            "target", target.displayName(), "sender", sender.displayName()));
       }
     });
   }
