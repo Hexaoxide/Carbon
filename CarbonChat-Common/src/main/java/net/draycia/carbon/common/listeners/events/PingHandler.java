@@ -70,7 +70,7 @@ public class PingHandler {
 
       event.message(event.message().replace(
         ping,
-        carbonChat.carbonSettings().channelPings().display().replace("<ping>", ping)
+        carbonChat.carbonSettings().channelPings().display().replace("<ping>", ping).replace("<name>", targetName)
       ));
     });
   }
