@@ -32,7 +32,7 @@ public final class ChannelPings {
   );
 
   @Setting
-  @Comment("The way players will see the pign")
+  @Comment("The way players will see the ping")
   private @NonNull String display = "<bold><red><ping></red><bold>";
 
   public boolean enabled() {
