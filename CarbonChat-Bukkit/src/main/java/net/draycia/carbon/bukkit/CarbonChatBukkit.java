@@ -81,7 +81,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("initialization.fields.uninitialized")
@@ -158,21 +157,19 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       return users;
     };
 
-    final Function<String, UUID> nameResolver = name -> Bukkit.getOfflinePlayer(name).getUniqueId();
-
     if (storageType == StorageType.MYSQL) {
       this.logger().info("Enabling MySQL storage!");
       final SQLCredentials credentials = this.carbonSettings().sqlCredentials();
-      this.userService = new MySQLUserService<>(this, credentials, supplier, BukkitPlayerUser::new,
-        nameResolver, BukkitConsoleUser::new);
+      this.userService = new MySQLUserService<>(this, credentials, supplier,
+        BukkitPlayerUser::new, BukkitConsoleUser::new);
     } else if (storageType == StorageType.JSON) {
       this.logger().info("Enabling JSON storage!");
-      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new,
-        nameResolver, BukkitConsoleUser::new);
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier,
+        BukkitPlayerUser::new, BukkitConsoleUser::new);
     } else {
       this.logger().error("Invalid storage type selected! Falling back to JSON.");
-      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, BukkitPlayerUser::new,
-        nameResolver, BukkitConsoleUser::new);
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier,
+        BukkitPlayerUser::new, BukkitConsoleUser::new);
     }
 
     // Setup listeners
@@ -357,10 +354,60 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     new PAPIContext();
   }
 
+  @Override
+  public @NonNull String resolveName(final @NonNull UUID uuid) {
+    if (this.messageService() instanceof RedisMessageService) {
+      final RedisMessageService redis = (RedisMessageService) this.messageService();
+
+      final String value = redis.get("UUID:" + uuid.toString());
+
+      if (value != null) {
+        return value;
+      } else {
+        final String name = Bukkit.getOfflinePlayer(uuid).getName();
+
+        if (name != null) {
+          redis.set("UUID:" + uuid.toString(), name);
+
+          return name;
+        }
+      }
+    }
+
+    final String name = Bukkit.getOfflinePlayer(uuid).getName();
+
+    if (name != null) {
+      return name;
+    }
+
+    return uuid.toString();
+  }
+
+  @Override
+  public @NonNull UUID resolveUUID(final @NonNull String name) {
+    if (this.messageService() instanceof RedisMessageService) {
+      final RedisMessageService redis = (RedisMessageService) this.messageService();
+
+      final String value = redis.get("Name:" + name);
+
+      if (value != null) {
+        return UUID.fromString(value);
+      } else {
+        final UUID uuid = Bukkit.getOfflinePlayer(name).getUniqueId();
+        redis.set("UUID:" + uuid.toString(), name);
+
+        return uuid;
+      }
+    }
+
+    return Bukkit.getOfflinePlayer(name).getUniqueId();
+  }
+
   public @NonNull MessageManager messageManager() {
     return this.messageManager;
   }
 
+  @Override
   public @NonNull UserService<BukkitPlayerUser> userService() {
     return this.userService;
   }

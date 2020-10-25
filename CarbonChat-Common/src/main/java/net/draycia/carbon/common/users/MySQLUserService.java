@@ -38,7 +38,6 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   private final @NonNull Database database;
   private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
   private final @NonNull Function<UUID, T> userFactory;
-  private final @NonNull Function<String, UUID> nameResolver;
   private final @NonNull Supplier<C> consoleFactory;
 
   @SuppressWarnings("methodref.receiver.bound.invalid")
@@ -49,12 +48,10 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   public MySQLUserService(final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
                           final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
                           final @NonNull Function<UUID, T> userFactory,
-                          final @NonNull Function<String, UUID> nameResolver,
                           final @NonNull Supplier<C> consoleFactory) {
     this.carbonChat = carbonChat;
     this.supplier = supplier;
     this.userFactory = userFactory;
-    this.nameResolver = nameResolver;
     this.consoleFactory = consoleFactory;
 
     final String username = credentials.username();
@@ -97,11 +94,6 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     };
 
     new Timer().schedule(timerTask, 0L, 300000L);
-  }
-
-  @Override
-  public UUID resolve(final @NonNull String name) {
-    return this.nameResolver.apply(name);
   }
 
   @Override

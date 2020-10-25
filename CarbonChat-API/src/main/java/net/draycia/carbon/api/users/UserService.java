@@ -7,9 +7,6 @@ import java.util.UUID;
 
 public interface UserService<T extends PlayerUser> {
 
-  @Nullable
-  UUID resolve(String name);
-
   @NonNull
   T wrap(UUID uuid);
 

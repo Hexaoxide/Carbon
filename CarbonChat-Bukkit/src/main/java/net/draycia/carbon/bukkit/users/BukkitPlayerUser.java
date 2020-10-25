@@ -37,7 +37,7 @@ import java.util.UUID;
 
 public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
-  private final @NonNull transient CarbonChatBukkit carbonChat;
+  private final transient @NonNull CarbonChatBukkit carbonChat;
   private final @NonNull Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
   private final @NonNull List<@NonNull UUID> ignoredUsers = new ArrayList<>();
   private @NonNull UUID uuid;
@@ -179,14 +179,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   public @NonNull String name() {
-    final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
-    final String name = player.getName();
-
-    if (name != null) {
-      return name;
-    }
-
-    return this.uuid.toString();
+    return this.carbonChat.resolveName(this.uuid);
   }
 
   @Override

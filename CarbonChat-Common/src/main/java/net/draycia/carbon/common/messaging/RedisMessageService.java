@@ -5,6 +5,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisStringCommands;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import net.draycia.carbon.api.CarbonChat;
@@ -12,6 +14,7 @@ import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.config.RedisCredentials;
 import net.draycia.carbon.api.users.PlayerUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -29,6 +32,8 @@ public class RedisMessageService implements MessageService {
   private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> subscribeSync;
 
   private final @NonNull RedisPubSubCommands<@NonNull String, @NonNull String> publishSync;
+
+  private final @NonNull RedisStringCommands<@NonNull String, @NonNull String> getSetSync;
 
   private final @NonNull UUID serverUUID = UUID.randomUUID();
 
@@ -54,6 +59,9 @@ public class RedisMessageService implements MessageService {
 
     final StatefulRedisPubSubConnection<String, String> publishConnection = client.connectPubSub();
     this.publishSync = publishConnection.sync();
+
+    final StatefulRedisConnection<String, String> getSetConnection = client.connect();
+    this.getSetSync = getSetConnection.sync();
 
     subscribeConnection.addListener((RedisListener) (channel, message) -> {
       final ByteArrayDataInput input = ByteStreams.newDataInput(Base64.getDecoder().decode(message));
@@ -106,6 +114,14 @@ public class RedisMessageService implements MessageService {
     this.userNotLoadedListeners.remove(key);
 
     this.subscribeSync.unsubscribe(key);
+  }
+
+  public @Nullable String get(final @NonNull String key) {
+    return this.getSetSync.get(key);
+  }
+
+  public void set(final @NonNull String key, final @NonNull String value) {
+    this.getSetSync.set(key, value);
   }
 
   @Override

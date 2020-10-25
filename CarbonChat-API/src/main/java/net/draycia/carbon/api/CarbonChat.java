@@ -18,6 +18,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.UUID;
 
 public interface CarbonChat {
 
@@ -30,6 +31,10 @@ public interface CarbonChat {
       .build();
 
   void reloadConfig();
+
+  @NonNull UUID resolveUUID(@NonNull String name);
+
+  @NonNull String resolveName(@NonNull UUID uuid);
 
   @NonNull Logger logger();
 

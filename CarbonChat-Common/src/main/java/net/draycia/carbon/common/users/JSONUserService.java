@@ -35,7 +35,6 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   private final @NonNull Type userType;
   private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
   private final @NonNull Function<UUID, T> userFactory;
-  private final @NonNull Function<String, UUID> nameResolver;
   private final @NonNull Supplier<C> consoleFactory;
 
   @SuppressWarnings("methodref.receiver.bound.invalid")
@@ -47,13 +46,11 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
                          final @NonNull CarbonChat carbonChat,
                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
                          final @NonNull Function<UUID, T> userFactory,
-                         final @NonNull Function<String, UUID> nameResolver,
                          final @NonNull Supplier<C> consoleFactory) {
     this.userType = userType;
     this.carbonChat = carbonChat;
     this.supplier = supplier;
     this.userFactory = userFactory;
-    this.nameResolver = nameResolver;
     this.consoleFactory = consoleFactory;
 
     final TimerTask timerTask = new TimerTask() {
@@ -64,11 +61,6 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
     };
 
     new Timer().schedule(timerTask, 300000L, 300000L);
-  }
-
-  @Override
-  public UUID resolve(final @NonNull String name) {
-    return this.nameResolver.apply(name);
   }
 
   @Override

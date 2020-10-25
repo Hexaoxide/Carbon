@@ -32,7 +32,7 @@ public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> 
       return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
     }
 
-    final UUID uuid = CarbonChatProvider.carbonChat().userService().resolve(input);
+    final UUID uuid = CarbonChatProvider.carbonChat().resolveUUID(input);
 
     if (uuid == null) {
       return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
