@@ -105,7 +105,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   @Override
   public @NonNull String nickname() {
     if (this.nickname != null) {
-      return this.nickname();
+      return this.nickname;
     }
 
     return this.displayName();
