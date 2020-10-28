@@ -21,31 +21,49 @@ import java.util.Map;
 public final class ChannelOptions {
 
   @Setting
-  @Comment("What this channel is identified as. This will be what's typed ingame to use the channel.")
+  @Comment("###############################\n" +
+    "        #             Key             #\n" +
+    "        ###############################\n" +
+    "        # What this channel is identified as. This will be what is typed ingame to use the channel.")
   private @NonNull String key = "channel";
   
   @Setting
-  @Comment("This is what the <color> placeholder will typically be replaced with.\n" +
-    "Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.\n" +
-    "If on a platform that supports PlaceholderAPI, this option will be ran through that as well.\n" +
-    "Note that the <color> placeholder is also used for personal and global user colors.")
+  @Comment("###############################\n" +
+    "        #            Color            #\n" +
+    "        ###############################\n" +
+    "        # This is what the <color> placeholder in this channel will typically be replaced with.\n" +
+    "        # Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.\n" +
+    "        # If on a platform that supports PlaceholderAPI, this option will be ran through that as well.\n" +
+    "        # Note that the <color> placeholder is also used for personal and global user colors.")
   private @Nullable String color = NamedTextColor.WHITE.asHexString();
   
   @Setting
-  @Comment("The contexts for this channel, which can modify the behaviour of channels and how/when players can use them.")
+  @Comment("###############################\n" +
+    "        #           Contexts          #\n" +
+    "        ###############################\n" +
+    "        # The contexts for this channel, which can modify the behaviour of channels and how/when players can use them.")
   private @Nullable Map<@NonNull String, @NonNull Context> contexts = new HashMap<>();
   
   @Setting
-  @Comment("The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
+  @Comment("###############################\n" +
+    "        #           Formats           #\n" +
+    "        ###############################\n" +
+    "        # The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
   private @Nullable Map<String, String> formats = ImmutableMap.of("default", "<color><<displayname><reset><color>> <message>");
 
   @Setting
-  @Comment("The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
+  @Comment("###############################\n" +
+    "        #     Default Format Name     #\n" +
+    "        ###############################\n" +
+    "        # The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.")
   private @Nullable String defaultFormatName;
   
   @Setting
-  @Comment("If this channel is the default channel players join in.\n" +
-    "Also used as a fallback in case the player's selected channel cannot be found.")
+  @Comment("###############################\n" +
+    "        #       Default Toggle        #\n" +
+    "        ###############################\n" +
+    "        # If this channel is the default channel players join in.\n" +
+    "        # Also used as a fallback in case the player's selected channel cannot be found.")
   private boolean isDefault = false; // primitive because missing = false
   
   @Setting
@@ -73,11 +91,17 @@ public final class ChannelOptions {
   private String name = "";
   
   @Setting
-  @Comment("If the player's chat message starts with whatever this is set to, the player speaks in this channel instead of their selected one")
+  @Comment("###############################\n" +
+    "        #       Message Prefix        #\n" +
+    "        ###############################\n" +
+    "        # If the player's chat message starts with whatever this is set to, the player speaks in this channel instead of their selected one.")
   private String messagePrefix = "";
   
   @Setting
-  @Comment("The command aliases for this channel")
+  @Comment("###############################\n" +
+    "        #           Aliases           #\n" +
+    "        ###############################\n" +
+    "        # The command aliases for this channel.")
   private List<String> aliases = new ArrayList<>();
   
   @Setting

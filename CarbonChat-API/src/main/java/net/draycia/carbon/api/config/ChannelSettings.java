@@ -35,8 +35,14 @@ public final class ChannelSettings {
   }
 
   @Setting
-  @Comment("All options here act like the defaults for all channels.\n" +
-    "Adding any of these options to any channel overrides the relevant defaults.")
+  @Comment("#############################################\n" +
+    "#                                           #\n" +
+    "#      Shared/Default Channel Options       #\n" +
+    "#                                           #\n" +
+    "#############################################\n" +
+    "\n" +
+    "# All options here act like the defaults for all channels.\n" +
+    "# Adding any of these options to any channel overrides the options set here.")
   private SharedChannelOptions sharedChannelOptions = new SharedChannelOptions();
 
   @Setting
@@ -44,8 +50,13 @@ public final class ChannelSettings {
     Collections.singletonMap("global", ChannelOptions.defaultChannel());
 
   @Setting
-  @Comment("Used for message formats - custom tags that are replaced in descending order" +
-    "\nFor example, in the default config, <group> wil be replaced with <green>%vault_group%")
+  @Comment("###############################\n" +
+    "#      Custom Placeholders    #\n" +
+    "###############################\n" +
+    "\n" +
+    "# Used for message formats - custom tags that are replaced in descending order\n" +
+    "# For example, in the default config, <group> wil be replaced with <green>%vault_group% \n" +
+    "# <prefix> will be effectively replaced with <gray>[<green>%vault_group%<gray>]")
   private @NonNull Map<@NonNull String, @NonNull String> customPlaceholders =
     ImmutableMap.of("prefix", "<gray>[<group><gray>]", "group", "<green>%vault_group%");
 
