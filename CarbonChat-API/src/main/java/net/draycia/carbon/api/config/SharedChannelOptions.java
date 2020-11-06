@@ -36,6 +36,7 @@ public final class SharedChannelOptions {
   @Setting private @NonNull String toggleOtherOffMessage = "<gray><player> <reset><gray>can no longer see <color><channel> <gray>chat!";
   @Setting private @NonNull String cannotUseMessage = "You cannot use that channel!";
   @Setting private @NonNull String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
+  @Setting private @NonNull List<@NonNull ColorPriority> colorPriorities = new ArrayList<>();
 
   public @NonNull String color() {
     return this.color;
@@ -117,4 +118,7 @@ public final class SharedChannelOptions {
     return this.shouldCancelChatEvent;
   }
 
+  public @NonNull List<@NonNull ColorPriority> colorPriorities() {
+    return this.colorPriorities;
+  }
 }

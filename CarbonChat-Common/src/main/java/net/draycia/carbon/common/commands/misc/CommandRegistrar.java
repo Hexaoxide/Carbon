@@ -16,7 +16,7 @@ import net.draycia.carbon.common.commands.MessageCommand;
 import net.draycia.carbon.common.commands.MuteCommand;
 import net.draycia.carbon.common.commands.NicknameCommand;
 import net.draycia.carbon.common.commands.ReplyCommand;
-import net.draycia.carbon.common.commands.SetColorCommand;
+import net.draycia.carbon.common.commands.SetChannelColorCommand;
 import net.draycia.carbon.common.commands.SpyChannelCommand;
 import net.draycia.carbon.common.commands.SudoChannelCommand;
 import net.draycia.carbon.common.commands.ToggleCommand;
@@ -40,7 +40,7 @@ public final class CommandRegistrar {
     new MuteCommand(commandManager);
     new NicknameCommand(commandManager);
     new ReplyCommand(commandManager);
-    new SetColorCommand(commandManager);
+    new SetChannelColorCommand(commandManager);
     new ShadowMuteCommand(commandManager);
     new SpyChannelCommand(commandManager);
     new SudoChannelCommand(commandManager);

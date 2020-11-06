@@ -14,15 +14,15 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class SetColorCommand {
+public class SetChannelColorCommand {
 
   private final @NonNull CarbonChat carbonChat;
 
   @SuppressWarnings("methodref.receiver.bound.invalid")
-  public SetColorCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
+  public SetChannelColorCommand(final @NonNull CommandManager<CarbonUser> commandManager) {
     this.carbonChat = CarbonChatProvider.carbonChat();
 
-    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("setcolor");
+    final CommandSettings commandSettings = this.carbonChat.commandSettings().get("setchannelcolor");
 
     if (commandSettings == null || !commandSettings.enabled()) {
       return;
@@ -33,7 +33,7 @@ public class SetColorCommand {
         commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
           commandManager.createDefaultCommandMeta())
           .senderType(PlayerUser.class) // player
-          .permission("carbonchat.setcolor." + channel.key())
+          .permission("carbonchat.setchannelcolor." + channel.key())
           .argument(StaticArgument.of(channel.key()))
           .argument(TextColorArgument.of("color")) // remember to replace this when cloud 1.1.0 releases
           .handler(context -> {

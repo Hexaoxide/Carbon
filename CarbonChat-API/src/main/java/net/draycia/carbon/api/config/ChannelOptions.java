@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.Context;
@@ -123,6 +124,15 @@ public final class ChannelOptions {
   @Setting
   @Comment("The message that's sent when you attempt to ignore a channel but are unable to do so")
   private String cannotIgnoreMessage;
+
+  @Setting
+  @Comment("The order in which colors are chosen for the <color> tag.\n" +
+    "Options:\n" +
+    "  PLAYER: The color the player has set with /setcolor\n" +
+    "  CUSTOM: The color the player has set with /setchannelcolor\n" +
+    "  CHANNEL: The color the channel has set in its settings")
+  private List<@NonNull ColorPriority> colorPriorities = ImmutableList.of(
+    ColorPriority.PLAYER, ColorPriority.CUSTOM, ColorPriority.CHANNEL);
   
   private @NonNull SharedChannelOptions defaultOptions() {
     return CarbonChatProvider.carbonChat().channelSettings().defaultChannelOptions();
@@ -404,6 +414,14 @@ public final class ChannelOptions {
     }
 
     return this.shouldCancelChatEvent;
+  }
+
+  public List<ColorPriority> colorPriorities() {
+    if (this.colorPriorities == null) {
+      return this.defaultOptions().colorPriorities();
+    }
+
+    return this.colorPriorities;
   }
 
   public @Nullable List<String> aliases() {

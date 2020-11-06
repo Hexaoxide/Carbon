@@ -1,6 +1,7 @@
 package net.draycia.carbon.api.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.kyori.adventure.text.format.TextColor;
 import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -28,6 +29,10 @@ public interface PlayerUser extends CarbonUser {
   void displayName(@Nullable String displayName);
 
   @NonNull String name();
+
+  @Nullable TextColor customChatColor();
+
+  void customChatColor(@Nullable TextColor customChatColor);
 
   @NonNull String parsePlaceholders(@NonNull String input);
 
@@ -107,15 +112,15 @@ public interface PlayerUser extends CarbonUser {
 
   @NonNull Iterable<UUID> ignoredUsers();
 
-  boolean hasGroup(final @NonNull String group);
+  boolean hasGroup(@NonNull String group);
 
-  boolean hasGroup(final @NonNull Group group);
+  boolean hasGroup(@NonNull Group group);
 
   @NonNull Collection<@NonNull Group> groups();
 
   @Nullable Group primaryGroup();
 
-  void sendMessage(final @NonNull PlayerUser sender, @NonNull String message);
+  void sendMessage(@NonNull PlayerUser sender, @NonNull String message);
 
   @Nullable ChatChannel selectedChannel();
 

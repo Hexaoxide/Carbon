@@ -3,6 +3,7 @@ package net.draycia.carbon.common.channels;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.config.ChannelOptions;
+import net.draycia.carbon.api.config.ColorPriority;
 import net.draycia.carbon.api.users.ConsoleUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.utils.ColorUtils;
@@ -140,11 +141,34 @@ public class CarbonChatChannel implements TextChannel {
         continue;
       }
 
-      final TextColor targetColor = this.channelColor(target);
+      final TextColor channelColor = this.channelColor(target);
+      final TextColor userColor = user.customChatColor();
+      final TextColor userChannelColor = user.channelSettings(this).color();
+
+      TextColor colorBuffer = null;
+
+      for (final ColorPriority colorPriority : this.options().colorPriorities()) {
+        if (colorPriority == ColorPriority.CHANNEL && channelColor != null) {
+          colorBuffer = channelColor;
+        } else if (colorPriority == ColorPriority.PLAYER && userColor != null) {
+          colorBuffer = userColor;
+        } else if (colorPriority == ColorPriority.CUSTOM && userChannelColor != null) {
+          colorBuffer = userChannelColor;
+        }
+      }
+
+      final TextColor chosenColor;
+
+      if (colorBuffer == null) {
+        chosenColor = NamedTextColor.WHITE;
+      } else {
+        chosenColor = colorBuffer;
+      }
 
       TextComponent formatComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(formatEvent.format(),
         "displayname", displayName,
-        "color", "<" + targetColor.asHexString() + ">",
+        "color", "<" + chosenColor.asHexString() + ">",
+        "playercolor", "<" + user.customChatColor(),
         "phase", Long.toString(System.currentTimeMillis() % 25),
         "message", formatEvent.message());
 
@@ -152,7 +176,7 @@ public class CarbonChatChannel implements TextChannel {
         final String prefix = this.carbonChat.carbonSettings().spyPrefix();
 
         formatComponent = (TextComponent) MiniMessage.get().parse(prefix, "color",
-          targetColor.asHexString()).append(formatComponent);
+          chosenColor.asHexString()).append(formatComponent);
       }
 
       final ChatComponentEvent newEvent = new ChatComponentEvent(user, target, this, formatComponent,
@@ -173,11 +197,19 @@ public class CarbonChatChannel implements TextChannel {
 
     CarbonEvents.post(consoleFormatEvent);
 
-    final TextColor targetColor = this.channelColor(user);
+    final TextColor channelColor = this.channelColor(user);
+    final TextColor targetColor;
+
+    if (channelColor != null) {
+      targetColor = channelColor;
+    } else {
+      targetColor = NamedTextColor.WHITE;
+    }
 
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(consoleFormatEvent.format(),
       "displayname", displayName,
       "color", "<" + targetColor.asHexString() + ">",
+      "playercolor", "<" + user.customChatColor(),
       "phase", Long.toString(System.currentTimeMillis() % 25),
       "message", consoleFormatEvent.message());
 
@@ -377,29 +409,14 @@ public class CarbonChatChannel implements TextChannel {
 
   @Override
   public @NonNull TextColor channelColor(final @NonNull CarbonUser user) {
-    if (user instanceof PlayerUser) {
-      final TextColor userColor = ((PlayerUser) user).channelSettings(this).color();
-
-      if (userColor != null) {
-        return userColor;
-      }
-    }
-
     final String input = this.options().color();
 
     if (input != null) {
       final TextColor color = ColorUtils.parseColor(user, input);
 
-      if (color == null) {
-        if (this.carbonChat.carbonSettings().showTips()) {
-          this.carbonChat.logger().error("Tip: Channel color found (" + input + ") is invalid!");
-          this.carbonChat.logger().error("Falling back to #FFFFFF");
-        }
-
-        return NamedTextColor.WHITE;
+      if (color != null) {
+        return color;
       }
-
-      return color;
     }
 
     return NamedTextColor.WHITE;
