@@ -32,7 +32,7 @@ public interface PlayerUser extends CarbonUser {
 
   @Nullable TextColor customChatColor();
 
-  void customChatColor(@Nullable TextColor customChatColor);
+  void customChatColor(@Nullable TextColor customChatColor, boolean fromRemote);
 
   @NonNull String parsePlaceholders(@NonNull String input);
 

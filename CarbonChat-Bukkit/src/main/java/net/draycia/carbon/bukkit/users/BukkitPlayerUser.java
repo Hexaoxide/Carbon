@@ -16,6 +16,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
@@ -46,6 +47,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   private boolean spyingWhispers = false;
   private @Nullable String nickname = null;
   private @Nullable UUID replyTarget = null;
+  private @Nullable TextColor customChatColor = null;
 
   private @Nullable String selectedChannelKey = null;
   private transient @Nullable ChatChannel selectedChannel = null;
@@ -180,6 +182,27 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   public @NonNull String name() {
     return this.carbonChat.resolveName(this.uuid);
+  }
+
+  @Override
+  public @Nullable TextColor customChatColor() {
+    return this.customChatColor;
+  }
+
+  @Override
+  public void customChatColor(@Nullable final TextColor customChatColor, final boolean fromRemote) {
+    this.customChatColor = customChatColor;
+
+    if (!fromRemote) {
+      if (customChatColor == null) {
+        this.carbonChat.messageManager().sendMessage("custom-chat-color-reset", this.uuid(), byteArray -> {
+        });
+      } else {
+        this.carbonChat.messageManager().sendMessage("custom-chat-color", this.uuid(), byteArray -> {
+          byteArray.writeUTF(customChatColor.asHexString());
+        });
+      }
+    }
   }
 
   @Override

@@ -70,12 +70,13 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     try {
       this.database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
         "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN, spyingwhispers BOOLEAN," +
-        "nickname VARCHAR(512))");
+        "nickname VARCHAR(512), customchatcolor VARCHAR(32))");
 
       // Ignore the exception, it's just saying the column already exists
       try {
         this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN spyingwhispers BOOLEAN DEFAULT false");
         this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR(512) DEFAULT false");
+        this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN customchatcolor VARCHAR(32) DEFAULT false");
       } catch (final SQLSyntaxErrorException ignored) {
       }
 
@@ -169,9 +170,10 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
         user.nickname(nickname, true);
       }
 
-      user.muted(users.<Boolean>get("muted"), true);
-      user.shadowMuted(users.<Boolean>get("shadowmuted"), true);
-      user.spyingWhispers(users.<Boolean>get("spyingwhispers"), true);
+      user.muted(users.get("muted"), true);
+      user.shadowMuted(users.get("shadowmuted"), true);
+      user.spyingWhispers(users.get("spyingwhispers"), true);
+      user.customChatColor(users.get("customchatcolor"), true);
 
       for (final DbRow channelSetting : channelSettings) {
         final ChatChannel chatChannel = this.carbonChat.channelRegistry().get(channelSetting.getString("channel"));
@@ -215,10 +217,10 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
       }
 
       this.carbonChat.logger().info("Saving user data!");
-      stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname) VALUES (?, ?, ?, ?, ?, ?) " +
-          "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname =?",
-        user.uuid().toString(), selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(),
-        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname());
+      stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname, customchatcolor) VALUES (?, ?, ?, ?, ?, ?, ?) " +
+          "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname = ?, customchatcolor = ?",
+        user.uuid().toString(), selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
+        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor());
 
       this.carbonChat.logger().info("Saving user channel settings!");
       // Save user channel settings
