@@ -152,6 +152,14 @@ public class MessageManager {
             "target", target.displayName(), "sender", sender.displayName()));
       }
     });
+
+    this.messageService().registerUserMessageListener("custom-chat-color-reset", (user, byteArray) -> {
+      user.customChatColor(null, true);
+    });
+
+    this.messageService().registerUserMessageListener("custom-chat-color", (user, byteArray) -> {
+      user.customChatColor(TextColor.fromHexString(byteArray.readUTF()), true);
+    });
   }
 
   public @NonNull MessageService messageService() {
