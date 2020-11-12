@@ -52,6 +52,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   private @Nullable String selectedChannelKey = null;
   private transient @Nullable ChatChannel selectedChannel = null;
 
+  private transient @NonNull Audience audience;
+
   @SuppressWarnings("initialization.fields.uninitialized")
   public BukkitPlayerUser() {
     final CarbonChatBukkit carbonChatBukkit =
@@ -62,6 +64,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     }
 
     this.carbonChat = carbonChatBukkit;
+    this.audience = this.carbonChat.messageProcessor().audiences().player(this.uuid());
   }
 
   public BukkitPlayerUser(final @NonNull UUID uuid) {
@@ -80,7 +83,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   @Override
   public @NonNull Audience audience() {
-    return this.carbonChat.messageProcessor().audiences().player(this.uuid());
+    return this.audience;
   }
 
   @Override
