@@ -1,6 +1,7 @@
 package net.draycia.carbon.api.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.TextColor;
 import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -131,5 +132,33 @@ public interface PlayerUser extends CarbonUser {
   void selectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
 
   void clearSelectedChannel();
+
+  @NonNull PingOptions pingOptions();
+
+  public static class PingOptions {
+    public @Nullable Sound whisperSound;
+    public @Nullable Sound pingSound;
+
+    public PingOptions(@Nullable Sound whisperSound, @Nullable Sound pingSound) {
+      this.whisperSound = whisperSound;
+      this.pingSound = pingSound;
+    }
+
+    public @Nullable Sound whisperSound() {
+      return this.whisperSound;
+    }
+
+    public void whisperSound(@Nullable Sound whisperSound) {
+      this.whisperSound = whisperSound;
+    }
+
+    public @Nullable Sound pingSound() {
+      return this.pingSound;
+    }
+
+    public void pingSound(@Nullable Sound pingSound) {
+      this.pingSound = pingSound;
+    }
+  }
 
 }

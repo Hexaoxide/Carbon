@@ -20,7 +20,7 @@ dependencies {
   compile 'net.kyori:event-api:3.0.0'
   compile 'net.kyori:registry:1.0.0-SNAPSHOT'
 
-  api 'cloud.commandframework:cloud-core:1.0.1'
+  api 'cloud.commandframework:cloud-core:1.1.0'
 
   api 'org.spongepowered:configurate-hocon:4.0.0-SNAPSHOT'
   api 'org.slf4j:slf4j-api:1.7.25'
