@@ -14,7 +14,8 @@ import net.draycia.carbon.util.CommandUtils;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SetColorCommand {
 
@@ -31,9 +32,9 @@ public class SetColorCommand {
     CommandUtils.handleDuplicateCommands(commandSettings);
 
     for (final ChatChannel channel : this.carbonChat.channelManager().registry().values()) {
-      final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-      arguments.put("channel", new LiteralArgument(channel.key()));
-      arguments.put("color", CarbonUtils.textColorArgument());
+      final List<Argument> arguments = new ArrayList<>();
+      arguments.add(new LiteralArgument(channel.key()));
+      arguments.add(CarbonUtils.textColorArgument("color"));
 
       new CommandAPICommand(commandSettings.name())
         .withArguments(arguments)

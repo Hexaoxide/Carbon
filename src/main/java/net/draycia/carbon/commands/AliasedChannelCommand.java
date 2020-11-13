@@ -11,7 +11,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AliasedChannelCommand {
 
@@ -30,7 +31,7 @@ public class AliasedChannelCommand {
 
     this.commandName = chatChannel.key();
 
-    final LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
+    final List<Argument> setChannelArguments = new ArrayList<>();
 
     new CommandAPICommand(this.commandName)
       .withArguments(setChannelArguments)
@@ -38,8 +39,8 @@ public class AliasedChannelCommand {
       .executesPlayer(this::channel)
       .register();
 
-    final LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
-    sendMessageArguments.put("message", new GreedyStringArgument());
+    final List<Argument> sendMessageArguments = new ArrayList<>();
+    sendMessageArguments.add(new GreedyStringArgument("message"));
 
     new CommandAPICommand(this.commandName)
       .withArguments(sendMessageArguments)

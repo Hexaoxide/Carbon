@@ -14,7 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ToggleCommand {
 
@@ -30,8 +31,8 @@ public class ToggleCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-    channelArguments.put("channel", CarbonUtils.channelArgument());
+    final List<Argument> channelArguments = new ArrayList<>();
+    channelArguments.add(CarbonUtils.channelArgument("channel"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
@@ -40,9 +41,9 @@ public class ToggleCommand {
       .executesPlayer(this::executeSelf)
       .register();
 
-    final LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
-    argumentsOther.put("players", CarbonUtils.chatUserArgument());
-    argumentsOther.put("channel", CarbonUtils.channelArgument());
+    final List<Argument> argumentsOther = new ArrayList<>();
+    argumentsOther.add(CarbonUtils.chatUserArgument("players"));
+    argumentsOther.add(CarbonUtils.channelArgument("channel"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(argumentsOther)

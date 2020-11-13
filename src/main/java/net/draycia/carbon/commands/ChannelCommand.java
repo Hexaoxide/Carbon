@@ -14,7 +14,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChannelCommand {
 
@@ -30,8 +31,8 @@ public class ChannelCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> setChannelArguments = new LinkedHashMap<>();
-    setChannelArguments.put("channel", CarbonUtils.channelArgument());
+    final List<Argument> setChannelArguments = new ArrayList<>();
+    setChannelArguments.add(CarbonUtils.channelArgument("channel"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(setChannelArguments)
@@ -40,9 +41,9 @@ public class ChannelCommand {
       .executesPlayer(this::channel)
       .register();
 
-    final LinkedHashMap<String, Argument> sendMessageArguments = new LinkedHashMap<>();
-    sendMessageArguments.put("channel", CarbonUtils.channelArgument());
-    sendMessageArguments.put("message", new GreedyStringArgument());
+    final List<Argument> sendMessageArguments = new ArrayList<>();
+    sendMessageArguments.add(CarbonUtils.channelArgument("channel"));
+    sendMessageArguments.add(new GreedyStringArgument("message"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(sendMessageArguments)

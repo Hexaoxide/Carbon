@@ -15,7 +15,8 @@ import net.draycia.carbon.util.CommandUtils;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpyChannelCommand {
 
@@ -31,8 +32,8 @@ public class SpyChannelCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-    channelArguments.put("channel", CarbonUtils.channelArgument());
+    final List<Argument> channelArguments = new ArrayList<>();
+    channelArguments.add(CarbonUtils.channelArgument("channel"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
@@ -41,8 +42,8 @@ public class SpyChannelCommand {
       .executesPlayer(this::execute)
       .register();
 
-    final LinkedHashMap<String, Argument> whisperArguments = new LinkedHashMap<>();
-    whisperArguments.put("channel", new LiteralArgument("whispers"));
+    final List<Argument> whisperArguments = new ArrayList<>();
+    whisperArguments.add(new LiteralArgument("whispers"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(whisperArguments)
@@ -51,9 +52,9 @@ public class SpyChannelCommand {
       .executesPlayer(this::executeWhispers)
       .register();
 
-    final LinkedHashMap<String, Argument> everythingArguments = new LinkedHashMap<>();
-    everythingArguments.put("channel", new LiteralArgument("*"));
-    everythingArguments.put("should-spy", new BooleanArgument());
+    final List<Argument> everythingArguments = new ArrayList<>();
+    everythingArguments.add(new LiteralArgument("*"));
+    everythingArguments.add(new BooleanArgument("should-spy"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(everythingArguments)

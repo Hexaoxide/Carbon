@@ -12,7 +12,8 @@ import net.draycia.carbon.util.CommandUtils;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageCommand {
 
@@ -28,9 +29,9 @@ public class MessageCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-    arguments.put("player", CarbonUtils.chatUserArgument());
-    arguments.put("message", new GreedyStringArgument());
+    final List<Argument> arguments = new ArrayList<>();
+    arguments.add(CarbonUtils.chatUserArgument("player"));
+    arguments.add(new GreedyStringArgument("message"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(arguments)

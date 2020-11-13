@@ -14,7 +14,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SudoChannelCommand {
 
@@ -30,9 +31,9 @@ public class SudoChannelCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> setOtherChannelArguments = new LinkedHashMap<>();
-    setOtherChannelArguments.put("player", CarbonUtils.onlineChatUserArgument());
-    setOtherChannelArguments.put("channel", CarbonUtils.channelArgument());
+    final List<Argument> setOtherChannelArguments = new ArrayList<>();
+    setOtherChannelArguments.add(CarbonUtils.onlineChatUserArgument("player"));
+    setOtherChannelArguments.add(CarbonUtils.channelArgument("channel"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(setOtherChannelArguments)
@@ -43,10 +44,10 @@ public class SudoChannelCommand {
       })
       .register();
 
-    final LinkedHashMap<String, Argument> sendMessageOtherArguments = new LinkedHashMap<>();
-    sendMessageOtherArguments.put("player", CarbonUtils.onlineChatUserArgument());
-    sendMessageOtherArguments.put("channel", CarbonUtils.channelArgument());
-    sendMessageOtherArguments.put("message", new GreedyStringArgument());
+    final List<Argument> sendMessageOtherArguments = new ArrayList<>();
+    sendMessageOtherArguments.add(CarbonUtils.onlineChatUserArgument("player"));
+    sendMessageOtherArguments.add(CarbonUtils.channelArgument("channel"));
+    sendMessageOtherArguments.add(new GreedyStringArgument("message"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(sendMessageOtherArguments)

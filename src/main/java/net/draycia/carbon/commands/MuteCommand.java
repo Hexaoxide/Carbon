@@ -15,7 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MuteCommand {
 
@@ -31,8 +32,8 @@ public class MuteCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> arguments = new LinkedHashMap<>();
-    arguments.put("player", CarbonUtils.chatUserArgument());
+    final List<Argument> arguments = new ArrayList<>();
+    arguments.add(CarbonUtils.chatUserArgument("player"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(arguments)

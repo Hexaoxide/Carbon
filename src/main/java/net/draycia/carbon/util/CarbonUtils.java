@@ -169,8 +169,8 @@ public final class CarbonUtils {
   }
 
   @NonNull
-  public static Argument onlineChatUserArgument() {
-    return new CustomArgument<>(input -> {
+  public static Argument onlineChatUserArgument(final String key) {
+    return new CustomArgument<>(key, input -> {
       final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
       final Player player = Bukkit.getPlayer(input);
@@ -192,8 +192,8 @@ public final class CarbonUtils {
   }
 
   @NonNull
-  public static Argument chatUserArgument() {
-    return new CustomArgument<>(input -> {
+  public static Argument chatUserArgument(final String key) {
+    return new CustomArgument<>(key, input -> {
       final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
       return carbonChat.userService().wrap(input);
@@ -209,8 +209,8 @@ public final class CarbonUtils {
   }
 
   @NonNull
-  public static Argument textColorArgument() {
-    return new CustomArgument<>(input -> {
+  public static Argument textColorArgument(final String key) {
+    return new CustomArgument<>(key, input -> {
       final TextColor color = parseColor(input);
 
       if (color == null) {
@@ -222,8 +222,8 @@ public final class CarbonUtils {
   }
 
   @NonNull
-  public static Argument channelArgument() {
-    return new CustomArgument<>(input -> {
+  public static Argument channelArgument(final String key) {
+    return new CustomArgument<>(key, input -> {
       final CarbonChat carbonChat = (CarbonChat) Bukkit.getPluginManager().getPlugin("CarbonChat");
 
       final ChatChannel channel = carbonChat.channelManager().registry().channel(input);

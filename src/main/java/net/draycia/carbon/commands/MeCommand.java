@@ -14,7 +14,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MeCommand {
 
@@ -30,8 +31,8 @@ public class MeCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
-    channelArguments.put("message", new GreedyStringArgument());
+    final List<Argument> channelArguments = new ArrayList<>();
+    channelArguments.add(new GreedyStringArgument("message"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)

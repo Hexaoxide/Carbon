@@ -18,7 +18,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -36,7 +35,7 @@ public class ChannelListCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> channelArguments = new LinkedHashMap<>();
+    final List<Argument> channelArguments = new ArrayList<>();
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(channelArguments)
@@ -45,8 +44,8 @@ public class ChannelListCommand {
       .executesPlayer(this::executeSelf)
       .register();
 
-    final LinkedHashMap<String, Argument> argumentsOther = new LinkedHashMap<>();
-    argumentsOther.put("player", CarbonUtils.onlineChatUserArgument());
+    final List<Argument> argumentsOther = new ArrayList<>();
+    argumentsOther.add(CarbonUtils.onlineChatUserArgument("player"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(argumentsOther)

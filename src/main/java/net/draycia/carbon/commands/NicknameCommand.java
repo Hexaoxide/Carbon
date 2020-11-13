@@ -14,7 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NicknameCommand {
 
@@ -30,8 +31,8 @@ public class NicknameCommand {
 
     CommandUtils.handleDuplicateCommands(commandSettings);
 
-    final LinkedHashMap<String, Argument> selfArguments = new LinkedHashMap<>();
-    selfArguments.put("nickname", new StringArgument());
+    final List<Argument> selfArguments = new ArrayList<>();
+    selfArguments.add(new StringArgument("nickname"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(selfArguments)
@@ -40,9 +41,9 @@ public class NicknameCommand {
       .executesPlayer(this::executeSelf)
       .register();
 
-    final LinkedHashMap<String, Argument> otherArguments = new LinkedHashMap<>();
-    otherArguments.put("player", CarbonUtils.chatUserArgument());
-    otherArguments.put("nickname", new StringArgument());
+    final List<Argument> otherArguments = new ArrayList<>();
+    otherArguments.add(CarbonUtils.chatUserArgument("player"));
+    otherArguments.add(new StringArgument("nickname"));
 
     new CommandAPICommand(commandSettings.name())
       .withArguments(otherArguments)
