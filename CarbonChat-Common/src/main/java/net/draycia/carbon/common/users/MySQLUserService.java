@@ -17,6 +17,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.api.config.SQLCredentials;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -70,13 +72,22 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     try {
       this.database.executeUpdate("CREATE TABLE IF NOT EXISTS sc_users (uuid CHAR(36) PRIMARY KEY," +
         "channel VARCHAR(16), muted BOOLEAN, shadowmuted BOOLEAN, spyingwhispers BOOLEAN," +
-        "nickname VARCHAR(512), customchatcolor VARCHAR(32))");
+        "nickname VARCHAR(512), customchatcolor VARCHAR(32), whisperpingkey VARCHAR(64), " +
+        "whisperpingvolume FLOAT, whisperpingpitch FLOAT, channelpingkey VARCHAR(64), " +
+        "channelpingvolume FLOAT, channelpingpitch FLOAT)");
 
       // Ignore the exception, it's just saying the column already exists
       try {
-        this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN spyingwhispers BOOLEAN DEFAULT false");
-        this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN nickname VARCHAR(512) DEFAULT false");
-        this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN customchatcolor VARCHAR(32) DEFAULT false");
+        this.database.executeUpdate("ALTER TABLE sc_users ADD COLUMN " +
+          "spyingwhispers BOOLEAN DEFAULT false, " +
+          "nickname VARCHAR(512) DEFAULT false, " +
+          "customchatcolor VARCHAR(32) DEFAULT false, " +
+          "whisperpingkey VARCHAR(64) DEFAULT false, " +
+          "whisperpingvolume FLOAT DEFAULT false, " +
+          "whisperpingpitch FLOAT DEFAULT false, " +
+          "channelpingkey VARCHAR(64) DEFAULT false, " +
+          "channelpingvolume FLOAT DEFAULT false, " +
+          "channelpingpitch FLOAT DEFAULT false");
       } catch (final SQLSyntaxErrorException ignored) {
       }
 
@@ -175,6 +186,32 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
       user.spyingWhispers(users.get("spyingwhispers"), true);
       user.customChatColor(users.get("customchatcolor"), true);
 
+      final String whisperPingKey = users.getString("whisperpingkey");
+      final Float whisperPingVolume = users.getFloat("whisperpingvolume");
+      final Float whisperPingPitch = users.getFloat("whisperpingpitch");
+
+      final Sound whisperSound;
+
+      if (whisperPingKey != null && whisperPingVolume != null && whisperPingPitch != null) {
+        whisperSound = Sound.sound(Key.key(whisperPingKey), Sound.Source.PLAYER, whisperPingVolume, whisperPingPitch);
+      } else {
+        whisperSound = null;
+      }
+
+      final String channelPingKey = users.getString("channelpingkey");
+      final Float channelPingVolume = users.getFloat("channelpingvolume");
+      final Float channelPingPitch = users.getFloat("channelpingpitch");
+
+      final Sound channelSound;
+
+      if (channelPingKey != null && channelPingVolume != null && channelPingPitch != null) {
+        channelSound = Sound.sound(Key.key(channelPingKey), Sound.Source.PLAYER, channelPingVolume, channelPingPitch);
+      } else {
+        channelSound = null;
+      }
+
+      user.pingOptions(new PlayerUser.PingOptions(whisperSound, channelSound));
+
       for (final DbRow channelSetting : channelSettings) {
         final ChatChannel chatChannel = this.carbonChat.channelRegistry().get(channelSetting.getString("channel"));
 
@@ -216,11 +253,18 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
         selectedName = channel.key();
       }
 
+      final Sound whisperSound = user.pingOptions().whisperSound();
+
       this.carbonChat.logger().info("Saving user data!");
-      stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname, customchatcolor) VALUES (?, ?, ?, ?, ?, ?, ?) " +
-          "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname = ?, customchatcolor = ?",
-        user.uuid().toString(), selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
-        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor());
+      stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname, customchatcolor, whisperpingkey, whisperpingvolume " +
+          "whisperpingpitch, channelpingkey, channelpingvolume, channelpingpitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+          "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname = ?, customchatcolor = ?, whisperpingkey = ?, whisperpingvolume = ?, " +
+          "whisperpingpitch = ?, channelpingkey = ?, channelpingvolume = ?, channelpingpitch = ?",
+        user.uuid().toString(),
+        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
+        whisperSound.name().asString(), whisperSound.volume(), whisperSound.pitch(),
+        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
+        whisperSound.name().asString(), whisperSound.volume(), whisperSound.pitch());
 
       this.carbonChat.logger().info("Saving user channel settings!");
       // Save user channel settings

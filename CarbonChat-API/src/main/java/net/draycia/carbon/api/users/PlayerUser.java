@@ -135,6 +135,8 @@ public interface PlayerUser extends CarbonUser {
 
   @NonNull PingOptions pingOptions();
 
+  void pingOptions(@NonNull PingOptions pingOptions);
+
   public static class PingOptions {
     public @Nullable Sound whisperSound;
     public @Nullable Sound pingSound;
