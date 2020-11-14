@@ -65,6 +65,8 @@ public final class CarbonTranslations {
   @Setting private String clearNotify = "<yellow>Chat has been cleared by <player>.";
   @Setting private String clearExempt = "<yellow>You were exempt from the clear due to your permissions!";
   @Setting private String cannotWhisperSelf = "<yellow>You cannot whisper yourself!";
+  @Setting private String whisperPingChanged = "<green>Whisper ping settings changed!";
+  @Setting private String channelPingChanged = "<green>Channel ping settings changed!";
 
   public ExceptionMessages exceptionMessages() {
     return this.exceptionMessages;
@@ -212,6 +214,14 @@ public final class CarbonTranslations {
 
   public String cannotWhisperSelf() {
     return this.cannotWhisperSelf;
+  }
+
+  public String channelPingChanged() {
+    return this.channelPingChanged;
+  }
+
+  public String whisperPingChanged() {
+    return this.whisperPingChanged;
   }
 
 }

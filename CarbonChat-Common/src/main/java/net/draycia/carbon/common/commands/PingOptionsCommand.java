@@ -32,13 +32,12 @@ public class PingOptionsCommand {
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
-        .permission("carbonchat.nickname")
+        .permission("carbonchat.pingoptions.channels")
         .argument(StaticArgument.of("channels"))
         .argument(EnumArgument.of(Sound.Source.class, "sound"))
-        //.argument(FloatArgument.newBuilder("volume").withMin(0).withMax(1).build()) // this doesn't work idk why
-        .argument(FloatArgument.of("volume"))
-        .argument(FloatArgument.of("pitch"))
-        .handler(this::setChannelOptions)
+        .argument(FloatArgument.<CarbonUser>newBuilder("volume").withMin(0).withMax(1).asRequired().build())
+        .argument(FloatArgument.<CarbonUser>newBuilder("pitch").withMin(0).withMax(1).asRequired().build())
+        .handler(this::channelOptions)
         .build()
     );
 
@@ -46,29 +45,30 @@ public class PingOptionsCommand {
       commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
-        .permission("carbonchat.nickname")
+        .permission("carbonchat.pingoptions.whispers")
         .argument(StaticArgument.of("whispers"))
         .argument(EnumArgument.of(Sound.Source.class, "sound"))
-        //.argument(FloatArgument.newBuilder("volume").withMin(0).withMax(1).build()) // this doesn't work idk why
-        .argument(FloatArgument.of("volume"))
-        .argument(FloatArgument.of("pitch"))
-        .handler(this::setWhisperOptions)
+        .argument(FloatArgument.<CarbonUser>newBuilder("volume").withMin(0).withMax(1).asRequired().build())
+        .argument(FloatArgument.<CarbonUser>newBuilder("pitch").withMin(0).withMax(1).asRequired().build())
+        .handler(this::whisperOptions)
         .build()
     );
   }
 
-  private void setChannelOptions(CommandContext<CarbonUser> context) {
+  private void channelOptions(final @NonNull CommandContext<CarbonUser> context) {
     ((PlayerUser) context.getSender()).pingOptions().pingSound(Sound.sound(Key.key(context.get("sound")),
       Sound.Source.PLAYER, context.get("volume"), context.get("pitch")));
 
-    // TODO: send message "your ping settings were changed!"
+    context.getSender().sendMessage(this.carbonChat.messageProcessor().processMessage(
+      this.carbonChat.translations().channelPingChanged()));
   }
 
-  private void setWhisperOptions(CommandContext<CarbonUser> context) {
+  private void whisperOptions(final @NonNull CommandContext<CarbonUser> context) {
     ((PlayerUser) context.getSender()).pingOptions().whisperSound(Sound.sound(Key.key(context.get("sound")),
       Sound.Source.PLAYER, context.get("volume"), context.get("pitch")));
 
-    // TODO: send message "your whisper ping settings were changed!"
+    context.getSender().sendMessage(this.carbonChat.messageProcessor().processMessage(
+      this.carbonChat.translations().whisperPingChanged()));
   }
 
 }

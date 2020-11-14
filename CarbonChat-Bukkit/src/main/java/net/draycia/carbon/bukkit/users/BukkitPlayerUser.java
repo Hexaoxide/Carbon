@@ -48,13 +48,14 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   private @Nullable String nickname = null;
   private @Nullable UUID replyTarget = null;
   private @Nullable TextColor customChatColor = null;
+  private @NonNull PingOptions pingOptions = new PingOptions(null, null);
 
   private @Nullable String selectedChannelKey = null;
   private transient @Nullable ChatChannel selectedChannel = null;
 
   private transient @NonNull Audience audience;
 
-  @SuppressWarnings("initialization.fields.uninitialized")
+  @SuppressWarnings({"initialization.fields.uninitialized", "method.invocation.invalid"})
   public BukkitPlayerUser() {
     final CarbonChatBukkit carbonChatBukkit =
       (CarbonChatBukkit) Bukkit.getPluginManager().getPlugin("CarbonChat");
@@ -95,6 +96,16 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     }
 
     return PlaceholderAPI.setPlaceholders(player, input);
+  }
+
+  @Override
+  public @NonNull PingOptions pingOptions() {
+    return this.pingOptions;
+  }
+
+  @Override
+  public void pingOptions(final @NonNull PingOptions pingOptions) {
+    this.pingOptions = pingOptions;
   }
 
   @Override

@@ -137,11 +137,11 @@ public interface PlayerUser extends CarbonUser {
 
   void pingOptions(@NonNull PingOptions pingOptions);
 
-  public static class PingOptions {
+  class PingOptions {
     public @Nullable Sound whisperSound;
     public @Nullable Sound pingSound;
 
-    public PingOptions(@Nullable Sound whisperSound, @Nullable Sound pingSound) {
+    public PingOptions(final @Nullable Sound whisperSound, final @Nullable Sound pingSound) {
       this.whisperSound = whisperSound;
       this.pingSound = pingSound;
     }
@@ -150,7 +150,7 @@ public interface PlayerUser extends CarbonUser {
       return this.whisperSound;
     }
 
-    public void whisperSound(@Nullable Sound whisperSound) {
+    public void whisperSound(final @Nullable Sound whisperSound) {
       this.whisperSound = whisperSound;
     }
 
@@ -158,7 +158,7 @@ public interface PlayerUser extends CarbonUser {
       return this.pingSound;
     }
 
-    public void pingSound(@Nullable Sound pingSound) {
+    public void pingSound(final @Nullable Sound pingSound) {
       this.pingSound = pingSound;
     }
   }

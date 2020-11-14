@@ -254,6 +254,34 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
       }
 
       final Sound whisperSound = user.pingOptions().whisperSound();
+      final String whisperName;
+      final Float whisperVolume;
+      final Float whisperPitch;
+
+      if (whisperSound != null) {
+        whisperName = whisperSound.name().asString();
+        whisperVolume = whisperSound.volume();
+        whisperPitch = whisperSound.pitch();
+      } else {
+        whisperName = null;
+        whisperVolume = null;
+        whisperPitch = null;
+      }
+
+      final Sound channelSound = user.pingOptions().pingSound();
+      final String channelName;
+      final Float channelVolume;
+      final Float channelPitch;
+
+      if (channelSound != null) {
+        channelName = channelSound.name().asString();
+        channelVolume = channelSound.volume();
+        channelPitch = channelSound.pitch();
+      } else {
+        channelName = null;
+        channelVolume = null;
+        channelPitch = null;
+      }
 
       this.carbonChat.logger().info("Saving user data!");
       stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname, customchatcolor, whisperpingkey, whisperpingvolume " +
@@ -262,9 +290,9 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
           "whisperpingpitch = ?, channelpingkey = ?, channelpingvolume = ?, channelpingpitch = ?",
         user.uuid().toString(),
         selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
-        whisperSound.name().asString(), whisperSound.volume(), whisperSound.pitch(),
+        whisperName, whisperVolume, whisperPitch, channelName, channelVolume, channelPitch,
         selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
-        whisperSound.name().asString(), whisperSound.volume(), whisperSound.pitch());
+        whisperName, whisperVolume, whisperPitch, channelName, channelVolume, channelPitch);
 
       this.carbonChat.logger().info("Saving user channel settings!");
       // Save user channel settings
