@@ -13,7 +13,7 @@ dependencies {
   compile 'net.kyori:adventure-text-serializer-plain:4.1.1'
   compile 'net.kyori:adventure-text-serializer-gson:4.1.1'
   compile 'net.kyori:adventure-text-serializer-legacy:4.1.1'
-  compile 'net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT'
+  compile 'net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT'
 
   compile 'de.themoep:minedown-adventure:1.6.2-SNAPSHOT'
 
