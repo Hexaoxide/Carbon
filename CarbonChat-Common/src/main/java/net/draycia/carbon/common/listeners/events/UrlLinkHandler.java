@@ -11,10 +11,11 @@ public class UrlLinkHandler {
   private static final Pattern URL_PATTERN = Pattern.compile("((?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?)");
 
   public UrlLinkHandler() {
-    // TODO: permission to make links clickable, maybe?
     CarbonEvents.register(ChatFormatEvent.class, PostOrders.NORMAL, true, event -> {
-      event.message(URL_PATTERN.matcher(event.message()).replaceAll("<click:open_url:'$1'>$1</click>"));
-      // Reminder: Do not use this on event.format(), this breaks hover events when they contain URLs
+      if (event.sender().hasPermission("carbonchat.autourl")) {
+        event.message(URL_PATTERN.matcher(event.message()).replaceAll("<click:open_url:'$1'>$1</click>"));
+        // Reminder: Do not use this on event.format(), this breaks hover events when they contain URLs
+      }
     });
   }
 
