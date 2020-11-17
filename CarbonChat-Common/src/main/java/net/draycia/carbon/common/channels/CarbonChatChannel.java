@@ -125,8 +125,6 @@ public class CarbonChatChannel implements TextChannel {
       return Collections.emptyMap();
     }
 
-    final String displayName = user.nickname();
-
     final Map<CarbonUser, Component> users = new HashMap<>();
 
     // Iterate through players who should receive messages in this channel
@@ -148,7 +146,7 @@ public class CarbonChatChannel implements TextChannel {
       TextColor colorBuffer = null;
 
       for (final ColorPriority colorPriority : this.options().colorPriorities()) {
-        if (colorPriority == ColorPriority.CHANNEL && channelColor != null) {
+        if (colorPriority == ColorPriority.CHANNEL) {
           colorBuffer = channelColor;
         } else if (colorPriority == ColorPriority.PLAYER && userColor != null) {
           colorBuffer = userColor;
@@ -166,7 +164,9 @@ public class CarbonChatChannel implements TextChannel {
       }
 
       TextComponent formatComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(formatEvent.format(),
-        "displayname", displayName,
+        "nickname", user.nickname(),
+        "displayname", user.displayName(),
+        "username", user.name(),
         "color", "<" + chosenColor.asHexString() + ">",
         "playercolor", "<" + user.customChatColor(),
         "phase", Long.toString(System.currentTimeMillis() % 25),
@@ -201,7 +201,9 @@ public class CarbonChatChannel implements TextChannel {
     final TextColor channelColor = this.channelColor(user);
 
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(consoleFormatEvent.format(),
-      "displayname", displayName,
+      "nickname", user.nickname(),
+      "displayname", user.displayName(),
+      "username", user.name(),
       "color", "<" + channelColor.asHexString() + ">",
       "playercolor", "<" + user.customChatColor(),
       "phase", Long.toString(System.currentTimeMillis() % 25),
