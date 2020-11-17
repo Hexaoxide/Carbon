@@ -2,6 +2,7 @@ package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -11,12 +12,12 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
   private final @NonNull PlayerUser sender;
-  private final @Nullable PlayerUser target;
+  private final @Nullable CarbonUser target;
   private @NonNull ChatChannel chatChannel;
   private @NonNull String format;
   private @NonNull String message;
 
-  public ChatFormatEvent(final @NonNull PlayerUser sender, final @Nullable PlayerUser target,
+  public ChatFormatEvent(final @NonNull PlayerUser sender, final @Nullable CarbonUser target,
                          final @NonNull ChatChannel chatChannel, final @NonNull String format,
                          final @NonNull String message) {
 
@@ -42,7 +43,7 @@ public class ChatFormatEvent implements CarbonEvent, Cancellable {
     return this.sender;
   }
 
-  public @Nullable PlayerUser target() {
+  public @Nullable CarbonUser target() {
     return this.target;
   }
 

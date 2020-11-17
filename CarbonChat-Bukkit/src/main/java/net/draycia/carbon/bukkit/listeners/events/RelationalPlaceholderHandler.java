@@ -3,6 +3,7 @@ package net.draycia.carbon.bukkit.listeners.events;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatFormatEvent;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.PostOrders;
 import org.bukkit.Bukkit;
@@ -12,14 +13,14 @@ public class RelationalPlaceholderHandler {
 
   public RelationalPlaceholderHandler() {
     CarbonEvents.register(ChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      final PlayerUser targetUser = event.target();
+      final CarbonUser targetUser = event.target();
 
-      if (targetUser == null) {
+      if (!(targetUser instanceof PlayerUser)) {
         return;
       }
 
       final Player sender = Bukkit.getPlayer(event.sender().uuid());
-      final Player target = Bukkit.getPlayer(targetUser.uuid());
+      final Player target = Bukkit.getPlayer(((PlayerUser) targetUser).uuid());
 
       if (sender == null || target == null) {
         return;

@@ -2,6 +2,7 @@ package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvent;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.event.Cancellable;
@@ -12,12 +13,12 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
   private final @NonNull PlayerUser sender;
-  private final @Nullable PlayerUser target;
+  private final @Nullable CarbonUser target;
   private @NonNull ChatChannel chatChannel;
   private @NonNull TextComponent component;
   private final @NonNull String originalMessage;
 
-  public ChatComponentEvent(final @NonNull PlayerUser sender, final @Nullable PlayerUser target,
+  public ChatComponentEvent(final @NonNull PlayerUser sender, final @Nullable CarbonUser target,
                             final @NonNull ChatChannel chatChannel, final @NonNull TextComponent component,
                             final @NonNull String originalMessage) {
 
@@ -42,7 +43,7 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     return this.sender;
   }
 
-  public @Nullable PlayerUser target() {
+  public @Nullable CarbonUser target() {
     return this.target;
   }
 

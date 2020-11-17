@@ -5,6 +5,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.draycia.carbon.api.events.ChatFormatEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.event.PostOrders;
@@ -19,9 +20,9 @@ public class PingHandler {
         return;
       }
 
-      final PlayerUser target = event.target();
+      final CarbonUser target = event.target();
 
-      if (target == null) {
+      if (!(target instanceof PlayerUser)) {
         return;
       }
 
@@ -40,7 +41,7 @@ public class PingHandler {
         }
       }
 
-      final Sound sound = target.pingOptions().pingSound();
+      final Sound sound = ((PlayerUser) target).pingOptions().pingSound();
 
       if (sound != null) {
         target.playSound(sound);
@@ -54,9 +55,9 @@ public class PingHandler {
         return;
       }
 
-      final PlayerUser target = event.target();
+      final CarbonUser target = event.target();
 
-      if (target == null) {
+      if (!(target instanceof PlayerUser)) {
         return;
       }
 

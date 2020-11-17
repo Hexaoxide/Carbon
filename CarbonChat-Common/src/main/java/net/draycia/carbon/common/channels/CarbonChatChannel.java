@@ -184,43 +184,35 @@ public class CarbonChatChannel implements TextChannel {
 
       CarbonEvents.post(newEvent);
 
-      final PlayerUser targetUser = newEvent.target();
+      final CarbonUser targetUser = newEvent.target();
 
       if (targetUser != null) {
         users.put(targetUser, newEvent.component());
       }
     }
 
-    // TODO: ChatFormatEvent ConsoleUser support for target, specify ConsoleUser as target
-    final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, null, this, preFormatEvent.format(),
+    final ConsoleUser consoleUser = this.carbonChat.userService().consoleUser();
+
+    final ChatFormatEvent consoleFormatEvent = new ChatFormatEvent(user, consoleUser, this, preFormatEvent.format(),
       preFormatEvent.message());
 
     CarbonEvents.post(consoleFormatEvent);
 
     final TextColor channelColor = this.channelColor(user);
-    final TextColor targetColor;
-
-    if (channelColor != null) {
-      targetColor = channelColor;
-    } else {
-      targetColor = NamedTextColor.WHITE;
-    }
 
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(consoleFormatEvent.format(),
       "displayname", displayName,
-      "color", "<" + targetColor.asHexString() + ">",
+      "color", "<" + channelColor.asHexString() + ">",
       "playercolor", "<" + user.customChatColor(),
       "phase", Long.toString(System.currentTimeMillis() % 25),
       "message", consoleFormatEvent.message());
 
-    final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, null, this, consoleFormat,
+    final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, consoleUser, this, consoleFormat,
       consoleFormatEvent.message());
 
     CarbonEvents.post(consoleEvent);
 
     if (!consoleEvent.cancelled()) {
-      final ConsoleUser consoleUser = this.carbonChat.userService().consoleUser();
-
       if (consoleUser != null) {
         users.put(consoleUser, consoleEvent.component());
       }
