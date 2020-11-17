@@ -130,15 +130,16 @@ public class CarbonChatChannel extends ChatChannel {
 
     final String displayName;
 
-    if (user.nickname() != null) {
-      displayName = user.nickname();
+    if (user.online()) {
+      displayName = user.player().getDisplayName();
     } else {
-      if (user.online()) {
-        displayName = user.player().getDisplayName();
-      } else {
-        displayName = user.offlinePlayer().getName();
-      }
+      displayName = user.offlinePlayer().getName();
     }
+
+    final String offlinePlayerName = user.offlinePlayer().getName();
+
+    final String nickname = user.nickname() == null ? "" : user.nickname();
+    final String username = offlinePlayerName == null ? "" : offlinePlayerName;
 
     // Iterate through players who should receive messages in this channel
     for (final ChatUser target : recipients) {
@@ -157,6 +158,8 @@ public class CarbonChatChannel extends ChatChannel {
       TextComponent formatComponent = (TextComponent) this.carbonChat.adventureManager().processMessage(formatEvent.format(),
         "br", "\n",
         "displayname", displayName,
+        "nickname", nickname,
+        "username", username,
         "color", "<" + targetColor.asHexString() + ">",
         "phase", Long.toString(System.currentTimeMillis() % 25),
         "server", this.carbonChat.getConfig().getString("server-name", "Server"),
@@ -187,6 +190,8 @@ public class CarbonChatChannel extends ChatChannel {
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.adventureManager().processMessage(consoleFormatEvent.format(),
       "br", "\n",
       "displayname", displayName,
+      "nickname", nickname,
+      "username", username,
       "color", "<" + targetColor.asHexString() + ">",
       "phase", Long.toString(System.currentTimeMillis() % 25),
       "server", this.carbonChat.getConfig().getString("server-name", "Server"),
