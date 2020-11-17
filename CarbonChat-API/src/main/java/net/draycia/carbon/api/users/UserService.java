@@ -4,20 +4,19 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface UserService<T extends PlayerUser> {
 
-  @NonNull
-  T wrap(UUID uuid);
+  @Nullable <C extends ConsoleUser> C consoleUser();
 
-  @Nullable // Maybe NonNull?
-  <C extends ConsoleUser> C consoleUser();
+  @NonNull T wrap(@NonNull UUID uuid);
 
-  @Nullable
-  T wrapIfLoaded(@NonNull UUID uuid);
+  @NonNull CompletableFuture<T> wrapLater(@NonNull UUID uuid);
 
-  @Nullable
-  T refreshUser(@NonNull UUID uuid);
+  @Nullable T wrapIfLoaded(@NonNull UUID uuid);
+
+  @Nullable T refreshUser(@NonNull UUID uuid);
 
   void onDisable();
 

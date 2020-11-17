@@ -104,18 +104,20 @@ public class BukkitChatListener implements Listener {
 
   @EventHandler
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    final PlayerUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
-    final UserEvent.Join joinEvent = new UserEvent.Join(user);
+    this.carbonChat.userService().wrapLater(event.getPlayer().getUniqueId()).thenAcceptAsync(user -> {
+      final UserEvent.Join joinEvent = new UserEvent.Join(user);
 
-    CarbonEvents.post(joinEvent);
+      CarbonEvents.post(joinEvent);
+    });
   }
 
   @EventHandler
   public void onPlayerLeave(final PlayerQuitEvent event) {
-    final PlayerUser user = this.carbonChat.userService().wrap(event.getPlayer().getUniqueId());
-    final UserEvent.Leave leaveEvent = new UserEvent.Leave(user);
+    this.carbonChat.userService().wrapLater(event.getPlayer().getUniqueId()).thenAcceptAsync(user -> {
+      final UserEvent.Leave leaveEvent = new UserEvent.Leave(user);
 
-    CarbonEvents.post(leaveEvent);
+      CarbonEvents.post(leaveEvent);
+    });
   }
 
 }

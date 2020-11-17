@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -122,6 +123,11 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     } catch (final ExecutionException exception) {
       throw new IllegalStateException(exception);
     }
+  }
+
+  @Override
+  public @NonNull CompletableFuture<T> wrapLater(final @NonNull UUID uuid) {
+    return CompletableFuture.supplyAsync(() -> this.wrap(uuid));
   }
 
   @Override
