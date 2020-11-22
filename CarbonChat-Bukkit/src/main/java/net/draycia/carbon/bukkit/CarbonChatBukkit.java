@@ -3,6 +3,7 @@ package net.draycia.carbon.bukkit;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
+import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
 import net.draycia.carbon.bukkit.listeners.events.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.events.ItemLinkHandler;
 import net.draycia.carbon.bukkit.messaging.BungeeMessageService;
@@ -79,6 +80,7 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -100,6 +102,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private CommandManager<CarbonUser> commandManager;
 
   private Logger logger;
+
+  private @NonNull Collection<@NonNull String> proxyPlayerNames = new ArrayList<>();
 
   public static final LegacyComponentSerializer LEGACY =
     LegacyComponentSerializer.builder()
@@ -144,10 +148,17 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     this.messageManager = new MessageManager(this, messageService);
 
+    Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+      if (Bukkit.getOnlinePlayers().size() > 0) {
+        BungeeChannelApi.of(this).getPlayerList("ALL")
+          .thenAccept(value -> this.proxyPlayerNames = value);
+      }
+    }, 1, 5 * 20); // 5 seconds * 20 ticks per second
+
     // Handle storage service
     final StorageType storageType = this.carbonSettings().storageType();
 
-    final Supplier<Iterable<BukkitPlayerUser>> supplier = () -> {
+    final Supplier<Collection<BukkitPlayerUser>> supplier = () -> {
       final List<BukkitPlayerUser> users = new ArrayList<>();
 
       for (final Player player : Bukkit.getOnlinePlayers()) {
@@ -160,15 +171,15 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     if (storageType == StorageType.MYSQL) {
       this.logger().info("Enabling MySQL storage!");
       final SQLCredentials credentials = this.carbonSettings().sqlCredentials();
-      this.userService = new MySQLUserService<>(this, credentials, supplier,
+      this.userService = new MySQLUserService<>(this, credentials, supplier, () -> this.proxyPlayerNames,
         BukkitPlayerUser::new, BukkitConsoleUser::new);
     } else if (storageType == StorageType.JSON) {
       this.logger().info("Enabling JSON storage!");
-      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier,
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, () -> this.proxyPlayerNames,
         BukkitPlayerUser::new, BukkitConsoleUser::new);
     } else {
       this.logger().error("Invalid storage type selected! Falling back to JSON.");
-      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier,
+      this.userService = new JSONUserService<>(BukkitPlayerUser.class, this, supplier, () -> this.proxyPlayerNames,
         BukkitPlayerUser::new, BukkitConsoleUser::new);
     }
 

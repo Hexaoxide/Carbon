@@ -41,7 +41,7 @@ public class MsgToggleCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.msgtoggle.others")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument()) // carbonchat.channellist.other
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name())) // carbonchat.channellist.other
         .handler(this::toggleOther)
         .build()
     );

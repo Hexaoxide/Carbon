@@ -33,7 +33,7 @@ public class SudoChannelCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.channel.others")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
         .argument(ChannelArgument.requiredChannelArgument())
         .handler(this::otherChannel)
         .build()
@@ -44,7 +44,7 @@ public class SudoChannelCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.channel.others.message")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
         .argument(ChannelArgument.requiredChannelArgument())
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(this::sendMessageOther)

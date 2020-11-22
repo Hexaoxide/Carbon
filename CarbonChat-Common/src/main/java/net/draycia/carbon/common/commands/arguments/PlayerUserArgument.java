@@ -4,24 +4,34 @@ import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> {
+public final class PlayerUserArgument<C extends CarbonUser> extends CommandArgument<C, PlayerUser> {
 
-  private PlayerUserArgument(final boolean required) {
+  private PlayerUserArgument(final @NonNull String command, final boolean required) {
     super(required, "user", PlayerUserArgument::parser,
       "",
-      PlayerUser.class, PlayerUserArgument::suggestions);
+      PlayerUser.class, (context, input) -> {
+        final List<String> suggestions = CarbonChatProvider.carbonChat().userService().onlineUsers().stream()
+          .map(PlayerUser::name).collect(Collectors.toCollection(ArrayList::new));
+
+        if (context.getSender().hasPermission("carbonchat.command.completions." + command)) {
+          suggestions.addAll(CarbonChatProvider.carbonChat().userService().proxyPlayers());
+        }
+
+        return suggestions;
+      });
   }
 
-  private static <C> ArgumentParseResult<PlayerUser> parser(final @NonNull CommandContext<C> commandContext,
+  private static <C extends CarbonUser> @NonNull ArgumentParseResult<PlayerUser> parser(final @NonNull CommandContext<C> commandContext,
                                                             final @NonNull Queue<String> inputs) {
     final String input = inputs.poll();
 
@@ -33,34 +43,17 @@ public final class PlayerUserArgument<C> extends CommandArgument<C, PlayerUser> 
     }
 
     final UUID uuid = CarbonChatProvider.carbonChat().resolveUUID(input);
-
-    if (uuid == null) {
-      return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
-    }
-
     final PlayerUser user = CarbonChatProvider.carbonChat().userService().wrap(uuid);
-
-    if (user == null) {
-      return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
-    }
 
     return ArgumentParseResult.success(user);
   }
 
-  private static <C> List<String> suggestions(final @NonNull CommandContext<C> commandContext,
-                                              final @NonNull String input) {
-    return StreamSupport
-      .stream(CarbonChatProvider.carbonChat().userService().onlineUsers().spliterator(), false)
-      .map(PlayerUser::name)
-      .collect(Collectors.toList());
+  public static <C extends CarbonUser> PlayerUserArgument<C> requiredPlayerUserArgument(final @NonNull String command) {
+    return new PlayerUserArgument<>(command, true);
   }
 
-  public static <C> PlayerUserArgument<C> requiredPlayerUserArgument() {
-    return new PlayerUserArgument<>(true);
-  }
-
-  public static <C> PlayerUserArgument<C> optionalPlayerUserArgument() {
-    return new PlayerUserArgument<>(false);
+  public static <C extends CarbonUser> PlayerUserArgument<C> optionalPlayerUserArgument(final @NonNull String command) {
+    return new PlayerUserArgument<>(command, false);
   }
 
 }

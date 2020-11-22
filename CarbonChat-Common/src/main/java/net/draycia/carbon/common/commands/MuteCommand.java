@@ -31,7 +31,7 @@ public class MuteCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // player & console
         .permission("carbonchat.mute")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
         .handler(this::mute)
         .build()
     );

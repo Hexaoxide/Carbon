@@ -31,7 +31,7 @@ public class IgnoreCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
         .permission("carbonchat.ignore")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
         .handler(this::ignoreUser)
         .build()
     );

@@ -31,7 +31,7 @@ public class ShadowMuteCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // player & console
         .permission("carbonchat.shadowmute")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
         .handler(this::shadowMute)
         .build()
     );

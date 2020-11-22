@@ -40,7 +40,7 @@ public class ClearChatCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // player & console
         .permission("carbonchat.clearchat.clear.player")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
         .handler(this::clearChatPlayer)
         .build()
     );

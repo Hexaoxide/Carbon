@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -34,7 +35,8 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   private final @NonNull CarbonChat carbonChat;
   private final @NonNull Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private final @NonNull Type userType;
-  private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+  private final @NonNull Supplier<@NonNull Collection<@NonNull T>> supplier;
+  private final @NonNull Supplier<@NonNull Collection<@NonNull String>> nameSupplier;
   private final @NonNull Function<UUID, T> userFactory;
   private final @NonNull Supplier<C> consoleFactory;
 
@@ -45,12 +47,14 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
 
   public JSONUserService(final @NonNull Class<? extends CarbonUser> userType,
                          final @NonNull CarbonChat carbonChat,
-                         final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
+                         final @NonNull Supplier<@NonNull Collection<@NonNull T>> supplier,
+                         final @NonNull Supplier<@NonNull Collection<@NonNull String>> nameSupplier,
                          final @NonNull Function<UUID, T> userFactory,
                          final @NonNull Supplier<C> consoleFactory) {
     this.userType = userType;
     this.carbonChat = carbonChat;
     this.supplier = supplier;
+    this.nameSupplier = nameSupplier;
     this.userFactory = userFactory;
     this.consoleFactory = consoleFactory;
 
@@ -112,8 +116,13 @@ public class JSONUserService<T extends PlayerUser, C extends ConsoleUser> implem
   }
 
   @Override
-  public @NonNull Iterable<@NonNull T> onlineUsers() {
+  public @NonNull Collection<@NonNull T> onlineUsers() {
     return this.supplier.get();
+  }
+
+  @Override
+  public @NonNull Collection<@NonNull String> proxyPlayers() {
+    return this.nameSupplier.get();
   }
 
   private @NonNull T loadUser(final @NonNull UUID uuid) {

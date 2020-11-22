@@ -25,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -39,7 +40,8 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
 
   private final @NonNull CarbonChat carbonChat;
   private final @NonNull Database database;
-  private final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier;
+  private final @NonNull Supplier<@NonNull Collection<@NonNull T>> supplier;
+  private final @NonNull Supplier<@NonNull Collection<@NonNull String>> nameSupplier;
   private final @NonNull Function<UUID, T> userFactory;
   private final @NonNull Supplier<C> consoleFactory;
 
@@ -49,11 +51,13 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     .build(CacheLoader.from(this::loadUser));
 
   public MySQLUserService(final @NonNull CarbonChat carbonChat, final @NonNull SQLCredentials credentials,
-                          final @NonNull Supplier<@NonNull Iterable<@NonNull T>> supplier,
+                          final @NonNull Supplier<@NonNull Collection<@NonNull T>> supplier,
+                          final @NonNull Supplier<@NonNull Collection<@NonNull String>> nameSupplier,
                           final @NonNull Function<UUID, T> userFactory,
                           final @NonNull Supplier<C> consoleFactory) {
     this.carbonChat = carbonChat;
     this.supplier = supplier;
+    this.nameSupplier = nameSupplier;
     this.userFactory = userFactory;
     this.consoleFactory = consoleFactory;
 
@@ -158,8 +162,13 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
   }
 
   @Override
-  public @NonNull Iterable<@NonNull T> onlineUsers() {
+  public @NonNull Collection<@NonNull T> onlineUsers() {
     return this.supplier.get();
+  }
+
+  @Override
+  public @NonNull Collection<@NonNull String> proxyPlayers() {
+    return this.nameSupplier.get();
   }
 
   private @Nullable T loadUser(final @NonNull UUID uuid) {

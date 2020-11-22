@@ -37,7 +37,7 @@ public class MessageCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
         .permission("carbonchat.message")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument())
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
         .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
         .handler(this::sendMessage)
         .build()

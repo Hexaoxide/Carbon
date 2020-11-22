@@ -42,7 +42,7 @@ public class NicknameCommand {
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.nickname.others")
         .argument(StringArgument.of("nickname"))
-        .argument(PlayerUserArgument.requiredPlayerUserArgument()) // carbonchat.channellist.other
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name())) // carbonchat.channellist.other
         .handler(this::nicknameOther)
         .build()
     );

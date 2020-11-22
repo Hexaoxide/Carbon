@@ -3,6 +3,7 @@ package net.draycia.carbon.api.users;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +25,8 @@ public interface UserService<T extends PlayerUser> {
 
   void validate(@NonNull T user);
 
-  @NonNull Iterable<@NonNull T> onlineUsers();
+  @NonNull Collection<@NonNull T> onlineUsers();
+
+  @NonNull Collection<@NonNull String> proxyPlayers();
 
 }

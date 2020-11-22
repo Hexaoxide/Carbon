@@ -44,7 +44,7 @@ public class ToggleCommand {
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.toggle.others")
         .argument(ChannelArgument.requiredChannelArgument())
-        .argument(PlayerUserArgument.optionalPlayerUserArgument()) // carbonchat.toggle.other
+        .argument(PlayerUserArgument.optionalPlayerUserArgument(commandSettings.name())) // carbonchat.toggle.other
         .handler(this::toggleOther)
         .build()
     );

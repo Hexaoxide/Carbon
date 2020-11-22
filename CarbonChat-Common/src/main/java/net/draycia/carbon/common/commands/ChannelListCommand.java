@@ -47,7 +47,7 @@ public class ChannelListCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(CarbonUser.class) // console & player
         .permission("carbonchat.channellist.others")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument()) // carbonchat.channellist.other
+        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name())) // carbonchat.channellist.other
         .handler(this::channelListOther)
         .build()
     );
