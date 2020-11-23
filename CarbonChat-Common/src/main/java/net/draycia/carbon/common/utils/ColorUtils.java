@@ -51,10 +51,10 @@ public final class ColorUtils {
   }
 
   private static final @NonNull Pattern spigotLegacyRGB =
-    Pattern.compile("[§&]x[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])[§&]([0-9a-f])");
+    Pattern.compile("[§&]x[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])");
 
   private static final @NonNull Pattern pluginRGB =
-    Pattern.compile("[§&]#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])");
+    Pattern.compile("[§&]#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
 
   public static @NonNull String translateAlternateColors(final @NonNull String input) {
     // TODO: check if MiniMessage or MineDown
@@ -80,8 +80,8 @@ public final class ColorUtils {
 
     if (!legacyCapable) {
       // Legacy Colors
-      for (final char c : "0123456789abcdef".toCharArray()) {
-        final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
+      for (final char c : "0123456789abcdefABCDEF".toCharArray()) {
+        final LegacyFormat format = LegacyComponentSerializer.parseChar(Character.toLowerCase(c));
 
         if (format != null) {
           final TextColor color = format.color();
@@ -93,8 +93,8 @@ public final class ColorUtils {
       }
 
       // Legacy Formatting
-      for (final char c : "klmno".toCharArray()) {
-        final LegacyFormat format = LegacyComponentSerializer.parseChar(c);
+      for (final char c : "klmnoKMNNO".toCharArray()) {
+        final LegacyFormat format = LegacyComponentSerializer.parseChar(Character.toLowerCase(c));
 
         if (format != null) {
           final TextDecoration decoration = format.decoration();
