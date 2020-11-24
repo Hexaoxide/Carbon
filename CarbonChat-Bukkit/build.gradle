@@ -6,7 +6,7 @@ plugins {
 description = 'CarbonChat-Bukkit'
 
 dependencies {
-  compile 'org.spongepowered:configurate-hocon:4.0.0-SNAPSHOT'
+  compile 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
   compile 'net.kyori:adventure-text-serializer-bungeecord:4.0.0-SNAPSHOT'
   compile 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
 

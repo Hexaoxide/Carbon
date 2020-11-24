@@ -75,7 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -260,10 +260,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     this.loadCommandSettings();
   }
 
+  // TODO: move config handling elsewhere, these should actually be in common
   private void loadCarbonSettings() {
     try {
-      final HoconConfigurationLoader loader =
-        this.loadConfigFile("config.conf", false);
+      final YamlConfigurationLoader loader =
+        this.loadConfigFile("config.yml", false);
       final CommentedConfigurationNode node = loader.load();
 
       this.carbonSettings = CarbonSettings.loadFrom(node);
@@ -275,8 +276,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadLanguage() {
     try {
-      final HoconConfigurationLoader loader =
-        this.loadConfigFile("language.conf", false);
+      final YamlConfigurationLoader loader =
+        this.loadConfigFile("language.yml", false);
       final CommentedConfigurationNode node = loader.load();
 
       this.translations = CarbonTranslations.loadFrom(node);
@@ -288,8 +289,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadModerationSettings() {
     try {
-      final HoconConfigurationLoader loader =
-        this.loadConfigFile("moderation.conf", false);
+      final YamlConfigurationLoader loader =
+        this.loadConfigFile("moderation.yml", false);
       final CommentedConfigurationNode node = loader.load();
 
       this.moderationSettings = ModerationSettings.loadFrom(node);
@@ -301,8 +302,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadCommandSettings() {
     try {
-      final HoconConfigurationLoader loader =
-        this.loadConfigFile("carbonCommands.conf", true);
+      final YamlConfigurationLoader loader =
+        this.loadConfigFile("commands.yml", true);
       final CommentedConfigurationNode node = loader.load();
 
       this.commandSettings = CommandSettingsRegistry.loadFrom(node);
@@ -314,8 +315,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void loadChannelSettings() {
     try {
-      final HoconConfigurationLoader loader =
-        this.loadConfigFile("channels.conf", false);
+      final YamlConfigurationLoader loader =
+        this.loadConfigFile("channels.yml", false);
       final CommentedConfigurationNode node = loader.load();
 
       this.channelSettings = ChannelSettings.loadFrom(node);
@@ -325,14 +326,14 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
   }
 
-  private HoconConfigurationLoader loadConfigFile(final String fileName, final boolean saveResource) {
+  private YamlConfigurationLoader loadConfigFile(final String fileName, final boolean saveResource) {
     final File configFile = new File(this.getDataFolder(), fileName);
 
     if (!(configFile.exists()) && saveResource) {
       this.saveResource(fileName, false);
     }
 
-    return HoconConfigurationLoader.builder()
+    return YamlConfigurationLoader.builder()
       .defaultOptions(opts -> {
         return opts.shouldCopyDefaults(true).serializers(builder -> {
           builder.register(Key.class, KeySerializer.INSTANCE)

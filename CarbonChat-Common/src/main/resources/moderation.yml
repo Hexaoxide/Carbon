@@ -1,0 +1,37 @@
+caps-protection:
+  # If true, stops message from sending. If false, simply changes the message to lowercase
+  block-message: false
+  # If caps protection is enabled
+  enabled: true
+  # The minimum message length for caps protection to activate
+  minimum-length: 10
+  # The amount of letters in the message for it to trigger the protection
+  percent-caps: 0.800000011920929
+  
+clear-chat:
+  # The message sent to clear chat, you probably want to leave this blank
+  message: ''
+  # How many messages will be sent in order to clear chat
+  message-count: 100
+  
+filters:
+  # Anything in blocked-words will prevent the message from being sent at all.
+  # Set to blocked-words: [] if you want to disable the blocked words feature.
+  blocked-patterns:
+  - pineapple doesn't belong on pizza
+  # If filtering / replacements is enabled
+  enabled: true
+  # Regex based filtering
+  # The keys ("****" for example) are what the text is replaced with.
+  # The strings in the lists ("lag" etc) are what's replaced.
+  # Set to filters: {} if you want to disable the filter feature.
+  # Set the key to "_" for the replacement to be blank (remove the filtered pattern).
+  replacements:
+    "****":
+    - la[g]+
+	
+# If true, muted users will be unable to use /whisper /msg
+mute-stops-whispers: true
+
+# The text that's prepended to someone else's shadowmuted messages.
+shadow-mute-prefix: "[SM] "

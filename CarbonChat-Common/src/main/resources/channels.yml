@@ -1,0 +1,69 @@
+channel-options:
+  global:
+    # The command aliases for this channel
+    aliases: []
+    # This is what the <color> placeholder will typically be replaced with.
+    # Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.
+    # If on a platform that supports PlaceholderAPI, this option will be ran through that as well.
+    # Note that the <color> placeholder is also used for personal and global user colors.
+    color: "#FFFFFF"
+    # The order in which colors are chosen for the <color> tag.
+    # Options:
+    #  PLAYER: The color the player has set with /setcolor
+    #  CUSTOM: The color the player has set with /setchannelcolor
+    #  CHANNEL: The color the channel has set in its settings
+    color-priorities:
+    - PLAYER
+    - CUSTOM
+    - CHANNEL
+    # The contexts for this channel, which can modify the behaviour of channels and how/when players can use them.
+    contexts: {}
+    # The name of the format that the plugin will fall back to when it cannot find a matching format for the player's groups.
+    default-format-name: default
+    # The formats for this channel. The key is the name of the group as your permissions plugin reports it.
+    formats:
+      default: "<color><<displayname><reset><color>> <message>"
+    # If this channel is the default channel players join in.
+    # Also used as a fallback in case the player's selected channel cannot be found.
+    is-default: true
+    # What this channel is identified as. This will be what's typed ingame to use the channel.
+    key: global
+    # If the player's chat message starts with whatever this is set to, the player speaks in this channel instead of their selected one
+    message-prefix: ''
+    # The display name of this channel, supports minimessage. Used in command feedback
+    name: Global
+    
+# Used for message formats - custom tags that are replaced in descending order
+# For example, in the default config, <group> wil be replaced with <green>%vault_group%
+custom-placeholders:
+  group: "<green>%vault_group%"
+  prefix: "<gray>[<group><gray>]"
+
+# All options here act like the defaults for all channels.
+# Adding any of these options to any channel overrides the relevant defaults.
+shared-channel-options:
+  cannot-ignore-message: "<red>You cannot ignore that channel!"
+  cannot-use-message: You cannot use that channel!
+  color: "#FFFFFF"
+  color-priorities: []
+  contexts: {}
+  cross-server: true
+  default-format-name: default
+  formats:
+    default: "<color><<displayname><reset><color>> <message>"
+    staff: "<#00CED1>[Staff] <color><<displayname><reset><color>> <message>"
+  group-overrides: []
+  honors-recipient-list: false
+  ignorable: true
+  permission-group-matching: false
+  primary-group-only: false
+  should-cancel-chat-event: false
+  switch-failure-message: "<red>You cannot use channel <channel>!"
+  switch-message: "<gray>You are now in <color><channel> <gray>chat!"
+  switch-other-message: "<gray><player> <reset><gray>is now in <color><channel> <gray>chat!"
+  toggle-off-message: "<gray>You can no longer see <color><channel> <gray>chat!"
+  toggle-on-message: "<gray>You can now see <color><channel> <gray>chat!"
+  toggle-other-off-message: "<gray><player> <reset><gray>can no longer see <color><channel>
+    <gray>chat!"
+  toggle-other-on-message: "<gray><player> <reset><gray>can now see <color><channel>
+    <gray>chat!"
