@@ -27,8 +27,7 @@ import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.channels.ChannelManager;
-import net.draycia.carbon.common.config.KeySerializer;
-import net.draycia.carbon.common.config.SoundSerializer;
+import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.draycia.carbon.common.messaging.RedisMessageService;
@@ -58,9 +57,7 @@ import net.draycia.carbon.common.messaging.MessageManager;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.common.users.JSONUserService;
 import net.draycia.carbon.common.users.MySQLUserService;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -73,7 +70,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -253,95 +249,27 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   public void reloadConfig() {
     this.getDataFolder().mkdirs();
 
-    this.loadCarbonSettings();
-    this.loadLanguage();
-    this.loadModerationSettings();
-    this.loadChannelSettings();
-    this.loadCommandSettings();
-  }
-
-  // TODO: move config handling elsewhere, these should actually be in common
-  private void loadCarbonSettings() {
     try {
-      final YamlConfigurationLoader loader =
-        this.loadConfigFile("config.yml", false);
-      final CommentedConfigurationNode node = loader.load();
+      final ConfigLoader<YamlConfigurationLoader> loader = new ConfigLoader<>();
 
-      this.carbonSettings = CarbonSettings.loadFrom(node);
-      loader.save(node);
-    } catch (final ConfigurateException exception) {
-      exception.printStackTrace();
+      this.carbonSettings = CarbonSettings.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
+        new File(this.getDataFolder(), "config.yml"), true));
+
+      this.commandSettings = CommandSettingsRegistry.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
+        new File(this.getDataFolder(), "commands.yml"), true));
+
+      this.channelSettings = ChannelSettings.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
+        new File(this.getDataFolder(), "channels.yml"), true));
+
+      this.moderationSettings = ModerationSettings.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
+        new File(this.getDataFolder(), "moderation.yml"), true));
+
+      this.translations = CarbonTranslations.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
+        new File(this.getDataFolder(), "translations.yml"), true));
+
+    } catch(final ConfigurateException ignored) {
+
     }
-  }
-
-  private void loadLanguage() {
-    try {
-      final YamlConfigurationLoader loader =
-        this.loadConfigFile("language.yml", false);
-      final CommentedConfigurationNode node = loader.load();
-
-      this.translations = CarbonTranslations.loadFrom(node);
-      loader.save(node);
-    } catch (final ConfigurateException exception) {
-      exception.printStackTrace();
-    }
-  }
-
-  private void loadModerationSettings() {
-    try {
-      final YamlConfigurationLoader loader =
-        this.loadConfigFile("moderation.yml", false);
-      final CommentedConfigurationNode node = loader.load();
-
-      this.moderationSettings = ModerationSettings.loadFrom(node);
-      loader.save(node);
-    } catch (final ConfigurateException exception) {
-      exception.printStackTrace();
-    }
-  }
-
-  private void loadCommandSettings() {
-    try {
-      final YamlConfigurationLoader loader =
-        this.loadConfigFile("commands.yml", true);
-      final CommentedConfigurationNode node = loader.load();
-
-      this.commandSettings = CommandSettingsRegistry.loadFrom(node);
-      loader.save(node);
-    } catch (final ConfigurateException exception) {
-      exception.printStackTrace();
-    }
-  }
-
-  private void loadChannelSettings() {
-    try {
-      final YamlConfigurationLoader loader =
-        this.loadConfigFile("channels.yml", false);
-      final CommentedConfigurationNode node = loader.load();
-
-      this.channelSettings = ChannelSettings.loadFrom(node);
-      loader.save(node);
-    } catch (final ConfigurateException exception) {
-      exception.printStackTrace();
-    }
-  }
-
-  private YamlConfigurationLoader loadConfigFile(final String fileName, final boolean saveResource) {
-    final File configFile = new File(this.getDataFolder(), fileName);
-
-    if (!(configFile.exists()) && saveResource) {
-      this.saveResource(fileName, false);
-    }
-
-    return YamlConfigurationLoader.builder()
-      .defaultOptions(opts -> {
-        return opts.shouldCopyDefaults(true).serializers(builder -> {
-          builder.register(Key.class, KeySerializer.INSTANCE)
-            .register(Sound.class, SoundSerializer.INSTANCE);
-        });
-      })
-      .file(configFile)
-      .build();
   }
 
   private void registerContexts() {
