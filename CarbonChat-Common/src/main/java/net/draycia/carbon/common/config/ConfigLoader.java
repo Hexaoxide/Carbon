@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigurationNode>> {
 
@@ -62,7 +61,7 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
       throw new IllegalStateException("File not found! [" + file + "]");
     }
 
-    this.copyFileToDataDir(inputStream);
+    this.copyFileToDataDir(inputStream, file);
 
     return this.loadAndSaveNode(dataDirFile, save);
   }
@@ -72,9 +71,9 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
     return new File(CarbonChatProvider.carbonChat().dataFolder().toFile(), file);
   }
 
-  public boolean copyFileToDataDir(final @NonNull InputStream source) {
+  public boolean copyFileToDataDir(final @NonNull InputStream source, final @NonNull String file) {
     try {
-      Files.copy(source, CarbonChatProvider.carbonChat().dataFolder(), StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(source, new File(CarbonChatProvider.carbonChat().dataFolder().toFile(), file).toPath());
     } catch (final IOException ex) {
       return false;
     }

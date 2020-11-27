@@ -249,7 +249,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public void reloadConfig() {
-    this.getDataFolder().mkdirs();
+    this.getDataFolder().mkdir();
 
     try {
       final ConfigLoader<YamlConfigurationLoader> loader = new ConfigLoader<>(YamlConfigurationLoader.class);
