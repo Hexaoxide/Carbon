@@ -191,6 +191,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     if (this.carbonSettings().showTips() && !FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
       this.logger().error("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
     }
+
+    this.logger().info("CarbonChat startup finished! Enjoy :)");
   }
 
   @Override
@@ -250,26 +252,21 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     this.getDataFolder().mkdirs();
 
     try {
-      final ConfigLoader<YamlConfigurationLoader> loader = new ConfigLoader<>();
+      final ConfigLoader<YamlConfigurationLoader> loader = new ConfigLoader<>(YamlConfigurationLoader.class);
 
-      this.carbonSettings = CarbonSettings.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
-        new File(this.getDataFolder(), "config.yml"), true));
-
-      this.commandSettings = CommandSettingsRegistry.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
-        new File(this.getDataFolder(), "commands.yml"), true));
-
-      this.channelSettings = ChannelSettings.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
-        new File(this.getDataFolder(), "channels.yml"), true));
-
-      this.moderationSettings = ModerationSettings.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
-        new File(this.getDataFolder(), "moderation.yml"), true));
-
-      this.translations = CarbonTranslations.loadFrom(loader.loadAndSaveNode(YamlConfigurationLoader.builder(),
-        new File(this.getDataFolder(), "translations.yml"), true));
-
+      this.carbonSettings = CarbonSettings.loadFrom(loader.loadAndSaveNode("config.yml", true));
+      this.commandSettings = CommandSettingsRegistry.loadFrom(loader.loadAndSaveNode("commands.yml", true));
+      this.channelSettings = ChannelSettings.loadFrom(loader.loadAndSaveNode("channels.yml", true));
+      this.translations = CarbonTranslations.loadFrom(loader.loadAndSaveNode("language.yml", true));
+      this.moderationSettings = ModerationSettings.loadFrom(loader.loadAndSaveNode("moderation.yml", true));
     } catch(final ConfigurateException ignored) {
 
     }
+  }
+
+  @Override
+  public File dataDirectory() {
+    return this.getDataFolder();
   }
 
   private void registerContexts() {

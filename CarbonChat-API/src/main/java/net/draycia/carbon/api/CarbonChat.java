@@ -17,6 +17,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.UUID;
 
@@ -31,6 +32,8 @@ public interface CarbonChat {
       .build();
 
   void reloadConfig();
+
+  @NonNull File dataDirectory();
 
   @NonNull UUID resolveUUID(@NonNull String name);
 

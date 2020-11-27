@@ -23,6 +23,8 @@ dependencies {
   api 'cloud.commandframework:cloud-core:1.1.0'
 
   api 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
+  api 'org.spongepowered:configurate-hocon:4.0.0-SNAPSHOT'
+
   api 'org.slf4j:slf4j-api:1.7.25'
 
   api 'net.luckperms:api:5.1'
