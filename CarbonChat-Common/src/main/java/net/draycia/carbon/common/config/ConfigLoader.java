@@ -8,6 +8,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
+import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
@@ -27,9 +28,9 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
     final B builder;
 
     if (this.format == HoconConfigurationLoader.class) {
-      builder = (B) HoconConfigurationLoader.builder();
+      builder = (B) HoconConfigurationLoader.builder().prettyPrinting(true);
     } else {
-      builder = (B) YamlConfigurationLoader.builder();
+      builder = (B) YamlConfigurationLoader.builder().nodeStyle(NodeStyle.BLOCK);
     }
 
     final L loader = this.loadConfigFile(builder, config, save);
