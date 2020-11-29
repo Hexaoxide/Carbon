@@ -254,11 +254,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     try {
       final ConfigLoader<YamlConfigurationLoader> loader = new ConfigLoader<>(YamlConfigurationLoader.class);
 
-      this.carbonSettings = CarbonSettings.loadFrom(loader.loadAndSaveNode("config.yml", true));
-      this.commandSettings = CommandSettingsRegistry.loadFrom(loader.loadAndSaveNode("commands.yml", true));
-      this.channelSettings = ChannelSettings.loadFrom(loader.loadAndSaveNode("channels.yml", true));
-      this.translations = CarbonTranslations.loadFrom(loader.loadAndSaveNode("language.yml", true));
-      this.moderationSettings = ModerationSettings.loadFrom(loader.loadAndSaveNode("moderation.yml", true));
+      this.carbonSettings = CarbonSettings.loadFrom(loader.loadConfig("config.yml"));
+      this.commandSettings = CommandSettingsRegistry.loadFrom(loader.loadConfig("commands.yml"));
+      this.channelSettings = ChannelSettings.loadFrom(loader.loadConfig("channels.yml"));
+      this.translations = CarbonTranslations.loadFrom(loader.loadConfig("language.yml"));
+      this.moderationSettings = ModerationSettings.loadFrom(loader.loadConfig("moderation.yml"));
     } catch(final ConfigurateException ignored) {
 
     }

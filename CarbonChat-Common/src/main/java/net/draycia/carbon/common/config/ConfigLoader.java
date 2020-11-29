@@ -24,7 +24,7 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
     this.format = format;
   }
 
-  public <B extends AbstractConfigurationLoader.Builder<?, L>> CommentedConfigurationNode loadAndSaveNode(final @NonNull File config, final boolean save) throws ConfigurateException {
+  public <B extends AbstractConfigurationLoader.Builder<?, L>> CommentedConfigurationNode loadConfig(final @NonNull String file) throws ConfigurateException {
     final B builder;
 
     if (this.format == HoconConfigurationLoader.class) {
@@ -33,58 +33,22 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
       builder = (B) YamlConfigurationLoader.builder().nodeStyle(NodeStyle.BLOCK);
     }
 
-    final L loader = this.loadConfigFile(builder, config, save);
+    final File config = this.findAndCopyFile(this.fileInDataDir(file));
+    final L loader = this.loadConfigFile(builder, config);
     final CommentedConfigurationNode node = loader.load();
 
-    loader.save(node);
+    if (!config.exists()) {
+      loader.save(node);
+    }
 
     return node;
   }
 
-  public @NonNull CommentedConfigurationNode loadAndSaveNode(final @NonNull String config, final boolean save) throws ConfigurateException {
-    final File dataDirFile = this.fileInDataDir(config);
-
-    if (dataDirFile.exists()) {
-      return this.loadAndSaveNode(dataDirFile, save);
-    }
-
-    final String file;
-
-    if (config.startsWith("/")) {
-      file = config;
-    } else {
-      file = "/" + config;
-    }
-
-    final InputStream inputStream = this.getClass().getResourceAsStream(file);
-
-    if (inputStream == null) {
-      throw new IllegalStateException("File not found! [" + file + "]");
-    }
-
-    this.copyFileToDataDir(inputStream, file);
-
-    return this.loadAndSaveNode(dataDirFile, save);
-  }
-
-  public @NonNull File fileInDataDir(final @NonNull String file) {
-    CarbonChatProvider.carbonChat().logger().info("Loading file " + file);
+  private @NonNull File fileInDataDir(final @NonNull String file) {
     return new File(CarbonChatProvider.carbonChat().dataFolder().toFile(), file);
   }
 
-  public boolean copyFileToDataDir(final @NonNull InputStream source, final @NonNull String file) {
-    try {
-      Files.copy(source, new File(CarbonChatProvider.carbonChat().dataFolder().toFile(), file).toPath());
-    } catch (final IOException ex) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private <B extends AbstractConfigurationLoader.Builder<?, L>> L loadConfigFile(final B builder, final @NonNull File config, final boolean save) {
-    // TODO: save file from jar if it doesn't exist
-
+  private <B extends AbstractConfigurationLoader.Builder<?, L>> L loadConfigFile(final B builder, final @NonNull File config) {
     return builder
       .defaultOptions(opts -> {
         return opts.shouldCopyDefaults(true).serializers(serializerBuilder -> {
@@ -94,6 +58,30 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
       })
       .file(config)
       .build();
+  }
+
+  private @NonNull File findAndCopyFile(final @NonNull File file) {
+    if (file.exists()) {
+      return file;
+    }
+
+    final String resource = "/" + file.getName();
+    final InputStream inputStream = this.getClass().getResourceAsStream(resource);
+
+    if (inputStream == null) {
+      return file;
+    }
+
+    return this.copyFileToDataDir(inputStream, file);
+  }
+
+  public @NonNull File copyFileToDataDir(final @NonNull InputStream source, final @NonNull File file) {
+    try {
+      Files.copy(source, file.toPath());
+    } catch (final IOException ignored) {
+    }
+
+    return file;
   }
 
 }
