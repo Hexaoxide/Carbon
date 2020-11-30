@@ -69,4 +69,9 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
   public @NonNull ChatChannel getOrDefault(final @NonNull String key) {
     return this.registry.getOrDefault(key, this.defaultValue());
   }
+
+  public void clear() {
+    this.registry.clear();
+  }
+
 }

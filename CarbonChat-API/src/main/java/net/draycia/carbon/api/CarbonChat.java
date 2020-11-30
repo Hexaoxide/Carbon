@@ -31,7 +31,7 @@ public interface CarbonChat {
       .useUnusualXRepeatedCharacterHexFormat()
       .build();
 
-  void reloadConfig();
+  void reload();
 
   @NonNull File dataDirectory();
 

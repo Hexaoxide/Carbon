@@ -1,6 +1,7 @@
 package net.draycia.carbon.api.channels;
 
 import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.identity.Identity;
@@ -22,6 +23,16 @@ public class EmptyTextChannel implements TextChannel {
   @Override
   public @NonNull List<@NonNull PlayerUser> audiences() {
     return Collections.emptyList();
+  }
+
+  @Override
+  public @NonNull ChannelOptions options() {
+    return ChannelOptions.defaultChannel();
+  }
+
+  @Override
+  public void options(final @NonNull ChannelOptions options) {
+
   }
 
   @Override

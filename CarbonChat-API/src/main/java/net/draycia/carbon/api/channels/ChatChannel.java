@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.channels;
 
+import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.audience.Audience;
@@ -71,5 +72,9 @@ public interface ChatChannel extends Audience {
   @NonNull String toggleOtherOffMessage();
 
   @NonNull String cannotUseMessage();
+
+  @NonNull ChannelOptions options();
+
+  void options(@NonNull ChannelOptions options);
 
 }

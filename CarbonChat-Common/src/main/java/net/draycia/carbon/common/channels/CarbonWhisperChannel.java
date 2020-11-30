@@ -3,6 +3,7 @@ package net.draycia.carbon.common.channels;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.WhisperChannel;
+import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.draycia.carbon.api.events.ChatFormatEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
@@ -35,6 +36,16 @@ public class CarbonWhisperChannel implements WhisperChannel {
     this.carbonChat = CarbonChatProvider.carbonChat();
     this.sender = sender;
     this.audience = audience;
+  }
+
+  @Override
+  public @NonNull ChannelOptions options() {
+    return ChannelOptions.defaultChannel();
+  }
+
+  @Override
+  public void options(final @NonNull ChannelOptions options) {
+
   }
 
   @Override

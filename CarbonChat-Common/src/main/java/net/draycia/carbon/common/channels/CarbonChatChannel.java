@@ -38,15 +38,21 @@ public class CarbonChatChannel implements TextChannel {
 
   private final @NonNull CarbonChat carbonChat;
 
-  private final @NonNull ChannelOptions options;
+  private @NonNull ChannelOptions options;
 
   public CarbonChatChannel(final @NonNull CarbonChat carbonChat, final @NonNull ChannelOptions options) {
     this.carbonChat = carbonChat;
     this.options = options;
   }
-  
+
+  @Override
   public @NonNull ChannelOptions options() {
     return this.options;
+  }
+
+  @Override
+  public void options(final @NonNull ChannelOptions options) {
+    this.options = options;
   }
 
   public @NonNull CarbonChat carbonChat() {

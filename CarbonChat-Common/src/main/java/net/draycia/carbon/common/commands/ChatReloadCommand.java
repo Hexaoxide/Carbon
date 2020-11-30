@@ -35,7 +35,7 @@ public class ChatReloadCommand {
   }
 
   private void reloadConfig(final @NonNull CommandContext<CarbonUser> context) {
-    this.carbonChat.reloadConfig();
+    this.carbonChat.reload();
 
     final Component message = this.carbonChat.messageProcessor()
       .processMessage(this.carbonChat.translations().reloaded().replace("br", "\n"));

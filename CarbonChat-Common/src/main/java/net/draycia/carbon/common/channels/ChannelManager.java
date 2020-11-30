@@ -112,4 +112,16 @@ public class ChannelManager {
     }
   }
 
+  public void reloadChannels() {
+    for (final Map.Entry<String, ChannelOptions> options :
+      this.carbonChat.channelSettings().channelOptions().entrySet()) {
+
+      final ChatChannel channel = this.registry().get(options.getValue().key());
+
+      if (channel != null) {
+        channel.options(options.getValue());
+      }
+    }
+  }
+
 }

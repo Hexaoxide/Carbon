@@ -4,6 +4,7 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.github.leonardosnt.bungeechannelapi.BungeeChannelApi;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.bukkit.listeners.events.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.events.ItemLinkHandler;
 import net.draycia.carbon.bukkit.messaging.BungeeMessageService;
@@ -121,7 +122,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     // Setup metrics
     final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
-    this.reloadConfig();
+    this.loadConfigs();
 
     // Setup Adventure
     final BukkitAudiences audiences = BukkitAudiences.create(this);
@@ -248,7 +249,28 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   @Override
-  public void reloadConfig() {
+  public void reload() {
+    this.loadConfigs();
+    this.channelManager.reloadChannels();
+
+    final ChatChannel defaultChannel = this.channelManager.defaultChannel();
+
+    for (final PlayerUser user : this.userService().onlineUsers()) {
+      final ChatChannel selectedChannel = user.selectedChannel();
+
+      if (selectedChannel != null) {
+        final ChatChannel channel = this.channelManager.channelOrDefault(selectedChannel.key());
+
+        if (channel != null) {
+          user.selectedChannel(channel);
+        } else if (defaultChannel != null) {
+          user.selectedChannel(defaultChannel);
+        }
+      }
+    }
+  }
+
+  private void loadConfigs() {
     this.getDataFolder().mkdir();
 
     try {
@@ -259,8 +281,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       this.channelSettings = ChannelSettings.loadFrom(loader.loadConfig("channels.yml"));
       this.translations = CarbonTranslations.loadFrom(loader.loadConfig("language.yml"));
       this.moderationSettings = ModerationSettings.loadFrom(loader.loadConfig("moderation.yml"));
-    } catch(final ConfigurateException ignored) {
-
+    } catch(final ConfigurateException ex) {
+      ex.printStackTrace();
     }
   }
 
