@@ -20,7 +20,6 @@ subprojects {
   apply plugin: 'org.checkerframework'
 
   repositories {
-    mavenLocal()
     mavenCentral()
 
     maven { url = 'https://mvn.intellectualsites.com/content/repositories/snapshots' }

@@ -36,7 +36,7 @@ public class ItemLinkHandler {
       for (final Pattern pattern : event.channel().itemLinkPatterns()) {
         if (pattern.matcher(event.originalMessage()).find()) {
           final TextComponent component = (TextComponent) event.component()
-            .replaceFirstText(pattern, input -> itemComponent);
+            .replaceText(configurer -> configurer.once().match(pattern).replacement(itemComponent));
           event.component(component);
 
           break;

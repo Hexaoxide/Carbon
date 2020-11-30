@@ -207,7 +207,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void customChatColor(@Nullable final TextColor customChatColor, final boolean fromRemote) {
+  public void customChatColor(final @Nullable TextColor customChatColor, final boolean fromRemote) {
     this.customChatColor = customChatColor;
 
     if (!fromRemote) {
