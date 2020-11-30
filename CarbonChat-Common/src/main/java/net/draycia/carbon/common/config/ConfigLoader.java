@@ -78,7 +78,8 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
   public @NonNull File copyFileToDataDir(final @NonNull InputStream source, final @NonNull File file) {
     try {
       Files.copy(source, file.toPath());
-    } catch (final IOException ignored) {
+    } catch (final IOException ex) {
+      ex.printStackTrace();
     }
 
     return file;
