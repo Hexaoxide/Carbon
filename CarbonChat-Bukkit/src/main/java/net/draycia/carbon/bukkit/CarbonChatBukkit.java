@@ -163,7 +163,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
           this.cancel();
         }
       }
-    }.runTaskTimer(this, 1, 5*20);
+    }.runTaskTimer(this, 20, 5*20);
 
     // Handle storage service
     final StorageType storageType = this.carbonSettings().storageType();
