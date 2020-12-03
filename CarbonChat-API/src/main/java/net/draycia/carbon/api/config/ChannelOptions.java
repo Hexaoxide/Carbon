@@ -309,7 +309,7 @@ public final class ChannelOptions {
   }
 
   public @NonNull List<@NonNull String> groupOverrides() {
-    if (this.groupOverrides == null) {
+    if (this.groupOverrides == null || this.groupOverrides.isEmpty()) {
       return this.defaultOptions().groupOverrides();
     }
 
