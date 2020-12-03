@@ -68,6 +68,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.ChannelNotRegisteredException;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,12 +147,23 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     this.messageManager = new MessageManager(this, messageService);
 
-    Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-      if (Bukkit.getOnlinePlayers().size() > 0) {
-        BungeeChannelApi.of(this).getPlayerList("ALL")
-          .thenAccept(value -> this.proxyPlayerNames = value);
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        try {
+          if (Bukkit.getOnlinePlayers().size() > 0) {
+            BungeeChannelApi.of(CarbonChatBukkit.this).getPlayerList("ALL")
+              .thenAccept(value -> CarbonChatBukkit.this.proxyPlayerNames = value);
+          }
+        } catch (final ChannelNotRegisteredException exception) {
+          CarbonChatBukkit.this.logger().info("Exception thrown when gathering proxy player list!");
+          CarbonChatBukkit.this.logger().info("Aborting attempts to communicate to the proxy.");
+          CarbonChatBukkit.this.logger().info("This is merely for command completions, don't worry.");
+
+          this.cancel();
+        }
       }
-    }, 1, 5 * 20); // 5 seconds * 20 ticks per second
+    }.runTaskTimer(this, 1, 5*20);
 
     // Handle storage service
     final StorageType storageType = this.carbonSettings().storageType();
