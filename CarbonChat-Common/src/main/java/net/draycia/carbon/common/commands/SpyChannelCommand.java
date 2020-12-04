@@ -34,6 +34,7 @@ public class SpyChannelCommand {
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
         .permission("carbonchat.spy")
+        .argument(StaticArgument.of("channel"))
         .argument(ChannelArgument.requiredChannelArgument())
         .handler(this::spyChannel)
         .build()
