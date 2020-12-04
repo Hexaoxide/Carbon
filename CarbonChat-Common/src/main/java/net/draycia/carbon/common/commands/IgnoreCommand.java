@@ -49,7 +49,7 @@ public class IgnoreCommand {
     } else {
       final String format;
 
-      if (sender.hasPermission("carbonchat.ignore.exempt")) {
+      if (targetUser.hasPermission("carbonchat.ignore.exempt")) {
         format = this.carbonChat.translations().ignoreExempt();
       } else {
         sender.ignoringUser(targetUser, true);
