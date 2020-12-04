@@ -57,7 +57,7 @@ public final class CarbonSettings {
 
   @Setting
   @Comment("Options: NONE, REDIS, BUNGEECORD\n" +
-    " 'BUNGEECORD' - Uses bungee plugin messaging, requires BungeeCord or another proxy which supports it (Velocity!)\n" +
+    " 'BUNGEECORD' - Uses bungee plugin messaging, requires BungeeCord or another proxy which supports it (Velocity, Waterfall!)\n" +
     " 'REDIS' - Uses redis for cross server syncing, does not require a server proxy\n" +
     " 'NONE' - Do not sync anything cross server, this is the default\n" +
     "Note: In order for channels to sync cross server, you'll need to enable is-cross-server for the\n" +
