@@ -6,7 +6,7 @@ caps-protection:
   # The minimum message length for caps protection to activate
   minimum-length: 10
   # The amount of letters in the message for it to trigger the protection
-  percent-caps: 0.800000011920929
+  percent-caps: 0.80
   
 clear-chat:
   # The message sent to clear chat, you probably want to leave this blank
