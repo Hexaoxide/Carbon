@@ -2,6 +2,7 @@ package net.draycia.carbon.api.config;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.Context;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -146,6 +147,7 @@ public final class ChannelOptions {
     settings.color = "#FFFFFF";
     settings.defaultFormatName = "default";
     settings.formats = Collections.singletonMap("default", "<color><<displayname><reset><color>> <message>");
+    settings.aliases = Lists.newArrayList("global", "g");
 
     return settings;
   }

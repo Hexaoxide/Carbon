@@ -1,7 +1,9 @@
 channel-options:
   global:
     # The command aliases for this channel
-    aliases: []
+    aliases:
+    - global
+    - g
     # This is what the <color> placeholder will typically be replaced with.
     # Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.
     # If on a platform that supports PlaceholderAPI, this option will be ran through that as well.
