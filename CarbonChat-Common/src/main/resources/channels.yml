@@ -1,9 +1,13 @@
 channel-options:
   global:
-    # The command aliases for this channel
+    # What this channel is identified as. This is used in command arguments (/channel global)
+    key: global
+    # The command aliases for this channel (/global /g)
     aliases:
     - global
     - g
+    # The display name of this channel, supports minimessage. Used in command feedback ("You switched to the Global channel")
+    name: Global
     # This is what the <color> placeholder will typically be replaced with.
     # Hex RGB (#B19CD9), named colors (light_purple), legacy (&d), and legacy RGB (&x&b&1&2&c&d&9) are all supported.
     # If on a platform that supports PlaceholderAPI, this option will be ran through that as well.
@@ -28,12 +32,8 @@ channel-options:
     # If this channel is the default channel players join in.
     # Also used as a fallback in case the player's selected channel cannot be found.
     is-default: true
-    # What this channel is identified as. This will be what's typed ingame to use the channel.
-    key: global
     # If the player's chat message starts with whatever this is set to, the player speaks in this channel instead of their selected one
     message-prefix: ''
-    # The display name of this channel, supports minimessage. Used in command feedback
-    name: Global
     
 # Used for message formats - custom tags that are replaced in descending order
 # For example, in the default config, <group> wil be replaced with <green>%vault_group%

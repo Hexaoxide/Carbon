@@ -23,7 +23,7 @@ import java.util.Map;
 public final class ChannelOptions {
 
   @Setting
-  @Comment("What this channel is identified as. This will be what's typed ingame to use the channel.")
+  @Comment("What this channel is identified as. This is used in command arguments (/channel global)")
   private @NonNull String key = "channel";
   
   @Setting
@@ -71,7 +71,7 @@ public final class ChannelOptions {
   private List<String> groupOverrides;
   
   @Setting
-  @Comment("The display name of this channel, supports minimessage. Used in command feedback")
+  @Comment("# The display name of this channel, supports minimessage. Used in command feedback (\"You switched to the Global channel\")")
   private String name = "";
   
   @Setting
@@ -79,7 +79,7 @@ public final class ChannelOptions {
   private String messagePrefix = "";
   
   @Setting
-  @Comment("The command aliases for this channel")
+  @Comment("The command aliases for this channel (/global /g)")
   private List<String> aliases = new ArrayList<>();
   
   @Setting
