@@ -16,7 +16,7 @@ clear-chat:
   
 filters:
   # Anything in blocked-words will prevent the message from being sent at all.
-  # Set to blocked-words: [] if you want to disable the blocked words feature.
+  # Set to blocked-patterns: [] if you want to disable the blocked words feature.
   blocked-patterns:
   - pineapple doesn't belong on pizza
   # If filtering / replacements is enabled

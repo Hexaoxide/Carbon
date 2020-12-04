@@ -139,7 +139,7 @@ public final class ModerationSettings {
 
     @Setting
     @Comment("Anything in blocked-words will prevent the message from being sent at all.\n" +
-      "Set to blocked-words: [] if you want to disable the blocked words feature.")
+      "Set to blocked-patterns: [] if you want to disable the blocked words feature.")
     private List<Pattern> blockedPatterns = Collections.singletonList(Pattern.compile("pineapple doesn't belong on pizza"));
 
     public boolean enabled() {
