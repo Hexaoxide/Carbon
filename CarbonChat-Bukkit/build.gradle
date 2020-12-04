@@ -82,6 +82,7 @@ shadowJar {
   archiveFileName.set(project.description + "-" + project.property('projectVersion') + ".jar")
   destinationDirectory = rootProject.getBuildDir()
   relocate("org.yaml", "net.draycia.carbon.libs.org.yaml")
+  relocate("net.kyori.adventure.text.minimessage", "net.draycia.carbon.libs.minimessage")
 }
 
 jar {
