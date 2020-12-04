@@ -61,8 +61,8 @@ public class EmptyTextChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable List<String> aliases() {
-    return null;
+  public @NonNull List<String> aliases() {
+    return Collections.emptyList();
   }
 
   @Override

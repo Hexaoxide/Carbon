@@ -426,7 +426,7 @@ public final class ChannelOptions {
     return this.colorPriorities;
   }
 
-  public @Nullable List<String> aliases() {
+  public @NonNull List<String> aliases() {
     return this.aliases;
   }
 

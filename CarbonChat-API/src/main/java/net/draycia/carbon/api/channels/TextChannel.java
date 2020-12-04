@@ -44,7 +44,7 @@ public interface TextChannel extends ChatChannel, ForwardingAudience {
 
   @Nullable String messagePrefix();
 
-  @Nullable List<String> aliases();
+  @NonNull List<String> aliases();
 
   boolean primaryGroupOnly();
 

@@ -527,7 +527,7 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @Nullable List<String> aliases() {
+  public @NonNull List<String> aliases() {
     return this.options().aliases();
   }
 

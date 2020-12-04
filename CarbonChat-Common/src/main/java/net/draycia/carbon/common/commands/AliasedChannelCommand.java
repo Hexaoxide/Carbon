@@ -26,7 +26,7 @@ public class AliasedChannelCommand {
     this.commandName = chatChannel.key();
 
     commandManager.command(
-      commandManager.commandBuilder(this.commandName,
+      commandManager.commandBuilder(this.commandName, this.chatChannel.aliases(),
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
         .permission("carbonchat.channel")
@@ -35,7 +35,7 @@ public class AliasedChannelCommand {
     );
 
     commandManager.command(
-      commandManager.commandBuilder(this.commandName,
+      commandManager.commandBuilder(this.commandName, this.chatChannel.aliases(),
         commandManager.createDefaultCommandMeta())
         .senderType(PlayerUser.class) // player
         .permission("carbonchat.channel.message")
