@@ -34,7 +34,7 @@ import net.draycia.carbon.api.config.SQLCredentials;
 import net.draycia.carbon.common.messaging.RedisMessageService;
 import net.draycia.carbon.bukkit.listeners.contexts.DistanceContext;
 import net.draycia.carbon.bukkit.listeners.contexts.EconomyContext;
-import net.draycia.carbon.common.contexts.FilterContext;
+import net.draycia.carbon.common.listeners.contexts.FilterContext;
 import net.draycia.carbon.bukkit.listeners.contexts.PAPIContext;
 import net.draycia.carbon.bukkit.listeners.contexts.TownyContext;
 import net.draycia.carbon.bukkit.listeners.contexts.WorldGuardContext;

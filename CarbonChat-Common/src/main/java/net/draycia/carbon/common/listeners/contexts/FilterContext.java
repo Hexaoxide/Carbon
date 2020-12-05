@@ -1,4 +1,4 @@
-package net.draycia.carbon.common.contexts;
+package net.draycia.carbon.common.listeners.contexts;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
