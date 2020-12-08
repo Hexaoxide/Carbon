@@ -1,21 +1,21 @@
 description 'CarbonChat-Common'
 
 dependencies {
-  checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
+  checkstyle("ca.stellardrift:stylecheck:${vers['stylecheck']}")
 
-  compile project(':CarbonChat-API')
+  api project(':CarbonChat-API')
 
-  compile('io.lettuce:lettuce-core:6.0.0.M1') {
+  implementation("io.lettuce:lettuce-core:${vers['lettuce-core']}") {
     exclude group: 'io.netty'
   }
 
-  compileOnly 'com.google.code.gson:gson:2.8.0'
+  implementation "org.spongepowered:configurate-hocon:${vers['configurate']}"
+  implementation "org.spongepowered:configurate-yaml:${vers['configurate']}"
 
-  compile 'org.spongepowered:configurate-hocon:4.0.0-SNAPSHOT'
-  compile 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
+  implementation "co.aikar:idb-core:${vers['idb-core']}"
+  implementation "com.zaxxer:HikariCP:${vers['hikari']}"
 
-  compile 'co.aikar:idb-core:1.0.0-SNAPSHOT'
-  compile 'com.zaxxer:HikariCP:2.4.1'
+  compileOnly "com.google.code.gson:gson:${vers['gson']}"
 
-  compileOnly 'org.slf4j:slf4j-api:1.7.25'
+  compileOnly "org.slf4j:slf4j-api:${vers['slf4j-api']}"
 }
