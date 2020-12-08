@@ -148,6 +148,7 @@ public final class ChannelOptions {
     settings.defaultFormatName = "default";
     settings.formats = Collections.singletonMap("default", "<color><<displayname><reset><color>> <message>");
     settings.aliases = Lists.newArrayList("global", "g");
+    settings.contexts = Collections.singletonMap("distance", new Context("distance", "100"));
 
     return settings;
   }
@@ -156,7 +157,7 @@ public final class ChannelOptions {
     return this.key;
   }
 
-  public @Nullable String color() {
+  public @NonNull String color() {
     if (this.color == null) {
       return this.defaultOptions().color();
     }
@@ -174,19 +175,13 @@ public final class ChannelOptions {
     }
 
     if (localContext == null) {
-      final Map<String, Context> defaultContexts = this.defaultOptions().contexts();
-
-      if (defaultContexts != null) {
-        return defaultContexts.get(key);
-      } else {
-        return null;
-      }
+      return this.defaultOptions().contexts().get(key);
     }
 
     return localContext;
   }
 
-  public @Nullable Map<String, Context> contexts() {
+  public @NonNull Map<String, Context> contexts() {
     if (this.contexts == null) {
       return this.defaultOptions().contexts();
     }
@@ -194,18 +189,12 @@ public final class ChannelOptions {
     return this.contexts;
   }
 
-  public @Nullable Map<String, Context> contextsAndDefault() {
+  public @NonNull Map<String, Context> contextsAndDefault() {
     if (this.contexts == null) {
       return this.defaultOptions().contexts();
     }
 
-    final Map<String, Context> defaultContexts = this.defaultOptions().contexts();
-
-    if (defaultContexts == null) {
-      return this.contexts;
-    }
-
-    final Map<String, Context> contexts = new HashMap<>(defaultContexts);
+    final Map<String, Context> contexts = new HashMap<>(this.defaultOptions().contexts());
 
     if (this.contexts != null) {
       contexts.putAll(this.contexts);
@@ -215,30 +204,16 @@ public final class ChannelOptions {
   }
 
   public @Nullable String format(final @NonNull String key) {
-    final String localFormat;
-
-    final Map<String, String> localFormats = this.formats();
-
-    if (localFormats != null) {
-      localFormat = localFormats.get(key);
-    } else {
-      localFormat = null;
-    }
+    final String localFormat = this.formats().get(key);
 
     if (localFormat == null) {
-      final Map<String, String> defaultFormats = this.defaultOptions().formats();
-
-      if (defaultFormats != null) {
-        return defaultFormats.get(key);
-      } else {
-        return null;
-      }
+      return this.defaultOptions().formats().get(key);
     }
 
     return localFormat;
   }
 
-  public @Nullable Map<@NonNull String, @NonNull String> formats() {
+  public @NonNull Map<@NonNull String, @NonNull String> formats() {
     if (this.formats == null) {
       return this.defaultOptions().formats();
     }
@@ -246,18 +221,12 @@ public final class ChannelOptions {
     return this.formats;
   }
 
-  public @Nullable Map<@NonNull String, @NonNull String> formatsAndDefault() {
+  public @NonNull Map<@NonNull String, @NonNull String> formatsAndDefault() {
     if (this.formats == null) {
       return this.defaultOptions().formats();
     }
 
-    final Map<String, String> defaultFormats = this.defaultOptions().formats();
-
-    if (defaultFormats == null) {
-      return this.formats;
-    }
-
-    final Map<String, String> formats = new HashMap<>(defaultFormats);
+    final Map<String, String> formats = new HashMap<>(this.defaultOptions().formats());
 
     if (this.formats != null) {
       formats.putAll(this.formats);
@@ -266,7 +235,7 @@ public final class ChannelOptions {
     return formats;
   }
 
-  public @Nullable String defaultFormatName() {
+  public @NonNull String defaultFormatName() {
     if (this.defaultFormatName == null || this.defaultFormatName.isEmpty()) {
       return this.defaultOptions().defaultFormatName();
     }

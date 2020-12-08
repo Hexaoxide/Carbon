@@ -4,15 +4,16 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
+import java.util.Arrays;
 import java.util.List;
 
 @ConfigSerializable
 public class Context {
 
   @Setting private final @NonNull String key;
-  @Setting private final @NonNull Object value;
+  @Setting private final @NonNull String value;
 
-  public Context(final @NonNull String key, final @NonNull Object value) {
+  public Context(final @NonNull String key, final @NonNull String value) {
     this.key = key;
     this.value = value;
   }
@@ -21,40 +22,76 @@ public class Context {
     return this.key;
   }
 
-  public @NonNull Object value() {
+  public @NonNull String value() {
     return this.value;
   }
 
   public boolean isFloat() {
-    return this.value instanceof Float;
+    try {
+      Float.valueOf(this.value);
+    } catch (final NumberFormatException ignored) {
+      return false;
+    }
+
+    return true;
   }
 
   public boolean isDouble() {
-    return this.value() instanceof Double;
+    try {
+      Double.valueOf(this.value);
+    } catch (final NumberFormatException ignored) {
+      return false;
+    }
+
+    return true;
   }
 
   public boolean isByte() {
-    return this.value() instanceof Byte;
+    try {
+      Byte.valueOf(this.value);
+    } catch (final NumberFormatException ignored) {
+      return false;
+    }
+
+    return true;
   }
 
   public boolean isInteger() {
-    return this.value() instanceof Integer;
+    try {
+      Integer.valueOf(this.value);
+    } catch (final NumberFormatException ignored) {
+      return false;
+    }
+
+    return true;
   }
 
   public boolean isLong() {
-    return this.value() instanceof Long;
+    try {
+      Long.valueOf(this.value);
+    } catch (final NumberFormatException ignored) {
+      return false;
+    }
+
+    return true;
   }
 
   public boolean isString() {
-    return this.value() instanceof String;
+    return true;
   }
 
   public boolean isBoolean() {
-    return this.value() instanceof Boolean;
+    try {
+      Boolean.valueOf(this.value);
+    } catch (final NumberFormatException ignored) {
+      return false;
+    }
+
+    return true;
   }
 
   public boolean isList() {
-    return this.value() instanceof List;
+    return true;
   }
 
   public boolean isListChecked(final Class<?> type) {
@@ -76,23 +113,29 @@ public class Context {
   }
 
   public boolean isNumber() {
-    return this.value() instanceof Number;
+    try {
+      Double.valueOf(this.value);
+    } catch (final NumberFormatException ignored) {
+      return false;
+    }
+
+    return true;
   }
 
   public String asString() {
-    return (String) this.value();
+    return this.value();
   }
 
   public Boolean asBoolean() {
-    return (Boolean) this.value();
+    return Boolean.valueOf(this.value());
   }
 
-  public <T> List<T> asList() {
-    return (List<T>) this.value();
+  public List<String> asList() {
+    return Arrays.asList(this.value.split(","));
   }
 
   public Number asNumber() {
-    return (Number) this.value();
+    return Double.valueOf(this.value());
   }
 
 }
