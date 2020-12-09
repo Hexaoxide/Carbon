@@ -1,42 +1,44 @@
+import java.nio.charset.StandardCharsets
+
 plugins {
-  id 'com.github.johnrengelman.shadow' version '6.0.0'
+  id 'com.github.johnrengelman.shadow' version '6.1.0'
   id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
 }
 
 description = 'CarbonChat-Bukkit'
 
 dependencies {
-  compile 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
-  compile 'org.spongepowered:configurate-hocon:4.0.0-SNAPSHOT'
-  compile 'org.yaml:snakeyaml:1.27'
-
-  compile 'net.kyori:adventure-text-serializer-bungeecord:4.0.0-SNAPSHOT'
-  compile 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
-
-  compile project(":CarbonChat-Common")
-
-  // Messaging
-  compile 'io.github.leonardosnt:bungeechannelapi:1.0.0-SNAPSHOT'
-
-  // Commands
-  compile "cloud.commandframework:cloud-paper:1.2.0-SNAPSHOT"
-
-  // Plugins
-  compileOnly('com.gmail.nossr50.mcMMO:mcMMO:2.1.143') {
-    exclude group: 'org.jetbrains', module: 'annotations'
-  }
-  compileOnly 'com.github.TownyAdvanced:Towny:0.96.2.0'
-  compileOnly('com.sk89q.worldguard:worldguard-bukkit:7.0.4-SNAPSHOT') {
-    exclude group: 'org.spigotmc', module: 'spigot-api' // Honestly?
-  }
-  compileOnly 'me.clip:placeholderapi:2.10.9'
-  compileOnly 'com.github.TownyAdvanced:Towny:0.96.1.11'
-
-  compileOnly 'net.luckperms:api:5.1'
-  compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+  implementation project(":CarbonChat-Common")
 
   // Server
-  compileOnly 'com.destroystokyo.paper:paper-api:1.16.2-R0.1-SNAPSHOT'
+  compileOnly "com.destroystokyo.paper:paper-api:${vers['paper-api']}"
+
+  // Adventure
+  implementation "net.kyori:adventure-platform-bukkit:${vers['adventure-platform']}"
+  implementation "net.kyori:adventure-text-serializer-bungeecord:${vers['adventure-platform']}"
+
+  // Config
+  implementation "org.spongepowered:configurate-yaml:${vers['configurate']}"
+  implementation "org.spongepowered:configurate-hocon:${vers['configurate']}"
+  implementation "org.yaml:snakeyaml:${vers['snakeyaml']}"
+
+  // Messaging
+  implementation "io.github.leonardosnt:bungeechannelapi:${vers['bungeechannelapi']}"
+
+  // Commands
+  implementation "cloud.commandframework:cloud-paper:${vers['cloud']}"
+
+  // Plugins
+  compileOnly("com.gmail.nossr50.mcMMO:mcMMO:${vers['mcmmo']}") {
+    exclude group: 'org.jetbrains', module: 'annotations'
+  }
+  compileOnly "com.github.TownyAdvanced:Towny:${vers['towny']}"
+  compileOnly("com.sk89q.worldguard:worldguard-bukkit:${vers['worldguard']}") {
+    exclude group: 'org.spigotmc', module: 'spigot-api' // Honestly?
+  }
+  compileOnly "me.clip:placeholderapi:${vers['placeholder-api']}"
+  compileOnly "net.luckperms:api:${vers['luckperms-api']}"
+  compileOnly "com.github.MilkBowl:VaultAPI:${vers['vault']}"
 }
 
 // Generates plugin.yml automatically
@@ -62,14 +64,14 @@ bukkit {
 
 checkstyle {
   def configRoot = new File(rootProject.projectDir, '.checkstyle')
-  toolVersion = '8.34'
+  toolVersion = vers['checkstyle']
   configDirectory = configRoot
   configProperties = [basedir: configRoot.getAbsolutePath()]
 }
 
 // Set output directory and encoding
 tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
+  options.encoding = StandardCharsets.UTF_8.name()
   options.compilerArgs += ['-Xlint:all']
 }
 
@@ -82,7 +84,23 @@ shadowJar {
   archiveFileName.set(project.description + "-" + project.property('projectVersion') + ".jar")
   destinationDirectory = rootProject.getBuildDir()
   relocate("org.yaml", "net.draycia.carbon.libs.org.yaml")
-  relocate("net.kyori.adventure.text.minimessage", "net.draycia.carbon.libs.minimessage")
+  relocate("net.kyori", "net.draycia.carbon.libs.kyori")
+  relocate("org.spongepowered.configurate", "net.draycia.carbon.libs.configurate")
+  relocate("org.checkerframework", "net.draycia.carbon.libs.checkerframework")
+  relocate("org.reactivestreams", "net.draycia.carbon.libs.reactivestreams")
+  relocate("org.codehaus", "net.draycia.carbon.libs.codehaus")
+  relocate("org.slf4j", "net.draycia.carbon.libs.slf4j")
+  relocate("io.leangen.geantyref", "net.draycia.carbon.libs.typereference")
+  relocate("io.lettuce", "net.draycia.carbon.libs.lettuce")
+  relocate("io.github.leonardosnt.bungeechannelapi", "net.draycia.carbon.libs.bungeechannelapi")
+  relocate("co.aikar.idb", "net.draycia.carbon.libs.idb")
+  relocate("cloud.commandframework", "net.draycia.carbon.libs.cloud")
+  relocate("com.zaxxer.hikari", "net.draycia.carbon.libs.hikari")
+  relocate("com.typesafe.config", "net.draycia.carbon.libs.typesafe.config")
+  relocate("com.google", "net.draycia.carbon.libs.google")
+  relocate("de.themoep.minedown", "net.draycia.carbon.libs.minedown")
+  relocate("reactor", "net.draycia.carbon.libs.reactor")
+  relocate("javax.annotation", "net.draycia.carbon.libs.javax.annotation")
 }
 
 jar {

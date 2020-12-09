@@ -3,6 +3,9 @@ plugins {
   id 'org.checkerframework' version '0.5.11'
 }
 
+// Get dependency versions from a centralized location
+apply from: 'dependencies.gradle'
+
 // Gets the git commit hash of the latest commit, used for version string
 ext.projectVersion = '1.0'
 def gitHash = versionDetails().gitHash
@@ -15,14 +18,12 @@ subprojects {
   apply plugin: 'checkstyle'
   apply plugin: 'java'
   apply plugin: 'java-library'
-  apply plugin: 'maven'
   apply plugin: 'maven-publish'
   apply plugin: 'org.checkerframework'
 
   repositories {
     mavenCentral()
 
-    maven { url = 'https://mvn.intellectualsites.com/content/repositories/snapshots' }
     maven { url = 'https://repo.maven.apache.org/maven2' }
     maven { url = 'https://oss.sonatype.org/content/groups/public/' }
     maven { url = 'https://maven.enginehub.org/repo/' }
@@ -32,17 +33,16 @@ subprojects {
     maven { url = 'https://dl.bintray.com/ichbinjoe/public/' }
     maven { url = 'https://repo.codemc.org/repository/maven-public/' }
     maven { url = "https://repo.aikar.co/content/groups/aikar/" }
-    maven { url = 'https://raw.githubusercontent.com/JorelAli/CommandAPI/mvn-repo/' }
     maven { url = 'https://repo.minebench.de/' }
   }
 
   dependencies {
-    checkstyle("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
+    checkstyle("ca.stellardrift:stylecheck:${vers['stylecheck']}")
   }
 
   checkstyle {
     def configRoot = new File(rootProject.projectDir, '.checkstyle')
-    toolVersion = '8.34'
+    toolVersion = vers['checkstyle']
     configDirectory = configRoot
     configProperties = [basedir: configRoot.getAbsolutePath()]
   }

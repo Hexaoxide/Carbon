@@ -5,27 +5,30 @@ plugins {
 description 'CarbonChat-API'
 
 dependencies {
-  compile 'org.checkerframework:checker-qual:3.7.0'
+  api "org.checkerframework:checker-qual:${vers['checker-qual']}"
 
-  compile 'net.kyori:adventure-api:4.1.1'
-  compile 'net.kyori:adventure-nbt:4.1.1'
-  compile 'net.kyori:adventure-platform-api:4.0.0-SNAPSHOT'
-  compile 'net.kyori:adventure-text-serializer-plain:4.1.1'
-  compile 'net.kyori:adventure-text-serializer-gson:4.1.1'
-  compile 'net.kyori:adventure-text-serializer-legacy:4.1.1'
-  compile 'net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT'
+  api "net.kyori:adventure-api:${vers['adventure']}"
+  api "net.kyori:adventure-nbt:${vers['adventure']}"
+  api "net.kyori:adventure-platform-api:${vers['adventure-platform']}"
+  api "net.kyori:adventure-text-serializer-plain:${vers['adventure']}"
+  api("net.kyori:adventure-text-serializer-gson:${vers['adventure']}") {
+    exclude group: 'com.google.code.gson'
+  }
+  api "net.kyori:adventure-text-serializer-legacy:${vers['adventure']}"
+  api "net.kyori:adventure-text-minimessage:${vers['minimessage']}"
 
-  compile 'de.themoep:minedown-adventure:1.6.2-SNAPSHOT'
+  api "de.themoep:minedown-adventure:${vers['minedown']}"
 
-  compile 'net.kyori:event-api:3.0.0'
-  compile 'net.kyori:registry:1.0.0-SNAPSHOT'
+  api("net.kyori:event-api:${vers['kyori-event-api']}")
+  api("net.kyori:registry:${vers['kyori-registry']}")
 
-  api 'cloud.commandframework:cloud-core:1.2.0-SNAPSHOT'
+  api "cloud.commandframework:cloud-core:${vers['cloud']}"
 
-  api 'org.spongepowered:configurate-yaml:4.0.0-SNAPSHOT'
-  api 'org.spongepowered:configurate-hocon:4.0.0-SNAPSHOT'
+  api "org.spongepowered:configurate-core:${vers['configurate']}"
 
-  api 'org.slf4j:slf4j-api:1.7.25'
+  api "com.google.guava:guava:${vers['guava']}"
 
-  api 'net.luckperms:api:5.1'
+  compileOnlyApi "org.slf4j:slf4j-api:${vers['slf4j-api']}"
+
+  compileOnlyApi "net.luckperms:api:${vers['luckperms-api']}"
 }
