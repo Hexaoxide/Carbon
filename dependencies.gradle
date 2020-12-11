@@ -24,7 +24,6 @@ ext {
     // Bukkit
     'paper-api'         : '1.16.4-R0.1-SNAPSHOT',
     'snakeyaml'         : '1.27',
-    'bungeechannelapi'  : '1.0.0-SNAPSHOT',
     'mcmmo'             : '2.1.143',
     'towny'             : '0.96.2.0',
     'worldguard'        : '7.0.4-SNAPSHOT',
