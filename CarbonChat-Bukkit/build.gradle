@@ -22,9 +22,6 @@ dependencies {
   implementation "org.spongepowered:configurate-hocon:${vers['configurate']}"
   implementation "org.yaml:snakeyaml:${vers['snakeyaml']}"
 
-  // Messaging
-  implementation "io.github.leonardosnt:bungeechannelapi:${vers['bungeechannelapi']}"
-
   // Commands
   implementation "cloud.commandframework:cloud-paper:${vers['cloud']}"
 
@@ -92,7 +89,6 @@ shadowJar {
   relocate("org.slf4j", "net.draycia.carbon.libs.slf4j")
   relocate("io.leangen.geantyref", "net.draycia.carbon.libs.typereference")
   relocate("io.lettuce", "net.draycia.carbon.libs.lettuce")
-  relocate("io.github.leonardosnt.bungeechannelapi", "net.draycia.carbon.libs.bungeechannelapi")
   relocate("co.aikar.idb", "net.draycia.carbon.libs.idb")
   relocate("cloud.commandframework", "net.draycia.carbon.libs.cloud")
   relocate("com.zaxxer.hikari", "net.draycia.carbon.libs.hikari")
