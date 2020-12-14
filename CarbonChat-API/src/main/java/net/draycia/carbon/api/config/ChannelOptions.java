@@ -148,7 +148,7 @@ public final class ChannelOptions {
     settings.defaultFormatName = "default";
     settings.formats = Collections.singletonMap("default", "<color><<displayname><reset><color>> <message>");
     settings.aliases = Lists.newArrayList("global", "g");
-    settings.contexts = Collections.singletonMap("distance", new Context("distance", "100"));
+    settings.contexts = Collections.singletonMap("distance", new Context("filter", "true"));
 
     return settings;
   }
