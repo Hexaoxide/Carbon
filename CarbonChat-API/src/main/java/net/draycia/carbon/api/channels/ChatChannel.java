@@ -1,0 +1,80 @@
+package net.draycia.carbon.api.channels;
+
+import net.draycia.carbon.api.config.ChannelOptions;
+import net.draycia.carbon.api.users.CarbonUser;
+import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+public interface ChatChannel extends Audience {
+
+  /**
+   * Gets the {@link TextColor} the supplied {@link CarbonUser} has set for this channel.
+   * If none is set, returns this channel's set color with the "color" config option.
+   * @param user The user that may have a color set.
+   * @return The color the user may have set, otherwise the channel's color.
+   */
+  @NonNull TextColor channelColor(@NonNull CarbonUser user);
+
+  @NonNull
+  Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull String message, boolean fromRemote);
+
+  @NonNull
+  Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser user, @NonNull Collection<@NonNull PlayerUser> recipients,
+                                          @NonNull String message, boolean fromRemote);
+
+  boolean canPlayerUse(@NonNull PlayerUser user);
+
+  boolean canPlayerSee(@NonNull PlayerUser sender, @NonNull PlayerUser target, boolean checkSpying);
+
+  boolean canPlayerSee(@NonNull PlayerUser target, boolean checkSpying);
+
+  void sendComponents(final @NonNull Identity identity,
+                      final @NonNull Map<? extends CarbonUser, Component> components);
+
+  void sendComponentsAndLog(final @NonNull Identity identity,
+                            final @NonNull Map<? extends CarbonUser, Component> components);
+
+  @NonNull String name();
+
+  @NonNull String key();
+
+  /**
+   * If this channel can be ignored, such as through the /toggle command.
+   * @return IF this channel can be ignored / toggled.
+   */
+  boolean ignorable();
+
+  @NonNull List<@NonNull Pattern> itemLinkPatterns();
+
+  @NonNull String switchMessage();
+
+  @NonNull String switchOtherMessage();
+
+  @NonNull String switchFailureMessage();
+
+  @NonNull String cannotIgnoreMessage();
+
+  @NonNull String toggleOffMessage();
+
+  @NonNull String toggleOnMessage();
+
+  @NonNull String toggleOtherOnMessage();
+
+  @NonNull String toggleOtherOffMessage();
+
+  @NonNull String cannotUseMessage();
+
+  @NonNull ChannelOptions options();
+
+  void options(@NonNull ChannelOptions options);
+
+}

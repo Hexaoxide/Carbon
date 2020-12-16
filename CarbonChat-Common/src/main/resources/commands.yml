@@ -1,0 +1,97 @@
+registry:
+  channel:
+    aliases:
+    - ch
+    - switch
+    - join
+    enabled: true
+    name: channel
+  channellist:
+    aliases:
+    - chlist
+    enabled: true
+    name: channellist
+  chatreload:
+    aliases:
+    - creload
+    - cr
+    enabled: true
+    name: chatreload
+  clearchat:
+    aliases:
+    - clear
+    - cc
+    enabled: true
+    name: clearchat
+  ignore:
+    aliases:
+    - block
+    enabled: true
+    name: ignore
+  me:
+    aliases:
+    - rp
+    enabled: true
+    name: me
+  message:
+    aliases:
+    - msg
+    - whisper
+    - w
+    enabled: true
+    name: message
+  msgtoggle:
+    aliases:
+    - messagetoggle
+    enabled: true
+    name: msgtoggle
+  mute:
+    aliases:
+    - m
+    enabled: true
+    name: mute
+  nickname:
+    aliases:
+    - nick
+    enabled: true
+    name: nickname
+  reply:
+    aliases:
+    - r
+    enabled: true
+    name: reply
+  setcolor:
+    aliases:
+    - setcolor
+    enabled: true
+    name: setcolor
+  shadowmute:
+    aliases:
+    - sm
+    - smute
+    enabled: true
+    name: shadowmute
+  spy:
+    aliases:
+    - spych
+    - spychannel
+    enabled: true
+    name: spy
+  sudochannel:
+    aliases:
+    - sch
+    - sudoch
+    - schannel
+    - chsudo
+    - channelsudo
+    enabled: true
+    name: sudochannel
+  toggle:
+    aliases:
+    - togglechannel
+    - tch
+    - togglech
+    - tchannel
+    - togglec
+    enabled: true
+    name: toggle

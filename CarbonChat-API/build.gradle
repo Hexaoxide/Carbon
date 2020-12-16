@@ -1,0 +1,34 @@
+plugins {
+  id 'java-library'
+}
+
+description 'CarbonChat-API'
+
+dependencies {
+  api "org.checkerframework:checker-qual:${vers['checker-qual']}"
+
+  api "net.kyori:adventure-api:${vers['adventure']}"
+  api "net.kyori:adventure-nbt:${vers['adventure']}"
+  api "net.kyori:adventure-platform-api:${vers['adventure-platform']}"
+  api "net.kyori:adventure-text-serializer-plain:${vers['adventure']}"
+  api("net.kyori:adventure-text-serializer-gson:${vers['adventure']}") {
+    exclude group: 'com.google.code.gson'
+  }
+  api "net.kyori:adventure-text-serializer-legacy:${vers['adventure']}"
+  api "net.kyori:adventure-text-minimessage:${vers['minimessage']}"
+
+  api "de.themoep:minedown-adventure:${vers['minedown']}"
+
+  api("net.kyori:event-api:${vers['kyori-event-api']}")
+  api("net.kyori:registry:${vers['kyori-registry']}")
+
+  api "cloud.commandframework:cloud-core:${vers['cloud']}"
+
+  api "org.spongepowered:configurate-core:${vers['configurate']}"
+
+  api "com.google.guava:guava:${vers['guava']}"
+
+  compileOnlyApi "org.slf4j:slf4j-api:${vers['slf4j-api']}"
+
+  compileOnlyApi "net.luckperms:api:${vers['luckperms-api']}"
+}
