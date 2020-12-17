@@ -93,7 +93,7 @@ shadowJar {
   relocate("cloud.commandframework", "net.draycia.carbon.libs.cloud")
   relocate("com.zaxxer.hikari", "net.draycia.carbon.libs.hikari")
   relocate("com.typesafe.config", "net.draycia.carbon.libs.typesafe.config")
-  relocate("com.google", "net.draycia.carbon.libs.google")
+  relocate("com.google.common", "net.draycia.carbon.libs.google.common")
   relocate("de.themoep.minedown", "net.draycia.carbon.libs.minedown")
   relocate("reactor", "net.draycia.carbon.libs.reactor")
   relocate("javax.annotation", "net.draycia.carbon.libs.javax.annotation")
