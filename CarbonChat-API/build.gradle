@@ -1,5 +1,6 @@
 plugins {
   id 'java-library'
+  id 'maven-publish'
 }
 
 description 'CarbonChat-API'
@@ -31,4 +32,17 @@ dependencies {
   compileOnlyApi "org.slf4j:slf4j-api:${vers['slf4j-api']}"
 
   compileOnlyApi "net.luckperms:api:${vers['luckperms-api']}"
+}
+
+
+publishing {
+  publications {
+    maven(MavenPublication) {
+      groupId = 'net.draycia'
+      artifactId = description
+      version = projectVersion // No hash
+
+      from components.java
+    }
+  }
 }
