@@ -10,9 +10,11 @@ apply from: 'dependencies.gradle'
 ext.projectVersion = '1.0'
 def gitHash = versionDetails().gitHash
 
-group = 'net.draycia'
-description = 'CarbonChat'
-version = project.property('projectVersion') + '-' + gitHash
+allprojects {
+  group = 'net.draycia'
+  description = 'CarbonChat'
+  version = project.property('projectVersion') + '-' + gitHash
+}
 
 subprojects {
   apply plugin: 'checkstyle'
