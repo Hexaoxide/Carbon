@@ -444,4 +444,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     return BukkitComponentSerializer.gson();
   }
 
+  @Override
+  public @NonNull String version() {
+    return this.getDescription().getVersion();
+  }
 }
