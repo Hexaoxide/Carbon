@@ -65,4 +65,6 @@ public interface CarbonChat {
 
   @NonNull CommandManager<CarbonUser> commandManager();
 
+  @NonNull String version();
+
 }
