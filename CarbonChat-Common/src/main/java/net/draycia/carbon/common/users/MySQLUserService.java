@@ -63,7 +63,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
 
     final String username = credentials.username();
     final String password = credentials.password();
-    final String database = credentials.password();
+    final String database = credentials.database();
     final String host = credentials.host();
     final int port = credentials.port();
 
