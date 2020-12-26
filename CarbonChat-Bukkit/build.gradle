@@ -24,6 +24,9 @@ dependencies {
 
   // Commands
   implementation "cloud.commandframework:cloud-paper:${vers['cloud']}"
+  
+  // SLF4J Binding
+  implementation 'org.slf4j:slf4j-jdk14:1.7.28'
 
   // Plugins
   compileOnly("com.gmail.nossr50.mcMMO:mcMMO:${vers['mcmmo']}") {
