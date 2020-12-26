@@ -11,7 +11,7 @@ public final class RedisCredentials {
   @Setting private @NonNull String host = "localhost";
   @Setting private @Nullable String password = "";
   @Setting private int port = 6379;
-  @Setting private int database = 0;
+  @Setting private @Nullable Integer database = null;
 
   public @NonNull String host() {
     return this.host;
@@ -25,7 +25,7 @@ public final class RedisCredentials {
     return this.port;
   }
 
-  public int database() {
+  public @Nullable Integer database() {
     return this.database;
   }
 

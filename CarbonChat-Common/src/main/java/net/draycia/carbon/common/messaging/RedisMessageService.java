@@ -43,8 +43,13 @@ public class RedisMessageService implements MessageService {
   public RedisMessageService(final @NonNull CarbonChat carbonChat, final @NonNull RedisCredentials credentials) {
     this.carbonChat = carbonChat;
 
-    final RedisURI.Builder builder = RedisURI.Builder.redis(credentials.host(), credentials.port())
-      .withDatabase(credentials.database());
+    final RedisURI.Builder builder = RedisURI.Builder.redis(credentials.host(), credentials.port());
+
+    final Integer database = credentials.database();
+
+    if (database != null) {
+      builder.withDatabase(database);
+    }
 
     final String password = credentials.password();
 
