@@ -54,23 +54,31 @@ public class ChannelCommand {
     final PlayerUser user = (PlayerUser) context.getSender();
     final TextChannel channel = context.get("channel");
 
-    if (user.channelSettings(channel).ignored()) {
-      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),
-        "color", "<" + channel.channelColor(user).toString() + ">",
-        "channel", channel.name()));
-
-      return;
-    }
+    if (!this.canUse(user, channel)) return;
 
     user.selectedChannel(channel);
   }
 
   private void sendMessage(final @NonNull CommandContext<CarbonUser> context) {
+    final PlayerUser user = (PlayerUser) context.getSender();
     final ChatChannel channel = context.get("channel");
     final String message = context.get("message");
 
-    channel.sendComponentsAndLog(context.getSender().identity(), channel.parseMessage((PlayerUser) context.getSender(),
+    if (!this.canUse(user, channel)) return;
+
+    channel.sendComponentsAndLog(context.getSender().identity(), channel.parseMessage(user,
       message, false));
+  }
+
+  private boolean canUse(final PlayerUser user, final ChatChannel channel) {
+    if (user.channelSettings(channel).ignored() || !channel.canPlayerUse(user)) {
+      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),
+        "color", "<" + channel.channelColor(user).toString() + ">",
+        "channel", channel.name()));
+
+      return false;
+    }
+    return true;
   }
 
 }
