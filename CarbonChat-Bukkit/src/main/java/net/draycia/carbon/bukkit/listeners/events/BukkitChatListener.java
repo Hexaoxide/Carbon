@@ -39,9 +39,9 @@ public class BukkitChatListener implements Listener {
       channel = this.carbonChat.channelRegistry().defaultValue();
     }
 
-    //    if (channel.shouldCancelChatEvent()) {
-    //      event.setCancelled(true);
-    //    }
+    if (channel.options().shouldCancelChatEvent()) {
+      event.setCancelled(true);
+    }
 
     for (final ChatChannel entry : this.carbonChat.channelRegistry()) {
       if (!(entry instanceof TextChannel)) {
