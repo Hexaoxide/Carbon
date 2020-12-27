@@ -106,10 +106,8 @@ public class CarbonChatChannel implements TextChannel {
   //  }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull Collection<@NonNull PlayerUser> recipients, @NonNull String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull Collection<@NonNull PlayerUser> recipients, final @NonNull String message, final boolean fromRemote) {
     //this.updateUserNickname(user);
-
-    message = MiniMessage.get().escapeTokens(message);
 
     final MessageContextEvent event = new MessageContextEvent(this, user);
 
