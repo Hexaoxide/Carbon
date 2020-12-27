@@ -48,22 +48,20 @@ public class AliasedChannelCommand {
   private void channel(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
 
-    if (user.channelSettings(this.chatChannel()).ignored()) {
-      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
-        "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
-        "channel", this.chatChannel().name()));
-
-      return;
-    }
+    if (!this.canUse(user)) return;
 
     user.selectedChannel(this.chatChannel());
   }
 
   private void sendMessage(final @NonNull CommandContext<CarbonUser> context) {
+    final PlayerUser user = (PlayerUser) context.getSender();
+
+    if (!this.canUse(user)) return;
+
     context.<String>getOptional("message").ifPresent(message -> {
       this.chatChannel().sendComponentsAndLog(
         context.getSender().identity(),
-        this.chatChannel().parseMessage((PlayerUser) context.getSender(), message, false));
+        this.chatChannel().parseMessage(user, message, false));
     });
   }
 
@@ -73,5 +71,16 @@ public class AliasedChannelCommand {
 
   public @NonNull String commandName() {
     return this.commandName;
+  }
+
+  private boolean canUse(final PlayerUser user) {
+    if (user.channelSettings(this.chatChannel()).ignored() || !this.chatChannel().canPlayerUse(user)) {
+      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(this.chatChannel().cannotUseMessage(),
+        "color", "<" + this.chatChannel().channelColor(user).toString() + ">",
+        "channel", this.chatChannel().name()));
+
+      return false;
+    }
+    return true;
   }
 }
