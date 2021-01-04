@@ -143,13 +143,11 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   @Override
   public void nickname(@Nullable String newNickname, final boolean fromRemote) {
-    this.nickname = newNickname;
-
     final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
 
     if (player.isOnline()) {
       if (newNickname != null) {
-        final Component component = this.carbonChat.messageProcessor().processMessage(this.nickname);
+        final Component component = this.carbonChat.messageProcessor().processMessage(newNickname);
         newNickname = CarbonChatBukkit.LEGACY.serialize(component);
       }
 
@@ -157,12 +155,11 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
       if (onlinePlayer != null) {
         onlinePlayer.setDisplayName(newNickname);
+        onlinePlayer.setPlayerListName(newNickname);
       }
-
-      //      if (this.carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-      //        onlinePlayer.setPlayerListName(newNickname);
-      //      }
     }
+
+    this.nickname = newNickname;
 
     if (!fromRemote) {
       final String nick = this.nickname;
