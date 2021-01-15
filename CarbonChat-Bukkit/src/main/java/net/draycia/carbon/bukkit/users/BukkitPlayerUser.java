@@ -143,6 +143,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   @Override
   public void nickname(@Nullable String newNickname, final boolean fromRemote) {
+    this.nickname = newNickname;
+
     final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
 
     if (player.isOnline()) {
@@ -158,8 +160,6 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
         onlinePlayer.setPlayerListName(newNickname);
       }
     }
-
-    this.nickname = newNickname;
 
     if (!fromRemote) {
       final String nick = this.nickname;
@@ -453,10 +453,10 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     final String targetName = this.nickname();
 
     final Component toPlayerComponent = this.carbonChat.messageProcessor().processMessage(toPlayerFormat,
-      "message", message, "target", targetName, "sender", senderName);
+      "message", message, "target", targetName, "receiver", targetName, "sender", senderName);
 
     final Component fromPlayerComponent = this.carbonChat.messageProcessor().processMessage(fromPlayerFormat,
-      "message", message, "target", targetName, "sender", senderName);
+      "message", message, "target", targetName, "receiver", targetName, "sender", senderName);
 
     final PrivateMessageEvent event = new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message);
 
