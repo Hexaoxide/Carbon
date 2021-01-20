@@ -106,7 +106,7 @@ public class BungeeMessageService implements MessageService {
 
     consumer.accept(msg);
 
-    this.api.forward("ALL", key, msg.toByteArray());
+    this.api.forward("ONLINE", key, msg.toByteArray());
   }
 
 }
