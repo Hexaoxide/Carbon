@@ -92,7 +92,7 @@ public final class ColorUtils {
       }
 
       // Legacy Formatting
-      for (final char c : "klmnoKMNNO".toCharArray()) {
+      for (final char c : "klmnoKLMNO".toCharArray()) {
         final LegacyFormat format = LegacyComponentSerializer.parseChar(Character.toLowerCase(c));
 
         if (format != null) {
