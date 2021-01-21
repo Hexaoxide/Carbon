@@ -13,6 +13,11 @@ public final class WhisperOptions {
   private @NonNull WhisperPings pings = new WhisperPings();
 
   @Setting
+  @Comment("If enabled, players will be able to whisper other players as if they had their own private channel, " +
+    "without the need to type /r or /msg each message. /msg [player]")
+  private boolean useEnhancedWhispers = false;
+
+  @Setting
   @Comment("")
   private @NonNull String switchMessage = "<gray>You are now in <color><channel> <gray>chat!";
 
@@ -82,6 +87,10 @@ public final class WhisperOptions {
 
   public @NonNull WhisperPings pings() {
     return this.pings;
+  }
+
+  public boolean useEnhancedWhispers() {
+    return this.useEnhancedWhispers;
   }
 
   public @NonNull String consoleFormat() {

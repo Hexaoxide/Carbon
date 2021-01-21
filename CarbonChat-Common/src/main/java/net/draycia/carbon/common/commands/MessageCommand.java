@@ -32,16 +32,29 @@ public class MessageCommand {
       return;
     }
 
-    commandManager.command(
-      commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
-        commandManager.createDefaultCommandMeta())
-        .senderType(PlayerUser.class) // player
-        .permission("carbonchat.message")
-        .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
-        .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
-        .handler(this::sendMessage)
-        .build()
-    );
+    if (this.carbonChat.carbonSettings().whisperOptions().useEnhancedWhispers()) {
+      commandManager.command(
+        commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+          commandManager.createDefaultCommandMeta())
+          .senderType(PlayerUser.class) // player
+          .permission("carbonchat.message")
+          .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
+          .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asOptional().build())
+          .handler(this::sendMessage)
+          .build()
+      );
+    } else {
+      commandManager.command(
+        commandManager.commandBuilder(commandSettings.name(), commandSettings.aliases(),
+          commandManager.createDefaultCommandMeta())
+          .senderType(PlayerUser.class) // player
+          .permission("carbonchat.message")
+          .argument(PlayerUserArgument.requiredPlayerUserArgument(commandSettings.name()))
+          .argument(StringArgument.<CarbonUser>newBuilder("message").greedy().asRequired().build())
+          .handler(this::sendMessage)
+          .build()
+      );
+    }
   }
 
   private void sendMessage(final @NonNull CommandContext<CarbonUser> context) {
