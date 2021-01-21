@@ -57,7 +57,6 @@ public final class ColorUtils {
     Pattern.compile("[§&]#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
 
   public static @NonNull String translateAlternateColors(final @NonNull String input) {
-    // TODO: check if MiniMessage or MineDown
     String output = input;
 
     String hexReplacement = "<#$1$2$3$4$5$6>";
