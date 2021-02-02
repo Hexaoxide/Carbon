@@ -4,6 +4,7 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.bukkit.listeners.contexts.NationContext;
 import net.draycia.carbon.bukkit.listeners.events.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.events.ItemLinkHandler;
 import net.draycia.carbon.bukkit.messaging.BungeeMessageService;
@@ -36,7 +37,7 @@ import net.draycia.carbon.bukkit.listeners.contexts.DistanceContext;
 import net.draycia.carbon.bukkit.listeners.contexts.EconomyContext;
 import net.draycia.carbon.common.listeners.contexts.FilterContext;
 import net.draycia.carbon.bukkit.listeners.contexts.PAPIContext;
-import net.draycia.carbon.bukkit.listeners.contexts.TownyContext;
+import net.draycia.carbon.bukkit.listeners.contexts.TownContext;
 import net.draycia.carbon.bukkit.listeners.contexts.WorldGuardContext;
 import net.draycia.carbon.bukkit.listeners.contexts.mcMMOContext;
 import net.draycia.carbon.common.listeners.events.CapsHandler;
@@ -306,7 +307,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private void registerContexts() {
     if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
-      this.getServer().getPluginManager().registerEvents(new TownyContext(this), this);
+      this.getServer().getPluginManager().registerEvents(new TownContext(this), this);
+      this.getServer().getPluginManager().registerEvents(new NationContext(this), this);
     }
 
     if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {

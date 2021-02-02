@@ -11,6 +11,7 @@ public final class ContextMessages {
   @Setting private @NonNull String vaultCostNotEnough = "<red>You do not have enough balance, cost: <balance><red>.";
   @Setting private @NonNull String mcmmoPartyNotInParty = "<red>You are not in a party!";
   @Setting private @NonNull String townyTownNotInTown = "<red>You are not in a town!";
+  @Setting private @NonNull String townyNationNotInNation = "<red>You are not in a nation!";
 
   public String vaultBalanceNotEnough() {
     return this.vaultBalanceNotEnough;
@@ -26,6 +27,10 @@ public final class ContextMessages {
 
   public String townyTownNotInTown() {
     return this.townyTownNotInTown;
+  }
+
+  public String townyNationNotInNation() {
+    return this.townyNationNotInNation;
   }
 
 }

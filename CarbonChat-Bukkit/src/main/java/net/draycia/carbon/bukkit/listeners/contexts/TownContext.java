@@ -20,13 +20,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public final class TownyContext implements Listener {
+public final class TownContext implements Listener {
 
   private final static @NonNull String KEY = "towny-town";
 
   private final @NonNull CarbonChat carbonChat;
 
-  public TownyContext(final @NonNull CarbonChat carbonChat) {
+  public TownContext(final @NonNull CarbonChat carbonChat) {
     this.carbonChat = carbonChat;
 
     CarbonEvents.register(ReceiverContextEvent.class, event -> {
