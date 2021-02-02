@@ -121,7 +121,7 @@ public final class NationContext implements Listener {
       final Resident target = TownyAPI.getInstance().getDataSource().getResident(user2.name());
 
       if (resident.hasNation() && target.hasNation()) {
-        return resident.isAlliedWith(target);
+        return resident.getTown().getNation().hasResident(target);
       }
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();
