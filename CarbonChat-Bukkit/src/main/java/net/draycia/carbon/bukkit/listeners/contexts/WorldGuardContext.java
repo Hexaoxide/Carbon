@@ -59,7 +59,7 @@ public final class WorldGuardContext {
     }
 
     if (context.isList()) {
-      for (final String region : context.<String>asList()) {
+      for (final String region : context.asList()) {
         if (this.isInRegion(region, player)) {
           return true;
         }
@@ -79,7 +79,7 @@ public final class WorldGuardContext {
       user1InRegion = this.isInRegion(context.asString(), sender);
       user2InRegion = this.isInRegion(context.asString(), target);
     } else if (context.isList()) {
-      for (final String item : context.<String>asList()) {
+      for (final String item : context.asList()) {
         if (!user1InRegion) {
           user1InRegion = this.isInRegion(item, sender);
         }

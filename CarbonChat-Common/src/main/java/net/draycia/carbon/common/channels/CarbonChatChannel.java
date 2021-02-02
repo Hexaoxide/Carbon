@@ -411,12 +411,10 @@ public class CarbonChatChannel implements TextChannel {
   public @NonNull TextColor channelColor(final @NonNull CarbonUser user) {
     final String input = this.options().color();
 
-    if (input != null) {
-      final TextColor color = ColorUtils.parseColor(user, input);
+    final TextColor color = ColorUtils.parseColor(user, input);
 
-      if (color != null) {
-        return color;
-      }
+    if (color != null) {
+      return color;
     }
 
     return NamedTextColor.WHITE;

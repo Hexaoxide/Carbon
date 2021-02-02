@@ -97,7 +97,8 @@ public class ChannelListCommand {
 
     final String availableFormat = this.carbonChat.translations().availableChannelsList();
     Component availableComponent = this.carbonChat.messageProcessor().processMessage(availableFormat, "br", "\n");
-    availableComponent = availableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), ac -> availableList);
+    availableComponent = availableComponent.replaceText(it ->
+      it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(availableList).once().build());
 
     sender.sendMessage(Identity.nil(), availableComponent);
 
@@ -109,7 +110,8 @@ public class ChannelListCommand {
 
       final String unavailableFormat = this.carbonChat.translations().unavailableChannelsList();
       Component unavailableComponent = this.carbonChat.messageProcessor().processMessage(unavailableFormat, "br", "\n");
-      unavailableComponent = unavailableComponent.replaceFirstText(Pattern.compile(Pattern.quote("<list>")), uac -> unavailableList);
+      unavailableComponent = unavailableComponent.replaceText(it ->
+        it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(unavailableList).once().build());
 
       sender.sendMessage(Identity.nil(), unavailableComponent);
     }

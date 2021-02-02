@@ -41,6 +41,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   private final transient @NonNull CarbonChatBukkit carbonChat;
   private final @NonNull Map<@NonNull String, @NonNull SimpleUserChannelSettings> channelSettings = new HashMap<>();
   private final @NonNull List<@NonNull UUID> ignoredUsers = new ArrayList<>();
+  @SuppressWarnings("NotNullFieldNotInitialized")
   private @NonNull UUID uuid;
   private boolean muted = false;
   private boolean shadowMuted = false;
@@ -480,14 +481,11 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
         this.replyTarget(sender);
       }
     } else if (offlineSender.isOnline()) {
-      final String targetNameFinal = targetName;
-      final String senderNameFinal = senderName;
-
       if (!FunctionalityConstants.HAS_PROXY) {
         final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
         final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-          "message", message, "target", targetNameFinal, "sender", senderNameFinal);
+          "message", message, "target", targetName, "sender", senderName);
 
         sender.sendMessage(Identity.nil(), playerOfflineComponent);
 
@@ -502,7 +500,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
           final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
           final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-            "message", message, "target", targetNameFinal, "sender", senderNameFinal);
+            "message", message, "target", targetName, "sender", senderName);
 
           sender.sendMessage(Identity.nil(), playerOfflineComponent);
 

@@ -21,8 +21,8 @@ public final class ChannelArgument<C> extends CommandArgument<C, TextChannel> {
       TextChannel.class, ChannelArgument::suggestions);
   }
 
-  private static <C> ArgumentParseResult<TextChannel> parser(final @NonNull CommandContext<C> commandContext,
-                                                             final @NonNull Queue<String> inputs) {
+  private static <C> @NonNull ArgumentParseResult<TextChannel> parser(final @NonNull CommandContext<C> commandContext,
+                                                                      final @NonNull Queue<String> inputs) {
     final String input = inputs.poll();
 
     final ExceptionMessages exceptions = CarbonChatProvider.carbonChat().translations().exceptionMessages();

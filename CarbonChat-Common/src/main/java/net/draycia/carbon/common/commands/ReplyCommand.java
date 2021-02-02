@@ -63,11 +63,7 @@ public class ReplyCommand {
       return;
     }
 
-    final PlayerUser targetUser = this.carbonChat.userService().wrap(replyTarget);
-
-    if (targetUser != null) {
-      targetUser.sendMessage(user, input);
-    }
+    this.carbonChat.userService().wrap(replyTarget).sendMessage(user, input);
   }
 
 }

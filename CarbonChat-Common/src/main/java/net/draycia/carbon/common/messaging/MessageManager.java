@@ -117,7 +117,7 @@ public class MessageManager {
       final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
       final PlayerUser user = this.carbonChat.userService().wrap(uuid);
 
-      if (user != null && channel instanceof TextChannel) {
+      if (channel instanceof TextChannel) {
         final Component component = this.carbonChat.gsonSerializer().deserialize(byteArray.readUTF());
 
         ((TextChannel) channel).sendComponent(user, component);

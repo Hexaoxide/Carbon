@@ -95,10 +95,6 @@ public class Context {
   }
 
   public boolean isListChecked(final Class<?> type) {
-    if (!this.isList()) {
-      return false;
-    }
-
     final List<?> list = this.asList();
 
     if (list.size() > 0) {

@@ -300,7 +300,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   @Override
-  public File dataDirectory() {
+  public @NonNull File dataDirectory() {
     return this.getDataFolder();
   }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * https://github.com/leonardosnt/bungeechannelapi
  *
  * Copyright (C) 2017 leonardosnt <leonrdsnt@gmail.com>
