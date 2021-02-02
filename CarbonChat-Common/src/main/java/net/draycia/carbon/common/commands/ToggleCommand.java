@@ -62,10 +62,10 @@ public class ToggleCommand {
       message = channel.cannotIgnoreMessage();
     } else if (settings.ignored()) {
       settings.ignoring(false);
-      message = channel.toggleOffMessage();
+      message = channel.toggleOnMessage();
     } else {
       settings.ignoring(true);
-      message = channel.toggleOnMessage();
+      message = channel.toggleOffMessage();
     }
 
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
