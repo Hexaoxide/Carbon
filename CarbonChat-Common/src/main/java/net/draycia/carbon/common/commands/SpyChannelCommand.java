@@ -112,7 +112,7 @@ public class SpyChannelCommand {
         user.channelSettings(channel).spying(true);
       }
 
-      message = this.carbonChat.translations().spyEverythingOff();
+      message = this.carbonChat.translations().spyEverythingOn();
     } else {
       user.spyingWhispers(false);
 
@@ -120,7 +120,7 @@ public class SpyChannelCommand {
         user.channelSettings(channel).spying(false);
       }
 
-      message = this.carbonChat.translations().spyEverythingOn();
+      message = this.carbonChat.translations().spyEverythingOff();
     }
 
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
