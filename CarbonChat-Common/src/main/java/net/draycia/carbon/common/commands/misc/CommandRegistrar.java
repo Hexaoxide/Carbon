@@ -13,6 +13,7 @@ import net.draycia.carbon.common.commands.ClearChatCommand;
 import net.draycia.carbon.common.commands.IgnoreCommand;
 import net.draycia.carbon.common.commands.MeCommand;
 import net.draycia.carbon.common.commands.MessageCommand;
+import net.draycia.carbon.common.commands.MsgToggleCommand;
 import net.draycia.carbon.common.commands.MuteCommand;
 import net.draycia.carbon.common.commands.NicknameCommand;
 import net.draycia.carbon.common.commands.PingOptionsCommand;
@@ -39,6 +40,7 @@ public final class CommandRegistrar {
     new MeCommand(commandManager);
     new MessageCommand(commandManager);
     new MuteCommand(commandManager);
+    new MsgToggleCommand(commandManager);
     new NicknameCommand(commandManager);
     new PingOptionsCommand(commandManager);
     new ReplyCommand(commandManager);
