@@ -9,6 +9,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
+import net.draycia.carbon.common.utils.ColorUtils;
 import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -54,6 +55,10 @@ public class NicknameCommand {
 
     if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(user.name())) {
       nickname = null;
+    }
+
+    if (nickname != null) {
+      nickname = ColorUtils.translateAlternateColors(nickname);
     }
 
     user.nickname(nickname);
