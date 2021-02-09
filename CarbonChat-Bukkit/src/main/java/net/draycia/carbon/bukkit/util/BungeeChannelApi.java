@@ -405,38 +405,41 @@ public class BungeeChannelApi {
 
       if (subchannel.equals("PlayerCount") || subchannel.equals("PlayerList") ||
         subchannel.equals("UUIDOther") || subchannel.equals("ServerIP")) {
-        String identifier = input.readUTF(); // Server/player name
-        callbacks = callbackMap.get(subchannel + "-" + identifier);
-
-        if (callbacks == null || callbacks.isEmpty())  {
-          return;
-        }
-
-        CompletableFuture<?> callback = callbacks.poll();
-
         try {
-          switch (subchannel) {
-            case "PlayerCount":
-              ((CompletableFuture<Integer>) callback).complete(Integer.valueOf(input.readInt()));
-              break;
+          String identifier = input.readUTF(); // Server/player name
+          callbacks = callbackMap.get(subchannel + "-" + identifier);
 
-            case "PlayerList":
-              ((CompletableFuture<List<String>>) callback).complete(Arrays.asList(input.readUTF().split(", ")));
-              break;
-
-            case "UUIDOther":
-              ((CompletableFuture<String>) callback).complete(input.readUTF());
-              break;
-
-            case "ServerIP": {
-              String ip = input.readUTF();
-              int port = input.readUnsignedShort();
-              ((CompletableFuture<InetSocketAddress>) callback).complete(new InetSocketAddress(ip, port));
-              break;
-            }
+          if (callbacks == null || callbacks.isEmpty())  {
+            return;
           }
-        } catch(Exception ex) {
-          callback.completeExceptionally(ex);
+
+          CompletableFuture<?> callback = callbacks.poll();
+
+          try {
+            switch (subchannel) {
+              case "PlayerCount":
+                ((CompletableFuture<Integer>) callback).complete(Integer.valueOf(input.readInt()));
+                break;
+
+              case "PlayerList":
+                ((CompletableFuture<List<String>>) callback).complete(Arrays.asList(input.readUTF().split(", ")));
+                break;
+
+              case "UUIDOther":
+                ((CompletableFuture<String>) callback).complete(input.readUTF());
+                break;
+
+              case "ServerIP": {
+                String ip = input.readUTF();
+                int port = input.readUnsignedShort();
+                ((CompletableFuture<InetSocketAddress>) callback).complete(new InetSocketAddress(ip, port));
+                break;
+              }
+            }
+          } catch(Exception ex) {
+            callback.completeExceptionally(ex);
+          }
+        } catch (final Exception exception) {
         }
 
         return;
