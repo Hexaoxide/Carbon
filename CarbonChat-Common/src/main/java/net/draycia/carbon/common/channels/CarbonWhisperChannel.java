@@ -262,7 +262,7 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
   @Override
   public @NonNull String cannotIgnoreMessage() {
-    return this.carbonChat.carbonSettings().whisperOptions().cannotIgnoreMessage();
+    throw new UnsupportedOperationException("Lnet/draycia/carbon/common/channels/CarbonWhisperChannel;cannotIgnoreMessage()Ljava/lang/String;");
   }
 
   @Override

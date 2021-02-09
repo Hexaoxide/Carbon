@@ -37,7 +37,17 @@ public interface PlayerUser extends CarbonUser {
 
   @NonNull String parsePlaceholders(@NonNull String input);
 
+  // TODO: change this
+  // impl behaviour is to computeIfAbsent the channel key in the channelSettings
+  // this doesn't really convey that nor is it documented
   @NonNull UserChannelSettings channelSettings(@NonNull ChatChannel channel);
+
+  // TODO: also this here is kinda dumb
+  // this only exists to easily enable whisper "channel" settings being saved on the player
+  // really, this shouldn't exist and instead the player's whisper channel should be passed in with the correct key
+  // but players don't always have a whisper channel, what if they've never whispered anyone?
+  // and the whisper channels are discarded sometimes, so that's also an issue
+  @NonNull UserChannelSettings channelSettings(@NonNull String key);
 
   @NonNull Map<@NonNull String, @NonNull ? extends UserChannelSettings> channelSettings();
 

@@ -4,7 +4,6 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
@@ -49,24 +48,21 @@ public class MsgToggleCommand {
 
   private void toggleSelf(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser user = (PlayerUser) context.getSender();
-    final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
-
-    if (channel == null) {
-      throw new IllegalArgumentException("Whisper channel not found!");
-    }
 
     final String message;
 
-    final UserChannelSettings settings = user.channelSettings(channel);
+    final UserChannelSettings settings = user.channelSettings().get("whisper");
 
-    if (!channel.ignorable()) {
-      message = channel.cannotIgnoreMessage();
-    } else if (settings.ignored()) {
+    if (settings == null) {
+      throw new IllegalArgumentException("PlayerUser implementation failed to return settings for 'whisper'.");
+    }
+
+    if (settings.ignored()) {
       settings.ignoring(false);
-      message = channel.toggleOffMessage();
+      message = this.carbonChat.carbonSettings().whisperOptions().toggleOffMessage();
     } else {
       settings.ignoring(true);
-      message = channel.toggleOnMessage();
+      message = this.carbonChat.carbonSettings().whisperOptions().toggleOnMessage();
     }
 
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
@@ -75,25 +71,24 @@ public class MsgToggleCommand {
   private void toggleOther(final @NonNull CommandContext<CarbonUser> context) {
     final CarbonUser sender = context.getSender();
     final PlayerUser user = context.get("user");
-    final ChatChannel channel = this.carbonChat.channelRegistry().get("whisper");
-
-    if (channel == null) {
-      throw new IllegalArgumentException("Whisper channel not found!");
-    }
 
     final String message;
     final String otherMessage;
 
-    final UserChannelSettings settings = user.channelSettings(channel);
+    final UserChannelSettings settings = user.channelSettings().get("whisper");
+
+    if (settings == null) {
+      throw new IllegalArgumentException("PlayerUser implementation failed to return settings for 'whisper'.");
+    }
 
     if (settings.ignored()) {
       settings.ignoring(false);
-      message = channel.toggleOffMessage();
-      otherMessage = channel.toggleOtherOffMessage();
+      message = this.carbonChat.carbonSettings().whisperOptions().toggleOffMessage();
+      otherMessage = this.carbonChat.carbonSettings().whisperOptions().toggleOtherOffMessage();
     } else {
       settings.ignoring(true);
-      message = channel.toggleOnMessage();
-      otherMessage = channel.toggleOtherOnMessage();
+      message = this.carbonChat.carbonSettings().whisperOptions().toggleOnMessage();
+      otherMessage = this.carbonChat.carbonSettings().whisperOptions().toggleOtherOnMessage();
     }
 
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));

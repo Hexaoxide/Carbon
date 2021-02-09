@@ -51,10 +51,6 @@ public final class WhisperOptions {
 
   @Setting
   @Comment("")
-  private @NonNull String cannotIgnoreMessage = "<red>You cannot ignore that channel!";
-
-  @Setting
-  @Comment("")
   private @NonNull String senderFormat = "<gold>[<white>Me <gray>-> <white><receiver><gold>] <message>";
 
   @Setting
@@ -115,10 +111,6 @@ public final class WhisperOptions {
 
   public @NonNull String switchFailureMessage() {
     return this.switchFailureMessage;
-  }
-
-  public @NonNull String cannotIgnoreMessage() {
-    return this.cannotIgnoreMessage;
   }
 
   public @NonNull String toggleOffMessage() {

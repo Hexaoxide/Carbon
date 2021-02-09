@@ -418,6 +418,13 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     });
   }
 
+  @Override
+  public @NonNull UserChannelSettings channelSettings(final @NonNull String key) {
+    return this.channelSettings.computeIfAbsent(key, name -> {
+      return new SimpleUserChannelSettings(this.uuid, key);
+    });
+  }
+
   public @NonNull Map<@NonNull String, @NonNull ? extends UserChannelSettings> channelSettings() {
     return this.channelSettings;
   }
