@@ -32,8 +32,6 @@ public class BungeeMessageService implements MessageService {
   public BungeeMessageService(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
 
-    this.carbonChat.getServer().getMessenger().registerOutgoingPluginChannel(carbonChat, "BungeeCord");
-
     this.api = BungeeChannelApi.of(carbonChat);
 
     this.api.registerForwardListener((String channel, Player player, byte[] bytes) -> {
