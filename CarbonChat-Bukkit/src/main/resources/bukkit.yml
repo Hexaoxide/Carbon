@@ -1,0 +1,5 @@
+# Carbon settings that only apply when the server is running bukkit.
+# Carbon may in the future support other platforms, and this is future proofing.
+
+# If the plugin will use bungee plugin messaging to show all proxy players in carbon command completions.
+bungee-player-list-enabled: true

@@ -4,6 +4,7 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.bukkit.config.CarbonBukkitSettings;
 import net.draycia.carbon.bukkit.listeners.contexts.AllianceContext;
 import net.draycia.carbon.bukkit.listeners.contexts.NationContext;
 import net.draycia.carbon.bukkit.listeners.events.BukkitChatListener;
@@ -97,6 +98,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private ModerationSettings moderationSettings;
   private CarbonSettings carbonSettings;
   private ChannelSettings channelSettings;
+  private CarbonBukkitSettings carbonBukkitSettings;
   private UserService<BukkitPlayerUser> userService;
   private MessageManager messageManager;
   private CarbonTranslations translations;
@@ -149,23 +151,25 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     this.messageManager = new MessageManager(this, messageService);
 
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        try {
-          if (Bukkit.getOnlinePlayers().size() > 0) {
-            BungeeChannelApi.of(CarbonChatBukkit.this).getPlayerList("ALL")
-              .thenAccept(value -> CarbonChatBukkit.this.proxyPlayerNames = value);
-          }
-        } catch (final ChannelNotRegisteredException exception) {
-          CarbonChatBukkit.this.logger().info("Exception thrown when gathering proxy player list!");
-          CarbonChatBukkit.this.logger().info("Aborting attempts to communicate to the proxy.");
-          CarbonChatBukkit.this.logger().info("This is merely for command completions, don't worry.");
+    if (this.carbonBukkitSettings.bungeePlayerListEnabled()) {
+      new BukkitRunnable() {
+        @Override
+        public void run() {
+          try {
+            if (Bukkit.getOnlinePlayers().size() > 0) {
+              BungeeChannelApi.of(CarbonChatBukkit.this).getPlayerList("ALL")
+                .thenAccept(value -> CarbonChatBukkit.this.proxyPlayerNames = value);
+            }
+          } catch (final ChannelNotRegisteredException exception) {
+            CarbonChatBukkit.this.logger().info("Exception thrown when gathering proxy player list!");
+            CarbonChatBukkit.this.logger().info("Aborting attempts to communicate to the proxy.");
+            CarbonChatBukkit.this.logger().info("This is merely for command completions, don't worry.");
 
-          this.cancel();
+            this.cancel();
+          }
         }
-      }
-    }.runTaskTimer(this, 20, 5*20);
+      }.runTaskTimer(this, 20, 5*20);
+    }
 
     // Handle storage service
     final StorageType storageType = this.carbonSettings().storageType();
@@ -296,6 +300,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       this.channelSettings = ChannelSettings.loadFrom(loader.loadConfig("channels.yml"));
       this.translations = CarbonTranslations.loadFrom(loader.loadConfig("language.yml"));
       this.moderationSettings = ModerationSettings.loadFrom(loader.loadConfig("moderation.yml"));
+
+      this.carbonBukkitSettings = CarbonBukkitSettings.loadFrom(loader.loadConfig("bukkit.yml"));
     } catch(final ConfigurateException ex) {
       ex.printStackTrace();
     }
