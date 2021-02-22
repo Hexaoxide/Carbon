@@ -103,7 +103,7 @@ public final class NationContext implements Listener {
 
   public boolean isInNation(final @NonNull PlayerUser user) {
     try {
-      return TownyAPI.getInstance().getDataSource().getResident(user.name()).hasNation();
+      return TownyAPI.getInstance().getDataSource().getResident(user.username()).hasNation();
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();
     }
@@ -117,8 +117,8 @@ public final class NationContext implements Listener {
     }
 
     try {
-      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.name());
-      final Resident target = TownyAPI.getInstance().getDataSource().getResident(user2.name());
+      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.username());
+      final Resident target = TownyAPI.getInstance().getDataSource().getResident(user2.username());
 
       if (resident.hasNation() && target.hasNation()) {
         return resident.getTown().getNation().hasResident(target);

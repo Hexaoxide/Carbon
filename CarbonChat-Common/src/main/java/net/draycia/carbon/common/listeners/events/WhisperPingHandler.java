@@ -17,7 +17,7 @@ public class WhisperPingHandler {
         return;
       }
 
-      if (!event.message().contains(event.sender().name())) {
+      if (!event.message().contains(event.sender().username())) {
         return;
       }
 

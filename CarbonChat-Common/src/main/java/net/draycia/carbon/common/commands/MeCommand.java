@@ -9,6 +9,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MeCommand {
@@ -47,7 +48,7 @@ public class MeCommand {
     }
 
     final Component component = this.carbonChat.messageProcessor().processMessage(format,
-      "displayname", user.displayName(), "message", message);
+      Template.of("displayname", user.displayName()), Template.of("message", message));
 
     if (user.shadowMuted()) {
       user.sendMessage(user.identity(), component);

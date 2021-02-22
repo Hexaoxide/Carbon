@@ -11,6 +11,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.draycia.carbon.common.utils.ColorUtils;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class NicknameCommand {
@@ -53,7 +54,7 @@ public class NicknameCommand {
     final PlayerUser user = (PlayerUser) context.getSender();
     String nickname = context.get("nickname");
 
-    if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(user.name())) {
+    if (nickname.equalsIgnoreCase("off") || nickname.equalsIgnoreCase(user.username())) {
       nickname = null;
     }
 
@@ -61,7 +62,7 @@ public class NicknameCommand {
       nickname = ColorUtils.translateAlternateColors(nickname);
     }
 
-    user.nickname(nickname);
+    user.nickname(this.carbonChat.messageProcessor().processMessage(nickname));
 
     final String message;
 
@@ -71,9 +72,9 @@ public class NicknameCommand {
       message = this.carbonChat.translations().nicknameSet();
     }
 
-    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
-      message, "nickname", nickname == null ? "" : nickname,
-      "user", user.name(), "sender", context.getSender().name()));
+    user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
+      Template.of("nickname", nickname == null ? "" : nickname),
+      Template.of("user", user.name()), Template.of("sender", context.getSender().name())));
   }
 
   private void nicknameOther(final @NonNull CommandContext<CarbonUser> context) {
@@ -81,11 +82,11 @@ public class NicknameCommand {
     String nickname = context.get("nickname");
 
     if (nickname.equalsIgnoreCase("off") ||
-      nickname.equalsIgnoreCase(target.name())) {
+      nickname.equalsIgnoreCase(target.username())) {
       nickname = null;
     }
 
-    target.nickname(nickname);
+    target.nickname(this.carbonChat.messageProcessor().processMessage(nickname));
 
     final String message;
 
@@ -95,9 +96,9 @@ public class NicknameCommand {
       message = this.carbonChat.translations().otherNicknameSet();
     }
 
-    context.getSender().sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
-      message, "nickname", nickname == null ? "" : nickname,
-      "user", target.name(), "sender", context.getSender().name()));
+    context.getSender().sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
+      Template.of("nickname", nickname == null ? "" : nickname),
+      Template.of("user", target.name()), Template.of("sender", context.getSender().name())));
   }
 
 }

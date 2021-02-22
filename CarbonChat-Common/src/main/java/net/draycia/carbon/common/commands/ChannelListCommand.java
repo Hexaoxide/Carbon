@@ -12,6 +12,7 @@ import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class ChannelListCommand {
       final String mustBeOnline = this.carbonChat.translations().userMustBeOnline();
 
       sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-        .processMessage(mustBeOnline, "player", user.name()));
+        .processMessage(mustBeOnline, Template.of("player", user.name())));
 
       return;
     }
@@ -96,7 +97,8 @@ public class ChannelListCommand {
     this.makeList(visibleChannels, availableList);
 
     final String availableFormat = this.carbonChat.translations().availableChannelsList();
-    Component availableComponent = this.carbonChat.messageProcessor().processMessage(availableFormat, "br", "\n");
+    Component availableComponent = this.carbonChat.messageProcessor().processMessage(availableFormat,
+      Template.of("br", "\n"));
     availableComponent = availableComponent.replaceText(it ->
       it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(availableList).once().build());
 
@@ -109,7 +111,8 @@ public class ChannelListCommand {
       this.makeList(invisibleChannels, unavailableList);
 
       final String unavailableFormat = this.carbonChat.translations().unavailableChannelsList();
-      Component unavailableComponent = this.carbonChat.messageProcessor().processMessage(unavailableFormat, "br", "\n");
+      Component unavailableComponent = this.carbonChat.messageProcessor().processMessage(unavailableFormat,
+        Template.of("br", "\n"));
       unavailableComponent = unavailableComponent.replaceText(it ->
         it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(unavailableList).once().build());
 

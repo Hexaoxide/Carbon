@@ -193,7 +193,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
       final String nickname = users.getString("nickname");
 
       if (nickname != null) {
-        user.nickname(nickname, true);
+        user.nickname(this.carbonChat.gsonSerializer().deserialize(nickname), true);
       }
 
       user.muted(users.get("muted"), true);
@@ -298,15 +298,18 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
         channelPitch = null;
       }
 
+      // TODO: what happens when the saved nickname isn't json?
+      final String nickname = this.carbonChat.gsonSerializer().serialize(user.nickname());
+
       this.carbonChat.logger().info("Saving user data!");
       stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname, customchatcolor, whisperpingkey, whisperpingvolume " +
           "whisperpingpitch, channelpingkey, channelpingvolume, channelpingpitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
           "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname = ?, customchatcolor = ?, whisperpingkey = ?, whisperpingvolume = ?, " +
           "whisperpingpitch = ?, channelpingkey = ?, channelpingvolume = ?, channelpingpitch = ?",
         user.uuid().toString(),
-        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
+        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), nickname, user.customChatColor(),
         whisperName, whisperVolume, whisperPitch, channelName, channelVolume, channelPitch,
-        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
+        selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), nickname, user.customChatColor(),
         whisperName, whisperVolume, whisperPitch, channelName, channelVolume, channelPitch);
 
       this.carbonChat.logger().info("Saving user channel settings!");

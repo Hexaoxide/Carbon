@@ -17,6 +17,8 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
@@ -46,15 +48,13 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   private boolean muted = false;
   private boolean shadowMuted = false;
   private boolean spyingWhispers = false;
-  private @Nullable String nickname = null;
+  private @Nullable Component nickname = null;
   private @Nullable UUID replyTarget = null;
   private @Nullable TextColor customChatColor = null;
   private @NonNull PingOptions pingOptions = new PingOptions(null, null);
 
   private @Nullable String selectedChannelKey = null;
   private transient @Nullable ChatChannel selectedChannel = null;
-
-  private transient @Nullable Audience audience;
 
   @SuppressWarnings({"initialization.fields.uninitialized", "method.invocation.invalid"})
   public BukkitPlayerUser() {
@@ -84,11 +84,13 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
   @Override
   public @NonNull Audience audience() {
-    if (this.audience == null) {
-      this.audience = this.carbonChat.messageProcessor().audiences().player(this.uuid());
+    final Player player = Bukkit.getPlayer(this.uuid());
+
+    if (player != null) {
+      return player;
     }
 
-    return this.audience;
+    return Audience.empty();
   }
 
   @Override
@@ -123,7 +125,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public @NonNull String nickname() {
+  public @NonNull Component nickname() {
     if (this.nickname != null) {
       return this.nickname;
     }
@@ -143,60 +145,62 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void nickname(@Nullable String newNickname, final boolean fromRemote) {
-    this.nickname = newNickname;
+  public void nickname(final @Nullable Component nickname, final boolean fromRemote) {
+    this.nickname = nickname;
 
     final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
 
     if (player.isOnline()) {
-      if (newNickname != null) {
-        final Component component = this.carbonChat.messageProcessor().processMessage(newNickname);
-        newNickname = CarbonChatBukkit.LEGACY.serialize(component);
-      }
-
       final Player onlinePlayer = player.getPlayer();
 
       if (onlinePlayer != null) {
-        onlinePlayer.setDisplayName(newNickname);
-        onlinePlayer.setPlayerListName(newNickname);
+        onlinePlayer.displayName(nickname);
+        onlinePlayer.playerListName(nickname);
       }
     }
 
     if (!fromRemote) {
-      final String nick = this.nickname;
+      final Component nick = this.nickname;
 
       if (nick == null) {
         this.carbonChat.messageManager().sendMessage("nickname-reset", this.uuid(), byteArray -> {
         });
       } else {
         this.carbonChat.messageManager().sendMessage("nickname", this.uuid(), byteArray -> {
-          byteArray.writeUTF(nick);
+          byteArray.writeUTF(this.carbonChat.gsonSerializer().serialize(nick));
         });
       }
     }
   }
 
   @Override
-  public @NonNull String displayName() {
+  public @NonNull Component displayName() {
     final Player player = Bukkit.getPlayer(this.uuid());
 
     if (player != null) {
-      return player.getDisplayName();
+      return player.displayName();
     }
 
     return this.name();
   }
 
-  public void displayName(final @Nullable String displayName) {
+  @Override
+  public void displayName(final @Nullable Component displayName) {
     final Player player = Bukkit.getPlayer(this.uuid());
 
     if (player != null) {
-      player.setDisplayName(displayName);
+      player.displayName(displayName);
     }
   }
 
-  public @NonNull String name() {
+  @Override
+  public @NonNull Component name() {
     return this.carbonChat.resolveName(this.uuid);
+  }
+
+  @Override
+  public @NonNull String username() {
+    return PlainComponentSerializer.plain().serialize(this.carbonChat.resolveName(this.uuid));
   }
 
   @Override
@@ -251,7 +255,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
     if (event.cancelled()) {
       this.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(event.failureMessage(),
-        "channel", chatChannel.name()));
+        Template.of("channel", chatChannel.name())));
 
       return;
     }
@@ -269,8 +273,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
     if (player.isOnline()) {
       this.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(chatChannel.switchMessage(),
-        "color", "<" + chatChannel.channelColor(this).toString() + ">",
-        "channel", chatChannel.name()));
+        Template.of("color", "<" + chatChannel.channelColor(this).toString() + ">"),
+        Template.of("channel", chatChannel.name())));
     }
   }
 
@@ -455,16 +459,18 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     final String fromPlayerFormat = this.carbonChat.carbonSettings().whisperOptions().receiverFormat();
 
     final OfflinePlayer offlineSender = Bukkit.getOfflinePlayer(sender.uuid());
-    final String senderName = sender.nickname();
+    final Component senderName = sender.nickname();
 
     final OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(this.uuid());
-    final String targetName = this.nickname();
+    final Component targetName = this.nickname();
 
     final Component toPlayerComponent = this.carbonChat.messageProcessor().processMessage(toPlayerFormat,
-      "message", message, "target", targetName, "receiver", targetName, "sender", senderName);
+      Template.of("message", message), Template.of("target", targetName),
+      Template.of("receiver", targetName), Template.of("sender", senderName));
 
     final Component fromPlayerComponent = this.carbonChat.messageProcessor().processMessage(fromPlayerFormat,
-      "message", message, "target", targetName, "receiver", targetName, "sender", senderName);
+      Template.of("message", message), Template.of("target", targetName),
+      Template.of("receiver", targetName), Template.of("sender", senderName));
 
     final PrivateMessageEvent event = new PrivateMessageEvent(sender, this, toPlayerComponent, fromPlayerComponent, message);
 
@@ -492,7 +498,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
         final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
         final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-          "message", message, "target", targetName, "sender", senderName);
+          Template.of("message", message), Template.of("target", targetName),
+          Template.of("sender", senderName));
 
         sender.sendMessage(Identity.nil(), playerOfflineComponent);
 
@@ -507,7 +514,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
           final String playerOfflineFormat = this.carbonChat.translations().otherPlayerOffline();
 
           final Component playerOfflineComponent = this.carbonChat.messageProcessor().processMessage(playerOfflineFormat,
-            "message", message, "target", targetName, "sender", senderName);
+            Template.of("message", message), Template.of("target", targetName),
+            Template.of("sender", senderName));
 
           sender.sendMessage(Identity.nil(), playerOfflineComponent);
 
@@ -536,8 +544,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
       }
 
       user.sendMessage(sender.identity(), this.carbonChat.messageProcessor()
-        .processMessage(this.carbonChat.translations().spyWhispers(), "message", message,
-          "target", targetName, "sender", senderName));
+        .processMessage(this.carbonChat.translations().spyWhispers(), Template.of("message", message),
+          Template.of("target", targetName), Template.of("sender", senderName)));
     }
   }
 }

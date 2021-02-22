@@ -4,29 +4,13 @@ import net.draycia.carbon.api.users.ConsoleUser;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single {
 
-  private final @NonNull Audience audience;
-
-  public BukkitConsoleUser(final @NonNull ConsoleCommandSender sender) {
-    final Plugin plugin = Bukkit.getPluginManager().getPlugin("CarbonChat");
-
-    if (plugin == null) {
-      throw new IllegalArgumentException("CarbonChat plugin cannot be found!");
-    }
-
-    this.audience = BukkitAudiences.create(plugin).sender(sender);
-  }
-
-  public BukkitConsoleUser() {
-    this(Bukkit.getConsoleSender());
-  }
+  private final @NonNull Audience audience = Bukkit.getConsoleSender();
 
   @Override
   public @NonNull Identity identity() {
@@ -44,7 +28,12 @@ public class BukkitConsoleUser implements ConsoleUser, ForwardingAudience.Single
   }
 
   @Override
-  public @NonNull String name() {
+  public @NonNull Component name() {
+    return Component.text("Console");
+  }
+
+  @Override
+  public @NonNull String username() {
     return "Console";
   }
 

@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -104,18 +105,18 @@ public class CarbonWhisperChannel implements WhisperChannel {
     }
 
     // Display names
-    final String senderName = this.sender.nickname();
-    final String receiverName = this.audience.nickname();
+    final Component senderName = this.sender.nickname();
+    final Component receiverName = this.audience.nickname();
 
     // Components
     final TextComponent senderComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(
       senderFormatEvent.format(),
-      "senderdisplayname", senderName,
-      "sender", this.sender.name(),
-      "receiverdisplayname", receiverName,
-      "receiver", this.audience.name(),
-      "phase", Long.toString(System.currentTimeMillis() % 25),
-      "message", senderFormatEvent.message());
+      Template.of("senderdisplayname", senderName),
+      Template.of("sender", this.sender.name()),
+      Template.of("receiverdisplayname", receiverName),
+      Template.of("receiver", this.audience.name()),
+      Template.of("phase", Long.toString(System.currentTimeMillis() % 25)),
+      Template.of("message", senderFormatEvent.message()));
 
     final ChatComponentEvent senderComponentEvent = new ChatComponentEvent(this.sender, this.sender, this,
       senderComponent, senderFormatEvent.message());
@@ -126,12 +127,12 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
     final TextComponent receiverComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(
       receiverFormatEvent.format(),
-      "senderdisplayname", senderName,
-      "sender", this.sender.name(),
-      "receiverdisplayname", receiverName,
-      "receiver", this.audience.name(),
-      "phase", Long.toString(System.currentTimeMillis() % 25),
-      "message", senderFormatEvent.message());
+      Template.of("senderdisplayname", senderName),
+      Template.of("sender", this.sender.name()),
+      Template.of("receiverdisplayname", receiverName),
+      Template.of("receiver", this.audience.name()),
+      Template.of("phase", Long.toString(System.currentTimeMillis() % 25)),
+      Template.of("message", senderFormatEvent.message()));
 
     final ChatComponentEvent receiverComponentEvent = new ChatComponentEvent(this.sender, this.audience, this,
       receiverComponent, receiverFormatEvent.message());
@@ -150,12 +151,12 @@ public class CarbonWhisperChannel implements WhisperChannel {
 
       final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(
         consoleFormatEvent.format(),
-        "senderdisplayname", senderName,
-        "sender", this.sender.name(),
-        "receiverdisplayname", receiverName,
-        "receiver", this.audience.name(),
-        "phase", Long.toString(System.currentTimeMillis() % 25),
-        "message", senderFormatEvent.message());
+        Template.of("senderdisplayname", senderName),
+        Template.of("sender", this.sender.name()),
+        Template.of("receiverdisplayname", receiverName),
+        Template.of("receiver", this.audience.name()),
+        Template.of("phase", Long.toString(System.currentTimeMillis() % 25)),
+        Template.of("message", senderFormatEvent.message()));
 
       final ChatComponentEvent consoleEvent = new ChatComponentEvent(this.sender, null, this, consoleFormat,
         consoleFormatEvent.message());
@@ -207,8 +208,7 @@ public class CarbonWhisperChannel implements WhisperChannel {
       entry.getKey().sendMessage(Identity.nil(), entry.getValue());
 
       if (entry.getKey() instanceof ConsoleUser) {
-        this.carbonChat.messageProcessor().audiences().console()
-          .sendMessage(identity, entry.getValue());
+        this.carbonChat.console().sendMessage(identity, entry.getValue());
       }
     }
   }

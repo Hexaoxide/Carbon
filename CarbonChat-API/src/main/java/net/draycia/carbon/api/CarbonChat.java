@@ -12,8 +12,9 @@ import net.draycia.carbon.api.messaging.MessageService;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserService;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 
@@ -23,21 +24,13 @@ import java.util.UUID;
 
 public interface CarbonChat {
 
-  LegacyComponentSerializer LEGACY =
-    LegacyComponentSerializer.builder()
-      .extractUrls()
-      .hexColors()
-      .character(LegacyComponentSerializer.SECTION_CHAR)
-      .useUnusualXRepeatedCharacterHexFormat()
-      .build();
-
   void reload();
 
   @NonNull File dataDirectory();
 
   @NonNull UUID resolveUUID(@NonNull String name);
 
-  @NonNull String resolveName(@NonNull UUID uuid);
+  @NonNull Component resolveName(@NonNull UUID uuid);
 
   @NonNull Logger logger();
 
@@ -66,5 +59,7 @@ public interface CarbonChat {
   @NonNull CommandManager<CarbonUser> commandManager();
 
   @NonNull String version();
+
+  @NonNull Audience console();
 
 }

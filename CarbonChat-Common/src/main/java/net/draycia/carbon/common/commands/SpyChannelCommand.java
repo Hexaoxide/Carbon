@@ -13,6 +13,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SpyChannelCommand {
@@ -79,8 +80,8 @@ public class SpyChannelCommand {
     }
 
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
-      "color", "<color:" + chatChannel.channelColor(user).toString() + ">",
-      "channel", chatChannel.name()));
+      Template.of("color", "<color:" + chatChannel.channelColor(user).toString() + ">"),
+      Template.of("channel", chatChannel.name())));
   }
 
   private void spyWhispers(final @NonNull CommandContext<CarbonUser> context) {
@@ -124,7 +125,7 @@ public class SpyChannelCommand {
     }
 
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-      .processMessage(message, "br", "\n"));
+      .processMessage(message, Template.of("br", "\n")));
   }
 
 }

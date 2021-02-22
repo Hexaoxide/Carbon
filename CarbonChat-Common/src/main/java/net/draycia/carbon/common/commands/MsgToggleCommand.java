@@ -10,6 +10,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MsgToggleCommand {
@@ -94,6 +95,6 @@ public class MsgToggleCommand {
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
 
     sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(otherMessage,
-      "player", user.name()));
+      Template.of("player", user.name())));
   }
 }

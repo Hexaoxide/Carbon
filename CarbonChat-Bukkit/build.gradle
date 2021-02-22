@@ -13,10 +13,6 @@ dependencies {
   // Server
   compileOnly "com.destroystokyo.paper:paper-api:${vers['paper-api']}"
 
-  // Adventure
-  implementation "net.kyori:adventure-platform-bukkit:${vers['adventure-platform']}"
-  implementation "net.kyori:adventure-text-serializer-bungeecord:${vers['adventure-platform']}"
-
   // Config
   implementation "org.spongepowered:configurate-yaml:${vers['configurate']}"
   implementation "org.spongepowered:configurate-hocon:${vers['configurate']}"
@@ -46,7 +42,7 @@ bukkit {
   name = "CarbonChat"
   version = rootProject.version
   main = 'net.draycia.carbon.bukkit.CarbonChatBukkit'
-  apiVersion = '1.13'
+  apiVersion = '1.16'
   author = 'Draycia'
   depend = ['PlaceholderAPI', 'Vault']
   softDepend = ['LuckPerms', 'Towny', 'mcMMO', 'WorldGuard']

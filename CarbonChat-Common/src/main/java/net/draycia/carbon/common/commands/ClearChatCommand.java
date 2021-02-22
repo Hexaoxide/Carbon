@@ -10,6 +10,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ClearChatCommand {
@@ -47,9 +48,9 @@ public class ClearChatCommand {
   }
 
   private void clearChat(final @NonNull CommandContext<CarbonUser> context) {
-    final String sender = context.getSender().name();
+    final Component sender = context.getSender().name();
     final String format = this.carbonChat.moderationSettings().clearChat().message();
-    final Component component = this.carbonChat.messageProcessor().processMessage(format, "br", "\n");
+    final Component component = this.carbonChat.messageProcessor().processMessage(format, Template.of("br", "\n"));
 
     for (final CarbonUser user : this.carbonChat.userService().onlineUsers()) {
       this.clearUserChat(user, component, sender);
@@ -58,18 +59,18 @@ public class ClearChatCommand {
 
   private void clearChatPlayer(final @NonNull CommandContext<CarbonUser> context) {
     final PlayerUser target = context.get("user");
-    final String sender = context.getSender().name();
+    final Component sender = context.getSender().name();
     final String format = this.carbonChat.moderationSettings().clearChat().message();
-    final Component component = this.carbonChat.messageProcessor().processMessage(format, "br", "\n");
+    final Component component = this.carbonChat.messageProcessor().processMessage(format, Template.of("br", "\n"));
 
     this.clearUserChat(target, component, sender);
   }
 
-  private void clearUserChat(final @NonNull CarbonUser user, final @NonNull Component component, final @NonNull String sender) {
+  private void clearUserChat(final @NonNull CarbonUser user, final @NonNull Component component, final @NonNull Component sender) {
     if (user.hasPermission("carbonchat.clearchat.exempt")) {
       final String message = this.carbonChat.translations().clearExempt();
       user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-        .processMessage(message, "player", sender));
+        .processMessage(message, Template.of("player", sender)));
     } else {
       for (int i = 0; i < this.carbonChat.moderationSettings().clearChat().messageCount(); i++) {
         user.sendMessage(Identity.nil(), component);
@@ -79,7 +80,7 @@ public class ClearChatCommand {
     if (user.hasPermission("carbonchat.clearchat.notify")) {
       final String message = this.carbonChat.translations().clearNotify();
       user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-        .processMessage(message, "player", sender));
+        .processMessage(message, Template.of("player", sender)));
     }
   }
 

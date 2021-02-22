@@ -10,7 +10,6 @@ dependencies {
 
   api "net.kyori:adventure-api:${vers['adventure']}"
   api "net.kyori:adventure-nbt:${vers['adventure']}"
-  api "net.kyori:adventure-platform-api:${vers['adventure-platform']}"
   api "net.kyori:adventure-text-serializer-plain:${vers['adventure']}"
   api("net.kyori:adventure-text-serializer-gson:${vers['adventure']}") {
     exclude group: 'com.google.code.gson'

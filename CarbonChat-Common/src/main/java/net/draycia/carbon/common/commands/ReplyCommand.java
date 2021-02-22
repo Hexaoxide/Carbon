@@ -10,6 +10,7 @@ import net.draycia.carbon.api.commands.settings.CommandSettings;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
@@ -45,7 +46,7 @@ public class ReplyCommand {
 
     if (input.isEmpty()) {
       final String message = this.carbonChat.translations().replyMessageBlank();
-      final Component component = this.carbonChat.messageProcessor().processMessage(message, "br", "\n");
+      final Component component = this.carbonChat.messageProcessor().processMessage(message, Template.of("br", "\n"));
 
       user.sendMessage(Identity.nil(), component);
 
@@ -56,7 +57,7 @@ public class ReplyCommand {
 
     if (replyTarget == null) {
       final String message = this.carbonChat.translations().noReplyTarget();
-      final Component component = this.carbonChat.messageProcessor().processMessage(message, "br", "\n");
+      final Component component = this.carbonChat.messageProcessor().processMessage(message, Template.of("br", "\n"));
 
       user.sendMessage(Identity.nil(), component);
 

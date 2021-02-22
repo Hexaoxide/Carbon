@@ -61,13 +61,11 @@ import net.draycia.carbon.common.messaging.MessageManager;
 import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.common.users.JSONUserService;
 import net.draycia.carbon.common.users.MySQLUserService;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -108,13 +106,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   private @NonNull Collection<@NonNull String> proxyPlayerNames = new ArrayList<>();
 
-  public static final LegacyComponentSerializer LEGACY =
-    LegacyComponentSerializer.builder()
-      .extractUrls()
-      .hexColors()
-      .character('§')
-      .useUnusualXRepeatedCharacterHexFormat()
-      .build();
+  public static final GsonComponentSerializer GSON_SERIALIZER = GsonComponentSerializer.builder().build();
 
   @Override
   public void onLoad() {
@@ -131,8 +123,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     this.loadConfigs();
 
     // Setup Adventure
-    final BukkitAudiences audiences = BukkitAudiences.create(this);
-    this.messageProcessor = new AdventureManager(audiences, this.carbonSettings.formatType());
+    this.messageProcessor = new AdventureManager(this.carbonSettings.formatType());
 
     // Initialize managers
     this.channelManager = new ChannelManager(this);
@@ -251,7 +242,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         if (sender instanceof Player) {
           return this.userService().wrap(((Player) sender).getUniqueId());
         } else {
-          return new BukkitConsoleUser((ConsoleCommandSender) sender);
+          return new BukkitConsoleUser();
         }
       }, user -> {
         if (user instanceof PlayerUser) {
@@ -337,21 +328,21 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   @Override
-  public @NonNull String resolveName(final @NonNull UUID uuid) {
+  public @NonNull Component resolveName(final @NonNull UUID uuid) {
     if (this.messageService() instanceof RedisMessageService) {
       final RedisMessageService redis = (RedisMessageService) this.messageService();
 
       final String value = redis.get("UUID:" + uuid.toString());
 
       if (value != null) {
-        return value;
+        return Component.text(value);
       } else {
         final String name = Bukkit.getOfflinePlayer(uuid).getName();
 
         if (name != null) {
           redis.set("UUID:" + uuid.toString(), name);
 
-          return name;
+          return Component.text(name);
         }
       }
     }
@@ -359,10 +350,10 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     final String name = Bukkit.getOfflinePlayer(uuid).getName();
 
     if (name != null) {
-      return name;
+      return Component.text(name);
     }
 
-    return uuid.toString();
+    return Component.text(uuid.toString());
   }
 
   @Override
@@ -451,7 +442,12 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
   @Override
   public @NonNull GsonComponentSerializer gsonSerializer() {
-    return BukkitComponentSerializer.gson();
+    return CarbonChatBukkit.GSON_SERIALIZER;
+  }
+
+  @Override
+  public @NonNull Audience console() {
+    return Bukkit.getConsoleSender();
   }
 
   @Override

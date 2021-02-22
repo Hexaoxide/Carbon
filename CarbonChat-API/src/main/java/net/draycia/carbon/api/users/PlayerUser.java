@@ -2,6 +2,7 @@ package net.draycia.carbon.api.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -17,19 +18,17 @@ public interface PlayerUser extends CarbonUser {
 
   boolean online();
 
-  @NonNull String nickname();
+  @NonNull Component nickname();
 
-  default void nickname(final @Nullable String nickname) {
+  default void nickname(final @Nullable Component nickname) {
     this.nickname(nickname, false);
   }
 
-  void nickname(@Nullable String nickname, boolean fromRemote);
+  void nickname(@Nullable Component nickname, boolean fromRemote);
 
-  @NonNull String displayName();
+  @NonNull Component displayName();
 
-  void displayName(@Nullable String displayName);
-
-  @NonNull String name();
+  void displayName(@Nullable Component displayName);
 
   @Nullable TextColor customChatColor();
 

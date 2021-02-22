@@ -12,6 +12,7 @@ import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ChannelCommand {
@@ -73,8 +74,8 @@ public class ChannelCommand {
   private boolean canUse(final PlayerUser user, final ChatChannel channel) {
     if (user.channelSettings(channel).ignored() || !channel.canPlayerUse(user)) {
       user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(channel.cannotUseMessage(),
-        "color", "<" + channel.channelColor(user).toString() + ">",
-        "channel", channel.name()));
+        Template.of("color", "<" + channel.channelColor(user).toString() + ">"),
+        Template.of("channel", channel.name())));
 
       return false;
     }

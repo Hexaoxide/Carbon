@@ -13,6 +13,7 @@ import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.channels.CarbonWhisperChannel;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Optional;
@@ -97,7 +98,7 @@ public class MessageCommand {
 
       sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
         this.carbonChat.carbonSettings().whisperOptions().nowWhisperingPlayer(),
-        "player", receiver.name()
+        Template.of("player", receiver.name())
       ));
     }
   }

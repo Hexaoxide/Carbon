@@ -6,7 +6,6 @@ ext {
     'guava'             : '26.0-jre',
     'slf4j-api'         : '1.7.25',
     'adventure'         : '4.3.0',
-    'adventure-platform': '4.0.0-SNAPSHOT',
     'minimessage'       : '4.1.0-SNAPSHOT',
     'kyori-event-api'   : '3.0.0',
     'kyori-registry'    : '1.0.0-SNAPSHOT',
@@ -22,7 +21,7 @@ ext {
     'gson'              : '2.8.0',
 
     // Bukkit
-    'paper-api'         : '1.16.4-R0.1-SNAPSHOT',
+    'paper-api'         : '1.16.5-R0.1-SNAPSHOT',
     'snakeyaml'         : '1.27',
     'mcmmo'             : '2.1.143',
     'towny'             : '0.96.2.0',

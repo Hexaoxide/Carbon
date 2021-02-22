@@ -12,6 +12,7 @@ import net.draycia.carbon.api.users.UserChannelSettings;
 import net.draycia.carbon.common.utils.TextColorArgument;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SetChannelColorCommand {
@@ -45,8 +46,8 @@ public class SetChannelColorCommand {
 
             user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
               this.carbonChat.translations().channelColorSet(),
-              "color", "<color:" + color.asHexString() + ">", "channel",
-              channel.name(), "hex", color.asHexString()));
+              Template.of("color", "<color:" + color.asHexString() + ">"),
+              Template.of("channel", channel.name()), Template.of("hex", color.asHexString())));
           }).build()
       );
     }

@@ -6,6 +6,7 @@ import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
@@ -20,8 +21,11 @@ public final class PlayerUserArgument<C extends CarbonUser> extends CommandArgum
     super(required, "user", PlayerUserArgument::parser,
       "",
       PlayerUser.class, (context, input) -> {
-        final List<String> suggestions = CarbonChatProvider.carbonChat().userService().onlineUsers().stream()
-          .map(PlayerUser::name).collect(Collectors.toCollection(ArrayList::new));
+        final List<String> suggestions = CarbonChatProvider.carbonChat().userService().onlineUsers()
+          .stream()
+          .map(PlayerUser::name)// Get the player's name
+          .map(PlainComponentSerializer.plain()::serialize) // Convert their name into a plain string
+          .collect(Collectors.toCollection(ArrayList::new)); // And collect into an arraylist
 
         if (context.getSender().hasPermission("carbonchat.command.completions." + command)) {
           suggestions.addAll(CarbonChatProvider.carbonChat().userService().proxyPlayers());

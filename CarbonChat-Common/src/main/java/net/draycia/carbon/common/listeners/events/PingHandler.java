@@ -8,6 +8,8 @@ import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -31,7 +33,7 @@ public class PingHandler {
         return;
       }
 
-      final String targetName = target.name();
+      final Component targetName = target.name();
       final String prefix = carbonChat.carbonSettings().channelPings().prefix();
       final boolean caseSensitive = carbonChat.carbonSettings().channelPings().caseSensitive();
       final String ping = prefix + targetName;
@@ -66,7 +68,7 @@ public class PingHandler {
         return;
       }
 
-      final String targetName = target.name();
+      final Component targetName = target.name();
       final String prefix = carbonChat.carbonSettings().channelPings().prefix();
       final boolean caseSensitive = carbonChat.carbonSettings().channelPings().caseSensitive();
       final String ping = prefix + targetName;
@@ -79,7 +81,7 @@ public class PingHandler {
         event.message(event.message().replace(ping,
           carbonChat.carbonSettings().channelPings().display()
             .replace("<ping>", ping)
-            .replace("<name>", targetName)
+            .replace("<name>", PlainComponentSerializer.plain().serialize(targetName))
         ));
       } else {
         if (!event.message().toLowerCase().contains(ping.toLowerCase())) {
@@ -89,7 +91,7 @@ public class PingHandler {
         event.message(this.replace(event.message(), ping,
           carbonChat.carbonSettings().channelPings().display()
             .replace("<ping>", ping)
-            .replace("<name>", targetName)
+            .replace("<name>", PlainComponentSerializer.plain().serialize(targetName))
         ));
       }
     });

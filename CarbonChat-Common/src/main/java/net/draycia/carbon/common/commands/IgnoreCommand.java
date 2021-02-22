@@ -10,6 +10,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class IgnoreCommand {
@@ -45,7 +46,7 @@ public class IgnoreCommand {
       sender.ignoringUser(targetUser, false);
 
       sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(
-        this.carbonChat.translations().notIgnoringUser(), "player", targetUser.displayName()));
+        this.carbonChat.translations().notIgnoringUser(), Template.of("player", targetUser.displayName())));
     } else {
       final String format;
 
@@ -57,7 +58,7 @@ public class IgnoreCommand {
       }
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
-        "sender", sender.displayName(), "player", targetUser.displayName());
+        Template.of("sender", sender.displayName()), Template.of("player", targetUser.displayName()));
 
       sender.sendMessage(Identity.nil(), message);
     }

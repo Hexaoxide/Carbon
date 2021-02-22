@@ -12,6 +12,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.ChannelArgument;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class SudoChannelCommand {
@@ -63,12 +64,12 @@ public class SudoChannelCommand {
     final String otherMessage = channel.switchOtherMessage();
 
     user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message,
-      "color", "<color:" + channel.channelColor(user).toString() + ">",
-      "channel", channel.name()));
+      Template.of("color", "<color:" + channel.channelColor(user).toString() + ">"),
+      Template.of("channel", channel.name())));
 
     sender.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(otherMessage,
-        "color", "<color:" + channel.channelColor(user).toString() + ">",
-        "channel", channel.name(), "player", user.name()));
+      Template.of("color", "<color:" + channel.channelColor(user).toString() + ">"),
+      Template.of("channel", channel.name()), Template.of("player", user.name())));
   }
 
   private void sendMessageOther(final @NonNull CommandContext<CarbonUser> context) {

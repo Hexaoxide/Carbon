@@ -9,6 +9,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
@@ -33,9 +34,9 @@ public class MessageManager {
       final String nickname = byteArray.readUTF();
       final String message = this.carbonChat.translations().nicknameSet();
 
-      user.nickname(nickname, true);
+      user.nickname(this.carbonChat.gsonSerializer().deserialize(nickname), true);
       user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-        .processMessage(message, "nickname", nickname));
+        .processMessage(message, Template.of("nickname", nickname)));
     });
 
     this.messageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
@@ -122,7 +123,7 @@ public class MessageManager {
 
         ((TextChannel) channel).sendComponent(user, component);
 
-        this.carbonChat.messageProcessor().audiences().console().sendMessage(Identity.identity(uuid), component);
+        this.carbonChat.console().sendMessage(Identity.identity(uuid), component);
       }
     });
 
@@ -148,8 +149,8 @@ public class MessageManager {
         }
 
         user.sendMessage(sender, this.carbonChat.messageProcessor()
-          .processMessage(this.carbonChat.translations().spyWhispers(), "message", message,
-            "target", target.displayName(), "sender", sender.displayName()));
+          .processMessage(this.carbonChat.translations().spyWhispers(), Template.of("message", message),
+            Template.of("target", target.displayName()), Template.of("sender", sender.displayName())));
       }
     });
 

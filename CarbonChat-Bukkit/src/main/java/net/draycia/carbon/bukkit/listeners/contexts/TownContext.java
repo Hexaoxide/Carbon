@@ -103,7 +103,7 @@ public final class TownContext implements Listener {
 
   public boolean isInTown(final @NonNull PlayerUser user) {
     try {
-      return TownyAPI.getInstance().getDataSource().getResident(user.name()).hasTown();
+      return TownyAPI.getInstance().getDataSource().getResident(user.username()).hasTown();
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();
     }
@@ -117,10 +117,10 @@ public final class TownContext implements Listener {
     }
 
     try {
-      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.name());
+      final Resident resident = TownyAPI.getInstance().getDataSource().getResident(user1.username());
 
       if (resident.hasTown()) {
-        return resident.getTown().hasResident(user2.name());
+        return resident.getTown().hasResident(user2.username());
       }
     } catch (final NotRegisteredException exception) {
       exception.printStackTrace();

@@ -10,6 +10,7 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.draycia.carbon.common.commands.arguments.PlayerUserArgument;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MuteCommand {
@@ -46,7 +47,7 @@ public class MuteCommand {
       final String format = this.carbonChat.translations().noLongerMuted();
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
-        "player", target.name(), "sender", user.name());
+        Template.of("player", target.name()), Template.of("sender", user.name()));
 
       user.sendMessage(Identity.nil(), message);
     } else {
@@ -60,7 +61,7 @@ public class MuteCommand {
       }
 
       final Component message = this.carbonChat.messageProcessor().processMessage(format,
-        "player", target.name(), "sender", user.name());
+        Template.of("player", target.name()), Template.of("sender", user.name()));
 
       user.sendMessage(Identity.nil(), message);
     }

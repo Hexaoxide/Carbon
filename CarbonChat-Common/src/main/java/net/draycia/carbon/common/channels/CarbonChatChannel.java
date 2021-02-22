@@ -21,6 +21,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 import net.luckperms.api.model.group.Group;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -170,13 +171,13 @@ public class CarbonChatChannel implements TextChannel {
       }
 
       TextComponent formatComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(formatEvent.format(),
-        "nickname", user.nickname(),
-        "displayname", user.displayName(),
-        "username", user.name(),
-        "color", "<" + chosenColor.asHexString() + ">",
-        "playercolor", "<" + user.customChatColor(),
-        "phase", Long.toString(System.currentTimeMillis() % 25),
-        "message", formatEvent.message());
+        Template.of("nickname", user.nickname()),
+        Template.of("displayname", user.displayName()),
+        Template.of("username", user.name()),
+        Template.of("color", "<" + chosenColor.asHexString() + ">"),
+        Template.of("playercolor", "<" + user.customChatColor()),
+        Template.of("phase", Long.toString(System.currentTimeMillis() % 25)),
+        Template.of("message", formatEvent.message()));
 
       if (this.isUserSpying(user, target)) {
         final String prefix = this.carbonChat.carbonSettings().spyPrefix();
@@ -207,13 +208,13 @@ public class CarbonChatChannel implements TextChannel {
     final TextColor channelColor = this.channelColor(user);
 
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(consoleFormatEvent.format(),
-      "nickname", user.nickname(),
-      "displayname", user.displayName(),
-      "username", user.name(),
-      "color", "<" + channelColor.asHexString() + ">",
-      "playercolor", "<" + user.customChatColor(),
-      "phase", Long.toString(System.currentTimeMillis() % 25),
-      "message", consoleFormatEvent.message());
+      Template.of("nickname", user.nickname()),
+      Template.of("displayname", user.displayName()),
+      Template.of("username", user.name()),
+      Template.of("color", "<" + channelColor.asHexString() + ">"),
+      Template.of("playercolor", "<" + user.customChatColor()),
+      Template.of("phase", Long.toString(System.currentTimeMillis() % 25)),
+      Template.of("message", consoleFormatEvent.message()));
 
     final ChatComponentEvent consoleEvent = new ChatComponentEvent(user, consoleUser, this, consoleFormat,
       consoleFormatEvent.message());
@@ -256,8 +257,7 @@ public class CarbonChatChannel implements TextChannel {
       entry.getKey().sendMessage(identity, entry.getValue());
 
       if (entry instanceof ConsoleUser) {
-        this.carbonChat.messageProcessor().audiences().console()
-          .sendMessage(identity, entry.getValue());
+        this.carbonChat.console().sendMessage(identity, entry.getValue());
       }
     }
   }

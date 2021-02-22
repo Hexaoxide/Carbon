@@ -21,38 +21,16 @@
 package net.draycia.carbon.bukkit.util;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.api.chat.hover.content.Content;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class CarbonUtils {
-
-  private static final @NonNull String @NonNull [] colors;
 
   private CarbonUtils() {
 
-  }
-
-  static {
-    final List<String> colorList = new ArrayList<>();
-
-    for (final NamedTextColor color : NamedTextColor.NAMES.values()) {
-      colorList.add(color.toString());
-    }
-
-    colors = colorList.toArray(new String[0]);
   }
 
   public static @NonNull Component createComponent(final @NonNull Player player) {
@@ -66,26 +44,22 @@ public final class CarbonUtils {
       return net.kyori.adventure.text.Component.empty();
     }
 
-    final Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
-    final HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
+    final HoverEvent<HoverEvent.ShowItem> hoverEvent = itemStack.asHoverEvent();
+    Component component = Component.text("[").color(NamedTextColor.WHITE).hoverEvent(hoverEvent);
 
-    final ComponentBuilder component = new ComponentBuilder();
-    component.event(event); // Let this be inherited by all coming components.
-    component.color(ChatColor.WHITE).append("[");
+    final Component displayName = itemStack.getItemMeta().displayName();
 
-    if (itemStack.getItemMeta().hasDisplayName()) {
-      component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
+    if (displayName != null) {
+      component = component.append(displayName);
     } else {
       // As of 1.13, Material is 1:1 with MC's names
       final String prefix = itemStack.getType().isBlock() ? "block" : "item";
       final String name = prefix + ".minecraft." + itemStack.getType().name().toLowerCase();
 
-      component.append(new TranslatableComponent(name));
+      component = component.append(Component.translatable(name));
     }
 
-    component.color(ChatColor.WHITE).append("]");
-
-    return BungeeComponentSerializer.get().deserialize(component.create());
+    return component.append(Component.text("]").color(NamedTextColor.WHITE));
   }
 
 }
