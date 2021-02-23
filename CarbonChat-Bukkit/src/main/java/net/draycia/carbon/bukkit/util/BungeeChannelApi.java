@@ -37,10 +37,10 @@ import com.google.common.io.ByteStreams;
  * @author leonardosnt (leonrdsnt@gmail.com)
  * @see <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/">https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/</a>
  */
-@SuppressWarnings("all")
+//@SuppressWarnings("all")
 public class BungeeChannelApi {
 
-  private static WeakHashMap<Plugin, BungeeChannelApi> registeredInstances = new WeakHashMap<>();
+  private static final WeakHashMap<Plugin, BungeeChannelApi> registeredInstances = new WeakHashMap<>();
 
   private final PluginMessageListener messageListener;
   private final Plugin plugin;
@@ -418,7 +418,7 @@ public class BungeeChannelApi {
           try {
             switch (subchannel) {
               case "PlayerCount":
-                ((CompletableFuture<Integer>) callback).complete(Integer.valueOf(input.readInt()));
+                ((CompletableFuture<Integer>) callback).complete(input.readInt());
                 break;
 
               case "PlayerList":
@@ -439,7 +439,7 @@ public class BungeeChannelApi {
           } catch(Exception ex) {
             callback.completeExceptionally(ex);
           }
-        } catch (final Exception exception) {
+        } catch (final Exception ignored) {
         }
 
         return;
@@ -513,14 +513,14 @@ public class BungeeChannelApi {
 
   private BiFunction<String, Queue<CompletableFuture<?>>, Queue<CompletableFuture<?>>> computeQueueValue(CompletableFuture<?> queueValue) {
     return (key, value) -> {
-      if (value == null) value = new ArrayDeque<CompletableFuture<?>>();
+      if (value == null) value = new ArrayDeque<>();
       value.add(queueValue);
       return value;
     };
   }
 
   private Player getFirstPlayer() {
-    /**
+    /*
      * if Bukkit Version < 1.7.10 then Bukkit.getOnlinePlayers() will return
      * a Player[] otherwise it'll return a Collection<? extends Player>.
      */
@@ -533,7 +533,6 @@ public class BungeeChannelApi {
     return firstPlayer;
   }
 
-  @SuppressWarnings("unused")
   private Player getFirstPlayer0(Player[] playerArray) {
     return playerArray.length > 0 ? playerArray[0] : null;
   }

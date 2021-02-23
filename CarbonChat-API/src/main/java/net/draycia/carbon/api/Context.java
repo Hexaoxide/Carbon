@@ -1,6 +1,7 @@
 package net.draycia.carbon.api;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
@@ -118,20 +119,24 @@ public class Context {
     return true;
   }
 
-  public String asString() {
+  public @NonNull String asString() {
     return this.value();
   }
 
-  public Boolean asBoolean() {
+  public @NonNull Boolean asBoolean() {
     return Boolean.valueOf(this.value());
   }
 
-  public List<String> asList() {
+  public @NonNull List<String> asList() {
     return Arrays.asList(this.value.split(","));
   }
 
-  public Number asNumber() {
-    return Double.valueOf(this.value());
+  public @Nullable Number asNumber() {
+    try {
+      return Double.valueOf(this.value());
+    } catch (final NumberFormatException exception) {
+      return null;
+    }
   }
 
 }

@@ -42,7 +42,13 @@ public class DistanceContext {
       }
 
       if (context.isNumber()) {
-        final double value = context.asNumber().doubleValue();
+        final Number number = context.asNumber();
+
+        if (number == null) {
+          throw new IllegalArgumentException("Context is not a number!");
+        }
+
+        final double value = number.doubleValue();
 
         if (value > 0) {
           event.cancelled(senderLocation.distance(targetLocation) > value);

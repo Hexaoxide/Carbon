@@ -44,7 +44,13 @@ public class EconomyContext {
       final Double requiredBal;
 
       if (context.isNumber()) {
-        requiredBal = context.asNumber().doubleValue();
+        final Number number = context.asNumber();
+
+        if (number == null) {
+          throw new IllegalArgumentException("Context is not a number!");
+        }
+
+        requiredBal = number.doubleValue();
       } else {
         return;
       }
@@ -78,7 +84,13 @@ public class EconomyContext {
       final Double cost;
 
       if (context.isNumber()) {
-        cost = context.asNumber().doubleValue();
+        final Number number = context.asNumber();
+
+        if (number == null) {
+          throw new IllegalArgumentException("Context is not a number!");
+        }
+
+        cost = number.doubleValue();
       } else {
         return;
       }

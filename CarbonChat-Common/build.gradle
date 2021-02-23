@@ -9,6 +9,8 @@ dependencies {
     exclude group: 'io.netty'
   }
 
+  implementation "net.kyori:adventure-serializer-configurate4:${vers['adventure']}"
+
   implementation "org.spongepowered:configurate-hocon:${vers['configurate']}"
   implementation "org.spongepowered:configurate-yaml:${vers['configurate']}"
 

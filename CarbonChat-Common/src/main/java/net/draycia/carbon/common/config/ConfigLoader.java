@@ -1,8 +1,6 @@
 package net.draycia.carbon.common.config;
 
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
@@ -10,6 +8,7 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,10 +50,10 @@ public class ConfigLoader<L extends AbstractConfigurationLoader<CommentedConfigu
   private <B extends AbstractConfigurationLoader.Builder<?, L>> L loadConfigFile(final B builder, final @NonNull File config) {
     return builder
       .defaultOptions(opts -> {
-        return opts.shouldCopyDefaults(true).serializers(serializerBuilder -> {
-          serializerBuilder.register(Key.class, KeySerializer.INSTANCE)
-            .register(Sound.class, SoundSerializer.INSTANCE);
-        });
+        final ConfigurateComponentSerializer serializer = ConfigurateComponentSerializer.configurate();
+
+        return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
+          serializerBuilder.registerAll(serializer.serializers()));
       })
       .file(config)
       .build();

@@ -100,7 +100,7 @@ public class ChannelListCommand {
     Component availableComponent = this.carbonChat.messageProcessor().processMessage(availableFormat,
       Template.of("br", "\n"));
     availableComponent = availableComponent.replaceText(it ->
-      it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(availableList).once().build());
+      it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(availableList).once());
 
     sender.sendMessage(Identity.nil(), availableComponent);
 
@@ -114,7 +114,7 @@ public class ChannelListCommand {
       Component unavailableComponent = this.carbonChat.messageProcessor().processMessage(unavailableFormat,
         Template.of("br", "\n"));
       unavailableComponent = unavailableComponent.replaceText(it ->
-        it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(unavailableList).once().build());
+        it.match(Pattern.compile(Pattern.quote("<list>"))).replacement(unavailableList).once());
 
       sender.sendMessage(Identity.nil(), unavailableComponent);
     }

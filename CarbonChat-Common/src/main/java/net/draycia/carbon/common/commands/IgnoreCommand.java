@@ -39,6 +39,7 @@ public class IgnoreCommand {
   }
 
   private void ignoreUser(final @NonNull CommandContext<CarbonUser> context) {
+    // TODO: why is this not sent to message broker and synced?
     final PlayerUser sender = (PlayerUser) context.getSender();
     final PlayerUser targetUser = context.get("user");
 

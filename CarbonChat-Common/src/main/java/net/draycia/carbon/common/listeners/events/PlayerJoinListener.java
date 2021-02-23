@@ -17,10 +17,7 @@ public class PlayerJoinListener {
 
       carbonChat.userService().validate(user);
 
-      // TODO: unfuck and plan out how nickname, displayname, and name all work because this isn't working out
-      if (user.nickname() != null) {
-        user.nickname(user.nickname());
-      }
+      user.nickname(user.nickname());
 
       final String channel = carbonChat.carbonSettings().channelOnJoin();
 
@@ -40,9 +37,7 @@ public class PlayerJoinListener {
       }
     });
 
-    CarbonEvents.register(UserEvent.Leave.class, event -> {
-      carbonChat.userService().invalidate(event.user());
-    });
+    CarbonEvents.register(UserEvent.Leave.class, event -> carbonChat.userService().invalidate(event.user()));
   }
 
 }

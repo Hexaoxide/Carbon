@@ -45,9 +45,10 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
     return null;
   }
 
+  @SuppressWarnings("return.type.incompatible") // https://github.com/typetools/checker-framework/issues/3638
   @Override
-  public @NonNull Set<String> keySet() {
-    return (Set<String>) this.registry.keySet(); // https://github.com/typetools/checker-framework/issues/3638
+  public @NonNull Set<@NonNull String> keySet() {
+    return this.registry.keySet();
   }
 
   @Override
