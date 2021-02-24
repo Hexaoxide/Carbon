@@ -63,11 +63,6 @@ public interface TextChannel extends ChatChannel, ForwardingAudience {
   boolean permissionGroupMatching();
 
   /**
-   * Gets the context with the associated key
-   */
-  @Nullable Context context(@NonNull String key);
-
-  /**
    * The custom group priority list for determining which chat format to use
    */
   @NonNull List<@NonNull String> groupOverrides();

@@ -37,7 +37,7 @@ import com.google.common.io.ByteStreams;
  * @author leonardosnt (leonrdsnt@gmail.com)
  * @see <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/">https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/</a>
  */
-//@SuppressWarnings("all")
+@SuppressWarnings("all")
 public class BungeeChannelApi {
 
   private static final WeakHashMap<Plugin, BungeeChannelApi> registeredInstances = new WeakHashMap<>();

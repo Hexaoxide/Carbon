@@ -2,10 +2,8 @@ package net.draycia.carbon.common.listeners.contexts;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
-import net.draycia.carbon.api.channels.Context;
 import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -63,17 +61,8 @@ public class FilterContext {
   }
 
   private boolean channelUsesFilter(final @NonNull ChatChannel chatChannel) {
-    if (chatChannel instanceof TextChannel) {
-      final Context context = ((TextChannel) chatChannel).context("filter");
-
-      if (context == null) {
-        return false;
-      }
-
-      return context.isBoolean() && context.asBoolean();
-    }
-
-    return false;
+    // TODO: reimplement
+    return true;
   }
 
 }

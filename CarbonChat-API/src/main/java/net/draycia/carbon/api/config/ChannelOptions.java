@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.channels.Context;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -32,10 +31,6 @@ public final class ChannelOptions {
     "If on a platform that supports PlaceholderAPI, this option will be ran through that as well.\n" +
     "Note that the <color> placeholder is also used for personal and global user colors.")
   private @Nullable String color = NamedTextColor.WHITE.asHexString();
-  
-  @Setting
-  @Comment("The contexts for this channel, which can modify the behaviour of channels and how/when players can use them.")
-  private @Nullable Map<@NonNull String, @NonNull Context> contexts = new HashMap<>();
   
   @Setting
   @Comment("The formats for this channel. The key is the name of the group as your permissions plugin reports it.")
@@ -144,7 +139,6 @@ public final class ChannelOptions {
     settings.defaultFormatName = "default";
     settings.formats = Collections.singletonMap("default", "<color><<displayname><reset><color>> <message>");
     settings.aliases = Lists.newArrayList("global", "g");
-    settings.contexts = Collections.singletonMap("distance", new Context("filter", "true"));
 
     return settings;
   }
@@ -159,44 +153,6 @@ public final class ChannelOptions {
     }
 
     return this.color;
-  }
-
-  public @Nullable Context context(final @NonNull String key) {
-    final Context localContext;
-
-    if (this.contexts != null) {
-      localContext = this.contexts.get(key);
-    } else {
-      localContext = null;
-    }
-
-    if (localContext == null) {
-      return this.defaultOptions().contexts().get(key);
-    }
-
-    return localContext;
-  }
-
-  public @NonNull Map<String, Context> contexts() {
-    if (this.contexts == null) {
-      return this.defaultOptions().contexts();
-    }
-
-    return this.contexts;
-  }
-
-  public @NonNull Map<String, Context> contextsAndDefault() {
-    if (this.contexts == null) {
-      return this.defaultOptions().contexts();
-    }
-
-    final Map<String, Context> contexts = new HashMap<>(this.defaultOptions().contexts());
-
-    if (this.contexts != null) {
-      contexts.putAll(this.contexts);
-    }
-
-    return contexts;
   }
 
   public @Nullable String format(final @NonNull String key) {

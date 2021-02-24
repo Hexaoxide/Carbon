@@ -1,13 +1,11 @@
 package net.draycia.carbon.api.config;
 
 import com.google.common.collect.ImmutableMap;
-import net.draycia.carbon.api.channels.Context;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +13,6 @@ import java.util.Map;
 public final class SharedChannelOptions {
 
   @Setting private @NonNull String color = "#FFFFFF";
-  @Setting private @NonNull Map<String, Context> contexts = new HashMap<>();
   @Setting private @NonNull Map<@NonNull String, @NonNull String> formats =
     ImmutableMap.of("default", "<color><<displayname><reset><color>> <message>",
       "staff", "<#00CED1>[Staff] <color><<displayname><reset><color>> <message>");
@@ -40,10 +37,6 @@ public final class SharedChannelOptions {
 
   public @NonNull String color() {
     return this.color;
-  }
-
-  public @NonNull Map<String, Context> contexts() {
-    return this.contexts;
   }
 
   public @NonNull Map<String, String> formats() {

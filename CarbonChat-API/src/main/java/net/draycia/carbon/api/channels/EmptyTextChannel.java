@@ -70,23 +70,8 @@ public class EmptyTextChannel implements TextChannel {
   }
 
   @Override
-  public boolean honorsRecipientList() {
-    return false;
-  }
-
-  @Override
   public boolean permissionGroupMatching() {
     return false;
-  }
-
-  @Override
-  public boolean testContext(final @NonNull PlayerUser sender, final @NonNull PlayerUser target) {
-    return false;
-  }
-
-  @Override
-  public @Nullable Context context(final @NonNull String key) {
-    return null;
   }
 
   @Override

@@ -5,8 +5,6 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.bukkit.config.CarbonBukkitSettings;
-import net.draycia.carbon.bukkit.listeners.contexts.AllianceContext;
-import net.draycia.carbon.bukkit.listeners.contexts.NationContext;
 import net.draycia.carbon.bukkit.listeners.events.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.events.ItemLinkHandler;
 import net.draycia.carbon.bukkit.messaging.BungeeMessageService;
@@ -35,13 +33,7 @@ import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.draycia.carbon.common.messaging.RedisMessageService;
-import net.draycia.carbon.bukkit.listeners.contexts.DistanceContext;
-import net.draycia.carbon.bukkit.listeners.contexts.EconomyContext;
 import net.draycia.carbon.common.listeners.contexts.FilterContext;
-import net.draycia.carbon.bukkit.listeners.contexts.PAPIContext;
-import net.draycia.carbon.bukkit.listeners.contexts.TownContext;
-import net.draycia.carbon.bukkit.listeners.contexts.WorldGuardContext;
-import net.draycia.carbon.bukkit.listeners.contexts.mcMMOContext;
 import net.draycia.carbon.common.listeners.events.CapsHandler;
 import net.draycia.carbon.common.listeners.events.CustomPlaceholderHandler;
 import net.draycia.carbon.common.listeners.events.IgnoredPlayerHandler;
@@ -64,7 +56,6 @@ import net.draycia.carbon.common.users.MySQLUserService;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -304,27 +295,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   }
 
   private void registerContexts() {
-    if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
-      this.getServer().getPluginManager().registerEvents(new TownContext(this), this);
-      this.getServer().getPluginManager().registerEvents(new NationContext(this), this);
-      this.getServer().getPluginManager().registerEvents(new AllianceContext(this), this);
-    }
-
-    if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
-      this.getServer().getPluginManager().registerEvents(new mcMMOContext(this), this);
-    }
-
-    if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-      new WorldGuardContext();
-    }
-
-    if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
-      new EconomyContext(this);
-    }
-
-    new DistanceContext();
     new FilterContext(this);
-    new PAPIContext();
   }
 
   @Override

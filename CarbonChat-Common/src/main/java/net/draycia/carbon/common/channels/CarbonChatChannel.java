@@ -10,10 +10,8 @@ import net.draycia.carbon.common.utils.ColorUtils;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.draycia.carbon.api.events.ChatFormatEvent;
-import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.draycia.carbon.api.users.CarbonUser;
-import net.draycia.carbon.api.channels.Context;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -77,37 +75,8 @@ public class CarbonChatChannel implements TextChannel {
     return audience;
   }
 
-  //  private void updateUserNickname(final @NonNull ChatUser user) {
-  //    final Player player = Bukkit.getPlayer(user.uuid());
-  //
-  //    if (player != null) {
-  //      String nickname = user.nickname();
-  //
-  //      if (nickname != null) {
-  //        final Component component = this.carbonChat.messageProcessor().processMessage(nickname);
-  //        nickname = CarbonChat.LEGACY.serialize(component);
-  //
-  //        player.setDisplayName(nickname);
-  //
-  //        if (this.carbonChat.getConfig().getBoolean("nicknames-set-tab-name")) {
-  //          player.setPlayerListName(nickname);
-  //        }
-  //      }
-  //    }
-  //  }
-
   @Override
   public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull Collection<@NonNull PlayerUser> recipients, final @NonNull String message, final boolean fromRemote) {
-    //this.updateUserNickname(user);
-
-    final MessageContextEvent event = new MessageContextEvent(this, user);
-
-    CarbonEvents.post(event);
-
-    if (event.cancelled()) {
-      return Collections.emptyMap();
-    }
-
     // Get player's formatting
     final String messageFormat = this.format(user);
 
@@ -499,11 +468,6 @@ public class CarbonChatChannel implements TextChannel {
     return this.options().primaryGroupOnly();
   }
 
-  //  @Override
-  //  public boolean shouldCancelChatEvent() {
-  //    return this.options().shouldCancelChatEvent();
-  //  }
-
   @Override
   public @NonNull List<@NonNull Pattern> itemLinkPatterns() {
     return this.carbonChat.carbonSettings().itemLinkPatterns();
@@ -512,11 +476,6 @@ public class CarbonChatChannel implements TextChannel {
   @Override
   public @NonNull List<String> aliases() {
     return this.options().aliases();
-  }
-
-  @Override
-  public @Nullable Context context(final @NonNull String key) {
-    return this.options().context(key);
   }
 
   @Override
