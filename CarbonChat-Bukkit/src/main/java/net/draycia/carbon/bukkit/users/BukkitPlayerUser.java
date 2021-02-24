@@ -333,7 +333,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     final User user = this.luckPerms.getUserManager().getUser(this.uuid());
 
     if (user != null) {
-      return user.getInheritedGroups(QueryOptions.nonContextual());
+      return user.getInheritedGroups(user.getQueryOptions());
     } else {
       return Collections.emptyList();
     }
