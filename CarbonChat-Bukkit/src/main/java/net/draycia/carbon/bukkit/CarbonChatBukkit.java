@@ -33,7 +33,7 @@ import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.draycia.carbon.common.messaging.RedisMessageService;
-import net.draycia.carbon.common.listeners.contexts.FilterContext;
+import net.draycia.carbon.common.listeners.events.FilterHandler;
 import net.draycia.carbon.common.listeners.events.CapsHandler;
 import net.draycia.carbon.common.listeners.events.CustomPlaceholderHandler;
 import net.draycia.carbon.common.listeners.events.IgnoredPlayerHandler;
@@ -184,7 +184,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     // Setup listeners
     this.setupCommands();
     this.setupListeners();
-    this.registerContexts();
 
     // Setup PlaceholderAPI placeholders
     new CarbonPlaceholders(this).register();
@@ -210,6 +209,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     new CapsHandler();
     new CustomPlaceholderHandler();
+    new FilterHandler();
     new IgnoredPlayerHandler();
     new ItemLinkHandler();
     new LegacyFormatHandler();
@@ -292,10 +292,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @Override
   public @NonNull File dataDirectory() {
     return this.getDataFolder();
-  }
-
-  private void registerContexts() {
-    new FilterContext(this);
   }
 
   @Override

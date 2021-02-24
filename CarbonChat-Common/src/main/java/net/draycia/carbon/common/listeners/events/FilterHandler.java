@@ -1,42 +1,36 @@
-package net.draycia.carbon.common.listeners.contexts;
+package net.draycia.carbon.common.listeners.events;
 
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
 import net.kyori.event.PostOrders;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FilterContext {
-
-  private final @NonNull CarbonChat carbonChat;
+public class FilterHandler {
 
   @SuppressWarnings("method.invocation.invalid")
-  public FilterContext(final @NonNull CarbonChat carbonChat) {
-    this.carbonChat = carbonChat;
+  public FilterHandler() {
+    final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
       if (!carbonChat.moderationSettings().filters().enabled()) {
         return;
       }
 
-      if (event.user().hasPermission("carbonchat.filter.exempt")) {
-        return;
-      }
-
-      if (!this.channelUsesFilter(event.channel())) {
+      if (event.user().hasPermission("carbonchat.filter.exempt") ||
+        event.user().hasPermission("carbonchat.filter.exempt." + event.channel().key())) {
         return;
       }
 
       String message = event.message();
 
       for (final Map.Entry<String, List<Pattern>> entry :
-        this.carbonChat.moderationSettings().filters().replacements().entrySet()) {
+        carbonChat.moderationSettings().filters().replacements().entrySet()) {
 
         for (final Pattern pattern : entry.getValue()) {
           final Matcher matcher = pattern.matcher(message);
@@ -51,18 +45,13 @@ public class FilterContext {
 
       event.message(message);
 
-      for (final Pattern blockedWord : this.carbonChat.moderationSettings().filters().blockedPatterns()) {
+      for (final Pattern blockedWord : carbonChat.moderationSettings().filters().blockedPatterns()) {
         if (blockedWord.matcher(event.message()).find()) {
           event.cancelled(true);
           break;
         }
       }
     });
-  }
-
-  private boolean channelUsesFilter(final @NonNull ChatChannel chatChannel) {
-    // TODO: reimplement
-    return true;
   }
 
 }
