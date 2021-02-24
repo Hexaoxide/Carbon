@@ -21,6 +21,7 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
   @Setting
   private final @NonNull Map<@NonNull String, @NonNull CommandSettings> registry = new HashMap<>();
 
+  // Configurate stuff
   private static final ObjectMapper<CommandSettingsRegistry> MAPPER;
 
   static {
@@ -38,6 +39,7 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
   public void saveTo(final CommentedConfigurationNode node) throws SerializationException {
     MAPPER.save(this, node);
   }
+  // End Configurate stuff
 
   @Override
   public @NonNull CommandSettings register(final @NonNull String key, final @NonNull CommandSettings value) {
@@ -51,6 +53,9 @@ public class CommandSettingsRegistry implements Registry<String, CommandSettings
     return this.registry.get(key);
   }
 
+  /**
+   * @see #get(String)
+   */
   public @Nullable CommandSettings get(final @NonNull ChatChannel channel) {
     return this.get(channel.key());
   }

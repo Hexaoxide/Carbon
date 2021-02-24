@@ -19,14 +19,24 @@ public class CommandSettings {
   @Setting
   private @NonNull Set<@NonNull String> aliases = Collections.emptySet();
 
+  /**
+   * The command's aliases
+   */
   public @NonNull Set<@NonNull String> aliases() {
     return this.aliases;
   }
 
+  /**
+   * The command's name, also the command root
+   */
   public @NonNull String name() {
     return this.name;
   }
 
+  /**
+   * If the command is enabled
+   * Setting to false prevents registration of the command
+   */
   public boolean enabled() {
     return this.enabled;
   }
