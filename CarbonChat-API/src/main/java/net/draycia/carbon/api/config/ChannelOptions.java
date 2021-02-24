@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -57,10 +57,6 @@ public final class ChannelOptions {
   @Setting
   @Comment("If this channel syncs to other servers (cross-server chat), requires a messaging system setup")
   private Boolean crossServer;
-  
-  @Setting
-  @Comment("If this channel should respect the bukkit recipient list, you normally shouldn't touch this")
-  private Boolean honorsRecipientList;
   
   @Setting
   @Comment("If players with the permission carbonchat.group.groupname are considered to have the group groupname")
@@ -261,14 +257,6 @@ public final class ChannelOptions {
     }
 
     return this.crossServer;
-  }
-
-  public Boolean honorsRecipientList() {
-    if (this.honorsRecipientList == null) {
-      return this.defaultOptions().honorsRecipientList();
-    }
-
-    return this.honorsRecipientList;
   }
 
   public Boolean permissionGroupMatching() {

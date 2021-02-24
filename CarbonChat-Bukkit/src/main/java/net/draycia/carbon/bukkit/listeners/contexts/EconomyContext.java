@@ -4,7 +4,7 @@ import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import net.kyori.adventure.identity.Identity;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;

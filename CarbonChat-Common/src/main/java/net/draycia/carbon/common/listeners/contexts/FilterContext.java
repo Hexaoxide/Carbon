@@ -5,7 +5,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import net.kyori.event.PostOrders;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

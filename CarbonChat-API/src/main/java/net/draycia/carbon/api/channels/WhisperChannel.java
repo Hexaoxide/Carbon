@@ -6,11 +6,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface WhisperChannel extends ChatChannel, ForwardingAudience.Single {
 
+  /**
+   * The sender of messages in this channel
+   */
   @NonNull CarbonUser sender();
 
   /**
    * The recipient for this channel, where messages are sent to.
-   * @return The channel recipient.
    */
   @Override
   @NonNull CarbonUser audience();

@@ -5,7 +5,7 @@ import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
 import net.draycia.carbon.api.events.ChannelSwitchEvent;

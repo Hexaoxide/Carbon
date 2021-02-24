@@ -12,9 +12,8 @@ import net.draycia.carbon.api.events.ChatComponentEvent;
 import net.draycia.carbon.api.events.ChatFormatEvent;
 import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.PreChatFormatEvent;
-import net.draycia.carbon.api.events.ReceiverContextEvent;
 import net.draycia.carbon.api.users.CarbonUser;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -58,15 +57,6 @@ public class CarbonChatChannel implements TextChannel {
 
   public @NonNull CarbonChat carbonChat() {
     return this.carbonChat;
-  }
-
-  @Override
-  public boolean testContext(final @NonNull PlayerUser sender, final @NonNull PlayerUser target) {
-    final ReceiverContextEvent event = new ReceiverContextEvent(this, sender, target);
-
-    CarbonEvents.post(event);
-
-    return !event.cancelled();
   }
 
   @Override
@@ -437,11 +427,6 @@ public class CarbonChatChannel implements TextChannel {
   @Override
   public boolean crossServer() {
     return this.options().crossServer();
-  }
-
-  @Override
-  public boolean honorsRecipientList() {
-    return this.options().honorsRecipientList();
   }
 
   @Override

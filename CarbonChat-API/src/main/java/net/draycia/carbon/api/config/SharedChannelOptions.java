@@ -1,7 +1,7 @@
 package net.draycia.carbon.api.config;
 
 import com.google.common.collect.ImmutableMap;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Setting;

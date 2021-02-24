@@ -12,7 +12,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.ReceiverContextEvent;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;

@@ -1,6 +1,6 @@
 package net.draycia.carbon.api.channels;
 
-import net.draycia.carbon.api.DefaultedKeyValueRegistry;
+import net.draycia.carbon.api.misc.DefaultedKeyValueRegistry;
 import net.kyori.registry.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -71,6 +71,9 @@ public class ChannelRegistry implements Registry<String, ChatChannel>, Defaulted
     return this.registry.getOrDefault(key, this.defaultValue());
   }
 
+  /**
+   * Clears the registry and removes all keys/values
+   */
   public void clear() {
     this.registry.clear();
   }

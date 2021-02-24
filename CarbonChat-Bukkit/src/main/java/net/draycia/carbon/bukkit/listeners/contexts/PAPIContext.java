@@ -4,7 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.api.events.MessageContextEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.ReceiverContextEvent;
-import net.draycia.carbon.api.Context;
+import net.draycia.carbon.api.channels.Context;
 import net.kyori.event.PostOrders;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

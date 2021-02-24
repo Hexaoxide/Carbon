@@ -1,6 +1,5 @@
 package net.draycia.carbon.api.channels;
 
-import net.draycia.carbon.api.Context;
 import net.draycia.carbon.api.config.ChannelOptions;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;

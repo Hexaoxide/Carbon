@@ -8,6 +8,9 @@ import java.util.Collection;
 
 public interface GroupChannel extends ChatChannel, ForwardingAudience {
 
+  /**
+   * The owner of this group
+   */
   @NonNull CarbonUser owner();
 
   @Override

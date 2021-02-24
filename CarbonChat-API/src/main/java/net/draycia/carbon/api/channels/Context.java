@@ -1,4 +1,4 @@
-package net.draycia.carbon.api;
+package net.draycia.carbon.api.channels;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
