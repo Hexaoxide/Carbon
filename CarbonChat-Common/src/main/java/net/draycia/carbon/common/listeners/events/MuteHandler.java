@@ -14,7 +14,7 @@ public class MuteHandler {
     });
 
     CarbonEvents.register(PreChatFormatEvent.class, event -> {
-      if (event.user().muted()) {
+      if (event.sender().muted()) {
         event.cancelled(true);
       }
     });

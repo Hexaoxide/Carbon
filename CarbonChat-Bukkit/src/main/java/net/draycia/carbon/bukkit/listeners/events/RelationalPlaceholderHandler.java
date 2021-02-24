@@ -13,14 +13,14 @@ public class RelationalPlaceholderHandler {
 
   public RelationalPlaceholderHandler() {
     CarbonEvents.register(ChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      final CarbonUser targetUser = event.target();
+      final CarbonUser recipient = event.recipient();
 
-      if (!(targetUser instanceof PlayerUser)) {
+      if (!(recipient instanceof PlayerUser)) {
         return;
       }
 
       final Player sender = Bukkit.getPlayer(event.sender().uuid());
-      final Player target = Bukkit.getPlayer(((PlayerUser) targetUser).uuid());
+      final Player target = Bukkit.getPlayer(((PlayerUser) recipient).uuid());
 
       if (sender == null || target == null) {
         return;

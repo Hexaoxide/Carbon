@@ -13,13 +13,13 @@ public class ShadowMuteHandler {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(ChatComponentEvent.class, PostOrders.FIRST, false, event -> {
-      if (event.sender().shadowMuted() && event.sender().equals(event.target())) {
+      if (event.sender().shadowMuted() && event.sender().equals(event.recipient())) {
         event.cancelled(true);
       }
     });
 
     CarbonEvents.register(ChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      if (event.target() != null) {
+      if (event.recipient() != null) {
         return;
       }
 

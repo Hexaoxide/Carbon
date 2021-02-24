@@ -10,13 +10,13 @@ public class IgnoredPlayerHandler {
 
   public IgnoredPlayerHandler() {
     CarbonEvents.register(ChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      final CarbonUser target = event.target();
+      final CarbonUser recipient = event.recipient();
 
-      if (!(target instanceof PlayerUser)) {
+      if (!(recipient instanceof PlayerUser)) {
         return;
       }
 
-      if (((PlayerUser) target).ignoringUser(event.sender())) {
+      if (((PlayerUser) recipient).ignoringUser(event.sender())) {
         event.cancelled(true);
       }
     });

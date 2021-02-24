@@ -27,13 +27,13 @@ public class PingHandler {
         return;
       }
 
-      final CarbonUser target = event.target();
+      final CarbonUser recipient = event.recipient();
 
-      if (!(target instanceof PlayerUser)) {
+      if (!(recipient instanceof PlayerUser)) {
         return;
       }
 
-      final Component targetName = target.name();
+      final Component targetName = recipient.name();
       final String prefix = carbonChat.carbonSettings().channelPings().prefix();
       final boolean caseSensitive = carbonChat.carbonSettings().channelPings().caseSensitive();
       final String ping = prefix + targetName;
@@ -48,12 +48,12 @@ public class PingHandler {
         }
       }
 
-      final Sound sound = ((PlayerUser) target).pingOptions().pingSound();
+      final Sound sound = ((PlayerUser) recipient).pingOptions().pingSound();
 
       if (sound != null) {
-        target.playSound(sound);
+        recipient.playSound(sound);
       } else {
-        target.playSound(carbonChat.carbonSettings().channelPings().sound());
+        recipient.playSound(carbonChat.carbonSettings().channelPings().sound());
       }
     });
 
@@ -62,13 +62,13 @@ public class PingHandler {
         return;
       }
 
-      final CarbonUser target = event.target();
+      final CarbonUser recipient = event.recipient();
 
-      if (!(target instanceof PlayerUser)) {
+      if (!(recipient instanceof PlayerUser)) {
         return;
       }
 
-      final Component targetName = target.name();
+      final Component targetName = recipient.name();
       final String prefix = carbonChat.carbonSettings().channelPings().prefix();
       final boolean caseSensitive = carbonChat.carbonSettings().channelPings().caseSensitive();
       final String ping = prefix + targetName;

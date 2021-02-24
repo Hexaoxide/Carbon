@@ -54,21 +54,21 @@ public interface ChatChannel extends Audience {
   boolean canPlayerUse(@NonNull PlayerUser user);
 
   /**
-   * Checks if the target can see messages from the sender in this channel
+   * Checks if the recipient can see messages from the sender in this channel
    * @param sender The sender
-   * @param target The target
-   * @param checkSpying Returns true if the target has spying enabled for the message
-   * @return If the target can see messages from the sender in this channel
+   * @param recipient The recipient
+   * @param checkSpying Returns true if the recipient has spying enabled for the message
+   * @return If the recipient can see messages from the sender in this channel
    */
-  boolean canPlayerSee(@NonNull PlayerUser sender, @NonNull PlayerUser target, boolean checkSpying);
+  boolean canPlayerSee(@NonNull PlayerUser sender, @NonNull PlayerUser recipient, boolean checkSpying);
 
   /**
-   * Checks if the target can see messages in this channel
-   * @param target The target
-   * @param checkSpying Returns true if the target has spying enabled for the message
-   * @return If the target can see messages in this channel
+   * Checks if the recipient can see messages in this channel
+   * @param recipient The recipient
+   * @param checkSpying Returns true if the recipient has spying enabled for the message
+   * @return If the recipient can see messages in this channel
    */
-  boolean canPlayerSee(@NonNull PlayerUser target, boolean checkSpying);
+  boolean canPlayerSee(@NonNull PlayerUser recipient, boolean checkSpying);
 
   /**
    * Sends each player their respective component, with the given identity.

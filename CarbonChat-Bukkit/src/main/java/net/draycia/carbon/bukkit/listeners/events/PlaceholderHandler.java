@@ -10,7 +10,7 @@ public class PlaceholderHandler {
 
   public PlaceholderHandler() {
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      event.format(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(event.user().uuid()), event.format()));
+      event.format(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(event.sender().uuid()), event.format()));
     });
   }
 

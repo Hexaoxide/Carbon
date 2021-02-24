@@ -9,20 +9,20 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class PrivateMessageEvent implements CarbonEvent, Cancellable {
 
   private final @NonNull PlayerUser sender;
-  private final @NonNull PlayerUser target;
+  private final @NonNull PlayerUser recipient;
   private final @NonNull Component senderComponent;
-  private final @NonNull Component targetComponent;
+  private final @NonNull Component recipientComponent;
   private final @NonNull String message;
   private boolean cancelled = false;
 
-  public PrivateMessageEvent(final @NonNull PlayerUser sender, final @NonNull PlayerUser target,
-                             final @NonNull Component senderComponent, final @NonNull Component targetComponent,
+  public PrivateMessageEvent(final @NonNull PlayerUser sender, final @NonNull PlayerUser recipient,
+                             final @NonNull Component senderComponent, final @NonNull Component recipientComponent,
                              final @NonNull String message) {
 
     this.sender = sender;
-    this.target = target;
+    this.recipient = recipient;
     this.senderComponent = senderComponent;
-    this.targetComponent = targetComponent;
+    this.recipientComponent = recipientComponent;
     this.message = message;
   }
 
@@ -40,16 +40,16 @@ public class PrivateMessageEvent implements CarbonEvent, Cancellable {
     return this.sender;
   }
 
-  public @NonNull PlayerUser target() {
-    return this.target;
+  public @NonNull PlayerUser recipient() {
+    return this.recipient;
   }
 
   public @NonNull Component senderComponent() {
     return this.senderComponent;
   }
 
-  public @NonNull Component targetComponent() {
-    return this.targetComponent;
+  public @NonNull Component recipientComponent() {
+    return this.recipientComponent;
   }
 
   public @NonNull String message() {

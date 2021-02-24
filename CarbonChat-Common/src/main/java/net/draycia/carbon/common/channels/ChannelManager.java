@@ -11,7 +11,6 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class ChannelManager {
@@ -56,7 +55,7 @@ public class ChannelManager {
       }
     }
 
-    CarbonEvents.post(new ChannelRegisterEvent(Collections.singletonList(channel), this.registry()));
+    CarbonEvents.post(new ChannelRegisterEvent(channel, this.registry()));
   }
 
   public @NonNull ChannelRegistry registry() {

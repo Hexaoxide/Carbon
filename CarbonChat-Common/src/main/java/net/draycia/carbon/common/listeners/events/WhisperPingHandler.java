@@ -13,7 +13,7 @@ public class WhisperPingHandler {
     final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     CarbonEvents.register(PrivateMessageEvent.class, PostOrders.LAST, false, event -> {
-      if (event.sender().uuid().equals(event.target().uuid())) {
+      if (event.sender().uuid().equals(event.recipient().uuid())) {
         return;
       }
 
@@ -22,12 +22,12 @@ public class WhisperPingHandler {
       }
 
       if (carbonChat.carbonSettings().whisperOptions().pings().enabled()) {
-        final Sound sound = event.target().pingOptions().whisperSound();
+        final Sound sound = event.recipient().pingOptions().whisperSound();
 
         if (sound != null) {
-          event.target().playSound(sound);
+          event.recipient().playSound(sound);
         } else {
-          event.target().playSound(carbonChat.carbonSettings().whisperOptions().pings().sound());
+          event.recipient().playSound(carbonChat.carbonSettings().whisperOptions().pings().sound());
         }
       }
     });

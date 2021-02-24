@@ -22,8 +22,8 @@ public class FilterHandler {
         return;
       }
 
-      if (event.user().hasPermission("carbonchat.filter.exempt") ||
-        event.user().hasPermission("carbonchat.filter.exempt." + event.channel().key())) {
+      if (event.sender().hasPermission("carbonchat.filter.exempt") ||
+        event.sender().hasPermission("carbonchat.filter.exempt." + event.channel().key())) {
         return;
       }
 

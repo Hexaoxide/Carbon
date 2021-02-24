@@ -10,8 +10,8 @@ public class UserFormattingHandler {
   @SuppressWarnings("method.invocation.invalid")
   public UserFormattingHandler() {
     CarbonEvents.register(PreChatFormatEvent.class, PostOrders.FIRST, false, event -> {
-      if (!event.user().hasPermission("carbonchat.formatting") &&
-        !event.user().hasPermission("carbonchat.channels." + event.channel().key() + ".formatting")) {
+      if (!event.sender().hasPermission("carbonchat.formatting") &&
+        !event.sender().hasPermission("carbonchat.channels." + event.channel().key() + ".formatting")) {
         this.suppressFormatting(event);
       }
       // TODO: convert ALL color code formats

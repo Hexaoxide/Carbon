@@ -13,17 +13,17 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
 
   private boolean isCancelled = false;
   private final @NonNull PlayerUser sender;
-  private final @Nullable CarbonUser target;
+  private final @Nullable CarbonUser recipient;
   private @NonNull ChatChannel chatChannel;
   private @NonNull TextComponent component;
   private final @NonNull String originalMessage;
 
-  public ChatComponentEvent(final @NonNull PlayerUser sender, final @Nullable CarbonUser target,
+  public ChatComponentEvent(final @NonNull PlayerUser sender, final @Nullable CarbonUser recipient,
                             final @NonNull ChatChannel chatChannel, final @NonNull TextComponent component,
                             final @NonNull String originalMessage) {
 
     this.sender = sender;
-    this.target = target;
+    this.recipient = recipient;
     this.chatChannel = chatChannel;
     this.component = component;
     this.originalMessage = originalMessage;
@@ -43,8 +43,8 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     return this.sender;
   }
 
-  public @Nullable CarbonUser target() {
-    return this.target;
+  public @Nullable CarbonUser recipient() {
+    return this.recipient;
   }
 
   public @NonNull ChatChannel channel() {

@@ -5,15 +5,13 @@ import net.draycia.carbon.api.events.misc.CarbonEvent;
 import net.kyori.registry.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.List;
-
 public class ChannelRegisterEvent implements CarbonEvent {
 
-  private final @NonNull List<@NonNull ChatChannel> registeredChannels;
+  private final @NonNull ChatChannel channel;
   private final @NonNull Registry<String, ChatChannel> registry;
 
-  public ChannelRegisterEvent(final @NonNull List<@NonNull ChatChannel> registeredChannels, final @NonNull Registry<String, ChatChannel> registry) {
-    this.registeredChannels = registeredChannels;
+  public ChannelRegisterEvent(final @NonNull ChatChannel channel, final @NonNull Registry<String, ChatChannel> registry) {
+    this.channel = channel;
     this.registry = registry;
   }
 
@@ -21,8 +19,8 @@ public class ChannelRegisterEvent implements CarbonEvent {
     this.registry.register(chatChannel.key(), chatChannel);
   }
 
-  public @NonNull List<@NonNull ChatChannel> registeredChannels() {
-    return this.registeredChannels;
+  public @NonNull ChatChannel channel() {
+    return this.channel;
   }
 
 }

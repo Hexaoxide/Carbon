@@ -150,10 +150,10 @@ public class CarbonChatChannel implements TextChannel {
 
       CarbonEvents.post(newEvent);
 
-      final CarbonUser targetUser = newEvent.target();
+      final CarbonUser recipient = newEvent.recipient();
 
-      if (targetUser != null) {
-        users.put(targetUser, newEvent.component());
+      if (recipient != null) {
+        users.put(recipient, newEvent.component());
       }
     }
 
