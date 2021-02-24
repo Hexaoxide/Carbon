@@ -5,10 +5,9 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class UserEvent implements CarbonEvent, Cancellable {
+public class UserEvent extends Cancellable.Impl implements CarbonEvent {
 
   private final @NonNull PlayerUser user;
-  private boolean cancelled = false;
 
   public UserEvent(final @NonNull PlayerUser user) {
     this.user = user;
@@ -16,16 +15,6 @@ public class UserEvent implements CarbonEvent, Cancellable {
 
   public @NonNull PlayerUser user() {
     return this.user;
-  }
-
-  @Override
-  public boolean cancelled() {
-    return this.cancelled;
-  }
-
-  @Override
-  public void cancelled(final boolean cancelled) {
-    this.cancelled = cancelled;
   }
 
   public static class Join extends UserEvent {

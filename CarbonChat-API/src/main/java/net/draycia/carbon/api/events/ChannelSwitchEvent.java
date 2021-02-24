@@ -6,12 +6,11 @@ import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class ChannelSwitchEvent implements CarbonEvent, Cancellable {
+public class ChannelSwitchEvent extends Cancellable.Impl implements CarbonEvent {
 
   private final @NonNull ChatChannel channel;
   private final @NonNull PlayerUser user;
   private @NonNull String failureMessage;
-  private boolean cancelled = false;
 
   public ChannelSwitchEvent(final @NonNull ChatChannel channel, final @NonNull PlayerUser user, final @NonNull String failureMessage) {
     this.channel = channel;
@@ -33,16 +32,6 @@ public class ChannelSwitchEvent implements CarbonEvent, Cancellable {
 
   public void failureMessage(final @NonNull String failureMessage) {
     this.failureMessage = failureMessage;
-  }
-
-  @Override
-  public boolean cancelled() {
-    return this.cancelled;
-  }
-
-  @Override
-  public void cancelled(final boolean cancelled) {
-    this.cancelled = cancelled;
   }
 
 }

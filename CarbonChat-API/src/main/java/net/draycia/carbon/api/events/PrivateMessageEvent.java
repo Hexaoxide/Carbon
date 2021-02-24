@@ -6,14 +6,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class PrivateMessageEvent implements CarbonEvent, Cancellable {
+public class PrivateMessageEvent extends Cancellable.Impl implements CarbonEvent {
 
   private final @NonNull PlayerUser sender;
   private final @NonNull PlayerUser recipient;
   private final @NonNull Component senderComponent;
   private final @NonNull Component recipientComponent;
   private final @NonNull String message;
-  private boolean cancelled = false;
 
   public PrivateMessageEvent(final @NonNull PlayerUser sender, final @NonNull PlayerUser recipient,
                              final @NonNull Component senderComponent, final @NonNull Component recipientComponent,
@@ -24,16 +23,6 @@ public class PrivateMessageEvent implements CarbonEvent, Cancellable {
     this.senderComponent = senderComponent;
     this.recipientComponent = recipientComponent;
     this.message = message;
-  }
-
-  @Override
-  public boolean cancelled() {
-    return this.cancelled;
-  }
-
-  @Override
-  public void cancelled(final boolean cancelled) {
-    this.cancelled = cancelled;
   }
 
   public @NonNull PlayerUser sender() {

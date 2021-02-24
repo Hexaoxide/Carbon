@@ -9,9 +9,8 @@ import net.kyori.event.Cancellable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class ChatComponentEvent implements CarbonEvent, Cancellable {
+public class ChatComponentEvent extends Cancellable.Impl implements CarbonEvent {
 
-  private boolean isCancelled = false;
   private final @NonNull PlayerUser sender;
   private final @Nullable CarbonUser recipient;
   private @NonNull ChatChannel chatChannel;
@@ -27,16 +26,6 @@ public class ChatComponentEvent implements CarbonEvent, Cancellable {
     this.chatChannel = chatChannel;
     this.component = component;
     this.originalMessage = originalMessage;
-  }
-
-  @Override
-  public boolean cancelled() {
-    return this.isCancelled;
-  }
-
-  @Override
-  public void cancelled(final boolean cancelled) {
-    this.isCancelled = cancelled;
   }
 
   public @NonNull PlayerUser sender() {
