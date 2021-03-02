@@ -25,22 +25,22 @@ public interface ChatChannel extends Audience {
   @NonNull TextColor channelColor(@NonNull CarbonUser user);
 
   /**
-   * Creates a map of User -> Component from a sender and message, where each component is sent to the corresponding user
+   * Creates a map of User -&gt; Component from a sender and message, where each component is sent to the corresponding user
    * @param sender The message sender
    * @param message The message the sender sent
    * @param fromRemote If the message originates from a different server
-   * @return The user -> component map
+   * @return The user -&gt; component map
    */
   @NonNull
   Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser sender, @NonNull String message, boolean fromRemote);
 
   /**
-   * Creates a map of User -> Component from a sender and message, where each component is sent to the corresponding user
+   * Creates a map of User -&gt; Component from a sender and message, where each component is sent to the corresponding user
    * @param sender The message sender
    * @param recipients The players that'll receive the message
    * @param message The message the sender sent
    * @param fromRemote If the message originates from a different server
-   * @return The user -> component map
+   * @return The user -&gt; component map
    */
   @NonNull
   Map<CarbonUser, Component> parseMessage(@NonNull PlayerUser sender, @NonNull Collection<@NonNull PlayerUser> recipients,
