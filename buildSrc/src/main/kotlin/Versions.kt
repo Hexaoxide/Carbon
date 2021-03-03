@@ -8,7 +8,7 @@ object Versions {
   const val GRGIT = "4.1.0"
 
   // Global
-  const val CHECKER_QUAL = "3.7.0"
+  const val CHECKER_QUAL = "3.11.0"
   const val GUAVA = "26.0-jre"
   const val SLF4J = "1.7.25"
   const val STYLECHECK = "0.1"
