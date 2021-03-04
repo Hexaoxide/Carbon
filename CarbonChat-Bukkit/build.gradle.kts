@@ -74,7 +74,7 @@ tasks {
     archiveFileName.set(project.description + "-" + Versions.CARBON_BASE + ".jar")
     destinationDirectory.set(rootProject.getBuildDir())
     relocate("org.yaml", "net.draycia.carbon.libs.org.yaml")
-    relocate("net.kyori", "net.draycia.carbon.libs.kyori")
+    relocate("net.kyori.adventure.text.minimessage", "net.draycia.carbon.libs.minimessage")
     relocate("org.spongepowered.configurate", "net.draycia.carbon.libs.configurate")
     relocate("org.checkerframework", "net.draycia.carbon.libs.checkerframework")
     relocate("org.reactivestreams", "net.draycia.carbon.libs.reactivestreams")
