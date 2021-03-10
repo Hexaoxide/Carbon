@@ -1,4 +1,4 @@
-package net.draycia.carbon.common.listeners.events;
+package net.draycia.carbon.common.listeners;
 
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.events.PrivateMessageEvent;
