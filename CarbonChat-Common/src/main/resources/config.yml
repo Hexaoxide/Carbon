@@ -19,7 +19,7 @@ channel-pings:
   sound:
     name: minecraft:entity.experience_orb.pickup
     pitch: 1
-    source: PLAYER
+    source: player
     volume: 10
 	
 # Options: MOJANG, MINIMESSAGE_MARKDOWN, MINIMESSAGE, MINEDOWN
@@ -76,7 +76,7 @@ whisper-options:
     sound:
       name: minecraft:entity.experience_orb.pickup
       pitch: 1
-      source: PLAYER
+      source: player
       volume: 10
   receiver-format: "<gold>[<white><sender> <gray>-> <white>Me<gold>] <message>"
   receiver-toggled-off: "<red><receiver> <red>has whispers toggled off!"
