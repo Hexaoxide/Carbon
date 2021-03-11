@@ -1,4 +1,4 @@
-package net.draycia.carbon.common.listeners.events;
+package net.draycia.carbon.common.listeners;
 
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -6,6 +6,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.UserEvent;
 import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.users.PlayerUser;
+import net.kyori.adventure.text.Component;
 
 public class PlayerJoinListener {
 
@@ -17,7 +18,11 @@ public class PlayerJoinListener {
 
       carbonChat.userService().validate(user);
 
-      user.nickname(user.nickname());
+      final Component nickname = user.nickname();
+
+      if (nickname != null) {
+        user.nickname(nickname);
+      }
 
       final String channel = carbonChat.carbonSettings().channelOnJoin();
 

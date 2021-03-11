@@ -124,7 +124,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public @NonNull Component nickname() {
+  public @Nullable Component nickname() {
     if (this.nickname != null) {
       return this.nickname;
     }
@@ -458,10 +458,10 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
     final String fromPlayerFormat = this.carbonChat.carbonSettings().whisperOptions().receiverFormat();
 
     final OfflinePlayer offlineSender = Bukkit.getOfflinePlayer(sender.uuid());
-    final Component senderName = sender.nickname();
+    final Component senderName = sender.nicknameOrName();
 
     final OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(this.uuid());
-    final Component targetName = this.nickname();
+    final Component targetName = this.nicknameOrName();
 
     final Component toPlayerComponent = this.carbonChat.messageProcessor().processMessage(toPlayerFormat,
       Template.of("message", message), Template.of("target", targetName),

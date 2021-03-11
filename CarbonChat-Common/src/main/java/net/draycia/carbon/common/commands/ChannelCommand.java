@@ -6,7 +6,7 @@ import cloud.commandframework.context.CommandContext;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.TextChannel;
-import net.draycia.carbon.api.commands.settings.CommandSettings;
+import net.draycia.carbon.api.commands.CommandSettings;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;

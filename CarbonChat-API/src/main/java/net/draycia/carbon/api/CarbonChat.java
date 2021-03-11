@@ -4,7 +4,7 @@ import cloud.commandframework.CommandManager;
 import net.draycia.carbon.api.config.CarbonTranslations;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.commands.settings.CommandSettingsRegistry;
+import net.draycia.carbon.api.commands.CommandSettingsRegistry;
 import net.draycia.carbon.api.config.CarbonSettings;
 import net.draycia.carbon.api.config.ChannelSettings;
 import net.draycia.carbon.api.config.ModerationSettings;

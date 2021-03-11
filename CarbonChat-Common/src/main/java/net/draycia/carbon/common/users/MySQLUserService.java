@@ -19,6 +19,7 @@ import net.draycia.carbon.api.users.UserService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -299,7 +300,15 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
       }
 
       // TODO: what happens when the saved nickname isn't json?
-      final String nickname = this.carbonChat.gsonSerializer().serialize(user.nickname());
+      final Component nicknameComponent = user.nickname();
+
+      final String nickname;
+
+      if (nicknameComponent != null) {
+        nickname = this.carbonChat.gsonSerializer().serialize(nicknameComponent);
+      } else {
+        nickname = null;
+      }
 
       this.carbonChat.logger().info("Saving user data!");
       stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname, customchatcolor, whisperpingkey, whisperpingvolume " +

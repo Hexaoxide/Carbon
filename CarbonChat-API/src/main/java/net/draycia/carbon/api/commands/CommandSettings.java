@@ -1,4 +1,4 @@
-package net.draycia.carbon.api.commands.settings;
+package net.draycia.carbon.api.commands;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;

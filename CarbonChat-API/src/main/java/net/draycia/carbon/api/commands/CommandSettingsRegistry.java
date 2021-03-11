@@ -1,4 +1,4 @@
-package net.draycia.carbon.api.commands.settings;
+package net.draycia.carbon.api.commands;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.registry.Registry;

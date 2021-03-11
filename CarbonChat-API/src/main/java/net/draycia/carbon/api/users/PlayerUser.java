@@ -18,7 +18,17 @@ public interface PlayerUser extends CarbonUser {
 
   boolean online();
 
-  @NonNull Component nickname();
+  default @NonNull Component nicknameOrName() {
+    final Component nickname = this.nickname();
+
+    if (nickname == null) {
+      return this.name();
+    }
+
+    return nickname;
+  }
+
+  @Nullable Component nickname();
 
   default void nickname(final @Nullable Component nickname) {
     this.nickname(nickname, false);

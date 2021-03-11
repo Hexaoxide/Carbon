@@ -1,4 +1,4 @@
-package net.draycia.carbon.bukkit.listeners.events;
+package net.draycia.carbon.bukkit.listeners;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;

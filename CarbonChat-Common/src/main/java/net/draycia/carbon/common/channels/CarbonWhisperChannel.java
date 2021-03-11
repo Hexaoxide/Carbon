@@ -105,8 +105,8 @@ public class CarbonWhisperChannel implements WhisperChannel {
     }
 
     // Display names
-    final Component senderName = this.sender.nickname();
-    final Component receiverName = this.audience.nickname();
+    final Component senderName = this.sender.nicknameOrName();
+    final Component receiverName = this.audience.nicknameOrName();
 
     // Components
     final TextComponent senderComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(

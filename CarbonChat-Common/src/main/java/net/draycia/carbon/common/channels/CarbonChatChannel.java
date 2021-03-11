@@ -130,7 +130,7 @@ public class CarbonChatChannel implements TextChannel {
       }
 
       TextComponent formatComponent = (TextComponent) this.carbonChat.messageProcessor().processMessage(formatEvent.format(),
-        Template.of("nickname", user.nickname()),
+        Template.of("nickname", user.nicknameOrName()),
         Template.of("displayname", user.displayName()),
         Template.of("username", user.name()),
         Template.of("color", "<" + chosenColor.asHexString() + ">"),
@@ -167,7 +167,7 @@ public class CarbonChatChannel implements TextChannel {
     final TextColor channelColor = this.channelColor(user);
 
     final TextComponent consoleFormat = (TextComponent) this.carbonChat.messageProcessor().processMessage(consoleFormatEvent.format(),
-      Template.of("nickname", user.nickname()),
+      Template.of("nickname", user.nicknameOrName()),
       Template.of("displayname", user.displayName()),
       Template.of("username", user.name()),
       Template.of("color", "<" + channelColor.asHexString() + ">"),
