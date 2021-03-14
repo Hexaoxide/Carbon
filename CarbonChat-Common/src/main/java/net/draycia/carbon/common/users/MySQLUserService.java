@@ -299,10 +299,38 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
       }
 
       this.carbonChat.logger().info("Saving user data!");
-      stm.executeUpdateQuery("INSERT INTO sc_users (uuid, channel, muted, shadowmuted, spyingwhispers, nickname, customchatcolor, whisperpingkey, whisperpingvolume " +
-          "whisperpingpitch, channelpingkey, channelpingvolume, channelpingpitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-          "ON DUPLICATE KEY UPDATE channel = ?, muted = ?, shadowmuted = ?, spyingwhispers = ?, nickname = ?, customchatcolor = ?, whisperpingkey = ?, whisperpingvolume = ?, " +
-          "whisperpingpitch = ?, channelpingkey = ?, channelpingvolume = ?, channelpingpitch = ?",
+      // TODO: Store in a nice format in a file, and load in?
+      stm.executeUpdateQuery("INSERT INTO" +
+          "  sc_users (" +
+          "    uuid," +
+          "    channel," +
+          "    muted," +
+          "    shadowmuted," +
+          "    spyingwhispers," +
+          "    nickname," +
+          "    customchatcolor," +
+          "    whisperpingkey," +
+          "    whisperpingvolume," +
+          "    whisperpingpitch," +
+          "    channelpingkey," +
+          "    channelpingvolume," +
+          "    channelpingpitch" +
+          "  )" +
+          "VALUES" +
+          "  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY" +
+          "UPDATE" +
+          "  channel = ?," +
+          "  muted = ?," +
+          "  shadowmuted = ?," +
+          "  spyingwhispers = ?," +
+          "  nickname = ?," +
+          "  customchatcolor = ?," +
+          "  whisperpingkey = ?," +
+          "  whisperpingvolume = ?," +
+          "  whisperpingpitch = ?," +
+          "  channelpingkey = ?," +
+          "  channelpingvolume = ?," +
+          "  channelpingpitch = ?",
         user.uuid().toString(),
         selectedName, user.muted(), user.shadowMuted(), user.spyingWhispers(), user.nickname(), user.customChatColor(),
         whisperName, whisperVolume, whisperPitch, channelName, channelVolume, channelPitch,
@@ -336,7 +364,6 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
         stm.executeUpdateQuery("INSERT INTO sc_ignored_users (uuid, user) VALUES (?, ?)",
           user.uuid().toString(), entry.toString());
       }
-
       return true;
     });
   }
