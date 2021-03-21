@@ -317,7 +317,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
           "    channelpingpitch" +
           "  )" +
           "VALUES" +
-          "  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY" +
+          "  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY " +
           "UPDATE" +
           "  channel = ?," +
           "  muted = ?," +
