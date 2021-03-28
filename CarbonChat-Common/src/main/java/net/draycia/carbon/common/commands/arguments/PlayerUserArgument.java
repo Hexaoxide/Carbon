@@ -35,10 +35,10 @@ public final class PlayerUserArgument<C extends CarbonUser> extends CommandArgum
                                                             final @NonNull Queue<String> inputs) {
     final String input = inputs.poll();
 
-    final String playerNotFound = CarbonChatProvider.carbonChat().translations().exceptionMessages()
-      .playerNotFound();
-
     if (input == null) {
+      final String playerNotFound = CarbonChatProvider.carbonChat().translations().exceptionMessages()
+        .playerNotFound();
+
       return ArgumentParseResult.failure(new IllegalArgumentException(playerNotFound));
     }
 

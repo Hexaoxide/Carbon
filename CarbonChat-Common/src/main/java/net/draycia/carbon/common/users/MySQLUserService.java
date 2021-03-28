@@ -171,6 +171,7 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
     return this.nameSupplier.get();
   }
 
+  @SuppressWarnings("NoLvTypeAnnotations")
   private @Nullable T loadUser(final @NonNull UUID uuid) {
     final T user = this.userFactory.apply(uuid);
 

@@ -1,9 +1,7 @@
-package net.draycia.carbon.bukkit.listeners.events;
+package net.draycia.carbon.bukkit.listeners;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.channels.TextChannel;
-import net.draycia.carbon.api.events.UserEvent;
-import net.draycia.carbon.api.events.misc.CarbonEvents;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.ConsoleUser;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
@@ -15,17 +13,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
 
-public class BukkitChatListener implements Listener {
+public class BukkitChatHandler implements Listener {
 
   private final @NonNull CarbonChatBukkit carbonChat;
 
-  public BukkitChatListener(final @NonNull CarbonChatBukkit carbonChat) {
+  public BukkitChatHandler(final @NonNull CarbonChatBukkit carbonChat) {
     this.carbonChat = carbonChat;
   }
 
@@ -100,24 +96,6 @@ public class BukkitChatListener implements Listener {
         //        }
       });
     }
-  }
-
-  @EventHandler
-  public void onPlayerJoin(final PlayerJoinEvent event) {
-    this.carbonChat.userService().wrapLater(event.getPlayer().getUniqueId()).thenAcceptAsync(user -> {
-      final UserEvent.Join joinEvent = new UserEvent.Join(user);
-
-      CarbonEvents.post(joinEvent);
-    });
-  }
-
-  @EventHandler
-  public void onPlayerLeave(final PlayerQuitEvent event) {
-    this.carbonChat.userService().wrapLater(event.getPlayer().getUniqueId()).thenAcceptAsync(user -> {
-      final UserEvent.Leave leaveEvent = new UserEvent.Leave(user);
-
-      CarbonEvents.post(leaveEvent);
-    });
   }
 
 }
