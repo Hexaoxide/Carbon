@@ -29,13 +29,6 @@ dependencies {
   implementation 'org.slf4j:slf4j-jdk14:1.7.28'
 
   // Plugins
-  compileOnly("com.gmail.nossr50.mcMMO:mcMMO:${vers['mcmmo']}") {
-    exclude group: 'org.jetbrains', module: 'annotations'
-  }
-  compileOnly "com.github.TownyAdvanced:Towny:${vers['towny']}"
-  compileOnly("com.sk89q.worldguard:worldguard-bukkit:${vers['worldguard']}") {
-    exclude group: 'org.spigotmc', module: 'spigot-api' // Honestly?
-  }
   compileOnly "me.clip:placeholderapi:${vers['placeholder-api']}"
   compileOnly "net.luckperms:api:${vers['luckperms-api']}"
   compileOnly "com.github.MilkBowl:VaultAPI:${vers['vault']}"
@@ -48,8 +41,7 @@ bukkit {
   main = 'net.draycia.carbon.bukkit.CarbonChatBukkit'
   apiVersion = '1.13'
   author = 'Draycia'
-  depend = ['PlaceholderAPI', 'Vault']
-  softDepend = ['LuckPerms', 'Towny', 'mcMMO', 'WorldGuard']
+  depend = ['PlaceholderAPI', 'Vault', 'LuckPerms']
   loadBefore = ["Essentials"]
   permissions {
     'carbonchat.channels.global.see' {
@@ -97,7 +89,6 @@ shadowJar {
   relocate("com.zaxxer.hikari", "net.draycia.carbon.libs.hikari")
   relocate("com.typesafe.config", "net.draycia.carbon.libs.typesafe.config")
   relocate("com.google.common", "net.draycia.carbon.libs.google.common")
-  relocate("de.themoep.minedown", "net.draycia.carbon.libs.minedown")
   relocate("reactor", "net.draycia.carbon.libs.reactor")
   relocate("javax.annotation", "net.draycia.carbon.libs.javax.annotation")
 }
