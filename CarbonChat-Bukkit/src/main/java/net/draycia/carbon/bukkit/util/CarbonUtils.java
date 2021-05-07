@@ -21,7 +21,6 @@
 package net.draycia.carbon.bukkit.util;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -34,32 +33,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class CarbonUtils {
-
-  private static final @NonNull String @NonNull [] colors;
 
   private CarbonUtils() {
 
   }
 
-  static {
-    final List<String> colorList = new ArrayList<>();
-
-    for (final NamedTextColor color : NamedTextColor.NAMES.values()) {
-      colorList.add(color.toString());
-    }
-
-    colors = colorList.toArray(new String[0]);
-  }
-
   public static @NonNull Component createComponent(final @NonNull Player player) {
-    if (!FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
-      return net.kyori.adventure.text.Component.empty();
-    }
-
     final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
     if (itemStack.getType().isAir()) {

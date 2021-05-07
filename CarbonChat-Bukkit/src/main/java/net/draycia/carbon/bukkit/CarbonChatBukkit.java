@@ -11,7 +11,6 @@ import net.draycia.carbon.bukkit.users.BukkitConsoleUser;
 import net.draycia.carbon.bukkit.users.BukkitPlayerUser;
 import net.draycia.carbon.bukkit.util.BungeeChannelApi;
 import net.draycia.carbon.bukkit.util.CarbonPlaceholders;
-import net.draycia.carbon.bukkit.util.FunctionalityConstants;
 import net.draycia.carbon.bukkit.util.Metrics;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -32,13 +31,6 @@ import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.messaging.EmptyMessageService;
 import net.draycia.carbon.api.config.SQLCredentials;
 import net.draycia.carbon.common.messaging.RedisMessageService;
-import net.draycia.carbon.bukkit.listeners.contexts.DistanceContext;
-import net.draycia.carbon.bukkit.listeners.contexts.EconomyContext;
-import net.draycia.carbon.common.listeners.contexts.FilterContext;
-import net.draycia.carbon.bukkit.listeners.contexts.PAPIContext;
-import net.draycia.carbon.bukkit.listeners.contexts.TownyContext;
-import net.draycia.carbon.bukkit.listeners.contexts.WorldGuardContext;
-import net.draycia.carbon.bukkit.listeners.contexts.mcMMOContext;
 import net.draycia.carbon.common.listeners.events.CapsHandler;
 import net.draycia.carbon.common.listeners.events.CustomPlaceholderHandler;
 import net.draycia.carbon.common.listeners.events.IgnoredPlayerHandler;
@@ -62,7 +54,6 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -196,15 +187,9 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     // Setup listeners
     this.setupCommands();
     this.setupListeners();
-    this.registerContexts();
 
     // Setup PlaceholderAPI placeholders
     new CarbonPlaceholders(this).register();
-
-    // Log missing functionality
-    if (this.carbonSettings().showTips() && !FunctionalityConstants.HAS_HOVER_EVENT_METHOD) {
-      this.logger().error("Item linking disabled! Please use Paper 1.16.2 #172 or newer.");
-    }
 
     this.logger().info("CarbonChat startup finished! Enjoy :)");
   }
@@ -302,28 +287,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @Override
   public File dataDirectory() {
     return this.getDataFolder();
-  }
-
-  private void registerContexts() {
-    if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
-      this.getServer().getPluginManager().registerEvents(new TownyContext(this), this);
-    }
-
-    if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
-      this.getServer().getPluginManager().registerEvents(new mcMMOContext(this), this);
-    }
-
-    if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-      new WorldGuardContext();
-    }
-
-    if (Bukkit.getServicesManager().isProvidedFor(Economy.class)) {
-      new EconomyContext(this);
-    }
-
-    new DistanceContext();
-    new FilterContext(this);
-    new PAPIContext();
   }
 
   @Override
