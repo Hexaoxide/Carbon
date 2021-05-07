@@ -189,18 +189,18 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
 
       final ChatChannel channel = this.carbonChat.channelRegistry().getOrDefault(users.get("channel"));
 
-      user.selectedChannel(channel, true);
+      user.selectedChannel(channel);
 
       final String nickname = users.get("nickname");
 
       if (nickname != null) {
-        user.nickname(nickname, true);
+        user.nickname(nickname);
       }
 
-      user.muted(users.get("muted"), true);
-      user.shadowMuted(users.get("shadowmuted"), true);
-      user.spyingWhispers(users.get("spyingwhispers"), true);
-      user.customChatColor(users.get("customchatcolor"), true);
+      user.muted(users.get("muted"));
+      user.shadowMuted(users.get("shadowmuted"));
+      user.spyingWhispers(users.get("spyingwhispers"));
+      user.customChatColor(users.get("customchatcolor"));
 
       final String whisperPingKey = users.get("whisperpingkey");
       final Float whisperPingVolume = users.get("whisperpingvolume");
@@ -234,19 +234,19 @@ public class MySQLUserService<T extends PlayerUser, C extends ConsoleUser> imple
         if (chatChannel != null) {
           final UserChannelSettings settings = user.channelSettings(chatChannel);
 
-          settings.spying(channelSetting.<Boolean>get("spying"), true);
-          settings.ignoring(channelSetting.<Boolean>get("ignored"), true);
+          settings.spying(channelSetting.<Boolean>get("spying"));
+          settings.ignoring(channelSetting.<Boolean>get("ignored"));
 
           final String color = channelSetting.get("color");
 
           if (color != null) {
-            settings.color(TextColor.fromHexString(color), true);
+            settings.color(TextColor.fromHexString(color));
           }
         }
       }
 
       for (final DbRow ignoredUser : ignoredUsers) {
-        user.ignoringUser(UUID.fromString(ignoredUser.get("user")), true, true);
+        user.ignoringUser(UUID.fromString(ignoredUser.get("user")), true);
       }
     } catch (final SQLException exception) {
       exception.printStackTrace();

@@ -8,7 +8,6 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.PlayerUser;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
@@ -29,90 +28,6 @@ public class MessageManager {
   }
 
   private void registerDefaultListeners() {
-    this.messageService().registerUserMessageListener("nickname", (user, byteArray) -> {
-      final String nickname = byteArray.readUTF();
-      final String message = this.carbonChat.translations().nicknameSet();
-
-      user.nickname(nickname, true);
-      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor()
-        .processMessage(message, "nickname", nickname));
-    });
-
-    this.messageService().registerUserMessageListener("nickname-reset", (user, byteArray) -> {
-      final String message = this.carbonChat.translations().nicknameReset();
-
-      user.nickname(null, true);
-      user.sendMessage(Identity.nil(), this.carbonChat.messageProcessor().processMessage(message));
-    });
-
-    this.messageService().registerUserMessageListener("selected-channel", (user, byteArray) -> {
-      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
-
-      if (channel != null) {
-        user.selectedChannel(channel, true);
-      }
-    });
-
-    this.messageService().registerUserMessageListener("spying-whispers", (user, byteArray) -> {
-      user.spyingWhispers(byteArray.readBoolean(), true);
-    });
-
-    this.messageService().registerUserMessageListener("muted", (user, byteArray) -> {
-      user.muted(byteArray.readBoolean(), true);
-    });
-
-    this.messageService().registerUserMessageListener("shadow-muted", (user, byteArray) -> {
-      user.shadowMuted(byteArray.readBoolean(), true);
-    });
-
-    this.messageService().registerUserMessageListener("reply-target", (user, byteArray) -> {
-      user.replyTarget(new UUID(byteArray.readLong(), byteArray.readLong()), true);
-    });
-
-    this.messageService().registerUserMessageListener("reply-target-reset", (user, byteArray) -> {
-      user.replyTarget((UUID) null, true);
-    });
-
-    this.messageService().registerUserMessageListener("ignoring-user", (user, byteArray) -> {
-      user.ignoringUser(new UUID(byteArray.readLong(), byteArray.readLong()), byteArray.readBoolean(), true);
-    });
-
-    this.messageService().registerUserMessageListener("ignoring-channel", (user, byteArray) -> {
-      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
-
-      if (channel != null) {
-        user.channelSettings(channel)
-          .ignoring(byteArray.readBoolean(), true);
-      }
-    });
-
-    this.messageService().registerUserMessageListener("spying-channel", (user, byteArray) -> {
-      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
-
-      if (channel != null) {
-        user.channelSettings(channel)
-          .spying(byteArray.readBoolean(), true);
-      }
-    });
-
-    this.messageService().registerUserMessageListener("channel-color", (user, byteArray) -> {
-      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
-
-      if (channel != null) {
-        user.channelSettings(channel)
-          .color(TextColor.fromHexString(byteArray.readUTF()), true);
-      }
-    });
-
-    this.messageService().registerUserMessageListener("channel-color-reset", (user, byteArray) -> {
-      final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
-
-      if (channel != null) {
-        user.channelSettings(channel)
-          .color(null, true);
-      }
-    });
-
     this.messageService().registerUUIDMessageListener("channel-component", (uuid, byteArray) -> {
       final ChatChannel channel = this.carbonChat.channelRegistry().get(byteArray.readUTF());
       final PlayerUser user = this.carbonChat.userService().wrap(uuid);
@@ -151,14 +66,6 @@ public class MessageManager {
           .processMessage(this.carbonChat.translations().spyWhispers(), "message", message,
             "target", target.displayName(), "sender", sender.displayName()));
       }
-    });
-
-    this.messageService().registerUserMessageListener("custom-chat-color-reset", (user, byteArray) -> {
-      user.customChatColor(null, true);
-    });
-
-    this.messageService().registerUserMessageListener("custom-chat-color", (user, byteArray) -> {
-      user.customChatColor(TextColor.fromHexString(byteArray.readUTF()), true);
     });
   }
 

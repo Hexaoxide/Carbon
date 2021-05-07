@@ -17,12 +17,10 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   private boolean ignored;
   private @Nullable String color;
   private @NonNull UUID uuid;
-  private @NonNull String channel;
 
   @SuppressWarnings("initialization.fields.uninitialized")
-  public SimpleUserChannelSettings(final @NonNull UUID uuid, final @NonNull String channel) {
+  public SimpleUserChannelSettings(final @NonNull UUID uuid) {
     this.uuid = uuid;
-    this.channel = channel;
   }
 
   private @NonNull CarbonUser user() {
@@ -35,15 +33,8 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public void spying(final boolean spying, final boolean fromRemote) {
+  public void spying(final boolean spying) {
     this.spying = spying;
-
-    if (!fromRemote) {
-      this.carbonChat.messageService().sendMessage("spying-channel", this.uuid, byteArray -> {
-        byteArray.writeUTF(this.channel);
-        byteArray.writeBoolean(spying);
-      });
-    }
   }
 
   @Override
@@ -52,15 +43,8 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public void ignoring(final boolean ignored, final boolean fromRemote) {
+  public void ignoring(final boolean ignored) {
     this.ignored = ignored;
-
-    if (!fromRemote) {
-      this.carbonChat.messageService().sendMessage("ignoring-channel", this.uuid, byteArray -> {
-        byteArray.writeUTF(this.channel);
-        byteArray.writeBoolean(ignored);
-      });
-    }
   }
 
   @Override
@@ -73,24 +57,11 @@ public class SimpleUserChannelSettings implements UserChannelSettings {
   }
 
   @Override
-  public void color(final @Nullable TextColor color, final boolean fromRemote) {
+  public void color(final @Nullable TextColor color) {
     if (color == null) {
       this.color = null;
     } else {
       this.color = color.asHexString();
-    }
-
-    if (!fromRemote) {
-      final String newColor = this.color;
-
-      if (newColor == null || newColor.isEmpty()) {
-        this.carbonChat.messageService().sendMessage("channel-color-reset", this.uuid, byteArray -> {
-        });
-      } else {
-        this.carbonChat.messageService().sendMessage("channel-color", this.uuid, byteArray -> {
-          byteArray.writeUTF(newColor);
-        });
-      }
     }
   }
 

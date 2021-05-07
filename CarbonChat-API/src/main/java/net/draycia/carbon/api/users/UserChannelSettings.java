@@ -7,27 +7,15 @@ public interface UserChannelSettings {
 
   boolean spying();
 
-  default void spying(final boolean spying) {
-    this.spying(spying, false);
-  }
-
-  void spying(boolean spying, boolean fromRemote);
+  void spying(boolean spying);
 
   boolean ignored();
 
-  void ignoring(boolean ignored, boolean fromRemote);
-
-  default void ignoring(final boolean ignored) {
-    this.ignoring(ignored, false);
-  }
+  void ignoring(boolean ignored);
 
   @Nullable
   TextColor color();
 
-  default void color(final @Nullable TextColor color) {
-    this.color(color, false);
-  }
-
-  void color(@Nullable TextColor color, boolean fromRemote);
+  void color(@Nullable TextColor color);
 
 }

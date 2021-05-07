@@ -70,7 +70,7 @@ public class BukkitChatHandler implements Listener {
 
     if (event.isAsynchronous()) {
       final Map<CarbonUser, Component> messages =
-        selectedChannel.parseMessage(user, event.getMessage(), false);
+        selectedChannel.parseMessage(user, event.getMessage());
 
       for (final Map.Entry<CarbonUser, Component> entry : messages.entrySet()) {
         if (entry.getValue().equals(Component.empty())) {
@@ -87,7 +87,7 @@ public class BukkitChatHandler implements Listener {
     } else {
       Bukkit.getScheduler().runTaskAsynchronously(this.carbonChat, () -> {
         selectedChannel.sendComponentsAndLog(user.identity(),
-          selectedChannel.parseMessage(user, event.getMessage(), false));
+          selectedChannel.parseMessage(user, event.getMessage()));
 
         //        if (this.carbonChat.getConfig().getBoolean("show-tips")) {
         //          this.carbonChat.logger().info("Tip: Sync chat event! I cannot set the message format due to this. :(");

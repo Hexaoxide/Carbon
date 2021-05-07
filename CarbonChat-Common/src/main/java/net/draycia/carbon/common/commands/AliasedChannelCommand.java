@@ -61,7 +61,7 @@ public class AliasedChannelCommand {
     context.<String>getOptional("message").ifPresent(message -> {
       this.chatChannel().sendComponentsAndLog(
         context.getSender().identity(),
-        this.chatChannel().parseMessage(user, message, false));
+        this.chatChannel().parseMessage(user, message));
     });
   }
 

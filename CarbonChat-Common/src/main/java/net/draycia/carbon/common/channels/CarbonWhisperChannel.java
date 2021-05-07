@@ -64,15 +64,14 @@ public class CarbonWhisperChannel implements WhisperChannel {
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull String message,
-                                                          final boolean fromRemote) {
-    return this.parseMessage(user, Collections.singleton(this.audience()), message, fromRemote);
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull String message) {
+    return this.parseMessage(user, Collections.singleton(this.audience()), message);
   }
 
   @Override
   public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user,
                                                           final @NonNull Collection<@NonNull PlayerUser> recipients,
-                                                          final @NonNull String message, final boolean fromRemote) {
+                                                          final @NonNull String message) {
     final Map<CarbonUser, Component> result = new HashMap<>();
 
     // Formats

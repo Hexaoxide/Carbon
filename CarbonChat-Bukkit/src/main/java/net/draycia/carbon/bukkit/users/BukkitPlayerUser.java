@@ -142,7 +142,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void nickname(@Nullable String newNickname, final boolean fromRemote) {
+  public void nickname(@Nullable String newNickname) {
     this.nickname = newNickname;
 
     final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
@@ -158,19 +158,6 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
       if (onlinePlayer != null) {
         onlinePlayer.setDisplayName(newNickname);
         onlinePlayer.setPlayerListName(newNickname);
-      }
-    }
-
-    if (!fromRemote) {
-      final String nick = this.nickname;
-
-      if (nick == null) {
-        this.carbonChat.messageManager().sendMessage("nickname-reset", this.uuid(), byteArray -> {
-        });
-      } else {
-        this.carbonChat.messageManager().sendMessage("nickname", this.uuid(), byteArray -> {
-          byteArray.writeUTF(nick);
-        });
       }
     }
   }
@@ -204,19 +191,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void customChatColor(final @Nullable TextColor customChatColor, final boolean fromRemote) {
+  public void customChatColor(final @Nullable TextColor customChatColor) {
     this.customChatColor = customChatColor;
-
-    if (!fromRemote) {
-      if (customChatColor == null) {
-        this.carbonChat.messageManager().sendMessage("custom-chat-color-reset", this.uuid(), byteArray -> {
-        });
-      } else {
-        this.carbonChat.messageManager().sendMessage("custom-chat-color", this.uuid(), byteArray -> {
-          byteArray.writeUTF(customChatColor.asHexString());
-        });
-      }
-    }
   }
 
   @Override
@@ -241,7 +217,7 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void selectedChannel(final @NonNull ChatChannel chatChannel, final boolean fromRemote) {
+  public void selectedChannel(final @NonNull ChatChannel chatChannel) {
     final String failureMessage = chatChannel.switchFailureMessage();
 
     final ChannelSwitchEvent event = new ChannelSwitchEvent(chatChannel, this, failureMessage);
@@ -257,12 +233,6 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
 
     this.selectedChannelKey = chatChannel.key();
     this.selectedChannel = chatChannel;
-
-    if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("selected-channel", this.uuid(), byteArray -> {
-        byteArray.writeUTF(chatChannel.key());
-      });
-    }
 
     final OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid());
 
@@ -284,19 +254,11 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void ignoringUser(final @NonNull UUID uuid, final boolean ignoring, final boolean fromRemote) {
+  public void ignoringUser(final @NonNull UUID uuid, final boolean ignoring) {
     if (ignoring) {
       this.ignoredUsers.add(uuid);
     } else {
       this.ignoredUsers.remove(uuid);
-    }
-
-    if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("ignoring-user", this.uuid(), byteArray -> {
-        byteArray.writeLong(uuid.getMostSignificantBits());
-        byteArray.writeLong(uuid.getLeastSignificantBits());
-        byteArray.writeBoolean(ignoring);
-      });
     }
   }
 
@@ -357,14 +319,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void muted(final boolean muted, final boolean fromRemote) {
+  public void muted(final boolean muted) {
     this.muted = muted;
-
-    if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("muted", this.uuid(), byteArray -> {
-        byteArray.writeBoolean(muted);
-      });
-    }
   }
 
   @Override
@@ -373,14 +329,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void shadowMuted(final boolean shadowMuted, final boolean fromRemote) {
+  public void shadowMuted(final boolean shadowMuted) {
     this.shadowMuted = shadowMuted;
-
-    if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("shadow-muted", this.uuid(), byteArray -> {
-        byteArray.writeBoolean(shadowMuted);
-      });
-    }
   }
 
   @Override
@@ -394,26 +344,14 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void replyTarget(final @Nullable UUID target, final boolean fromRemote) {
+  public void replyTarget(final @Nullable UUID target) {
     this.replyTarget = target;
-
-    if (!fromRemote) {
-      if (target != null) {
-        this.carbonChat.messageManager().sendMessage("reply-target", this.uuid(), byteArray -> {
-          byteArray.writeLong(target.getMostSignificantBits());
-          byteArray.writeLong(target.getLeastSignificantBits());
-        });
-      } else {
-        this.carbonChat.messageManager().sendMessage("reply-target-reset", this.uuid(), byteArray -> {
-        });
-      }
-    }
   }
 
   @Override
   public @NonNull UserChannelSettings channelSettings(final @NonNull ChatChannel channel) {
     return this.channelSettings.computeIfAbsent(channel.key(), name -> {
-      return new SimpleUserChannelSettings(this.uuid, channel.key());
+      return new SimpleUserChannelSettings(this.uuid);
     });
   }
 
@@ -422,14 +360,8 @@ public class BukkitPlayerUser implements PlayerUser, ForwardingAudience.Single {
   }
 
   @Override
-  public void spyingWhispers(final boolean spyingWhispers, final boolean fromRemote) {
+  public void spyingWhispers(final boolean spyingWhispers) {
     this.spyingWhispers = spyingWhispers;
-
-    if (!fromRemote) {
-      this.carbonChat.messageManager().sendMessage("spying-whispers", this.uuid(), byteArray -> {
-        byteArray.writeBoolean(spyingWhispers);
-      });
-    }
   }
 
   @Override

@@ -66,8 +66,7 @@ public class ChannelCommand {
 
     if (!this.canUse(user, channel)) return;
 
-    channel.sendComponentsAndLog(context.getSender().identity(), channel.parseMessage(user,
-      message, false));
+    channel.sendComponentsAndLog(context.getSender().identity(), channel.parseMessage(user, message));
   }
 
   private boolean canUse(final PlayerUser user, final ChatChannel channel) {

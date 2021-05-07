@@ -106,7 +106,7 @@ public class CarbonChatChannel implements TextChannel {
   //  }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull Collection<@NonNull PlayerUser> recipients, final @NonNull String message, final boolean fromRemote) {
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull Collection<@NonNull PlayerUser> recipients, final @NonNull String message) {
     //this.updateUserNickname(user);
 
     final MessageContextEvent event = new MessageContextEvent(this, user);
@@ -226,7 +226,8 @@ public class CarbonChatChannel implements TextChannel {
       }
     }
 
-    if (user.online() && !fromRemote && this.crossServer()) {
+    // TODO: Rethink how cross server messaging works. There should be no recursion inherent in the design.
+    if (user.online() && this.crossServer()) {
       this.sendMessageToBungee(user.uuid(), consoleEvent.component());
     }
 
@@ -263,8 +264,8 @@ public class CarbonChatChannel implements TextChannel {
   }
 
   @Override
-  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull String message, final boolean fromRemote) {
-    return this.parseMessage(user, this.audiences(), message, fromRemote);
+  public @NonNull Map<CarbonUser, Component> parseMessage(final @NonNull PlayerUser user, final @NonNull String message) {
+    return this.parseMessage(user, this.audiences(), message);
   }
 
   public @NonNull String format(final @NonNull PlayerUser user) {

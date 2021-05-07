@@ -19,11 +19,7 @@ public interface PlayerUser extends CarbonUser {
 
   @NonNull String nickname();
 
-  default void nickname(final @Nullable String nickname) {
-    this.nickname(nickname, false);
-  }
-
-  void nickname(@Nullable String nickname, boolean fromRemote);
+  void nickname(@Nullable String nickname);
 
   @NonNull String displayName();
 
@@ -33,7 +29,7 @@ public interface PlayerUser extends CarbonUser {
 
   @Nullable TextColor customChatColor();
 
-  void customChatColor(@Nullable TextColor customChatColor, boolean fromRemote);
+  void customChatColor(@Nullable TextColor customChatColor);
 
   @NonNull String parsePlaceholders(@NonNull String input);
 
@@ -43,70 +39,38 @@ public interface PlayerUser extends CarbonUser {
 
   boolean spyingWhispers();
 
-  default void spyingWhispers(final boolean spyingWhispers) {
-    this.spyingWhispers(spyingWhispers, false);
-  }
-
-  void spyingWhispers(boolean spyingWhispers, boolean fromRemote);
+  void spyingWhispers(boolean spyingWhispers);
 
   boolean muted();
 
-  default void muted(final boolean muted) {
-    this.muted(muted, false);
-  }
-
-  void muted(boolean muted, boolean fromRemote);
+  void muted(boolean muted);
 
   boolean shadowMuted();
 
-  default void shadowMuted(final boolean shadowMuted) {
-    this.shadowMuted(shadowMuted, false);
-  }
-
-  void shadowMuted(boolean shadowMuted, boolean fromRemote);
+  void shadowMuted(boolean shadowMuted);
 
   @Nullable UUID replyTarget();
 
-  default void replyTarget(final @Nullable UUID target) {
-    this.replyTarget(target, false);
-  }
-
   default void replyTarget(final @Nullable PlayerUser user) {
     if (user == null) {
-      this.replyTarget((UUID) null, false);
+      this.replyTarget((UUID) null);
     } else {
-      this.replyTarget(user.uuid(), false);
+      this.replyTarget(user.uuid());
     }
   }
 
-  void replyTarget(@Nullable UUID target, boolean fromRemote);
-
-  default void replyTarget(final @Nullable PlayerUser user, final boolean fromRemote) {
-    if (user == null) {
-      this.replyTarget((UUID) null, fromRemote);
-    } else {
-      this.replyTarget(user.uuid(), fromRemote);
-    }
-  }
+  void replyTarget(@Nullable UUID target);
 
   boolean ignoringUser(@NonNull UUID uuid);
 
-  void ignoringUser(@NonNull UUID uuid, boolean ignoring, boolean fromRemote);
-
-  default void ignoringUser(final @NonNull UUID uuid, final boolean ignoring) {
-    this.ignoringUser(uuid, ignoring, false);
-  }
+  void ignoringUser(@NonNull UUID uuid, boolean ignoring);
 
   default boolean ignoringUser(final @NonNull PlayerUser user) {
     return this.ignoringUser(user.uuid());
   }
 
-  default void ignoringUser(final @NonNull PlayerUser user, final boolean ignoring, final boolean fromRemote) {
-    this.ignoringUser(user.uuid(), ignoring, fromRemote);
-  }
-
-  default void ignoringUser(final @NonNull PlayerUser user, final boolean ignoring) {
-    this.ignoringUser(user.uuid(), ignoring, false);
+  default void ignoringUser(final @NonNull PlayerUser user, boolean ignoring) {
+    this.ignoringUser(user.uuid(), ignoring);
   }
 
   @NonNull Iterable<CarbonUser> ignoredChatUsers();
@@ -125,11 +89,7 @@ public interface PlayerUser extends CarbonUser {
 
   @Nullable ChatChannel selectedChannel();
 
-  default void selectedChannel(final @NonNull ChatChannel channel) {
-    this.selectedChannel(channel, false);
-  }
-
-  void selectedChannel(@NonNull ChatChannel channel, boolean fromRemote);
+  void selectedChannel(@NonNull ChatChannel channel);
 
   void clearSelectedChannel();
 
