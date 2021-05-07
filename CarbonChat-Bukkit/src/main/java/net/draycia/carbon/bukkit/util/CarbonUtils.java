@@ -21,14 +21,8 @@
 package net.draycia.carbon.bukkit.util;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.api.chat.hover.content.Content;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -46,26 +40,20 @@ public final class CarbonUtils {
       return net.kyori.adventure.text.Component.empty();
     }
 
-    final Content content = Bukkit.getItemFactory().hoverContentOf(itemStack);
-    final HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, content);
+    final TextComponent.Builder builder = Component.text();
 
-    final ComponentBuilder component = new ComponentBuilder();
-    component.event(event); // Let this be inherited by all coming components.
-    component.color(ChatColor.WHITE).append("[");
+    builder.hoverEvent(itemStack); // Let this be inherited by all coming components.
+    builder.append(Component.text("[", NamedTextColor.WHITE));
 
     if (itemStack.getItemMeta().hasDisplayName()) {
-      component.append(TextComponent.fromLegacyText(itemStack.getItemMeta().getDisplayName()));
+      builder.append(itemStack.getItemMeta().displayName());
     } else {
-      // As of 1.13, Material is 1:1 with MC's names
-      final String prefix = itemStack.getType().isBlock() ? "block" : "item";
-      final String name = prefix + ".minecraft." + itemStack.getType().name().toLowerCase();
-
-      component.append(new TranslatableComponent(name));
+      builder.append(Component.translatable(itemStack.getType().getTranslationKey()));
     }
 
-    component.color(ChatColor.WHITE).append("]");
+    builder.append(Component.text("]", NamedTextColor.WHITE));
 
-    return BungeeComponentSerializer.get().deserialize(component.create());
+    return builder.build();
   }
 
 }
