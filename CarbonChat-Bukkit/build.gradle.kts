@@ -8,7 +8,7 @@ plugins {
 description = 'CarbonChat-Bukkit'
 
 dependencies {
-  implementation project(":CarbonChat-Common")
+  implementation project(":CarbonChat-API")
 
   // Server
   compileOnly "com.destroystokyo.paper:paper-api:${vers['paper-api']}"
@@ -19,7 +19,6 @@ dependencies {
 
   // Config
   implementation "org.spongepowered:configurate-yaml:${vers['configurate']}"
-  implementation "org.spongepowered:configurate-hocon:${vers['configurate']}"
   implementation "org.yaml:snakeyaml:${vers['snakeyaml']}"
 
   // Commands
