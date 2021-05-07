@@ -1,9 +1,7 @@
 package net.draycia.carbon.common.adventure;
 
-import de.themoep.minedown.adventure.MineDown;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.adventure.FormatType;
 import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.common.utils.ColorUtils;
 import net.kyori.adventure.platform.AudienceProvider;
@@ -18,11 +16,8 @@ public class AdventureManager implements MessageProcessor {
 
   private final @NonNull CarbonChat carbonChat;
 
-  private final @NonNull FormatType formatType;
-
-  public AdventureManager(final @NonNull AudienceProvider provider, final @NonNull FormatType formatType) {
+  public AdventureManager(final @NonNull AudienceProvider provider) {
     this.provider = provider;
-    this.formatType = formatType;
     this.carbonChat = CarbonChatProvider.carbonChat();
   }
 
@@ -39,17 +34,7 @@ public class AdventureManager implements MessageProcessor {
 
     format = this.processPlaceholders(format, placeholders);
 
-    switch (this.formatType) {
-      case MINEDOWN:
-        return MineDown.parse(format);
-      case MOJANG:
-        return this.processMojang(format);
-      case MINIMESSAGE_MARKDOWN:
-        return MiniMessage.markdown().parse(format);
-      case MINIMESSAGE:
-      default:
-        return MiniMessage.get().parse(format);
-    }
+    return MiniMessage.get().parse(format);
   }
 
   private @NonNull Component processMojang(final @NonNull String input) {
@@ -65,11 +50,6 @@ public class AdventureManager implements MessageProcessor {
     }
 
     return input;
-  }
-
-  @Override
-  public @NonNull FormatType formatType() {
-    return this.formatType;
   }
 
   @Override

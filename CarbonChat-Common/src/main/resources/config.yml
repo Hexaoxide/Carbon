@@ -21,9 +21,6 @@ channel-pings:
     pitch: 1
     source: PLAYER
     volume: 10
-	
-# Options: MOJANG, MINIMESSAGE_MARKDOWN, MINIMESSAGE, MINEDOWN
-format-type: MINIMESSAGE
 
 # The list of regex patterns to show items in chat. '\\Q' and '\\E' just denote that the content isn't regex.
 item-link-patterns:

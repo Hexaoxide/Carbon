@@ -1,6 +1,5 @@
 package net.draycia.carbon.api.config;
 
-import net.draycia.carbon.api.adventure.FormatType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -63,10 +62,6 @@ public final class CarbonSettings {
     "Note: In order for channels to sync cross server, you'll need to enable is-cross-server for the\n" +
     "   channel as well as this setting.")
   private @NonNull MessagingType messagingType = MessagingType.NONE;
-
-  @Setting
-  @Comment("Options: MOJANG, MINIMESSAGE_MARKDOWN, MINIMESSAGE, MINEDOWN")
-  private @NonNull FormatType formatType = FormatType.MINIMESSAGE;
 
   @Setting
   @Comment("The credentials necessary to connect to your redis server")
@@ -135,9 +130,5 @@ public final class CarbonSettings {
 
   public @NonNull WhisperOptions whisperOptions() {
     return this.whisperOptions;
-  }
-
-  public @NonNull FormatType formatType() {
-    return this.formatType;
   }
 }

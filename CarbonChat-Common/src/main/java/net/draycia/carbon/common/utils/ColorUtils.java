@@ -1,11 +1,7 @@
 package net.draycia.carbon.common.utils;
 
-import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.adventure.MessageProcessor;
 import net.draycia.carbon.api.users.CarbonUser;
 import net.draycia.carbon.api.users.PlayerUser;
-import net.draycia.carbon.common.adventure.AdventureManager;
-import net.draycia.carbon.api.adventure.FormatType;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -56,20 +52,10 @@ public final class ColorUtils {
   private static final @NonNull Pattern pluginRGB =
     Pattern.compile("[§&]#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
 
+  private static final @NonNull String hexReplacement = "<#$1$2$3$4$5$6>";
+
   public static @NonNull String translateAlternateColors(final @NonNull String input) {
     String output = input;
-
-    String hexReplacement = "<#$1$2$3$4$5$6>";
-    boolean legacyCapable = false;
-
-    final MessageProcessor messageProcessor = CarbonChatProvider.carbonChat().messageProcessor();
-
-    if (messageProcessor instanceof AdventureManager) {
-      if (messageProcessor.formatType() == FormatType.MINEDOWN) {
-        hexReplacement = "&#$1$2$3$4$5$6&";
-        legacyCapable = true;
-      }
-    }
 
     // Legacy RGB
     output = spigotLegacyRGB.matcher(output).replaceAll(hexReplacement);
@@ -77,30 +63,28 @@ public final class ColorUtils {
     // Alternate RGB, TAB (neznamy) && KiteBoard
     output = pluginRGB.matcher(output).replaceAll(hexReplacement);
 
-    if (!legacyCapable) {
-      // Legacy Colors
-      for (final char c : "0123456789abcdefABCDEF".toCharArray()) {
-        final LegacyFormat format = LegacyComponentSerializer.parseChar(Character.toLowerCase(c));
+    // Legacy Colors
+    for (final char c : "0123456789abcdefABCDEF".toCharArray()) {
+      final LegacyFormat format = LegacyComponentSerializer.parseChar(Character.toLowerCase(c));
 
-        if (format != null) {
-          final TextColor color = format.color();
+      if (format != null) {
+        final TextColor color = format.color();
 
-          if (color != null) {
-            output = output.replaceAll("[§&]" + c, "<" + color.asHexString() + ">");
-          }
+        if (color != null) {
+          output = output.replaceAll("[§&]" + c, "<" + color.asHexString() + ">");
         }
       }
+    }
 
-      // Legacy Formatting
-      for (final char c : "klmnoKLMNO".toCharArray()) {
-        final LegacyFormat format = LegacyComponentSerializer.parseChar(Character.toLowerCase(c));
+    // Legacy Formatting
+    for (final char c : "klmnoKLMNO".toCharArray()) {
+      final LegacyFormat format = LegacyComponentSerializer.parseChar(Character.toLowerCase(c));
 
-        if (format != null) {
-          final TextDecoration decoration = format.decoration();
+      if (format != null) {
+        final TextDecoration decoration = format.decoration();
 
-          if (decoration != null) {
-            output = output.replaceAll("[§&]" + c, "<" + decoration.name() + ">");
-          }
+        if (decoration != null) {
+          output = output.replaceAll("[§&]" + c, "<" + decoration.name() + ">");
         }
       }
     }

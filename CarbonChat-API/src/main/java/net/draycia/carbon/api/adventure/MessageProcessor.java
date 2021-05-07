@@ -11,6 +11,4 @@ public interface MessageProcessor {
 
   @NonNull AudienceProvider audiences();
 
-  @NonNull FormatType formatType();
-
 }
