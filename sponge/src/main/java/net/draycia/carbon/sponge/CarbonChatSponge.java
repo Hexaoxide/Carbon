@@ -13,7 +13,7 @@ public class CarbonChatSponge implements CarbonChat {
   private final PluginContainer pluginContainer;
   private final Logger logger;
 
-  private static final int BSTATS_PLUGIN_ID = 8720;
+  private static final int BSTATS_PLUGIN_ID = 11279;
 
   @Inject
   public CarbonChatSponge(
