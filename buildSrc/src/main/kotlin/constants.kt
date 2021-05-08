@@ -2,7 +2,7 @@ package net.draycia.carbon
 
 // Misc
 const val CHECKSTYLE_VER         = "8.34"
-const val CHECKER_QUAL_VER       = "3.8.0"
+const val CHECKER_QUAL_VER       = "3.13.0"
 const val GUAVA_VER              = "26.0-jre"
 const val STYLECHECK_VER         = "0.1-SNAPSHOT"
 const val MOONSHINE_VER          = "0.2.4-SNAPSHOT"
