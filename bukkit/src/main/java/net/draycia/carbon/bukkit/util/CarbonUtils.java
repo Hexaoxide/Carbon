@@ -27,6 +27,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.Objects;
+
 public final class CarbonUtils {
 
   private CarbonUtils() {
@@ -45,11 +47,10 @@ public final class CarbonUtils {
     builder.hoverEvent(itemStack); // Let this be inherited by all coming components.
     builder.append(Component.text("[", NamedTextColor.WHITE));
 
-    if (itemStack.getItemMeta().hasDisplayName()) {
-      builder.append(itemStack.getItemMeta().displayName());
-    } else {
-      builder.append(Component.translatable(itemStack.getType().getTranslationKey()));
-    }
+    final Component displayName = itemStack.getItemMeta().displayName();
+
+    builder.append(Objects.requireNonNullElseGet(displayName, () ->
+      Component.translatable(itemStack.getType().getTranslationKey())));
 
     builder.append(Component.text("]", NamedTextColor.WHITE));
 
