@@ -1,3 +1,30 @@
-include("CarbonChat-API")
-include("CarbonChat-Bukkit")
-include("CarbonChat-Sponge")
+enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+    maven("https://repo.stellardrift.ca/repository/snapshots/") // todo: polyglot-version-catalogs is not relased on the gradle plugin portal yet
+  }
+}
+
+plugins {
+  id("ca.stellardrift.polyglot-version-catalogs") version "5.0.0-SNAPSHOT"
+}
+
+rootProject.name = "CarbonChat"
+
+setupSubproject("carbonchat-api") {
+  projectDir = file("api")
+}
+setupSubproject("carbonchat-bukkit") {
+  projectDir = file("bukkit")
+}
+setupSubproject("carbonchat-sponge") {
+  projectDir = file("sponge")
+}
+
+inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
+  include(name)
+  project(":$name").apply(block)
+}
