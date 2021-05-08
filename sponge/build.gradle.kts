@@ -32,13 +32,11 @@ tasks {
       archive.copyTo(libs.resolve(archive.name), overwrite = true)
     }
     relocate("org.yaml", "net.draycia.carbon.libs.org.yaml")
-    relocate("org.spongepowered.configurate", "net.draycia.carbon.libs.configurate")
     relocate("org.checkerframework", "net.draycia.carbon.libs.checkerframework")
     relocate("org.reactivestreams", "net.draycia.carbon.libs.reactivestreams")
     relocate("org.codehaus", "net.draycia.carbon.libs.codehaus")
     relocate("io.leangen.geantyref", "net.draycia.carbon.libs.typereference")
     relocate("io.lettuce", "net.draycia.carbon.libs.lettuce")
-    relocate("co.aikar.idb", "net.draycia.carbon.libs.idb")
     relocate("cloud.commandframework", "net.draycia.carbon.libs.cloud")
     relocate("com.zaxxer.hikari", "net.draycia.carbon.libs.hikari")
     relocate("com.typesafe.config", "net.draycia.carbon.libs.typesafe.config")

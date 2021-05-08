@@ -13,10 +13,6 @@ dependencies {
   compileOnly("com.destroystokyo.paper:paper-api:$PAPER_API_VER")
   implementation("io.papermc", "paperlib", "1.0.6")
 
-  // Adventure
-  implementation("net.kyori:adventure-platform-bukkit:$ADVENTURE_PLATFORM_VER")
-  implementation("net.kyori:adventure-text-serializer-bungeecord:$ADVENTURE_PLATFORM_VER")
-
   // Config
   implementation("org.spongepowered:configurate-yaml:$CONFIGURATE_VER")
   implementation("org.yaml:snakeyaml:$SNAKEYAML_VER")
@@ -29,7 +25,6 @@ dependencies {
 
   // Plugins
   compileOnly("me.clip:placeholderapi:$PLACEHOLDER_API_VER")
-  compileOnly("net.luckperms:api:$LUCKPERMS_API_VER")
   compileOnly("com.github.MilkBowl:VaultAPI:$VAULT_VER")
 }
 
@@ -40,7 +35,7 @@ bukkit {
   main = "net.draycia.carbon.bukkit.CarbonChatBukkit"
   apiVersion = "1.13"
   author = "Draycia"
-  depend = listOf("PlaceholderAPI", "Vault", "LuckPerms")
+  depend = listOf("PlaceholderAPI", "Vault")
   loadBefore = listOf("Essentials")
   website = rootProject.ext["github"] as String
   permissions {
@@ -96,7 +91,6 @@ tasks {
     relocate("org.codehaus", "net.draycia.carbon.libs.codehaus")
     relocate("io.leangen.geantyref", "net.draycia.carbon.libs.typereference")
     relocate("io.lettuce", "net.draycia.carbon.libs.lettuce")
-    relocate("co.aikar.idb", "net.draycia.carbon.libs.idb")
     relocate("cloud.commandframework", "net.draycia.carbon.libs.cloud")
     relocate("com.zaxxer.hikari", "net.draycia.carbon.libs.hikari")
     relocate("com.typesafe.config", "net.draycia.carbon.libs.typesafe.config")
