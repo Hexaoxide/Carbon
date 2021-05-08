@@ -15,6 +15,7 @@ const val ADVENTURE_PLATFORM_VER = "4.0.0-SNAPSHOT"
 const val MINIMESSAGE_VER        = "4.1.0-SNAPSHOT"
 const val KYORI_EVENT_API_VER    = "3.0.0"
 const val KYORI_REGISTRY_VER     = "1.0.0-SNAPSHOT"
+const val BSTATS_VER             = "2.2.1"
 
 // Common
 const val LETTUCE_CORE_VER       = "6.0.0.M1"

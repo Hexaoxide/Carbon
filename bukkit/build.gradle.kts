@@ -24,6 +24,9 @@ dependencies {
   // Commands
   implementation("cloud.commandframework:cloud-paper:$CLOUD_VER")
 
+  // Misc
+  implementation("org.bstats:bstats-bukkit:$BSTATS_VER")
+
   // Plugins
   compileOnly("me.clip:placeholderapi:$PLACEHOLDER_API_VER")
   compileOnly("net.luckperms:api:$LUCKPERMS_API_VER")

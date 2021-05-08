@@ -1,5 +1,6 @@
-import net.draycia.carbon.CLOUD_VER
 import java.util.Locale
+import net.draycia.carbon.BSTATS_VER
+import net.draycia.carbon.CLOUD_VER
 import org.spongepowered.plugin.metadata.PluginDependency
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 
@@ -11,6 +12,7 @@ plugins {
 dependencies {
   implementation(projects.carbonchatApi)
   implementation("cloud.commandframework:cloud-sponge:$CLOUD_VER")
+  implementation("org.bstats:bstats-sponge:$BSTATS_VER")
 }
 
 tasks {
