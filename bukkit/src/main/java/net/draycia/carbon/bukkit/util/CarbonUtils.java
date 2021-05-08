@@ -22,12 +22,15 @@ package net.draycia.carbon.bukkit.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNullElseGet;
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.translatable;
+import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 
 public final class CarbonUtils {
 
@@ -39,20 +42,20 @@ public final class CarbonUtils {
     final ItemStack itemStack = player.getInventory().getItemInMainHand();
 
     if (itemStack.getType().isAir()) {
-      return net.kyori.adventure.text.Component.empty();
+      return empty();
     }
 
-    final TextComponent.Builder builder = Component.text();
+    final TextComponent.Builder builder = text();
 
     builder.hoverEvent(itemStack); // Let this be inherited by all coming components.
-    builder.append(Component.text("[", NamedTextColor.WHITE));
+    builder.append(text("[", WHITE));
 
     final Component displayName = itemStack.getItemMeta().displayName();
 
-    builder.append(Objects.requireNonNullElseGet(displayName, () ->
-      Component.translatable(itemStack.getType().getTranslationKey())));
+    builder.append(requireNonNullElseGet(displayName, () ->
+      translatable(itemStack.getType().getTranslationKey())));
 
-    builder.append(Component.text("]", NamedTextColor.WHITE));
+    builder.append(text("]", WHITE));
 
     return builder.build();
   }
