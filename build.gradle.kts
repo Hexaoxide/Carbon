@@ -1,13 +1,13 @@
 import net.draycia.carbon.*
 
-//import org.checkerframework.gradle.plugin.CheckerFrameworkPlugin
+import org.checkerframework.gradle.plugin.CheckerFrameworkPlugin
 
 plugins {
   `java-library`
   `maven-publish`
   id("com.github.johnrengelman.shadow") version "7.0.0" apply false
   //checkstyle
-  //id("org.checkerframework") version "0.5.12"
+  id("org.checkerframework") version "0.5.20" apply false
 }
 
 ext["github"] = "https://github.com/Hexaoxide/Carbon"
@@ -39,7 +39,7 @@ subprojects {
   apply<JavaLibraryPlugin>()
   apply<MavenPublishPlugin>()
   //apply<CheckstylePlugin>()
-  //apply<CheckerFrameworkPlugin>()
+  apply<CheckerFrameworkPlugin>()
 
   repositories {
     mavenCentral()
