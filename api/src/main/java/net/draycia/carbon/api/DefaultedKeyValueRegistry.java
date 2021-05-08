@@ -5,8 +5,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * An extension of the DefaultedRegistryGetter that declares a defaultValue method
- * @param <K>
- * @param <V>
+ * @param <K> the key type
+ * @param <V> the value type
  */
 public interface DefaultedKeyValueRegistry<K, V> extends DefaultedRegistryGetter<K, V> {
 

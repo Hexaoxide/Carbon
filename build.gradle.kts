@@ -1,12 +1,17 @@
-import net.draycia.carbon.*
-
+import net.draycia.carbon.STYLECHECK_VER
 import org.checkerframework.gradle.plugin.CheckerFrameworkPlugin
+import org.checkerframework.gradle.plugin.CheckerFrameworkExtension
+import net.kyori.indra.IndraExtension
+import net.kyori.indra.IndraCheckstylePlugin
+import net.kyori.indra.IndraPlugin
+import net.kyori.indra.IndraPublishingPlugin
 
 plugins {
-  `java-library`
-  `maven-publish`
+  val indraVersion = "2.0.2"
+  id("net.kyori.indra") version indraVersion apply false
+  id("net.kyori.indra.checkstyle") version indraVersion apply false
+  id("net.kyori.indra.publishing") version indraVersion apply false
   id("com.github.johnrengelman.shadow") version "7.0.0" apply false
-  //checkstyle
   id("org.checkerframework") version "0.5.20" apply false
 }
 
@@ -14,31 +19,14 @@ ext["github"] = "https://github.com/Hexaoxide/Carbon"
 
 val projectVersion: String by project
 
-allprojects {
-  group = "net.draycia"
-  description = "CarbonChat - A modern chat plugin"
-  version = projectVersion // todo: include git hash
-}
-
-allprojects {
-  //configure<JavaPluginConvention> {
-  //  sourceCompatibility = JavaVersion.VERSION_11
-  //  targetCompatibility = sourceCompatibility
-  //  disableAutoTargetJvm()
-  //}
-
-  //checkstyle {
-  //  toolVersion = "8.36.2"
-  //  val configRoot = rootProject.projectDir
-  //  configDirectory.set(configRoot)
-  //  configProperties["basedir"] = configRoot.absolutePath
-  //}
-}
+group = "net.draycia"
+description = "CarbonChat - A modern chat plugin"
+version = projectVersion // todo: include git hash
 
 subprojects {
-  apply<JavaLibraryPlugin>()
-  apply<MavenPublishPlugin>()
-  //apply<CheckstylePlugin>()
+  apply<IndraPlugin>()
+  apply<IndraCheckstylePlugin>()
+  apply<IndraPublishingPlugin>()
   apply<CheckerFrameworkPlugin>()
 
   repositories {
@@ -63,14 +51,27 @@ subprojects {
   }
 
   dependencies {
-    //checkstyle("ca.stellardrift:stylecheck:$STYLECHECK_VER")
+    "checkstyle"("ca.stellardrift:stylecheck:$STYLECHECK_VER")
   }
 
-//  checkerFramework {
-//    checkers = [
-//      "org.checkerframework.checker.nullness.NullnessChecker"
-//    ]
-//  }
+  configure<JavaPluginConvention> {
+    disableAutoTargetJvm()
+  }
+
+  configure<CheckerFrameworkExtension> {
+    checkers = listOf(
+      "org.checkerframework.checker.nullness.NullnessChecker"
+    )
+  }
+
+  configure<IndraExtension> {
+    gpl3OnlyLicense()
+
+    javaVersions {
+      target(11)
+    }
+  }
+
 }
 
 tasks {
