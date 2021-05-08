@@ -1,18 +1,16 @@
 import java.util.Locale
-import net.draycia.carbon.BSTATS_VER
-import net.draycia.carbon.CLOUD_VER
 import org.spongepowered.plugin.metadata.PluginDependency
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 
 plugins {
   id("com.github.johnrengelman.shadow")
-  id("org.spongepowered.gradle.plugin") version "1.0.3"
+  id("org.spongepowered.gradle.plugin")
 }
 
 dependencies {
   implementation(projects.carbonchatApi)
-  implementation("cloud.commandframework:cloud-sponge:$CLOUD_VER")
-  implementation("org.bstats:bstats-sponge:$BSTATS_VER")
+  implementation(libs.cloudSponge)
+  //implementation(libs.bstatsSponge) // not updated for api 8 yet
 }
 
 tasks {
@@ -23,26 +21,12 @@ tasks {
     dependsOn(shadowJar)
   }
   shadowJar {
-    minimize()
     archiveFileName.set(project.name + "-" + project.version + ".jar")
-    doLast {
-      val archive = archiveFile.get().asFile
-      val libs = rootProject.buildDir.resolve("libs")
-      libs.mkdirs()
-      archive.copyTo(libs.resolve(archive.name), overwrite = true)
+    configureShadow()
+    dependencies {
+      // included in sponge
+      exclude(dependency("io.leangen.geantyref:geantyref"))
     }
-    relocate("org.yaml", "net.draycia.carbon.libs.org.yaml")
-    relocate("org.checkerframework", "net.draycia.carbon.libs.checkerframework")
-    relocate("org.reactivestreams", "net.draycia.carbon.libs.reactivestreams")
-    relocate("org.codehaus", "net.draycia.carbon.libs.codehaus")
-    relocate("io.leangen.geantyref", "net.draycia.carbon.libs.typereference")
-    relocate("io.lettuce", "net.draycia.carbon.libs.lettuce")
-    relocate("cloud.commandframework", "net.draycia.carbon.libs.cloud")
-    relocate("com.zaxxer.hikari", "net.draycia.carbon.libs.hikari")
-    relocate("com.typesafe.config", "net.draycia.carbon.libs.typesafe.config")
-    relocate("com.google.common", "net.draycia.carbon.libs.google.common")
-    relocate("reactor", "net.draycia.carbon.libs.reactor")
-    relocate("javax.annotation", "net.draycia.carbon.libs.javax.annotation")
   }
 }
 

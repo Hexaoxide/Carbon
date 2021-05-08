@@ -1,18 +1,17 @@
-import net.draycia.carbon.STYLECHECK_VER
-import org.checkerframework.gradle.plugin.CheckerFrameworkPlugin
-import org.checkerframework.gradle.plugin.CheckerFrameworkExtension
-import net.kyori.indra.IndraExtension
 import net.kyori.indra.IndraCheckstylePlugin
 import net.kyori.indra.IndraPlugin
 import net.kyori.indra.IndraPublishingPlugin
+import net.kyori.indra.repository.sonatypeSnapshots
+import org.checkerframework.gradle.plugin.CheckerFrameworkExtension
+import org.checkerframework.gradle.plugin.CheckerFrameworkPlugin
 
 plugins {
-  val indraVersion = "2.0.2"
-  id("net.kyori.indra") version indraVersion apply false
-  id("net.kyori.indra.checkstyle") version indraVersion apply false
-  id("net.kyori.indra.publishing") version indraVersion apply false
-  id("com.github.johnrengelman.shadow") version "7.0.0" apply false
-  id("org.checkerframework") version "0.5.20" apply false
+  id("net.kyori.indra")
+  id("net.kyori.indra.git")
+  id("net.kyori.indra.checkstyle")
+  id("net.kyori.indra.publishing")
+  id("com.github.johnrengelman.shadow") apply false
+  id("org.checkerframework") apply false
 }
 
 ext["github"] = "https://github.com/Hexaoxide/Carbon"
@@ -31,9 +30,9 @@ subprojects {
 
   repositories {
     mavenCentral()
-    maven("https://nexus.proximyst.com/repository/maven-public/")
-    maven("https://repo.maven.apache.org/maven2")
     maven("https://oss.sonatype.org/content/groups/public/")
+    sonatypeSnapshots()
+    maven("https://nexus.proximyst.com/repository/maven-public/")
     //maven("https://repo.incendo.org/content/repositories/snapshots") // normal cloud snapshot repo
     maven("https://repo.jpenilla.xyz/snapshots/") { // temp cloud snapshot repo for sponge-8
       content {
@@ -51,7 +50,7 @@ subprojects {
   }
 
   dependencies {
-    "checkstyle"("ca.stellardrift:stylecheck:$STYLECHECK_VER")
+    checkstyle(rootProject.libs.stylecheck)
   }
 
   configure<JavaPluginConvention> {
@@ -64,12 +63,14 @@ subprojects {
     )
   }
 
-  configure<IndraExtension> {
+  indra {
     gpl3OnlyLicense()
 
     javaVersions {
       target(11)
     }
+
+    github("Hexaoxide", "Carbon")
   }
 
 }

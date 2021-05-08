@@ -1,31 +1,39 @@
-import net.draycia.carbon.*
-
-description="CarbonChat-API"
-
 dependencies {
-  api("org.checkerframework:checker-qual:${CHECKER_QUAL_VER}")
+  compileOnlyApi(libs.checkerQual)
 
-  api("net.kyori:adventure-api:$ADVENTURE_VER")
-  api("net.kyori:adventure-nbt:$ADVENTURE_VER")
-  api("net.kyori:adventure-text-serializer-plain:$ADVENTURE_VER")
-  api("net.kyori:adventure-text-serializer-gson:$ADVENTURE_VER") {
-    //excludeGroup("com.google.code.gson")
+  api(platform(libs.adventureBom))
+  compileOnlyApi(libs.adventureApi)
+  compileOnlyApi(libs.adventureTextSerializerPlain)
+  compileOnlyApi(libs.adventureTextSerializerGson) {
+    exclude("com.google.code.gson")
   }
-  api("net.kyori:adventure-text-minimessage:$MINIMESSAGE_VER")
+  api(libs.minimessage) {
+    isTransitive = false
+  }
 
-  api("net.kyori:event-api:$KYORI_EVENT_API_VER")
-  api("net.kyori:registry:$KYORI_REGISTRY_VER")
+  api(libs.kyoriEventApi)
+  api(libs.kyoriRegistry)
 
-  api("cloud.commandframework:cloud-core:$CLOUD_VER")
+  api(libs.cloudCore)
+  api(libs.cloudMinecraftExtras) {
+    isTransitive = false
+  }
 
-  api("org.spongepowered:configurate-core:$CONFIGURATE_VER")
+  api(libs.configurateCore)
+  api(libs.adventureSerializerConfigurate4) {
+    isTransitive = false
+  }
+  api(libs.configurateHocon)
+  api(libs.typesafeConfig)
 
-  api("com.google.guava:guava:$GUAVA_VER")
+  api(libs.moonshine)
 
-  compileOnlyApi("com.proximyst.moonshine:core:$MOONSHINE_VER")
+  // we shade and relocate a newer version than minecraft provides
+  api(libs.guava)
 
   // Provided by Minecraft
-  compileOnlyApi("org.apache.logging.log4j:log4j-api:2.11.2")
+  compileOnlyApi(libs.gson)
+  compileOnlyApi(libs.log4jApi)
 }
 
 

@@ -1,0 +1,142 @@
+metadata:
+  format: { version: 1.0 }
+  polyglot-extensions:
+    - plugins
+
+plugins:
+  net.kyori.indra: &indra 2.0.2
+  net.kyori.indra.checkstyle: *indra
+  net.kyori.indra.publishing: *indra
+  net.kyori.indra.git: *indra
+  com.github.johnrengelman.shadow: 7.0.0
+  net.minecrell.plugin-yml.bukkit: 0.4.0
+  org.spongepowered.gradle.plugin: 1.0.3
+  org.checkerframework: 0.5.20
+
+versions:
+  adventure: 4.7.0
+  minimessage: 4.1.0-SNAPSHOT
+  cloud: 1.5.0-SNAPSHOT
+  configurate: 4.1.1-SNAPSHOT
+  typesafeConfig: 1.+
+  checkerQual: 3.13.0
+  stylecheck: 0.1-SNAPSHOT
+  gson: 2.8.0
+  guava: 30.1-jre
+  bstats: 2.2.1
+  paperApi: 1.16.5-R0.1-SNAPSHOT
+  paperLib: 1.0.6
+  kyoriEventApi: 3.0.0
+  kyoriRegistry: 1.0.0-SNAPSHOT
+  log4j: 2.11.2
+  moonshine: 0.2.4-SNAPSHOT
+
+dependencies:
+  adventureBom:
+    group: net.kyori
+    name: adventure-bom
+    version: { ref: adventure }
+  adventureApi:
+    group: net.kyori
+    name: adventure-api
+  adventureTextSerializerGson:
+    group: net.kyori
+    name: adventure-text-serializer-gson
+  adventureTextSerializerPlain:
+    group: net.kyori
+    name: adventure-text-serializer-plain
+  adventureSerializerConfigurate4:
+    group: net.kyori
+    name: adventure-serializer-configurate4
+    version: { ref: adventure }
+  minimessage:
+    group: net.kyori
+    name: adventure-text-minimessage
+    version: { ref: minimessage }
+
+  log4jApi:
+    group: org.apache.logging.log4j
+    name: log4j-api
+    version: { ref: log4j }
+
+  moonshine:
+    group: com.proximyst.moonshine
+    name: core
+    version: { ref: moonshine }
+
+  kyoriEventApi:
+    group: net.kyori
+    name: event-api
+    version: { ref: kyoriEventApi }
+  kyoriRegistry:
+    group: net.kyori
+    name: registry
+    version: { ref: kyoriRegistry }
+
+  cloudCore:
+    group: cloud.commandframework
+    name: cloud-core
+    version: { ref: cloud }
+  cloudMinecraftExtras:
+    group: cloud.commandframework
+    name: cloud-minecraft-extras
+    version: { ref: cloud }
+  cloudPaper:
+    group: cloud.commandframework
+    name: cloud-paper
+    version: { ref: cloud }
+  cloudSponge:
+    group: cloud.commandframework
+    name: cloud-sponge
+    version: { ref: cloud }
+
+  configurateCore:
+    group: org.spongepowered
+    name: configurate-core
+    version: { ref: configurate }
+  configurateHocon:
+    group: org.spongepowered
+    name: configurate-hocon
+    version: { ref: configurate }
+  typesafeConfig:
+    group: com.typesafe
+    name: config
+    version: { ref: typesafeConfig }
+
+  checkerQual:
+    group: org.checkerframework
+    name: checker-qual
+    version: { ref: checkerQual }
+  stylecheck:
+    group: ca.stellardrift
+    name: stylecheck
+    version: { ref: stylecheck }
+
+  gson:
+    group: com.google.code.gson
+    name: gson
+    version: { ref: gson }
+  guava:
+    group: com.google.guava
+    name: guava
+    version: { ref: guava }
+
+  bstatsBukkit:
+    group: org.bstats
+    name: bstats-bukkit
+    version: { ref: bstats }
+  bstatsSponge:
+    group: org.bstats
+    name: bstats-sponge
+    version: { ref: bstats }
+
+  paperApi:
+    group: com.destroystokyo.paper
+    name: paper-api
+    version: { ref: paperApi }
+  paperLib:
+    group: io.papermc
+    name: paperlib
+    version: { ref: paperLib }
+
+bundles:
