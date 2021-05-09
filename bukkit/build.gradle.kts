@@ -29,7 +29,7 @@ tasks {
   }
   shadowJar {
     archiveFileName.set(project.name + "-" + project.version + ".jar")
-    configureShadow()
+    configureShadowJar()
     relocateDependency("io.papermc.lib")
     relocateDependency("io.leangen.geantyref")
   }
@@ -44,7 +44,7 @@ bukkit {
   author = "Draycia"
   depend = listOf("PlaceholderAPI", "Vault")
   loadBefore = listOf("Essentials")
-  website = rootProject.ext["github"] as String
+  website = GITHUB_REPO_URL
   permissions {
     create("carbonchat.channels.global.see") {
       default = TRUE

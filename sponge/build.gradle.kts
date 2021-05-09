@@ -1,6 +1,6 @@
-import java.util.Locale
-import org.spongepowered.plugin.metadata.PluginDependency
 import org.spongepowered.gradle.plugin.config.PluginLoaders
+import org.spongepowered.plugin.metadata.PluginDependency
+import java.util.Locale
 
 plugins {
   id("com.github.johnrengelman.shadow")
@@ -22,7 +22,7 @@ tasks {
   }
   shadowJar {
     archiveFileName.set(project.name + "-" + project.version + ".jar")
-    configureShadow()
+    configureShadowJar()
     dependencies {
       // included in sponge
       exclude(dependency("io.leangen.geantyref:geantyref"))
@@ -38,10 +38,9 @@ sponge {
     mainClass("net.draycia.carbon.sponge.CarbonChatSponge")
     description(project.description)
     links {
-      val url = rootProject.ext["github"] as String
-      homepage(url)
-      source(url)
-      issues("$url/issues")
+      homepage(GITHUB_REPO_URL)
+      source(GITHUB_REPO_URL)
+      issues("$GITHUB_REPO_URL/issues")
     }
     contributor("Vicarious") {
       description("Lead Developer")

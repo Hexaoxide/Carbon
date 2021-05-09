@@ -9,24 +9,28 @@ plugins {
   id("net.kyori.indra")
   id("net.kyori.indra.git")
   id("net.kyori.indra.checkstyle")
-  id("net.kyori.indra.publishing")
+  id("net.kyori.indra.publishing") apply false
   id("com.github.johnrengelman.shadow") apply false
   id("org.checkerframework") apply false
 }
 
-ext["github"] = "https://github.com/Hexaoxide/Carbon"
-
-val projectVersion: String by project
-
 group = "net.draycia"
 description = "CarbonChat - A modern chat plugin"
-version = projectVersion // todo: include git hash
+val projectVersion: String by project // get from gradle.properties
+version = projectVersion
 
 subprojects {
   apply<IndraPlugin>()
   apply<IndraCheckstylePlugin>()
   apply<IndraPublishingPlugin>()
   apply<CheckerFrameworkPlugin>()
+
+  if (projectVersion.endsWith("-SNAPSHOT")) {
+    // Add git commit hash to version for platforms, but not for API
+    if (this != rootProject.projects.carbonchatApi.dependencyProject) {
+      version = "$projectVersion+${indraGit.commit()?.name?.substring(0, 7) ?: error("Failed to retrieve git commit hash")}"
+    }
+  }
 
   repositories {
     mavenCentral()

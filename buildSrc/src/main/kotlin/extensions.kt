@@ -25,7 +25,7 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("it.unimi.dsi.fastutil")
 }
 
-fun ShadowJar.configureShadow() {
+fun ShadowJar.configureShadowJar() {
   minimize()
 
   standardRelocations()
