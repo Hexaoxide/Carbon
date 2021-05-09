@@ -1,4 +1,4 @@
-package net.draycia.carbon.bukkit.util;
+package net.draycia.carbon.api.util;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;

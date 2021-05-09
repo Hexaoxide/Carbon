@@ -1,4 +1,4 @@
-package net.draycia.carbon.api;
+package net.draycia.carbon.api.util;
 
 import net.kyori.registry.DefaultedRegistryGetter;
 import org.checkerframework.checker.nullness.qual.NonNull;

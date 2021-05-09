@@ -2,6 +2,7 @@ package net.draycia.carbon.sponge;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 public class CarbonChatSponge implements CarbonChat {
   private final PluginContainer pluginContainer;
   private final Logger logger;
+  private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
   private static final int BSTATS_PLUGIN_ID = 11279;
 
@@ -42,6 +44,12 @@ public class CarbonChatSponge implements CarbonChat {
   @Override
   public @NonNull Logger logger() {
     return this.logger;
+  }
+
+  @Override
+  public @NonNull CarbonEventHandler eventHandler() {
+    // TODO: move to common
+    return this.eventHandler;
   }
 
   @Override

@@ -2,6 +2,7 @@ package net.draycia.carbon.bukkit;
 
 import io.papermc.lib.PaperLib;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +25,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 
 public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   private final Logger logger = LogManager.getLogger("CarbonChat");
+  private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
   private static final int BSTATS_PLUGIN_ID = 8720;
 
@@ -49,6 +51,12 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
   @Override
   public @NonNull Logger logger() {
     return this.logger;
+  }
+
+  @Override
+  public @NonNull CarbonEventHandler eventHandler() {
+    // TODO: move to common
+    return this.eventHandler;
   }
 
   @Override

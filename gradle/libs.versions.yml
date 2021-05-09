@@ -45,6 +45,9 @@ dependencies:
   adventureTextSerializerPlain:
     group: net.kyori
     name: adventure-text-serializer-plain
+  adventureTextSerializerLegacy:
+    group: net.kyori
+    name: adventure-text-serializer-legacy
   adventureSerializerConfigurate4:
     group: net.kyori
     name: adventure-serializer-configurate4
