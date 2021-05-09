@@ -38,7 +38,7 @@ tasks {
 // Generates plugin.yml automatically
 bukkit {
   name = rootProject.name
-  version = rootProject.version as String
+  version = project.version as String
   main = "net.draycia.carbon.bukkit.CarbonChatBukkit"
   apiVersion = "1.13"
   author = "Draycia"
