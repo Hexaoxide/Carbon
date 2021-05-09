@@ -9,7 +9,6 @@ plugins {
 
 dependencies {
   implementation(projects.carbonchatApi)
-  implementation(libs.adventureTextSerializerLegacy)
   implementation(libs.cloudSponge)
   //implementation(libs.bstatsSponge) // not updated for api 8 yet
 }
