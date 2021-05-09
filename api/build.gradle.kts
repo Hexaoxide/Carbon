@@ -40,18 +40,3 @@ dependencies {
   compileOnlyApi(libs.gson)
   compileOnlyApi(libs.log4jApi)
 }
-
-
-publishing {
-  /*
-  publications {
-    maven(MavenPublication) {
-      groupId = "net.draycia"
-      artifactId = description
-      version = projectVersion // No hash
-
-      from components.java
-    }
-  }
-   */
-}

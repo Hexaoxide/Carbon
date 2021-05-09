@@ -76,7 +76,6 @@ subprojects {
 
     github("Hexaoxide", "Carbon")
   }
-
 }
 
 tasks {
