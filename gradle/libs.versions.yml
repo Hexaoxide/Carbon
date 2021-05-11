@@ -4,7 +4,7 @@ metadata:
     - plugins
 
 plugins:
-  net.kyori.indra: &indra 2.0.2
+  net.kyori.indra: &indra 2.0.3
   net.kyori.indra.checkstyle: *indra
   net.kyori.indra.publishing: *indra
   net.kyori.indra.git: *indra
