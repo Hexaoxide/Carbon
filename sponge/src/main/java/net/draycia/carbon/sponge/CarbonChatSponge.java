@@ -81,6 +81,8 @@ public class CarbonChatSponge implements CarbonChat {
 
     final TextComponent.Builder builder = text();
 
+    builder.hoverEvent(itemStack.createSnapshot());
+
     builder.append(text('[', WHITE));
     builder.append(itemStack.get(Keys.DISPLAY_NAME).orElse(itemStack.type().asComponent()));
     builder.append(text(']', WHITE));
