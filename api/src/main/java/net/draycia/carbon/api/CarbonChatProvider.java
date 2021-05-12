@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class CarbonChatProvider {
 
   private CarbonChatProvider() {
+
   }
 
   private static @Nullable CarbonChat instance;

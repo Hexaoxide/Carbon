@@ -11,6 +11,7 @@ import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import static java.util.Objects.requireNonNull;
 
 public final class SpongePlayerCommander implements PlayerCommander, SpongeCommander {
+
   private final CarbonChat carbon;
   private final ServerPlayer player;
   private final CommandCause commandCause;
@@ -39,4 +40,5 @@ public final class SpongePlayerCommander implements PlayerCommander, SpongeComma
   public @NonNull Audience audience() {
     return this.commandCause.audience();
   }
+
 }

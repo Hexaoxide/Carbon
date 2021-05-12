@@ -11,6 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import static java.util.Objects.requireNonNull;
 
 public final class BukkitPlayerCommander implements PlayerCommander, BukkitCommander {
+
   private final CarbonChat carbon;
   private final Player player;
 
@@ -37,4 +38,5 @@ public final class BukkitPlayerCommander implements PlayerCommander, BukkitComma
   public @NonNull CarbonPlayer carbonPlayer() {
     return requireNonNull(this.carbon.userManager().carbonPlayer(this.player.getUniqueId()), "No CarbonPlayer for logged in Player!");
   }
+
 }

@@ -8,6 +8,7 @@ public class SpongeChatListener {
 
   @Listener
   public void onPlayerChat(final @NonNull PlayerChatEvent event) {
+
   }
 
 }

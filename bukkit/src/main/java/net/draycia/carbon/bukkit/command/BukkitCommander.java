@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface BukkitCommander extends Commander, ForwardingAudience.Single {
+
   @NonNull CommandSender commandSender();
 
   static @NonNull BukkitCommander from(final @NonNull CommandSender sender) {
@@ -29,4 +30,5 @@ public interface BukkitCommander extends Commander, ForwardingAudience.Single {
       return this.commandSender;
     }
   }
+
 }

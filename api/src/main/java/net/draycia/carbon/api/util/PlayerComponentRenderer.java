@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 @FunctionalInterface
 public interface PlayerComponentRenderer {
+
   /**
    * Renders a Component for the specified recipient.
    * @param sender The player that sent the message.
@@ -19,4 +20,5 @@ public interface PlayerComponentRenderer {
   Component render(final @NonNull CarbonPlayer sender,
                    final @NonNull CarbonPlayer recipient,
                    final @NonNull Component message);
+
 }

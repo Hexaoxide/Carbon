@@ -9,6 +9,7 @@ public class BukkitChatListener implements Listener {
 
   @EventHandler
   public void onPlayerchat(final @NonNull AsyncChatEvent event) {
+
   }
 
 }

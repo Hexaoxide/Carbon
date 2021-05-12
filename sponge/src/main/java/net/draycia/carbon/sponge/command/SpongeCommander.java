@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.api.command.CommandCause;
 
 public interface SpongeCommander extends Commander, ForwardingAudience.Single {
+
   @NonNull CommandCause commandCause();
 
   static @NonNull SpongeCommander from(final @NonNull CommandCause commandCause) {
@@ -30,4 +31,5 @@ public interface SpongeCommander extends Commander, ForwardingAudience.Single {
       return this.commandCause.audience();
     }
   }
+
 }
