@@ -51,6 +51,14 @@
   </module>
   <module name="NewlineAtEndOfFile"/>
 
+  <!-- empty line at beginning after class/interface/enum definition -->
+  <!-- Temporary until https://github.com/checkstyle/checkstyle/issues/5313 -->
+  <module name="RegexpMultiline">
+    <property name="format" value="^([^\r\n ]+ )*(class|interface|enum) [^{]*\{\r?\n[^\r\n}]"/>
+    <property name="message" value="Leave empty row after class/interface/enum definition!"/>
+    <property name="fileExtensions" value="groovy,java"/>
+  </module>
+
   <module name="SuppressWarningsFilter" />
 
   <module name="TreeWalker">
