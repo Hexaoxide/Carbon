@@ -4,6 +4,7 @@ import io.papermc.lib.PaperLib;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.util.logging.Level;
 
@@ -11,11 +12,11 @@ public class CarbonChatBukkitEntry extends JavaPlugin {
 
   private static final int BSTATS_PLUGIN_ID = 8720;
 
-  private CarbonChatBukkit carbon;
+  private @MonotonicNonNull CarbonChatBukkit carbon;
 
   @Override
   public void onEnable() {
-    this.carbon = new CarbonChatBukkit();
+    this.carbon = new CarbonChatBukkit(this);
 
     if (!PaperLib.isPaper()) {
       this.carbon.logger().error("*");

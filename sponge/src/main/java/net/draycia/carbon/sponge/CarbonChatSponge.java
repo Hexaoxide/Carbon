@@ -1,8 +1,14 @@
 package net.draycia.carbon.sponge;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
+import cloud.commandframework.sponge.SpongeCommandManager;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
+import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.sponge.command.SpongeCommander;
+import net.draycia.carbon.sponge.command.SpongePlayerCommander;
 import net.draycia.carbon.sponge.users.MemoryUserManagerSponge;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
@@ -22,9 +28,10 @@ import static net.kyori.adventure.text.Component.empty;
 @Plugin("carbonchat")
 public class CarbonChatSponge extends CarbonChatCommon {
 
+  private static final int BSTATS_PLUGIN_ID = 11279;
+
   private final PluginContainer pluginContainer;
   private final Logger logger;
-  private static final int BSTATS_PLUGIN_ID = 11279;
 
   private final @NonNull UserManager userManager = new MemoryUserManagerSponge();
 
@@ -49,6 +56,23 @@ public class CarbonChatSponge extends CarbonChatCommon {
   @Override
   public @NonNull UserManager userManager() {
     return this.userManager;
+  }
+
+  @Override
+  protected @NonNull CommandManager<Commander> createCommandManager() {
+    final SpongeCommandManager<Commander> commandManager = new SpongeCommandManager<>(
+      this.pluginContainer,
+      AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+      commander -> ((SpongeCommander) commander).commandCause(),
+      commandCause -> {
+        if (commandCause.subject() instanceof ServerPlayer) {
+          return new SpongePlayerCommander(this, (ServerPlayer) commandCause.subject(), commandCause);
+        }
+        return SpongeCommander.from(commandCause);
+      }
+    );
+    commandManager.parserMapper().cloudNumberSuggestions(true);
+    return commandManager;
   }
 
   @Override

@@ -32,8 +32,7 @@ public class MemoryUserManagerBukkit implements UserManager {
       return null;
     }
 
-    final CarbonPlayer carbonPlayer = new CarbonPlayerBukkit(player.getName(),
-      player.displayName(), player.getUniqueId());
+    final CarbonPlayer carbonPlayer = new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
 
     this.users.put(uuid, carbonPlayer);
 
@@ -46,6 +45,10 @@ public class MemoryUserManagerBukkit implements UserManager {
 
     if (player == null) {
       return null;
+    }
+
+    if (this.users.containsKey(player.getUniqueId())) {
+      return this.users.get(player.getUniqueId());
     }
 
     return new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());

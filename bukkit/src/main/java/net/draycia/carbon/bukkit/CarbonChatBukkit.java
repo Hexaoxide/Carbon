@@ -1,8 +1,15 @@
 package net.draycia.carbon.bukkit;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.brigadier.CloudBrigadierManager;
+import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
+import cloud.commandframework.paper.PaperCommandManager;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.bukkit.command.BukkitCommander;
+import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
 import net.draycia.carbon.bukkit.users.MemoryUserManagerBukkit;
 import net.draycia.carbon.common.CarbonChatCommon;
+import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +27,12 @@ import static net.kyori.adventure.text.Component.translatable;
 public final class CarbonChatBukkit extends CarbonChatCommon {
 
   private final @NonNull UserManager userManager = new MemoryUserManagerBukkit();
-  protected final Logger logger = LogManager.getLogger("CarbonChat");
+  private final Logger logger = LogManager.getLogger("CarbonChat");
+  private final CarbonChatBukkitEntry plugin;
+
+  CarbonChatBukkit(final @NonNull CarbonChatBukkitEntry plugin) {
+    this.plugin = plugin;
+  }
 
   @Override
   public @NonNull Logger logger() {
@@ -30,6 +42,33 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
   @Override
   public @NonNull UserManager userManager() {
     return this.userManager;
+  }
+
+  @Override
+  protected @NonNull CommandManager<Commander> createCommandManager() {
+    final PaperCommandManager<Commander> commandManager;
+    try {
+      commandManager = new PaperCommandManager<>(
+        this.plugin,
+        AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+        commandSender -> {
+          if (commandSender instanceof Player) {
+            return new BukkitPlayerCommander(this, (Player) commandSender);
+          }
+          return BukkitCommander.from(commandSender);
+        },
+        commander -> ((BukkitCommander) commander).commandSender()
+      );
+    } catch (final Exception ex) {
+      throw new RuntimeException("Failed to initialize command manager.", ex);
+    }
+    commandManager.registerAsynchronousCompletions();
+    commandManager.registerBrigadier();
+    final CloudBrigadierManager<Commander, ?> brigadierManager = commandManager.brigadierManager();
+    if (brigadierManager != null) {
+      brigadierManager.setNativeNumberSuggestions(false);
+    }
+    return commandManager;
   }
 
   @Override

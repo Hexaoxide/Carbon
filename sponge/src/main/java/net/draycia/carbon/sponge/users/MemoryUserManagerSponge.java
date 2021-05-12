@@ -51,6 +51,10 @@ public class MemoryUserManagerSponge implements UserManager {
       return null;
     }
 
+    if (this.users.containsKey(player.get().uniqueId())) {
+      return this.users.get(player.get().uniqueId());
+    }
+
     return new CarbonPlayerSponge(player.get().name(), text(player.get().name()),
       player.get().uniqueId());
   }
