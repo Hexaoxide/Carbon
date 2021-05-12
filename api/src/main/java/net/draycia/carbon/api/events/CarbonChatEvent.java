@@ -28,6 +28,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   }
 
   /**
+   * The renderer used to construct components for each player in recipients.
+   *
    * @return The per-player component renderer.
    */
   public @NonNull PlayerComponentRenderer renderer() {
@@ -37,6 +39,7 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   /**
    * The players that will receive the message.
    * List is mutable and players may be added/removed.
+   *
    * @return The players that will receive this message.
    */
   public @NonNull List<@NonNull CarbonPlayer> recipients() {

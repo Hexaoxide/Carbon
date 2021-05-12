@@ -10,9 +10,11 @@ public interface PlayerComponentRenderer {
 
   /**
    * Renders a Component for the specified recipient.
+   *
    * @param sender The player that sent the message.
    * @param recipient The player receiving the message.
    * @param message The message being sent.
+   *
    * @return The component to be shown to the recipient,
    * or null if the recipient should not receive the message.
    */
