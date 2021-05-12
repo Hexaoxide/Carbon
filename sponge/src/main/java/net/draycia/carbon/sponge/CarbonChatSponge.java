@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.api.Sponge;
@@ -18,8 +17,6 @@ import org.spongepowered.plugin.jvm.Plugin;
 import java.util.UUID;
 
 import static net.kyori.adventure.text.Component.empty;
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 
 @Plugin("carbonchat")
 public class CarbonChatSponge implements CarbonChat {
@@ -53,7 +50,7 @@ public class CarbonChatSponge implements CarbonChat {
   }
 
   @Override
-  public @NonNull Component createComponent(final @NonNull UUID uuid) {
+  public @NonNull Component createItemHoverComponent(final @NonNull UUID uuid) {
     final ServerPlayer player = Sponge.server().player(uuid).orElse(null);
     if (player == null) {
       return empty();
@@ -79,14 +76,9 @@ public class CarbonChatSponge implements CarbonChat {
       return empty();
     }
 
-    final TextComponent.Builder builder = text();
+    final Component displayName = itemStack.get(Keys.DISPLAY_NAME)
+      .orElse(itemStack.type().asComponent());
 
-    builder.hoverEvent(itemStack.createSnapshot());
-
-    builder.append(text('[', WHITE));
-    builder.append(itemStack.get(Keys.DISPLAY_NAME).orElse(itemStack.type().asComponent()));
-    builder.append(text(']', WHITE));
-
-    return builder.build();
+    return createItemHoverComponent(displayName, itemStack.createSnapshot());
   }
 }
