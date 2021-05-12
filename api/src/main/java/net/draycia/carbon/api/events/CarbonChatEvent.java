@@ -8,6 +8,9 @@ import java.util.List;
 
 import static net.kyori.adventure.text.Component.translatable;
 
+/**
+ * {@link CancellableCarbonEvent} that's called when chat components are rendered for online players.
+ */
 public class CarbonChatEvent extends CancellableCarbonEvent {
   private @NonNull PlayerComponentRenderer renderer = (sender, recipient, message) -> {
     return translatable("chat.type.text", sender.displayName(), message);
