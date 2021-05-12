@@ -27,7 +27,7 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   }
 
   /**
-   * The per-player component renderer.
+   * @return The per-player component renderer.
    */
   public @NonNull PlayerComponentRenderer renderer() {
     return this.renderer;
