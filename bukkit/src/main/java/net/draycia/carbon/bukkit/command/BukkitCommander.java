@@ -14,21 +14,13 @@ public interface BukkitCommander extends Commander, ForwardingAudience.Single {
     return new BukkitCommanderImpl(sender);
   }
 
-  final class BukkitCommanderImpl implements BukkitCommander {
-    private final CommandSender commandSender;
-
-    private BukkitCommanderImpl(final @NonNull CommandSender commandSender) {
-      this.commandSender = commandSender;
-    }
-
-    public @NonNull CommandSender commandSender() {
-      return this.commandSender;
-    }
+  record BukkitCommanderImpl(@NonNull CommandSender commandSender) implements BukkitCommander {
 
     @Override
     public @NonNull Audience audience() {
       return this.commandSender;
     }
+
   }
 
 }

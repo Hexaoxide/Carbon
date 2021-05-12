@@ -10,7 +10,7 @@ plugins {
   id("net.kyori.indra.git")
   id("net.kyori.indra.checkstyle")
   id("net.kyori.indra.publishing") apply false
-  id("com.github.johnrengelman.shadow") apply false
+  //id("com.github.johnrengelman.shadow") apply false
   id("org.checkerframework") apply false
 }
 
@@ -23,7 +23,7 @@ subprojects {
   apply<IndraPlugin>()
   apply<IndraCheckstylePlugin>()
   apply<IndraPublishingPlugin>()
-  //apply<CheckerFrameworkPlugin>()
+  apply<CheckerFrameworkPlugin>()
 
   if (projectVersion.endsWith("-SNAPSHOT")) {
     // Add git commit hash to version for platforms, but not for API
@@ -61,19 +61,17 @@ subprojects {
     disableAutoTargetJvm()
   }
 
-  /*
   configure<CheckerFrameworkExtension> {
     checkers = listOf(
       "org.checkerframework.checker.nullness.NullnessChecker"
     )
   }
-   */
 
   indra {
     gpl3OnlyLicense()
 
     javaVersions {
-      target(11)
+      target(16)
     }
 
     github("Hexaoxide", "Carbon")
@@ -85,4 +83,14 @@ tasks {
   withType<Jar> {
     onlyIf { false }
   }
+
+  withType<JavaCompile> {
+    options.forkOptions.jvmArgs = listOf("--illegal-access=permit")
+    options.isFork = true
+  }
+}
+
+tasks.named<JavaCompile>("compileJava") {
+  options.forkOptions.jvmArgs = listOf("--illegal-access=permit")
+  options.isFork = true
 }

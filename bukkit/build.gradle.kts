@@ -77,7 +77,7 @@ bukkit {
   name = rootProject.name
   version = project.version as String
   main = "net.draycia.carbon.bukkit.CarbonChatBukkitEntry"
-  apiVersion = "1.13"
+  apiVersion = "1.16"
   author = "Draycia"
   depend = listOf("PlaceholderAPI", "Vault")
   loadBefore = listOf("Essentials")

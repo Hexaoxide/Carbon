@@ -16,7 +16,7 @@ public final class CarbonEventHandler {
   }
 
   public <T extends CarbonEvent> void register(final @NonNull Class<T> clazz, final int priority, final boolean consumeCancelled, final @NonNull Consumer<T> consumer) {
-    this.eventBus.register(clazz, new EventSubscriber<T>() {
+    this.eventBus.register(clazz, new EventSubscriber<>() {
       @Override
       public int postOrder() {
         return priority;

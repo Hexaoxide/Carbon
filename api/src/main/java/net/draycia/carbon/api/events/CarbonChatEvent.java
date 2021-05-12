@@ -13,9 +13,8 @@ import static net.kyori.adventure.text.Component.translatable;
  */
 public class CarbonChatEvent extends CancellableCarbonEvent {
 
-  private @NonNull PlayerComponentRenderer renderer = (sender, recipient, message) -> {
-    return translatable("chat.type.text", sender.displayName(), message);
-  };
+  private @NonNull PlayerComponentRenderer renderer = (sender, recipient, message) ->
+    translatable("chat.type.text", sender.displayName(), message);
 
   private final @NonNull List<@NonNull CarbonPlayer> recipients;
 
