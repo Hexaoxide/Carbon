@@ -16,17 +16,18 @@ public class CarbonChatBukkitEntry extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    this.carbon = new CarbonChatBukkit(this);
-
     if (!PaperLib.isPaper()) {
-      this.carbon.logger().error("*");
-      this.carbon.logger().error("* CarbonChat makes extensive use of APIs added by Paper.");
-      this.carbon.logger().error("* For this reason, CarbonChat is not compatible with Spigot or CraftBukkit servers.");
-      this.carbon.logger().error("* Upgrade your server to Paper in order to use CarbonChat.");
-      this.carbon.logger().error("*");
+      this.getLogger().log(Level.SEVERE, "*");
+      this.getLogger().log(Level.SEVERE, "* CarbonChat makes extensive use of APIs added by Paper.");
+      this.getLogger().log(Level.SEVERE, "* For this reason, CarbonChat is not compatible with Spigot or CraftBukkit servers.");
+      this.getLogger().log(Level.SEVERE, "* Upgrade your server to Paper in order to use CarbonChat.");
+      this.getLogger().log(Level.SEVERE, "*");
       PaperLib.suggestPaper(this, Level.SEVERE);
       Bukkit.getPluginManager().disablePlugin(this);
+      return;
     }
+
+    this.carbon = new CarbonChatBukkit(this);
 
     final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
