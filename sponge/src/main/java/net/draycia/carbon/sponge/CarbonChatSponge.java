@@ -10,20 +10,11 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.sponge.command.SpongeCommander;
 import net.draycia.carbon.sponge.command.SpongePlayerCommander;
 import net.draycia.carbon.sponge.users.MemoryUserManagerSponge;
-import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.Keys;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.jvm.Plugin;
-
-import java.util.UUID;
-
-import static net.kyori.adventure.text.Component.empty;
 
 @Plugin("carbonchat")
 public class CarbonChatSponge extends CarbonChatCommon {
@@ -75,36 +66,4 @@ public class CarbonChatSponge extends CarbonChatCommon {
     return commandManager;
   }
 
-  @Override
-  public @NonNull Component createItemHoverComponent(final @NonNull UUID uuid) {
-    final ServerPlayer player = Sponge.server().player(uuid).orElse(null);
-    if (player == null) {
-      return empty();
-    }
-
-    final ItemStack itemStack;
-
-    final ItemStack mainHand = player.itemInHand(HandTypes.MAIN_HAND);
-
-    if (!mainHand.isEmpty()) {
-      itemStack = mainHand;
-    } else {
-      final ItemStack offHand = player.itemInHand(HandTypes.OFF_HAND);
-
-      if (!offHand.isEmpty()) {
-        itemStack = offHand;
-      } else {
-        itemStack = null;
-      }
-    }
-
-    if (itemStack == null || itemStack.isEmpty()) {
-      return empty();
-    }
-
-    final Component displayName = itemStack.get(Keys.DISPLAY_NAME)
-      .orElse(itemStack.type().asComponent());
-
-    return createItemHoverComponent(displayName, itemStack.createSnapshot());
-  }
 }

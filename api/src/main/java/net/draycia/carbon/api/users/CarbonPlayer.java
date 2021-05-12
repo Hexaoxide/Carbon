@@ -18,4 +18,6 @@ public interface CarbonPlayer extends Audience, Identified {
 
   @NonNull UUID uuid();
 
+  @NonNull Component createItemHoverComponent();
+
 }
