@@ -2,8 +2,6 @@ import net.kyori.indra.IndraCheckstylePlugin
 import net.kyori.indra.IndraPlugin
 import net.kyori.indra.IndraPublishingPlugin
 import net.kyori.indra.repository.sonatypeSnapshots
-import org.checkerframework.gradle.plugin.CheckerFrameworkExtension
-import org.checkerframework.gradle.plugin.CheckerFrameworkPlugin
 
 plugins {
   id("net.kyori.indra")
@@ -23,7 +21,6 @@ subprojects {
   apply<IndraPlugin>()
   apply<IndraCheckstylePlugin>()
   apply<IndraPublishingPlugin>()
-  apply<CheckerFrameworkPlugin>()
 
   if (projectVersion.endsWith("-SNAPSHOT")) {
     // Add git commit hash to version for platforms, but not for API
@@ -61,12 +58,6 @@ subprojects {
     disableAutoTargetJvm()
   }
 
-  configure<CheckerFrameworkExtension> {
-    checkers = listOf(
-      "org.checkerframework.checker.nullness.NullnessChecker"
-    )
-  }
-
   indra {
     gpl3OnlyLicense()
 
@@ -83,14 +74,4 @@ tasks {
   withType<Jar> {
     onlyIf { false }
   }
-
-  withType<JavaCompile> {
-    options.forkOptions.jvmArgs = listOf("--illegal-access=permit")
-    options.isFork = true
-  }
-}
-
-tasks.named<JavaCompile>("compileJava") {
-  options.forkOptions.jvmArgs = listOf("--illegal-access=permit")
-  options.isFork = true
 }
