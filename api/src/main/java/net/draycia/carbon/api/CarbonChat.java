@@ -1,6 +1,7 @@
 package net.draycia.carbon.api;
 
 import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEventSource;
@@ -14,6 +15,8 @@ public interface CarbonChat {
   @NonNull Logger logger();
 
   @NonNull CarbonEventHandler eventHandler();
+
+  @NonNull UserManager userManager();
 
   @NonNull Component createItemHoverComponent(final @NonNull UUID uuid);
 

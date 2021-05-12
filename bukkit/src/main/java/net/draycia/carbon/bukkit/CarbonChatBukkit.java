@@ -1,5 +1,7 @@
 package net.draycia.carbon.bukkit;
 
+import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.bukkit.users.MemoryUserManagerBukkit;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -14,6 +16,13 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.translatable;
 
 public final class CarbonChatBukkit extends CarbonChatCommon {
+
+  private UserManager userManager = new MemoryUserManagerBukkit();
+
+  @Override
+  public @NonNull UserManager userManager() {
+    return this.userManager;
+  }
 
   @Override
   public @NonNull Component createItemHoverComponent(final @NonNull UUID uuid) {
