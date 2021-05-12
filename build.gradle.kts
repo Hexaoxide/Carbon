@@ -23,7 +23,7 @@ subprojects {
   apply<IndraPlugin>()
   apply<IndraCheckstylePlugin>()
   apply<IndraPublishingPlugin>()
-  apply<CheckerFrameworkPlugin>()
+  //apply<CheckerFrameworkPlugin>()
 
   if (projectVersion.endsWith("-SNAPSHOT")) {
     // Add git commit hash to version for platforms, but not for API
@@ -61,11 +61,13 @@ subprojects {
     disableAutoTargetJvm()
   }
 
+  /*
   configure<CheckerFrameworkExtension> {
     checkers = listOf(
       "org.checkerframework.checker.nullness.NullnessChecker"
     )
   }
+   */
 
   indra {
     gpl3OnlyLicense()
