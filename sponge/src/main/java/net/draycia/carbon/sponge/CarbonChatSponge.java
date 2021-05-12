@@ -1,10 +1,9 @@
 package net.draycia.carbon.sponge;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.common.CarbonChatCommon;
 import net.kyori.adventure.text.Component;
-import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
@@ -19,34 +18,20 @@ import java.util.UUID;
 import static net.kyori.adventure.text.Component.empty;
 
 @Plugin("carbonchat")
-public class CarbonChatSponge implements CarbonChat {
-  private final PluginContainer pluginContainer;
-  private final Logger logger;
-  private final CarbonEventHandler eventHandler = new CarbonEventHandler();
+public class CarbonChatSponge extends CarbonChatCommon {
 
+  private final PluginContainer pluginContainer;
   private static final int BSTATS_PLUGIN_ID = 11279;
 
   @Inject
   public CarbonChatSponge(
     //final Metrics.@NonNull Factory metricsFactory,
-    final @NonNull PluginContainer pluginContainer,
-    final @NonNull Logger logger
+    final @NonNull PluginContainer pluginContainer
   ) {
     this.pluginContainer = pluginContainer;
-    this.logger = logger;
+    this.initialize();
 
     //metricsFactory.make(BSTATS_PLUGIN_ID);
-  }
-
-  @Override
-  public @NonNull Logger logger() {
-    return this.logger;
-  }
-
-  @Override
-  public @NonNull CarbonEventHandler eventHandler() {
-    // TODO: move to common
-    return this.eventHandler;
   }
 
   @Override

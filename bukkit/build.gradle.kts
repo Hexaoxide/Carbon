@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.carbonchatApi)
+  implementation(projects.carbonchatCommon)
 
   // Server
   compileOnly(libs.paperApi)
@@ -39,7 +39,7 @@ tasks {
 bukkit {
   name = rootProject.name
   version = project.version as String
-  main = "net.draycia.carbon.bukkit.CarbonChatBukkit"
+  main = "net.draycia.carbon.bukkit.CarbonChatBukkitEntry"
   apiVersion = "1.13"
   author = "Draycia"
   depend = listOf("PlaceholderAPI", "Vault")

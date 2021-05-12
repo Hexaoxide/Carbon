@@ -4,7 +4,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven("https://repo.stellardrift.ca/repository/snapshots/") // todo: polyglot-version-catalogs is not relased on the gradle plugin portal yet
+    maven("https://repo.stellardrift.ca/repository/snapshots/") // todo: polyglot-version-catalogs is not released on the gradle plugin portal yet
   }
 }
 
@@ -16,6 +16,9 @@ rootProject.name = "CarbonChat"
 
 setupSubproject("carbonchat-api") {
   projectDir = file("api")
+}
+setupSubproject("carbonchat-common") {
+  projectDir = file("common")
 }
 setupSubproject("carbonchat-bukkit") {
   projectDir = file("bukkit")
