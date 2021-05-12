@@ -6,8 +6,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEventSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static net.kyori.adventure.text.Component.text;
@@ -15,16 +13,10 @@ import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 
 public abstract class CarbonChatCommon implements CarbonChat {
 
-  protected final Logger logger = LogManager.getLogger("CarbonChat");
   private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
   public void initialize() {
 
-  }
-
-  @Override
-  public @NonNull Logger logger() {
-    return this.logger;
   }
 
   @Override

@@ -5,6 +5,7 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.sponge.users.MemoryUserManagerSponge;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
@@ -22,6 +23,7 @@ import static net.kyori.adventure.text.Component.empty;
 public class CarbonChatSponge extends CarbonChatCommon {
 
   private final PluginContainer pluginContainer;
+  private final Logger logger;
   private static final int BSTATS_PLUGIN_ID = 11279;
 
   private final @NonNull UserManager userManager = new MemoryUserManagerSponge();
@@ -29,12 +31,19 @@ public class CarbonChatSponge extends CarbonChatCommon {
   @Inject
   public CarbonChatSponge(
     //final Metrics.@NonNull Factory metricsFactory,
-    final @NonNull PluginContainer pluginContainer
+    final @NonNull PluginContainer pluginContainer,
+    final @NonNull Logger logger
   ) {
     this.pluginContainer = pluginContainer;
+    this.logger = logger;
     this.initialize();
 
     //metricsFactory.make(BSTATS_PLUGIN_ID);
+  }
+
+  @Override
+  public @NonNull Logger logger() {
+    return this.logger;
   }
 
   @Override

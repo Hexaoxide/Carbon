@@ -4,6 +4,8 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.users.MemoryUserManagerBukkit;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +20,12 @@ import static net.kyori.adventure.text.Component.translatable;
 public final class CarbonChatBukkit extends CarbonChatCommon {
 
   private final @NonNull UserManager userManager = new MemoryUserManagerBukkit();
+  protected final Logger logger = LogManager.getLogger("CarbonChat");
+
+  @Override
+  public @NonNull Logger logger() {
+    return this.logger;
+  }
 
   @Override
   public @NonNull UserManager userManager() {
