@@ -67,7 +67,25 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
       return empty();
     }
 
-    final ItemStack itemStack = player.getInventory().getItemInMainHand();
+    final ItemStack itemStack;
+
+    final ItemStack mainHand = player.getInventory().getItemInMainHand();
+
+    if (mainHand != null && !mainHand.getType().isAir()) {
+      itemStack = mainHand;
+    } else {
+      final ItemStack offHand = player.getInventory().getItemInMainHand();
+
+      if (offHand != null && !offHand.getType().isAir()) {
+        itemStack = offHand;
+      } else {
+        itemStack = null;
+      }
+    }
+
+    if (itemStack == null) {
+      return empty();
+    }
 
     if (itemStack.getType().isAir()) {
       return empty();
