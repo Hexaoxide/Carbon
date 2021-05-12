@@ -17,7 +17,7 @@ import static net.kyori.adventure.text.Component.translatable;
 
 public final class CarbonChatBukkit extends CarbonChatCommon {
 
-  private UserManager userManager = new MemoryUserManagerBukkit();
+  private final @NonNull UserManager userManager = new MemoryUserManagerBukkit();
 
   @Override
   public @NonNull UserManager userManager() {

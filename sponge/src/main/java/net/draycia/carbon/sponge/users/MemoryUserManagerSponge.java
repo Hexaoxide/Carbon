@@ -1,22 +1,25 @@
-package net.draycia.carbon.bukkit.users;
+package net.draycia.carbon.sponge.users;
 
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+
+import static net.kyori.adventure.text.Component.text;
 
 /**
  * This class should not be used.
  * No data is persisted or saved.
  * This exists merely as a placeholder.
  */
-public class MemoryUserManagerBukkit implements UserManager {
+public class MemoryUserManagerSponge implements UserManager {
 
   private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
 
@@ -26,14 +29,14 @@ public class MemoryUserManagerBukkit implements UserManager {
       return this.users.get(uuid);
     }
 
-    final Player player = Bukkit.getPlayer(uuid);
+    final Optional<ServerPlayer> player = Sponge.server().player(uuid);
 
-    if (player == null) {
+    if (player.isEmpty()) {
       return null;
     }
 
-    final CarbonPlayer carbonPlayer = new CarbonPlayerBukkit(player.getName(),
-      player.displayName(), player.getUniqueId());
+    final CarbonPlayer carbonPlayer = new CarbonPlayerSponge(player.get().name(),
+      text(player.get().name()), player.get().uniqueId());
 
     this.users.put(uuid, carbonPlayer);
 
@@ -42,13 +45,14 @@ public class MemoryUserManagerBukkit implements UserManager {
 
   @Override
   public @Nullable CarbonPlayer carbonPlayer(final @NonNull String username) {
-    final Player player = Bukkit.getPlayer(username);
+    final Optional<ServerPlayer> player = Sponge.server().player(username);
 
-    if (player == null) {
+    if (player.isEmpty()) {
       return null;
     }
 
-    return new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
+    return new CarbonPlayerSponge(player.get().name(), text(player.get().name()),
+      player.get().uniqueId());
   }
 
 }
