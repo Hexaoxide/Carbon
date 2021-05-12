@@ -23,13 +23,9 @@ public class CarbonPlayerSponge extends CarbonPlayerCommon {
 
   @Override
   public @NonNull Audience audience() {
-    final Optional<ServerPlayer> player = this.player();
-
-    if (player.isEmpty()) {
-      return Audience.empty();
-    }
-
-    return player.get();
+    return this.player()
+      .map(player -> (Audience) player)
+      .orElseGet(Audience::empty);
   }
 
   private @NonNull Optional<ServerPlayer> player() {
