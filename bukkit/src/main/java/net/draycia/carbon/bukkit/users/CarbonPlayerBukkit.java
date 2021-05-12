@@ -26,6 +26,17 @@ public class CarbonPlayerBukkit extends CarbonPlayerCommon {
   }
 
   @Override
+  public void displayName(final @Nullable Component displayName) {
+    super.displayName(displayName);
+
+    final Player player = this.player();
+
+    if (player != null) {
+      player.displayName(displayName);
+    }
+  }
+
+  @Override
   public @NonNull Audience audience() {
     final Player player = this.player();
 

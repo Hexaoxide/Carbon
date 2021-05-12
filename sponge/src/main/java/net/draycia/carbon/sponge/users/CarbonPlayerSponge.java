@@ -5,6 +5,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.type.HandTypes;
@@ -22,6 +23,19 @@ public class CarbonPlayerSponge extends CarbonPlayerCommon {
     final @NonNull UUID uuid
   ) {
     super(username, displayName, uuid, Identity.identity(uuid));
+  }
+
+  @Override
+  public void displayName(final @Nullable Component displayName) {
+    super.displayName(displayName);
+
+    this.player().ifPresent(player -> {
+      if (displayName != null) {
+        player.offer(Keys.CUSTOM_NAME, displayName);
+      } else {
+        player.remove(Keys.CUSTOM_NAME);
+      }
+    });
   }
 
   @Override
