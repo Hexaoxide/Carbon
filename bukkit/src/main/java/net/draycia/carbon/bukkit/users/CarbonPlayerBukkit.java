@@ -15,7 +15,7 @@ import java.util.UUID;
 import static java.util.Objects.requireNonNullElseGet;
 import static net.kyori.adventure.text.Component.translatable;
 
-public class CarbonPlayerBukkit extends CarbonPlayerCommon {
+public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
   public CarbonPlayerBukkit(
     final @NonNull String username,

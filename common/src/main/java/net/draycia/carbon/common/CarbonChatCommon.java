@@ -41,7 +41,7 @@ public abstract class CarbonChatCommon implements CarbonChat {
   protected abstract @NonNull CommandManager<Commander> createCommandManager();
 
   @Override
-  public @NonNull CarbonEventHandler eventHandler() {
+  public final @NonNull CarbonEventHandler eventHandler() {
     return this.eventHandler;
   }
 

@@ -36,12 +36,17 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
     this.recipients = recipients;
   }
 
+  /**
+   * Set the {@link PlayerComponentRenderer} for the event.
+   *
+   * @param renderer new {@link PlayerComponentRenderer}
+   */
   public void renderer(final @NonNull PlayerComponentRenderer renderer) {
     this.renderer = renderer;
   }
 
   /**
-   * The renderer used to construct components for each player in recipients.
+   * Get the renderer used to construct components for each player in recipients.
    *
    * @return The per-player component renderer.
    */
@@ -50,7 +55,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   }
 
   /**
-   * The sender of the message.
+   * Get the sender of the message.
+   *
    * @return The message sender.
    */
   public CarbonPlayer sender() {
@@ -58,7 +64,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   }
 
   /**
-   * The original message that was sent.
+   * Get the original message that was sent.
+   *
    * @return The original message.
    */
   public Component originalMessage() {
@@ -66,13 +73,19 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   }
 
   /**
-   * The chat message that will be sent.
+   * Get the chat message that will be sent.
+   *
    * @return The chat message.
    */
   public Component message() {
     return this.message;
   }
 
+  /**
+   * Set the chat message that will be sent.
+   *
+   * @param message new message
+   */
   public void message(final @NonNull Component message) {
     this.message = message;
   }

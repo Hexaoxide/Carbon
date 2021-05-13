@@ -19,7 +19,7 @@ import static net.kyori.adventure.text.Component.text;
  * No data is persisted or saved.
  * This exists merely as a placeholder.
  */
-public class MemoryUserManagerSponge implements UserManager {
+public final class MemoryUserManagerSponge implements UserManager {
 
   private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
 

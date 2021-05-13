@@ -12,7 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 
-public class BukkitChatListener implements Listener {
+public final class BukkitChatListener implements Listener {
 
   private final CarbonChat carbonChat;
   private final UserManager userManager;

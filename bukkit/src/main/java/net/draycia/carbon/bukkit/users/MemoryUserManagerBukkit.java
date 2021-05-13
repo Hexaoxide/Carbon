@@ -16,7 +16,7 @@ import java.util.UUID;
  * No data is persisted or saved.
  * This exists merely as a placeholder.
  */
-public class MemoryUserManagerBukkit implements UserManager {
+public final class MemoryUserManagerBukkit implements UserManager {
 
   private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
 

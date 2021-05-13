@@ -15,7 +15,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import java.util.Optional;
 import java.util.UUID;
 
-public class CarbonPlayerSponge extends CarbonPlayerCommon {
+public final class CarbonPlayerSponge extends CarbonPlayerCommon {
 
   public CarbonPlayerSponge(
     final @NonNull String username,

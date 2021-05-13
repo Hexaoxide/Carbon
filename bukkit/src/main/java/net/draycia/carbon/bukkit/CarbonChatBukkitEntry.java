@@ -5,16 +5,15 @@ import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.util.logging.Level;
 
-public class CarbonChatBukkitEntry extends JavaPlugin {
+public final class CarbonChatBukkitEntry extends JavaPlugin {
 
   private static final int BSTATS_PLUGIN_ID = 8720;
 
-  @SuppressWarnings("initialization.fields.uninitialized")
-  private @NonNull CarbonChatBukkit carbon;
+  private @MonotonicNonNull CarbonChatBukkit carbon;
 
   @Override
   public void onEnable() {

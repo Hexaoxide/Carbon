@@ -17,7 +17,7 @@ import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.jvm.Plugin;
 
 @Plugin("carbonchat")
-public class CarbonChatSponge extends CarbonChatCommon {
+public final class CarbonChatSponge extends CarbonChatCommon {
 
   private static final int BSTATS_PLUGIN_ID = 11279;
 
