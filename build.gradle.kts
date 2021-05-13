@@ -27,6 +27,7 @@ subprojects {
     mavenCentral()
     maven("https://oss.sonatype.org/content/groups/public/")
     sonatypeSnapshots()
+    maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://nexus.proximyst.com/repository/maven-public/")
     //maven("https://repo.incendo.org/content/repositories/snapshots") // normal cloud snapshot repo
     maven("https://repo.jpenilla.xyz/snapshots/") { // temp cloud snapshot repo for sponge-8
@@ -35,7 +36,6 @@ subprojects {
       }
     }
     maven("https://maven.enginehub.org/repo/")
-    maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://jitpack.io")
     maven("https://dl.bintray.com/ichbinjoe/public/")
