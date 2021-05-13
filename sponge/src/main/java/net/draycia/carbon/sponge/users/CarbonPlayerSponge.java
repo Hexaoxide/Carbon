@@ -76,10 +76,8 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
       return Component.empty();
     }
 
-    final Component displayName = itemStack.get(Keys.DISPLAY_NAME)
+    return itemStack.get(Keys.DISPLAY_NAME)
       .orElse(itemStack.type().asComponent());
-
-    return this.createItemHoverComponent(displayName, itemStack.createSnapshot());
   }
 
 }

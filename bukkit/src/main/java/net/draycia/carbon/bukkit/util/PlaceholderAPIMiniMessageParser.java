@@ -18,11 +18,11 @@ import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyList;
 
-public final class PlaceholderAPIMiniMessageSerializer {
+public final class PlaceholderAPIMiniMessageParser {
 
   private final MiniMessage miniMessage;
 
-  private PlaceholderAPIMiniMessageSerializer(final @NonNull MiniMessage miniMessage) {
+  private PlaceholderAPIMiniMessageParser(final @NonNull MiniMessage miniMessage) {
     this.miniMessage = miniMessage;
   }
 
@@ -78,8 +78,8 @@ public final class PlaceholderAPIMiniMessageSerializer {
     return this.miniMessage.parse(builder.toString(), templates);
   }
 
-  public static @NonNull PlaceholderAPIMiniMessageSerializer create(final @NonNull MiniMessage backingInstance) {
-    return new PlaceholderAPIMiniMessageSerializer(backingInstance);
+  public static @NonNull PlaceholderAPIMiniMessageParser create(final @NonNull MiniMessage backingInstance) {
+    return new PlaceholderAPIMiniMessageParser(backingInstance);
   }
 
   private static boolean containsLegacyColorCodes(final @NonNull String string) {

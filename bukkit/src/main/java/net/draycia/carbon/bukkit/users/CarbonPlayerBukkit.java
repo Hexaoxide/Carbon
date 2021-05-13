@@ -12,9 +12,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNullElseGet;
-import static net.kyori.adventure.text.Component.translatable;
-
 public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
   public CarbonPlayerBukkit(
@@ -83,10 +80,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
       return Component.empty();
     }
 
-    final Component displayName = requireNonNullElseGet(itemStack.getItemMeta().displayName(), () ->
-      translatable(itemStack.getType().getTranslationKey()));
-
-    return this.createItemHoverComponent(displayName, itemStack);
+    return itemStack.displayName();
   }
 
 }
