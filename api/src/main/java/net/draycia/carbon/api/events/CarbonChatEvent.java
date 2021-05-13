@@ -2,6 +2,7 @@ package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.PlayerComponentRenderer;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
@@ -16,9 +17,22 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   private @NonNull PlayerComponentRenderer renderer = (sender, recipient, message) ->
     translatable("chat.type.text", sender.displayName(), message);
 
+  private final @NonNull CarbonPlayer sender;
+
+  private final @NonNull Component originalMessage;
+
+  private @NonNull Component message;
+
   private final @NonNull List<@NonNull CarbonPlayer> recipients;
 
-  public CarbonChatEvent(final @NonNull List<@NonNull CarbonPlayer> recipients) {
+  public CarbonChatEvent(
+    final @NonNull CarbonPlayer sender,
+    final @NonNull Component originalMessage,
+    final @NonNull List<@NonNull CarbonPlayer> recipients
+  ) {
+    this.sender = sender;
+    this.originalMessage = originalMessage;
+    this.message = originalMessage;
     this.recipients = recipients;
   }
 
@@ -33,6 +47,34 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
    */
   public @NonNull PlayerComponentRenderer renderer() {
     return this.renderer;
+  }
+
+  /**
+   * The sender of the message.
+   * @return The message sender.
+   */
+  public CarbonPlayer sender() {
+    return this.sender;
+  }
+
+  /**
+   * The original message that was sent.
+   * @return The original message.
+   */
+  public Component originalMessage() {
+    return this.originalMessage;
+  }
+
+  /**
+   * The chat message that will be sent.
+   * @return The chat message.
+   */
+  public Component message() {
+    return this.message;
+  }
+
+  public void message(final @NonNull Component message) {
+    this.message = message;
   }
 
   /**
