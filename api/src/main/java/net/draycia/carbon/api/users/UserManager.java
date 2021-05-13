@@ -5,6 +5,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
+/**
+ * Manager used to load and obtain {@link CarbonPlayer CarbonPlayers}.
+ *
+ * @since 2.0.0
+ */
 public interface UserManager {
 
   /**
@@ -13,6 +18,8 @@ public interface UserManager {
    * @param uuid The player's UUID.
    *
    * @return The {@link CarbonPlayer}, or null if the player doesn't exist.
+   *
+   * @since 2.0.0
    */
   @Nullable CarbonPlayer carbonPlayer(final @NonNull UUID uuid);
 
@@ -22,6 +29,8 @@ public interface UserManager {
    * @param username The player's username.
    *
    * @return The {@link CarbonPlayer}, or null if the player doesn't exist.
+   *
+   * @since 2.0.0
    */
   @Nullable CarbonPlayer carbonPlayer(final @NonNull String username);
 

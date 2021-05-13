@@ -11,6 +11,8 @@ import static net.kyori.adventure.text.Component.translatable;
 
 /**
  * {@link CancellableCarbonEvent} that's called when chat components are rendered for online players.
+ *
+ * @since 2.0.0
  */
 public class CarbonChatEvent extends CancellableCarbonEvent {
 
@@ -25,6 +27,15 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
 
   private final @NonNull List<@NonNull CarbonPlayer> recipients;
 
+  /**
+   * {@link CancellableCarbonEvent} that's called when chat components are rendered for online players.
+   *
+   * @param sender the sender of the message
+   * @param originalMessage the original message that was sent
+   * @param recipients the recipients of the message
+   *
+   * @since 2.0.0
+   */
   public CarbonChatEvent(
     final @NonNull CarbonPlayer sender,
     final @NonNull Component originalMessage,
@@ -39,7 +50,9 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   /**
    * Set the {@link PlayerComponentRenderer} for the event.
    *
-   * @param renderer new {@link PlayerComponentRenderer}
+   * @param renderer the renderer
+   *
+   * @since 2.0.0
    */
   public void renderer(final @NonNull PlayerComponentRenderer renderer) {
     this.renderer = renderer;
@@ -49,6 +62,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
    * Get the renderer used to construct components for each player in recipients.
    *
    * @return The per-player component renderer.
+   *
+   * @since 2.0.0
    */
   public @NonNull PlayerComponentRenderer renderer() {
     return this.renderer;
@@ -58,6 +73,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
    * Get the sender of the message.
    *
    * @return The message sender.
+   *
+   * @since 2.0.0
    */
   public CarbonPlayer sender() {
     return this.sender;
@@ -67,6 +84,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
    * Get the original message that was sent.
    *
    * @return The original message.
+   *
+   * @since 2.0.0
    */
   public Component originalMessage() {
     return this.originalMessage;
@@ -76,6 +95,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
    * Get the chat message that will be sent.
    *
    * @return The chat message.
+   *
+   * @since 2.0.0
    */
   public Component message() {
     return this.message;
@@ -85,6 +106,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
    * Set the chat message that will be sent.
    *
    * @param message new message
+   *
+   * @since 2.0.0
    */
   public void message(final @NonNull Component message) {
     this.message = message;
@@ -95,6 +118,8 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
    * List is mutable and players may be added/removed.
    *
    * @return The players that will receive this message.
+   *
+   * @since 2.0.0
    */
   public @NonNull List<@NonNull CarbonPlayer> recipients() {
     return this.recipients;

@@ -10,12 +10,27 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.regex.Pattern;
 
+/**
+ * Basic color related utilities.
+ *
+ * @since 1.0.0
+ */
 public final class ColorUtils {
 
   private ColorUtils() {
 
   }
 
+  /**
+   * Parses the input into a color.<br>
+   * Supports named colors, legacy, and hex inputs.
+   *
+   * @param input the color input
+   *
+   * @return the color
+   *
+   * @since 1.0.0
+   */
   public static @Nullable TextColor parseColor(@NonNull String input) {
     if (input.isEmpty()) {
       return NamedTextColor.WHITE;
@@ -44,7 +59,16 @@ public final class ColorUtils {
 
   private static final @NonNull String hexReplacement = "<#$1$2$3$4$5$6>";
 
-  public static @NonNull String translateAlternateColors(final @NonNull String input) {
+  /**
+   * Converts the input legacy, legacy rgb, and alternate color formats to MiniMessage color tags.
+   *
+   * @param input the message to convert
+   *
+   * @return the converted message
+   *
+   * @since 1.0.0
+   */
+  public static @NonNull String legacyToMiniMessage(final @NonNull String input) {
     String output = input;
 
     // Legacy RGB

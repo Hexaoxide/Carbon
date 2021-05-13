@@ -45,7 +45,7 @@ public final class BukkitChatListener implements Listener {
     }
 
     final var chatEvent = new CarbonChatEvent(player, event.message(), recipients);
-    final var result = this.carbonChat.eventHandler().post(chatEvent);
+    final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
     if (result.wasSuccessful()) {
       // TODO: send to channels

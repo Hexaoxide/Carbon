@@ -5,6 +5,11 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Renderer used to construct chat components on a per-player basis.
+ *
+ * @since 2.0.0
+ */
 @FunctionalInterface
 public interface PlayerComponentRenderer {
 
@@ -16,7 +21,9 @@ public interface PlayerComponentRenderer {
    * @param message The message being sent.
    *
    * @return The component to be shown to the recipient,
-   * or null if the recipient should not receive the message.
+   *     or null if the recipient should not receive the message.
+   *
+   * @since 2.0.0
    */
   @Nullable
   Component render(final @NonNull CarbonPlayer sender,

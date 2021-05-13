@@ -2,7 +2,7 @@
 
 <!--  MIT License-->
 
-<!--  Copyright (c) 2017-2020 KyoriPowered-->
+<!--  Copyright (c) 2017-2021 KyoriPowered-->
 
 <!--  Permission is hereby granted, free of charge, to any person obtaining a copy-->
 <!--  of this software and associated documentation files (the "Software"), to deal-->
@@ -27,5 +27,8 @@
   "http://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
   <!-- add any necessary suppressions here -->
-  <suppress files="src[\\/]test[\\/]java[\\/].*" checks="RequireExplicitVisibilityModifier"/>
+  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common)[\\/].*" checks="FilteringWriteTag" />
+  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common)[\\/].*" checks="MissingJavadocMethod" />
+  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common)[\\/].*" checks="MissingJavadocPackage" />
+  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common)[\\/].*" checks="MissingJavadocType" />
 </suppressions>
