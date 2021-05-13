@@ -1,7 +1,6 @@
 package net.draycia.carbon.bukkit;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.draycia.carbon.api.users.UserManager;
@@ -43,8 +42,8 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
         this.plugin,
         AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
         commandSender -> {
-          if (commandSender instanceof Player) {
-            return new BukkitPlayerCommander(this, (Player) commandSender);
+          if (commandSender instanceof Player player) {
+            return new BukkitPlayerCommander(this, player);
           }
           return BukkitCommander.from(commandSender);
         },
@@ -55,7 +54,7 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
     }
     commandManager.registerAsynchronousCompletions();
     commandManager.registerBrigadier();
-    final CloudBrigadierManager<Commander, ?> brigadierManager = commandManager.brigadierManager();
+    final var brigadierManager = commandManager.brigadierManager();
     if (brigadierManager != null) {
       brigadierManager.setNativeNumberSuggestions(false);
     }

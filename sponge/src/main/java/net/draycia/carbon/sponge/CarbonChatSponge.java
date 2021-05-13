@@ -56,8 +56,8 @@ public class CarbonChatSponge extends CarbonChatCommon {
       AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
       commander -> ((SpongeCommander) commander).commandCause(),
       commandCause -> {
-        if (commandCause.subject() instanceof ServerPlayer) {
-          return new SpongePlayerCommander(this, (ServerPlayer) commandCause.subject(), commandCause);
+        if (commandCause.subject() instanceof ServerPlayer player) {
+          return new SpongePlayerCommander(this, player, commandCause);
         }
         return SpongeCommander.from(commandCause);
       }
