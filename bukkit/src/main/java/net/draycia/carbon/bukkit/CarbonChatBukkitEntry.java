@@ -1,6 +1,7 @@
 package net.draycia.carbon.bukkit;
 
 import io.papermc.lib.PaperLib;
+import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +32,8 @@ public class CarbonChatBukkitEntry extends JavaPlugin {
     this.carbon = new CarbonChatBukkit(this);
 
     final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+
+    Bukkit.getPluginManager().registerEvents(new BukkitChatListener(this.carbon), this);
 
     this.carbon.initialize();
   }

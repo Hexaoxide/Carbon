@@ -23,7 +23,7 @@ public class BukkitChatListener implements Listener {
   }
 
   @EventHandler
-  public void onPlayerchat(final @NonNull AsyncChatEvent event) {
+  public void onPlayerChat(final @NonNull AsyncChatEvent event) {
     // There's no guarantee that recipients is mutable.
     // If it's ever immutable, we yell at who ever is responsible.
     event.recipients().clear();
