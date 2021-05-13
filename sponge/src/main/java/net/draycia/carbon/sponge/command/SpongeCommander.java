@@ -14,12 +14,21 @@ public interface SpongeCommander extends Commander, ForwardingAudience.Single {
     return new SpongeCommanderImpl(commandCause);
   }
 
-  record SpongeCommanderImpl(
-    @NonNull CommandCause commandCause) implements SpongeCommander {
+  final class SpongeCommanderImpl implements SpongeCommander {
+
+    private final CommandCause commandCause;
+
+    private SpongeCommanderImpl(final @NonNull CommandCause commandCause) {
+      this.commandCause = commandCause;
+    }
 
     @Override
-    public @NonNull
-    Audience audience() {
+    public @NonNull CommandCause commandCause() {
+      return this.commandCause;
+    }
+
+    @Override
+    public @NonNull Audience audience() {
       return this.commandCause.audience();
     }
 

@@ -10,21 +10,19 @@ import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 import static java.util.Objects.requireNonNull;
 
-public record SpongePlayerCommander(CarbonChat carbon,
-                                    @NonNull ServerPlayer player,
-                                    @NonNull CommandCause commandCause)
-  implements PlayerCommander, SpongeCommander {
+public record SpongePlayerCommander(
+  @NonNull CarbonChat carbon,
+  @NonNull ServerPlayer player,
+  @NonNull CommandCause commandCause
+) implements PlayerCommander, SpongeCommander {
 
   @Override
-  public @NonNull
-  CarbonPlayer carbonPlayer() {
-    return requireNonNull(this.carbon.userManager().carbonPlayer(this.player.uniqueId()),
-      "No CarbonPlayer for logged in Player!");
+  public @NonNull CarbonPlayer carbonPlayer() {
+    return requireNonNull(this.carbon.userManager().carbonPlayer(this.player.uniqueId()), "No CarbonPlayer for logged in Player!");
   }
 
   @Override
-  public @NonNull
-  Audience audience() {
+  public @NonNull Audience audience() {
     return this.commandCause.audience();
   }
 

@@ -10,26 +10,24 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.util.Objects.requireNonNull;
 
-public record BukkitPlayerCommander(CarbonChat carbon,
-                                    @NonNull Player player) implements PlayerCommander, BukkitCommander {
+public record BukkitPlayerCommander(
+  @NonNull CarbonChat carbon,
+  @NonNull Player player
+) implements PlayerCommander, BukkitCommander {
 
   @Override
-  public @NonNull
-  CommandSender commandSender() {
+  public @NonNull CommandSender commandSender() {
     return this.player;
   }
 
   @Override
-  public @NonNull
-  Audience audience() {
+  public @NonNull Audience audience() {
     return this.player;
   }
 
   @Override
-  public @NonNull
-  CarbonPlayer carbonPlayer() {
-    return requireNonNull(this.carbon.userManager().carbonPlayer(this.player.getUniqueId()),
-      "No CarbonPlayer for logged in Player!");
+  public @NonNull CarbonPlayer carbonPlayer() {
+    return requireNonNull(this.carbon.userManager().carbonPlayer(this.player.getUniqueId()), "No CarbonPlayer for logged in Player!");
   }
 
 }

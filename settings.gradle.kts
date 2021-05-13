@@ -5,6 +5,7 @@ pluginManagement {
   repositories {
     gradlePluginPortal()
     maven("https://repo.stellardrift.ca/repository/snapshots/") // todo: polyglot-version-catalogs is not released on the gradle plugin portal yet
+    maven("https://repo.jpenilla.xyz/snapshots/") // todo: for shadow to be compatible with Records
   }
 }
 

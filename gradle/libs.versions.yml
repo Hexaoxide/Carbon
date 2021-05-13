@@ -8,10 +8,9 @@ plugins:
   net.kyori.indra.checkstyle: *indra
   net.kyori.indra.publishing: *indra
   net.kyori.indra.git: *indra
-  com.github.johnrengelman.shadow: 7.0.0
+  com.github.johnrengelman.shadow: 7.1.0-hexaoxide-SNAPSHOT # todo: temporary until shadow bumps jdependency for Record support
   net.minecrell.plugin-yml.bukkit: 0.4.0
   org.spongepowered.gradle.plugin: 1.0.3
-  org.checkerframework: 0.5.20
 
 versions:
   adventure: 4.7.0

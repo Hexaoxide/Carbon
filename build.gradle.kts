@@ -1,15 +1,9 @@
-import net.kyori.indra.IndraCheckstylePlugin
-import net.kyori.indra.IndraPlugin
-import net.kyori.indra.IndraPublishingPlugin
 import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
   id("net.kyori.indra")
   id("net.kyori.indra.git")
   id("net.kyori.indra.checkstyle")
-  id("net.kyori.indra.publishing") apply false
-  //id("com.github.johnrengelman.shadow") apply false
-  id("org.checkerframework") apply false
 }
 
 group = "net.draycia"
@@ -18,9 +12,9 @@ val projectVersion: String by project // get from gradle.properties
 version = projectVersion
 
 subprojects {
-  apply<IndraPlugin>()
-  apply<IndraCheckstylePlugin>()
-  apply<IndraPublishingPlugin>()
+  plugins.apply("net.kyori.indra")
+  plugins.apply("net.kyori.indra.checkstyle")
+  plugins.apply("net.kyori.indra.publishing")
 
   if (projectVersion.endsWith("-SNAPSHOT")) {
     // Add git commit hash to version for platforms, but not for API
