@@ -12,22 +12,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 
+import static net.draycia.carbon.common.Injector.byInject;
+
 public final class BukkitChatListener implements Listener {
 
-  private final CarbonChat carbonChat;
-  private final UserManager userManager;
-
-  public BukkitChatListener(final CarbonChat carbonChat) {
-    this.carbonChat = carbonChat;
-    this.userManager = this.carbonChat.userManager();
-  }
+  private final CarbonChat carbonChat = byInject(CarbonChat.class);
+  private final UserManager userManager = this.carbonChat.userManager();
 
   @EventHandler
   public void onPlayerChat(final @NonNull AsyncChatEvent event) {
-    // There's no guarantee that recipients is mutable.
-    // If it's ever immutable, we yell at who ever is responsible.
-    event.recipients().clear();
-
     final var player = this.userManager.carbonPlayer(event.getPlayer().getUniqueId());
 
     if (player == null) {
@@ -59,6 +52,10 @@ public final class BukkitChatListener implements Listener {
         }
       }
     }
+
+    // There's no guarantee that recipients is mutable.
+    // If it's ever immutable, we yell at who ever is responsible.
+    event.recipients().clear();
   }
 
 }

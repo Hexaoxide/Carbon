@@ -32,7 +32,7 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
 
     final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
-    Bukkit.getPluginManager().registerEvents(new BukkitChatListener(this.carbon), this);
+    Bukkit.getPluginManager().registerEvents(new BukkitChatListener(), this);
 
     this.carbon.initialize();
   }

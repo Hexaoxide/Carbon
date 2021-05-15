@@ -3,11 +3,13 @@ package net.draycia.carbon.bukkit;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
 import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
 import net.draycia.carbon.bukkit.users.MemoryUserManagerBukkit;
 import net.draycia.carbon.common.CarbonChatCommon;
+import net.draycia.carbon.common.Injector;
 import net.draycia.carbon.common.command.Commander;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +24,8 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
 
   CarbonChatBukkit(final @NonNull CarbonChatBukkitEntry plugin) {
     this.plugin = plugin;
+
+    Injector.provide(CarbonChat.class, this);
   }
 
   @Override

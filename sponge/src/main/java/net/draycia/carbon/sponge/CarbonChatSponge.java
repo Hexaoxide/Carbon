@@ -4,14 +4,18 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
 import com.google.inject.Inject;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
+import net.draycia.carbon.common.Injector;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.sponge.command.SpongeCommander;
 import net.draycia.carbon.sponge.command.SpongePlayerCommander;
+import net.draycia.carbon.sponge.listeners.SpongeChatListener;
 import net.draycia.carbon.sponge.users.MemoryUserManagerSponge;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.jvm.Plugin;
@@ -34,6 +38,11 @@ public final class CarbonChatSponge extends CarbonChatCommon {
   ) {
     this.pluginContainer = pluginContainer;
     this.logger = logger;
+
+    Injector.provide(CarbonChat.class, this);
+
+    Sponge.eventManager().registerListeners(pluginContainer, new SpongeChatListener());
+
     this.initialize();
 
     //metricsFactory.make(BSTATS_PLUGIN_ID);
