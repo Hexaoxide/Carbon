@@ -241,6 +241,10 @@
     <!-- https://checkstyle.org/config_whitespace.html#TypecastParenPad -->
     <module name="TypecastParenPad"/>
 
+    <!-- carbon -->
+    <!-- https://checkstyle.sourceforge.io/config_whitespace.html#ParenPad -->
+    <module name="ParenPad"/>
+
     <!-- https://checkstyle.org/config_coding.html#UnnecessaryParentheses -->
     <module name="UnnecessaryParentheses"/>
 
