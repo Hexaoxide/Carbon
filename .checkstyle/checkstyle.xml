@@ -249,7 +249,7 @@
 
     <!-- https://checkstyle.org/config_whitespace.html#WhitespaceAfter -->
     <module name="WhitespaceAfter">
-      <property name="tokens" value="COMMA, SEMI, TYPECAST"/>
+      <property name="tokens" value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE, LITERAL_WHILE, LITERAL_FOR"/>
     </module>
 
     <!-- https://checkstyle.org/config_whitespace.html#WhitespaceAround -->
