@@ -5,18 +5,21 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static net.draycia.carbon.common.Injector.byInject;
+import static net.kyori.adventure.key.Key.key;
 
 public final class BukkitChatListener implements Listener {
 
-  private final CarbonChat carbonChat = byInject(CarbonChat.class);
+  private final CarbonChatBukkit carbonChat = byInject(CarbonChat.class); // lol this is dumb
   private final UserManager userManager = this.carbonChat.userManager();
 
   @EventHandler
@@ -37,15 +40,20 @@ public final class BukkitChatListener implements Listener {
       }
     }
 
-    final var chatEvent = new CarbonChatEvent(player, event.message(), recipients);
+    final var chatEvent = new CarbonChatEvent(player, event.message(), recipients,
+      Map.of(key("carbon", "default"), this.carbonChat.vanillaChatRenderer));
     final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
     if (result.wasSuccessful()) {
       // TODO: send to channels
 
       for (final var recipient : chatEvent.recipients()) {
-        final var component = chatEvent.renderer()
-          .render(player, recipient, chatEvent.message());
+        var component = chatEvent.message();
+
+        for (final var entry : chatEvent.renderers().entrySet()) {
+          component = entry.getValue().render(player,
+            recipient, chatEvent.message(), chatEvent.originalMessage());
+        }
 
         if (component != null) {
           recipient.sendMessage(component);

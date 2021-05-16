@@ -1,17 +1,14 @@
 package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.PlayerComponentRenderer;
+import net.draycia.carbon.api.util.ChatComponentRenderer;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
-
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.Component.translatable;
+import java.util.Map;
 
 /**
  * {@link CancellableCarbonEvent} that's called when chat components are rendered for online players.
@@ -20,19 +17,7 @@ import static net.kyori.adventure.text.Component.translatable;
  */
 public class CarbonChatEvent extends CancellableCarbonEvent {
 
-  // Mimics vanilla chat, should be *visually* identical but without the hover stuff.
-  private @NonNull PlayerComponentRenderer renderer = (sender, recipient, message) -> {
-    final var clickEvent = ClickEvent.suggestCommand("/msg " + sender.username());
-    final var hoverEvent = HoverEvent.showEntity(Key.key("player"),
-      sender.uuid(), text(sender.username()));
-
-    final var name = sender.displayName()
-      .clickEvent(clickEvent)
-      .hoverEvent(hoverEvent)
-      .insertion(sender.username());
-
-    return translatable("chat.type.text", name, message);
-  };
+  private final @NonNull Map<Key, ChatComponentRenderer> renderers;
 
   private final @NonNull CarbonPlayer sender;
 
@@ -40,48 +25,40 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
 
   private @NonNull Component message;
 
-  private final @NonNull List<@NonNull CarbonPlayer> recipients;
+  private final @NonNull List<@NonNull ? extends Audience> recipients;
 
   /**
-   * {@link CancellableCarbonEvent} that's called when chat components are rendered for online players.
+   * {@link CancellableCarbonEvent} that's called when players send messages in chat.
    *
    * @param sender the sender of the message
    * @param originalMessage the original message that was sent
    * @param recipients the recipients of the message
+   * @param renderers the renderers of the message
    *
    * @since 2.0.0
    */
   public CarbonChatEvent(
     final @NonNull CarbonPlayer sender,
     final @NonNull Component originalMessage,
-    final @NonNull List<@NonNull CarbonPlayer> recipients
+    final @NonNull List<@NonNull ? extends Audience> recipients,
+    final @NonNull Map<Key, ChatComponentRenderer> renderers
   ) {
     this.sender = sender;
     this.originalMessage = originalMessage;
     this.message = originalMessage;
     this.recipients = recipients;
+    this.renderers = renderers;
   }
 
   /**
-   * Set the {@link PlayerComponentRenderer} for the event.
+   * Get the renderers used to construct components for each of the recipients.
    *
-   * @param renderer the renderer
-   *
-   * @since 2.0.0
-   */
-  public void renderer(final @NonNull PlayerComponentRenderer renderer) {
-    this.renderer = renderer;
-  }
-
-  /**
-   * Get the renderer used to construct components for each player in recipients.
-   *
-   * @return The per-player component renderer.
+   * @return The per-recipient component renderers.
    *
    * @since 2.0.0
    */
-  public @NonNull PlayerComponentRenderer renderer() {
-    return this.renderer;
+  public @NonNull Map<Key, ChatComponentRenderer> renderers() {
+    return this.renderers;
   }
 
   /**
@@ -129,14 +106,15 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
   }
 
   /**
-   * The players that will receive the message.
-   * List is mutable and players may be added/removed.
+   * The recipients of the message.
+   * List is mutable and elements may be added/removed.
    *
-   * @return The players that will receive this message.
+   * @return the recipients of the message.
+   *     entries may be players, console, or other audience implementations
    *
    * @since 2.0.0
    */
-  public @NonNull List<@NonNull CarbonPlayer> recipients() {
+  public @NonNull List<@NonNull ? extends Audience> recipients() {
     return this.recipients;
   }
 
