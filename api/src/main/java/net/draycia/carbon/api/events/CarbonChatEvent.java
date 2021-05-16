@@ -22,11 +22,11 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
 
   // Mimics vanilla chat, should be *visually* identical but without the hover stuff.
   private @NonNull PlayerComponentRenderer renderer = (sender, recipient, message) -> {
-    var clickEvent = ClickEvent.suggestCommand("/msg " + sender.username());
-    var hoverEvent = HoverEvent.showEntity(Key.key("player"),
+    final var clickEvent = ClickEvent.suggestCommand("/msg " + sender.username());
+    final var hoverEvent = HoverEvent.showEntity(Key.key("player"),
       sender.uuid(), text(sender.username()));
 
-    var name = sender.displayName()
+    final var name = sender.displayName()
       .clickEvent(clickEvent)
       .hoverEvent(hoverEvent)
       .insertion(sender.username());

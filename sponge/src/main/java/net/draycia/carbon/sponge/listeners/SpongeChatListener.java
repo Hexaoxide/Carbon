@@ -23,16 +23,10 @@ public final class SpongeChatListener {
 
   @Listener
   public void onPlayerChat(final @NonNull PlayerChatEvent event, final @First Player sender) {
-    var original = event.originalChatRouter().chat(sender, event.originalMessage());
-
-
-
-    // annoying bullshit, can't get recipients at all, can't format per-player
-    // cancel event and do EVERYTHING ourselves...
-    // there was discussion about this issue 6 YEARS AGO
-    // there have been pending PRs to address this blatant issue for ///6 years///
-    // https://github.com/SpongePowered/SpongeAPI/issues/612
     // https://github.com/SpongePowered/SpongeAPI/pull/2340
+    // this event currently doesn't have a concept of recipients, it seems?
+    // or they're in the stack?
+    // idk, let's just do our own thing in the meantime
     event.setCancelled(true);
 
     final var player = this.userManager.carbonPlayer(sender.uniqueId());
