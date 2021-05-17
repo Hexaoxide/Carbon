@@ -15,4 +15,10 @@ public interface CarbonMessageService {
         @Placeholder final Component plugin
     );
 
+    @Message("unsupported.legacy")
+    void unsupportedLegacyChar(
+        @Receiver final Audience audience,
+        @Placeholder final String message
+    );
+
 }
