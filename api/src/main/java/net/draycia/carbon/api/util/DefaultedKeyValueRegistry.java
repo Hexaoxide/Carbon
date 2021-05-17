@@ -8,18 +8,16 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @param <K> the key type
  * @param <V> the value type
- *
  * @since 1.0.0
  */
 public interface DefaultedKeyValueRegistry<K, V> extends DefaultedRegistryGetter<K, V> {
 
-  /**
-   * Gets the default value.
-   *
-   * @return the default value
-   *
-   * @since 1.0.0
-   */
-  @NonNull V defaultValue();
+    /**
+     * Gets the default value.
+     *
+     * @return the default value
+     * @since 1.0.0
+     */
+    @NonNull V defaultValue();
 
 }

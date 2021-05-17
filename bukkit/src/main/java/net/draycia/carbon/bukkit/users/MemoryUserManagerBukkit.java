@@ -18,40 +18,40 @@ import java.util.UUID;
  */
 public final class MemoryUserManagerBukkit implements UserManager {
 
-  private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
+    private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
 
-  @Override
-  public @Nullable CarbonPlayer carbonPlayer(final @NonNull UUID uuid) {
-    if (this.users.containsKey(uuid)) {
-      return this.users.get(uuid);
+    @Override
+    public @Nullable CarbonPlayer carbonPlayer(final @NonNull UUID uuid) {
+        if (this.users.containsKey(uuid)) {
+            return this.users.get(uuid);
+        }
+
+        final Player player = Bukkit.getPlayer(uuid);
+
+        if (player == null) {
+            return null;
+        }
+
+        final CarbonPlayer carbonPlayer = new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
+
+        this.users.put(uuid, carbonPlayer);
+
+        return carbonPlayer;
     }
 
-    final Player player = Bukkit.getPlayer(uuid);
+    @Override
+    public @Nullable CarbonPlayer carbonPlayer(final @NonNull String username) {
+        final Player player = Bukkit.getPlayer(username);
 
-    if (player == null) {
-      return null;
+        if (player == null) {
+            return null;
+        }
+
+        if (this.users.containsKey(player.getUniqueId())) {
+            return this.users.get(player.getUniqueId());
+        }
+
+        return new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
     }
-
-    final CarbonPlayer carbonPlayer = new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
-
-    this.users.put(uuid, carbonPlayer);
-
-    return carbonPlayer;
-  }
-
-  @Override
-  public @Nullable CarbonPlayer carbonPlayer(final @NonNull String username) {
-    final Player player = Bukkit.getPlayer(username);
-
-    if (player == null) {
-      return null;
-    }
-
-    if (this.users.containsKey(player.getUniqueId())) {
-      return this.users.get(player.getUniqueId());
-    }
-
-    return new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
-  }
 
 }

@@ -17,67 +17,67 @@ import java.util.UUID;
 
 public final class CarbonPlayerSponge extends CarbonPlayerCommon {
 
-  public CarbonPlayerSponge(
-    final @NonNull String username,
-    final @NonNull Component displayName,
-    final @NonNull UUID uuid
-  ) {
-    super(username, displayName, uuid, Identity.identity(uuid));
-  }
-
-  @Override
-  public void displayName(final @Nullable Component displayName) {
-    super.displayName(displayName);
-
-    this.player().ifPresent(player -> {
-      if (displayName != null) {
-        player.offer(Keys.CUSTOM_NAME, displayName);
-      } else {
-        player.remove(Keys.CUSTOM_NAME);
-      }
-    });
-  }
-
-  @Override
-  public @NonNull Audience audience() {
-    return this.player()
-      .map(player -> (Audience) player)
-      .orElseGet(Audience::empty);
-  }
-
-  private @NonNull Optional<ServerPlayer> player() {
-    return Sponge.server().player(this.uuid);
-  }
-
-  @Override
-  public @NonNull Component createItemHoverComponent() {
-    final ServerPlayer player = this.player().orElse(null);
-    if (player == null) {
-      return Component.empty();
+    public CarbonPlayerSponge(
+        final @NonNull String username,
+        final @NonNull Component displayName,
+        final @NonNull UUID uuid
+    ) {
+        super(username, displayName, uuid, Identity.identity(uuid));
     }
 
-    final ItemStack itemStack;
+    @Override
+    public void displayName(final @Nullable Component displayName) {
+        super.displayName(displayName);
 
-    final ItemStack mainHand = player.itemInHand(HandTypes.MAIN_HAND);
-
-    if (!mainHand.isEmpty()) {
-      itemStack = mainHand;
-    } else {
-      final ItemStack offHand = player.itemInHand(HandTypes.OFF_HAND);
-
-      if (!offHand.isEmpty()) {
-        itemStack = offHand;
-      } else {
-        itemStack = null;
-      }
+        this.player().ifPresent(player -> {
+            if (displayName != null) {
+                player.offer(Keys.CUSTOM_NAME, displayName);
+            } else {
+                player.remove(Keys.CUSTOM_NAME);
+            }
+        });
     }
 
-    if (itemStack == null || itemStack.isEmpty()) {
-      return Component.empty();
+    @Override
+    public @NonNull Audience audience() {
+        return this.player()
+            .map(player -> (Audience) player)
+            .orElseGet(Audience::empty);
     }
 
-    return itemStack.get(Keys.DISPLAY_NAME)
-      .orElse(itemStack.type().asComponent());
-  }
+    private @NonNull Optional<ServerPlayer> player() {
+        return Sponge.server().player(this.uuid);
+    }
+
+    @Override
+    public @NonNull Component createItemHoverComponent() {
+        final ServerPlayer player = this.player().orElse(null);
+        if (player == null) {
+            return Component.empty();
+        }
+
+        final ItemStack itemStack;
+
+        final ItemStack mainHand = player.itemInHand(HandTypes.MAIN_HAND);
+
+        if (!mainHand.isEmpty()) {
+            itemStack = mainHand;
+        } else {
+            final ItemStack offHand = player.itemInHand(HandTypes.OFF_HAND);
+
+            if (!offHand.isEmpty()) {
+                itemStack = offHand;
+            } else {
+                itemStack = null;
+            }
+        }
+
+        if (itemStack == null || itemStack.isEmpty()) {
+            return Component.empty();
+        }
+
+        return itemStack.get(Keys.DISPLAY_NAME)
+            .orElse(itemStack.type().asComponent());
+    }
 
 }

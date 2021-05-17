@@ -18,51 +18,51 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class CarbonChatBukkit extends CarbonChatCommon {
 
-  private final @NonNull UserManager userManager = new MemoryUserManagerBukkit();
-  private final Logger logger = LogManager.getLogger("CarbonChat");
-  private final CarbonChatBukkitEntry plugin;
+    private final @NonNull UserManager userManager = new MemoryUserManagerBukkit();
+    private final Logger logger = LogManager.getLogger("CarbonChat");
+    private final CarbonChatBukkitEntry plugin;
 
-  CarbonChatBukkit(final @NonNull CarbonChatBukkitEntry plugin) {
-    this.plugin = plugin;
+    CarbonChatBukkit(final @NonNull CarbonChatBukkitEntry plugin) {
+        this.plugin = plugin;
 
-    Injector.provide(CarbonChat.class, this);
-  }
-
-  @Override
-  public @NonNull Logger logger() {
-    return this.logger;
-  }
-
-  @Override
-  public @NonNull UserManager userManager() {
-    return this.userManager;
-  }
-
-  @Override
-  protected @NonNull CommandManager<Commander> createCommandManager() {
-    final PaperCommandManager<Commander> commandManager;
-    try {
-      commandManager = new PaperCommandManager<>(
-        this.plugin,
-        AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
-        commandSender -> {
-          if (commandSender instanceof Player player) {
-            return new BukkitPlayerCommander(this, player);
-          }
-          return BukkitCommander.from(commandSender);
-        },
-        commander -> ((BukkitCommander) commander).commandSender()
-      );
-    } catch (final Exception ex) {
-      throw new RuntimeException("Failed to initialize command manager.", ex);
+        Injector.provide(CarbonChat.class, this);
     }
-    commandManager.registerAsynchronousCompletions();
-    commandManager.registerBrigadier();
-    final var brigadierManager = commandManager.brigadierManager();
-    if (brigadierManager != null) {
-      brigadierManager.setNativeNumberSuggestions(false);
+
+    @Override
+    public @NonNull Logger logger() {
+        return this.logger;
     }
-    return commandManager;
-  }
+
+    @Override
+    public @NonNull UserManager userManager() {
+        return this.userManager;
+    }
+
+    @Override
+    protected @NonNull CommandManager<Commander> createCommandManager() {
+        final PaperCommandManager<Commander> commandManager;
+        try {
+            commandManager = new PaperCommandManager<>(
+                this.plugin,
+                AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+                commandSender -> {
+                    if (commandSender instanceof Player player) {
+                        return new BukkitPlayerCommander(this, player);
+                    }
+                    return BukkitCommander.from(commandSender);
+                },
+                commander -> ((BukkitCommander) commander).commandSender()
+            );
+        } catch (final Exception ex) {
+            throw new RuntimeException("Failed to initialize command manager.", ex);
+        }
+        commandManager.registerAsynchronousCompletions();
+        commandManager.registerBrigadier();
+        final var brigadierManager = commandManager.brigadierManager();
+        if (brigadierManager != null) {
+            brigadierManager.setNativeNumberSuggestions(false);
+        }
+        return commandManager;
+    }
 
 }

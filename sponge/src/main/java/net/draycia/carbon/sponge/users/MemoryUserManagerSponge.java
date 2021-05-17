@@ -21,42 +21,42 @@ import static net.kyori.adventure.text.Component.text;
  */
 public final class MemoryUserManagerSponge implements UserManager {
 
-  private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
+    private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
 
-  @Override
-  public @Nullable CarbonPlayer carbonPlayer(final @NonNull UUID uuid) {
-    if (this.users.containsKey(uuid)) {
-      return this.users.get(uuid);
+    @Override
+    public @Nullable CarbonPlayer carbonPlayer(final @NonNull UUID uuid) {
+        if (this.users.containsKey(uuid)) {
+            return this.users.get(uuid);
+        }
+
+        final Optional<ServerPlayer> player = Sponge.server().player(uuid);
+
+        if (player.isEmpty()) {
+            return null;
+        }
+
+        final CarbonPlayer carbonPlayer = new CarbonPlayerSponge(player.get().name(),
+            text(player.get().name()), player.get().uniqueId());
+
+        this.users.put(uuid, carbonPlayer);
+
+        return carbonPlayer;
     }
 
-    final Optional<ServerPlayer> player = Sponge.server().player(uuid);
+    @Override
+    public @Nullable CarbonPlayer carbonPlayer(final @NonNull String username) {
+        final Optional<ServerPlayer> player = Sponge.server().player(username);
 
-    if (player.isEmpty()) {
-      return null;
+        if (player.isEmpty()) {
+            return null;
+        }
+
+        if (this.users.containsKey(player.get().uniqueId())) {
+            return this.users.get(player.get().uniqueId());
+        }
+
+        return new CarbonPlayerSponge(player.get().name(), text(player.get().name()),
+            player.get().uniqueId());
     }
-
-    final CarbonPlayer carbonPlayer = new CarbonPlayerSponge(player.get().name(),
-      text(player.get().name()), player.get().uniqueId());
-
-    this.users.put(uuid, carbonPlayer);
-
-    return carbonPlayer;
-  }
-
-  @Override
-  public @Nullable CarbonPlayer carbonPlayer(final @NonNull String username) {
-    final Optional<ServerPlayer> player = Sponge.server().player(username);
-
-    if (player.isEmpty()) {
-      return null;
-    }
-
-    if (this.users.containsKey(player.get().uniqueId())) {
-      return this.users.get(player.get().uniqueId());
-    }
-
-    return new CarbonPlayerSponge(player.get().name(), text(player.get().name()),
-      player.get().uniqueId());
-  }
 
 }

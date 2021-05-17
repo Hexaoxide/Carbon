@@ -5,6 +5,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface PlayerCommander extends Commander {
 
-  @NonNull CarbonPlayer carbonPlayer();
+    @NonNull CarbonPlayer carbonPlayer();
 
 }

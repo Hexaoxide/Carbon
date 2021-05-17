@@ -8,30 +8,30 @@ import org.spongepowered.api.command.CommandCause;
 
 public interface SpongeCommander extends Commander, ForwardingAudience.Single {
 
-  @NonNull CommandCause commandCause();
+    @NonNull CommandCause commandCause();
 
-  static @NonNull SpongeCommander from(final @NonNull CommandCause commandCause) {
-    return new SpongeCommanderImpl(commandCause);
-  }
-
-  final class SpongeCommanderImpl implements SpongeCommander {
-
-    private final CommandCause commandCause;
-
-    private SpongeCommanderImpl(final @NonNull CommandCause commandCause) {
-      this.commandCause = commandCause;
+    static @NonNull SpongeCommander from(final @NonNull CommandCause commandCause) {
+        return new SpongeCommanderImpl(commandCause);
     }
 
-    @Override
-    public @NonNull CommandCause commandCause() {
-      return this.commandCause;
-    }
+    final class SpongeCommanderImpl implements SpongeCommander {
 
-    @Override
-    public @NonNull Audience audience() {
-      return this.commandCause.audience();
-    }
+        private final CommandCause commandCause;
 
-  }
+        private SpongeCommanderImpl(final @NonNull CommandCause commandCause) {
+            this.commandCause = commandCause;
+        }
+
+        @Override
+        public @NonNull CommandCause commandCause() {
+            return this.commandCause;
+        }
+
+        @Override
+        public @NonNull Audience audience() {
+            return this.commandCause.audience();
+        }
+
+    }
 
 }

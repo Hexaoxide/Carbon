@@ -23,56 +23,56 @@ import org.spongepowered.plugin.jvm.Plugin;
 @Plugin("carbonchat")
 public final class CarbonChatSponge extends CarbonChatCommon {
 
-  private static final int BSTATS_PLUGIN_ID = 11279;
+    private static final int BSTATS_PLUGIN_ID = 11279;
 
-  private final PluginContainer pluginContainer;
-  private final Logger logger;
+    private final PluginContainer pluginContainer;
+    private final Logger logger;
 
-  private final @NonNull UserManager userManager = new MemoryUserManagerSponge();
+    private final @NonNull UserManager userManager = new MemoryUserManagerSponge();
 
-  @Inject
-  public CarbonChatSponge(
-    //final Metrics.@NonNull Factory metricsFactory,
-    final @NonNull PluginContainer pluginContainer,
-    final @NonNull Logger logger
-  ) {
-    this.pluginContainer = pluginContainer;
-    this.logger = logger;
+    @Inject
+    public CarbonChatSponge(
+        //final Metrics.@NonNull Factory metricsFactory,
+        final @NonNull PluginContainer pluginContainer,
+        final @NonNull Logger logger
+    ) {
+        this.pluginContainer = pluginContainer;
+        this.logger = logger;
 
-    Injector.provide(CarbonChat.class, this);
+        Injector.provide(CarbonChat.class, this);
 
-    Sponge.eventManager().registerListeners(pluginContainer, new SpongeChatListener());
+        Sponge.eventManager().registerListeners(pluginContainer, new SpongeChatListener());
 
-    this.initialize();
+        this.initialize();
 
-    //metricsFactory.make(BSTATS_PLUGIN_ID);
-  }
+        //metricsFactory.make(BSTATS_PLUGIN_ID);
+    }
 
-  @Override
-  public @NonNull Logger logger() {
-    return this.logger;
-  }
+    @Override
+    public @NonNull Logger logger() {
+        return this.logger;
+    }
 
-  @Override
-  public @NonNull UserManager userManager() {
-    return this.userManager;
-  }
+    @Override
+    public @NonNull UserManager userManager() {
+        return this.userManager;
+    }
 
-  @Override
-  protected @NonNull CommandManager<Commander> createCommandManager() {
-    final SpongeCommandManager<Commander> commandManager = new SpongeCommandManager<>(
-      this.pluginContainer,
-      AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
-      commander -> ((SpongeCommander) commander).commandCause(),
-      commandCause -> {
-        if (commandCause.subject() instanceof ServerPlayer player) {
-          return new SpongePlayerCommander(this, player, commandCause);
-        }
-        return SpongeCommander.from(commandCause);
-      }
-    );
-    commandManager.parserMapper().cloudNumberSuggestions(true);
-    return commandManager;
-  }
+    @Override
+    protected @NonNull CommandManager<Commander> createCommandManager() {
+        final SpongeCommandManager<Commander> commandManager = new SpongeCommandManager<>(
+            this.pluginContainer,
+            AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+            commander -> ((SpongeCommander) commander).commandCause(),
+            commandCause -> {
+                if (commandCause.subject() instanceof ServerPlayer player) {
+                    return new SpongePlayerCommander(this, player, commandCause);
+                }
+                return SpongeCommander.from(commandCause);
+            }
+        );
+        commandManager.parserMapper().cloudNumberSuggestions(true);
+        return commandManager;
+    }
 
 }
