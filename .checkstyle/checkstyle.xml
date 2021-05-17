@@ -27,12 +27,20 @@
   <module name="SuppressWarningsFilter"/>
 
   <!-- carbon -->
-  <!-- empty line at beginning after class/interface/enum definition -->
   <!-- Temporary until https://github.com/checkstyle/checkstyle/issues/5313 -->
+  <!-- empty line at beginning after class/interface/enum definition -->
   <module name="RegexpMultiline">
     <property name="format" value="^([^\r\n ]+ )*(class|interface|enum) [^{]*\{\r?\n[^\r\n}]"/>
-    <property name="message" value="Leave empty row after class/interface/enum definition!"/>
+    <property name="message" value="Leave an empty line after class/interface/enum definition!"/>
     <property name="fileExtensions" value="groovy,java"/>
+  </module>
+
+  <!-- empty line before the last } of class/interface/enum definition -->
+  <module name="RegexpMultiline">
+    <property name="format" value="}\r\n}\r\n\Z"/>
+    <property name="message" value="Leave an empty line before the last } of class/interface/enum!"/>
+    <property name="fileExtensions" value="groovy,java"/>
+    <property name="matchAcrossLines" value="true"/>
   </module>
 
   <!-- https://checkstyle.org/config_filters.html#SuppressWithPlainTextCommentFilter -->
