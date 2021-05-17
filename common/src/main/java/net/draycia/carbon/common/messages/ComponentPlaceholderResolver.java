@@ -13,10 +13,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class ComponentPlaceholderResolver<R> implements IPlaceholderResolver<R, Component> {
 
-    public ResolveResult resolve(final String placeholderName,
-                                 final Component value,
-                                 final PlaceholderContext<R> ctx,
-                                 final Multimap<String, @Nullable Object> flags) {
+    public ResolveResult resolve(
+        final String placeholderName,
+        final Component value,
+        final PlaceholderContext<R> ctx,
+        final Multimap<String, @Nullable Object> flags
+    ) {
         return ResolveResult.ok(placeholderName, MiniMessage.get().serialize(value));
     }
 
