@@ -1,12 +1,16 @@
 package net.draycia.carbon.common.messages;
 
+<<<<<<< HEAD
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+=======
+>>>>>>> Initial pass - 1/?
 import com.proximyst.moonshine.message.IMessageParser;
 import com.proximyst.moonshine.message.ParsingContext;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+<<<<<<< HEAD
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 @Singleton
@@ -30,6 +34,12 @@ public class CarbonMessageParser implements IMessageParser<String, Component, Au
             }
         }
 
+=======
+
+public class CarbonMessageParser implements IMessageParser<String, Component, Audience> {
+
+    public Component parse(final String message, final ParsingContext<Audience> parsingContext) {
+>>>>>>> Initial pass - 1/?
         return MiniMessage.get().parse(message, parsingContext.placeholders());
     }
 
