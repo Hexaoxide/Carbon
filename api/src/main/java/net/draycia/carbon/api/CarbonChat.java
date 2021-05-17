@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+import java.nio.file.Path;
+
 /**
  * The main plugin interface.<br>
  * Instances may be obtained through {@link CarbonChatProvider#carbonChat()}.
@@ -26,6 +28,15 @@ public interface CarbonChat {
     Logger logger();
 
     /**
+     * The plugin's data storage directory.<br>
+     * This is where configs and misc files will be stored.
+     *
+     * @return the plugin's data directory
+     * @since 2.0.0
+     */
+    Path dataDirectory();
+
+    /**
      * The event handler, used for listening to and emitting events.
      *
      * @return the event handler
@@ -33,12 +44,6 @@ public interface CarbonChat {
      */
     CarbonEventHandler eventHandler();
 
-    /**
-     * The user manager, used for loading and obtaining {@link CarbonPlayer CarbonPlayers}.
-     *
-     * @return the user manager
-     * @since 2.0.0
-     */
-    UserManager userManager();
+    CarbonServer server();
 
 }

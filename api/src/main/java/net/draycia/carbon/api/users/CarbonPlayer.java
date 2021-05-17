@@ -75,4 +75,6 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void selectedChannel(final ChatChannel chatChannel);
 
+    boolean hasPermission(final String permission);
+
 }
