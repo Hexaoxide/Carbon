@@ -1,12 +1,9 @@
-import com.google.gson.JsonParser
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission.Default.TRUE
-import java.io.InputStreamReader
-import java.net.URL
-import java.time.Duration
 
 plugins {
   id("com.github.johnrengelman.shadow")
   id("net.minecrell.plugin-yml.bukkit")
+  id("xyz.jpenilla.run-paper")
 }
 
 dependencies {
@@ -37,38 +34,9 @@ tasks {
     relocateDependency("io.papermc.lib")
     relocateDependency("io.leangen.geantyref")
   }
-  register<JavaExec>("runServer") {
-    workingDir = projectDir.resolve("run")
-    standardInput = System.`in`
-    dependsOn(shadowJar)
-    val paperJar = workingDir.resolve("paperclip.jar")
-    classpath(paperJar)
-    args = listOf("nogui")
-    systemProperty("disable.watchdog", true)
-
-    doFirst {
-      // Create working dir and plugins dir if needed
-      if (!workingDir.exists()) workingDir.mkdir()
-      val pluginsDir = workingDir.resolve("plugins")
-      if (!pluginsDir.exists()) pluginsDir.mkdir()
-
-      // Copy carbon jar
-      val carbonJar = pluginsDir.resolve("carbon.jar")
-      shadowJar.get().archiveFile.get().asFile.copyTo(carbonJar, overwrite = true)
-
-      // Download latest Paperclip if we don't have one or if it's older than 3 days
-      val paperVersion = "1.16.5"
-      if (!paperJar.exists() || paperJar.lastModified() < System.currentTimeMillis() - Duration.ofDays(3).toMillis()) {
-        val jsonParser = JsonParser()
-        logger.lifecycle("Fetching latest Paper {} builds...", paperVersion)
-        val builds = jsonParser.parse(InputStreamReader(URL("https://papermc.io/api/v2/projects/paper/versions/$paperVersion").openStream())).asJsonObject["builds"].asJsonArray
-        val latest = builds.last().asString
-        logger.lifecycle("Downloading Paper {} build {}...", paperVersion, latest)
-        val jarUrl = URL("https://papermc.io/api/v2/projects/paper/versions/$paperVersion/builds/$latest/downloads/paper-$paperVersion-$latest.jar")
-        paperJar.writeBytes(jarUrl.readBytes())
-        logger.lifecycle("Done downloading Paper {} build {}.", paperVersion, latest)
-      }
-    }
+  runServer {
+    minecraftVersion("1.16.5")
+    pluginJarName("carbon.jar")
   }
 }
 
