@@ -45,6 +45,9 @@ sponge {
     contributor("Vicarious") {
       description("Lead Developer")
     }
+    contributor("Glare") {
+      description("Moral Support")
+    }
     dependency("spongeapi") {
       loadOrder(PluginDependency.LoadOrder.AFTER)
       optional(false)
