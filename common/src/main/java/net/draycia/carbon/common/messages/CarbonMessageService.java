@@ -4,8 +4,7 @@ import com.proximyst.moonshine.annotation.Message;
 import com.proximyst.moonshine.annotation.Placeholder;
 import com.proximyst.moonshine.annotation.Receiver;
 import net.kyori.adventure.audience.Audience;
-
-import java.awt.*;
+import net.kyori.adventure.text.Component;
 
 public interface CarbonMessageService {
 

@@ -1,8 +1,6 @@
 package net.draycia.carbon.api;
 
 import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -44,6 +42,12 @@ public interface CarbonChat {
      */
     CarbonEventHandler eventHandler();
 
+    /**
+     * The server that carbon is running on.
+     *
+     * @return the server
+     * @since 2.0.0
+     */
     CarbonServer server();
 
 }

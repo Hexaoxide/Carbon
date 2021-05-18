@@ -23,9 +23,9 @@ public class CarbonMessageParser implements IMessageParser<String, Component, Au
     }
 
     public Component parse(String message, final ParsingContext<Audience> parsingContext) {
-        if (checkForLegacy) {
-            if (message.contains(legacyChar)) {
-                message = message.replace(legacyChar, "");
+        if (this.checkForLegacy) {
+            if (message.contains(this.legacyChar)) {
+                message = message.replace(this.legacyChar, "");
                 this.messageService.unsupportedLegacyChar(parsingContext.receiver(), message);
             }
         }
