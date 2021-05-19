@@ -1,11 +1,10 @@
 package net.draycia.carbon.bukkit.listeners;
 
+import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,17 +15,16 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.ArrayList;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.draycia.carbon.common.Injector.byInject;
 import static net.kyori.adventure.key.Key.key;
 
 public final class BukkitChatListener implements Listener {
 
-    private final CarbonChatBukkit carbonChat = byInject(CarbonChat.class); // lol this is dumb
-    private final UserManager userManager = this.carbonChat.userManager();
+    @Inject
+    private CarbonChat carbonChat;
 
     @EventHandler
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
-        final var sender = this.userManager.carbonPlayer(event.getPlayer().getUniqueId());
+        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId());
 
         if (sender == null) {
             return;
@@ -36,7 +34,7 @@ public final class BukkitChatListener implements Listener {
         final var channel = sender.selectedChannel();
 
         for (final Player bukkitRecipient : event.recipients()) {
-            final var recipient = this.userManager.carbonPlayer(bukkitRecipient.getUniqueId());
+            final var recipient = this.carbonChat.server().player(bukkitRecipient.getUniqueId());
 
             if (recipient != null && channel.hearingPermitted(recipient).permitted()) {
                 recipients.add(recipient);

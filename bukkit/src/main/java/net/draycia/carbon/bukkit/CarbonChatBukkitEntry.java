@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit;
 
+import com.google.inject.Singleton;
 import io.papermc.lib.PaperLib;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
@@ -9,6 +10,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.util.logging.Level;
 
+@Singleton
 public final class CarbonChatBukkitEntry extends JavaPlugin {
 
     private static final int BSTATS_PLUGIN_ID = 8720;
@@ -31,10 +33,6 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
         this.carbon = new CarbonChatBukkit(this);
 
         final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
-
-        Bukkit.getPluginManager().registerEvents(new BukkitChatListener(), this);
-
-        this.carbon.initialize();
     }
 
     @Override

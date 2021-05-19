@@ -3,36 +3,64 @@ package net.draycia.carbon.bukkit;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
 import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
+import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.users.MemoryUserManagerBukkit;
 import net.draycia.carbon.common.CarbonChatCommon;
-import net.draycia.carbon.common.Injector;
 import net.draycia.carbon.common.command.Commander;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.nio.file.Path;
 
+@Singleton
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkit extends CarbonChatCommon {
 
-    private final UserManager userManager = new MemoryUserManagerBukkit();
-    private final Logger logger = LogManager.getLogger("CarbonChat");
-    private final CarbonChatBukkitEntry plugin;
-    private final CarbonServerBukkit carbonServerBukkit;
+    private UserManager userManager;
+    private Logger logger = LogManager.getLogger("CarbonChat");
+    private CarbonChatBukkitEntry plugin;
+    private CarbonServerBukkit carbonServerBukkit;
+    private Injector injector;
 
     CarbonChatBukkit(final CarbonChatBukkitEntry plugin) {
         this.plugin = plugin;
-        this.carbonServerBukkit = new CarbonServerBukkit(this.plugin, this);
+        this.injector = Guice.createInjector(this);
 
-        Injector.provide(CarbonChat.class, this);
+        // configure at some point ?
+
+        Bukkit.getPluginManager().registerEvents(
+            this.injector.getInstance(BukkitChatListener.class), this.plugin);
+
+        super.initialize();
+    }
+
+    @Override
+    public void configure() {
+        this.bind(CarbonChat.class).toInstance(this);
+        this.bind(Logger.class).toInstance(logger);
+        this.bind(CarbonChatBukkitEntry.class).toInstance(plugin);
+
+        this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
+        this.carbonServerBukkit = this.injector.getInstance(CarbonServerBukkit.class);
+
+        this.bind(UserManager.class).to(MemoryUserManagerBukkit.class);
+        this.userManager = this.injector.getInstance(MemoryUserManagerBukkit.class);
+    }
+
+    public Injector injector() {
+        return this.injector;
     }
 
     public UserManager userManager() {

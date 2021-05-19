@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -16,16 +17,11 @@ import java.util.UUID;
 @DefaultQualifier(NonNull.class)
 public class CarbonServerBukkit implements CarbonServer {
 
-    private final CarbonChatBukkitEntry chatBukkitEntry;
-    private final CarbonChatBukkit carbonChatBukkit;
+    @Inject
+    private CarbonChatBukkitEntry chatBukkitEntry;
 
-    public CarbonServerBukkit(
-        final CarbonChatBukkitEntry chatBukkitEntry,
-        final CarbonChatBukkit carbonChatBukkit
-    ) {
-        this.chatBukkitEntry = chatBukkitEntry;
-        this.carbonChatBukkit = carbonChatBukkit;
-    }
+    @Inject
+    private CarbonChatBukkit carbonChatBukkit;
 
     @Override
     public Audience console() {

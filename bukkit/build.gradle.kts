@@ -31,6 +31,7 @@ tasks {
   }
   runServer {
     minecraftVersion("1.16.5")
+    jvmArgs("-DLog4jContextSelector=org.apache.logging.log4j.core.selector.ClassLoaderContextSelector")
   }
 }
 

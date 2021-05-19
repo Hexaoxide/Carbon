@@ -28,7 +28,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
     public void displayName(final @Nullable Component displayName) {
         super.displayName(displayName);
 
-        final Player player = this.player();
+        final @Nullable Player player = this.player();
 
         if (player != null) {
             player.displayName(displayName);
@@ -53,7 +53,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
     @Override
     public @NonNull Component createItemHoverComponent() {
-        final Player player = this.player(); // This is temporary (it's not)
+        final @Nullable Player player = this.player(); // This is temporary (it's not)
 
         if (player == null) {
             return Component.empty();
@@ -88,7 +88,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
     @Override
     public boolean hasPermission(final String permission) {
-        final var player = this.player();
+        final @Nullable Player player = this.player();
 
         if (player != null) {
             return player.hasPermission(permission);
