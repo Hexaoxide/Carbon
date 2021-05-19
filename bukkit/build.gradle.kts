@@ -36,7 +36,6 @@ tasks {
   }
   runServer {
     minecraftVersion("1.16.5")
-    pluginJarName("carbon.jar")
   }
 }
 
