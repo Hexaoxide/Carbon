@@ -38,10 +38,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Singleton
 public final class ServerReceiverResolver implements IReceiverResolver<Audience> {
-<<<<<<< HEAD
 
-=======
->>>>>>> Initial pass - 1/?
     private final @NonNull CarbonServer carbonServer;
 
     @Inject
@@ -59,12 +56,7 @@ public final class ServerReceiverResolver implements IReceiverResolver<Audience>
         return Optional.of(new Resolver(this.carbonServer, annotation.permission()));
     }
 
-<<<<<<< HEAD
     private static final class Resolver implements IReceiver<Audience> {
-
-=======
-    private static class Resolver implements IReceiver<Audience> {
->>>>>>> Initial pass - 1/?
         private final @NonNull CarbonServer carbonServer;
         private final @Nullable String permission;
 
@@ -85,11 +77,6 @@ public final class ServerReceiverResolver implements IReceiverResolver<Audience>
                     .filter(player -> player.hasPermission(this.permission)))
                     .collect(Collectors.toList()));
         }
-<<<<<<< HEAD
-
     }
 
-=======
-    }
->>>>>>> Initial pass - 1/?
 }

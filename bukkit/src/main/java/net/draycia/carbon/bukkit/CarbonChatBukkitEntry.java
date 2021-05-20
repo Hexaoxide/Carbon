@@ -2,7 +2,6 @@ package net.draycia.carbon.bukkit;
 
 import com.google.inject.Singleton;
 import io.papermc.lib.PaperLib;
-import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;

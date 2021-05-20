@@ -12,6 +12,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkitModule extends AbstractModule {
+
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonChatBukkitEntry plugin;
     private final CarbonChatBukkit cc;
@@ -30,4 +31,5 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
         this.bind(UserManager.class).to(MemoryUserManagerBukkit.class);
     }
+
 }
