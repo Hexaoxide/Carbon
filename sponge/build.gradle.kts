@@ -21,6 +21,9 @@ tasks {
     dependencies {
       // included in sponge
       exclude(dependency("io.leangen.geantyref:geantyref"))
+      exclude(dependency("com.google.inject:guice"))
+      exclude(dependency("aopalliance:aopalliance"))
+      exclude(dependency("javax.inject:javax.inject"))
     }
   }
 }
