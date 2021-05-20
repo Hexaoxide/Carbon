@@ -1,7 +1,7 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission.Default.TRUE
 
 plugins {
-  id("com.github.johnrengelman.shadow")
+  id("carbon-shadow-subproject")
   id("net.minecrell.plugin-yml.bukkit")
   id("xyz.jpenilla.run-paper")
 }
@@ -25,12 +25,7 @@ dependencies {
 }
 
 tasks {
-  build {
-    dependsOn(shadowJar)
-  }
   shadowJar {
-    archiveFileName.set(project.name + "-" + project.version + ".jar")
-    configureShadowJar()
     relocateDependency("io.papermc.lib")
     relocateDependency("io.leangen.geantyref")
   }

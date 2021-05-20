@@ -1,9 +1,9 @@
 import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
+  id("carbon-build-logic")
   id("net.kyori.indra")
   id("net.kyori.indra.git")
-  id("net.kyori.indra.checkstyle")
 }
 
 group = "net.draycia"
@@ -45,7 +45,7 @@ subprojects {
   }
 
   dependencies {
-    checkstyle(rootProject.libs.stylecheck)
+    "checkstyle"(rootProject.libs.stylecheck)
   }
 
   configure<JavaPluginConvention> {

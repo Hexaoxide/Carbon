@@ -14,6 +14,8 @@ plugins {
 
 rootProject.name = "CarbonChat"
 
+includeBuild("build-logic")
+
 setupSubproject("carbonchat-api") {
   projectDir = file("api")
 }

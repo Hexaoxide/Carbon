@@ -3,7 +3,7 @@ import org.spongepowered.plugin.metadata.PluginDependency
 import java.util.Locale
 
 plugins {
-  id("com.github.johnrengelman.shadow")
+  id("carbon-shadow-subproject")
   id("org.spongepowered.gradle.plugin")
 }
 
@@ -17,12 +17,7 @@ tasks {
   runServer {
     classpath(shadowJar)
   }
-  build {
-    dependsOn(shadowJar)
-  }
   shadowJar {
-    archiveFileName.set(project.name + "-" + project.version + ".jar")
-    configureShadowJar()
     dependencies {
       // included in sponge
       exclude(dependency("io.leangen.geantyref:geantyref"))

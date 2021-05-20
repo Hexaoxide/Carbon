@@ -27,16 +27,7 @@ fun ShadowJar.standardRelocations() {
 
 fun ShadowJar.configureShadowJar() {
   minimize()
-
   standardRelocations()
-
-  doLast {
-    val archive = archiveFile.get().asFile
-    val libs = project.rootProject.buildDir.resolve("libs")
-    libs.mkdirs()
-    archive.copyTo(libs.resolve(archive.name), overwrite = true)
-  }
-
   dependencies {
     // not needed at runtime
     exclude(dependency("com.google.code.findbugs:jsr305"))
