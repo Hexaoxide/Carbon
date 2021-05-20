@@ -1,6 +1,6 @@
 package net.draycia.carbon.sponge.listeners;
 
-import net.draycia.carbon.api.CarbonChat;
+import com.google.inject.Inject;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -17,12 +17,13 @@ import org.spongepowered.api.event.message.PlayerChatEvent;
 import java.util.ArrayList;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.draycia.carbon.common.Injector.byInject;
 import static net.kyori.adventure.key.Key.key;
 
 public final class SpongeChatListener {
 
-    private final CarbonChatSponge carbonChat = byInject(CarbonChat.class); // lol this is dumb
+    @Inject
+    private CarbonChatSponge carbonChat;
+
     private final UserManager userManager = this.carbonChat.userManager();
 
     @Listener

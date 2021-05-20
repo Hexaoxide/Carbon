@@ -1,7 +1,10 @@
 package net.draycia.carbon.bukkit;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.papermc.lib.PaperLib;
+import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +18,13 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
     private static final int BSTATS_PLUGIN_ID = 8720;
 
     private @MonotonicNonNull CarbonChatBukkit carbon;
+    private Injector injector;
+
+    @Override
+    public void onLoad() {
+        this.carbon = new CarbonChatBukkit(this);
+        this.injector = Guice.createInjector(new CarbonChatBukkitModule(this, this.carbon));
+    }
 
     @Override
     public void onEnable() {
@@ -29,9 +39,14 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
             return;
         }
 
-        this.carbon = new CarbonChatBukkit(this);
-
         final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+
+        Bukkit.getPluginManager().registerEvents(
+            this.injector.getInstance(BukkitChatListener.class), this);
+    }
+
+    public Injector injector() {
+        return this.injector;
     }
 
     @Override

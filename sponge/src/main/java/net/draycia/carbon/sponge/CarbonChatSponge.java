@@ -4,8 +4,6 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
@@ -48,8 +46,6 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         this.logger = logger;
         this.dataDirectory = dataDirectory;
         this.carbonServerSponge = new CarbonServerSponge(this);
-
-        Injector.provide(CarbonChat.class, this);
 
         Sponge.eventManager().registerListeners(pluginContainer, new SpongeChatListener());
 

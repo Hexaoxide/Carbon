@@ -3,18 +3,14 @@ package net.draycia.carbon.bukkit;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
 import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
-import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.common.command.Commander;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -28,22 +24,11 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
     private @Inject Logger logger;
     private final CarbonChatBukkitEntry plugin;
     private @Inject CarbonServerBukkit carbonServerBukkit;
-    private final Injector injector;
 
     CarbonChatBukkit(final CarbonChatBukkitEntry plugin) {
         this.plugin = plugin;
-        this.injector = Guice.createInjector(new CarbonChatBukkitModule(plugin, this));
-
-        // configure at some point ?
-
-        Bukkit.getPluginManager().registerEvents(
-            this.injector.getInstance(BukkitChatListener.class), this.plugin);
 
         super.initialize();
-    }
-
-    public Injector injector() {
-        return this.injector;
     }
 
     public UserManager userManager() {
