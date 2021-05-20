@@ -35,7 +35,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         final CarbonChatBukkitEntry plugin,
         final CarbonChatBukkit carbonChat,
         final Path dataDirectory
-        ) {
+    ) {
         this.plugin = plugin;
         this.carbonChat = carbonChat;
         this.dataDirectory = dataDirectory;

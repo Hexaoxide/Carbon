@@ -13,8 +13,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY;
-import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 
 public abstract class CarbonChatCommon implements CarbonChat {
 
@@ -29,9 +27,7 @@ public abstract class CarbonChatCommon implements CarbonChat {
             .handler(ctx -> {
                 final Commander sender = ctx.getSender();
 
-                this.messageService.exampleCommandFeedback(
-                    sender, text("Carbon!", DARK_GRAY, BOLD)
-                );
+                this.messageService.exampleCommandFeedback(sender, this.messageService.pluginName());
 
                 if (sender instanceof PlayerCommander) {
                     final Component itemComponent = ((PlayerCommander) sender).carbonPlayer().createItemHoverComponent();

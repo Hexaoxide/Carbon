@@ -20,4 +20,7 @@ public interface CarbonMessageService {
         @Placeholder final String message
     );
 
+    @Message("placeholders.plugin")
+    Component pluginName();
+
 }
