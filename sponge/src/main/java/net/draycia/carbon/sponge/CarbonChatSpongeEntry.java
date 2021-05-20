@@ -3,19 +3,15 @@ package net.draycia.carbon.sponge;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
-import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.jvm.Plugin;
-
-import java.nio.file.Path;
 
 @Plugin("carbonchat")
 @DefaultQualifier(NonNull.class)
@@ -24,6 +20,7 @@ public final class CarbonChatSpongeEntry {
     private static final int BSTATS_PLUGIN_ID = 11279;
 
     private @MonotonicNonNull CarbonChatSponge carbon;
+    private final Game game;
     private final Injector injector;
 
     private final PluginContainer pluginContainer;
@@ -31,24 +28,22 @@ public final class CarbonChatSpongeEntry {
     @Inject
     public CarbonChatSpongeEntry(
         //final Metrics.Factory metricsFactory,
+        final Game game,
         final PluginContainer pluginContainer,
-        final Logger logger,
-        final @ConfigDir(sharedRoot = false) Path dataDirectory,
         final Injector injector
     ) {
+        this.game = game;
         this.pluginContainer = pluginContainer;
 
-        this.carbon = new CarbonChatSponge();
-
-        this.injector = injector.createChildInjector(
-            new CarbonChatSpongeModule(logger, this.carbon, this, dataDirectory));
+        this.injector = injector.createChildInjector(new CarbonChatSpongeModule());
+        this.carbon = this.injector.getInstance(CarbonChatSponge.class);
 
         //metricsFactory.make(BSTATS_PLUGIN_ID);
     }
 
     @Listener
     public void onInitialize(final StartingEngineEvent<Server> event) {
-        Sponge.eventManager().registerListeners(pluginContainer,
+        this.game.eventManager().registerListeners(this.pluginContainer,
             this.injector.getInstance(SpongeChatListener.class));
 
         this.carbon.initialize();

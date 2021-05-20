@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.message.IMessageSource;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.common.ForCarbon;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -26,7 +27,7 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
     private final Properties properties;
 
     @Inject
-    CarbonMessageSource(final Path dataDirectory, final CarbonChat carbonChat) throws IOException {
+    CarbonMessageSource(final @ForCarbon Path dataDirectory, final CarbonChat carbonChat) throws IOException {
         final var directoryFile = dataDirectory.toFile();
 
         if (!directoryFile.exists()) {

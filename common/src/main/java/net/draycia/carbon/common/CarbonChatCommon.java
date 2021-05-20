@@ -1,7 +1,6 @@
 package net.draycia.carbon.common;
 
 import cloud.commandframework.CommandManager;
-import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.common.command.Commander;
@@ -16,8 +15,15 @@ import static net.kyori.adventure.text.Component.text;
 
 public abstract class CarbonChatCommon implements CarbonChat {
 
-    @Inject
+    //@Inject
     private CarbonMessageService messageService;
+
+    public CarbonChatCommon() {
+    }
+
+    protected CarbonChatCommon(final CarbonMessageService messageService) {
+        this.messageService = messageService;
+    }
 
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 

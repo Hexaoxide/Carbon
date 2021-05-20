@@ -6,7 +6,7 @@ import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.spongepowered.api.Sponge;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
@@ -20,6 +20,7 @@ import static net.kyori.adventure.key.Key.key;
 
 public final class SpongeChatListener {
 
+    @Inject private Game game;
     @Inject
     private CarbonChatSponge carbonChat;
 
@@ -40,7 +41,7 @@ public final class SpongeChatListener {
         final var recipients = new ArrayList<Audience>();
         final var channel = sender.selectedChannel();
 
-        for (final ServerPlayer spongeRecipient : Sponge.server().onlinePlayers()) {
+        for (final ServerPlayer spongeRecipient : this.game.server().onlinePlayers()) {
             final var recipient = this.carbonChat.server().player(spongeRecipient.uniqueId());
 
             if (recipient != null && channel.hearingPermitted(recipient).permitted()) {
@@ -50,7 +51,7 @@ public final class SpongeChatListener {
 
         // console too!
         // i'm not 100% sure this is "console" but I literally cannot find anything that explicitly says console
-        recipients.add(Sponge.systemSubject());
+        recipients.add(this.game.systemSubject());
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel.renderer()));
