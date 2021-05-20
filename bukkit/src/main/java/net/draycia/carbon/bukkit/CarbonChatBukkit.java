@@ -6,7 +6,6 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Singleton;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
@@ -22,7 +21,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.nio.file.Path;
 
-@Singleton
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkit extends CarbonChatCommon {
 

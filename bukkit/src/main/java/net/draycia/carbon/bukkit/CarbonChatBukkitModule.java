@@ -25,11 +25,13 @@ public final class CarbonChatBukkitModule extends AbstractModule {
     @Override
     public void configure() {
         this.bind(CarbonChat.class).toInstance(this.cc);
-        this.requestInjection(this.cc);
+        this.bind(CarbonChatBukkit.class).toInstance(this.cc);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(CarbonChatBukkitEntry.class).toInstance(this.plugin);
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
         this.bind(UserManager.class).to(MemoryUserManagerBukkit.class);
+
+        this.requestInjection(this.cc);
     }
 
 }
