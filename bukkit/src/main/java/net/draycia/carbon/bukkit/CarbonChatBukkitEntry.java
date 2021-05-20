@@ -43,6 +43,8 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
             this.injector.getInstance(BukkitChatListener.class), this);
+
+        this.carbon.initialize();
     }
 
     public Injector injector() {

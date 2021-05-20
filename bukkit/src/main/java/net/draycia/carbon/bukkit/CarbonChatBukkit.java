@@ -27,8 +27,6 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
 
     CarbonChatBukkit(final CarbonChatBukkitEntry plugin) {
         this.plugin = plugin;
-
-        super.initialize();
     }
 
     public UserManager userManager() {
