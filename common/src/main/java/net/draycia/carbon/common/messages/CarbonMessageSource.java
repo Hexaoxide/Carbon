@@ -27,7 +27,7 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
     private final Properties properties;
 
     @Inject
-    CarbonMessageSource(final @ForCarbon Path dataDirectory, final CarbonChat carbonChat) throws IOException {
+    CarbonMessageSource(final @ForCarbon Path dataDirectory) throws IOException {
         final var directoryFile = dataDirectory.toFile();
 
         if (!directoryFile.exists()) {
@@ -50,7 +50,7 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
 
         boolean write = !file.isFile();
 
-        try (final InputStream stream = carbonChat.getClass().getResourceAsStream("/" + fileName)) {
+        try (final InputStream stream = CarbonChat.class.getResourceAsStream("/" + fileName)) {
             final Properties packaged = new Properties();
             packaged.load(stream);
 

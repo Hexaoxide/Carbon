@@ -15,11 +15,7 @@ import static net.kyori.adventure.text.Component.text;
 
 public abstract class CarbonChatCommon implements CarbonChat {
 
-    //@Inject
-    private CarbonMessageService messageService;
-
-    public CarbonChatCommon() {
-    }
+    private final CarbonMessageService messageService;
 
     protected CarbonChatCommon(final CarbonMessageService messageService) {
         this.messageService = messageService;

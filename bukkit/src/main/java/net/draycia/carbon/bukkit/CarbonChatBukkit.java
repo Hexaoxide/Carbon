@@ -4,12 +4,14 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
 import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -18,15 +20,27 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import java.nio.file.Path;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class CarbonChatBukkit extends CarbonChatCommon {
 
-    private @Inject UserManager userManager;
-    private @Inject Logger logger;
+    private final UserManager userManager;
+    private final Logger logger;
     private final CarbonChatBukkitEntry plugin;
-    private @Inject CarbonServerBukkit carbonServerBukkit;
+    private final CarbonServer carbonServerBukkit;
 
-    CarbonChatBukkit(final CarbonChatBukkitEntry plugin) {
+    @Inject
+    private CarbonChatBukkit(
+        final CarbonChatBukkitEntry plugin,
+        final Logger logger,
+        final CarbonServer carbonServerBukkit,
+        final UserManager userManager,
+        final CarbonMessageService messageService
+    ) {
+        super(messageService);
+        this.userManager = userManager;
+        this.logger = logger;
         this.plugin = plugin;
+        this.carbonServerBukkit = carbonServerBukkit;
     }
 
     public UserManager userManager() {

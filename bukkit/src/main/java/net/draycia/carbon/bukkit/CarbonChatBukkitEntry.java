@@ -6,7 +6,6 @@ import com.google.inject.Singleton;
 import io.papermc.lib.PaperLib;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
@@ -22,10 +21,9 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        this.carbon = new CarbonChatBukkit(this);
-
         this.injector = Guice.createInjector(new CarbonChatBukkitModule(this,
-            this.carbon, this.getDataFolder().toPath()));
+            this.getDataFolder().toPath()));
+        this.carbon = this.injector.getInstance(CarbonChatBukkit.class);
     }
 
     @Override
@@ -37,13 +35,13 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
             this.getLogger().log(Level.SEVERE, "* Upgrade your server to Paper in order to use CarbonChat.");
             this.getLogger().log(Level.SEVERE, "*");
             PaperLib.suggestPaper(this, Level.SEVERE);
-            Bukkit.getPluginManager().disablePlugin(this);
+            this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
         final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
-        Bukkit.getPluginManager().registerEvents(
+        this.getServer().getPluginManager().registerEvents(
             this.injector.getInstance(BukkitChatListener.class), this);
 
         this.carbon.initialize();

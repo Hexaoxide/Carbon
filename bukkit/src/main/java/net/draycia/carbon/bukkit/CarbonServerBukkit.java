@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -21,7 +22,7 @@ public class CarbonServerBukkit implements CarbonServer {
     private CarbonChatBukkitEntry chatBukkitEntry;
 
     @Inject
-    private CarbonChatBukkit carbonChatBukkit;
+    private UserManager userManager;
 
     @Override
     public Audience console() {
@@ -45,12 +46,12 @@ public class CarbonServerBukkit implements CarbonServer {
 
     @Override
     public @Nullable CarbonPlayer player(final UUID uuid) {
-        return this.carbonChatBukkit.userManager().carbonPlayer(uuid);
+        return this.userManager.carbonPlayer(uuid);
     }
 
     @Override
     public @Nullable CarbonPlayer player(final String username) {
-        return this.carbonChatBukkit.userManager().carbonPlayer(username);
+        return this.userManager.carbonPlayer(username);
     }
 
     private @Nullable CarbonPlayer player(final Player player) {

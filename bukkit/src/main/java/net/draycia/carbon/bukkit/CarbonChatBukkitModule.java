@@ -19,16 +19,13 @@ public final class CarbonChatBukkitModule extends AbstractModule {
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonChatBukkitEntry plugin;
-    private final CarbonChatBukkit carbonChat;
     private final Path dataDirectory;
 
     CarbonChatBukkitModule(
         final CarbonChatBukkitEntry plugin,
-        final CarbonChatBukkit carbonChat,
         final Path dataDirectory
     ) {
         this.plugin = plugin;
-        this.carbonChat = carbonChat;
         this.dataDirectory = dataDirectory;
     }
 
@@ -36,15 +33,12 @@ public final class CarbonChatBukkitModule extends AbstractModule {
     public void configure() {
         this.install(new CarbonCommonModule());
 
-        this.bind(CarbonChat.class).toInstance(this.carbonChat);
-        this.bind(CarbonChatBukkit.class).toInstance(this.carbonChat);
+        this.bind(CarbonChat.class).to(CarbonChatBukkit.class);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonChatBukkitEntry.class).toInstance(this.plugin);
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
         this.bind(UserManager.class).to(MemoryUserManagerBukkit.class);
-
-        this.requestInjection(this.carbonChat);
     }
 
 }
