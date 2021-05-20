@@ -18,12 +18,8 @@ import java.util.UUID;
 @DefaultQualifier(NonNull.class)
 public class CarbonServerSponge implements CarbonServer {
 
-    private final CarbonChatSponge carbonChatSponge;
-
     @Inject
-    public CarbonServerSponge(final CarbonChatSponge carbonChatSponge) {
-        this.carbonChatSponge = carbonChatSponge;
-    }
+    private CarbonChatSponge carbonChatSponge;
 
     @Override
     public Audience console() {
@@ -47,12 +43,12 @@ public class CarbonServerSponge implements CarbonServer {
 
     @Override
     public @Nullable CarbonPlayer player(final UUID uuid) {
-        return this.carbonChatSponge.userManager().carbonPlayer(uuid);
+        return this.carbonChatSponge.server().player(uuid);
     }
 
     @Override
     public @Nullable CarbonPlayer player(final String username) {
-        return this.carbonChatSponge.userManager().carbonPlayer(username);
+        return this.carbonChatSponge.server().player(username);
     }
 
     private @Nullable CarbonPlayer player(final Player player) {

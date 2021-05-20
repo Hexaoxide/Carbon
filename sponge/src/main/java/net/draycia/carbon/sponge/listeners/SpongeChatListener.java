@@ -2,7 +2,6 @@ package net.draycia.carbon.sponge.listeners;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
@@ -24,8 +23,6 @@ public final class SpongeChatListener {
     @Inject
     private CarbonChatSponge carbonChat;
 
-    private final UserManager userManager = this.carbonChat.userManager();
-
     @Listener
     public void onPlayerChat(final @NonNull PlayerChatEvent event, final @First Player messageSender) {
         // https://github.com/SpongePowered/SpongeAPI/pull/2340
@@ -34,7 +31,7 @@ public final class SpongeChatListener {
         // idk, let's just do our own thing in the meantime
         event.setCancelled(true);
 
-        final var sender = this.userManager.carbonPlayer(messageSender.uniqueId());
+        final var sender = this.carbonChat.server().player(messageSender.uniqueId());
 
         if (sender == null) {
             return;
@@ -44,7 +41,7 @@ public final class SpongeChatListener {
         final var channel = sender.selectedChannel();
 
         for (final ServerPlayer spongeRecipient : Sponge.server().onlinePlayers()) {
-            final var recipient = this.userManager.carbonPlayer(spongeRecipient.uniqueId());
+            final var recipient = this.carbonChat.server().player(spongeRecipient.uniqueId());
 
             if (recipient != null && channel.hearingPermitted(recipient).permitted()) {
                 recipients.add(recipient);
