@@ -1,7 +1,6 @@
 package net.draycia.carbon.common;
 
 import cloud.commandframework.CommandManager;
-import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.Moonshine;
@@ -25,7 +24,7 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY;
 import static net.kyori.adventure.text.format.TextDecoration.BOLD;
 
-public abstract class CarbonChatCommon extends AbstractModule implements CarbonChat {
+public abstract class CarbonChatCommon implements CarbonChat {
 
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
