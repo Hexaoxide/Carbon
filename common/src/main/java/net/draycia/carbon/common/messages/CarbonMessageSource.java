@@ -27,6 +27,12 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
 
     @Inject
     CarbonMessageSource(final Path dataDirectory, final CarbonChat carbonChat) throws IOException {
+        final var directoryFile = dataDirectory.toFile();
+
+        if (!directoryFile.exists()) {
+            directoryFile.mkdirs();
+        }
+
         this.properties = new Properties();
 
         // TODO: read file name from config, allow users to specify which file

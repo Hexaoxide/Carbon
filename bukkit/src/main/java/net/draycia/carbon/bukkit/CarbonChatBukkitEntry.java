@@ -23,7 +23,9 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
     @Override
     public void onLoad() {
         this.carbon = new CarbonChatBukkit(this);
-        this.injector = Guice.createInjector(new CarbonChatBukkitModule(this, this.carbon));
+
+        this.injector = Guice.createInjector(new CarbonChatBukkitModule(this,
+            this.carbon, this.getDataFolder().toPath()));
     }
 
     @Override
