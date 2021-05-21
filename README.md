@@ -1,7 +1,7 @@
 # Carbon
 
 ### Dev Builds
-Currently there are no releases, all jars are dev builds, which can be found [here](https://chlorine.hexaoxi.de/job/Carbon/).
+Carbon is currently in early development and as such, developer / preview builds are not offered.
 
 ### Support
 Support is given through [GitHub Issues](https://github.com/Hexaoxide/Carbon/issues) and [Discord](https://discord.gg/S8s75Yf).  
