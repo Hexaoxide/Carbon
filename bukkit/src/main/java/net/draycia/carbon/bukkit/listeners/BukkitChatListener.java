@@ -4,6 +4,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
@@ -13,8 +14,8 @@ import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
-import java.util.Map;
 
+import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.draycia.carbon.common.Injector.byInject;
 import static net.kyori.adventure.key.Key.key;
 
@@ -47,8 +48,10 @@ public final class BukkitChatListener implements Listener {
         // console too!
         recipients.add(Bukkit.getConsoleSender());
 
-        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients,
-            Map.of(key("carbon", "default"), channel.renderer()));
+        final var renderers = new ArrayList<KeyedRenderer>();
+        renderers.add(keyedRenderer(key("carbon", "default"), channel.renderer()));
+
+        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (result.wasSuccessful()) {
@@ -57,8 +60,8 @@ public final class BukkitChatListener implements Listener {
             for (final var recipient : chatEvent.recipients()) {
                 var component = chatEvent.message();
 
-                for (final var entry : chatEvent.renderers().entrySet()) {
-                    component = entry.getValue().render(sender,
+                for (final var renderer : chatEvent.renderers()) {
+                    component = renderer.render(sender,
                         recipient, chatEvent.message(), chatEvent.originalMessage());
                 }
 
