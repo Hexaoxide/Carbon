@@ -38,9 +38,7 @@ public final class BukkitChatListener implements Listener {
         for (final Player bukkitRecipient : event.recipients()) {
             final var recipient = this.userManager.carbonPlayer(bukkitRecipient.getUniqueId());
 
-            // The naming is a little backwards, ChatChannel#mayReceiveMessages
-            // TODO: Change it at some point
-            if (recipient != null && channel.mayReceiveMessages(recipient)) {
+            if (recipient != null && channel.hearingPermitted(recipient).permitted()) {
                 recipients.add(recipient);
             }
         }

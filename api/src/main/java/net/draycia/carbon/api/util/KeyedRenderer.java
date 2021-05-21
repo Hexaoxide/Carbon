@@ -18,7 +18,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
 
     /**
-     * Creates a new renderer with the corresponding key
+     * Creates a new renderer with the corresponding key.
      *
      * @param key the renderer's key
      * @param renderer the chat renderer
@@ -29,6 +29,11 @@ public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
         return new Impl(key, renderer);
     }
 
+    /**
+     * Implementation of the keyed renderer.
+     *
+     * @since 2.0.0
+     */
     record Impl(@NonNull Key key, ChatComponentRenderer renderer) implements KeyedRenderer {
 
         @Override

@@ -45,7 +45,7 @@ public final class SpongeChatListener {
         for (final ServerPlayer spongeRecipient : Sponge.server().onlinePlayers()) {
             final var recipient = this.userManager.carbonPlayer(spongeRecipient.uniqueId());
 
-            if (recipient != null && channel.mayReceiveMessages(recipient)) {
+            if (recipient != null && channel.hearingPermitted(recipient).permitted()) {
                 recipients.add(recipient);
             }
         }

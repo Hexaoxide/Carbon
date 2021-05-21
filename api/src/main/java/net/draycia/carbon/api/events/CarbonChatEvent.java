@@ -1,16 +1,13 @@
 package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.ChatComponentRenderer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * {@link CancellableCarbonEvent} that's called when chat components are rendered for online players.

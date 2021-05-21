@@ -46,6 +46,8 @@ public interface ChatChannel extends Keyed {
 
     /**
      * Represents the result of a channel permission check.
+     *
+     * @since 2.0.0
      */
     record ChannelPermissionResult(boolean permitted, Component reason) {
 
