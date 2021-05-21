@@ -30,6 +30,7 @@ versions:
   kyoriRegistry: 1.0.0-SNAPSHOT
   log4j: 2.11.2
   moonshine: 0.2.4-SNAPSHOT
+  guice: 5.0.1
 
 dependencies:
   adventureBom:
@@ -132,6 +133,11 @@ dependencies:
     group: org.bstats
     name: bstats-sponge
     version: { ref: bstats }
+
+  guice:
+    group: com.google.inject
+    name: guice
+    version: { ref: guice }
 
   paperApi:
     group: com.destroystokyo.paper

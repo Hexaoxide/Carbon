@@ -1,15 +1,13 @@
 package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.ChatComponentRenderer;
+import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.util.List;
-import java.util.Map;
 
 import static net.kyori.adventure.text.Component.empty;
 
@@ -21,7 +19,7 @@ import static net.kyori.adventure.text.Component.empty;
 @DefaultQualifier(NonNull.class)
 public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Result> {
 
-    private final Map<Key, ChatComponentRenderer> renderers;
+    private final List<KeyedRenderer> renderers;
     private final CarbonPlayer sender;
     private final Component originalMessage;
     private Component message;
@@ -41,7 +39,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         final CarbonPlayer sender,
         final Component originalMessage,
         final List<? extends Audience> recipients,
-        final Map<Key, ChatComponentRenderer> renderers
+        final List<KeyedRenderer> renderers
     ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
@@ -56,7 +54,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      * @return The per-recipient component renderers.
      * @since 2.0.0
      */
-    public Map<Key, ChatComponentRenderer> renderers() {
+    public List<KeyedRenderer> renderers() {
         return this.renderers;
     }
 

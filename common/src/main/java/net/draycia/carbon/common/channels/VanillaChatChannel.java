@@ -30,18 +30,26 @@ public class VanillaChatChannel implements ChatChannel {
             return translatable("chat.type.text", name.color(TextColor.color(0xff0000)), message);
         };
 
-    @Override
-    public boolean mayReceiveMessages(final CarbonPlayer player) {
-        return true;
-    }
-
-    @Override
-    public boolean maySendMessages(final CarbonPlayer player) {
-        return true;
-    }
+    private final Key key = Key.key("carbon", "vanilla");
 
     @Override
     public ChatComponentRenderer renderer() {
         return this.renderer;
     }
+
+    @Override
+    public ChannelPermissionResult speechPermitted(final CarbonPlayer carbonPlayer) {
+        return ChannelPermissionResult.allowed();
+    }
+
+    @Override
+    public ChannelPermissionResult hearingPermitted(final CarbonPlayer carbonPlayer) {
+        return ChannelPermissionResult.allowed();
+    }
+
+    @Override
+    public @NonNull Key key() {
+        return this.key;
+    }
+
 }

@@ -28,9 +28,15 @@ tasks {
   shadowJar {
     relocateDependency("io.papermc.lib")
     relocateDependency("io.leangen.geantyref")
+
+    // Guice
+    relocateDependency("com.google.inject")
+    relocateDependency("org.aopalliance")
+    relocateDependency("javax.inject")
   }
   runServer {
     minecraftVersion("1.16.5")
+    jvmArgs("-DLog4jContextSelector=org.apache.logging.log4j.core.selector.ClassLoaderContextSelector") // https://github.com/PaperMC/Paper/issues/4155
   }
 }
 

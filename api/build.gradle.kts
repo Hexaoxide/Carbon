@@ -24,13 +24,6 @@ dependencies {
     isTransitive = false
   }
 
-  api(libs.configurateCore)
-  api(libs.adventureSerializerConfigurate4) {
-    isTransitive = false
-  }
-  api(libs.configurateHocon)
-  api(libs.typesafeConfig)
-
   api(libs.moonshine)
 
   // we shade and relocate a newer version than minecraft provides

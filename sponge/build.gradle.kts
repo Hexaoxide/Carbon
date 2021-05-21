@@ -21,6 +21,9 @@ tasks {
     dependencies {
       // included in sponge
       exclude(dependency("io.leangen.geantyref:geantyref"))
+      exclude(dependency("com.google.inject:guice"))
+      exclude(dependency("aopalliance:aopalliance"))
+      exclude(dependency("javax.inject:javax.inject"))
     }
   }
 }
@@ -30,7 +33,7 @@ sponge {
   plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
     loader(PluginLoaders.JAVA_PLAIN)
     displayName(rootProject.name)
-    mainClass("net.draycia.carbon.sponge.CarbonChatSponge")
+    mainClass("net.draycia.carbon.sponge.CarbonChatSpongeEntry")
     description(project.description)
     links {
       homepage(GITHUB_REPO_URL)
