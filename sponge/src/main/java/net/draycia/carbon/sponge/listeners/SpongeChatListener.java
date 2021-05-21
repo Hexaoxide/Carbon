@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static net.draycia.carbon.common.Injector.byInject;
 import static net.kyori.adventure.key.Key.key;
+import static net.kyori.adventure.text.Component.empty;
 
 public final class SpongeChatListener {
 
@@ -71,6 +72,12 @@ public final class SpongeChatListener {
                 if (component != null) {
                     recipient.sendMessage(component);
                 }
+            }
+        } else if (chatEvent.result().cancelled()) {
+            final var message = chatEvent.result().reason();
+
+            if (!message.equals(empty())) {
+                sender.sendMessage(message);
             }
         }
     }

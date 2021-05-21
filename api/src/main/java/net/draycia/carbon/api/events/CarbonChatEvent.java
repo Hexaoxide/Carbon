@@ -11,26 +11,25 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import java.util.List;
 import java.util.Map;
 
+import static net.kyori.adventure.text.Component.empty;
+
 /**
- * {@link CancellableCarbonEvent} that's called when chat components are rendered for online players.
+ * {@link ResultedCarbonEvent} that's called when chat components are rendered for online players.
  *
  * @since 2.0.0
  */
 @DefaultQualifier(NonNull.class)
-public class CarbonChatEvent extends CancellableCarbonEvent {
+public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Result> {
 
     private final Map<Key, ChatComponentRenderer> renderers;
-
     private final CarbonPlayer sender;
-
     private final Component originalMessage;
-
     private Component message;
-
     private final List<? extends Audience> recipients;
+    private Result result = Result.ALLOWED;
 
     /**
-     * {@link CancellableCarbonEvent} that's called when players send messages in chat.
+     * {@link ResultedCarbonEvent} that's called when players send messages in chat.
      *
      * @param sender          the sender of the message
      * @param originalMessage the original message that was sent
@@ -111,6 +110,30 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
      */
     public List<? extends Audience> recipients() {
         return this.recipients;
+    }
+
+    @Override
+    public Result result() {
+        return this.result;
+    }
+
+    @Override
+    public void result(final Result result) {
+        this.result = result;
+    }
+
+    public record Result(boolean cancelled, Component reason) implements ResultedCarbonEvent.Result {
+
+        private static final Result ALLOWED = new Result(true, empty());
+
+        public static Result allowed() {
+            return ALLOWED;
+        }
+
+        public static Result denied(final Component reason) {
+            return new Result(false, reason);
+        }
+
     }
 
 }
