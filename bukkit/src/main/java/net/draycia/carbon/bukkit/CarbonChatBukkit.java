@@ -3,43 +3,67 @@ package net.draycia.carbon.bukkit;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
-import net.draycia.carbon.api.CarbonChat;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
 import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
-import net.draycia.carbon.bukkit.users.MemoryUserManagerBukkit;
 import net.draycia.carbon.common.CarbonChatCommon;
-import net.draycia.carbon.common.Injector;
 import net.draycia.carbon.common.command.Commander;
-import org.apache.logging.log4j.LogManager;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+import java.nio.file.Path;
+
+@DefaultQualifier(NonNull.class)
+@Singleton
 public final class CarbonChatBukkit extends CarbonChatCommon {
 
-    private final @NonNull UserManager userManager = new MemoryUserManagerBukkit();
-    private final Logger logger = LogManager.getLogger("CarbonChat");
+    private final UserManager userManager;
+    private final Logger logger;
     private final CarbonChatBukkitEntry plugin;
+    private final CarbonServer carbonServerBukkit;
 
-    CarbonChatBukkit(final @NonNull CarbonChatBukkitEntry plugin) {
+    @Inject
+    private CarbonChatBukkit(
+        final CarbonChatBukkitEntry plugin,
+        final Logger logger,
+        final CarbonServer carbonServerBukkit,
+        final UserManager userManager,
+        final CarbonMessageService messageService
+    ) {
+        super(messageService);
+        this.userManager = userManager;
+        this.logger = logger;
         this.plugin = plugin;
-
-        Injector.provide(CarbonChat.class, this);
+        this.carbonServerBukkit = carbonServerBukkit;
     }
 
-    @Override
-    public @NonNull Logger logger() {
-        return this.logger;
-    }
-
-    @Override
-    public @NonNull UserManager userManager() {
+    public UserManager userManager() {
         return this.userManager;
     }
 
     @Override
-    protected @NonNull CommandManager<Commander> createCommandManager() {
+    public Logger logger() {
+        return this.logger;
+    }
+
+    @Override
+    public Path dataDirectory() {
+        return this.plugin.getDataFolder().toPath();
+    }
+
+    @Override
+    public CarbonServer server() {
+        return this.carbonServerBukkit;
+    }
+
+    @Override
+    protected CommandManager<Commander> createCommandManager() {
         final PaperCommandManager<Commander> commandManager;
         try {
             commandManager = new PaperCommandManager<>(

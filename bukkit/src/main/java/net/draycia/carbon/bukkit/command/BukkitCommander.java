@@ -22,6 +22,7 @@ public interface BukkitCommander extends Commander, ForwardingAudience.Single {
             this.commandSender = commandSender;
         }
 
+        @Override
         public @NonNull CommandSender commandSender() {
             return this.commandSender;
         }

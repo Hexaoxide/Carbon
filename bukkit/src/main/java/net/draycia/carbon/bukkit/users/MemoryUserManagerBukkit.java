@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit.users;
 
+import com.google.inject.Singleton;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import org.bukkit.Bukkit;
@@ -16,6 +17,7 @@ import java.util.UUID;
  * No data is persisted or saved.
  * This exists merely as a placeholder.
  */
+@Singleton
 public final class MemoryUserManagerBukkit implements UserManager {
 
     private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();

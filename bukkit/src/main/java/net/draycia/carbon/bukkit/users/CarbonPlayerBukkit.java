@@ -9,9 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.util.UUID;
 
+@DefaultQualifier(NonNull.class)
 public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
     public CarbonPlayerBukkit(
@@ -26,7 +28,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
     public void displayName(final @Nullable Component displayName) {
         super.displayName(displayName);
 
-        final Player player = this.player();
+        final @Nullable Player player = this.player();
 
         if (player != null) {
             player.displayName(displayName);
@@ -36,7 +38,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
     @Override
     public @NonNull Audience audience() {
-        final Player player = this.player();
+        final @Nullable Player player = this.player();
 
         if (player == null) {
             return Audience.empty();
@@ -51,22 +53,22 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
     @Override
     public @NonNull Component createItemHoverComponent() {
-        final Player player = this.player(); // This is temporary (it's not)
+        final @Nullable Player player = this.player(); // This is temporary (it's not)
 
         if (player == null) {
             return Component.empty();
         }
 
-        final ItemStack itemStack;
+        final @Nullable ItemStack itemStack;
 
-        final ItemStack mainHand = player.getInventory().getItemInMainHand();
+        final @Nullable ItemStack mainHand = player.getInventory().getItemInMainHand();
 
-        if (!mainHand.getType().isAir()) {
+        if (mainHand != null && !mainHand.getType().isAir()) {
             itemStack = mainHand;
         } else {
-            final ItemStack offHand = player.getInventory().getItemInMainHand();
+            final @Nullable ItemStack offHand = player.getInventory().getItemInMainHand();
 
-            if (!offHand.getType().isAir()) {
+            if (offHand != null && !offHand.getType().isAir()) {
                 itemStack = offHand;
             } else {
                 itemStack = null;
@@ -82,6 +84,17 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
         }
 
         return itemStack.displayName();
+    }
+
+    @Override
+    public boolean hasPermission(final String permission) {
+        final @Nullable Player player = this.player();
+
+        if (player != null) {
+            return player.hasPermission(permission);
+        }
+
+        return false;
     }
 
 }
