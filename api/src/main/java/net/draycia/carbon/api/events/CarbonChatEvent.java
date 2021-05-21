@@ -120,14 +120,32 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         this.result = result;
     }
 
+    /**
+     * The result of this event.
+     *
+     * @since 2.0.0
+     */
     public record Result(boolean cancelled, Component reason) implements ResultedCarbonEvent.Result {
 
         private static final Result ALLOWED = new Result(true, empty());
 
+        /**
+         * Returns a Result that denotes the event was allowed and not cancelled.
+         *
+         * @return an allowed result
+         * @since 2.0.0
+         */
         public static Result allowed() {
             return ALLOWED;
         }
 
+        /**
+         * Returns a Result that denotes the event was denied and cancelled.
+         *
+         * @param reason the reason the event was denied
+         * @return a denied result
+         * @since 2.0.0
+         */
         public static Result denied(final Component reason) {
             return new Result(false, reason);
         }

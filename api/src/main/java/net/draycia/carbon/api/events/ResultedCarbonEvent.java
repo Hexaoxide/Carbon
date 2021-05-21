@@ -27,6 +27,7 @@ public interface ResultedCarbonEvent<R extends ResultedCarbonEvent.Result> exten
 
     /**
      * Represents the result of the event.
+     *
      * @since 2.0.0
      */
     interface Result {
