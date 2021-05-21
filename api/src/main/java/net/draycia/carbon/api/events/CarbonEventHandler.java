@@ -16,7 +16,16 @@ import java.util.function.Consumer;
 @DefaultQualifier(NonNull.class)
 public final class CarbonEventHandler {
 
-    private final SimpleEventBus<CarbonEvent> eventBus = new SimpleEventBus<>(CarbonEvent.class);
+    private final SimpleEventBus<CarbonEvent> eventBus = new SimpleEventBus<>(CarbonEvent.class) {
+        @Override
+        protected boolean eventCancelled(final @NonNull CarbonEvent event) {
+            if (event instanceof ResultedCarbonEvent<?> resultedCarbonEvent) {
+                return !resultedCarbonEvent.result().cancelled();
+            }
+
+            return false;
+        }
+    };
 
     /**
      * Registers a subscriber for the given event class.

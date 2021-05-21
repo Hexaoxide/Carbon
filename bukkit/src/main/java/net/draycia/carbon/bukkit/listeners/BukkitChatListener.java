@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
+import static net.kyori.adventure.text.Component.empty;
 
 public final class BukkitChatListener implements Listener {
 
@@ -51,8 +52,6 @@ public final class BukkitChatListener implements Listener {
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (result.wasSuccessful()) {
-            // TODO: send to channels
-
             for (final var recipient : chatEvent.recipients()) {
                 var component = chatEvent.message();
 
@@ -64,6 +63,13 @@ public final class BukkitChatListener implements Listener {
                 if (component != null) {
                     recipient.sendMessage(component);
                 }
+            }
+        } else if (chatEvent.result().cancelled()) {
+
+            final var message = chatEvent.result().reason();
+
+            if (!message.equals(empty())) {
+                sender.sendMessage(message);
             }
         }
 
