@@ -2,6 +2,7 @@ package net.draycia.carbon.api.events;
 
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
+import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -19,7 +20,7 @@ import java.util.Map;
 @DefaultQualifier(NonNull.class)
 public class CarbonChatEvent extends CancellableCarbonEvent {
 
-    private final Map<Key, ChatComponentRenderer> renderers;
+    private final List<KeyedRenderer> renderers;
 
     private final CarbonPlayer sender;
 
@@ -42,7 +43,7 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
         final CarbonPlayer sender,
         final Component originalMessage,
         final List<? extends Audience> recipients,
-        final Map<Key, ChatComponentRenderer> renderers
+        final List<KeyedRenderer> renderers
     ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
@@ -57,7 +58,7 @@ public class CarbonChatEvent extends CancellableCarbonEvent {
      * @return The per-recipient component renderers.
      * @since 2.0.0
      */
-    public Map<Key, ChatComponentRenderer> renderers() {
+    public List<KeyedRenderer> renderers() {
         return this.renderers;
     }
 

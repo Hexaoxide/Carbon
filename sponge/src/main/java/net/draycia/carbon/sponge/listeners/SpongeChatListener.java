@@ -3,6 +3,7 @@ package net.draycia.carbon.sponge.listeners;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -14,8 +15,8 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.PlayerChatEvent;
 
 import java.util.ArrayList;
-import java.util.Map;
 
+import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.draycia.carbon.common.Injector.byInject;
 import static net.kyori.adventure.key.Key.key;
 
@@ -53,8 +54,10 @@ public final class SpongeChatListener {
         // i'm not 100% sure this is "console" but I literally cannot find anything that explicitly says console
         recipients.add(Sponge.systemSubject());
 
-        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients,
-            Map.of(key("carbon", "default"), channel.renderer()));
+        final var renderers = new ArrayList<KeyedRenderer>();
+        renderers.add(keyedRenderer(key("carbon", "default"), channel.renderer()));
+
+        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (result.wasSuccessful()) {
@@ -63,8 +66,8 @@ public final class SpongeChatListener {
             for (final var recipient : chatEvent.recipients()) {
                 var component = chatEvent.message();
 
-                for (final var entry : chatEvent.renderers().entrySet()) {
-                    component = entry.getValue().render(sender,
+                for (final var renderer : chatEvent.renderers()) {
+                    component = renderer.render(sender,
                         recipient, chatEvent.message(), chatEvent.originalMessage());
                 }
 
