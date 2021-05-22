@@ -1,1 +1,3 @@
-files: []
+files:
+  - source: common/src/main/resources/messages-en_US.properties
+    translation: /common/src/main/resources/messages-%locale_with_underscore%.properties
