@@ -36,9 +36,9 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
         this.properties = new Properties();
 
         // TODO: read file name from config, allow users to specify which file.
-        // TODO: have a fallback that uses messages-en.properties in the jar
+        // TODO: have a fallback that uses messages-en_US.properties in the jar
         //  so that any missing entries in the user's file will be resolvable.
-        final var fileName = "messages-en.properties";
+        final var fileName = "messages-en_US.properties";
         final var file = dataDirectory.resolve(fileName).toFile();
 
         if (file.isFile()) {
