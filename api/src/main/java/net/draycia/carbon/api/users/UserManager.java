@@ -1,10 +1,9 @@
 package net.draycia.carbon.api.users;
 
+import java.util.UUID;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.UUID;
 
 /**
  * Manager used to load and obtain {@link CarbonPlayer CarbonPlayers}.

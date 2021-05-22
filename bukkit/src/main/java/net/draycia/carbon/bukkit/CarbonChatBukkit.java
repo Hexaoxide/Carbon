@@ -5,6 +5,7 @@ import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
@@ -16,8 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.nio.file.Path;
 
 @DefaultQualifier(NonNull.class)
 @Singleton

@@ -1,12 +1,11 @@
 package net.draycia.carbon.api.events;
 
+import java.util.function.Consumer;
 import net.kyori.event.EventSubscriber;
 import net.kyori.event.PostResult;
 import net.kyori.event.SimpleEventBus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.function.Consumer;
 
 /**
  * Event handler for listening to and emitting carbon events.

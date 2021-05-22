@@ -3,12 +3,6 @@ package net.draycia.carbon.common.messages;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.message.IMessageSource;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.common.ForCarbon;
-import net.kyori.adventure.audience.Audience;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,6 +13,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.common.ForCarbon;
+import net.kyori.adventure.audience.Audience;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
 @DefaultQualifier(NonNull.class)

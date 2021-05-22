@@ -1,5 +1,7 @@
 package net.draycia.carbon.sponge.users;
 
+import java.util.Optional;
+import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
@@ -12,9 +14,6 @@ import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.inventory.ItemStack;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerSponge extends CarbonPlayerCommon {

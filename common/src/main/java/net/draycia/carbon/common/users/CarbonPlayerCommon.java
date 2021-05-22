@@ -1,5 +1,6 @@
 package net.draycia.carbon.common.users;
 
+import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.VanillaChatChannel;
@@ -9,8 +10,6 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.UUID;
 
 import static java.util.Objects.requireNonNullElseGet;
 import static net.kyori.adventure.text.Component.text;

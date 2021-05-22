@@ -5,6 +5,7 @@ import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
@@ -18,8 +19,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.plugin.PluginContainer;
-
-import java.nio.file.Path;
 
 // TODO: this class should die
 @DefaultQualifier(NonNull.class)

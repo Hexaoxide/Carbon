@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit.users;
 
+import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
@@ -10,8 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.UUID;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerBukkit extends CarbonPlayerCommon {

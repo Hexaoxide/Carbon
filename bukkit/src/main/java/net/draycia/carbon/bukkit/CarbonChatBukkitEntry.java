@@ -4,12 +4,11 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.papermc.lib.PaperLib;
+import java.util.logging.Level;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-
-import java.util.logging.Level;
 
 @Singleton
 public final class CarbonChatBukkitEntry extends JavaPlugin {

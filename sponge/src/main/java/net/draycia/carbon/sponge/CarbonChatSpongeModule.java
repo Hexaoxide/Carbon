@@ -3,6 +3,7 @@ package net.draycia.carbon.sponge;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
@@ -10,8 +11,6 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.sponge.users.MemoryUserManagerSponge;
 import org.spongepowered.api.config.ConfigDir;
-
-import java.nio.file.Path;
 
 public class CarbonChatSpongeModule extends AbstractModule {
 

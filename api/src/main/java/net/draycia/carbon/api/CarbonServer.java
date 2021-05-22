@@ -1,12 +1,11 @@
 package net.draycia.carbon.api;
 
+import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.UUID;
 
 /**
  * The server that carbon is running on.

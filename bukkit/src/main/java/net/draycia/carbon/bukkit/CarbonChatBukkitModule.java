@@ -1,6 +1,7 @@
 package net.draycia.carbon.bukkit;
 
 import com.google.inject.AbstractModule;
+import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
@@ -11,8 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.nio.file.Path;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkitModule extends AbstractModule {

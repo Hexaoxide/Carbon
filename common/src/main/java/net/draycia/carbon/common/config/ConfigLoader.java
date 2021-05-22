@@ -1,13 +1,12 @@
 package net.draycia.carbon.common.config;
 
+import java.io.File;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
-
-import java.io.File;
 
 @DefaultQualifier(NonNull.class)
 public class ConfigLoader {

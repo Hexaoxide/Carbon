@@ -1,11 +1,10 @@
 package net.draycia.carbon.api;
 
+import java.nio.file.Path;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.nio.file.Path;
 
 /**
  * The main plugin interface.<br>

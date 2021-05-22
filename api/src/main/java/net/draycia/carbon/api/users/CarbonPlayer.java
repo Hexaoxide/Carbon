@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.users;
 
+import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
@@ -7,8 +8,6 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.UUID;
 
 /**
  * Generic abstraction for players.

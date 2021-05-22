@@ -1,6 +1,7 @@
 package net.draycia.carbon.sponge.listeners;
 
 import com.google.inject.Inject;
+import java.util.ArrayList;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.sponge.CarbonChatSponge;
@@ -12,8 +13,6 @@ import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.PlayerChatEvent;
-
-import java.util.ArrayList;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;

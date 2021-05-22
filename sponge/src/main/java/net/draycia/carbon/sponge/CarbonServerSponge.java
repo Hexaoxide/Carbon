@@ -2,6 +2,8 @@ package net.draycia.carbon.sponge;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.ArrayList;
+import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
@@ -10,9 +12,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-
-import java.util.ArrayList;
-import java.util.UUID;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
