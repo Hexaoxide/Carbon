@@ -66,7 +66,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
         if (mainHand != null && !mainHand.getType().isAir()) {
             itemStack = mainHand;
         } else {
-            final @Nullable ItemStack offHand = player.getInventory().getItemInMainHand();
+            final @Nullable ItemStack offHand = player.getInventory().getItemInOffHand();
 
             if (offHand != null && !offHand.getType().isAir()) {
                 itemStack = offHand;
