@@ -9,10 +9,12 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
+@DefaultQualifier(NonNull.class)
 public abstract class CarbonChatCommon implements CarbonChat {
 
     private final CarbonMessageService messageService;

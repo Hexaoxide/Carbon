@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.config.PrimaryConfig;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -26,7 +27,10 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
     private final Properties properties;
 
     @Inject
-    CarbonMessageSource(final @ForCarbon Path dataDirectory) throws IOException {
+    CarbonMessageSource(
+        final @ForCarbon Path dataDirectory,
+        final PrimaryConfig primaryConfig
+        ) throws IOException {
         final var directoryFile = dataDirectory.toFile();
 
         if (!directoryFile.exists()) {
@@ -35,10 +39,7 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
 
         this.properties = new Properties();
 
-        // TODO: read file name from config, allow users to specify which file.
-        // TODO: have a fallback that uses messages.properties in the jar
-        //  so that any missing entries in the user's file will be resolvable.
-        final var fileName = "messages.properties";
+        final var fileName = primaryConfig.translationFile();
         final var file = dataDirectory.resolve(fileName).toFile();
 
         if (file.isFile()) {

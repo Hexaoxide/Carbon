@@ -1,39 +1,57 @@
 package net.draycia.carbon.common.config;
 
-import java.io.File;
+import com.google.inject.Inject;
+import java.nio.file.Path;
+import net.draycia.carbon.common.ForCarbon;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
 @DefaultQualifier(NonNull.class)
 public class ConfigLoader {
 
-    public CommentedConfigurationNode loadConfig(final File file) throws ConfigurateException {
-        final var builder = HoconConfigurationLoader.builder().prettyPrinting(true);
+    @Inject
+    @ForCarbon
+    private Path dataDirectory;
 
-        final var loader = this.loadConfigFile(builder, file);
-        final CommentedConfigurationNode node = loader.load();
+    public <T> @Nullable T load(final Class<T> clazz, final String fileName) {
+        final var directoryFile = dataDirectory.toFile();
 
-        if (!file.exists()) {
-            loader.save(node);
+        if (!directoryFile.exists()) {
+            directoryFile.mkdirs();
         }
 
-        return node;
-    }
+        final var file = dataDirectory.resolve(fileName).toFile();
 
-    private HoconConfigurationLoader loadConfigFile(final HoconConfigurationLoader.Builder builder, final File config) {
-        return builder
+        final var loader = HoconConfigurationLoader.builder()
+            .prettyPrinting(true)
             .defaultOptions(opts -> {
-                final ConfigurateComponentSerializer serializer = ConfigurateComponentSerializer.configurate();
+                final ConfigurateComponentSerializer serializer =
+                    ConfigurateComponentSerializer.configurate();
 
                 return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
                     serializerBuilder.registerAll(serializer.serializers()));
             })
-            .file(config)
+            .file(file)
             .build();
+
+        try {
+            final var node = loader.load();
+            final T config = node.get(clazz);
+
+            if (!file.exists()) {
+                node.set(clazz, config);
+                loader.save(node);
+            }
+
+            return config;
+        } catch (final ConfigurateException exception) {
+            exception.printStackTrace();
+            return null;
+        }
     }
 
 }
