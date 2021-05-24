@@ -23,12 +23,6 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public ConfigLoader configLoader() {
-        return new ConfigLoader();
-    }
-
-    @Provides
-    @Singleton
     public PrimaryConfig primaryConfig(final ConfigLoader configLoader) {
         final @Nullable PrimaryConfig primaryConfig =
             configLoader.load(PrimaryConfig.class, "config.conf");
