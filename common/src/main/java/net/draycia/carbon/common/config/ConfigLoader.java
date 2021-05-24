@@ -1,6 +1,5 @@
 package net.draycia.carbon.common.config;
 
-import com.google.inject.Inject;
 import java.nio.file.Path;
 import net.draycia.carbon.common.ForCarbon;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
@@ -13,9 +12,11 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 @DefaultQualifier(NonNull.class)
 public class ConfigLoader {
 
-    @Inject
-    @ForCarbon
-    private Path dataDirectory;
+    private final Path dataDirectory;
+
+    public ConfigLoader(@ForCarbon final @NonNull Path dataDirectory) {
+        this.dataDirectory = dataDirectory;
+    }
 
     public <T> @Nullable T load(final Class<T> clazz, final String fileName) {
         final var directoryFile = this.dataDirectory.toFile();

@@ -15,7 +15,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class CarbonServerBukkit implements CarbonServer {
+public final class CarbonServerBukkit implements CarbonServer {
 
     private final CarbonChatBukkitEntry chatBukkitEntry;
     private final UserManager userManager;

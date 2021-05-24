@@ -17,7 +17,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class CarbonServerSponge implements CarbonServer {
+public final class CarbonServerSponge implements CarbonServer {
 
     private final Game game;
     private final UserManager userManager;

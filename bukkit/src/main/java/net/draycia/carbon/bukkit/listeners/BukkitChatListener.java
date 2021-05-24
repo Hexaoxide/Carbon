@@ -19,8 +19,12 @@ import static net.kyori.adventure.text.Component.empty;
 
 public final class BukkitChatListener implements Listener {
 
+    private final CarbonChat carbonChat;
+
     @Inject
-    private CarbonChat carbonChat;
+    public BukkitChatListener(final CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
+    }
 
     @EventHandler
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
