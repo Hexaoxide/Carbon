@@ -1,5 +1,7 @@
 package net.draycia.carbon.common.config;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import net.draycia.carbon.common.ForCarbon;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
@@ -18,14 +20,12 @@ public class ConfigLoader {
         this.dataDirectory = dataDirectory;
     }
 
-    public <T> @Nullable T load(final Class<T> clazz, final String fileName) {
-        final var directoryFile = this.dataDirectory.toFile();
-
-        if (!directoryFile.exists()) {
-            directoryFile.mkdirs();
+    public <T> @Nullable T load(final Class<T> clazz, final String fileName) throws IOException {
+        if (!Files.exists(this.dataDirectory)) {
+            Files.createDirectories(this.dataDirectory);
         }
 
-        final var file = this.dataDirectory.resolve(fileName).toFile();
+        final Path file = this.dataDirectory.resolve(fileName);
 
         final var loader = HoconConfigurationLoader.builder()
             .prettyPrinting(true)
@@ -36,14 +36,14 @@ public class ConfigLoader {
                 return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
                     serializerBuilder.registerAll(serializer.serializers()));
             })
-            .file(file)
+            .path(file)
             .build();
 
         try {
             final var node = loader.load();
             final T config = node.get(clazz);
 
-            if (!file.exists()) {
+            if (!Files.exists(file)) {
                 node.set(clazz, config);
                 loader.save(node);
             }

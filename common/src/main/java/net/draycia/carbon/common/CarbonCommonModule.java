@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.Moonshine;
+import java.io.IOException;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.CarbonMessageParser;
@@ -23,7 +24,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public PrimaryConfig primaryConfig(final ConfigLoader configLoader) {
+    public PrimaryConfig primaryConfig(final ConfigLoader configLoader) throws IOException {
         final @Nullable PrimaryConfig primaryConfig =
             configLoader.load(PrimaryConfig.class, "config.conf");
 
