@@ -30,7 +30,7 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
     CarbonMessageSource(
         final @ForCarbon Path dataDirectory,
         final PrimaryConfig primaryConfig
-        ) throws IOException {
+    ) throws IOException {
         final var directoryFile = dataDirectory.toFile();
 
         if (!directoryFile.exists()) {

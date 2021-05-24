@@ -18,13 +18,13 @@ public class ConfigLoader {
     private Path dataDirectory;
 
     public <T> @Nullable T load(final Class<T> clazz, final String fileName) {
-        final var directoryFile = dataDirectory.toFile();
+        final var directoryFile = this.dataDirectory.toFile();
 
         if (!directoryFile.exists()) {
             directoryFile.mkdirs();
         }
 
-        final var file = dataDirectory.resolve(fileName).toFile();
+        final var file = this.dataDirectory.resolve(fileName).toFile();
 
         final var loader = HoconConfigurationLoader.builder()
             .prettyPrinting(true)
