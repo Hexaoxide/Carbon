@@ -17,11 +17,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class CarbonServerBukkit implements CarbonServer {
 
-    @Inject
-    private CarbonChatBukkitEntry chatBukkitEntry;
+    private final CarbonChatBukkitEntry chatBukkitEntry;
+    private final UserManager userManager;
 
     @Inject
-    private UserManager userManager;
+    private CarbonServerBukkit(final CarbonChatBukkitEntry chatBukkitEntry, final UserManager userManager) {
+        this.chatBukkitEntry = chatBukkitEntry;
+        this.userManager = userManager;
+    }
 
     @Override
     public Audience console() {

@@ -61,6 +61,7 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
         }
 
         final @Nullable ItemStack itemStack = player.equipped(EquipmentTypes.MAIN_HAND)
+            .filter(it -> !it.isEmpty())
             .orElseGet(() -> player.equipped(EquipmentTypes.OFF_HAND).orElse(null));
 
         if (itemStack == null || itemStack.isEmpty()) {

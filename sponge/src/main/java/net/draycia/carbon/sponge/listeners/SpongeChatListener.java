@@ -20,8 +20,14 @@ import static net.kyori.adventure.text.Component.empty;
 
 public final class SpongeChatListener {
 
-    @Inject private Game game;
-    @Inject private CarbonChatSponge carbonChat;
+    private final Game game;
+    private final CarbonChatSponge carbonChat;
+
+    @Inject
+    private SpongeChatListener(final Game game, final CarbonChatSponge carbonChat) {
+        this.game = game;
+        this.carbonChat = carbonChat;
+    }
 
     @Listener
     public void onPlayerChat(final @NonNull PlayerChatEvent event, final @First Player messageSender) {
