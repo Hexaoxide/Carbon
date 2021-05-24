@@ -25,23 +25,28 @@ subprojects {
 
   repositories {
     mavenCentral()
-    maven("https://oss.sonatype.org/content/groups/public/")
     sonatypeSnapshots()
+    // Paper API
     maven("https://papermc.io/repo/repository/maven-public/")
-    maven("https://nexus.proximyst.com/repository/maven-public/")
-    //maven("https://repo.incendo.org/content/repositories/snapshots") // normal cloud snapshot repo
-    maven("https://repo.jpenilla.xyz/snapshots/") { // temp cloud snapshot repo for sponge-8
-      content {
-        includeGroup("cloud.commandframework")
-      }
+    // Moonshine
+    maven("https://nexus.proximyst.com/repository/maven-public/") {
+      content { includeGroup("com.proximyst.moonshine") }
     }
-    maven("https://maven.enginehub.org/repo/")
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    maven("https://jitpack.io")
-    maven("https://dl.bintray.com/ichbinjoe/public/")
-    maven("https://repo.codemc.org/repository/maven-public/")
-    maven("https://repo.glaremasters.me/repository/public/")
-    maven("https://repo.aikar.co/content/groups/aikar/")
+    // cloud snapshots repo
+    //maven("https://repo.incendo.org/content/repositories/snapshots") {
+    //  content { includeGroup("cloud.commandframework") }
+    //}
+    // temporary cloud snapshots repo for sponge-8
+    maven("https://repo.jpenilla.xyz/snapshots/") {
+      content { includeGroup("cloud.commandframework") }
+    }
+    // PlaceholderAPI
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
+      content { includeGroup("me.clip") }
+    }
+    maven("https://jitpack.io") {
+      content { includeGroupByRegex("com\\.github\\..*") }
+    }
   }
 
   dependencies {
