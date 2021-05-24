@@ -15,7 +15,12 @@ dependencies {
 
 tasks {
   runServer {
-    classpath(shadowJar)
+    // look away pls
+    for (sub in sequenceOf(project.projects.carbonchatApi, project.projects.carbonchatCommon)) {
+      classpath(sub.dependencyProject.tasks.jar.map { it.archiveFile })
+      dependsOn(sub.dependencyProject.tasks.jar)
+    }
+    classpath(configurations.runtimeClasspath)
   }
   shadowJar {
     dependencies {
