@@ -3,13 +3,13 @@ package net.draycia.carbon.common.messages;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.message.IMessageSource;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
@@ -31,24 +31,23 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
         final @ForCarbon Path dataDirectory,
         final PrimaryConfig primaryConfig
     ) throws IOException {
-        final var directoryFile = dataDirectory.toFile();
-
-        if (!directoryFile.exists()) {
-            directoryFile.mkdirs();
+        if (!Files.exists(dataDirectory)) {
+            Files.createDirectories(dataDirectory);
         }
 
         this.properties = new Properties();
 
-        final var fileName = primaryConfig.translationFile();
-        final var file = dataDirectory.resolve(fileName).toFile();
+        final String fileName = primaryConfig.translationFile();
+        final Path file = dataDirectory.resolve(fileName);
 
-        if (file.isFile()) {
-            try (final Reader reader = new FileReader(file, StandardCharsets.UTF_8)) {
+        if (Files.isRegularFile(file)) {
+            final InputStream inputStream = Files.newInputStream(file);
+            try (final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
                 this.properties.load(reader);
             }
         }
 
-        boolean write = !file.isFile();
+        boolean write = !Files.isRegularFile(file);
 
         try (final InputStream stream = CarbonChat.class.getResourceAsStream("/" + fileName)) {
             final Properties packaged = new Properties();
@@ -60,9 +59,8 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
         }
 
         if (write) {
-            try (final Writer writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-                this.properties.store(writer, null);
-            }
+            final BufferedWriter outputStream = Files.newBufferedWriter(file);
+            this.properties.store(outputStream, null);
         }
     }
 
