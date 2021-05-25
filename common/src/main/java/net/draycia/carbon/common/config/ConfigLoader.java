@@ -33,7 +33,8 @@ public class ConfigLoader {
                 final ConfigurateComponentSerializer serializer =
                     ConfigurateComponentSerializer.configurate();
 
-                return opts.shouldCopyDefaults(true).serializers(serializer.serializers());
+                return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
+                    serializerBuilder.registerAll(serializer.serializers()));
             })
             .path(file)
             .build();
