@@ -72,7 +72,8 @@ public final class CarbonMessageSource implements IMessageSource<String, Audienc
             })
             .forEach(localeFile -> {
                 final String localeString = localeFile.getFileName().toString().substring("messages-".length()).replace(".properties", "");
-                final @Nullable Locale locale = Translator.parseLocale(localeString);
+                // MC uses no_NO when the player selects nb_NO...
+                final @Nullable Locale locale = Translator.parseLocale(localeString.replace("nb_NO", "no_NO"));
 
                 if (locale == null) {
                     this.logger.warn("Unknown locale '{}'?", localeString);

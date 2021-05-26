@@ -68,7 +68,7 @@ public interface CarbonPlayer extends Audience, Identified {
     @Nullable Locale locale();
 
     /**
-     * The player's selected channel. If none has been set, returns the server default.
+     * The player's selected channel, or null if one isn't set.
      *
      * @return the player's selected channel
      * @since 2.0.0

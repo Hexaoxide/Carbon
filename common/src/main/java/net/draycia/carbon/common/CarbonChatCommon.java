@@ -32,14 +32,15 @@ public abstract class CarbonChatCommon implements CarbonChat {
                 final Commander sender = ctx.getSender();
 
                 this.messageService.exampleCommandFeedback(sender, this.messageService.pluginName());
-                this.messageService.localeTestMessage(sender);
 
-                if (sender instanceof PlayerCommander) {
-                    final Component itemComponent = ((PlayerCommander) sender).carbonPlayer().createItemHoverComponent();
+                if (sender instanceof PlayerCommander player) {
+                    this.messageService.localeTestMessage(player.carbonPlayer());
+
+                    final Component itemComponent = player.carbonPlayer().createItemHoverComponent();
                     if (itemComponent != empty()) {
-                        sender.sendMessage(TextComponent.ofChildren(text("Item: "), itemComponent));
+                        player.sendMessage(TextComponent.ofChildren(text("Item: "), itemComponent));
                     } else {
-                        sender.sendMessage(text("You are not holding an item!"));
+                        player.sendMessage(text("You are not holding an item!"));
                     }
                 }
             }));
