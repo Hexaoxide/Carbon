@@ -9,14 +9,11 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @DefaultQualifier(NonNull.class)
 public class PrimaryConfig {
 
-    @Comment("""
-            The file that localisations are loaded from.
-            Files will be pulled from the jar.
-            """)
-    private String translationFile = "locale/messages.properties";
+    @Comment("The default locale for plugin messages.")
+    private String defaultLocale = "en_US";
 
-    public String translationFile() {
-        return this.translationFile;
+    public String defaultLocale() {
+        return this.defaultLocale;
     }
 
 }
