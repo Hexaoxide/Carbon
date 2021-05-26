@@ -16,6 +16,7 @@ dependencies {
 tasks {
   runServer {
     classpath(shadowJar.map { it.archiveFile })
+    dependsOn(shadowJar)
   }
   afterEvaluate {
     runServer {
