@@ -19,10 +19,8 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
     protected final String username;
     protected Component displayName;
     protected final UUID uuid;
-
-
     protected final Identity identity;
-    protected transient @Nullable ChatChannel selectedChannel;
+    protected @Nullable ChatChannel selectedChannel;
 
     protected CarbonPlayerCommon(
         final String username,

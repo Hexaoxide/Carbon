@@ -41,7 +41,7 @@ public final class BukkitChatListener implements Listener {
         var channel = sender.selectedChannel();
 
         if (channel == null) {
-            channel = basicChat;
+            channel = this.basicChat;
         }
 
         for (final Player bukkitRecipient : event.recipients()) {

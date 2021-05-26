@@ -3,8 +3,11 @@ package net.draycia.carbon.common.messages;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.message.IMessageSource;
-
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -16,7 +19,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.CarbonJar;
 import net.draycia.carbon.common.ForCarbon;
@@ -30,7 +32,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class CarbonMessageSource implements IMessageSource<String, Audience> {
+public final class CarbonMessageSource implements IMessageSource<String, Audience> {
 
     private final Locale defaultLocale;
     private final Map<Locale, Properties> locales = new HashMap<>();
@@ -114,11 +116,11 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
             }
         }
 
-        return forAudience(key, player);
+        return this.forAudience(key, player);
     }
 
     private String forAudience(final String key, final Audience audience) {
-        final String value = this.locales.get(defaultLocale).getProperty(key);
+        final String value = this.locales.get(this.defaultLocale).getProperty(key);
 
         if (value == null) {
             throw new IllegalStateException("No message mapping for key " + key);

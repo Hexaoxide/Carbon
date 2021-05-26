@@ -3,7 +3,6 @@ package net.draycia.carbon.common.messages;
 import com.proximyst.moonshine.annotation.Message;
 import com.proximyst.moonshine.annotation.Placeholder;
 import com.proximyst.moonshine.annotation.Receiver;
-import java.util.UUID;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 

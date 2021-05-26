@@ -16,7 +16,7 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.plugin.PluginContainer;
 
 @DefaultQualifier(NonNull.class)
-public class CarbonChatSpongeModule extends AbstractModule {
+public final class CarbonChatSpongeModule extends AbstractModule {
 
     private final PluginContainer pluginContainer;
     private final Path configDir;
