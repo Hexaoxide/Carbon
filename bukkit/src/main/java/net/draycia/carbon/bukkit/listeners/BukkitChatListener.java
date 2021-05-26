@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
@@ -20,10 +21,12 @@ import static net.kyori.adventure.text.Component.empty;
 public final class BukkitChatListener implements Listener {
 
     private final CarbonChat carbonChat;
+    private final ChatChannel basicChat;
 
     @Inject
-    public BukkitChatListener(final CarbonChat carbonChat) {
+    public BukkitChatListener(final CarbonChat carbonChat, final ChatChannel basicChat) {
         this.carbonChat = carbonChat;
+        this.basicChat = basicChat;
     }
 
     @EventHandler
@@ -35,7 +38,11 @@ public final class BukkitChatListener implements Listener {
         }
 
         final var recipients = new ArrayList<Audience>();
-        final var channel = sender.selectedChannel();
+        var channel = sender.selectedChannel();
+
+        if (channel == null) {
+            channel = basicChat;
+        }
 
         for (final Player bukkitRecipient : event.recipients()) {
             final var recipient = this.carbonChat.server().player(bukkitRecipient.getUniqueId());
@@ -49,7 +56,7 @@ public final class BukkitChatListener implements Listener {
         recipients.add(Bukkit.getConsoleSender());
 
         final var renderers = new ArrayList<KeyedRenderer>();
-        renderers.add(keyedRenderer(key("carbon", "default"), channel.renderer()));
+        renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
         final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);

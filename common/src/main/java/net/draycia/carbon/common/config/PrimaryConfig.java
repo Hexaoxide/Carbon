@@ -13,7 +13,7 @@ public class PrimaryConfig {
             The file that localisations are loaded from.
             Files will be pulled from the jar.
             """)
-    private String translationFile = "messages.properties";
+    private String translationFile = "locale/messages.properties";
 
     public String translationFile() {
         return this.translationFile;

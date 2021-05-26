@@ -54,6 +54,17 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
     }
 
     @Override
+    public @Nullable Locale locale() {
+        final var player = this.player();
+
+        if (player.isPresent()) {
+            return player.get().locale();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public @NonNull Component createItemHoverComponent() {
         final @Nullable ServerPlayer player = this.player().orElse(null);
         if (player == null) {

@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.users;
 
+import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
@@ -59,12 +60,20 @@ public interface CarbonPlayer extends Audience, Identified {
     Component createItemHoverComponent();
 
     /**
+     * The player's locale.
+     *
+     * @return the player's locale, or null if offline
+     * @since 2.0.0
+     */
+    @Nullable Locale locale();
+
+    /**
      * The player's selected channel. If none has been set, returns the server default.
      *
      * @return the player's selected channel
      * @since 2.0.0
      */
-    ChatChannel selectedChannel();
+    @Nullable ChatChannel selectedChannel();
 
     /**
      * Sets the player's selected channel.

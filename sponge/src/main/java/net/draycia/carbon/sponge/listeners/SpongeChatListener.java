@@ -59,7 +59,7 @@ public final class SpongeChatListener {
         recipients.add(this.game.systemSubject());
 
         final var renderers = new ArrayList<KeyedRenderer>();
-        renderers.add(keyedRenderer(key("carbon", "default"), channel.renderer()));
+        renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
         final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);

@@ -16,15 +16,7 @@ import static net.kyori.adventure.text.Component.empty;
  * @since 2.0.0
  */
 @DefaultQualifier(NonNull.class)
-public interface ChatChannel extends Keyed {
-
-    /**
-     * This channel's renderer.
-     *
-     * @return the renderer
-     * @since 2.0.0
-     */
-    ChatComponentRenderer renderer();
+public interface ChatChannel extends Keyed, ChatComponentRenderer {
 
     /**
      * Checks if the player may send messages in this channel.
