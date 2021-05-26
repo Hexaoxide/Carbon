@@ -86,9 +86,8 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
                     this.locales.put(locale, properties);
 
                     this.logger.info("Successfully loaded locale {} ({})", locale.getDisplayName(), locale);
-                } catch (IOException e) {
-                    // TODO: message "unable to load locale"
-                    e.printStackTrace();
+                } catch (final IOException ex) {
+                    this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, localeFile, ex);
                 }
             }));
     }
