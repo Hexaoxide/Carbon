@@ -143,14 +143,18 @@ public class CarbonMessageSource implements IMessageSource<String, Audience> {
 
     private void walkPluginJar(final Consumer<Stream<Path>> user) throws IOException {
         if (Files.isDirectory(this.pluginJar)) {
-            user.accept(Files.walk(this.pluginJar));
+            try (final var stream = Files.walk(this.pluginJar)) {
+                user.accept(stream);
+            }
             return;
         }
         try (final FileSystem jar = FileSystems.newFileSystem(this.pluginJar, this.getClass().getClassLoader())) {
             final Path root = jar.getRootDirectories()
                 .iterator()
                 .next();
-            user.accept(Files.walk(root));
+            try (final var stream = Files.walk(root)) {
+                user.accept(stream);
+            }
         }
     }
 
