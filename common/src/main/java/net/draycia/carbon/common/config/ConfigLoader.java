@@ -1,5 +1,6 @@
 package net.draycia.carbon.common.config;
 
+import com.google.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ public class ConfigLoader {
 
     private final Path dataDirectory;
 
+    @Inject
     public ConfigLoader(@ForCarbon final @NonNull Path dataDirectory) {
         this.dataDirectory = dataDirectory;
     }

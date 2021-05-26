@@ -21,6 +21,7 @@ public interface CarbonMessageService {
         @Placeholder final String message
     );
 
+    /*
     @Message("channel.format.basic")
     Component basicChatFormat(
         @Receiver final Audience audience,
@@ -28,6 +29,7 @@ public interface CarbonMessageService {
         @Placeholder Component displayname,
         @Placeholder String username
     );
+     */
 
     @Message("placeholders.plugin")
     Component pluginName();

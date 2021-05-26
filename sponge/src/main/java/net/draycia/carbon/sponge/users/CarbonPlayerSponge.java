@@ -1,5 +1,6 @@
 package net.draycia.carbon.sponge.users;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -14,6 +15,7 @@ import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
+import org.spongepowered.api.util.locale.LocaleSource;
 
 import static net.kyori.adventure.text.Component.translatable;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
@@ -55,13 +57,9 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
 
     @Override
     public @Nullable Locale locale() {
-        final var player = this.player();
-
-        if (player.isPresent()) {
-            return player.get().locale();
-        } else {
-            return null;
-        }
+        return this.player()
+            .map(LocaleSource::locale)
+            .orElse(null);
     }
 
     @Override
