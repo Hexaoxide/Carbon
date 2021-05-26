@@ -20,6 +20,9 @@ public interface CarbonMessageService {
         @Placeholder final String message
     );
 
+    @Message("test.phrase")
+    void localeTestMessage(@Receiver final Audience audience);
+
     /*
     @Message("channel.format.basic")
     Component basicChatFormat(

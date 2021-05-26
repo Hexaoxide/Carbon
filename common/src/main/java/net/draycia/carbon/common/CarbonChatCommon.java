@@ -32,6 +32,7 @@ public abstract class CarbonChatCommon implements CarbonChat {
                 final Commander sender = ctx.getSender();
 
                 this.messageService.exampleCommandFeedback(sender, this.messageService.pluginName());
+                this.messageService.localeTestMessage(sender);
 
                 if (sender instanceof PlayerCommander) {
                     final Component itemComponent = ((PlayerCommander) sender).carbonPlayer().createItemHoverComponent();
