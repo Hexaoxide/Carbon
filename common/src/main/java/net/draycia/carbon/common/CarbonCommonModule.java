@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.Moonshine;
 import java.io.IOException;
+import java.util.UUID;
 import net.draycia.carbon.common.channels.BasicChatChannel;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
@@ -14,6 +15,7 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.ServerReceiverResolver;
+import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -47,6 +49,7 @@ public final class CarbonCommonModule extends AbstractModule {
     public CarbonMessageService messageService(
         final ServerReceiverResolver serverReceiverResolver,
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
+        final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageParser carbonMessageParser,
         final CarbonMessageSender carbonMessageSender
@@ -54,6 +57,7 @@ public final class CarbonCommonModule extends AbstractModule {
         return Moonshine.<Audience>builder()
             .receiver(serverReceiverResolver)
             .placeholder(Component.class, componentPlaceholderResolver)
+            .placeholder(UUID.class, uuidPlaceholderResolver)
             .source(carbonMessageSource)
             .parser(carbonMessageParser)
             .sender(carbonMessageSender)

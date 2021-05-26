@@ -2,8 +2,10 @@ package net.draycia.carbon.sponge.listeners;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.channels.BasicChatChannel;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -22,11 +24,13 @@ public final class SpongeChatListener {
 
     private final Game game;
     private final CarbonChatSponge carbonChat;
+    private final BasicChatChannel basicChat;
 
     @Inject
-    private SpongeChatListener(final Game game, final CarbonChatSponge carbonChat) {
+    private SpongeChatListener(final Game game, final CarbonChatSponge carbonChat, final BasicChatChannel basicChat) {
         this.game = game;
         this.carbonChat = carbonChat;
+        this.basicChat = basicChat;
     }
 
     @Listener
@@ -44,7 +48,11 @@ public final class SpongeChatListener {
         }
 
         final var recipients = new ArrayList<Audience>();
-        final var channel = sender.selectedChannel();
+        var channel = sender.selectedChannel();
+
+        if (channel == null) {
+            channel = this.basicChat;
+        }
 
         for (final ServerPlayer spongeRecipient : this.game.server().onlinePlayers()) {
             final var recipient = this.carbonChat.server().player(spongeRecipient.uniqueId());
@@ -55,7 +63,6 @@ public final class SpongeChatListener {
         }
 
         // console too!
-        // i'm not 100% sure this is "console" but I literally cannot find anything that explicitly says console
         recipients.add(this.game.systemSubject());
 
         final var renderers = new ArrayList<KeyedRenderer>();

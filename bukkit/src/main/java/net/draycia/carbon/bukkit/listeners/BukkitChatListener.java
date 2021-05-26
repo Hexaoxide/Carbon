@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.channels.BasicChatChannel;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,10 +21,10 @@ import static net.kyori.adventure.text.Component.empty;
 public final class BukkitChatListener implements Listener {
 
     private final CarbonChat carbonChat;
-    private final ChatChannel basicChat;
+    private final BasicChatChannel basicChat;
 
     @Inject
-    public BukkitChatListener(final CarbonChat carbonChat, final ChatChannel basicChat) {
+    public BukkitChatListener(final CarbonChat carbonChat, final BasicChatChannel basicChat) {
         this.carbonChat = carbonChat;
         this.basicChat = basicChat;
     }
