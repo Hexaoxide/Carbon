@@ -15,12 +15,16 @@ dependencies {
 
 tasks {
   runServer {
-    // look away pls
-    for (sub in sequenceOf(project.projects.carbonchatApi, project.projects.carbonchatCommon)) {
-      classpath(sub.dependencyProject.tasks.jar.map { it.archiveFile })
-      dependsOn(sub.dependencyProject.tasks.jar)
+    classpath(shadowJar.map { it.archiveFile })
+  }
+  afterEvaluate {
+    runServer {
+      val path = classpath.toMutableList()
+      path.removeIf {
+        it.name == jar.forUseAtConfigurationTime().get().archiveFile.forUseAtConfigurationTime().get().asFile.name
+      }
+      classpath = objects.fileCollection().from(path)
     }
-    classpath(configurations.runtimeClasspath)
   }
   shadowJar {
     dependencies {
