@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit.users;
 
+import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
@@ -48,6 +49,17 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
     private @Nullable Player player() {
         return Bukkit.getPlayer(this.uuid);
+    }
+
+    @Override
+    public @Nullable Locale locale() {
+        final @Nullable Player player = this.player();
+
+        if (player != null) {
+            return player.locale();
+        } else {
+            return null;
+        }
     }
 
     @Override

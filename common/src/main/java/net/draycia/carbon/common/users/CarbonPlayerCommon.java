@@ -3,7 +3,6 @@ package net.draycia.carbon.common.users;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.channels.VanillaChatChannel;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -21,7 +20,7 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
     protected Component displayName;
     protected final UUID uuid;
     protected final Identity identity;
-    protected ChatChannel selectedChannel;
+    protected @Nullable ChatChannel selectedChannel;
 
     protected CarbonPlayerCommon(
         final String username,
@@ -33,7 +32,7 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
         this.displayName = displayName;
         this.uuid = uuid;
         this.identity = identity;
-        this.selectedChannel = new VanillaChatChannel(); // TODO: replace, persist and use global instance
+        this.selectedChannel = null;
     }
 
     @Override
@@ -62,7 +61,7 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
     }
 
     @Override
-    public ChatChannel selectedChannel() {
+    public @Nullable ChatChannel selectedChannel() {
         return this.selectedChannel;
     }
 

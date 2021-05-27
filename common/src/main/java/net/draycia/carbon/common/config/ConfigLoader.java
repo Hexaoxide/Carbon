@@ -1,39 +1,60 @@
 package net.draycia.carbon.common.config;
 
-import java.io.File;
+import com.google.inject.Inject;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import net.draycia.carbon.common.ForCarbon;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
 @DefaultQualifier(NonNull.class)
 public class ConfigLoader {
 
-    public CommentedConfigurationNode loadConfig(final File file) throws ConfigurateException {
-        final var builder = HoconConfigurationLoader.builder().prettyPrinting(true);
+    private final Path dataDirectory;
 
-        final var loader = this.loadConfigFile(builder, file);
-        final CommentedConfigurationNode node = loader.load();
-
-        if (!file.exists()) {
-            loader.save(node);
-        }
-
-        return node;
+    @Inject
+    public ConfigLoader(@ForCarbon final @NonNull Path dataDirectory) {
+        this.dataDirectory = dataDirectory;
     }
 
-    private HoconConfigurationLoader loadConfigFile(final HoconConfigurationLoader.Builder builder, final File config) {
-        return builder
+    public <T> @Nullable T load(final Class<T> clazz, final String fileName) throws IOException {
+        if (!Files.exists(this.dataDirectory)) {
+            Files.createDirectories(this.dataDirectory);
+        }
+
+        final Path file = this.dataDirectory.resolve(fileName);
+
+        final var loader = HoconConfigurationLoader.builder()
+            .prettyPrinting(true)
             .defaultOptions(opts -> {
-                final ConfigurateComponentSerializer serializer = ConfigurateComponentSerializer.configurate();
+                final ConfigurateComponentSerializer serializer =
+                    ConfigurateComponentSerializer.configurate();
 
                 return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
                     serializerBuilder.registerAll(serializer.serializers()));
             })
-            .file(config)
+            .path(file)
             .build();
+
+        try {
+            final var node = loader.load();
+            final T config = node.get(clazz);
+
+            if (!Files.exists(file)) {
+                node.set(clazz, config);
+                loader.save(node);
+            }
+
+            return config;
+        } catch (final ConfigurateException exception) {
+            exception.printStackTrace();
+            return null;
+        }
     }
 
 }

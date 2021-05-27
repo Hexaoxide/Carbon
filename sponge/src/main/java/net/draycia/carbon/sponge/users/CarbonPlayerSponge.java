@@ -1,5 +1,6 @@
 package net.draycia.carbon.sponge.users;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -11,9 +12,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
+import org.spongepowered.api.util.locale.LocaleSource;
+
+import static net.kyori.adventure.text.Component.translatable;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerSponge extends CarbonPlayerCommon {
@@ -51,34 +56,43 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
     }
 
     @Override
+    public @Nullable Locale locale() {
+        return this.player()
+            .map(LocaleSource::locale)
+            .orElse(null);
+    }
+
+    @Override
     public @NonNull Component createItemHoverComponent() {
-        final ServerPlayer player = this.player().orElse(null);
+        final @Nullable ServerPlayer player = this.player().orElse(null);
         if (player == null) {
             return Component.empty();
         }
 
-        final ItemStack itemStack;
-
-        final ItemStack mainHand = player.itemInHand(HandTypes.MAIN_HAND);
-
-        if (!mainHand.isEmpty()) {
-            itemStack = mainHand;
-        } else {
-            final ItemStack offHand = player.itemInHand(HandTypes.OFF_HAND);
-
-            if (!offHand.isEmpty()) {
-                itemStack = offHand;
-            } else {
-                itemStack = null;
-            }
-        }
+        final @Nullable ItemStack itemStack = player.equipped(EquipmentTypes.MAIN_HAND)
+            .filter(it -> !it.isEmpty())
+            .orElseGet(() -> player.equipped(EquipmentTypes.OFF_HAND).orElse(null));
 
         if (itemStack == null || itemStack.isEmpty()) {
             return Component.empty();
         }
 
-        return itemStack.get(Keys.DISPLAY_NAME)
-            .orElse(itemStack.type().asComponent());
+        return this.fromStack(itemStack);
+    }
+
+    private @NonNull Component fromStack(final @NonNull ItemStack stack) {
+        return stack.get(Keys.DISPLAY_NAME)
+
+            // This is here as a fallback, but really, every ItemStack should
+            // have a DISPLAY_NAME which is already formatted properly for us by the game.
+            .orElseGet(() -> translatable()
+                .key("chat.square_brackets")
+                .args(stack.get(Keys.CUSTOM_NAME)
+                    .map(name -> name.decorate(ITALIC))
+                    .orElseGet(() -> stack.type().asComponent()))
+                .hoverEvent(stack.createSnapshot())
+                .apply(builder -> stack.get(Keys.ITEM_RARITY).ifPresent(rarity -> builder.color(rarity.color())))
+                .build());
     }
 
     @Override

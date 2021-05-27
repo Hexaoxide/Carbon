@@ -4,29 +4,27 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.papermc.lib.PaperLib;
+import java.util.Set;
 import java.util.logging.Level;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 @Singleton
 public final class CarbonChatBukkitEntry extends JavaPlugin {
 
+    private static final Set<Class<? extends Listener>> LISTENER_CLASSES = Set.of(
+        BukkitChatListener.class
+    );
     private static final int BSTATS_PLUGIN_ID = 8720;
 
     private @MonotonicNonNull CarbonChatBukkit carbon;
-    private Injector injector;
+    private @MonotonicNonNull Injector injector;
 
     @Override
     public void onLoad() {
-        this.injector = Guice.createInjector(new CarbonChatBukkitModule(this,
-            this.getDataFolder().toPath()));
-        this.carbon = this.injector.getInstance(CarbonChatBukkit.class);
-    }
-
-    @Override
-    public void onEnable() {
         if (!PaperLib.isPaper()) {
             this.getLogger().log(Level.SEVERE, "*");
             this.getLogger().log(Level.SEVERE, "* CarbonChat makes extensive use of APIs added by Paper.");
@@ -38,16 +36,26 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
             return;
         }
 
-        final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
-
-        this.getServer().getPluginManager().registerEvents(
-            this.injector.getInstance(BukkitChatListener.class), this);
-
-        this.carbon.initialize();
+        this.injector = Guice.createInjector(new CarbonChatBukkitModule(
+            this,
+            this.getDataFolder().toPath(),
+            this.getFile().toPath()
+        ));
+        this.carbon = this.injector.getInstance(CarbonChatBukkit.class);
     }
 
-    public Injector injector() {
-        return this.injector;
+    @Override
+    public void onEnable() {
+        final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+
+        for (final Class<? extends Listener> listenerClass : LISTENER_CLASSES) {
+            this.getServer().getPluginManager().registerEvents(
+                this.injector.getInstance(listenerClass),
+                this
+            );
+        }
+
+        this.carbon.initialize();
     }
 
     @Override

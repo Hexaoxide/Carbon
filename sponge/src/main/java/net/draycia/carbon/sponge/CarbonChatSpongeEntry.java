@@ -35,18 +35,18 @@ public final class CarbonChatSpongeEntry {
         this.game = game;
         this.pluginContainer = pluginContainer;
 
-        this.injector = injector.createChildInjector(new CarbonChatSpongeModule());
+        this.injector = injector.createChildInjector(injector.getInstance(CarbonChatSpongeModule.class));
         this.carbon = this.injector.getInstance(CarbonChatSponge.class);
 
         //metricsFactory.make(BSTATS_PLUGIN_ID);
-    }
-
-    @Listener
-    public void onInitialize(final StartingEngineEvent<Server> event) {
         this.game.eventManager().registerListeners(this.pluginContainer,
             this.injector.getInstance(SpongeChatListener.class));
 
         this.carbon.initialize();
+    }
+
+    @Listener
+    public void onInitialize(final StartingEngineEvent<Server> event) {
     }
 
 }

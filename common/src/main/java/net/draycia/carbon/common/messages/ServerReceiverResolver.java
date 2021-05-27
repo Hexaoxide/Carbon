@@ -41,7 +41,7 @@ public final class ServerReceiverResolver implements IReceiverResolver<Audience>
     private final @NonNull CarbonServer carbonServer;
 
     @Inject
-    public ServerReceiverResolver(final @NonNull CarbonServer carbonServer) {
+    public ServerReceiverResolver(final CarbonServer carbonServer) {
         this.carbonServer = carbonServer;
     }
 

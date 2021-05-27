@@ -15,7 +15,17 @@ dependencies {
 
 tasks {
   runServer {
-    classpath(shadowJar)
+    classpath(shadowJar.map { it.archiveFile })
+    dependsOn(shadowJar)
+  }
+  afterEvaluate {
+    runServer {
+      val path = classpath.toMutableList()
+      path.removeIf {
+        it.name == jar.forUseAtConfigurationTime().get().archiveFile.forUseAtConfigurationTime().get().asFile.name
+      }
+      classpath = objects.fileCollection().from(path)
+    }
   }
   shadowJar {
     dependencies {

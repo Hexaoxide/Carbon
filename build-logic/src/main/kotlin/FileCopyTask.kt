@@ -3,7 +3,7 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-open class FileCopyTask : DefaultTask() {
+abstract class FileCopyTask : DefaultTask() {
   @InputFile
   val fileToCopy = project.objects.fileProperty()
 

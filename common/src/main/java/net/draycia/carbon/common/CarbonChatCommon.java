@@ -9,10 +9,12 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
+@DefaultQualifier(NonNull.class)
 public abstract class CarbonChatCommon implements CarbonChat {
 
     private final CarbonMessageService messageService;
@@ -31,12 +33,14 @@ public abstract class CarbonChatCommon implements CarbonChat {
 
                 this.messageService.exampleCommandFeedback(sender, this.messageService.pluginName());
 
-                if (sender instanceof PlayerCommander) {
-                    final Component itemComponent = ((PlayerCommander) sender).carbonPlayer().createItemHoverComponent();
+                if (sender instanceof PlayerCommander player) {
+                    this.messageService.localeTestMessage(player.carbonPlayer());
+
+                    final Component itemComponent = player.carbonPlayer().createItemHoverComponent();
                     if (itemComponent != empty()) {
-                        sender.sendMessage(TextComponent.ofChildren(text("Item: "), itemComponent));
+                        player.sendMessage(TextComponent.ofChildren(text("Item: "), itemComponent));
                     } else {
-                        sender.sendMessage(text("You are not holding an item!"));
+                        player.sendMessage(text("You are not holding an item!"));
                     }
                 }
             }));
