@@ -30,7 +30,7 @@ public class BasicChatChannel implements ChatChannel {
     ) {
         // TODO: Once per-user is setup, use the service for the recipient?
         // TODO: Or, have the MessageSource do the per-use for us.
-        return service.basicChatFormat(
+        return this.service.basicChatFormat(
             recipient,
             sender.uuid(),
             sender.displayName(),
