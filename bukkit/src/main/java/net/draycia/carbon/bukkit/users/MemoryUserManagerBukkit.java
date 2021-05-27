@@ -33,11 +33,8 @@ public final class MemoryUserManagerBukkit implements UserManager {
             return null;
         }
 
-        final CarbonPlayer carbonPlayer = new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
-
-        this.users.put(uuid, carbonPlayer);
-
-        return carbonPlayer;
+        return this.users.computeIfAbsent(player.getUniqueId(), key ->
+            new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId()));
     }
 
     @Override
@@ -48,11 +45,7 @@ public final class MemoryUserManagerBukkit implements UserManager {
             return null;
         }
 
-        if (this.users.containsKey(player.getUniqueId())) {
-            return this.users.get(player.getUniqueId());
-        }
-
-        return new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId());
+        return this.carbonPlayer(player.getUniqueId());
     }
 
 }

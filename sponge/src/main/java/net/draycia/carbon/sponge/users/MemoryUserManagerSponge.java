@@ -30,18 +30,16 @@ public final class MemoryUserManagerSponge implements UserManager {
             return this.users.get(uuid);
         }
 
-        final Optional<ServerPlayer> player = Sponge.server().player(uuid);
+        final Optional<ServerPlayer> serverPlayer = Sponge.server().player(uuid);
 
-        if (player.isEmpty()) {
+        if (serverPlayer.isEmpty()) {
             return null;
         }
 
-        final CarbonPlayer carbonPlayer = new CarbonPlayerSponge(player.get().name(),
-            text(player.get().name()), player.get().uniqueId());
+        final ServerPlayer player = serverPlayer.get();
 
-        this.users.put(uuid, carbonPlayer);
-
-        return carbonPlayer;
+        return this.users.computeIfAbsent(player.uniqueId(), key ->
+            new CarbonPlayerSponge(player.name(), text(player.name()), player.uniqueId()));
     }
 
     @Override
@@ -52,12 +50,7 @@ public final class MemoryUserManagerSponge implements UserManager {
             return null;
         }
 
-        if (this.users.containsKey(player.get().uniqueId())) {
-            return this.users.get(player.get().uniqueId());
-        }
-
-        return new CarbonPlayerSponge(player.get().name(), text(player.get().name()),
-            player.get().uniqueId());
+        return this.carbonPlayer(player.get().uniqueId());
     }
 
 }
