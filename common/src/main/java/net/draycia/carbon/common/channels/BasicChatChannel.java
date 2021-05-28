@@ -53,4 +53,5 @@ public class BasicChatChannel implements ChatChannel {
     public @NonNull Key key() {
         return this.key;
     }
+
 }

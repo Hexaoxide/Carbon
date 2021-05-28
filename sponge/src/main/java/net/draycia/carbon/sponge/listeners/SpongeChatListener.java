@@ -2,7 +2,6 @@ package net.draycia.carbon.sponge.listeners;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.BasicChatChannel;

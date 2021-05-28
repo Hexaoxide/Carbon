@@ -1,9 +1,10 @@
 package net.draycia.carbon.api.events;
 
 import java.util.function.Consumer;
+import net.kyori.event.EventBus;
 import net.kyori.event.EventSubscriber;
+import net.kyori.event.EventSubscription;
 import net.kyori.event.PostResult;
-import net.kyori.event.SimpleEventBus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -15,16 +16,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonEventHandler {
 
-    private final SimpleEventBus<CarbonEvent> eventBus = new SimpleEventBus<>(CarbonEvent.class) {
-        @Override
-        protected boolean eventCancelled(final @NonNull CarbonEvent event) {
-            if (event instanceof ResultedCarbonEvent<?> resultedCarbonEvent) {
-                return !resultedCarbonEvent.result().cancelled();
-            }
-
-            return false;
+    private final EventBus<CarbonEvent> eventBus = EventBus.create(CarbonEvent.class, (type, event, subscriber) -> {
+        if (event instanceof ResultedCarbonEvent<?> rce) {
+            return !rce.result().cancelled();
         }
-    };
+        return true;
+    });
 
     /**
      * Registers a subscriber for the given event class.
@@ -32,10 +29,14 @@ public final class CarbonEventHandler {
      * @param eventClass the class to listen for
      * @param subscriber the subscriber that's executed when the event is emitted
      * @param <T>        the class to listen for
-     * @since 1.0.0
+     * @return           the subscription, so that it may be unregistered
+     * @since 2.0.0
      */
-    public <T extends CarbonEvent> void register(final Class<T> eventClass, final EventSubscriber<T> subscriber) {
-        this.eventBus.register(eventClass, subscriber);
+    public <T extends CarbonEvent> EventSubscription subscribe(
+        final Class<T> eventClass,
+        final EventSubscriber<T> subscriber
+    ) {
+        return this.eventBus.subscribe(eventClass, subscriber);
     }
 
     /**
@@ -44,47 +45,19 @@ public final class CarbonEventHandler {
      *
      * @param eventClass       the class to listen for
      * @param priority         the priority of the consumer
-     * @param consumeCancelled if the consumer should be executed if the event is cancelled early
+     * @param acceptsCancelled if the consumer should be executed if the event is cancelled early
      * @param consumer         the consumer that's executed when the event is emitted
      * @param <T>              the class to listen for
-     * @return the subscriber, so that it may be unregistered
+     * @return                 the subscription, so that it may be unregistered
      * @since 2.0.0
      */
-    public <T extends CarbonEvent> EventSubscriber<T> register(
-        final Class<T> eventClass, final int priority,
-        final boolean consumeCancelled,
-        final Consumer<T> consumer) {
-
-        final var subscriber = new EventSubscriber<T>() {
-            @Override
-            public int postOrder() {
-                return priority;
-            }
-
-            @Override
-            public boolean consumeCancelledEvents() {
-                return consumeCancelled;
-            }
-
-            @Override
-            public void invoke(final T event) {
-                consumer.accept(event);
-            }
-        };
-
-        this.eventBus.register(eventClass, subscriber);
-
-        return subscriber;
-    }
-
-    /**
-     * Unregisters the subscriber and prevents it from being executed.
-     *
-     * @param subscriber the subscriber
-     * @since 1.0.0
-     */
-    public void unregister(final EventSubscriber<? super CarbonEvent> subscriber) {
-        this.eventBus.unregister(subscriber);
+    public <T extends CarbonEvent> EventSubscription subscribe(
+        final Class<T> eventClass,
+        final int priority,
+        final boolean acceptsCancelled,
+        final Consumer<T> consumer
+    ) {
+        return this.eventBus.subscribe(eventClass, new EventSubscriberImpl<>(consumer, priority, acceptsCancelled));
     }
 
     /**
