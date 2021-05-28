@@ -2,7 +2,14 @@ package net.draycia.carbon.velocity;
 
 import com.velocitypowered.api.plugin.Plugin;
 
-@Plugin(id = "carbonchat", name = "CarbonChat", version = "2.0.0-SNAPSHOT",
-    description = "Chat formatting & Channel plugin.", authors = {"Draycia"})
+@Plugin(
+    id = "$[ID]",
+    name = "$[NAME]",
+    version = "$[VERSION]",
+    description = "$[DESCRIPTION]",
+    url = "$[URL]",
+    authors = {"Draycia"}
+)
 public class CarbonChatVelocityEntry {
+
 }

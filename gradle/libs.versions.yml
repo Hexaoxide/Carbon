@@ -4,6 +4,7 @@ metadata:
     - plugins
 
 plugins:
+  net.kyori.blossom: 1.2.0
   net.kyori.indra: &indra 2.0.5
   net.kyori.indra.checkstyle: *indra
   net.kyori.indra.publishing: *indra
