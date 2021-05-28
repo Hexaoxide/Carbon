@@ -9,6 +9,7 @@ dependencies {
   implementation(projects.carbonchatCommon)
   compileOnly(libs.velocityApi)
   annotationProcessor(libs.velocityApi)
+  implementation(libs.cloudVelocity)
 }
 
 tasks {

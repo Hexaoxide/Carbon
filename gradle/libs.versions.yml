@@ -95,6 +95,10 @@ dependencies:
     group: cloud.commandframework
     name: cloud-sponge
     version: { ref: cloud }
+  cloudVelocity:
+    group: cloud.commandframework
+    name: cloud-velocity
+    version: { ref: cloud }
 
   configurateCore:
     group: org.spongepowered
