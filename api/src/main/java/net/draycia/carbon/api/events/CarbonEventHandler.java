@@ -55,26 +55,9 @@ public final class CarbonEventHandler {
         final Class<T> eventClass,
         final int priority,
         final boolean acceptsCancelled,
-        final Consumer<T> consumer) {
-
-        final var subscriber = new EventSubscriber<T>() {
-            @Override
-            public void on(final @NonNull T event) {
-                consumer.accept(event);
-            }
-
-            @Override
-            public int postOrder() {
-                return priority;
-            }
-
-            @Override
-            public boolean acceptsCancelled() {
-                return acceptsCancelled;
-            }
-        };
-
-        return this.eventBus.subscribe(eventClass, subscriber);
+        final Consumer<T> consumer
+    ) {
+        return this.eventBus.subscribe(eventClass, new EventSubscriberImpl<>(consumer, priority, acceptsCancelled));
     }
 
     /**
