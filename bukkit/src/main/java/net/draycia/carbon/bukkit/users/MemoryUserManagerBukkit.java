@@ -34,7 +34,7 @@ public final class MemoryUserManagerBukkit implements UserManager {
         }
 
         return this.users.computeIfAbsent(player.getUniqueId(), key ->
-            new CarbonPlayerBukkit(player.getName(), player.displayName(), player.getUniqueId()));
+            new CarbonPlayerBukkit(player.getName(), player.getUniqueId()));
     }
 
     @Override

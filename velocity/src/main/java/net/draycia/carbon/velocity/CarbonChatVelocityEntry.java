@@ -69,4 +69,5 @@ public class CarbonChatVelocityEntry {
             this.server.getEventManager().register(this, this.injector.getInstance(clazz));
         }
     }
+
 }

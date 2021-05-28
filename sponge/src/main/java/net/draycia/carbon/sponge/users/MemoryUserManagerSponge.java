@@ -12,8 +12,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
-import static net.kyori.adventure.text.Component.text;
-
 /**
  * This class should not be used.
  * No data is persisted or saved.
@@ -39,7 +37,7 @@ public final class MemoryUserManagerSponge implements UserManager {
         final ServerPlayer player = serverPlayer.get();
 
         return this.users.computeIfAbsent(player.uniqueId(), key ->
-            new CarbonPlayerSponge(player.name(), text(player.name()), player.uniqueId()));
+            new CarbonPlayerSponge(player.name(), player.uniqueId()));
     }
 
     @Override
