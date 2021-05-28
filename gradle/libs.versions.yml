@@ -4,13 +4,13 @@ metadata:
     - plugins
 
 plugins:
-  net.kyori.indra: &indra 2.0.4
+  net.kyori.indra: &indra 2.0.5
   net.kyori.indra.checkstyle: *indra
   net.kyori.indra.publishing: *indra
   net.kyori.indra.git: *indra
   com.github.johnrengelman.shadow: 7.1.0-hexaoxide-SNAPSHOT # todo: temporary until shadow bumps jdependency for Record support
   net.minecrell.plugin-yml.bukkit: 0.4.0
-  org.spongepowered.gradle.plugin: 1.1.0
+  org.spongepowered.gradle.plugin: 1.1.1-SNAPSHOT
   xyz.jpenilla.run-paper: 1.0.0-SNAPSHOT
 
 versions:

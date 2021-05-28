@@ -3,7 +3,7 @@ import org.spongepowered.plugin.metadata.PluginDependency
 import java.util.Locale
 
 plugins {
-  id("carbon-shadow-subproject")
+  id("carbon.shadow-platform")
   id("org.spongepowered.gradle.plugin")
 }
 
@@ -14,19 +14,6 @@ dependencies {
 }
 
 tasks {
-  runServer {
-    classpath(shadowJar.map { it.archiveFile })
-    dependsOn(shadowJar)
-  }
-  afterEvaluate {
-    runServer {
-      val path = classpath.toMutableList()
-      path.removeIf {
-        it.name == jar.forUseAtConfigurationTime().get().archiveFile.forUseAtConfigurationTime().get().asFile.name
-      }
-      classpath = objects.fileCollection().from(path)
-    }
-  }
   shadowJar {
     dependencies {
       // included in sponge
@@ -39,6 +26,7 @@ tasks {
 }
 
 sponge {
+  injectRepositories(false) // We specify repositories in settings.gradle.kts
   apiVersion("8.0.0")
   plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
     loader(PluginLoaders.JAVA_PLAIN)

@@ -1,7 +1,7 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission.Default.TRUE
 
 plugins {
-  id("carbon-shadow-subproject")
+  id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
   id("xyz.jpenilla.run-paper")
 }

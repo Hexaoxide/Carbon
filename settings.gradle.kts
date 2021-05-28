@@ -1,10 +1,42 @@
 enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+dependencyResolutionManagement {
+  repositories {
+    mavenCentral()
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+    // Paper API
+    maven("https://papermc.io/repo/repository/maven-public/")
+    // Sponge API
+    maven("https://repo.spongepowered.org/repository/maven-public/")
+    // Moonshine
+    maven("https://nexus.proximyst.com/repository/maven-public/") {
+      content { includeGroup("com.proximyst.moonshine") }
+    }
+    // cloud snapshots repo
+    //maven("https://repo.incendo.org/content/repositories/snapshots") {
+    //  content { includeGroup("cloud.commandframework") }
+    //}
+    // temporary cloud snapshots repo for sponge-8
+    maven("https://repo.jpenilla.xyz/snapshots/") {
+      content { includeGroup("cloud.commandframework") }
+    }
+    // PlaceholderAPI
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
+      content { includeGroup("me.clip") }
+    }
+    maven("https://jitpack.io") {
+      content { includeGroupByRegex("com\\.github\\..*") }
+    }
+  }
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+}
+
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven("https://repo.jpenilla.xyz/snapshots/") // todo: for shadow to be compatible with Records
+    maven("https://repo.spongepowered.org/repository/maven-public/") // SpongeGradle snapshots
+    maven("https://repo.jpenilla.xyz/snapshots/") // run-paper + shadow snapshot
   }
 }
 
