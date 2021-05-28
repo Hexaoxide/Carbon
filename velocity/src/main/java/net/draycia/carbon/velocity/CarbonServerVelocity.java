@@ -1,7 +1,8 @@
-package net.draycia.carbon.sponge;
+package net.draycia.carbon.velocity;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.ArrayList;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
@@ -12,21 +13,17 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
 
-@Singleton
 @DefaultQualifier(NonNull.class)
-public final class CarbonServerSponge implements CarbonServer, ForwardingAudience.Single {
+public final class CarbonServerVelocity implements CarbonServer, ForwardingAudience.Single {
 
-    private final Game game;
+    private final ProxyServer server;
     private final UserManager userManager;
 
     @Inject
-    private CarbonServerSponge(final UserManager userManager, final Game game) {
+    private CarbonServerVelocity(final ProxyServer server, final UserManager userManager) {
+        this.server = server;
         this.userManager = userManager;
-        this.game = game;
     }
 
     @Override
@@ -36,14 +33,14 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
 
     @Override
     public Audience console() {
-        return Sponge.systemSubject();
+        return this.server.getConsoleCommandSource();
     }
 
     @Override
     public Iterable<? extends CarbonPlayer> players() {
         final var players = new ArrayList<CarbonPlayer>();
 
-        for (final var player : this.game.server().onlinePlayers()) {
+        for (final var player : this.server.getAllPlayers()) {
             final @Nullable CarbonPlayer carbonPlayer = this.player(player);
 
             if (carbonPlayer != null) {
@@ -65,7 +62,7 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     }
 
     private @Nullable CarbonPlayer player(final Player player) {
-        return this.player(player.uniqueId());
+        return this.player(player.getUniqueId());
     }
 
 }

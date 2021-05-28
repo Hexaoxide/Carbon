@@ -1,13 +1,15 @@
-package net.draycia.carbon.bukkit.users;
+package net.draycia.carbon.velocity.users;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -17,9 +19,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * This exists merely as a placeholder.
  */
 @Singleton
-public final class MemoryUserManagerBukkit implements UserManager {
+public final class MemoryUserManagerVelocity implements UserManager {
+
+    private final ProxyServer server;
 
     private final @NonNull Map<UUID, @NonNull CarbonPlayer> users = new HashMap<>();
+
+    @Inject
+    public MemoryUserManagerVelocity(final ProxyServer server) {
+        this.server = server;
+    }
 
     @Override
     public @Nullable CarbonPlayer carbonPlayer(final @NonNull UUID uuid) {
@@ -27,25 +36,25 @@ public final class MemoryUserManagerBukkit implements UserManager {
             return this.users.get(uuid);
         }
 
-        final Player player = Bukkit.getPlayer(uuid);
+        final Optional<Player> player = this.server.getPlayer(uuid);
 
-        if (player == null) {
+        if (player.isEmpty()) {
             return null;
         }
 
-        return this.users.computeIfAbsent(player.getUniqueId(), key ->
-            new CarbonPlayerBukkit(player.getName(), player.getUniqueId()));
+        return this.users.computeIfAbsent(player.get().getUniqueId(), key ->
+            new CarbonPlayerVelocity(player.get().getUsername(), player.get().getUniqueId(), this.server));
     }
 
     @Override
     public @Nullable CarbonPlayer carbonPlayer(final @NonNull String username) {
-        final Player player = Bukkit.getPlayer(username);
+        final Optional<Player> player = this.server.getPlayer(username);
 
-        if (player == null) {
+        if (player.isEmpty()) {
             return null;
         }
 
-        return this.carbonPlayer(player.getUniqueId());
+        return this.carbonPlayer(player.get().getUniqueId());
     }
 
 }

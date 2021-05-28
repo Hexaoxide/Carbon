@@ -2,6 +2,7 @@ package net.draycia.carbon.sponge;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import java.util.Set;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -17,9 +18,12 @@ import org.spongepowered.plugin.jvm.Plugin;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatSpongeEntry {
 
+    private static final Set<Class<?>> LISTENER_CLASSES = Set.of(
+        SpongeChatListener.class
+    );
     private static final int BSTATS_PLUGIN_ID = 11279;
 
-    private @MonotonicNonNull CarbonChatSponge carbon;
+    private final @MonotonicNonNull CarbonChatSponge carbon;
     private final Game game;
     private final Injector injector;
 
@@ -38,9 +42,10 @@ public final class CarbonChatSpongeEntry {
         this.injector = injector.createChildInjector(injector.getInstance(CarbonChatSpongeModule.class));
         this.carbon = this.injector.getInstance(CarbonChatSponge.class);
 
+        for (final Class<?> clazz : LISTENER_CLASSES) {
+            this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(clazz));
+        }
         //metricsFactory.make(BSTATS_PLUGIN_ID);
-        this.game.eventManager().registerListeners(this.pluginContainer,
-            this.injector.getInstance(SpongeChatListener.class));
 
         this.carbon.initialize();
     }

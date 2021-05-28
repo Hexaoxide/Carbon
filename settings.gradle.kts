@@ -9,6 +9,16 @@ dependencyResolutionManagement {
     maven("https://papermc.io/repo/repository/maven-public/")
     // Sponge API
     maven("https://repo.spongepowered.org/repository/maven-public/")
+    // Velocity API
+    maven("https://nexus.velocitypowered.com/repository/maven-public/")
+    // Velocity Proxy for run config
+    //ivy("https://versions.velocitypowered.com/download/") {
+    ivy("https://ci.velocitypowered.com/job/velocity-3.0.0/lastSuccessfulBuild/artifact/proxy/build/libs/") {
+      //patternLayout { artifact("[revision].[ext]") }
+      patternLayout { artifact("velocity-proxy-3.0.0-SNAPSHOT-all.jar") }
+      metadataSources { artifact() }
+      content { includeModule("com.velocitypowered", "velocity-proxy") }
+    }
     // Moonshine
     maven("https://nexus.proximyst.com/repository/maven-public/") {
       content { includeGroup("com.proximyst.moonshine") }
@@ -59,6 +69,9 @@ setupSubproject("carbonchat-bukkit") {
 }
 setupSubproject("carbonchat-sponge") {
   projectDir = file("sponge")
+}
+setupSubproject("carbonchat-velocity") {
+  projectDir = file("velocity")
 }
 
 inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {

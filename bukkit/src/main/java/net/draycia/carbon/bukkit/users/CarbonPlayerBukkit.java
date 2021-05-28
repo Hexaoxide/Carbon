@@ -18,10 +18,9 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
     public CarbonPlayerBukkit(
         final @NonNull String username,
-        final @NonNull Component displayName,
         final @NonNull UUID uuid
     ) {
-        super(username, displayName, uuid, Identity.identity(uuid));
+        super(username, uuid, Identity.identity(uuid));
     }
 
     @Override

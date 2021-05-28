@@ -8,6 +8,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -15,7 +16,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public final class CarbonServerBukkit implements CarbonServer {
+public final class CarbonServerBukkit implements CarbonServer, ForwardingAudience.Single {
 
     private final CarbonChatBukkitEntry chatBukkitEntry;
     private final UserManager userManager;
@@ -24,6 +25,11 @@ public final class CarbonServerBukkit implements CarbonServer {
     private CarbonServerBukkit(final CarbonChatBukkitEntry chatBukkitEntry, final UserManager userManager) {
         this.chatBukkitEntry = chatBukkitEntry;
         this.userManager = userManager;
+    }
+
+    @Override
+    public Audience audience() {
+        return this.console();
     }
 
     @Override
