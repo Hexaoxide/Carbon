@@ -9,12 +9,13 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class CarbonServerVelocity implements CarbonServer {
+public class CarbonServerVelocity implements CarbonServer, ForwardingAudience.Single {
 
     private final ProxyServer server;
     private final UserManager userManager;
@@ -23,6 +24,11 @@ public class CarbonServerVelocity implements CarbonServer {
     public CarbonServerVelocity(final ProxyServer server, final UserManager userManager) {
         this.server = server;
         this.userManager = userManager;
+    }
+
+    @Override
+    public Audience audience() {
+        return this.console();
     }
 
     @Override

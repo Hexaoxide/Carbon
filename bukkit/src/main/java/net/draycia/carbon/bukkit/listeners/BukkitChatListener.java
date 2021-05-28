@@ -53,7 +53,7 @@ public final class BukkitChatListener implements Listener {
         }
 
         // console too!
-        recipients.add(Bukkit.getConsoleSender());
+        recipients.add(this.carbonChat.server());
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));

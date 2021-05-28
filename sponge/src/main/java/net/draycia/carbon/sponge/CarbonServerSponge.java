@@ -8,6 +8,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -17,7 +18,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public final class CarbonServerSponge implements CarbonServer {
+public final class CarbonServerSponge implements CarbonServer, ForwardingAudience.Single {
 
     private final Game game;
     private final UserManager userManager;
@@ -26,6 +27,11 @@ public final class CarbonServerSponge implements CarbonServer {
     private CarbonServerSponge(final UserManager userManager, final Game game) {
         this.userManager = userManager;
         this.game = game;
+    }
+
+    @Override
+    public Audience audience() {
+        return this.console();
     }
 
     @Override

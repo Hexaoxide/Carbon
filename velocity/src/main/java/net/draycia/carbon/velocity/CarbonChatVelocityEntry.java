@@ -10,6 +10,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import net.draycia.carbon.velocity.listeners.VelocityChatListener;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -61,7 +62,8 @@ public class CarbonChatVelocityEntry {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        //this.server.getEventManager().register(this, new VelocityChatListener());
+        this.server.getEventManager().register(this,
+            this.injector.getInstance(VelocityChatListener.class));
     }
 
     public Path dataDirectory() {
