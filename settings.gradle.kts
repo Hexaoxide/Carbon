@@ -60,6 +60,9 @@ setupSubproject("carbonchat-bukkit") {
 setupSubproject("carbonchat-sponge") {
   projectDir = file("sponge")
 }
+setupSubproject("carbonchat-velocity") {
+  projectDir = file("velocity")
+}
 
 inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
   include(name)

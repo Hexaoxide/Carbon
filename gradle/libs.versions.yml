@@ -31,6 +31,7 @@ versions:
   log4j: 2.11.2
   moonshine: 0.2.4-SNAPSHOT
   guice: 5.0.1
+  velocityApi: 1.1.5
 
 dependencies:
   adventureBom:
@@ -147,5 +148,10 @@ dependencies:
     group: io.papermc
     name: paperlib
     version: { ref: paperLib }
+
+  velocityApi:
+    group: com.velocitypowered
+    name: velocity-api
+    version: { ref: velocityApi }
 
 bundles:
