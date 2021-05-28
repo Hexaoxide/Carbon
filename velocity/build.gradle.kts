@@ -1,12 +1,5 @@
 plugins {
-  id("carbon-shadow-subproject")
-
-}
-
-repositories {
-  maven("https://nexus.velocitypowered.com/repository/maven-public/") {
-    name = "velocity"
-  }
+  id("carbon.shadow-platform")
 }
 
 dependencies {

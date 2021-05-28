@@ -9,6 +9,8 @@ dependencyResolutionManagement {
     maven("https://papermc.io/repo/repository/maven-public/")
     // Sponge API
     maven("https://repo.spongepowered.org/repository/maven-public/")
+    // Velocity API
+    maven("https://nexus.velocitypowered.com/repository/maven-public/")
     // Moonshine
     maven("https://nexus.proximyst.com/repository/maven-public/") {
       content { includeGroup("com.proximyst.moonshine") }
