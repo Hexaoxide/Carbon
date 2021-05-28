@@ -17,19 +17,17 @@ import static net.kyori.adventure.text.Component.text;
 public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
     protected final String username;
-    protected Component displayName;
+    protected @Nullable Component displayName;
     protected final UUID uuid;
     protected final Identity identity;
     protected @Nullable ChatChannel selectedChannel;
 
     protected CarbonPlayerCommon(
         final String username,
-        final Component displayName,
         final UUID uuid,
         final Identity identity
     ) {
         this.username = username;
-        this.displayName = displayName;
         this.uuid = uuid;
         this.identity = identity;
         this.selectedChannel = null;
@@ -42,7 +40,7 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
 
     @Override
     public Component displayName() {
-        return this.displayName;
+        return requireNonNullElseGet(this.displayName, () -> text(username));
     }
 
     @Override
