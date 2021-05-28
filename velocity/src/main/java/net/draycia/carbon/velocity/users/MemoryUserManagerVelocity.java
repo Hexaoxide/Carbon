@@ -36,19 +36,19 @@ public final class MemoryUserManagerVelocity implements UserManager {
             return this.users.get(uuid);
         }
 
-        final Optional<Player> player = server.getPlayer(uuid);
+        final Optional<Player> player = this.server.getPlayer(uuid);
 
         if (player.isEmpty()) {
             return null;
         }
 
         return this.users.computeIfAbsent(player.get().getUniqueId(), key ->
-            new CarbonPlayerVelocity(player.get().getUsername(), player.get().getUniqueId(), server));
+            new CarbonPlayerVelocity(player.get().getUsername(), player.get().getUniqueId(), this.server));
     }
 
     @Override
     public @Nullable CarbonPlayer carbonPlayer(final @NonNull String username) {
-        final Optional<Player> player = server.getPlayer(username);
+        final Optional<Player> player = this.server.getPlayer(username);
 
         if (player.isEmpty()) {
             return null;

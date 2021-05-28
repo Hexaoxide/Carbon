@@ -40,7 +40,7 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
 
     @Override
     public Component displayName() {
-        return requireNonNullElseGet(this.displayName, () -> text(username));
+        return requireNonNullElseGet(this.displayName, () -> text(this.username));
     }
 
     @Override

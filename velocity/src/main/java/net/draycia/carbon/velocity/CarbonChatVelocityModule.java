@@ -19,17 +19,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonChatVelocityModule extends AbstractModule {
 
     private final Logger logger;
-    private final CarbonChatVelocityEntry plugin;
     private final Path dataDirectory;
     private final Path pluginJar;
 
     CarbonChatVelocityModule(
         final Logger logger,
-        final CarbonChatVelocityEntry plugin,
         final Path dataDirectory
     ) throws URISyntaxException {
         this.logger = logger;
-        this.plugin = plugin;
         this.dataDirectory = dataDirectory;
         this.pluginJar = Paths.get(CarbonChatVelocityEntry.class
             .getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -40,10 +37,9 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).to(CarbonChatVelocity.class);
-        //this.bind(Logger.class).toInstance(this.logger); // TODO: fix, this is the wrong kind of logger
+        this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(Path.class).annotatedWith(CarbonJar.class).toInstance(this.pluginJar);
-        this.bind(CarbonChatVelocityEntry.class).toInstance(this.plugin);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);
         this.bind(UserManager.class).to(MemoryUserManagerVelocity.class);
     }

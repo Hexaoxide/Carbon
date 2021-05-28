@@ -51,10 +51,10 @@ bukkit {
   loadBefore = listOf("Essentials")
   website = GITHUB_REPO_URL
   permissions {
-    create("carbonchat.channels.global.see") {
+    register("carbonchat.channels.global.see") {
       default = TRUE
     }
-    create("carbonchat.channels.global.use") {
+    register("carbonchat.channels.global.use") {
       default = TRUE
     }
   }

@@ -38,7 +38,7 @@ public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
     }
 
     private @Nullable Player player() {
-        return server.getPlayer(this.uuid).orElse(null);
+        return this.server.getPlayer(this.uuid).orElse(null);
     }
 
     @Override

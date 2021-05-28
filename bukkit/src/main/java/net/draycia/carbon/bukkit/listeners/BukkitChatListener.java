@@ -8,7 +8,6 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.BasicChatChannel;
 import net.kyori.adventure.audience.Audience;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

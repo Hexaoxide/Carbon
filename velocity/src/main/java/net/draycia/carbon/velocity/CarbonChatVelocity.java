@@ -4,39 +4,45 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.velocity.VelocityCommandManager;
 import com.google.inject.Inject;
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonChatCommon;
+import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.slf4j.Logger;
 
 @DefaultQualifier(NonNull.class)
 public class CarbonChatVelocity extends CarbonChatCommon {
 
     private final Logger logger;
-    private final CarbonChatVelocityEntry plugin;
     private final CarbonServer server;
     private final Path dataDirectory;
+    private final PluginContainer pluginContainer;
+    private final ProxyServer proxyServer;
 
     @Inject
     public CarbonChatVelocity(
         final Logger logger,
-        final CarbonChatVelocityEntry plugin,
         final CarbonServer server,
-        final Path dataDirectory,
-        final CarbonMessageService messageService
+        @ForCarbon final Path dataDirectory,
+        final CarbonMessageService messageService,
+        final PluginContainer pluginContainer,
+        final ProxyServer proxyServer
     ) {
         super(messageService);
         this.logger = logger;
-        this.plugin = plugin;
         this.server = server;
         this.dataDirectory = dataDirectory;
+        this.pluginContainer = pluginContainer;
+        this.proxyServer = proxyServer;
     }
 
     @Override
@@ -56,10 +62,9 @@ public class CarbonChatVelocity extends CarbonChatCommon {
 
     @Override
     protected @NonNull CommandManager<Commander> createCommandManager() {
-        final VelocityCommandManager<Commander> commandManager;
-        commandManager = new VelocityCommandManager<>(
-            this.plugin.pluginContainer(),
-            this.plugin.proxyServer(),
+        final VelocityCommandManager<Commander> commandManager = new VelocityCommandManager<>(
+            this.pluginContainer,
+            this.proxyServer,
             AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
             commandSender -> {
                 if (commandSender instanceof Player player) {

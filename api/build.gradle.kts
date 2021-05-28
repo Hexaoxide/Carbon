@@ -1,6 +1,7 @@
 dependencies {
   // Doesn't add any dependencies, only version constraints
   api(platform(libs.adventureBom))
+  api(platform(libs.log4jBom))
 
   // These are provided by Paper and Sponge
   compileOnlyApi(libs.adventureApi)

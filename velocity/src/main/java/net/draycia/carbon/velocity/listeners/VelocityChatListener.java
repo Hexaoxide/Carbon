@@ -23,7 +23,7 @@ public final class VelocityChatListener {
     private final BasicChatChannel basicChat;
 
     @Inject
-    public VelocityChatListener(final CarbonChat carbonChat, final BasicChatChannel basicChat) {
+    private VelocityChatListener(final CarbonChat carbonChat, final BasicChatChannel basicChat) {
         this.carbonChat = carbonChat;
         this.basicChat = basicChat;
     }
