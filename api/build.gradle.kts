@@ -16,7 +16,7 @@ dependencies {
 
   compileOnlyApi(libs.checkerQual)
 
-  api(libs.kyoriCoffee)
+  api(libs.kyoriEventApi)
   api(libs.kyoriRegistry)
 
   api(libs.cloudCore)

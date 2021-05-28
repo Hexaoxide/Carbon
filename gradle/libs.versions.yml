@@ -26,8 +26,8 @@ versions:
   bstats: 2.2.1
   paperApi: 1.16.5-R0.1-SNAPSHOT
   paperLib: 1.0.6
+  kyoriEventApi: 5.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT
-  kyoriCoffee: 1.0.0-SNAPSHOT
   log4j: 2.11.2
   moonshine: 0.2.4-SNAPSHOT
   guice: 5.0.1
@@ -68,14 +68,14 @@ dependencies:
     name: core
     version: { ref: moonshine }
 
+  kyoriEventApi:
+    group: net.kyori
+    name: event-api
+    version: { ref: kyoriEventApi }
   kyoriRegistry:
     group: net.kyori
     name: registry
     version: { ref: kyoriRegistry }
-  kyoriCoffee:
-    group: net.kyori
-    name: coffee
-    version: { ref: kyoriCoffee }
 
   cloudCore:
     group: cloud.commandframework

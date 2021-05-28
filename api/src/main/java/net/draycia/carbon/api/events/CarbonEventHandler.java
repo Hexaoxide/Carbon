@@ -1,10 +1,10 @@
 package net.draycia.carbon.api.events;
 
 import java.util.function.Consumer;
-import net.draycia.carbon.api.events.bus.EventBus;
-import net.draycia.carbon.api.events.bus.EventSubscriber;
-import net.draycia.carbon.api.events.bus.EventSubscription;
-import net.draycia.carbon.api.events.bus.PostResult;
+import net.kyori.event.EventBus;
+import net.kyori.event.EventSubscriber;
+import net.kyori.event.EventSubscription;
+import net.kyori.event.PostResult;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -16,7 +16,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonEventHandler {
 
-    private final EventBus<CarbonEvent> eventBus = EventBus.create(CarbonEvent.class);
+    private final EventBus<CarbonEvent> eventBus = EventBus.create(CarbonEvent.class, (type, event, subscriber) -> {
+        if (event instanceof ResultedCarbonEvent<?> rce) {
+            return !rce.result().cancelled();
+        }
+        return true;
+    });
 
     /**
      * Registers a subscriber for the given event class.
