@@ -7,20 +7,18 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.proxy.Player;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
-import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.slf4j.Logger;
 
 @DefaultQualifier(NonNull.class)
 public class CarbonChatVelocity extends CarbonChatCommon {
 
-    private final UserManager userManager;
     private final Logger logger;
     private final CarbonChatVelocityEntry plugin;
     private final CarbonServer server;
@@ -28,7 +26,6 @@ public class CarbonChatVelocity extends CarbonChatCommon {
 
     @Inject
     public CarbonChatVelocity(
-        final UserManager userManager,
         final Logger logger,
         final CarbonChatVelocityEntry plugin,
         final CarbonServer server,
@@ -36,7 +33,6 @@ public class CarbonChatVelocity extends CarbonChatCommon {
         final CarbonMessageService messageService
     ) {
         super(messageService);
-        this.userManager = userManager;
         this.logger = logger;
         this.plugin = plugin;
         this.server = server;

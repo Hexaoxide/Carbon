@@ -1,11 +1,17 @@
 package net.draycia.carbon.velocity;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -25,6 +31,9 @@ public class CarbonChatVelocityEntry {
     private final ProxyServer server;
     private final PluginContainer pluginContainer;
 
+    private final @MonotonicNonNull CarbonChatVelocity carbon;
+    private @MonotonicNonNull Injector injector;
+
     @Inject
     public CarbonChatVelocityEntry(
         final Logger logger,
@@ -36,6 +45,23 @@ public class CarbonChatVelocityEntry {
         this.dataDirectory = dataDirectory;
         this.server = server;
         this.pluginContainer = pluginContainer;
+
+        try {
+            this.injector = Guice.createInjector(new CarbonChatVelocityModule(
+                logger,
+                this,
+                this.dataDirectory
+            ));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        this.carbon = this.injector.getInstance(CarbonChatVelocity.class);
+    }
+
+    @Subscribe
+    public void onProxyInitialization(ProxyInitializeEvent event) {
+        //this.server.getEventManager().register(this, new VelocityChatListener());
     }
 
     public Path dataDirectory() {
@@ -49,4 +75,5 @@ public class CarbonChatVelocityEntry {
     public PluginContainer pluginContainer() {
         return this.pluginContainer;
     }
+
 }

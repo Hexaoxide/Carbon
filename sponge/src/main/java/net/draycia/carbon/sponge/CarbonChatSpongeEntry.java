@@ -19,7 +19,7 @@ public final class CarbonChatSpongeEntry {
 
     private static final int BSTATS_PLUGIN_ID = 11279;
 
-    private @MonotonicNonNull CarbonChatSponge carbon;
+    private final @MonotonicNonNull CarbonChatSponge carbon;
     private final Game game;
     private final Injector injector;
 
