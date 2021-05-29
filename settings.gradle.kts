@@ -45,7 +45,6 @@ dependencyResolutionManagement {
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven("https://repo.spongepowered.org/repository/maven-public/") // SpongeGradle snapshots
     maven("https://repo.jpenilla.xyz/snapshots/") // run-paper + shadow snapshot
   }
 }
