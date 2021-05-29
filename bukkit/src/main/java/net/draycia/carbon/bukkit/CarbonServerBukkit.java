@@ -29,7 +29,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
 
     @Override
     public Audience audience() {
-        return this.console();
+        return Audience.audience(this.console(), Audience.audience(this.players()));
     }
 
     @Override

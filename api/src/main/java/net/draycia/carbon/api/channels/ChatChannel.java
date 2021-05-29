@@ -1,7 +1,10 @@
 package net.draycia.carbon.api.channels;
 
+import java.util.List;
+import java.util.Set;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -35,6 +38,17 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     ChannelPermissionResult hearingPermitted(final CarbonPlayer carbonPlayer);
+
+    /**
+     * Returns a list of all recipients that will receive messages from the sender.
+     *
+     * @param sender the sender of messages
+     * @return the recipients
+     * @since 2.0.0
+     */
+    List<Audience> recipients(final CarbonPlayer sender);
+
+    List<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients);
 
     /**
      * Represents the result of a channel permission check.

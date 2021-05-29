@@ -36,21 +36,13 @@ public final class VelocityChatListener {
             return;
         }
 
-        final var recipients = new ArrayList<Audience>();
         var channel = sender.selectedChannel();
 
         if (channel == null) {
             channel = this.basicChat;
         }
 
-        for (final CarbonPlayer player : this.carbonChat.server().players()) {
-            if (channel.hearingPermitted(player).permitted()) {
-                recipients.add(player);
-            }
-        }
-
-        // console too!
-        recipients.add(this.carbonChat.server());
+        final var recipients = channel.recipients(sender);
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));

@@ -28,7 +28,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
 
     @Override
     public Audience audience() {
-        return this.console();
+        return Audience.audience(this.console(), Audience.audience(this.players()));
     }
 
     @Override

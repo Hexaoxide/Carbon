@@ -6,7 +6,6 @@ import com.google.inject.Singleton;
 import com.proximyst.moonshine.Moonshine;
 import java.io.IOException;
 import java.util.UUID;
-import net.draycia.carbon.common.channels.BasicChatChannel;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.CarbonMessageParser;
@@ -24,12 +23,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonCommonModule extends AbstractModule {
-
-    @Provides
-    @Singleton
-    public BasicChatChannel basicChat(final CarbonMessageService service) {
-        return new BasicChatChannel(service);
-    }
 
     @Provides
     @Singleton
