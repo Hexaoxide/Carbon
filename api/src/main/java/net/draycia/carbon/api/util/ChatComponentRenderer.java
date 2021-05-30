@@ -4,7 +4,6 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -25,10 +24,10 @@ public interface ChatComponentRenderer {
      * @param message         the message being sent
      * @param originalMessage the original message that was sent
      * @return                the component to be shown to the recipient,
-     *                        or null if the recipient should not receive the message
+     *                        or empty if the recipient should not receive the message
      * @since 2.0.0
      */
-    @Nullable
+    @NonNull
     Component render(final CarbonPlayer sender,
                      final Audience recipient,
                      final Component message,

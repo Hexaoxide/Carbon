@@ -6,10 +6,8 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.BasicChatChannel;
-import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
@@ -36,21 +34,13 @@ public final class VelocityChatListener {
             return;
         }
 
-        final var recipients = new ArrayList<Audience>();
         var channel = sender.selectedChannel();
 
         if (channel == null) {
             channel = this.basicChat;
         }
 
-        for (final CarbonPlayer player : this.carbonChat.server().players()) {
-            if (channel.hearingPermitted(player).permitted()) {
-                recipients.add(player);
-            }
-        }
-
-        // console too!
-        recipients.add(this.carbonChat.server());
+        final var recipients = channel.recipients(sender);
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
