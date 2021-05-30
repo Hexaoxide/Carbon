@@ -36,12 +36,12 @@ public final class BukkitChatListener implements Listener {
             return;
         }
 
-        var channel = requireNonNullElse(sender.selectedChannel(), this.basicChat);
+        final var channel = requireNonNullElse(sender.selectedChannel(), this.basicChat);
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
         //   or ChatChannel#filterRecipients
         //   for now we will just always invoke ChatChannel#recipients
-        var recipients = channel.recipients(sender);
+        final var recipients = channel.recipients(sender);
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));

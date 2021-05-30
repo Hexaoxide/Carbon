@@ -33,11 +33,11 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     /**
      * Checks if the player may receive messages from this channel.
      *
-     * @param carbonPlayer the player that's receiving messages
+     * @param audience the audience that's receiving messages
      * @return if the player may receive messages
      * @since 2.0.0
      */
-    ChannelPermissionResult hearingPermitted(final CarbonPlayer carbonPlayer);
+    ChannelPermissionResult hearingPermitted(final Audience audience);
 
     /**
      * Returns a list of all recipients that will receive messages from the sender.
@@ -48,7 +48,15 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      */
     List<Audience> recipients(final CarbonPlayer sender);
 
-    List<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients);
+    /**
+     * Filters the given recipients and removes entries that may not see messages in this channel.
+     *
+     * @param sender the sender of messages
+     * @param recipients the recipients
+     * @return the recipients that may receive messages
+     * @since 2.0.0
+     */
+    Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients);
 
     /**
      * Represents the result of a channel permission check.

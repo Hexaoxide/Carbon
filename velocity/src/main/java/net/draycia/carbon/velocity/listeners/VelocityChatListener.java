@@ -6,10 +6,8 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.BasicChatChannel;
-import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -12,13 +13,12 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class BasicChatChannel implements ChatChannel {
+public final class BasicChatChannel implements ChatChannel {
 
     private final Key key = Key.key("carbon", "vanilla");
 
@@ -29,13 +29,13 @@ public class BasicChatChannel implements ChatChannel {
     private BasicChatChannel(
         final CarbonMessageService service,
         final CarbonChat carbonChat
-        ) {
+    ) {
         this.service = service;
         this.carbonChat = carbonChat;
     }
 
     @Override
-    public @Nullable @NotNull Component render(
+    public @NotNull Component render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,
@@ -58,7 +58,7 @@ public class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public ChannelPermissionResult hearingPermitted(final CarbonPlayer carbonPlayer) {
+    public ChannelPermissionResult hearingPermitted(final Audience audience) {
         return ChannelPermissionResult.allowed();
     }
 
@@ -74,6 +74,13 @@ public class BasicChatChannel implements ChatChannel {
 
         // console too!
         recipients.add(this.carbonChat.server().console());
+
+        return recipients;
+    }
+
+    @Override
+    public Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients) {
+        recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
 
         return recipients;
     }
