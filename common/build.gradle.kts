@@ -6,6 +6,9 @@ dependencies {
     api(libs.adventureSerializerConfigurate4) {
         isTransitive = false
     }
+    api(libs.adventureTextSerializerGson) {
+      isTransitive = false
+    }
     api(libs.typesafeConfig)
 
     // Other

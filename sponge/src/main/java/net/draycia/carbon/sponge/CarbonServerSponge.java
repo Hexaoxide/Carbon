@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
@@ -55,12 +56,12 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public @Nullable CarbonPlayer player(final UUID uuid) {
+    public CompletableFuture<@Nullable CarbonPlayer> player(final UUID uuid) {
         return this.userManager.carbonPlayer(uuid);
     }
 
     @Override
-    public @Nullable CarbonPlayer player(final String username) {
+    public CompletableFuture<@Nullable CarbonPlayer> player(final String username) {
         return this.userManager.carbonPlayer(username);
     }
 

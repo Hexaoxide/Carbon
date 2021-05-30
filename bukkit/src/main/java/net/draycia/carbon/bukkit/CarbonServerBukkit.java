@@ -3,12 +3,17 @@ package net.draycia.carbon.bukkit;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -18,6 +23,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerBukkit implements CarbonServer, ForwardingAudience.Single {
 
+    private final Map<UUID, CarbonPlayerBukkit> userCache = new HashMap<>();
     private final CarbonChatBukkitEntry chatBukkitEntry;
     private final UserManager userManager;
 
@@ -42,7 +48,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
         final var players = new ArrayList<CarbonPlayer>();
 
         for (final var player : this.chatBukkitEntry.getServer().getOnlinePlayers()) {
-            final @Nullable CarbonPlayer carbonPlayer = this.player(player);
+            final @Nullable CarbonPlayer carbonPlayer = this.player(player).join();
 
             if (carbonPlayer != null) {
                 players.add(carbonPlayer);
@@ -53,17 +59,51 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public @Nullable CarbonPlayer player(final UUID uuid) {
-        return this.userManager.carbonPlayer(uuid);
+    public CompletableFuture<@Nullable CarbonPlayer> player(final UUID uuid) {
+        final CarbonPlayerBukkit carbonPlayerBukkit = this.userCache.get(uuid);
+
+        if (carbonPlayerBukkit != null) {
+            return CompletableFuture.completedFuture(carbonPlayerBukkit);
+        }
+
+        return CompletableFuture.supplyAsync(() -> {
+            final @Nullable CarbonPlayer carbonPlayer = this.userManager.carbonPlayer(uuid).join();
+
+            if (carbonPlayer != null) {
+                return new CarbonPlayerBukkit(carbonPlayer);
+            }
+
+            return null;
+        });
     }
 
     @Override
-    public @Nullable CarbonPlayer player(final String username) {
-        return this.userManager.carbonPlayer(username);
+    public CompletableFuture<@Nullable CarbonPlayer> player(final String username) {
+        for (final var bukkitPlayer : this.userCache.values()) {
+            if (bukkitPlayer.username().equalsIgnoreCase(username)) {
+                return CompletableFuture.completedFuture(bukkitPlayer);
+            }
+        }
+
+        return CompletableFuture.supplyAsync(() -> {
+            final @Nullable UUID uuid = this.resolveUUID(username).join();
+
+            if (uuid != null) {
+                return this.player(uuid).join();
+            }
+
+            return null;
+        });
     }
 
-    private @Nullable CarbonPlayer player(final Player player) {
+    private CompletableFuture<@Nullable CarbonPlayer> player(final Player player) {
         return this.player(player.getUniqueId());
+    }
+
+    @Override
+    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
+        // TODO: user cache?
+        return CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(username).getUniqueId());
     }
 
 }

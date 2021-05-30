@@ -30,7 +30,7 @@ public final class BukkitChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
-        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId());
+        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
         if (sender == null) {
             return;

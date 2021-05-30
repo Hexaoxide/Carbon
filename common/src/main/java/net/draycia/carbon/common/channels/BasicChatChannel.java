@@ -41,8 +41,6 @@ public final class BasicChatChannel implements ChatChannel {
         final Component message,
         final Component originalMessage
     ) {
-        // TODO: Once per-user is setup, use the service for the recipient?
-        // TODO: Or, have the MessageSource do the per-use for us.
         return this.service.basicChatFormat(
             recipient,
             sender.uuid(),

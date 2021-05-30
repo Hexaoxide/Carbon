@@ -1,6 +1,7 @@
 package net.draycia.carbon.api;
 
 import java.nio.file.Path;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -48,5 +49,13 @@ public interface CarbonChat {
      * @since 2.0.0
      */
     CarbonServer server();
+
+    /**
+     * The registry that channels are registered to.
+     *
+     * @return the channel registry
+     * @since 2.0.0
+     */
+    ChannelRegistry channelRegistry();
 
 }

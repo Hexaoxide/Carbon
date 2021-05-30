@@ -1,6 +1,7 @@
 package net.draycia.carbon.api.users;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -20,15 +21,6 @@ public interface UserManager {
      * @return The {@link CarbonPlayer}, or null if the player doesn't exist.
      * @since 2.0.0
      */
-    @Nullable CarbonPlayer carbonPlayer(final UUID uuid);
-
-    /**
-     * Loads and returns a {@link CarbonPlayer} with the given username.
-     *
-     * @param username The player's username.
-     * @return The {@link CarbonPlayer}, or null if the player doesn't exist.
-     * @since 2.0.0
-     */
-    @Nullable CarbonPlayer carbonPlayer(final String username);
+    CompletableFuture<@Nullable CarbonPlayer> carbonPlayer(final UUID uuid);
 
 }

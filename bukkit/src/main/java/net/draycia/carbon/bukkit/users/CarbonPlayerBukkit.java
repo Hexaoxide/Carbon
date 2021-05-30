@@ -1,10 +1,9 @@
 package net.draycia.carbon.bukkit.users;
 
 import java.util.Locale;
-import java.util.UUID;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,11 +15,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
 
-    public CarbonPlayerBukkit(
-        final @NonNull String username,
-        final @NonNull UUID uuid
-    ) {
-        super(username, uuid, Identity.identity(uuid));
+    private final CarbonPlayer carbonPlayer;
+
+    public CarbonPlayerBukkit(final CarbonPlayer carbonPlayer) {
+        this.carbonPlayer = carbonPlayer;
     }
 
     @Override
@@ -46,19 +44,9 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
         return player;
     }
 
-    private @Nullable Player player() {
-        return Bukkit.getPlayer(this.uuid);
-    }
-
     @Override
-    public @Nullable Locale locale() {
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            return player.locale();
-        } else {
-            return null;
-        }
+    protected CarbonPlayer carbonPlayer() {
+        return this.carbonPlayer;
     }
 
     @Override
@@ -105,6 +93,21 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
         }
 
         return false;
+    }
+
+    @Override
+    public @Nullable Locale locale() {
+        final @Nullable Player player = this.player();
+
+        if (player != null) {
+            return player.locale();
+        } else {
+            return null;
+        }
+    }
+
+    private @Nullable Player player() {
+        return Bukkit.getPlayer(this.uuid);
     }
 
 }

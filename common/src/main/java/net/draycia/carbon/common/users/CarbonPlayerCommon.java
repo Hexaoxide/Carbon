@@ -1,8 +1,10 @@
 package net.draycia.carbon.common.users;
 
+import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -16,26 +18,38 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
-    protected final String username;
     protected @Nullable Component displayName;
-    protected final UUID uuid;
-    protected final Identity identity;
+    protected Identity identity;
     protected @Nullable ChatChannel selectedChannel;
+    protected String username;
+    protected UUID uuid;
 
     protected CarbonPlayerCommon(
+        final Identity identity,
         final String username,
-        final UUID uuid,
-        final Identity identity
+        final UUID uuid
     ) {
-        this.username = username;
-        this.uuid = uuid;
+        this.displayName = text(username);
         this.identity = identity;
         this.selectedChannel = null;
+        this.username = username;
+        this.uuid = uuid;
+    }
+
+    protected CarbonPlayerCommon() {
+
     }
 
     @Override
-    public String username() {
-        return this.username;
+    public @NonNull Audience audience() {
+        return Audience.empty();
+    }
+
+    abstract protected CarbonPlayer carbonPlayer();
+
+    @Override
+    public Component createItemHoverComponent() {
+        return Component.empty();
     }
 
     @Override
@@ -49,13 +63,18 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
     }
 
     @Override
+    public boolean hasPermission(String permission) {
+        return false;
+    }
+
+    @Override
     public Identity identity() {
         return this.identity;
     }
 
     @Override
-    public UUID uuid() {
-        return this.uuid;
+    public @Nullable Locale locale() {
+        return Locale.getDefault();
     }
 
     @Override
@@ -68,4 +87,13 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
         this.selectedChannel = chatChannel;
     }
 
+    @Override
+    public String username() {
+        return this.username;
+    }
+
+    @Override
+    public UUID uuid() {
+        return this.uuid;
+    }
 }

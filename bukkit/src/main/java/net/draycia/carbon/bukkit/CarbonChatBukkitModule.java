@@ -4,8 +4,6 @@ import com.google.inject.AbstractModule;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.bukkit.users.MemoryUserManagerBukkit;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonJar;
 import net.draycia.carbon.common.ForCarbon;
@@ -42,7 +40,6 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(CarbonJar.class).toInstance(this.pluginJar);
         this.bind(CarbonChatBukkitEntry.class).toInstance(this.plugin);
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
-        this.bind(UserManager.class).to(MemoryUserManagerBukkit.class);
     }
 
 }
