@@ -1,4 +1,4 @@
-package net.draycia.carbon.bukkit.users;
+package net.draycia.carbon.common.users;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,7 +20,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class JSONUserManagerBukkit implements UserManager {
+public class JSONUserManager implements UserManager {
 
     private final Path dataDirectory;
     private final Injector injector;
@@ -28,7 +28,7 @@ public class JSONUserManagerBukkit implements UserManager {
     private final Path userDirectory;
 
     @Inject
-    public JSONUserManagerBukkit(
+    public JSONUserManager(
         final @ForCarbon Path dataDirectory,
         final Injector injector
     ) throws IOException {
