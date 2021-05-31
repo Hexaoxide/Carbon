@@ -1,5 +1,8 @@
 package net.draycia.carbon.velocity;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -33,6 +36,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
     private final UserManager userManager;
 
     private final HttpClient client = HttpClient.newHttpClient();
+    private final Gson gson = new Gson();
 
     @Inject
     private CarbonServerVelocity(final ProxyServer server, final UserManager userManager) {
@@ -124,11 +128,15 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
 
                 final HttpResponse<String> response =
                     this.client.send(request, HttpResponse.BodyHandlers.ofString());
-                final String mojangUUID = response.body().replaceAll(
+                final String mojangResponse = response.body().replaceAll(
                     "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})",
                     "$1-$2-$3-$4-$5");
 
-                return UUID.fromString(mojangUUID);
+                JsonArray jsonArray = gson.fromJson(mojangResponse, JsonObject.class).getAsJsonArray();
+                JsonObject json = (JsonObject) jsonArray.get(1);
+                String uuid = json.get("uuid").getAsString();
+
+                return UUID.fromString(uuid);
             } catch (URISyntaxException | IOException | InterruptedException e) {
                 e.printStackTrace();
             }
