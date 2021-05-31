@@ -28,7 +28,7 @@ public final class VelocityChatListener {
 
     @Subscribe
     public void onPlayerChat(final @NonNull PlayerChatEvent event) {
-        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId());
+        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
         if (sender == null) {
             return;

@@ -9,6 +9,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
@@ -28,6 +29,11 @@ public class CarbonChatVelocity extends CarbonChatCommon {
     private final PluginContainer pluginContainer;
     private final ProxyServer proxyServer;
 
+    // TODO: actually bind this lmao
+    private final ChannelRegistry channelRegistry;
+
+    // TODO: check config, bind UserManager implementation
+
     @Inject
     public CarbonChatVelocity(
         final Logger logger,
@@ -35,7 +41,8 @@ public class CarbonChatVelocity extends CarbonChatCommon {
         @ForCarbon final Path dataDirectory,
         final CarbonMessageService messageService,
         final PluginContainer pluginContainer,
-        final ProxyServer proxyServer
+        final ProxyServer proxyServer,
+        final ChannelRegistry channelRegistry
     ) {
         super(messageService);
         this.logger = logger;
@@ -43,6 +50,7 @@ public class CarbonChatVelocity extends CarbonChatCommon {
         this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
         this.proxyServer = proxyServer;
+        this.channelRegistry = channelRegistry;
     }
 
     @Override
@@ -58,6 +66,11 @@ public class CarbonChatVelocity extends CarbonChatCommon {
     @Override
     public CarbonServer server() {
         return this.server;
+    }
+
+    @Override
+    public ChannelRegistry channelRegistry() {
+        return this.channelRegistry;
     }
 
     @Override

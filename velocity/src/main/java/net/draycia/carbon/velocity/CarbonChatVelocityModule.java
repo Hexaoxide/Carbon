@@ -6,11 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonJar;
 import net.draycia.carbon.common.ForCarbon;
-import net.draycia.carbon.velocity.users.MemoryUserManagerVelocity;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -41,7 +39,6 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(Path.class).annotatedWith(CarbonJar.class).toInstance(this.pluginJar);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);
-        this.bind(UserManager.class).to(MemoryUserManagerVelocity.class);
     }
 
 }

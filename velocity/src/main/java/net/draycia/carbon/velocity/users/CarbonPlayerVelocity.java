@@ -3,10 +3,9 @@ package net.draycia.carbon.velocity.users;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.Locale;
-import java.util.UUID;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -16,14 +15,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
 
     private final ProxyServer server;
-    
-    public CarbonPlayerVelocity(
-        final String username,
-        final UUID uuid,
-        final ProxyServer server
-    ) {
-        super(username, uuid, Identity.identity(uuid));
+    private final CarbonPlayer carbonPlayer;
+
+    public CarbonPlayerVelocity(final ProxyServer server, final CarbonPlayer carbonPlayer) {
         this.server = server;
+        this.carbonPlayer = carbonPlayer;
     }
 
     @Override
@@ -35,6 +31,11 @@ public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
         }
 
         return player;
+    }
+
+    @Override
+    protected CarbonPlayer carbonPlayer() {
+        return this.carbonPlayer;
     }
 
     private @Nullable Player player() {
