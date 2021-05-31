@@ -36,7 +36,7 @@ public final class SpongeChatListener {
 
     @Listener
     public void onPlayerChat(final @NonNull PlayerChatEvent event, final @First Player source) {
-        final var sender = this.carbonChat.server().player(source.uniqueId());
+        final var sender = this.carbonChat.server().player(source.uniqueId()).join();
 
         if (sender == null) {
             return;

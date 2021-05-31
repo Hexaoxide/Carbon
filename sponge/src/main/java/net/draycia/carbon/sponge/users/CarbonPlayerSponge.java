@@ -2,10 +2,9 @@ package net.draycia.carbon.sponge.users;
 
 import java.util.Locale;
 import java.util.Optional;
-import java.util.UUID;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -23,11 +22,22 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerSponge extends CarbonPlayerCommon {
 
-    public CarbonPlayerSponge(
-        final @NonNull String username,
-        final @NonNull UUID uuid
-    ) {
-        super(username, uuid, Identity.identity(uuid));
+    private final CarbonPlayer carbonPlayer;
+
+    public CarbonPlayerSponge(final CarbonPlayer carbonPlayer) {
+        this.carbonPlayer = carbonPlayer;
+    }
+
+    @Override
+    public @NonNull Audience audience() {
+        return this.player()
+            .map(player -> (Audience) player)
+            .orElseGet(Audience::empty);
+    }
+
+    @Override
+    protected CarbonPlayer carbonPlayer() {
+        return this.carbonPlayer;
     }
 
     @Override
@@ -43,22 +53,8 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
         });
     }
 
-    @Override
-    public @NonNull Audience audience() {
-        return this.player()
-            .map(player -> (Audience) player)
-            .orElseGet(Audience::empty);
-    }
-
     private @NonNull Optional<ServerPlayer> player() {
         return Sponge.server().player(this.uuid);
-    }
-
-    @Override
-    public @Nullable Locale locale() {
-        return this.player()
-            .map(LocaleSource::locale)
-            .orElse(null);
     }
 
     @Override
@@ -104,6 +100,13 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
         }
 
         return false;
+    }
+
+    @Override
+    public @Nullable Locale locale() {
+        return this.player()
+            .map(LocaleSource::locale)
+            .orElse(null);
     }
 
 }

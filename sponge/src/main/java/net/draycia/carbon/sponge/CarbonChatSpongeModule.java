@@ -5,11 +5,9 @@ import com.google.inject.Inject;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonJar;
 import net.draycia.carbon.common.ForCarbon;
-import net.draycia.carbon.sponge.users.MemoryUserManagerSponge;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.config.ConfigDir;
@@ -39,7 +37,6 @@ public final class CarbonChatSpongeModule extends AbstractModule {
         this.bind(CarbonChat.class).to(CarbonChatSponge.class);
         this.bind(CarbonChatSponge.class);
         this.bind(CarbonServer.class).to(CarbonServerSponge.class);
-        this.bind(UserManager.class).to(MemoryUserManagerSponge.class);
     }
 
 }

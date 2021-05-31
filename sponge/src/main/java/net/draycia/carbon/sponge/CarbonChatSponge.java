@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.common.ForCarbon;
@@ -31,6 +32,11 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     private final Path dataDirectory;
     private final PluginContainer pluginContainer;
 
+    // TODO: actually bind this lmao
+    private final ChannelRegistry channelRegistry;
+
+    // TODO: check config, bind UserManager implementation
+
     @Inject
     private CarbonChatSponge(
         final PluginContainer pluginContainer,
@@ -38,7 +44,8 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         final @ForCarbon Path dataDirectory,
         final CarbonServerSponge carbonServerSponge,
         final UserManager userManager,
-        final CarbonMessageService messageService
+        final CarbonMessageService messageService,
+        final ChannelRegistry channelRegistry
     ) {
         super(messageService);
         this.userManager = userManager;
@@ -46,6 +53,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         this.carbonServerSponge = carbonServerSponge;
         this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
+        this.channelRegistry = channelRegistry;
     }
 
     public UserManager userManager() {
@@ -65,6 +73,11 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     @Override
     public CarbonServer server() {
         return this.carbonServerSponge;
+    }
+
+    @Override
+    public ChannelRegistry channelRegistry() {
+        return this.channelRegistry;
     }
 
     @Override
