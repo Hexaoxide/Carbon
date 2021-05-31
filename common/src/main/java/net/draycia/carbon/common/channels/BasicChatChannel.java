@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public final class BasicChatChannel implements ChatChannel {
 
-    private final Key key = Key.key("carbon", "vanilla");
+    private final Key key = Key.key("carbon", "basic");
 
     private final CarbonMessageService service;
     private final CarbonChat carbonChat;

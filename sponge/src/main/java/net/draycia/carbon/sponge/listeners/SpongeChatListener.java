@@ -3,9 +3,9 @@ package net.draycia.carbon.sponge.listeners;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Optional;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.channels.BasicChatChannel;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -23,15 +23,15 @@ import static net.kyori.adventure.text.Component.empty;
 public final class SpongeChatListener {
 
     private final CarbonChatSponge carbonChat;
-    private final BasicChatChannel basicChat;
+    private final ChannelRegistry registry;
 
     @Inject
     private SpongeChatListener(
         final CarbonChatSponge carbonChat,
-        final BasicChatChannel basicChat
+        final ChannelRegistry registry
     ) {
         this.carbonChat = carbonChat;
-        this.basicChat = basicChat;
+        this.registry = registry;
     }
 
     @Listener
@@ -39,10 +39,12 @@ public final class SpongeChatListener {
         final var sender = this.carbonChat.server().player(source.uniqueId()).join();
 
         if (sender == null) {
+            // TODO: find out why this is returning null
             return;
         }
 
-        final var channel = requireNonNullElse(sender.selectedChannel(), this.basicChat);
+        final var channel = requireNonNullElse(sender.selectedChannel(),
+            this.registry.defaultValue());
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
         //   or ChatChannel#filterRecipients
@@ -67,7 +69,8 @@ public final class SpongeChatListener {
 
         try {
             event.setAudience(Audience.audience(chatEvent.recipients()));
-        } catch (final UnsupportedOperationException ignored) {
+        } catch (final UnsupportedOperationException exception) {
+            exception.printStackTrace();
             // Do we log something here? Would get spammy fast.
         }
 
