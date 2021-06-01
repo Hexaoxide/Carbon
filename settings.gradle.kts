@@ -45,8 +45,9 @@ dependencyResolutionManagement {
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven("https://repo.jpenilla.xyz/snapshots/") // run-paper + shadow snapshot
+    maven("https://repo.jpenilla.xyz/snapshots/") // for shadow snapshot
   }
+  includeBuild("build-logic")
 }
 
 plugins {
@@ -54,8 +55,6 @@ plugins {
 }
 
 rootProject.name = "CarbonChat"
-
-includeBuild("build-logic")
 
 setupSubproject("carbonchat-api") {
   projectDir = file("api")
