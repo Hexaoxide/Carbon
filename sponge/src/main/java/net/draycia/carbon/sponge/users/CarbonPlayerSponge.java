@@ -35,8 +35,8 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
         final String username,
         final UUID uuid
     ) {
-       super(identity, username, uuid);
-       this.carbonPlayer = this;
+        super(identity, username, uuid);
+        this.carbonPlayer = this;
     }
 
     @Override

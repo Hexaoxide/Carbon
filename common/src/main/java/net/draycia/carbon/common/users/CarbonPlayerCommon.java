@@ -63,7 +63,7 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(final String permission) {
         return false;
     }
 
@@ -96,4 +96,5 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
     public UUID uuid() {
         return this.uuid;
     }
+
 }

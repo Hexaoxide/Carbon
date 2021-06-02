@@ -37,7 +37,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final PrimaryConfig primaryConfig,
         final @ForCarbon Path dataDirectory,
         final Injector injector
-        ) throws IOException {
+    ) throws IOException {
         switch (primaryConfig.storageType()) {
             default -> {
                 return new JSONUserManager(dataDirectory, injector);

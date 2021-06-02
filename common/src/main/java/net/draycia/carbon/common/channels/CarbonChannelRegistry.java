@@ -17,6 +17,7 @@ public class CarbonChannelRegistry extends DefaultedRegistryImpl<Key, ChatChanne
 
     @Override
     public @NonNull ChatChannel defaultValue() {
-        return defaultChannel;
+        return this.defaultChannel;
     }
+
 }

@@ -20,12 +20,13 @@ public class ChatChannelSerializerGson extends TypeAdapter<ChatChannel> {
     }
 
     @Override
-    public void write(JsonWriter out, ChatChannel value) throws IOException {
+    public void write(final JsonWriter out, final ChatChannel value) throws IOException {
         out.value(value.key().asString());
     }
 
     @Override
-    public ChatChannel read(JsonReader in) throws IOException {
+    public ChatChannel read(final JsonReader in) throws IOException {
         return this.registry.getOrDefault(key(in.nextString()));
     }
+
 }

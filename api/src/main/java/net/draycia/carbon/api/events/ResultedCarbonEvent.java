@@ -1,12 +1,15 @@
 package net.draycia.carbon.api.events;
 
 import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
  * Represents a {@link CarbonEvent} that has a result.
  *
  * @since 2.0.0
  */
+@DefaultQualifier(NonNull.class)
 public interface ResultedCarbonEvent<R extends ResultedCarbonEvent.Result> extends CarbonEvent {
 
     /**
@@ -42,7 +45,7 @@ public interface ResultedCarbonEvent<R extends ResultedCarbonEvent.Result> exten
 
         /**
          * The reason of the result.<br>
-         * Typically only present if allowed is false.
+         * Typically empty unless allowed is false.
          *
          * @return the reason of the result
          * @since 2.0.0

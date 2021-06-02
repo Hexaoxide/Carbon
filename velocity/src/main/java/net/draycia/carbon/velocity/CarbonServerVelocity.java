@@ -13,12 +13,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
@@ -33,7 +32,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerVelocity implements CarbonServer, ForwardingAudience.Single {
 
-    private final Map<UUID, CarbonPlayerVelocity> userCache = new HashMap<>();
+    private final Map<UUID, CarbonPlayerVelocity> userCache = new ConcurrentHashMap<>();
     private final ProxyServer server;
     private final UserManager userManager;
 
@@ -71,23 +70,16 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
         return players;
     }
 
-    @Override
-    public CompletableFuture<@Nullable CarbonPlayer> player(final UUID uuid) {
-        final CarbonPlayerVelocity carbonPlayerVelocity = this.userCache.get(uuid);
-
-        if (carbonPlayerVelocity != null) {
-            return CompletableFuture.completedFuture(carbonPlayerVelocity);
-        }
-
+    private CompletableFuture<@Nullable CarbonPlayerVelocity> loadPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable CarbonPlayer carbonPlayer = this.userManager.carbonPlayer(uuid).join();
+            final UserManager.PlayerResult result = this.userManager.carbonPlayer(uuid).join();
 
-            if (carbonPlayer != null) {
-                return new CarbonPlayerVelocity(this.server, carbonPlayer);
+            if (result.successful()) {
+                return new CarbonPlayerVelocity(this.server, result.player());
             }
 
             // TODO: replace this with some mojang call or smth
-            var profile = this.server.getPlayer(uuid).get().getGameProfile();
+            final var profile = this.server.getPlayer(uuid).get().getGameProfile();
 
             return new CarbonPlayerVelocity(
                 this.server,
@@ -95,6 +87,15 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                 profile.getName(),
                 uuid
             );
+        });
+    }
+
+    @Override
+    public CompletableFuture<@Nullable CarbonPlayer> player(final UUID uuid) {
+        return CompletableFuture.supplyAsync(() -> {
+            return this.userCache.computeIfAbsent(uuid, id -> {
+                return this.loadPlayer(uuid).join();
+            });
         });
     }
 
@@ -142,9 +143,9 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                     "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})",
                     "$1-$2-$3-$4-$5");
 
-                JsonArray jsonArray = gson.fromJson(mojangResponse, JsonObject.class).getAsJsonArray();
-                JsonObject json = (JsonObject) jsonArray.get(1);
-                String uuid = json.get("uuid").getAsString();
+                final JsonArray jsonArray = this.gson.fromJson(mojangResponse, JsonObject.class).getAsJsonArray();
+                final JsonObject json = (JsonObject) jsonArray.get(1);
+                final String uuid = json.get("uuid").getAsString();
 
                 return UUID.fromString(uuid);
             } catch (URISyntaxException | IOException | InterruptedException e) {

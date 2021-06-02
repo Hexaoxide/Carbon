@@ -3,16 +3,14 @@ package net.draycia.carbon.sponge;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -30,7 +28,7 @@ import org.spongepowered.api.profile.ProfileNotFoundException;
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerSponge implements CarbonServer, ForwardingAudience.Single {
 
-    private final Map<UUID, CarbonPlayerSponge> userCache = new HashMap<>();
+    private final Map<UUID, CarbonPlayerSponge> userCache = new ConcurrentHashMap<>();
     private final Game game;
     private final UserManager userManager;
 
@@ -42,12 +40,12 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
 
     @Override
     public Audience audience() {
-        return Audience.audience(this.console(), Audience.audience(this.players()));
+        return this.game.server();
     }
 
     @Override
     public Audience console() {
-        return Sponge.systemSubject();
+        return this.game.systemSubject();
     }
 
     @Override
@@ -65,23 +63,16 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
         return players;
     }
 
-    @Override
-    public CompletableFuture<@Nullable CarbonPlayer> player(final UUID uuid) {
-        final CarbonPlayerSponge carbonPlayerSponge = this.userCache.get(uuid);
-
-        if (carbonPlayerSponge != null) {
-            return CompletableFuture.completedFuture(carbonPlayerSponge);
-        }
-
+    private CompletableFuture<@Nullable CarbonPlayerSponge> loadPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable CarbonPlayer carbonPlayer = this.userManager.carbonPlayer(uuid).join();
+            final UserManager.PlayerResult result = this.userManager.carbonPlayer(uuid).join();
 
-            if (carbonPlayer != null) {
-                return new CarbonPlayerSponge(carbonPlayer);
+            if (result.successful()) {
+                return new CarbonPlayerSponge(result.player());
             }
 
             try {
-                var profile = Sponge.server().gameProfileManager().basicProfile(uuid).get();
+                final GameProfile profile = Sponge.server().gameProfileManager().basicProfile(uuid).get();
 
                 return new CarbonPlayerSponge(
                     Identity.identity(uuid),
@@ -93,6 +84,15 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
             }
 
             return null;
+        });
+    }
+
+    @Override
+    public CompletableFuture<@Nullable CarbonPlayer> player(final UUID uuid) {
+        return CompletableFuture.supplyAsync(() -> {
+            return this.userCache.computeIfAbsent(uuid, id -> {
+                return this.loadPlayer(uuid).join();
+            });
         });
     }
 

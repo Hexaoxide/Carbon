@@ -51,7 +51,7 @@ public interface CarbonServer extends Audience {
     CompletableFuture<@Nullable CarbonPlayer> player(final String username);
 
     /**
-     * Obtains the desired user's UUID
+     * Obtains the desired user's UUID.
      *
      * @param username the user's username
      * @return the user's UUID
