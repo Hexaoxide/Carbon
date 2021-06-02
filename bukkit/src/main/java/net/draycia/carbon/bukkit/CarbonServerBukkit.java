@@ -13,6 +13,7 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -71,6 +72,12 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
 
             if (carbonPlayer != null) {
                 return new CarbonPlayerBukkit(carbonPlayer);
+            }
+
+            @Nullable String name = Bukkit.getOfflinePlayer(uuid).getName();
+
+            if (name != null) {
+                return new CarbonPlayerBukkit(Identity.identity(uuid), name, uuid);
             }
 
             return null;

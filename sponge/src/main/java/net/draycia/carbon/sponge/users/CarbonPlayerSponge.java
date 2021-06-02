@@ -2,9 +2,11 @@ package net.draycia.carbon.sponge.users;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -26,6 +28,15 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
 
     public CarbonPlayerSponge(final CarbonPlayer carbonPlayer) {
         this.carbonPlayer = carbonPlayer;
+    }
+
+    public CarbonPlayerSponge(
+        final Identity identity,
+        final String username,
+        final UUID uuid
+    ) {
+       super(identity, username, uuid);
+       this.carbonPlayer = this;
     }
 
     @Override

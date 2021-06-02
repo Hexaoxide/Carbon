@@ -18,12 +18,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -84,7 +86,15 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                 return new CarbonPlayerVelocity(this.server, carbonPlayer);
             }
 
-            return null;
+            // TODO: replace this with some mojang call or smth
+            var profile = this.server.getPlayer(uuid).get().getGameProfile();
+
+            return new CarbonPlayerVelocity(
+                this.server,
+                Identity.identity(uuid),
+                profile.getName(),
+                uuid
+            );
         });
     }
 

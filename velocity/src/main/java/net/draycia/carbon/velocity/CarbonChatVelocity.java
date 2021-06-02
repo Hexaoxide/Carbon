@@ -29,10 +29,7 @@ public class CarbonChatVelocity extends CarbonChatCommon {
     private final PluginContainer pluginContainer;
     private final ProxyServer proxyServer;
 
-    // TODO: actually bind this lmao
     private final ChannelRegistry channelRegistry;
-
-    // TODO: check config, bind UserManager implementation
 
     @Inject
     public CarbonChatVelocity(

@@ -3,9 +3,11 @@ package net.draycia.carbon.velocity.users;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.Locale;
+import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -20,6 +22,17 @@ public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
     public CarbonPlayerVelocity(final ProxyServer server, final CarbonPlayer carbonPlayer) {
         this.server = server;
         this.carbonPlayer = carbonPlayer;
+    }
+
+    public CarbonPlayerVelocity(
+        final ProxyServer server,
+        final Identity identity,
+        final String username,
+        final UUID uuid
+    ) {
+        super(identity, username, uuid);
+        this.server = server;
+        this.carbonPlayer = this;
     }
 
     @Override

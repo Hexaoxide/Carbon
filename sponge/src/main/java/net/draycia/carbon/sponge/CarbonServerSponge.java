@@ -5,15 +5,18 @@ import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -75,6 +78,18 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
 
             if (carbonPlayer != null) {
                 return new CarbonPlayerSponge(carbonPlayer);
+            }
+
+            try {
+                var profile = Sponge.server().gameProfileManager().basicProfile(uuid).get();
+
+                return new CarbonPlayerSponge(
+                    Identity.identity(uuid),
+                    profile.name().get(),
+                    uuid
+                );
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
             }
 
             return null;
