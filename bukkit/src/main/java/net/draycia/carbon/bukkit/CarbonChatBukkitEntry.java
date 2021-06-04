@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -41,6 +42,7 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
             this.getDataFolder().toPath(),
             this.getFile().toPath()
         ));
+
         this.carbon = this.injector.getInstance(CarbonChatBukkit.class);
     }
 
@@ -56,10 +58,26 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
         }
 
         this.carbon.initialize();
+
+        final long saveDelay = 5 * 60 * 20;
+
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this,
+            this::savePlayers, 60 * 20, saveDelay);
     }
 
     @Override
     public void onDisable() {
+        this.savePlayers();
+    }
+
+    private void savePlayers() {
+        for (final var player : this.carbon.server().players()) {
+            this.carbon.userManager().savePlayer(player).thenAccept(result -> {
+                if (!result.successful()) {
+                    this.carbon.server().console().sendMessage(result.reason());
+                }
+            });
+        }
     }
 
 }

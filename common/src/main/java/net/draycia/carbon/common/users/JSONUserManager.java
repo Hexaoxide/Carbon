@@ -7,15 +7,18 @@ import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.serialisation.gson.CarbonPlayerSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -28,23 +31,27 @@ public class JSONUserManager implements UserManager {
 
     private final Path dataDirectory;
     private final Injector injector;
+    private final Logger logger;
     private final Gson serializer;
     private final Path userDirectory;
 
     @Inject
     public JSONUserManager(
         final @ForCarbon Path dataDirectory,
-        final Injector injector
+        final Injector injector,
+        final Logger logger
     ) throws IOException {
         this.dataDirectory = dataDirectory;
         this.injector = injector;
+        this.logger = logger;
         this.userDirectory = this.dataDirectory.resolve("users");
 
         Files.createDirectories(this.userDirectory);
 
         this.serializer = GsonComponentSerializer.gson().populator()
             .apply(new GsonBuilder())
-            .registerTypeAdapter(CarbonChat.class, this.injector.getInstance(ChatChannelSerializerGson.class))
+            .registerTypeAdapter(ChatChannel.class, this.injector.getInstance(ChatChannelSerializerGson.class))
+            .registerTypeAdapter(CarbonPlayer.class, this.injector.getInstance(CarbonPlayerSerializerGson.class))
             .create();
     }
 
@@ -57,6 +64,7 @@ public class JSONUserManager implements UserManager {
                 final CarbonPlayer player =
                     this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayer.class);
 
+                // TODO: supply reason if fromJson returns null
                 return new JSONPlayerResult(player, empty());
             } catch (final IOException exception) {
                 return new JSONPlayerResult(null, text(exception.getMessage()));
@@ -67,12 +75,17 @@ public class JSONUserManager implements UserManager {
     @Override
     public CompletableFuture<PlayerResult> savePlayer(final CarbonPlayer player) {
         return CompletableFuture.supplyAsync(() -> {
+            this.logger.info("Saving player data for [{}], [{}]", player.username(), player.uuid());
             final Path userFile = this.userDirectory.resolve(player.uuid() + ".json");
 
             try {
-                this.serializer.toJson(player, CarbonPlayer.class, Files.newBufferedWriter(userFile));
+                final String json = this.serializer.toJson(player, CarbonPlayer.class);
+                Files.writeString(userFile, json, StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
+                //this.serializer.toJson(player, CarbonPlayer.class, Files.newBufferedWriter(userFile));
 
-                return new JSONPlayerResult(player, empty());
+                return new JSONPlayerResult(player, text(String.format("Saving player data for [%s], [%s]",
+                    player.username(), player.uuid())));
             } catch (final IOException exception) {
                 return new JSONPlayerResult(null, text(exception.getMessage()));
             }
@@ -81,19 +94,17 @@ public class JSONUserManager implements UserManager {
 
     private final static class JSONPlayerResult implements PlayerResult {
 
-        private final boolean successful;
         private final Component reason;
         private final @Nullable CarbonPlayer player;
 
         private JSONPlayerResult(final @Nullable CarbonPlayer player, final Component reason) {
-            this.successful = player == null;
             this.reason = reason;
             this.player = player;
         }
 
         @Override
         public boolean successful() {
-            return this.successful;
+            return this.player != null;
         }
 
         @Override

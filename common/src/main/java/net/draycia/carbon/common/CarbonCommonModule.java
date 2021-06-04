@@ -6,7 +6,6 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.Moonshine;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
@@ -35,12 +34,11 @@ public final class CarbonCommonModule extends AbstractModule {
     @Singleton
     public UserManager userManager(
         final PrimaryConfig primaryConfig,
-        final @ForCarbon Path dataDirectory,
         final Injector injector
-    ) throws IOException {
+    ) {
         switch (primaryConfig.storageType()) {
             default -> {
-                return new JSONUserManager(dataDirectory, injector);
+                return injector.getInstance(JSONUserManager.class);
             }
         }
     }
