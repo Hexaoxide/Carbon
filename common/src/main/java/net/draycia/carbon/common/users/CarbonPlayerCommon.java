@@ -16,22 +16,29 @@ import static java.util.Objects.requireNonNullElseGet;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
-public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
+public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
     protected @Nullable Component displayName;
-    protected Identity identity;
     protected @Nullable ChatChannel selectedChannel;
     protected String username;
     protected UUID uuid;
 
-    protected CarbonPlayerCommon(
-        final Identity identity,
+    public CarbonPlayerCommon(
         final String username,
         final UUID uuid
     ) {
-        this.displayName = text(username);
-        this.identity = identity;
-        this.selectedChannel = null;
+        this.username = username;
+        this.uuid = uuid;
+    }
+
+    public CarbonPlayerCommon(
+        final @Nullable Component displayName,
+        final @Nullable ChatChannel selectedChannel,
+        final String username,
+        final UUID uuid
+    ) {
+        this.displayName = displayName;
+        this.selectedChannel = selectedChannel;
         this.username = username;
         this.uuid = uuid;
     }
@@ -45,7 +52,9 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
         return Audience.empty();
     }
 
-    abstract protected CarbonPlayer carbonPlayer();
+    protected CarbonPlayer carbonPlayer() {
+        return this;
+    }
 
     @Override
     public Component createItemHoverComponent() {
@@ -69,7 +78,7 @@ public abstract class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudi
 
     @Override
     public Identity identity() {
-        return this.identity;
+        return Identity.identity(this.uuid);
     }
 
     @Override

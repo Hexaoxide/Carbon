@@ -5,6 +5,7 @@ import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -15,7 +16,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
+public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements ForwardingAudience.Single {
 
     private final CarbonPlayer carbonPlayer;
 
@@ -28,7 +29,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon {
         final String username,
         final UUID uuid
     ) {
-        super(identity, username, uuid);
+        super(username, uuid);
         this.carbonPlayer = this;
     }
 

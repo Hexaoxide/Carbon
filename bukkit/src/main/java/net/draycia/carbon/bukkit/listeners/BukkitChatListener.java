@@ -67,6 +67,7 @@ public final class BukkitChatListener implements Listener {
         }
 
         event.renderer((source, sourceDisplayName, message, viewer) -> {
+            final @NonNull AsyncChatEvent eventRef = event;
             Component component = message;
 
             for (final var renderer : chatEvent.renderers()) {

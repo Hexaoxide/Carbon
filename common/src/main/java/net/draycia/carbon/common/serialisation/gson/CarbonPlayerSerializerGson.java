@@ -8,7 +8,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
+import java.util.UUID;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.kyori.adventure.text.Component;
 
 public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayer>, JsonDeserializer<CarbonPlayer> {
 
@@ -16,9 +20,16 @@ public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayer>,
     public CarbonPlayer deserialize(
         final JsonElement jsonElement,
         final Type type,
-        final JsonDeserializationContext jsonDeserializationContext
+        final JsonDeserializationContext context
     ) throws JsonParseException {
-        return null;
+        final JsonObject object = jsonElement.getAsJsonObject();
+
+        final Component displayName = context.deserialize(object.get("displayName"), Component.class);
+        final ChatChannel selectedChannel = context.deserialize(object.get("selectedChannel"), ChatChannel.class);
+        final String username = object.get("username").getAsString();
+        final UUID uuid = context.deserialize(object.get("uuid"), UUID.class);
+
+        return new CarbonPlayerCommon(displayName, selectedChannel, username, uuid);
     }
 
     @Override
@@ -30,7 +41,6 @@ public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayer>,
         final JsonObject object = new JsonObject();
 
         object.add("displayName", context.serialize(player.displayName()));
-        object.add("identity", context.serialize(player.identity()));
         object.add("selectedChannel", context.serialize(player.selectedChannel()));
         object.add("username", context.serialize(player.username()));
         object.add("uuid", context.serialize(player.uuid()));
