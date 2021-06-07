@@ -1,4 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.kyori.indra.git.IndraGitExtension
+import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.the
 
 /**
  * Relocate a package into the `net.draycia.carbon.libs` namespace.
@@ -36,3 +40,9 @@ fun ShadowJar.configureShadowJar() {
     exclude(dependency("com.google.j2objc:j2objc-annotations"))
   }
 }
+
+fun Project.latestGitHash(): String? =
+  the<IndraGitExtension>().commit()?.name?.substring(0, 7)
+
+val Project.libs: LibrariesForLibs
+  get() = the()

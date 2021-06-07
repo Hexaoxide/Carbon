@@ -1,3 +1,7 @@
+plugins {
+  id("carbon.base-conventions")
+}
+
 dependencies {
   // Doesn't add any dependencies, only version constraints
   api(platform(libs.adventureBom))
