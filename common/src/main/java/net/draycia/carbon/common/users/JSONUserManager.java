@@ -8,15 +8,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.serialisation.gson.CarbonPlayerSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
-import net.kyori.adventure.text.Component;
+import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -35,6 +38,8 @@ public class JSONUserManager implements UserManager {
     private final Gson serializer;
     private final Path userDirectory;
 
+    private final Map<UUID, CarbonPlayerCommon> userCache = new ConcurrentHashMap<>();
+
     @Inject
     public JSONUserManager(
         final @ForCarbon Path dataDirectory,
@@ -50,72 +55,64 @@ public class JSONUserManager implements UserManager {
 
         this.serializer = GsonComponentSerializer.gson().populator()
             .apply(new GsonBuilder())
+            .registerTypeAdapter(CarbonPlayerCommon.class, this.injector.getInstance(CarbonPlayerSerializerGson.class))
             .registerTypeAdapter(ChatChannel.class, this.injector.getInstance(ChatChannelSerializerGson.class))
-            .registerTypeAdapter(CarbonPlayer.class, this.injector.getInstance(CarbonPlayerSerializerGson.class))
+            .registerTypeAdapter(UUID.class, this.injector.getInstance(UUIDSerializerGson.class))
             .create();
     }
 
     @Override
-    public CompletableFuture<PlayerResult> carbonPlayer(final UUID uuid) {
+    public CompletableFuture<ComponentPlayerResult> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
+            final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
+
+            if (cachedPlayer != null) {
+                return  new ComponentPlayerResult(cachedPlayer, empty());
+            }
+
             final Path userFile = this.userDirectory.resolve(uuid + ".json");
 
-            try {
-                final CarbonPlayer player =
-                    this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayer.class);
+            if (Files.exists(userFile)) {
+                try {
+                    final CarbonPlayerCommon player =
+                        this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
 
-                // TODO: supply reason if fromJson returns null
-                return new JSONPlayerResult(player, empty());
-            } catch (final IOException exception) {
-                return new JSONPlayerResult(null, text(exception.getMessage()));
+                    this.userCache.put(uuid, player);
+
+                    // TODO: supply reason if fromJson returns null
+                    return new ComponentPlayerResult(player, empty());
+                } catch (final IOException exception) {
+                    return new ComponentPlayerResult(null, text(exception.getMessage()));
+                }
             }
+
+            return new ComponentPlayerResult(null, text("No save file found for player."));
         });
     }
 
     @Override
-    public CompletableFuture<PlayerResult> savePlayer(final CarbonPlayer player) {
+    public CompletableFuture<ComponentPlayerResult> savePlayer(final CarbonPlayer player) {
         return CompletableFuture.supplyAsync(() -> {
             this.logger.info("Saving player data for [{}], [{}]", player.username(), player.uuid());
             final Path userFile = this.userDirectory.resolve(player.uuid() + ".json");
 
             try {
-                final String json = this.serializer.toJson(player, CarbonPlayer.class);
-                Files.writeString(userFile, json, StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING);
-                //this.serializer.toJson(player, CarbonPlayer.class, Files.newBufferedWriter(userFile));
+                Files.createDirectories(userFile);
+                Files.createFile(userFile);
 
-                return new JSONPlayerResult(player, text(String.format("Saving player data for [%s], [%s]",
+                final String json = this.serializer.toJson(player, CarbonPlayerCommon.class);
+                Files.writeString(userFile, json,
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.CREATE_NEW);
+
+                return new ComponentPlayerResult(player, text(String.format("Saving player data for [%s], [%s]",
                     player.username(), player.uuid())));
             } catch (final IOException exception) {
-                return new JSONPlayerResult(null, text(exception.getMessage()));
+                exception.printStackTrace();
+                return new ComponentPlayerResult(null, text(exception.getMessage()));
             }
         });
-    }
-
-    private final static class JSONPlayerResult implements PlayerResult {
-
-        private final Component reason;
-        private final @Nullable CarbonPlayer player;
-
-        private JSONPlayerResult(final @Nullable CarbonPlayer player, final Component reason) {
-            this.reason = reason;
-            this.player = player;
-        }
-
-        @Override
-        public boolean successful() {
-            return this.player != null;
-        }
-
-        @Override
-        public Component reason() {
-            return this.reason;
-        }
-
-        @Override
-        public @Nullable CarbonPlayer player() {
-            return this.player;
-        }
     }
 
 }

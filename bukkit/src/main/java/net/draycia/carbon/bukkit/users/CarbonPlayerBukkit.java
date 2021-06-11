@@ -6,7 +6,6 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -25,7 +24,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     public CarbonPlayerBukkit(
-        final Identity identity,
         final String username,
         final UUID uuid
     ) {

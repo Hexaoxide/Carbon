@@ -3,14 +3,18 @@ package net.draycia.carbon.sponge;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
+import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.jvm.Plugin;
 
@@ -52,6 +56,26 @@ public final class CarbonChatSpongeEntry {
 
     @Listener
     public void onInitialize(final StartingEngineEvent<Server> event) {
+        Sponge.asyncScheduler().submit(Task.builder()
+            .interval(5, TimeUnit.MINUTES)
+            .plugin(this.pluginContainer)
+            .execute(this::savePlayers)
+            .build());
+    }
+
+    @Listener
+    public void onDisable(final StoppingEngineEvent<Server> event) {
+        this.savePlayers();
+    }
+
+    private void savePlayers() {
+        for (final var player : this.carbon.server().players()) {
+            this.carbon.userManager().savePlayer(player).thenAccept(result -> {
+                if (result.player() == null) {
+                    this.carbon.server().console().sendMessage(result.reason());
+                }
+            });
+        }
     }
 
 }

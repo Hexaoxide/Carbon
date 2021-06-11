@@ -3,9 +3,11 @@ package net.draycia.carbon.sponge.users;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -22,21 +24,12 @@ import static net.kyori.adventure.text.Component.translatable;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonPlayerSponge extends CarbonPlayerCommon {
+public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudience.Single {
 
     private final CarbonPlayer carbonPlayer;
 
     public CarbonPlayerSponge(final CarbonPlayer carbonPlayer) {
         this.carbonPlayer = carbonPlayer;
-    }
-
-    public CarbonPlayerSponge(
-        final Identity identity,
-        final String username,
-        final UUID uuid
-    ) {
-        super(identity, username, uuid);
-        this.carbonPlayer = this;
     }
 
     @Override
@@ -47,13 +40,18 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
     }
 
     @Override
-    protected CarbonPlayer carbonPlayer() {
-        return this.carbonPlayer;
+    public String username() {
+        return this.carbonPlayer.username();
+    }
+
+    @Override
+    public Component displayName() {
+        return this.carbonPlayer.displayName();
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
-        super.displayName(displayName);
+        this.carbonPlayer.displayName(displayName);
 
         this.player().ifPresent(player -> {
             if (displayName != null) {
@@ -64,8 +62,13 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
         });
     }
 
+    @Override
+    public UUID uuid() {
+        return this.carbonPlayer.uuid();
+    }
+
     private @NonNull Optional<ServerPlayer> player() {
-        return Sponge.server().player(this.uuid);
+        return Sponge.server().player(this.carbonPlayer.uuid());
     }
 
     @Override
@@ -106,11 +109,8 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
         final var player = this.player();
 
         // Ignore inspection. Don't make code harder to read, IntelliJ.
-        if (player.isPresent()) {
-            return player.get().hasPermission(permission);
-        }
-
-        return false;
+        return player.map(serverPlayer -> serverPlayer.hasPermission(permission))
+            .orElse(false);
     }
 
     @Override
@@ -120,4 +120,18 @@ public final class CarbonPlayerSponge extends CarbonPlayerCommon {
             .orElse(null);
     }
 
+    @Override
+    public @Nullable ChatChannel selectedChannel() {
+        return this.carbonPlayer.selectedChannel();
+    }
+
+    @Override
+    public void selectedChannel(final ChatChannel chatChannel) {
+        this.carbonPlayer.selectedChannel(chatChannel);
+    }
+
+    @Override
+    public @NonNull Identity identity() {
+        return this.carbonPlayer.identity();
+    }
 }

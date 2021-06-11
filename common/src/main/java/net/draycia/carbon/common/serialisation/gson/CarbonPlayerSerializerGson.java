@@ -14,10 +14,10 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.text.Component;
 
-public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayer>, JsonDeserializer<CarbonPlayer> {
+public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayerCommon>, JsonDeserializer<CarbonPlayer> {
 
     @Override
-    public CarbonPlayer deserialize(
+    public CarbonPlayerCommon deserialize(
         final JsonElement jsonElement,
         final Type type,
         final JsonDeserializationContext context
@@ -34,7 +34,7 @@ public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayer>,
 
     @Override
     public JsonElement serialize(
-        final CarbonPlayer player,
+        final CarbonPlayerCommon player,
         final Type type,
         final JsonSerializationContext context
     ) {

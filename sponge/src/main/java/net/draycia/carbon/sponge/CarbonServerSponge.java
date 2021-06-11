@@ -3,39 +3,37 @@ package net.draycia.carbon.sponge;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.profile.GameProfile;
-import org.spongepowered.api.profile.ProfileNotFoundException;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+
+import static net.kyori.adventure.text.Component.text;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerSponge implements CarbonServer, ForwardingAudience.Single {
 
-    private final Map<UUID, CarbonPlayerSponge> userCache = new ConcurrentHashMap<>();
     private final Game game;
     private final UserManager userManager;
 
     @Inject
     private CarbonServerSponge(final UserManager userManager, final Game game) {
-        this.userManager = userManager;
         this.game = game;
+        this.userManager = userManager;
     }
 
     @Override
@@ -52,58 +50,45 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     public Iterable<? extends CarbonPlayer> players() {
         final var players = new ArrayList<CarbonPlayer>();
 
-        for (final var player : this.game.server().onlinePlayers()) {
-            final @Nullable CarbonPlayer carbonPlayer = this.player(player).join();
+        for (final var player : Sponge.server().onlinePlayers()) {
+            final ComponentPlayerResult result = this.player(player).join();
 
-            if (carbonPlayer != null) {
-                players.add(carbonPlayer);
+            if (result.player() != null) {
+                players.add(result.player());
             }
         }
 
         return players;
     }
 
-    private CompletableFuture<@Nullable CarbonPlayerSponge> loadPlayer(final UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            final UserManager.PlayerResult result = this.userManager.carbonPlayer(uuid).join();
+    private CompletableFuture<ComponentPlayerResult> wrapPlayer(final UUID uuid) {
+        return this.userManager.carbonPlayer(uuid).thenCompose(result -> {
+            return CompletableFuture.supplyAsync(() -> {
+                if (result.player() != null) {
+                    new ComponentPlayerResult(new CarbonPlayerSponge(result.player()), Component.empty());
+                }
 
-            if (result.successful()) {
-                return new CarbonPlayerSponge(result.player());
-            }
+                final @Nullable String name = this.resolveName(uuid).join();
 
-            try {
-                final GameProfile profile = Sponge.server().gameProfileManager().basicProfile(uuid).get();
+                if (name != null) {
+                    final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
+                        null, name, uuid);
 
-                return new CarbonPlayerSponge(
-                    Identity.identity(uuid),
-                    profile.name().get(),
-                    uuid
-                );
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
+                    return new ComponentPlayerResult(new CarbonPlayerSponge(player), Component.empty());
+                }
 
-            return null;
-        });
-    }
-
-    @Override
-    public CompletableFuture<@Nullable CarbonPlayer> player(final UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            return this.userCache.computeIfAbsent(uuid, id -> {
-                return this.loadPlayer(uuid).join();
+                return new ComponentPlayerResult(null, text("Name not found for uuid!"));
             });
         });
     }
 
     @Override
-    public CompletableFuture<@Nullable CarbonPlayer> player(final String username) {
-        for (final var spongePlayer : this.userCache.values()) {
-            if (spongePlayer.username().equalsIgnoreCase(username)) {
-                return CompletableFuture.completedFuture(spongePlayer);
-            }
-        }
+    public CompletableFuture<ComponentPlayerResult> player(final UUID uuid) {
+        return this.wrapPlayer(uuid);
+    }
 
+    @Override
+    public CompletableFuture<ComponentPlayerResult> player(final String username) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable UUID uuid = this.resolveUUID(username).join();
 
@@ -111,25 +96,27 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
                 return this.player(uuid).join();
             }
 
-            return null;
+            return new ComponentPlayerResult(null, text("No UUID found for name."));
         });
     }
 
-    private CompletableFuture<@Nullable CarbonPlayer> player(final Player player) {
+    private CompletableFuture<ComponentPlayerResult> player(final ServerPlayer player) {
         return this.player(player.uniqueId());
     }
 
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        return CompletableFuture.supplyAsync(() -> {
-            final GameProfile profile;
-            try {
-                profile = Sponge.server().gameProfileManager().basicProfile(username).get();
-                return profile.uuid();
-            } catch (InterruptedException | ExecutionException | ProfileNotFoundException e) {
-                return null;
-            }
-        });
+        // TODO: user cache?
+        return CompletableFuture.supplyAsync(() ->
+            Sponge.server().gameProfileManager().basicProfile(username).join().uuid()
+        );
+    }
+
+    @Override
+    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
+        return CompletableFuture.supplyAsync(() ->
+            Sponge.server().gameProfileManager().basicProfile(uuid).join().name().get()
+        );
     }
 
 }

@@ -36,32 +36,32 @@ public final class SpongeChatListener {
 
     @Listener
     public void onPlayerChat(final @NonNull PlayerChatEvent event, final @First Player source) {
-        final var sender = this.carbonChat.server().player(source.uniqueId()).join();
+        final var result = this.carbonChat.server().player(source.uniqueId()).join();
 
-        if (sender == null) {
-            // TODO: find out why this is returning null
+        if (result.player() == null) {
+            this.carbonChat.server().console().sendMessage(result.reason());
             return;
         }
 
-        final var channel = requireNonNullElse(sender.selectedChannel(),
+        final var channel = requireNonNullElse(result.player().selectedChannel(),
             this.registry.defaultValue());
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
         //   or ChatChannel#filterRecipients
         //   for now we will just always invoke ChatChannel#recipients
-        final var recipients = channel.recipients(sender);
+        final var recipients = channel.recipients(result.player());
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers);
-        final var result = this.carbonChat.eventHandler().emit(chatEvent);
+        final var chatEvent = new CarbonChatEvent(result.player(), event.message(), recipients, renderers);
+        final var eventResult = this.carbonChat.eventHandler().emit(chatEvent);
 
-        if (!result.wasSuccessful()) {
+        if (!eventResult.wasSuccessful()) {
             final var message = chatEvent.result().reason();
 
             if (!message.equals(empty())) {
-                sender.sendMessage(message);
+                result.player().sendMessage(message);
             }
 
             return;
@@ -78,7 +78,7 @@ public final class SpongeChatListener {
             Component component = message;
 
             for (final var renderer : chatEvent.renderers()) {
-                component = renderer.render(sender, target, component, message);
+                component = renderer.render(result.player(), target, component, message);
             }
 
             if (component == Component.empty()) {

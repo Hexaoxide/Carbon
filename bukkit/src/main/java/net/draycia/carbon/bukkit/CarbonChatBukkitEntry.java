@@ -62,7 +62,7 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
         final long saveDelay = 5 * 60 * 20;
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(this,
-            this::savePlayers, 60 * 20, saveDelay);
+            this::savePlayers, saveDelay, saveDelay);
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
     private void savePlayers() {
         for (final var player : this.carbon.server().players()) {
             this.carbon.userManager().savePlayer(player).thenAccept(result -> {
-                if (!result.successful()) {
+                if (result.player() == null) {
                     this.carbon.server().console().sendMessage(result.reason());
                 }
             });

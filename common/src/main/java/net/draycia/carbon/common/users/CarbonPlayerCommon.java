@@ -24,14 +24,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected UUID uuid;
 
     public CarbonPlayerCommon(
-        final String username,
-        final UUID uuid
-    ) {
-        this.username = username;
-        this.uuid = uuid;
-    }
-
-    public CarbonPlayerCommon(
         final @Nullable Component displayName,
         final @Nullable ChatChannel selectedChannel,
         final String username,
@@ -43,7 +35,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.uuid = uuid;
     }
 
-    protected CarbonPlayerCommon() {
+    public CarbonPlayerCommon() {
 
     }
 
