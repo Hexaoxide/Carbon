@@ -71,7 +71,7 @@ public final class CarbonChatSpongeEntry {
 
     private void savePlayers() {
         for (final var player : this.carbon.server().players()) {
-            this.carbon.userManager().savePlayer(((CarbonPlayerSponge)player).carbonPlayer()).thenAccept(result -> {
+            this.carbon.userManager().savePlayer(((CarbonPlayerSponge) player).carbonPlayer()).thenAccept(result -> {
                 if (result.player() == null) {
                     this.carbon.server().console().sendMessage(result.reason());
                 }

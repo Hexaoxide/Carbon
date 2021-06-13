@@ -1,7 +1,6 @@
 package net.draycia.carbon.bukkit.users;
 
 import java.util.Locale;
-import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
@@ -21,14 +20,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
 
     public CarbonPlayerBukkit(final CarbonPlayer carbonPlayer) {
         this.carbonPlayer = carbonPlayer;
-    }
-
-    public CarbonPlayerBukkit(
-        final String username,
-        final UUID uuid
-    ) {
-        super(username, uuid);
-        this.carbonPlayer = this;
     }
 
     @Override
@@ -55,7 +46,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    protected CarbonPlayer carbonPlayer() {
+    public CarbonPlayer carbonPlayer() {
         return this.carbonPlayer;
     }
 

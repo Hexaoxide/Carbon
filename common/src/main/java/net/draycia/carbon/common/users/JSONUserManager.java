@@ -67,7 +67,7 @@ public class JSONUserManager implements UserManager {
             final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
 
             if (cachedPlayer != null) {
-                return  new ComponentPlayerResult(cachedPlayer, empty());
+                return new ComponentPlayerResult(cachedPlayer, empty());
             }
 
             final Path userFile = this.userDirectory.resolve(uuid + ".json");

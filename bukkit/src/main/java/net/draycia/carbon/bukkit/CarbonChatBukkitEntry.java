@@ -7,6 +7,7 @@ import io.papermc.lib.PaperLib;
 import java.util.Set;
 import java.util.logging.Level;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
+import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -72,7 +73,7 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
 
     private void savePlayers() {
         for (final var player : this.carbon.server().players()) {
-            this.carbon.userManager().savePlayer(player).thenAccept(result -> {
+            this.carbon.userManager().savePlayer(((CarbonPlayerBukkit) player).carbonPlayer()).thenAccept(result -> {
                 if (result.player() == null) {
                     this.carbon.server().console().sendMessage(result.reason());
                 }

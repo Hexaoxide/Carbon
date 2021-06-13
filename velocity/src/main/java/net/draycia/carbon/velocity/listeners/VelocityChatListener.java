@@ -28,11 +28,13 @@ public final class VelocityChatListener {
 
     @Subscribe
     public void onPlayerChat(final @NonNull PlayerChatEvent event) {
-        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
-        if (sender == null) {
+        if (playerResult.player() == null) {
             return;
         }
+
+        final var sender = playerResult.player();
 
         var channel = sender.selectedChannel();
 

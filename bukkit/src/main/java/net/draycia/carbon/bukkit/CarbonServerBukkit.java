@@ -3,29 +3,29 @@ package net.draycia.carbon.bukkit;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+import static net.kyori.adventure.text.Component.text;
+
 @Singleton
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerBukkit implements CarbonServer, ForwardingAudience.Single {
 
-    private final Map<UUID, CarbonPlayerBukkit> userCache = new ConcurrentHashMap<>();
     private final CarbonChatBukkitEntry chatBukkitEntry;
     private final UserManager userManager;
 
@@ -52,45 +52,42 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
         for (final var player : this.chatBukkitEntry.getServer().getOnlinePlayers()) {
             final @Nullable ComponentPlayerResult result = this.player(player).join();
 
-            if (carbonPlayer != null) {
-                players.add(carbonPlayer);
+            if (result.player() != null) {
+                players.add(result.player());
             }
         }
 
         return players;
     }
 
-    private CompletableFuture<@Nullable CarbonPlayerBukkit> loadPlayer(final UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            final ComponentPlayerResult result = this.userManager.carbonPlayer(uuid).join();
+    private CompletableFuture<ComponentPlayerResult> wrapPlayer(final UUID uuid) {
+        return this.userManager.carbonPlayer(uuid).thenCompose(result -> {
+            return CompletableFuture.supplyAsync(() -> {
+                if (result.player() != null) {
+                    new ComponentPlayerResult(new CarbonPlayerBukkit(result.player()), Component.empty());
+                }
 
-            if (result.successful()) {
-                return new CarbonPlayerBukkit(result.player());
-            }
+                final @Nullable String name = this.resolveName(uuid).join();
 
-            final OfflinePlayer profile = Bukkit.getOfflinePlayer(uuid);
+                if (name != null) {
+                    final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
+                        null, name, uuid);
 
-            return new CarbonPlayerBukkit(profile.getName(), uuid);
-        });
-    }
+                    return new ComponentPlayerResult(new CarbonPlayerBukkit(player), Component.empty());
+                }
 
-    @Override
-    public CompletableFuture<ComponentPlayerResult> player(final UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            return this.userCache.computeIfAbsent(uuid, id -> {
-                return this.loadPlayer(uuid).join();
+                return new ComponentPlayerResult(null, text("Name not found for uuid!"));
             });
         });
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult> player(final String username) {
-        for (final var bukkitPlayer : this.userCache.values()) {
-            if (bukkitPlayer.username().equalsIgnoreCase(username)) {
-                return CompletableFuture.completedFuture(bukkitPlayer);
-            }
-        }
+    public CompletableFuture<ComponentPlayerResult> player(final UUID uuid) {
+        return this.wrapPlayer(uuid);
+    }
 
+    @Override
+    public CompletableFuture<ComponentPlayerResult> player(final String username) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable UUID uuid = this.resolveUUID(username).join();
 
@@ -98,7 +95,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
                 return this.player(uuid).join();
             }
 
-            return null;
+            return new ComponentPlayerResult(null, text("No UUID found for name."));
         });
     }
 

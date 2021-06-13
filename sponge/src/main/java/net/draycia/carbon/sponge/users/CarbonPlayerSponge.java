@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -138,4 +137,5 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     public @NonNull Identity identity() {
         return this.carbonPlayer.identity();
     }
+
 }

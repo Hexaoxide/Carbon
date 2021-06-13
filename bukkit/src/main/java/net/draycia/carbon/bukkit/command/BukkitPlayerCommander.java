@@ -27,7 +27,7 @@ public record BukkitPlayerCommander(
 
     @Override
     public @NonNull CarbonPlayer carbonPlayer() {
-        return requireNonNull(this.carbon.server().player(this.player.getUniqueId()).join(), "No CarbonPlayer for logged in Player!");
+        return requireNonNull(this.carbon.server().player(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
     }
 
 }

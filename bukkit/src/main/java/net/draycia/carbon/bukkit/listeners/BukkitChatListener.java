@@ -30,12 +30,13 @@ public final class BukkitChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
-        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
-        if (sender == null) {
+        if (playerResult.player() == null) {
             return;
         }
 
+        final var sender = playerResult.player();
         final var channel = requireNonNullElse(sender.selectedChannel(), this.basicChat);
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
