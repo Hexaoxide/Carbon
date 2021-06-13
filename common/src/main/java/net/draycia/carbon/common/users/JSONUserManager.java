@@ -97,14 +97,19 @@ public class JSONUserManager implements UserManager {
             final Path userFile = this.userDirectory.resolve(player.uuid() + ".json");
 
             try {
-                Files.createDirectories(userFile);
-                Files.createFile(userFile);
+                if (!Files.exists(userFile)) {
+                    Files.createFile(userFile);
+                }
 
-                final String json = this.serializer.toJson(player, CarbonPlayerCommon.class);
-                Files.writeString(userFile, json,
-                    StandardOpenOption.WRITE,
-                    StandardOpenOption.TRUNCATE_EXISTING,
-                    StandardOpenOption.CREATE_NEW);
+                try {
+                    final String json = this.serializer.toJson(player, CarbonPlayerCommon.class);
+
+                    Files.writeString(userFile, json,
+                        StandardOpenOption.WRITE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
+                } catch (final ClassCastException exception) {
+                    exception.printStackTrace();
+                }
 
                 return new ComponentPlayerResult(player, text(String.format("Saving player data for [%s], [%s]",
                     player.username(), player.uuid())));

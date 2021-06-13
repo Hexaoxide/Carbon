@@ -32,6 +32,10 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
         this.carbonPlayer = carbonPlayer;
     }
 
+    public CarbonPlayer carbonPlayer() {
+        return this.carbonPlayer;
+    }
+
     @Override
     public @NonNull Audience audience() {
         return this.player()

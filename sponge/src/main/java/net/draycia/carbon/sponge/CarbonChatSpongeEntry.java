@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
+import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -70,7 +71,7 @@ public final class CarbonChatSpongeEntry {
 
     private void savePlayers() {
         for (final var player : this.carbon.server().players()) {
-            this.carbon.userManager().savePlayer(player).thenAccept(result -> {
+            this.carbon.userManager().savePlayer(((CarbonPlayerSponge)player).carbonPlayer()).thenAccept(result -> {
                 if (result.player() == null) {
                     this.carbon.server().console().sendMessage(result.reason());
                 }

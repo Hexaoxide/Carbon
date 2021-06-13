@@ -47,14 +47,14 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public Iterable<? extends CarbonPlayer> players() {
-        final var players = new ArrayList<CarbonPlayer>();
+    public Iterable<CarbonPlayerSponge> players() {
+        final var players = new ArrayList<CarbonPlayerSponge>();
 
         for (final var player : Sponge.server().onlinePlayers()) {
             final ComponentPlayerResult result = this.player(player).join();
 
             if (result.player() != null) {
-                players.add(result.player());
+                players.add((CarbonPlayerSponge) result.player());
             }
         }
 
