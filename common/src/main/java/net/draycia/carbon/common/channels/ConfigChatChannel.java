@@ -1,7 +1,6 @@
 package net.draycia.carbon.common.channels;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,24 +14,35 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
 
-@Singleton
+import static net.kyori.adventure.text.Component.text;
+
+@ConfigSerializable
 @DefaultQualifier(NonNull.class)
-public final class BasicChatChannel implements ChatChannel {
+public final class ConfigChatChannel implements ChatChannel {
 
-    private final Key key = Key.key("carbon", "basic");
+    @Comment("""
+        The channel's key, used to track the channel.
+        The key can stay "carbon".
+        The value is what's used in commands, this is probably what you want to change.
+        """)
+    private Key key = Key.key("carbon", "basic");
 
-    private final CarbonMessageService service;
-    private final CarbonChat carbonChat;
+    @Comment("""
+        The permission required to use the channel.
+        To read messages you must have the permission carbon.channel.basic.see
+        To send messages you must have the permission carbon.channel.basic.speak
+        If you want to give both, grant carbon.channel.basic or carbon.channel.basic.*
+        """)
+    private String permission = "carbon.channel.basic";
 
     @Inject
-    private BasicChatChannel(
-        final CarbonMessageService service,
-        final CarbonChat carbonChat
-    ) {
-        this.carbonChat = carbonChat;
-        this.service = service;
-    }
+    private transient CarbonMessageService service;
+
+    @Inject
+    private transient CarbonChat carbonChat;
 
     @Override
     public @NotNull Component render(
@@ -41,6 +51,7 @@ public final class BasicChatChannel implements ChatChannel {
         final Component message,
         final Component originalMessage
     ) {
+        // TODO: change
         return this.service.basicChatFormat(
             recipient,
             sender.uuid(),
@@ -52,12 +63,18 @@ public final class BasicChatChannel implements ChatChannel {
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer carbonPlayer) {
-        return ChannelPermissionResult.allowed();
+        return ChannelPermissionResult.allowedIf(text("Insufficient permissions!"), () ->
+            carbonPlayer.hasPermission(this.permission + ".speak")); // carbon.channels.local.speak
     }
 
     @Override
     public ChannelPermissionResult hearingPermitted(final Audience audience) {
-        return ChannelPermissionResult.allowed();
+        if (audience instanceof CarbonPlayer carbonPlayer) {
+            return ChannelPermissionResult.allowedIf(text("Insufficient permissions!"), () ->
+                carbonPlayer.hasPermission(this.permission + ".see")); // carbon.channels.local.see
+        } else {
+            return ChannelPermissionResult.allowed();
+        }
     }
 
     @Override

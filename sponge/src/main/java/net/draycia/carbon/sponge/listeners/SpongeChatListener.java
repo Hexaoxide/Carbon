@@ -3,6 +3,7 @@ package net.draycia.carbon.sponge.listeners;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Optional;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -27,10 +28,10 @@ public final class SpongeChatListener {
 
     @Inject
     private SpongeChatListener(
-        final CarbonChatSponge carbonChat,
+        final CarbonChat carbonChat,
         final ChannelRegistry registry
     ) {
-        this.carbonChat = carbonChat;
+        this.carbonChat = (CarbonChatSponge) carbonChat;
         this.registry = registry;
     }
 

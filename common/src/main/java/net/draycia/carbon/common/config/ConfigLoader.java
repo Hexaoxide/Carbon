@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.config;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,15 +12,48 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.objectmapping.guice.GuiceObjectMapperProvider;
 
 @DefaultQualifier(NonNull.class)
 public class ConfigLoader {
 
     private final Path dataDirectory;
+    private final GuiceObjectMapperProvider mapper;
 
     @Inject
-    public ConfigLoader(@ForCarbon final @NonNull Path dataDirectory) {
+    public ConfigLoader(
+        @ForCarbon final Path dataDirectory,
+        final Injector injector
+    ) {
         this.dataDirectory = dataDirectory;
+        this.mapper = injector.getInstance(GuiceObjectMapperProvider.class);
+    }
+
+    public ConfigurationLoader<?> configurationLoader(final Path file) {
+        return this.configurationLoader(file, false);
+    }
+
+    public ConfigurationLoader<?> configurationLoader(final Path file, final boolean guice) {
+        return HoconConfigurationLoader.builder()
+            .prettyPrinting(true)
+            .defaultOptions(opts -> {
+                final ConfigurateComponentSerializer serializer =
+                    ConfigurateComponentSerializer.configurate();
+
+                if (guice) {
+                    return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
+                            serializerBuilder.registerAll(serializer.serializers())
+                                .registerAnnotatedObjects(mapper.get())
+                    );
+                } else {
+                    return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
+                            serializerBuilder.registerAll(serializer.serializers())
+                    );
+                }
+            })
+            .path(file)
+            .build();
     }
 
     public <T> @Nullable T load(final Class<T> clazz, final String fileName) throws IOException {
@@ -29,17 +63,7 @@ public class ConfigLoader {
 
         final Path file = this.dataDirectory.resolve(fileName);
 
-        final var loader = HoconConfigurationLoader.builder()
-            .prettyPrinting(true)
-            .defaultOptions(opts -> {
-                final ConfigurateComponentSerializer serializer =
-                    ConfigurateComponentSerializer.configurate();
-
-                return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
-                    serializerBuilder.registerAll(serializer.serializers()));
-            })
-            .path(file)
-            .build();
+        final var loader = configurationLoader(file);
 
         try {
             final var node = loader.load();

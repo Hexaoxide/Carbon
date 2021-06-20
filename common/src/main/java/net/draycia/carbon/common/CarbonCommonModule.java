@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.channels.BasicChatChannel;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
@@ -45,18 +44,6 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public ChannelRegistry channelRegistry(
-        final PrimaryConfig primaryConfig,
-        final Injector injector
-    ) {
-        // TODO: load channels from config(s)
-        // TODO: pick default channel after registration
-
-        return new CarbonChannelRegistry(injector.getInstance(BasicChatChannel.class));
-    }
-
-    @Provides
-    @Singleton
     public PrimaryConfig primaryConfig(final ConfigLoader configLoader) throws IOException {
         final @Nullable PrimaryConfig primaryConfig =
             configLoader.load(PrimaryConfig.class, "config.conf");
@@ -86,6 +73,11 @@ public final class CarbonCommonModule extends AbstractModule {
             .parser(carbonMessageParser)
             .sender(carbonMessageSender)
             .create(CarbonMessageService.class, this.getClass().getClassLoader());
+    }
+
+    @Override
+    protected void configure() {
+        this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
     }
 
 }

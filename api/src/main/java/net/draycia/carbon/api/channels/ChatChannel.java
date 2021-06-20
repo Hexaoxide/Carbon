@@ -2,6 +2,7 @@ package net.draycia.carbon.api.channels;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
 import net.kyori.adventure.audience.Audience;
@@ -86,6 +87,18 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
          */
         public static ChannelPermissionResult denied(final Component reason) {
             return new ChannelPermissionResult(false, reason);
+        }
+
+        // TODO: redo this / reconsider this
+        public static ChannelPermissionResult allowedIf(
+            final Component reason,
+            final Supplier<Boolean> supplier
+        ) {
+            if (supplier.get()) {
+                return ALLOWED;
+            } else {
+                return denied(reason);
+            }
         }
 
     }

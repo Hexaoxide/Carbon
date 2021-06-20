@@ -3,6 +3,7 @@ dependencies {
 
     // Configs
     api(libs.configurateHocon)
+    api(libs.configurateGuice)
     api(libs.adventureSerializerConfigurate4) {
         isTransitive = false
     }

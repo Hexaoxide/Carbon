@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -46,6 +48,7 @@ public final class CarbonChatSpongeEntry {
 
         this.injector = injector.createChildInjector(injector.getInstance(CarbonChatSpongeModule.class));
         this.carbon = this.injector.getInstance(CarbonChatSponge.class);
+        CarbonChatProvider.register(carbon);
 
         for (final Class<?> clazz : LISTENER_CLASSES) {
             this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(clazz));
@@ -62,6 +65,8 @@ public final class CarbonChatSpongeEntry {
             .plugin(this.pluginContainer)
             .execute(this::savePlayers)
             .build());
+
+        ((CarbonChannelRegistry) this.carbon.channelRegistry()).loadChannels();
     }
 
     @Listener
