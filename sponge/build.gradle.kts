@@ -31,7 +31,7 @@ sponge {
   plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
     loader(PluginLoaders.JAVA_PLAIN)
     displayName(rootProject.name)
-    mainClass("net.draycia.carbon.sponge.CarbonChatSpongeEntry")
+    mainClass("net.draycia.carbon.sponge.CarbonChatSponge")
     description(project.description)
     links {
       homepage(GITHUB_REPO_URL)
