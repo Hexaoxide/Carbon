@@ -65,7 +65,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
 
                 final Path configFile = channelDirectory.resolve("basic-channel.conf.example");
 
-                final var loader = this.configLoader.configurationLoader(configFile, true);
+                final var loader = this.configLoader.configurationLoader(configFile);
                 final var node = loader.load();
 
                 final var configChannel = this.injector.getInstance(ConfigChatChannel.class);

@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.messages.CarbonMessageService;
@@ -42,7 +42,7 @@ public final class ConfigChatChannel implements ChatChannel {
     private transient CarbonMessageService service;
 
     @Inject
-    private transient CarbonChat carbonChat;
+    private transient CarbonServer carbonServer;
 
     @Override
     public @NotNull Component render(
@@ -81,14 +81,14 @@ public final class ConfigChatChannel implements ChatChannel {
     public List<Audience> recipients(final CarbonPlayer sender) {
         final List<Audience> recipients = new ArrayList<>();
 
-        for (final CarbonPlayer player : this.carbonChat.server().players()) {
+        for (final CarbonPlayer player : this.carbonServer.players()) {
             if (this.hearingPermitted(player).permitted()) {
                 recipients.add(player);
             }
         }
 
         // console too!
-        recipients.add(this.carbonChat.server().console());
+        recipients.add(this.carbonServer.console());
 
         return recipients;
     }
