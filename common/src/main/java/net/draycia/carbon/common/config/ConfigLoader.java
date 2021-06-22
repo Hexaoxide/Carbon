@@ -13,13 +13,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.guice.GuiceObjectMapperProvider;
 
 @DefaultQualifier(NonNull.class)
 public class ConfigLoader {
 
     private final Path dataDirectory;
-    private final GuiceObjectMapperProvider mapper;
+    private final ObjectMapper.Factory mapper;
 
     @Inject
     public ConfigLoader(
@@ -27,7 +28,9 @@ public class ConfigLoader {
         final Injector injector
     ) {
         this.dataDirectory = dataDirectory;
-        this.mapper = injector.getInstance(GuiceObjectMapperProvider.class);
+        this.mapper = ObjectMapper.factoryBuilder()
+            .addDiscoverer(GuiceObjectMapperProvider.injectedObjectDiscoverer(injector))
+            .build();
     }
 
     public ConfigurationLoader<?> configurationLoader(final Path file) {
@@ -44,7 +47,7 @@ public class ConfigLoader {
                 if (guice) {
                     return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
                             serializerBuilder.registerAll(serializer.serializers())
-                                .registerAnnotatedObjects(mapper.get())
+                                .registerAnnotatedObjects(this.mapper)
                     );
                 } else {
                     return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
@@ -63,7 +66,7 @@ public class ConfigLoader {
 
         final Path file = this.dataDirectory.resolve(fileName);
 
-        final var loader = configurationLoader(file);
+        final var loader = this.configurationLoader(file);
 
         try {
             final var node = loader.load();
