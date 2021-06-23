@@ -11,7 +11,7 @@ import org.spongepowered.configurate.serialize.TypeSerializer;
 public class LocaleSerializerConfigurate implements TypeSerializer<Locale> {
 
     @Override
-    public Locale deserialize(Type type, ConfigurationNode node) throws SerializationException {
+    public Locale deserialize(final Type type, final ConfigurationNode node) throws SerializationException {
         final String value = node.getString();
 
         if (value == null) {
@@ -22,7 +22,7 @@ public class LocaleSerializerConfigurate implements TypeSerializer<Locale> {
     }
 
     @Override
-    public void serialize(Type type, @Nullable Locale obj, ConfigurationNode node) throws SerializationException {
+    public void serialize(final Type type, @Nullable final Locale obj, final ConfigurationNode node) throws SerializationException {
         node.set(obj.toLanguageTag());
     }
 

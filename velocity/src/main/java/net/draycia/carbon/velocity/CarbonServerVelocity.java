@@ -131,7 +131,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                 final JsonObject json = (JsonObject) jsonArray.get(1);
 
                 return UuidUtils.fromUndashed(json.get("uuid").getAsString());
-            } catch (URISyntaxException | IOException | InterruptedException e) {
+            } catch (final URISyntaxException | IOException | InterruptedException e) {
                 e.printStackTrace();
             }
 
@@ -156,7 +156,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                 final JsonObject json = (JsonObject) jsonArray.get(1);
 
                 return json.get("name").getAsString();
-            } catch (URISyntaxException | IOException | InterruptedException e) {
+            } catch (final URISyntaxException | IOException | InterruptedException e) {
                 e.printStackTrace();
             }
 

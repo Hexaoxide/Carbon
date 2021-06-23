@@ -54,8 +54,8 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
     }
 
     public void loadChannels() {
-        final Path channelDirectory = dataDirectory.resolve("channels");
-        this.basicChannel = injector.getInstance(BasicChatChannel.class);
+        final Path channelDirectory = this.dataDirectory.resolve("channels");
+        this.basicChannel = this.injector.getInstance(BasicChatChannel.class);
         this.defaultKey = this.primaryConfig.defaultChannel();
 
         if (!Files.exists(channelDirectory)) {
@@ -77,27 +77,27 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
 
                 // TODO: create advanced-channel.conf.example
                 // TODO: log in console, "no channels found - adding example configs"
-            } catch (IOException exception) {
+            } catch (final IOException exception) {
                 exception.printStackTrace();
             }
 
             return;
         }
 
-        try (Stream<Path> paths = Files.walk(channelDirectory)) {
+        try (final Stream<Path> paths = Files.walk(channelDirectory)) {
             paths.forEach(path -> {
                 final String fileName = path.getFileName().toString();
 
                 if (fileName.endsWith(".conf")) {
-                    final @Nullable ChatChannel channel = loadChannel(path);
+                    final @Nullable ChatChannel channel = this.loadChannel(path);
 
                     if (channel != null) {
-                        logger.info("Registering channel with key [" + channel.key() + "]");
+                        this.logger.info("Registering channel with key [" + channel.key() + "]");
                         register(channel.key(), channel);
                     }
                 }
             });
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             exception.printStackTrace();
         }
     }
@@ -107,7 +107,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
     static {
         try {
             MAPPER = ObjectMapper.factory().get(ConfigChatChannel.class);
-        } catch (SerializationException e) {
+        } catch (final SerializationException e) {
             e.printStackTrace();
         }
     }
@@ -117,7 +117,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
 
         try {
             return MAPPER.load(loader.load());
-        } catch (ConfigurateException exception) {
+        } catch (final ConfigurateException exception) {
             exception.printStackTrace();
         }
 
@@ -135,7 +135,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
     }
 
     @Override
-    public @NonNull ChatChannel getOrDefault(@NonNull Key key) {
+    public @NonNull ChatChannel getOrDefault(@NonNull final Key key) {
         final @Nullable ChatChannel channel = this.get(key);
 
         if (channel != null) {

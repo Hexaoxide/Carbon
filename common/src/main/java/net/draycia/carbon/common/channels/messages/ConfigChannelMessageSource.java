@@ -12,7 +12,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
-public class ConfigChannelMessageSource implements IMessageSource<String, Audience>  {
+public class ConfigChannelMessageSource implements IMessageSource<String, Audience> {
 
     // Map<String, String> -> Map<Group, Format>
     // "default" key will be configurable but let's not worry about that for now

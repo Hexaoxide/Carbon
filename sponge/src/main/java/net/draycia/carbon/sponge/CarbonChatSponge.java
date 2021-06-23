@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
@@ -19,7 +18,6 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.sponge.command.SpongeCommander;
 import net.draycia.carbon.sponge.command.SpongePlayerCommander;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
-import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -104,7 +102,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
 
     private void savePlayers() {
         for (final var player : this.server().players()) {
-            this.userManager().savePlayer((player).carbonPlayer()).thenAccept(result -> {
+            this.userManager().savePlayer(player.carbonPlayer()).thenAccept(result -> {
                 if (result.player() == null) {
                     this.server().console().sendMessage(result.reason());
                 }

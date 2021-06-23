@@ -26,7 +26,7 @@ public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
      * @return the keyed renderer
      * @since 2.0.0
      */
-    static KeyedRenderer keyedRenderer(final Key key, ChatComponentRenderer renderer) {
+    static KeyedRenderer keyedRenderer(final Key key, final ChatComponentRenderer renderer) {
         return new Impl(key, renderer);
     }
 
