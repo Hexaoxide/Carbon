@@ -1,5 +1,6 @@
 package net.draycia.carbon.common.config;
 
+import java.util.Locale;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -11,9 +12,9 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class PrimaryConfig {
 
     @Comment("The default locale for plugin messages.")
-    private String defaultLocale = "en_US";
+    private Locale defaultLocale = Locale.US;
 
-    public String defaultLocale() {
+    public Locale defaultLocale() {
         return this.defaultLocale;
     }
 

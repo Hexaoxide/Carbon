@@ -104,7 +104,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
 
     private void savePlayers() {
         for (final var player : this.server().players()) {
-            this.userManager().savePlayer(((CarbonPlayerSponge) player).carbonPlayer()).thenAccept(result -> {
+            this.userManager().savePlayer((player).carbonPlayer()).thenAccept(result -> {
                 if (result.player() == null) {
                     this.server().console().sendMessage(result.reason());
                 }
@@ -127,7 +127,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     }
 
     @Override
-    public CarbonServer server() {
+    public CarbonServerSponge server() {
         return this.carbonServerSponge;
     }
 

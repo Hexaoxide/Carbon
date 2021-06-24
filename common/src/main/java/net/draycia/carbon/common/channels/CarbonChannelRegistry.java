@@ -22,6 +22,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.objectmapping.ObjectMapper;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
@@ -100,11 +102,21 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
     }
 
+    private static ObjectMapper<ConfigChatChannel> MAPPER;
+
+    static {
+        try {
+            MAPPER = ObjectMapper.factory().get(ConfigChatChannel.class);
+        } catch (SerializationException e) {
+            e.printStackTrace();
+        }
+    }
+
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
         final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile, true);
 
         try {
-            return loader.load().get(ConfigChatChannel.class);
+            return MAPPER.load(loader.load());
         } catch (ConfigurateException exception) {
             exception.printStackTrace();
         }

@@ -1,21 +1,32 @@
 package net.draycia.carbon.common.channels;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.proximyst.moonshine.Moonshine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.channels.messages.ConfigChannelMessageService;
+import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
+import net.draycia.carbon.common.messages.CarbonMessageParser;
+import net.draycia.carbon.common.messages.CarbonMessageSender;
+import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
+import net.draycia.carbon.common.messages.ServerReceiverResolver;
+import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -38,11 +49,17 @@ public final class ConfigChatChannel implements ChatChannel {
         """)
     private String permission = "carbon.channel.basic";
 
+    @Setting("format")
+    @Comment("stuff here lol")
+    private ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+
     @Inject
-    private transient CarbonMessageService service;
+    private transient Injector injector;
 
     @Inject
     private transient CarbonServer carbonServer;
+
+    private transient @Nullable ConfigChannelMessageService messageService = null;
 
     @Override
     public @NotNull Component render(
@@ -51,8 +68,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final Component message,
         final Component originalMessage
     ) {
-        // TODO: change
-        return this.service.basicChatFormat(
+        return this.messageService().chatFormat(
             recipient,
             sender.uuid(),
             sender.displayName(),
@@ -103,6 +119,31 @@ public final class ConfigChatChannel implements ChatChannel {
     @Override
     public @NonNull Key key() {
         return this.key;
+    }
+
+    private ConfigChannelMessageService createMessageService() {
+        final ServerReceiverResolver serverReceiverResolver = this.injector.getInstance(ServerReceiverResolver.class);
+        final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver = this.injector.getInstance(ComponentPlaceholderResolver.class);
+        final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver = this.injector.getInstance(UUIDPlaceholderResolver.class);
+        final CarbonMessageParser carbonMessageParser = this.injector.getInstance(CarbonMessageParser.class);
+        final CarbonMessageSender carbonMessageSender = this.injector.getInstance(CarbonMessageSender.class);
+
+        return Moonshine.<Audience>builder()
+            .receiver(serverReceiverResolver)
+            .placeholder(Component.class, componentPlaceholderResolver)
+            .placeholder(UUID.class, uuidPlaceholderResolver)
+            .source(this.messageSource)
+            .parser(carbonMessageParser)
+            .sender(carbonMessageSender)
+            .create(ConfigChannelMessageService.class, this.getClass().getClassLoader());
+    }
+
+    private ConfigChannelMessageService messageService() {
+        if (this.messageService == null) {
+            this.messageService = this.createMessageService();
+        }
+
+        return this.messageService;
     }
 
 }

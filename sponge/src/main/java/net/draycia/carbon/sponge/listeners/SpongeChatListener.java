@@ -6,12 +6,14 @@ import java.util.Optional;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.PlayerChatEvent;
@@ -79,7 +81,12 @@ public final class SpongeChatListener {
             Component component = message;
 
             for (final var renderer : chatEvent.renderers()) {
-                component = renderer.render(result.player(), target, component, message);
+                if (target instanceof ServerPlayer serverPlayer) {
+                    final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(serverPlayer).join();
+                    component = renderer.render(result.player(), targetPlayer.player(), component, message);
+                } else {
+                    component = renderer.render(result.player(), target, component, message);
+                }
             }
 
             if (component == Component.empty()) {

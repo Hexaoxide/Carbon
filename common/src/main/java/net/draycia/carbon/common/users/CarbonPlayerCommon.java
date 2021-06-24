@@ -1,5 +1,6 @@
 package net.draycia.carbon.common.users;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -66,6 +67,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public boolean hasPermission(final String permission) {
         return false;
+    }
+
+    @Override
+    public String primaryGroup() {
+        return "default"; // TODO: implement
+    }
+
+    @Override
+    public List<String> groups() {
+        return List.of("default"); // TODO: implement
     }
 
     @Override

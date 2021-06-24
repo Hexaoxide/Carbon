@@ -1,5 +1,6 @@
 package net.draycia.carbon.sponge.users;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -114,6 +115,16 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
         // Ignore inspection. Don't make code harder to read, IntelliJ.
         return player.map(serverPlayer -> serverPlayer.hasPermission(permission))
             .orElse(false);
+    }
+
+    @Override
+    public String primaryGroup() {
+        return "default"; // TODO: implement
+    }
+
+    @Override
+    public List<String> groups() {
+        return List.of("default"); // TODO: implement
     }
 
     @Override

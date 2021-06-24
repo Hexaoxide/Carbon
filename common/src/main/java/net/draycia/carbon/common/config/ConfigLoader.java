@@ -5,7 +5,9 @@ import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.serialisation.gson.LocaleSerializerConfigurate;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -47,11 +49,13 @@ public class ConfigLoader {
                 if (guice) {
                     return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
                             serializerBuilder.registerAll(serializer.serializers())
+                                .register(Locale.class, new LocaleSerializerConfigurate())
                                 .registerAnnotatedObjects(this.mapper)
                     );
                 } else {
                     return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
                             serializerBuilder.registerAll(serializer.serializers())
+                                .register(Locale.class, new LocaleSerializerConfigurate())
                     );
                 }
             })

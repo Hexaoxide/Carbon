@@ -99,7 +99,7 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
         });
     }
 
-    private CompletableFuture<ComponentPlayerResult> player(final ServerPlayer player) {
+    public CompletableFuture<ComponentPlayerResult> player(final ServerPlayer player) {
         return this.player(player.uniqueId());
     }
 
