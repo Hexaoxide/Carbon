@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -64,6 +65,8 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(this,
             this::savePlayers, saveDelay, saveDelay);
+
+        ((CarbonChannelRegistry) this.carbon.channelRegistry()).loadChannels();
     }
 
     @Override
