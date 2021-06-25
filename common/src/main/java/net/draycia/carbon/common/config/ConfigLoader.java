@@ -36,28 +36,16 @@ public class ConfigLoader {
     }
 
     public ConfigurationLoader<?> configurationLoader(final Path file) {
-        return this.configurationLoader(file, false);
-    }
-
-    public ConfigurationLoader<?> configurationLoader(final Path file, final boolean guice) {
         return HoconConfigurationLoader.builder()
             .prettyPrinting(true)
             .defaultOptions(opts -> {
                 final ConfigurateComponentSerializer serializer =
                     ConfigurateComponentSerializer.configurate();
 
-                if (guice) {
-                    return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
-                            serializerBuilder.registerAll(serializer.serializers())
-                                .register(Locale.class, new LocaleSerializerConfigurate())
-                                .registerAnnotatedObjects(this.mapper)
-                    );
-                } else {
-                    return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
-                            serializerBuilder.registerAll(serializer.serializers())
-                                .register(Locale.class, new LocaleSerializerConfigurate())
-                    );
-                }
+                return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
+                        serializerBuilder.registerAll(serializer.serializers())
+                            .register(Locale.class, new LocaleSerializerConfigurate())
+                );
             })
             .path(file)
             .build();

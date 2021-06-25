@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
@@ -16,13 +17,22 @@ public class ConfigChannelMessageSource implements IMessageSource<String, Audien
 
     // Map<String, String> -> Map<Group, Format>
     // "default" key will be configurable but let's not worry about that for now
-    @Comment("")
+    @Setting("basic")
+    @Comment("""
+        Basic chat formats.
+        The "default" format is the main one you want to edit.
+        The "console" format is what's shown to console.
+        The keys are group names, the values are chat formats (MiniMessage).
+        """)
     private Map<String, String> defaults = Map.of("default", "<displayname>: <message>",
         "console", "<username> - <uuid>: <message>");
 
-    // TODO: This needs to be empty by default
-    // TODO: New version of this class, for making configs
-    @Comment("")
+    // TODO: Move the default to the advanced config?
+    @Comment("""
+        Per-Language chat formats.
+        You can safely delete this section if you don't want to use this feature.
+        Will fall back to the defaults section if no format was found for the player.
+        """)
     private Map<Locale, Map<String, String>> locales = Map.of(Locale.US,
         Map.of("default", "<displayname>: <message>"));
 
@@ -36,7 +46,6 @@ public class ConfigChannelMessageSource implements IMessageSource<String, Audien
     }
 
     private String forPlayer(final String key, final CarbonPlayer player) {
-        System.out.println(player.locale());
         final Map<String, String> formats = this.locales.get(player.locale());
 
         if (formats != null) {

@@ -113,7 +113,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile, true);
+        final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile);
 
         try {
             return MAPPER.load(loader.load());

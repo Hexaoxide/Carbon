@@ -1,13 +1,11 @@
 package net.draycia.carbon.common.channels;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.proximyst.moonshine.Moonshine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageService;
@@ -50,14 +48,8 @@ public final class ConfigChatChannel implements ChatChannel {
     private String permission = "carbon.channel.basic";
 
     @Setting("format")
-    @Comment("stuff here lol")
+    @Comment("The chat formats for this channel.")
     private ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
-
-    @Inject
-    private transient Injector injector;
-
-    @Inject
-    private transient CarbonServer carbonServer;
 
     private transient @Nullable ConfigChannelMessageService messageService = null;
 
@@ -97,14 +89,14 @@ public final class ConfigChatChannel implements ChatChannel {
     public List<Audience> recipients(final CarbonPlayer sender) {
         final List<Audience> recipients = new ArrayList<>();
 
-        for (final CarbonPlayer player : this.carbonServer.players()) {
+        for (final CarbonPlayer player : CarbonChatProvider.carbonChat().server().players()) {
             if (this.hearingPermitted(player).permitted()) {
                 recipients.add(player);
             }
         }
 
         // console too!
-        recipients.add(this.carbonServer.console());
+        recipients.add(CarbonChatProvider.carbonChat().server().console());
 
         return recipients;
     }
@@ -122,11 +114,11 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     private ConfigChannelMessageService createMessageService() {
-        final ServerReceiverResolver serverReceiverResolver = this.injector.getInstance(ServerReceiverResolver.class);
-        final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver = this.injector.getInstance(ComponentPlaceholderResolver.class);
-        final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver = this.injector.getInstance(UUIDPlaceholderResolver.class);
-        final CarbonMessageParser carbonMessageParser = this.injector.getInstance(CarbonMessageParser.class);
-        final CarbonMessageSender carbonMessageSender = this.injector.getInstance(CarbonMessageSender.class);
+        final ServerReceiverResolver serverReceiverResolver = new ServerReceiverResolver(CarbonChatProvider.carbonChat().server());
+        final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
+        final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
+        final CarbonMessageParser carbonMessageParser = new CarbonMessageParser();
+        final CarbonMessageSender carbonMessageSender = new CarbonMessageSender();
 
         return Moonshine.<Audience>builder()
             .receiver(serverReceiverResolver)
