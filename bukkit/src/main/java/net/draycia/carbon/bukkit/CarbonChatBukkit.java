@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
@@ -27,7 +26,7 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
     private final UserManager userManager;
     private final Logger logger;
     private final CarbonChatBukkitEntry plugin;
-    private final CarbonServer carbonServerBukkit;
+    private final CarbonServerBukkit carbonServerBukkit;
     private final CarbonMessageService messageService;
     private final ChannelRegistry channelRegistry;
 
@@ -35,7 +34,7 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
     private CarbonChatBukkit(
         final CarbonChatBukkitEntry plugin,
         final Logger logger,
-        final CarbonServer carbonServerBukkit,
+        final CarbonServerBukkit carbonServerBukkit,
         final UserManager userManager,
         final CarbonMessageService messageService,
         final ChannelRegistry channelRegistry
@@ -65,7 +64,7 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
     }
 
     @Override
-    public CarbonServer server() {
+    public CarbonServerBukkit server() {
         return this.carbonServerBukkit;
     }
 

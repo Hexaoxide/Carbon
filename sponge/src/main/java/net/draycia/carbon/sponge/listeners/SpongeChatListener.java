@@ -39,32 +39,32 @@ public final class SpongeChatListener {
 
     @Listener
     public void onPlayerChat(final @NonNull PlayerChatEvent event, final @First Player source) {
-        final var result = this.carbonChat.server().player(source.uniqueId()).join();
+        final var playerResult = this.carbonChat.server().player(source.uniqueId()).join();
 
-        if (result.player() == null) {
-            this.carbonChat.server().console().sendMessage(result.reason());
+        if (playerResult.player() == null) {
+            this.carbonChat.server().console().sendMessage(playerResult.reason());
             return;
         }
 
-        final var channel = requireNonNullElse(result.player().selectedChannel(),
+        final var channel = requireNonNullElse(playerResult.player().selectedChannel(),
             this.registry.defaultValue());
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
         //   or ChatChannel#filterRecipients
         //   for now we will just always invoke ChatChannel#recipients
-        final var recipients = channel.recipients(result.player());
+        final var recipients = channel.recipients(playerResult.player());
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(result.player(), event.message(), recipients, renderers);
+        final var chatEvent = new CarbonChatEvent(playerResult.player(), event.message(), recipients, renderers);
         final var eventResult = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!eventResult.wasSuccessful()) {
             final var message = chatEvent.result().reason();
 
             if (!message.equals(empty())) {
-                result.player().sendMessage(message);
+                playerResult.player().sendMessage(message);
             }
 
             return;
@@ -83,9 +83,9 @@ public final class SpongeChatListener {
             for (final var renderer : chatEvent.renderers()) {
                 if (target instanceof ServerPlayer serverPlayer) {
                     final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(serverPlayer).join();
-                    component = renderer.render(result.player(), targetPlayer.player(), component, message);
+                    component = renderer.render(playerResult.player(), targetPlayer.player(), component, message);
                 } else {
-                    component = renderer.render(result.player(), target, component, message);
+                    component = renderer.render(playerResult.player(), target, component, message);
                 }
             }
 

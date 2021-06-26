@@ -99,7 +99,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
         });
     }
 
-    private CompletableFuture<ComponentPlayerResult> player(final Player player) {
+    public CompletableFuture<ComponentPlayerResult> player(final Player player) {
         return this.player(player.getUniqueId());
     }
 
