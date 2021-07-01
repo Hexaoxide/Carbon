@@ -38,8 +38,7 @@ public final class CarbonChatBukkitEntry extends JavaPlugin {
 
         this.injector = Guice.createInjector(new CarbonChatBukkitModule(
             this,
-            this.getDataFolder().toPath(),
-            this.getFile().toPath()
+            this.getDataFolder().toPath()
         ));
         this.carbon = this.injector.getInstance(CarbonChatBukkit.class);
     }
