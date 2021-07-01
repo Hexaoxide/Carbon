@@ -12,3 +12,14 @@ indra {
   }
   github(GITHUB_ORGANIZATION, GITHUB_REPO)
 }
+
+tasks {
+  withType<JavaCompile> {
+    // disable 'warning: No processor claimed any of these annotations' spam
+    options.compilerArgs.add("-Xlint:-processing")
+  }
+}
+
+dependencies {
+  checkstyle(libs.stylecheck)
+}

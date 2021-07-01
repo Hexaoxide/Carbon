@@ -40,7 +40,8 @@ tasks {
     classpath(velocityRun.asFileTree)
     workingDir = layout.projectDirectory.dir("run").asFile
 
-    dependsOn(shadowJar)
+    val pluginJar = shadowJar.flatMap { it.archiveFile }
+    inputs.file(pluginJar)
 
     doFirst {
       if (!workingDir.exists()) {
@@ -51,7 +52,7 @@ tasks {
         plugins.mkdirs()
       }
 
-      shadowJar.get().archiveFile.get().asFile.copyTo(plugins.resolve("carbon.jar"), overwrite = true)
+      pluginJar.get().asFile.copyTo(plugins.resolve("carbon.jar"), overwrite = true)
     }
   }
 }

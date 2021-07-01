@@ -7,8 +7,9 @@ val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatfo
 tasks {
   val copyJar = register<FileCopyTask>("copyJar") {
     fileToCopy.set(platformExtension.jarTask.flatMap { it.archiveFile })
-    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
-    dependsOn(platformExtension.jarTask)
+    destination.set(rootProject.layout.buildDirectory.dir("libs").flatMap {
+      it.file(fileToCopy.map { file -> file.asFile.name })
+    })
   }
   build {
     dependsOn(copyJar)
@@ -18,5 +19,6 @@ tasks {
 val projectVersion = version as String
 if (projectVersion.endsWith("-SNAPSHOT")) {
   // Add git commit hash to version for platforms
-  version = "$projectVersion+${indraGit.commit()?.name?.substring(0, 7) ?: error("Failed to retrieve git commit hash")}"
+  val gitHash = latestGitHash() ?: error("Failed to retrieve git commit hash")
+  version = "$projectVersion+$gitHash"
 }

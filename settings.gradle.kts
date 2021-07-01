@@ -45,8 +45,9 @@ dependencyResolutionManagement {
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven("https://repo.jpenilla.xyz/snapshots/") // run-paper + shadow snapshot
+    maven("https://repo.jpenilla.xyz/snapshots/") // for shadow snapshot
   }
+  includeBuild("build-logic")
 }
 
 plugins {
@@ -55,25 +56,13 @@ plugins {
 
 rootProject.name = "CarbonChat"
 
-includeBuild("build-logic")
-
-setupSubproject("carbonchat-api") {
-  projectDir = file("api")
-}
-setupSubproject("carbonchat-common") {
-  projectDir = file("common")
-}
-setupSubproject("carbonchat-bukkit") {
-  projectDir = file("bukkit")
-}
-setupSubproject("carbonchat-sponge") {
-  projectDir = file("sponge")
-}
-setupSubproject("carbonchat-velocity") {
-  projectDir = file("velocity")
-}
-
-inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
-  include(name)
-  project(":$name").apply(block)
+sequenceOf(
+  "api",
+  "common",
+  "bukkit",
+  "sponge",
+  "velocity"
+).forEach {
+  include("carbonchat-$it")
+  project(":carbonchat-$it").projectDir = file(it)
 }
