@@ -8,11 +8,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -20,7 +24,6 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.CarbonJar;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.kyori.adventure.audience.Audience;
@@ -43,10 +46,9 @@ public final class CarbonMessageSource implements IMessageSource<String, Audienc
     private CarbonMessageSource(
         final @ForCarbon Path dataDirectory,
         final PrimaryConfig primaryConfig,
-        final @CarbonJar Path pluginJar,
         final Logger logger
     ) throws IOException {
-        this.pluginJar = pluginJar;
+        this.pluginJar = pluginJar();
         this.logger = logger;
 
         this.defaultLocale = primaryConfig.defaultLocale();
@@ -89,6 +91,23 @@ public final class CarbonMessageSource implements IMessageSource<String, Audienc
             }));
     }
 
+    private static @NonNull Path pluginJar() {
+        try {
+            URL sourceUrl = CarbonMessageSource.class.getProtectionDomain().getCodeSource().getLocation();
+            // Some class loaders give the full url to the class, some give the URL to its jar.
+            // We want the containing jar, so we will unwrap jar-schema code sources.
+            if (sourceUrl.getProtocol().equals("jar")) {
+                final int exclamationIdx = sourceUrl.getPath().lastIndexOf('!');
+                if (exclamationIdx != -1) {
+                    sourceUrl = new URL(sourceUrl.getPath().substring(0, exclamationIdx));
+                }
+            }
+            return Paths.get(sourceUrl.toURI());
+        } catch (final URISyntaxException | MalformedURLException ex) {
+            throw new RuntimeException("Could not locate plugin jar", ex);
+        }
+    }
+
     @Override
     public String message(final String key, final Audience receiver) {
         if (receiver instanceof CarbonPlayer player) {
@@ -127,7 +146,7 @@ public final class CarbonMessageSource implements IMessageSource<String, Audienc
     private void walkPluginJar(final Consumer<Stream<Path>> user) throws IOException {
         if (Files.isDirectory(this.pluginJar)) {
             try (final var stream = Files.walk(this.pluginJar)) {
-                user.accept(stream);
+                user.accept(stream.map(path -> path.relativize(this.pluginJar)));
             }
             return;
         }

@@ -125,7 +125,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
         return List.of("default"); // TODO: implement
     }
 
-
     @Override
     public @Nullable Locale locale() {
         final @Nullable Player player = this.player();

@@ -67,7 +67,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         this.pluginContainer = pluginContainer;
 
         this.injector = injector.createChildInjector(new CarbonChatSpongeModule(
-            this, dataDirectory, pluginContainer));
+            this, dataDirectory));
 
         this.logger = logger;
         this.messageService = this.injector.getInstance(CarbonMessageService.class);
