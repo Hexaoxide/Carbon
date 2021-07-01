@@ -105,6 +105,10 @@ dependencies:
     group: org.spongepowered
     name: configurate-core
     version: { ref: configurate }
+  configurateGuice:
+    group: org.spongepowered
+    name: configurate-extra-guice
+    version: { ref: configurate }
   configurateHocon:
     group: org.spongepowered
     name: configurate-hocon

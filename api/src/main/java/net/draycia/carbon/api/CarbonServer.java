@@ -1,7 +1,9 @@
 package net.draycia.carbon.api;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -35,18 +37,36 @@ public interface CarbonServer extends Audience {
      * Obtains a {@link CarbonPlayer} instance for the specified uuid.
      *
      * @param uuid the player's uuid
-     * @return the player
+     * @return the result
      * @since 2.0.0
      */
-    @Nullable CarbonPlayer player(final UUID uuid);
+    CompletableFuture<ComponentPlayerResult> player(final UUID uuid);
 
     /**
      * Obtains a {@link CarbonPlayer} instance for the specified username.
      *
      * @param username the player's username
-     * @return the player
+     * @return the result
      * @since 2.0.0
      */
-    @Nullable CarbonPlayer player(final String username);
+    CompletableFuture<ComponentPlayerResult> player(final String username);
+
+    /**
+     * Obtains the desired user's UUID.
+     *
+     * @param username the user's username
+     * @return the user's UUID
+     * @since 2.0.0
+     */
+    CompletableFuture<@Nullable UUID> resolveUUID(final String username);
+
+    /**
+     * Obtains the desired player's name.
+     *
+     * @param uuid the user's UUID
+     * @return the user's name
+     * @since 2.0.0
+     */
+    CompletableFuture<@Nullable String> resolveName(final UUID uuid);
 
 }

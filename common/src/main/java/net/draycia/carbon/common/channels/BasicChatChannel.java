@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public final class BasicChatChannel implements ChatChannel {
 
-    private final Key key = Key.key("carbon", "vanilla");
+    private final Key key = Key.key("carbon", "basic");
 
     private final CarbonMessageService service;
     private final CarbonChat carbonChat;
@@ -30,8 +30,8 @@ public final class BasicChatChannel implements ChatChannel {
         final CarbonMessageService service,
         final CarbonChat carbonChat
     ) {
-        this.service = service;
         this.carbonChat = carbonChat;
+        this.service = service;
     }
 
     @Override
@@ -41,8 +41,6 @@ public final class BasicChatChannel implements ChatChannel {
         final Component message,
         final Component originalMessage
     ) {
-        // TODO: Once per-user is setup, use the service for the recipient?
-        // TODO: Or, have the MessageSource do the per-use for us.
         return this.service.basicChatFormat(
             recipient,
             sender.uuid(),

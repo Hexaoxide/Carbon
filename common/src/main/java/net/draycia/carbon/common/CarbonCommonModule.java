@@ -1,11 +1,15 @@
 package net.draycia.carbon.common;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.proximyst.moonshine.Moonshine;
 import java.io.IOException;
 import java.util.UUID;
+import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.CarbonMessageParser;
@@ -15,6 +19,7 @@ import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.ServerReceiverResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.users.JSONUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -23,6 +28,19 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonCommonModule extends AbstractModule {
+
+    @Provides
+    @Singleton
+    public UserManager userManager(
+        final PrimaryConfig primaryConfig,
+        final Injector injector
+    ) {
+        switch (primaryConfig.storageType()) {
+            default -> {
+                return injector.getInstance(JSONUserManager.class);
+            }
+        }
+    }
 
     @Provides
     @Singleton
@@ -55,6 +73,11 @@ public final class CarbonCommonModule extends AbstractModule {
             .parser(carbonMessageParser)
             .sender(carbonMessageSender)
             .create(CarbonMessageService.class, this.getClass().getClassLoader());
+    }
+
+    @Override
+    protected void configure() {
+        this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
     }
 
 }

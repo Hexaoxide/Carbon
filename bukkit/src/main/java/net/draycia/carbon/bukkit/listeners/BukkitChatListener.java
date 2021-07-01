@@ -4,10 +4,13 @@ import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.channels.BasicChatChannel;
+import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,24 +22,26 @@ import static net.kyori.adventure.text.Component.empty;
 
 public final class BukkitChatListener implements Listener {
 
-    private final CarbonChat carbonChat;
-    private final BasicChatChannel basicChat;
+    private final CarbonChatBukkit carbonChat;
+    private final ChannelRegistry registry;
 
     @Inject
-    public BukkitChatListener(final CarbonChat carbonChat, final BasicChatChannel basicChat) {
-        this.carbonChat = carbonChat;
-        this.basicChat = basicChat;
+    public BukkitChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
+        this.carbonChat = (CarbonChatBukkit) carbonChat;
+        this.registry = registry;
     }
 
     @EventHandler
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
-        final var sender = this.carbonChat.server().player(event.getPlayer().getUniqueId());
+        final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
-        if (sender == null) {
+        if (playerResult.player() == null) {
             return;
         }
 
-        final var channel = requireNonNullElse(sender.selectedChannel(), this.basicChat);
+        final var sender = playerResult.player();
+        final var channel = requireNonNullElse(playerResult.player().selectedChannel(),
+            this.registry.defaultValue());
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
         //   or ChatChannel#filterRecipients
@@ -70,7 +75,12 @@ public final class BukkitChatListener implements Listener {
             Component component = message;
 
             for (final var renderer : chatEvent.renderers()) {
-                component = renderer.render(sender, viewer, component, message);
+                if (viewer instanceof Player player) {
+                    final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(player).join();
+                    component = renderer.render(playerResult.player(), targetPlayer.player(), component, message);
+                } else {
+                    component = renderer.render(playerResult.player(), viewer, component, message);
+                }
             }
 
             return component;

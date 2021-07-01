@@ -1,5 +1,6 @@
 package net.draycia.carbon.api.users;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -91,5 +92,21 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     boolean hasPermission(final String permission);
+
+    /**
+     * Returns the player's primary group.
+     *
+     * @return the player's primary group
+     * @since 2.0.0
+     */
+    String primaryGroup();
+
+    /**
+     * Returns the complete list of groups the player is in.
+     *
+     * @return the groups the player is in
+     * @since 2.0.0
+     */
+    List<String> groups();
 
 }

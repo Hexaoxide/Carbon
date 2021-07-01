@@ -51,13 +51,7 @@ public final class CarbonMessageSource implements IMessageSource<String, Audienc
         this.pluginJar = pluginJar();
         this.logger = logger;
 
-        final @Nullable Locale configLocale = Translator.parseLocale(primaryConfig.defaultLocale());
-
-        if (configLocale != null) {
-            this.defaultLocale = configLocale;
-        } else {
-            this.defaultLocale = Locale.ENGLISH;
-        }
+        this.defaultLocale = primaryConfig.defaultLocale();
 
         final Path localeDirectory = dataDirectory.resolve("locale");
 

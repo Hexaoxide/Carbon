@@ -17,11 +17,7 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public abstract class CarbonChatCommon implements CarbonChat {
 
-    private final CarbonMessageService messageService;
-
-    protected CarbonChatCommon(final CarbonMessageService messageService) {
-        this.messageService = messageService;
-    }
+    public abstract CarbonMessageService messageService();
 
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
@@ -31,10 +27,10 @@ public abstract class CarbonChatCommon implements CarbonChat {
             .handler(ctx -> {
                 final Commander sender = ctx.getSender();
 
-                this.messageService.exampleCommandFeedback(sender, this.messageService.pluginName());
+                this.messageService().exampleCommandFeedback(sender, this.messageService().pluginName());
 
                 if (sender instanceof PlayerCommander player) {
-                    this.messageService.localeTestMessage(player.carbonPlayer());
+                    this.messageService().localeTestMessage(player.carbonPlayer());
 
                     final Component itemComponent = player.carbonPlayer().createItemHoverComponent();
                     if (itemComponent != empty()) {
