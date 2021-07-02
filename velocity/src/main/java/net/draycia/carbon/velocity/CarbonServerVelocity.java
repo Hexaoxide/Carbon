@@ -110,7 +110,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
         });
     }
 
-    private CompletableFuture<ComponentPlayerResult> player(final Player player) {
+    public CompletableFuture<ComponentPlayerResult> player(final Player player) {
         return this.player(player.getUniqueId());
     }
 

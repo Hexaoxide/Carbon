@@ -4,54 +4,93 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.velocity.VelocityCommandManager;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Set;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.common.CarbonChatCommon;
-import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
+import net.draycia.carbon.velocity.listeners.VelocityChatListener;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+@Plugin(
+    id = "$[ID]",
+    name = "$[NAME]",
+    version = "$[VERSION]",
+    description = "$[DESCRIPTION]",
+    url = "$[URL]",
+    authors = {"Draycia"}
+)
 @DefaultQualifier(NonNull.class)
 public class CarbonChatVelocity extends CarbonChatCommon {
 
-    private final Logger logger;
-    private final CarbonServer server;
+    private static final Set<Class<?>> LISTENER_CLASSES = Set.of(
+        VelocityChatListener.class
+    );
+
     private final Path dataDirectory;
-    private final PluginContainer pluginContainer;
     private final ProxyServer proxyServer;
+    private final PluginContainer pluginContainer;
+    private final Logger logger;
+    private final Injector injector;
+
     private final CarbonMessageService messageService;
     private final ChannelRegistry channelRegistry;
+    private final CarbonServerVelocity carbonServer;
 
     @Inject
     public CarbonChatVelocity(
-        final Logger logger,
-        final CarbonServer server,
-        @ForCarbon final Path dataDirectory,
-        final CarbonMessageService messageService,
-        final PluginContainer pluginContainer,
+        @DataDirectory final Path dataDirectory,
         final ProxyServer proxyServer,
-        final ChannelRegistry channelRegistry
+        final PluginContainer pluginContainer,
+        final Injector injector
     ) {
-        this.logger = logger;
-        this.server = server;
-        this.messageService = messageService;
-        this.dataDirectory = dataDirectory;
-        this.pluginContainer = pluginContainer;
-        this.proxyServer = proxyServer;
-        this.channelRegistry = channelRegistry;
-
         CarbonChatProvider.register(this);
+
+        this.dataDirectory = dataDirectory;
+        this.proxyServer = proxyServer;
+        this.pluginContainer = pluginContainer;
+        this.logger = LogManager.getLogger(this.pluginContainer.getDescription().getId());
+
+        final CarbonChatVelocityModule carbonVelocityModule;
+
+        try {
+            carbonVelocityModule = new CarbonChatVelocityModule(this.logger, this.dataDirectory);
+        } catch (final URISyntaxException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        this.injector = injector.createChildInjector(carbonVelocityModule);
+
+        this.messageService = injector.getInstance(CarbonMessageService.class);
+        this.channelRegistry = injector.getInstance(ChannelRegistry.class);
+        this.carbonServer = injector.getInstance(CarbonServerVelocity.class);
+    }
+
+    @Subscribe
+    public void onProxyInitialization(final ProxyInitializeEvent event) {
+        super.initialize();
+
+        for (final Class<?> clazz : LISTENER_CLASSES) {
+            this.proxyServer.getEventManager().register(this, this.injector.getInstance(clazz));
+        }
+
         ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
     }
 
@@ -66,8 +105,8 @@ public class CarbonChatVelocity extends CarbonChatCommon {
     }
 
     @Override
-    public CarbonServer server() {
-        return this.server;
+    public CarbonServerVelocity server() {
+        return this.carbonServer;
     }
 
     @Override
