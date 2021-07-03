@@ -126,6 +126,36 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
+    public boolean muted() {
+        return this.carbonPlayer.muted();
+    }
+
+    @Override
+    public void muted(final boolean muted) {
+        this.carbonPlayer.muted(muted);
+    }
+
+    @Override
+    public boolean deafened() {
+        return this.carbonPlayer.deafened();
+    }
+
+    @Override
+    public void deafened(final boolean deafened) {
+        this.carbonPlayer.deafened(deafened);
+    }
+
+    @Override
+    public boolean spying() {
+        return this.carbonPlayer.spying();
+    }
+
+    @Override
+    public void spying(final boolean spying) {
+        this.carbonPlayer.spying(spying);
+    }
+
+    @Override
     public @Nullable Locale locale() {
         final @Nullable Player player = this.player();
 

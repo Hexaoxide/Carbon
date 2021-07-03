@@ -19,8 +19,11 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
+    protected boolean deafened = false;
     protected @Nullable Component displayName;
+    protected boolean muted = false;
     protected @Nullable ChatChannel selectedChannel;
+    protected boolean spying = false;
     protected String username;
     protected UUID uuid;
 
@@ -77,6 +80,36 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public List<String> groups() {
         return List.of("default"); // TODO: implement
+    }
+
+    @Override
+    public boolean muted() {
+        return this.muted;
+    }
+
+    @Override
+    public void muted(final boolean muted) {
+        this.muted = muted;
+    }
+
+    @Override
+    public boolean deafened() {
+        return this.deafened;
+    }
+
+    @Override
+    public void deafened(final boolean deafened) {
+        this.deafened = deafened;
+    }
+
+    @Override
+    public boolean spying() {
+        return this.spying;
+    }
+
+    @Override
+    public void spying(final boolean spying) {
+        this.spying = spying;
     }
 
     @Override

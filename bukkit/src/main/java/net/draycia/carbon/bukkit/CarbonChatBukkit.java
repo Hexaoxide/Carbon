@@ -1,52 +1,109 @@
 package net.draycia.carbon.bukkit;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.paper.PaperCommandManager;
-import com.google.inject.Inject;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import io.papermc.lib.PaperLib;
 import java.nio.file.Path;
+import java.util.Set;
+import java.util.logging.Level;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.bukkit.command.BukkitCommander;
-import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
-import net.draycia.carbon.common.CarbonChatCommon;
-import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
+import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.listeners.DeafenHandler;
+import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.entity.Player;
+import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 
-@DefaultQualifier(NonNull.class)
 @Singleton
-public final class CarbonChatBukkit extends CarbonChatCommon {
+public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
-    private final UserManager userManager;
-    private final Logger logger;
-    private final CarbonChatBukkitEntry plugin;
-    private final CarbonServerBukkit carbonServerBukkit;
-    private final CarbonMessageService messageService;
-    private final ChannelRegistry channelRegistry;
+    private static final Set<Class<? extends Listener>> LISTENER_CLASSES = Set.of(
+        BukkitChatListener.class
+    );
+    private static final int BSTATS_PLUGIN_ID = 8720;
 
-    @Inject
-    private CarbonChatBukkit(
-        final CarbonChatBukkitEntry plugin,
-        final Logger logger,
-        final CarbonServerBukkit carbonServerBukkit,
-        final UserManager userManager,
-        final CarbonMessageService messageService,
-        final ChannelRegistry channelRegistry
-    ) {
-        this.userManager = userManager;
-        this.logger = logger;
-        this.plugin = plugin;
-        this.carbonServerBukkit = carbonServerBukkit;
-        this.messageService = messageService;
-        this.channelRegistry = channelRegistry;
+    private @MonotonicNonNull Injector injector;
+
+    private UserManager userManager;
+    private Logger logger;
+    private CarbonServerBukkit carbonServerBukkit;
+    private CarbonMessageService messageService;
+    private ChannelRegistry channelRegistry;
+
+    @Override
+    public void onLoad() {
+        if (!PaperLib.isPaper()) {
+            this.getLogger().log(Level.SEVERE, "*");
+            this.getLogger().log(Level.SEVERE, "* CarbonChat makes extensive use of APIs added by Paper.");
+            this.getLogger().log(Level.SEVERE, "* For this reason, CarbonChat is not compatible with Spigot or CraftBukkit servers.");
+            this.getLogger().log(Level.SEVERE, "* Upgrade your server to Paper in order to use CarbonChat.");
+            this.getLogger().log(Level.SEVERE, "*");
+            PaperLib.suggestPaper(this, Level.SEVERE);
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         CarbonChatProvider.register(this);
+
+        this.injector = Guice.createInjector(new CarbonChatBukkitModule(
+            this, this.getDataFolder().toPath()));
+
+        this.logger = LogManager.getLogger("CarbonChat");
+        this.messageService = this.injector.getInstance(CarbonMessageService.class);
+        this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
+        this.carbonServerBukkit = this.injector.getInstance(CarbonServerBukkit.class);
+        this.userManager = this.injector.getInstance(UserManager.class);
+    }
+
+    @Override
+    public void onEnable() {
+        final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+
+        for (final Class<? extends Listener> listenerClass : LISTENER_CLASSES) {
+            this.getServer().getPluginManager().registerEvents(
+                this.injector.getInstance(listenerClass),
+                this
+            );
+        }
+
+        // TODO: abstract?
+        this.injector.getInstance(MuteHandler.class);
+        this.injector.getInstance(DeafenHandler.class);
+
+        final long saveDelay = 5 * 60 * 20;
+
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this,
+            this::savePlayers, saveDelay, saveDelay);
+
+        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+    }
+
+    @Override
+    public void onDisable() {
+        this.savePlayers();
+    }
+
+    private void savePlayers() {
+        for (final var player : this.server().players()) {
+            this.userManager().savePlayer(((CarbonPlayerBukkit) player).carbonPlayer()).thenAccept(result -> {
+                if (result.player() == null) {
+                    this.server().console().sendMessage(result.reason());
+                }
+            });
+        }
     }
 
     public UserManager userManager() {
@@ -60,7 +117,7 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
 
     @Override
     public Path dataDirectory() {
-        return this.plugin.getDataFolder().toPath();
+        return this.getDataFolder().toPath();
     }
 
     @Override
@@ -73,36 +130,15 @@ public final class CarbonChatBukkit extends CarbonChatCommon {
         return this.channelRegistry;
     }
 
-    @Override
     public CarbonMessageService messageService() {
         return this.messageService;
     }
 
+    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
+
     @Override
-    protected CommandManager<Commander> createCommandManager() {
-        final PaperCommandManager<Commander> commandManager;
-        try {
-            commandManager = new PaperCommandManager<>(
-                this.plugin,
-                AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
-                commandSender -> {
-                    if (commandSender instanceof Player player) {
-                        return new BukkitPlayerCommander(this, player);
-                    }
-                    return BukkitCommander.from(commandSender);
-                },
-                commander -> ((BukkitCommander) commander).commandSender()
-            );
-        } catch (final Exception ex) {
-            throw new RuntimeException("Failed to initialize command manager.", ex);
-        }
-        commandManager.registerAsynchronousCompletions();
-        commandManager.registerBrigadier();
-        final var brigadierManager = commandManager.brigadierManager();
-        if (brigadierManager != null) {
-            brigadierManager.setNativeNumberSuggestions(false);
-        }
-        return commandManager;
+    public final @NonNull CarbonEventHandler eventHandler() {
+        return this.eventHandler;
     }
 
 }

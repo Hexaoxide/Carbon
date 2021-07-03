@@ -1,8 +1,5 @@
 package net.draycia.carbon.sponge;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.sponge.SpongeCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import java.nio.file.Path;
@@ -10,13 +7,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
-import net.draycia.carbon.sponge.command.SpongeCommander;
-import net.draycia.carbon.sponge.command.SpongePlayerCommander;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -25,7 +20,6 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
@@ -67,7 +61,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         this.pluginContainer = pluginContainer;
 
         this.injector = injector.createChildInjector(new CarbonChatSpongeModule(
-            this, dataDirectory));
+            this, dataDirectory, pluginContainer));
 
         this.logger = logger;
         this.messageService = this.injector.getInstance(CarbonMessageService.class);
@@ -81,7 +75,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         }
         //metricsFactory.make(BSTATS_PLUGIN_ID);
 
-        this.initialize();
+        this.initialize(this.injector);
     }
 
     @Listener
@@ -134,26 +128,15 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         return this.channelRegistry;
     }
 
-    @Override
     public CarbonMessageService messageService() {
         return this.messageService;
     }
 
+    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
+
     @Override
-    protected CommandManager<Commander> createCommandManager() {
-        final SpongeCommandManager<Commander> commandManager = new SpongeCommandManager<>(
-            this.pluginContainer,
-            AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
-            commander -> ((SpongeCommander) commander).commandCause(),
-            commandCause -> {
-                if (commandCause.subject() instanceof ServerPlayer player) {
-                    return new SpongePlayerCommander(this, player, commandCause);
-                }
-                return SpongeCommander.from(commandCause);
-            }
-        );
-        commandManager.parserMapper().cloudNumberSuggestions(true);
-        return commandManager;
+    public final @NonNull CarbonEventHandler eventHandler() {
+        return this.eventHandler;
     }
 
 }

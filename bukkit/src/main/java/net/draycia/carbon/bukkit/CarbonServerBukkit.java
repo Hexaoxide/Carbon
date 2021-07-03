@@ -26,11 +26,11 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerBukkit implements CarbonServer, ForwardingAudience.Single {
 
-    private final CarbonChatBukkitEntry chatBukkitEntry;
+    private final CarbonChatBukkit chatBukkitEntry;
     private final UserManager userManager;
 
     @Inject
-    private CarbonServerBukkit(final CarbonChatBukkitEntry chatBukkitEntry, final UserManager userManager) {
+    private CarbonServerBukkit(final CarbonChatBukkit chatBukkitEntry, final UserManager userManager) {
         this.chatBukkitEntry = chatBukkitEntry;
         this.userManager = userManager;
     }

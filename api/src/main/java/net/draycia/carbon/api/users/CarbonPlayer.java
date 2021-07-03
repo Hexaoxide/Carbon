@@ -109,4 +109,49 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     List<String> groups();
 
+    /**
+     * Returns if the player is muted and unable to speak in chat.
+     *
+     * @return if the player is muted
+     * @since 2.0.0
+     */
+    boolean muted();
+
+    /**
+     * Mutes and unmutes the player.
+     *
+     * @since 2.0.0
+     */
+    void muted(final boolean muted);
+
+    /**
+     * Returns if the player is deafened and unable to read messages.
+     *
+     * @return if the player is deafened
+     * @since 2.0.0
+     */
+    boolean deafened();
+
+    /**
+     * Deafens and undeafens the player.
+     *
+     * @since 2.0.0
+     */
+    void deafened(final boolean deafened);
+
+    /**
+     * Returns if the player is spying on messages and able to read muted/private messages.
+     *
+     * @return if the player is spying on messages
+     * @since 2.0.0
+     */
+    boolean spying();
+
+    /**
+     * Sets and unsets the player's ability to spy.
+     *
+     * @since 2.0.0
+     */
+    void spying(final boolean spying);
+
 }

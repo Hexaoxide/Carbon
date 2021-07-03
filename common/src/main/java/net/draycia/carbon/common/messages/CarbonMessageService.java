@@ -33,6 +33,9 @@ public interface CarbonMessageService {
         @Placeholder Component message
     );
 
+    @Message("mute.spy.prefix")
+    Component muteSpyPrefix();
+
     @Message("placeholders.plugin")
     Component pluginName();
 
