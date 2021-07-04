@@ -1,10 +1,13 @@
 package net.draycia.carbon.bukkit.users;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.bukkit.util.BukkitCapabilities;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -117,11 +120,31 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
 
     @Override
     public String primaryGroup() {
-        return "default"; // TODO: implement
+        if (!BukkitCapabilities.vaultEnabled()) {
+            return "default";
+        }
+
+        final String group = BukkitCapabilities.permission().getPrimaryGroup(this.player());
+
+        if (group != null) {
+            return group;
+        }
+
+        return "default";
     }
 
     @Override
     public List<String> groups() {
+        if (!BukkitCapabilities.vaultEnabled()) {
+            return List.of("default");
+        }
+
+        final String[] groups = BukkitCapabilities.permission().getPlayerGroups(this.player());
+
+        if (groups != null && groups.length != 0) {
+            return Arrays.asList(groups);
+        }
+
         return List.of("default"); // TODO: implement
     }
 

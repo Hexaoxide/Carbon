@@ -47,7 +47,7 @@ bukkit {
   main = "net.draycia.carbon.bukkit.CarbonChatBukkit"
   apiVersion = "1.16"
   author = "Draycia"
-  //depend = listOf("PlaceholderAPI", "Vault") // We don't need these yet
+  softDepend = listOf("PlaceholderAPI", "Vault")
   loadBefore = listOf("Essentials")
   website = GITHUB_REPO_URL
   permissions {
