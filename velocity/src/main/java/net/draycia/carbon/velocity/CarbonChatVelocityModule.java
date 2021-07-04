@@ -29,20 +29,20 @@ public final class CarbonChatVelocityModule extends AbstractModule {
     private final Path dataDirectory;
     private final PluginContainer pluginContainer;
     private final ProxyServer proxyServer;
-    private final CarbonChat carbonChat;
+    private final CarbonChatVelocity carbonChatVelocity;
 
     CarbonChatVelocityModule(
         final Logger logger,
         final Path dataDirectory,
         final PluginContainer pluginContainer,
         final ProxyServer proxyServer,
-        final CarbonChat carbonChat
+        final CarbonChatVelocity carbonChatVelocity
     ) throws URISyntaxException {
         this.logger = logger;
         this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
         this.proxyServer = proxyServer;
-        this.carbonChat = carbonChat;
+        this.carbonChatVelocity = carbonChatVelocity;
     }
 
     @Provides
@@ -54,7 +54,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
             AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
             commandSender -> {
                 if (commandSender instanceof Player player) {
-                    return new VelocityPlayerCommander(this.carbonChat, player);
+                    return new VelocityPlayerCommander(this.carbonChatVelocity, player);
                 }
                 return VelocityCommander.from(commandSender);
             },
@@ -69,7 +69,8 @@ public final class CarbonChatVelocityModule extends AbstractModule {
     public void configure() {
         this.install(new CarbonCommonModule());
 
-        this.bind(CarbonChat.class).to(CarbonChatVelocity.class);
+        this.bind(CarbonChat.class).toInstance(this.carbonChatVelocity);
+        this.bind(CarbonChatVelocity.class).toInstance(this.carbonChatVelocity);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);

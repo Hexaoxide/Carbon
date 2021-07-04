@@ -73,6 +73,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).toInstance(this.carbonChat);
+        this.bind(CarbonChatBukkit.class).toInstance(this.carbonChat);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);

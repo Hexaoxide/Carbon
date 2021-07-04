@@ -63,6 +63,7 @@ public final class CarbonChatSpongeModule extends AbstractModule {
 
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.configDir);
         this.bind(CarbonChat.class).toInstance(this.carbonChatSponge);
+        this.bind(CarbonChatSponge.class).toInstance(this.carbonChatSponge);
         this.bind(CarbonServer.class).to(CarbonServerSponge.class);
     }
 
