@@ -15,7 +15,7 @@ versions:
   shadow: 7.1.0-hexaoxide-SNAPSHOT
   adventure: 4.7.0
   minimessage: 4.1.0-SNAPSHOT
-  cloud: 1.5.0-SNAPSHOT
+  cloud: 1.6.0-SNAPSHOT
   configurate: 4.1.1
   typesafeConfig: 1.4.1
   checkerQual: 3.13.0
