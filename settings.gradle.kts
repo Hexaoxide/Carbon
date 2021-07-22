@@ -3,6 +3,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
   repositories {
+    mavenLocal {
+      content { includeGroup("net.kyori.moonshine") }
+    }
     mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     // Paper API
@@ -18,10 +21,6 @@ dependencyResolutionManagement {
       patternLayout { artifact("velocity-proxy-3.0.0-SNAPSHOT-all.jar") }
       metadataSources { artifact() }
       content { includeModule("com.velocitypowered", "velocity-proxy") }
-    }
-    // Moonshine
-    maven("https://nexus.proximyst.com/repository/maven-public/") {
-      content { includeGroup("com.proximyst.moonshine") }
     }
     // cloud snapshots repo
     //maven("https://repo.incendo.org/content/repositories/snapshots") {

@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.proximyst.moonshine.Moonshine;
+import io.leangen.geantyref.TypeToken;
 import java.io.IOException;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -12,16 +12,18 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
-import net.draycia.carbon.common.messages.CarbonMessageParser;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
-import net.draycia.carbon.common.messages.ServerReceiverResolver;
+import net.draycia.carbon.common.messages.ReceiverResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.JSONUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.Moonshine;
+import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -58,21 +60,22 @@ public final class CarbonCommonModule extends AbstractModule {
     @Provides
     @Singleton
     public CarbonMessageService messageService(
-        final ServerReceiverResolver serverReceiverResolver,
+        final ReceiverResolver receiverResolver,
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
-        final CarbonMessageParser carbonMessageParser,
-        final CarbonMessageSender carbonMessageSender
-    ) {
-        return Moonshine.<Audience>builder()
-            .receiver(serverReceiverResolver)
-            .placeholder(Component.class, componentPlaceholderResolver)
-            .placeholder(UUID.class, uuidPlaceholderResolver)
-            .source(carbonMessageSource)
-            .parser(carbonMessageParser)
-            .sender(carbonMessageSender)
-            .create(CarbonMessageService.class, this.getClass().getClassLoader());
+        final CarbonMessageSender carbonMessageSender,
+        final CarbonMessageRenderer carbonMessageRenderer
+    ) throws UnscannableMethodException {
+        return Moonshine.<CarbonMessageService, Audience>builder(new TypeToken<>() {})
+            .receiverLocatorResolver(receiverResolver, 0)
+            .sourced(carbonMessageSource)
+            .rendered(carbonMessageRenderer)
+            .sent(carbonMessageSender)
+            .resolvingWithStrategy(null)
+            .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
+            .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
+            .create(this.getClass().getClassLoader());
     }
 
     @Override

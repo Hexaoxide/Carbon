@@ -10,6 +10,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.intellij.lang.annotations.Subst;
 
 import static net.kyori.adventure.key.Key.key;
 
@@ -29,9 +30,8 @@ public class ChatChannelSerializerGson extends TypeAdapter<ChatChannel> {
     }
 
     @Override
-    @SuppressWarnings("PatternValidation") // the input is variable
     public @Nullable ChatChannel read(final JsonReader in) throws IOException {
-        final @Nullable String channelName = in.nextString();
+        @Subst("namespace:value") final @Nullable String channelName = in.nextString();
 
         if (channelName != null) {
             return this.registry.get(key(channelName));

@@ -39,12 +39,12 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     private final CarbonMessageService messageService;
     private final CarbonServerSponge carbonServerSponge;
     private final ChannelRegistry channelRegistry;
-    private final Game game;
     private final Injector injector;
     private final Logger logger;
     private final Path dataDirectory;
     private final PluginContainer pluginContainer;
     private final UserManager userManager;
+    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
     @Inject
     public CarbonChatSponge(
@@ -57,7 +57,6 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     ) {
         CarbonChatProvider.register(this);
 
-        this.game = game;
         this.pluginContainer = pluginContainer;
 
         this.injector = injector.createChildInjector(new CarbonChatSpongeModule(
@@ -71,7 +70,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         this.dataDirectory = dataDirectory;
 
         for (final Class<?> clazz : LISTENER_CLASSES) {
-            this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(clazz));
+            game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(clazz));
         }
         //metricsFactory.make(BSTATS_PLUGIN_ID);
 
@@ -131,8 +130,6 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     public CarbonMessageService messageService() {
         return this.messageService;
     }
-
-    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
     @Override
     public final @NonNull CarbonEventHandler eventHandler() {

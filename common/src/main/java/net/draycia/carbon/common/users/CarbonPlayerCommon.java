@@ -9,9 +9,11 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNullElseGet;
 import static net.kyori.adventure.text.Component.text;
@@ -24,8 +26,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected boolean muted = false;
     protected @Nullable ChatChannel selectedChannel;
     protected boolean spying = false;
-    protected String username;
-    protected UUID uuid;
+    protected @MonotonicNonNull String username;
+    protected @MonotonicNonNull UUID uuid;
 
     public CarbonPlayerCommon(
         final @Nullable Component displayName,
@@ -44,7 +46,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public @NotNull Audience audience() {
         return Audience.empty();
     }
 

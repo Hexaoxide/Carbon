@@ -1,10 +1,10 @@
 package net.draycia.carbon.common.channels.messages;
 
-import com.proximyst.moonshine.message.IMessageSource;
 import java.util.Locale;
 import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.moonshine.message.IMessageSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
@@ -13,7 +13,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
-public class ConfigChannelMessageSource implements IMessageSource<String, Audience> {
+public class ConfigChannelMessageSource implements IMessageSource<Audience, String> {
 
     // Map<String, String> -> Map<Group, Format>
     // "default" key will be configurable but let's not worry about that for now
@@ -24,7 +24,7 @@ public class ConfigChannelMessageSource implements IMessageSource<String, Audien
         The "console" format is what's shown to console.
         The keys are group names, the values are chat formats (MiniMessage).
         """)
-    private Map<String, String> defaults = Map.of("default", "<displayname>: <message>",
+    private final Map<String, String> defaults = Map.of("default", "<displayname>: <message>",
         "console", "<username> - <uuid>: <message>");
 
     // TODO: Move the default to the advanced config?
@@ -33,15 +33,15 @@ public class ConfigChannelMessageSource implements IMessageSource<String, Audien
         You can safely delete this section if you don't want to use this feature.
         Will fall back to the defaults section if no format was found for the player.
         """)
-    private Map<Locale, Map<String, String>> locales = Map.of(Locale.US,
+    private final Map<Locale, Map<String, String>> locales = Map.of(Locale.US,
         Map.of("default", "<displayname>: <message>"));
 
     @Override
-    public String message(final String key, final Audience receiver) {
+    public String messageOf(final Audience receiver, final String messageKey) {
         if (receiver instanceof CarbonPlayer player) {
-            return this.forPlayer(key, player);
+            return this.forPlayer(messageKey, player);
         } else {
-            return this.forAudience(key, receiver);
+            return this.forAudience(messageKey, receiver);
         }
     }
 

@@ -1,9 +1,9 @@
 package net.draycia.carbon.bukkit.users;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements ForwardingAudience.Single {
@@ -57,7 +58,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public @NonNull @NotNull Audience audience() {
         final @Nullable Player player = this.player();
 
         if (player == null) {
@@ -73,7 +74,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public @NonNull Component createItemHoverComponent() {
+    public Component createItemHoverComponent() {
         final @Nullable Player player = this.player(); // This is temporary (it's not)
 
         if (player == null) {
@@ -126,11 +127,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
 
         final String group = BukkitCapabilities.permission().getPrimaryGroup(this.player());
 
-        if (group != null) {
-            return group;
-        }
-
-        return "default";
+        return Objects.requireNonNullElse(group, "default");
     }
 
     @Override
@@ -204,7 +201,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public @NonNull Identity identity() {
+    public Identity identity() {
         return this.carbonPlayer.identity();
     }
 

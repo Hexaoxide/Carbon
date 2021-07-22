@@ -8,6 +8,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +24,7 @@ public record VelocityPlayerCommander(
     }
 
     @Override
-    public Audience audience() {
+    public @NotNull Audience audience() {
         return this.player;
     }
 

@@ -21,8 +21,8 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     private final List<KeyedRenderer> renderers;
     private final CarbonPlayer sender;
     private final Component originalMessage;
-    private Component message;
     private final List<? extends Audience> recipients;
+    private Component message;
     private Result result = Result.ALLOWED;
 
     /**

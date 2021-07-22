@@ -32,8 +32,6 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public class JSONUserManager implements UserManager {
 
-    private final Path dataDirectory;
-    private final Injector injector;
     private final Logger logger;
     private final Gson serializer;
     private final Path userDirectory;
@@ -46,18 +44,16 @@ public class JSONUserManager implements UserManager {
         final Injector injector,
         final Logger logger
     ) throws IOException {
-        this.dataDirectory = dataDirectory;
-        this.injector = injector;
         this.logger = logger;
-        this.userDirectory = this.dataDirectory.resolve("users");
+        this.userDirectory = dataDirectory.resolve("users");
 
         Files.createDirectories(this.userDirectory);
 
         this.serializer = GsonComponentSerializer.gson().populator()
             .apply(new GsonBuilder())
-            .registerTypeAdapter(CarbonPlayerCommon.class, this.injector.getInstance(CarbonPlayerSerializerGson.class))
-            .registerTypeAdapter(ChatChannel.class, this.injector.getInstance(ChatChannelSerializerGson.class))
-            .registerTypeAdapter(UUID.class, this.injector.getInstance(UUIDSerializerGson.class))
+            .registerTypeAdapter(CarbonPlayerCommon.class, injector.getInstance(CarbonPlayerSerializerGson.class))
+            .registerTypeAdapter(ChatChannel.class, injector.getInstance(ChatChannelSerializerGson.class))
+            .registerTypeAdapter(UUID.class, injector.getInstance(UUIDSerializerGson.class))
             .create();
     }
 

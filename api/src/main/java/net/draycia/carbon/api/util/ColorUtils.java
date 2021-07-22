@@ -18,6 +18,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class ColorUtils {
 
+    private static final Pattern spigotLegacyRGB =
+        Pattern.compile("[§&]x[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])");
+    private static final Pattern pluginRGB =
+        Pattern.compile("[§&]#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
+    private static final String hexReplacement = "<#$1$2$3$4$5$6>";
+
     private ColorUtils() {
 
     }
@@ -49,14 +55,6 @@ public final class ColorUtils {
 
         return TextColor.fromCSSHexString(input);
     }
-
-    private static final Pattern spigotLegacyRGB =
-        Pattern.compile("[§&]x[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])[§&]([0-9a-fA-F])");
-
-    private static final Pattern pluginRGB =
-        Pattern.compile("[§&]#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
-
-    private static final String hexReplacement = "<#$1$2$3$4$5$6>";
 
     /**
      * Converts the input legacy, legacy rgb, and alternate color formats to MiniMessage color tags.

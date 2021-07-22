@@ -13,7 +13,10 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayerCommon>, JsonDeserializer<CarbonPlayer> {
 
     @Override

@@ -11,7 +11,9 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
@@ -19,6 +21,7 @@ import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
+@DefaultQualifier(NonNull.class)
 public final class VelocityChatListener {
 
     private final CarbonChatVelocity carbonChat;
@@ -31,7 +34,7 @@ public final class VelocityChatListener {
     }
 
     @Subscribe
-    public void onPlayerChat(final @NonNull PlayerChatEvent event) {
+    public void onPlayerChat(final PlayerChatEvent event) {
         final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
         if (playerResult.player() == null) {
@@ -67,7 +70,7 @@ public final class VelocityChatListener {
                     }
                 }
 
-                if (component != null) {
+                if (component != Component.empty()) {
                     recipient.sendMessage(component);
                 }
             }

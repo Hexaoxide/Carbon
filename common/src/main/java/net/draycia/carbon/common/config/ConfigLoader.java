@@ -1,7 +1,6 @@
 package net.draycia.carbon.common.config;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,24 +14,20 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
-import org.spongepowered.configurate.objectmapping.ObjectMapper;
-import org.spongepowered.configurate.objectmapping.guice.GuiceObjectMapperProvider;
 
 @DefaultQualifier(NonNull.class)
 public class ConfigLoader {
 
     private final Path dataDirectory;
-    private final ObjectMapper.Factory mapper;
+    private final LocaleSerializerConfigurate locale;
 
     @Inject
     public ConfigLoader(
         @ForCarbon final Path dataDirectory,
-        final Injector injector
+        final LocaleSerializerConfigurate locale
     ) {
         this.dataDirectory = dataDirectory;
-        this.mapper = ObjectMapper.factoryBuilder()
-            .addDiscoverer(GuiceObjectMapperProvider.injectedObjectDiscoverer(injector))
-            .build();
+        this.locale = locale;
     }
 
     public ConfigurationLoader<?> configurationLoader(final Path file) {
@@ -43,8 +38,8 @@ public class ConfigLoader {
                     ConfigurateComponentSerializer.configurate();
 
                 return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
-                        serializerBuilder.registerAll(serializer.serializers())
-                            .register(Locale.class, new LocaleSerializerConfigurate())
+                    serializerBuilder.registerAll(serializer.serializers())
+                        .register(Locale.class, this.locale)
                 );
             })
             .path(file)
@@ -62,7 +57,7 @@ public class ConfigLoader {
 
         try {
             final var node = loader.load();
-            final T config = node.get(clazz);
+            final @Nullable T config = node.get(clazz);
 
             if (!Files.exists(file)) {
                 node.set(clazz, config);

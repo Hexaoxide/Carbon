@@ -8,7 +8,6 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Set;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -40,13 +39,13 @@ public class CarbonChatVelocity extends CarbonChatCommon {
 
     private final Path dataDirectory;
     private final ProxyServer proxyServer;
-    private final PluginContainer pluginContainer;
     private final Logger logger;
     private final Injector injector;
 
     private final CarbonMessageService messageService;
     private final ChannelRegistry channelRegistry;
     private final CarbonServerVelocity carbonServer;
+    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
     @Inject
     public CarbonChatVelocity(
@@ -59,17 +58,12 @@ public class CarbonChatVelocity extends CarbonChatCommon {
 
         this.dataDirectory = dataDirectory;
         this.proxyServer = proxyServer;
-        this.pluginContainer = pluginContainer;
-        this.logger = LogManager.getLogger(this.pluginContainer.getDescription().getId());
+        this.logger = LogManager.getLogger(pluginContainer.getDescription().getId());
 
         final CarbonChatVelocityModule carbonVelocityModule;
 
-        try {
-            carbonVelocityModule = new CarbonChatVelocityModule(
-                this.logger, this.dataDirectory, this.pluginContainer, this.proxyServer, this);
-        } catch (final URISyntaxException ex) {
-            throw new RuntimeException(ex);
-        }
+        carbonVelocityModule = new CarbonChatVelocityModule(
+            this.logger, this.dataDirectory, pluginContainer, this.proxyServer, this);
 
         this.injector = injector.createChildInjector(carbonVelocityModule);
 
@@ -112,8 +106,6 @@ public class CarbonChatVelocity extends CarbonChatCommon {
     public CarbonMessageService messageService() {
         return this.messageService;
     }
-
-    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
     @Override
     public final @NonNull CarbonEventHandler eventHandler() {

@@ -4,31 +4,23 @@ import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.CommandCause;
 
+@DefaultQualifier(NonNull.class)
 public interface SpongeCommander extends Commander, ForwardingAudience.Single {
 
-    @NonNull CommandCause commandCause();
-
-    static @NonNull SpongeCommander from(final @NonNull CommandCause commandCause) {
+    static SpongeCommander from(final CommandCause commandCause) {
         return new SpongeCommanderImpl(commandCause);
     }
 
-    final class SpongeCommanderImpl implements SpongeCommander {
+    @NonNull CommandCause commandCause();
 
-        private final CommandCause commandCause;
-
-        private SpongeCommanderImpl(final @NonNull CommandCause commandCause) {
-            this.commandCause = commandCause;
-        }
+    record SpongeCommanderImpl(CommandCause commandCause) implements SpongeCommander {
 
         @Override
-        public @NonNull CommandCause commandCause() {
-            return this.commandCause;
-        }
-
-        @Override
-        public @NonNull Audience audience() {
+        public @NotNull Audience audience() {
             return this.commandCause.audience();
         }
 

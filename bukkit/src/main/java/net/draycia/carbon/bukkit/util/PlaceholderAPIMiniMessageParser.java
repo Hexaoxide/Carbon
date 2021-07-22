@@ -14,18 +14,36 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Collections.emptyList;
 
+@DefaultQualifier(NonNull.class)
 public final class PlaceholderAPIMiniMessageParser {
 
     private final MiniMessage miniMessage;
 
-    private PlaceholderAPIMiniMessageParser(final @NonNull MiniMessage miniMessage) {
+    private PlaceholderAPIMiniMessageParser(final MiniMessage miniMessage) {
         this.miniMessage = miniMessage;
     }
 
-    public @NonNull Component parse(final @NonNull OfflinePlayer player, final @NonNull String input, final @NonNull Collection<Template> templates) {
+    public static PlaceholderAPIMiniMessageParser create(final MiniMessage backingInstance) {
+        return new PlaceholderAPIMiniMessageParser(backingInstance);
+    }
+
+    private static boolean containsLegacyColorCodes(final String string) {
+        final char[] charArray = string.toCharArray();
+
+        for (final char c : charArray) {
+            if (c == LegacyComponentSerializer.SECTION_CHAR) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Component parse(final OfflinePlayer player, final String input, final Collection<Template> templates) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(player, match),
@@ -34,11 +52,11 @@ public final class PlaceholderAPIMiniMessageParser {
         );
     }
 
-    public @NonNull Component parse(final @NonNull OfflinePlayer player, final @NonNull String input) {
+    public Component parse(final OfflinePlayer player, final String input) {
         return this.parse(player, input, emptyList());
     }
 
-    public @NonNull Component parseRelational(final @NonNull Player one, final @NonNull Player two, final @NonNull String input, final @NonNull Collection<Template> templates) {
+    public Component parseRelational(final Player one, final Player two, final String input, final Collection<Template> templates) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(one, PlaceholderAPI.setRelationalPlaceholders(one, two, match)),
@@ -47,23 +65,25 @@ public final class PlaceholderAPIMiniMessageParser {
         );
     }
 
-    public @NonNull Component parseRelational(final @NonNull Player one, final @NonNull Player two, final @NonNull String input) {
+    public Component parseRelational(final Player one, final Player two, final String input) {
         return this.parseRelational(one, two, input, emptyList());
     }
 
-    private @NonNull Component parse(
-        final @NonNull Pattern pattern,
-        final @NonNull UnaryOperator<String> placeholderResolver,
-        final @NonNull String input,
-        final @NonNull Collection<Template> originalTemplates
+    private Component parse(
+        final Pattern pattern,
+        final UnaryOperator<String> placeholderResolver,
+        final String input,
+        final Collection<Template> originalTemplates
     ) {
         final Matcher matcher = pattern.matcher(input);
         final List<Template> templates = new ArrayList<>(originalTemplates);
         final StringBuilder builder = new StringBuilder();
         int id = 0;
+
         while (matcher.find()) {
             final String match = matcher.group();
             final String replaced = placeholderResolver.apply(match);
+
             if (match.equals(replaced) || !containsLegacyColorCodes(replaced)) {
                 matcher.appendReplacement(builder, replaced);
             } else {
@@ -73,22 +93,10 @@ public final class PlaceholderAPIMiniMessageParser {
                 matcher.appendReplacement(builder, "<" + key + ">");
             }
         }
+
         matcher.appendTail(builder);
+
         return this.miniMessage.parse(builder.toString(), templates);
-    }
-
-    public static @NonNull PlaceholderAPIMiniMessageParser create(final @NonNull MiniMessage backingInstance) {
-        return new PlaceholderAPIMiniMessageParser(backingInstance);
-    }
-
-    private static boolean containsLegacyColorCodes(final @NonNull String string) {
-        final char[] charArray = string.toCharArray();
-        for (int i = 0; i < charArray.length; i++) {
-            if (charArray[i] == LegacyComponentSerializer.SECTION_CHAR) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

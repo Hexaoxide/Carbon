@@ -1,4 +1,4 @@
-import java.util.Locale
+import java.util.*
 
 plugins {
   id("carbon.shadow-platform")

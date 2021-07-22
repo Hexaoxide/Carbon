@@ -5,24 +5,27 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 import static java.util.Objects.requireNonNull;
 
+@DefaultQualifier(NonNull.class)
 public record SpongePlayerCommander(
-    @NonNull CarbonChat carbon,
-    @NonNull ServerPlayer player,
-    @NonNull CommandCause commandCause
+    CarbonChat carbon,
+    ServerPlayer player,
+    CommandCause commandCause
 ) implements PlayerCommander, SpongeCommander {
 
     @Override
-    public @NonNull CarbonPlayer carbonPlayer() {
+    public CarbonPlayer carbonPlayer() {
         return requireNonNull(this.carbon.server().player(this.player.uniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public @NotNull Audience audience() {
         return this.commandCause.audience();
     }
 

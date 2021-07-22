@@ -12,21 +12,19 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class PrimaryConfig {
 
     @Comment("The default locale for plugin messages.")
-    private Locale defaultLocale = Locale.US;
+    private final Locale defaultLocale = Locale.US;
+    @Comment("The default channel that new players will be in when they join.")
+    private final Key defaultChannel = Key.key("carbon", "basic");
+    @Comment("The service that will be used to store and load player information.")
+    private final StorageType storageType = StorageType.JSON;
 
     public Locale defaultLocale() {
         return this.defaultLocale;
     }
 
-    @Comment("The default channel that new players will be in when they join.")
-    private Key defaultChannel = Key.key("carbon", "basic");
-
     public Key defaultChannel() {
         return this.defaultChannel;
     }
-
-    @Comment("The service that will be used to store and load player information.")
-    private StorageType storageType = StorageType.JSON;
 
     public StorageType storageType() {
         return this.storageType;

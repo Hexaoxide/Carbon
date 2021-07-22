@@ -12,6 +12,7 @@ import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
@@ -23,6 +24,7 @@ import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 
+@DefaultQualifier(NonNull.class)
 public final class SpongeChatListener {
 
     private final CarbonChatSponge carbonChat;
@@ -38,7 +40,7 @@ public final class SpongeChatListener {
     }
 
     @Listener
-    public void onPlayerChat(final @NonNull PlayerChatEvent event, final @First Player source) {
+    public void onPlayerChat(final PlayerChatEvent event, final @First Player source) {
         final var playerResult = this.carbonChat.server().player(source.uniqueId()).join();
 
         if (playerResult.player() == null) {
