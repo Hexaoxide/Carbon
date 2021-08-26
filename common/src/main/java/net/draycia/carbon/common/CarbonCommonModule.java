@@ -24,6 +24,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
+import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
+import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -72,7 +74,7 @@ public final class CarbonCommonModule extends AbstractModule {
             .sourced(carbonMessageSource)
             .rendered(carbonMessageRenderer)
             .sent(carbonMessageSender)
-            .resolvingWithStrategy(null)
+            .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
             .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
             .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
             .create(this.getClass().getClassLoader());

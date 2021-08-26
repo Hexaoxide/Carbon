@@ -8,7 +8,7 @@ import net.kyori.moonshine.annotation.Message;
 public interface ConfigChannelMessageService {
 
     // TODO: locale placeholders?
-    @Message("channel.format")
+    @Message("")
     Component chatFormat(
         final Audience audience,
         UUID uuid,

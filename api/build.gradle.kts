@@ -25,6 +25,7 @@ dependencies {
   api(libs.kyoriRegistry)
   api(libs.kyoriMoonshine)
   api(libs.kyoriMoonshineCore)
+  api(libs.kyoriMoonshineStandard)
 
   api(libs.cloudCore)
   api(libs.cloudMinecraftExtras) {

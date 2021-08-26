@@ -20,6 +20,8 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
+import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
+import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -116,7 +118,7 @@ public final class ConfigChatChannel implements ChatChannel {
         return this.key;
     }
 
-    private @Nullable ConfigChannelMessageService createMessageService() {
+    private @Nullable ConfigChannelMessageService createMessageService(final ClassLoader classLoader) {
         final ReceiverResolver serverReceiverResolver = new ReceiverResolver();
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
@@ -130,10 +132,10 @@ public final class ConfigChatChannel implements ChatChannel {
                 .sourced(this.messageSource)
                 .rendered(carbonMessageRenderer)
                 .sent(carbonMessageSender)
-                .resolvingWithStrategy(null)
+                .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
-                .create();
+                .create(classLoader);
         } catch (final UnscannableMethodException e) {
             e.printStackTrace();
         }
@@ -143,7 +145,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private ConfigChannelMessageService messageService() {
         if (this.messageService == null) {
-            this.messageService = this.createMessageService();
+            this.messageService = this.createMessageService(CarbonChatProvider.carbonChat().getClass().getClassLoader());
         }
 
         return requireNonNull(this.messageService, "Channel message service must not be null!");

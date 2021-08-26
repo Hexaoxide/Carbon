@@ -82,6 +82,10 @@ dependencies:
     group: net.kyori.moonshine
     name: moonshine-core
     version: { ref: kyoriMoonshine }
+  kyoriMoonshineStandard:
+    group: net.kyori.moonshine
+    name: moonshine-standard
+    version: { ref: kyoriMoonshine }
 
   cloudCore:
     group: cloud.commandframework
