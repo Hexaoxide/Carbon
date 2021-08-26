@@ -18,6 +18,7 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.ReceiverResolver;
+import net.draycia.carbon.common.messages.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.JSONUserManager;
 import net.kyori.adventure.audience.Audience;
@@ -65,6 +66,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final ReceiverResolver receiverResolver,
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
+        final StringPlaceholderResolver<Audience> stringPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageSender carbonMessageSender,
         final CarbonMessageRenderer carbonMessageRenderer
@@ -77,6 +79,7 @@ public final class CarbonCommonModule extends AbstractModule {
             .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
             .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
             .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
+            .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
             .create(this.getClass().getClassLoader());
     }
 

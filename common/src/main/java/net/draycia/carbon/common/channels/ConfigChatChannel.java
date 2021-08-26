@@ -14,6 +14,7 @@ import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.ReceiverResolver;
+import net.draycia.carbon.common.messages.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -118,10 +119,11 @@ public final class ConfigChatChannel implements ChatChannel {
         return this.key;
     }
 
-    private @Nullable ConfigChannelMessageService createMessageService(final ClassLoader classLoader) {
+    private @Nullable ConfigChannelMessageService createMessageService() {
         final ReceiverResolver serverReceiverResolver = new ReceiverResolver();
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
+        final StringPlaceholderResolver<Audience> stringPlaceholderResolver = new StringPlaceholderResolver<>();
         final CarbonMessageRenderer carbonMessageRenderer = new CarbonMessageRenderer();
         final CarbonMessageSender carbonMessageSender = new CarbonMessageSender();
 
@@ -135,7 +137,8 @@ public final class ConfigChatChannel implements ChatChannel {
                 .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
-                .create(classLoader);
+                .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
+                .create(this.getClass().getClassLoader());
         } catch (final UnscannableMethodException e) {
             e.printStackTrace();
         }
@@ -145,7 +148,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private ConfigChannelMessageService messageService() {
         if (this.messageService == null) {
-            this.messageService = this.createMessageService(CarbonChatProvider.carbonChat().getClass().getClassLoader());
+            this.messageService = this.createMessageService();
         }
 
         return requireNonNull(this.messageService, "Channel message service must not be null!");

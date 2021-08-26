@@ -46,21 +46,22 @@ public class ConfigChannelMessageSource implements IMessageSource<Audience, Stri
     }
 
     private String forPlayer(final String key, final CarbonPlayer player) {
-        final Map<String, String> formats = this.locales.get(player.locale());
-
-        if (formats != null) {
-            final String format = formats.get(player.primaryGroup());
-
-            if (format != null) {
-                return format;
-            }
-
-            final String defaultFormat = formats.get("default");
-
-            if (defaultFormat != null) {
-                return defaultFormat;
-            }
-        }
+        // TODO: rewrite and reimplement
+        //        final Map<String, String> formats = this.locales.get(player.locale());
+        //
+        //        if (formats != null) {
+        //            final String format = formats.get(player.primaryGroup());
+        //
+        //            if (format != null) {
+        //                return format;
+        //            }
+        //
+        //            final String defaultFormat = formats.get("default");
+        //
+        //            if (defaultFormat != null) {
+        //                return defaultFormat;
+        //            }
+        //        }
 
         final String format = this.defaults.get(player.primaryGroup());
 

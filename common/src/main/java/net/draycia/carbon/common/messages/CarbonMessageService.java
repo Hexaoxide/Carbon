@@ -4,19 +4,20 @@ import java.util.UUID;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
+import net.kyori.moonshine.annotation.Placeholder;
 
 public interface CarbonMessageService {
 
     @Message("example.command.hello")
     void exampleCommandFeedback(
         final Audience audience,
-        final Component plugin
+        @Placeholder final Component plugin
     );
 
     @Message("unsupported.legacy")
     void unsupportedLegacyChar(
         final Audience audience,
-        final String message
+        @Placeholder final String message
     );
 
     @Message("test.phrase")
@@ -25,10 +26,10 @@ public interface CarbonMessageService {
     @Message("channel.format.basic")
     Component basicChatFormat(
         final Audience audience,
-        UUID uuid,
-        Component displayname,
-        String username,
-        Component message
+        @Placeholder UUID uuid,
+        @Placeholder Component displayname,
+        @Placeholder String username,
+        @Placeholder Component message
     );
 
     @Message("mute.spy.prefix")
