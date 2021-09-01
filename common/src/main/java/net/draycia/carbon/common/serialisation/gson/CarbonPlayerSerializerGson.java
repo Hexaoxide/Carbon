@@ -43,7 +43,10 @@ public class CarbonPlayerSerializerGson implements JsonSerializer<CarbonPlayerCo
     ) {
         final JsonObject object = new JsonObject();
 
-        object.add("displayName", context.serialize(player.displayName()));
+        if (player.hasCustomDisplayName()) {
+            object.add("displayName", context.serialize(player.displayName()));
+        }
+
         object.add("selectedChannel", context.serialize(player.selectedChannel()));
         object.add("username", context.serialize(player.username()));
         object.add("uuid", context.serialize(player.uuid()));

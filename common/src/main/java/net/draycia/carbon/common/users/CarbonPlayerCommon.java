@@ -20,6 +20,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     protected boolean deafened = false;
     protected @Nullable Component displayName;
+    protected transient @Nullable Component temporaryDisplayName; // Don't persist temp names
     protected boolean muted = false;
     protected @Nullable ChatChannel selectedChannel;
     protected boolean spying = false;
@@ -58,12 +59,22 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable Component displayName() {
+        if (this.temporaryDisplayName != null) {
+            return this.temporaryDisplayName;
+        }
+
         return this.displayName;
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public void temporaryDisplayName(final @Nullable Component temporaryDisplayName) {
+        // TODO: support durations (expires after X time)
+        this.temporaryDisplayName = temporaryDisplayName;
     }
 
     @Override
@@ -134,6 +145,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public String username() {
         return this.username;
+    }
+
+    @Override
+    public boolean hasCustomDisplayName() {
+        return this.displayName != null;
     }
 
     @Override

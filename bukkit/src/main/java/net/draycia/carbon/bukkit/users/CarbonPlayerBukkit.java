@@ -58,8 +58,28 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
+    public void temporaryDisplayName(@Nullable Component displayName) {
+        this.carbonPlayer.temporaryDisplayName(displayName);
+
+        final @Nullable Player player = this.player();
+
+        if (player != null) {
+            // Update player's name in chat
+            player.displayName(displayName);
+
+            // Update player's name in the tab player list
+            player.playerListName(displayName);
+        }
+    }
+
+    @Override
     public String username() {
         return this.carbonPlayer.username();
+    }
+
+    @Override
+    public boolean hasCustomDisplayName() {
+        return this.carbonPlayer.hasCustomDisplayName();
     }
 
     @Override

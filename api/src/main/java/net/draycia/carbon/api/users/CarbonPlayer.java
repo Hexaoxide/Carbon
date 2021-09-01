@@ -28,6 +28,13 @@ public interface CarbonPlayer extends Audience, Identified {
     String username();
 
     /**
+     * Checks if the player has a display name set through {@link CarbonPlayer#displayName(Component)}
+     *
+     * @return if the player has a display name set through {@link CarbonPlayer#displayName(Component)}
+     */
+    boolean hasCustomDisplayName();
+
+    /**
      * Gets the player's display name, shown in places like chat and tab menu.
      *
      * @return the player's display name
@@ -43,6 +50,17 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     void displayName(final @Nullable Component displayName);
+
+    /**
+     * Temporarily sets the player's display name.<br>
+     * Setting null is equivalent to setting the display name to the username.
+     * If the player logs off or is otherwise disconnected from the server,
+     *  their temporary display name will be reset.
+     *
+     * @param displayName the new display name
+     * @since 2.0.0
+     */
+    void temporaryDisplayName(final @Nullable Component displayName);
 
     /**
      * The player's UUID, often used for identification purposes.

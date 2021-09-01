@@ -38,13 +38,13 @@ public class BukkitPlayerJoinListener implements Listener {
                 final CarbonPlayer player = result.player();
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) this.carbonChat, () -> {
-                    if (player.displayName() != null) {
+                    if (player.hasCustomDisplayName()) {
                         player.displayName(player.displayName());
                     } else {
                         final @Nullable Component nickname = this.createDefaultNickname(player);
 
                         if (nickname != null) {
-                            player.displayName(nickname);
+                            player.temporaryDisplayName(nickname);
                         }
                     }
                 });
@@ -52,6 +52,7 @@ public class BukkitPlayerJoinListener implements Listener {
     }
 
     private @Nullable Component createDefaultNickname(final CarbonPlayer player) {
+        // TODO: command to re-calculate and apply default nicknames
         if (BukkitCapabilities.vaultEnabled()) {
             final Chat vaultChat = Objects.requireNonNull(BukkitCapabilities.chat());
             final Player bukkitPlayer = Bukkit.getPlayer(player.uuid());
