@@ -15,9 +15,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
-import static java.util.Objects.requireNonNullElseGet;
-import static net.kyori.adventure.text.Component.text;
-
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
@@ -60,13 +57,13 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public Component displayName() {
-        return requireNonNullElseGet(this.displayName, () -> text(this.username));
+    public @Nullable Component displayName() {
+        return this.displayName;
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
-        this.displayName = requireNonNullElseGet(displayName, () -> text(this.username));
+        this.displayName = displayName;
     }
 
     @Override

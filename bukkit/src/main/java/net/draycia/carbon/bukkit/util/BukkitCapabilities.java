@@ -1,5 +1,6 @@
 package net.draycia.carbon.bukkit.util;
 
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -12,6 +13,7 @@ public final class BukkitCapabilities {
 
     private static @Nullable Boolean vaultEnabled = null;
     private static @Nullable Permission permission = null;
+    private static @Nullable Chat chat = null;
 
     private BukkitCapabilities() {
 
@@ -40,6 +42,23 @@ public final class BukkitCapabilities {
         }
 
         return permission;
+    }
+
+    public static @Nullable Chat chat() {
+        if (!vaultEnabled()) {
+            return null;
+        }
+
+        if (chat == null) {
+            final @Nullable RegisteredServiceProvider<Chat> rsp = Bukkit.getServer()
+                .getServicesManager().getRegistration(Chat.class);
+
+            if (rsp != null) {
+                chat = rsp.getProvider();
+            }
+        }
+
+        return chat;
     }
 
 }

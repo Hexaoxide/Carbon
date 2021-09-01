@@ -13,6 +13,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
+import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.listeners.DeafenHandler;
@@ -33,7 +34,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     private static final Set<Class<? extends Listener>> LISTENER_CLASSES = Set.of(
-        BukkitChatListener.class
+        BukkitChatListener.class,
+        BukkitPlayerJoinListener.class
     );
     private static final int BSTATS_PLUGIN_ID = 8720;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();

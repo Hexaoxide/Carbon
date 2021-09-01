@@ -5,7 +5,10 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
 import net.kyori.moonshine.annotation.Placeholder;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public interface ConfigChannelMessageService {
 
     // TODO: locale placeholders?
@@ -13,7 +16,7 @@ public interface ConfigChannelMessageService {
     Component chatFormat(
         final Audience audience,
         @Placeholder UUID uuid,
-        @Placeholder Component displayname,
+        @Placeholder("displayname") Component displayName,
         @Placeholder String username,
         @Placeholder Component message
     );

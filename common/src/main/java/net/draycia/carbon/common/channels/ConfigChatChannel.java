@@ -3,6 +3,7 @@ package net.draycia.carbon.common.channels;
 import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -69,7 +70,7 @@ public final class ConfigChatChannel implements ChatChannel {
         return this.messageService().chatFormat(
             recipient,
             sender.uuid(),
-            sender.displayName(),
+            Objects.requireNonNullElseGet(sender.displayName(), () -> Component.text(sender.username())),
             sender.username(),
             message
         );
