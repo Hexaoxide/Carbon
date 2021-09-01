@@ -14,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
@@ -42,7 +43,7 @@ public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
     }
 
     @Override
-    public Audience audience() {
+    public @NotNull Audience audience() {
         final @Nullable Player player = this.player();
 
         if (player == null) {
@@ -103,7 +104,7 @@ public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
     }
 
     @Override
-    public @NonNull Identity identity() {
+    public @NotNull Identity identity() {
         return this.carbonPlayer.identity();
     }
 

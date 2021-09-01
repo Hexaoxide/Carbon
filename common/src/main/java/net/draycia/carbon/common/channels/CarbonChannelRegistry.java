@@ -17,6 +17,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.registry.DefaultedRegistry;
 import net.kyori.registry.RegistryImpl;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -29,14 +30,23 @@ import org.spongepowered.configurate.serialize.SerializationException;
 @DefaultQualifier(NonNull.class)
 public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implements ChannelRegistry, DefaultedRegistry<Key, ChatChannel> {
 
+    private static @MonotonicNonNull ObjectMapper<ConfigChatChannel> MAPPER;
+
+    static {
+        try {
+            MAPPER = ObjectMapper.factory().get(ConfigChatChannel.class);
+        } catch (final SerializationException e) {
+            e.printStackTrace();
+        }
+    }
+
     private final ConfigLoader configLoader;
     private final Path dataDirectory;
     private final Injector injector;
     private final Logger logger;
     private final PrimaryConfig primaryConfig;
-
-    private Key defaultKey;
-    private ChatChannel basicChannel;
+    private @MonotonicNonNull Key defaultKey;
+    private @MonotonicNonNull ChatChannel basicChannel;
 
     @Inject
     public CarbonChannelRegistry(
@@ -102,16 +112,6 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
     }
 
-    private static ObjectMapper<ConfigChatChannel> MAPPER;
-
-    static {
-        try {
-            MAPPER = ObjectMapper.factory().get(ConfigChatChannel.class);
-        } catch (final SerializationException e) {
-            e.printStackTrace();
-        }
-    }
-
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
         final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile);
 
@@ -125,17 +125,17 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
     }
 
     @Override
-    public @NonNull ChatChannel defaultValue() {
+    public ChatChannel defaultValue() {
         return Objects.requireNonNullElse(this.get(this.defaultKey), this.basicChannel);
     }
 
     @Override
-    public @NonNull Key defaultKey() {
+    public Key defaultKey() {
         return this.defaultKey;
     }
 
     @Override
-    public @NonNull ChatChannel getOrDefault(@NonNull final Key key) {
+    public ChatChannel getOrDefault(final Key key) {
         final @Nullable ChatChannel channel = this.get(key);
 
         if (channel != null) {

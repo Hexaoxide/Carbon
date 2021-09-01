@@ -19,13 +19,13 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("net.kyori.adventure.text.minimessage")
   relocateDependency("net.kyori.adventure.serializer.configurate4")
   relocateDependency("net.kyori.event")
+  relocateDependency("net.kyori.moonshine")
   relocateDependency("net.kyori.registry")
   relocateDependency("cloud.commandframework")
   relocateDependency("org.spongepowered.configurate")
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.common")
   relocateDependency("com.google.thirdparty.publicsuffix")
-  relocateDependency("com.proximyst.moonshine")
   relocateDependency("it.unimi.dsi.fastutil")
 }
 

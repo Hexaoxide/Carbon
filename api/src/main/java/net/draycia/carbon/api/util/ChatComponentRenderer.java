@@ -23,8 +23,8 @@ public interface ChatComponentRenderer {
      *                        may be a player, console, or other Audience implementations
      * @param message         the message being sent
      * @param originalMessage the original message that was sent
-     * @return                the component to be shown to the recipient,
-     *                        or empty if the recipient should not receive the message
+     * @return the component to be shown to the recipient,
+     *     or empty if the recipient should not receive the message
      * @since 2.0.0
      */
     @NonNull

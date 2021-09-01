@@ -1,5 +1,3 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission.Default.TRUE
-
 plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
@@ -35,8 +33,7 @@ tasks {
     relocateDependency("javax.inject")
   }
   runServer {
-    minecraftVersion("1.17")
-    jvmArgs("-DLog4jContextSelector=org.apache.logging.log4j.core.selector.ClassLoaderContextSelector") // https://github.com/PaperMC/Paper/issues/4155
+    minecraftVersion("1.17.1")
   }
 }
 
@@ -50,12 +47,4 @@ bukkit {
   softDepend = listOf("PlaceholderAPI", "Vault")
   loadBefore = listOf("Essentials")
   website = GITHUB_REPO_URL
-  permissions {
-    register("carbonchat.channels.global.see") {
-      default = TRUE
-    }
-    register("carbonchat.channels.global.use") {
-      default = TRUE
-    }
-  }
 }

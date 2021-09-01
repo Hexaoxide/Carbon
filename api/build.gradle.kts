@@ -23,13 +23,14 @@ dependencies {
 
   api(libs.kyoriEventApi)
   api(libs.kyoriRegistry)
+  api(libs.kyoriMoonshine)
+  api(libs.kyoriMoonshineCore)
+  api(libs.kyoriMoonshineStandard)
 
   api(libs.cloudCore)
   api(libs.cloudMinecraftExtras) {
     isTransitive = false
   }
-
-  api(libs.moonshine)
 
   // we shade and relocate a newer version than minecraft provides
   api(libs.guava)

@@ -12,11 +12,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatProvider {
 
+    private static @Nullable CarbonChat instance;
+
     private CarbonChatProvider() {
 
     }
-
-    private static @Nullable CarbonChat instance;
 
     /**
      * Registers the {@link CarbonChat} implementation.

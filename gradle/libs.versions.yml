@@ -27,8 +27,8 @@ versions:
   paperLib: 1.0.6
   kyoriEventApi: 5.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT
+  kyoriMoonshine: 2.0.0-SNAPSHOT
   log4j: 2.11.2
-  moonshine: 0.2.4-SNAPSHOT
   guice: 5.0.1
   velocityApi: 3.0.0-SNAPSHOT
 
@@ -66,11 +66,6 @@ dependencies:
     group: org.apache.logging.log4j
     name: log4j-api
 
-  moonshine:
-    group: com.proximyst.moonshine
-    name: core
-    version: { ref: moonshine }
-
   kyoriEventApi:
     group: net.kyori
     name: event-api
@@ -79,6 +74,18 @@ dependencies:
     group: net.kyori
     name: registry
     version: { ref: kyoriRegistry }
+  kyoriMoonshine:
+    group: net.kyori.moonshine
+    name: moonshine
+    version: { ref: kyoriMoonshine }
+  kyoriMoonshineCore:
+    group: net.kyori.moonshine
+    name: moonshine-core
+    version: { ref: kyoriMoonshine }
+  kyoriMoonshineStandard:
+    group: net.kyori.moonshine
+    name: moonshine-standard
+    version: { ref: kyoriMoonshine }
 
   cloudCore:
     group: cloud.commandframework

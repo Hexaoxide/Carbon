@@ -17,7 +17,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonEventHandler {
 
     private final EventBus<CarbonEvent> eventBus = EventBus.create(CarbonEvent.class, (type, event, subscriber) -> {
-        if (event instanceof ResultedCarbonEvent<?> rce) {
+        if (event instanceof ResultedCarbonEvent<@NonNull ?> rce) {
             return !rce.result().cancelled();
         }
         return true;

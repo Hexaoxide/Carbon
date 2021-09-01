@@ -3,8 +3,10 @@ package net.draycia.carbon.bukkit;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
@@ -28,6 +30,8 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
 
     private final CarbonChatBukkit chatBukkitEntry;
     private final UserManager userManager;
+
+    private final Map<UUID, CarbonPlayerBukkit> userCache = new ConcurrentHashMap<>();
 
     @Inject
     private CarbonServerBukkit(final CarbonChatBukkit chatBukkitEntry, final UserManager userManager) {
@@ -61,23 +65,36 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
     }
 
     private CompletableFuture<ComponentPlayerResult> wrapPlayer(final UUID uuid) {
-        return this.userManager.carbonPlayer(uuid).thenCompose(result -> {
-            return CompletableFuture.supplyAsync(() -> {
-                if (result.player() != null) {
-                    new ComponentPlayerResult(new CarbonPlayerBukkit(result.player()), Component.empty());
-                }
+        return CompletableFuture.supplyAsync(() -> {
+            final @Nullable CarbonPlayerBukkit cachedPlayer = this.userCache.get(uuid);
 
-                final @Nullable String name = this.resolveName(uuid).join();
+            if (cachedPlayer != null) {
+                return new ComponentPlayerResult(cachedPlayer, Component.empty());
+            }
 
-                if (name != null) {
-                    final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
-                        null, name, uuid);
+            final ComponentPlayerResult result = this.userManager.carbonPlayer(uuid).join();
 
-                    return new ComponentPlayerResult(new CarbonPlayerBukkit(player), Component.empty());
-                }
+            if (result.player() != null) {
+                final CarbonPlayerBukkit carbonPlayerBukkit = new CarbonPlayerBukkit(result.player());
 
-                return new ComponentPlayerResult(null, text("Name not found for uuid!"));
-            });
+                this.userCache.put(uuid, carbonPlayerBukkit);
+
+                return new ComponentPlayerResult(carbonPlayerBukkit, Component.empty());
+            }
+
+            final @Nullable String name = this.resolveName(uuid).join();
+
+            if (name != null) {
+                final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
+                    null, name, uuid);
+                final CarbonPlayerBukkit carbonPlayerBukkit = new CarbonPlayerBukkit(player);
+
+                this.userCache.put(uuid, carbonPlayerBukkit);
+
+                return new ComponentPlayerResult(carbonPlayerBukkit, Component.empty());
+            }
+
+            return new ComponentPlayerResult(null, text("Name not found for uuid!"));
         });
     }
 

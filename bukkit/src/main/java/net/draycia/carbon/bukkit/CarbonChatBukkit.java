@@ -13,6 +13,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
+import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.listeners.DeafenHandler;
@@ -26,22 +27,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
+@DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     private static final Set<Class<? extends Listener>> LISTENER_CLASSES = Set.of(
-        BukkitChatListener.class
+        BukkitChatListener.class,
+        BukkitPlayerJoinListener.class
     );
     private static final int BSTATS_PLUGIN_ID = 8720;
-
+    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
     private @MonotonicNonNull Injector injector;
-
-    private UserManager userManager;
-    private Logger logger;
-    private CarbonServerBukkit carbonServerBukkit;
-    private CarbonMessageService messageService;
-    private ChannelRegistry channelRegistry;
+    private @MonotonicNonNull UserManager userManager;
+    private @MonotonicNonNull Logger logger;
+    private @MonotonicNonNull CarbonServerBukkit carbonServerBukkit;
+    private @MonotonicNonNull CarbonMessageService messageService;
+    private @MonotonicNonNull ChannelRegistry channelRegistry;
 
     @Override
     public void onLoad() {
@@ -133,8 +136,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     public CarbonMessageService messageService() {
         return this.messageService;
     }
-
-    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
     @Override
     public final @NonNull CarbonEventHandler eventHandler() {

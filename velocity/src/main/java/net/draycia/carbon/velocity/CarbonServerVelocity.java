@@ -28,6 +28,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -47,7 +48,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
     }
 
     @Override
-    public Audience audience() {
+    public @NotNull Audience audience() {
         return Audience.audience(this.console(), Audience.audience(this.players()));
     }
 
@@ -123,12 +124,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                     .GET()
                     .build();
 
-                final HttpResponse<String> response =
-                    this.client.send(request, HttpResponse.BodyHandlers.ofString());
-                final String mojangResponse = response.body();
-
-                final JsonArray jsonArray = this.gson.fromJson(mojangResponse, JsonObject.class).getAsJsonArray();
-                final JsonObject json = (JsonObject) jsonArray.get(1);
+                final JsonObject json = this.queryMojang(request);
 
                 return UuidUtils.fromUndashed(json.get("uuid").getAsString());
             } catch (final URISyntaxException | IOException | InterruptedException e) {
@@ -148,12 +144,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                     .GET()
                     .build();
 
-                final HttpResponse<String> response =
-                    this.client.send(request, HttpResponse.BodyHandlers.ofString());
-                final String mojangResponse = response.body();
-
-                final JsonArray jsonArray = this.gson.fromJson(mojangResponse, JsonObject.class).getAsJsonArray();
-                final JsonObject json = (JsonObject) jsonArray.get(1);
+                final JsonObject json = this.queryMojang(request);
 
                 return json.get("name").getAsString();
             } catch (final URISyntaxException | IOException | InterruptedException e) {
@@ -162,6 +153,15 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
 
             return null;
         });
+    }
+
+    private JsonObject queryMojang(final HttpRequest request) throws IOException, InterruptedException {
+        final HttpResponse<String> response =
+            this.client.send(request, HttpResponse.BodyHandlers.ofString());
+        final String mojangResponse = response.body();
+
+        final JsonArray jsonArray = this.gson.fromJson(mojangResponse, JsonObject.class).getAsJsonArray();
+        return (JsonObject) jsonArray.get(1);
     }
 
 }

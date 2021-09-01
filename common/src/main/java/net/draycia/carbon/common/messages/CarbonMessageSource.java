@@ -2,7 +2,6 @@ package net.draycia.carbon.common.messages;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.proximyst.moonshine.message.IMessageSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,6 +27,7 @@ import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.translation.Translator;
+import net.kyori.moonshine.message.IMessageSource;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -35,7 +35,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public final class CarbonMessageSource implements IMessageSource<String, Audience> {
+public final class CarbonMessageSource implements IMessageSource<Audience, String> {
 
     private final Locale defaultLocale;
     private final Map<Locale, Properties> locales = new HashMap<>();
@@ -109,11 +109,11 @@ public final class CarbonMessageSource implements IMessageSource<String, Audienc
     }
 
     @Override
-    public String message(final String key, final Audience receiver) {
+    public String messageOf(final Audience receiver, final String messageKey) {
         if (receiver instanceof CarbonPlayer player) {
-            return this.forPlayer(key, player);
+            return this.forPlayer(messageKey, player);
         } else {
-            return this.forAudience(key, receiver);
+            return this.forAudience(messageKey, receiver);
         }
     }
 

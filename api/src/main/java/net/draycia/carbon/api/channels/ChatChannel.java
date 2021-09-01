@@ -52,7 +52,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     /**
      * Filters the given recipients and removes entries that may not see messages in this channel.
      *
-     * @param sender the sender of messages
+     * @param sender     the sender of messages
      * @param recipients the recipients
      * @return the recipients that may receive messages
      * @since 2.0.0

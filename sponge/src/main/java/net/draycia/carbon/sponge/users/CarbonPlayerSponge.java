@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -37,7 +38,7 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public @NotNull Audience audience() {
         return this.player()
             .map(player -> (Audience) player)
             .orElseGet(Audience::empty);
@@ -71,12 +72,12 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
         return this.carbonPlayer.uuid();
     }
 
-    private @NonNull Optional<ServerPlayer> player() {
+    private Optional<ServerPlayer> player() {
         return Sponge.server().player(this.carbonPlayer.uuid());
     }
 
     @Override
-    public @NonNull Component createItemHoverComponent() {
+    public Component createItemHoverComponent() {
         final @Nullable ServerPlayer player = this.player().orElse(null);
         if (player == null) {
             return Component.empty();
@@ -93,7 +94,7 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
         return this.fromStack(itemStack);
     }
 
-    private @NonNull Component fromStack(final @NonNull ItemStack stack) {
+    private Component fromStack(final ItemStack stack) {
         return stack.get(Keys.DISPLAY_NAME)
 
             // This is here as a fallback, but really, every ItemStack should
@@ -175,7 +176,7 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     }
 
     @Override
-    public @NonNull Identity identity() {
+    public @NotNull Identity identity() {
         return this.carbonPlayer.identity();
     }
 

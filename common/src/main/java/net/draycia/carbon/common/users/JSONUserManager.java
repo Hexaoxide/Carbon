@@ -9,9 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
@@ -32,11 +34,10 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public class JSONUserManager implements UserManager {
 
-    private final Path dataDirectory;
-    private final Injector injector;
     private final Logger logger;
     private final Gson serializer;
     private final Path userDirectory;
+    private final CarbonChat carbonChat;
 
     private final Map<UUID, CarbonPlayerCommon> userCache = new ConcurrentHashMap<>();
 
@@ -44,20 +45,20 @@ public class JSONUserManager implements UserManager {
     public JSONUserManager(
         final @ForCarbon Path dataDirectory,
         final Injector injector,
-        final Logger logger
-    ) throws IOException {
-        this.dataDirectory = dataDirectory;
-        this.injector = injector;
+        final Logger logger,
+        final CarbonChat carbonChat
+        ) throws IOException {
         this.logger = logger;
-        this.userDirectory = this.dataDirectory.resolve("users");
+        this.userDirectory = dataDirectory.resolve("users");
+        this.carbonChat = carbonChat;
 
         Files.createDirectories(this.userDirectory);
 
         this.serializer = GsonComponentSerializer.gson().populator()
             .apply(new GsonBuilder())
-            .registerTypeAdapter(CarbonPlayerCommon.class, this.injector.getInstance(CarbonPlayerSerializerGson.class))
-            .registerTypeAdapter(ChatChannel.class, this.injector.getInstance(ChatChannelSerializerGson.class))
-            .registerTypeAdapter(UUID.class, this.injector.getInstance(UUIDSerializerGson.class))
+            .registerTypeAdapter(CarbonPlayerCommon.class, injector.getInstance(CarbonPlayerSerializerGson.class))
+            .registerTypeAdapter(ChatChannel.class, injector.getInstance(ChatChannelSerializerGson.class))
+            .registerTypeAdapter(UUID.class, injector.getInstance(UUIDSerializerGson.class))
             .create();
     }
 
@@ -86,7 +87,15 @@ public class JSONUserManager implements UserManager {
                 }
             }
 
-            return new ComponentPlayerResult(null, text("No save file found for player."));
+            final String name = Objects.requireNonNull(
+                this.carbonChat.server().resolveName(uuid).join());
+
+            final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
+                null, name, uuid);
+
+            this.userCache.put(uuid, player);
+
+            return new ComponentPlayerResult(player, empty());
         });
     }
 

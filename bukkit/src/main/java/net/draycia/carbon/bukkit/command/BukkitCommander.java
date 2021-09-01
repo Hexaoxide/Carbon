@@ -5,30 +5,21 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public interface BukkitCommander extends Commander, ForwardingAudience.Single {
 
-    @NonNull CommandSender commandSender();
-
-    static @NonNull BukkitCommander from(final @NonNull CommandSender sender) {
+    static BukkitCommander from(final CommandSender sender) {
         return new BukkitCommanderImpl(sender);
     }
 
-    final class BukkitCommanderImpl implements BukkitCommander {
+    CommandSender commandSender();
 
-        private final CommandSender commandSender;
-
-        private BukkitCommanderImpl(final @NonNull CommandSender commandSender) {
-            this.commandSender = commandSender;
-        }
+    record BukkitCommanderImpl(CommandSender commandSender) implements BukkitCommander {
 
         @Override
-        public @NonNull CommandSender commandSender() {
-            return this.commandSender;
-        }
-
-        @Override
-        public @NonNull Audience audience() {
+        public Audience audience() {
             return this.commandSender;
         }
 

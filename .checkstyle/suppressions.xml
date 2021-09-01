@@ -23,12 +23,16 @@
 <!--  SOFTWARE.-->
 
 <!DOCTYPE suppressions PUBLIC
-  "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
-  "http://checkstyle.org/dtds/suppressions_1_2.dtd">
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "http://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
-  <!-- add any necessary suppressions here -->
-  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*" checks="FilteringWriteTag" />
-  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*" checks="MissingJavadocMethod" />
-  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*" checks="MissingJavadocPackage" />
-  <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*" checks="MissingJavadocType" />
+    <!-- add any necessary suppressions here -->
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*"
+              checks="FilteringWriteTag"/>
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*"
+              checks="MissingJavadocMethod"/>
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*"
+              checks="MissingJavadocPackage"/>
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity)[\\/].*"
+              checks="MissingJavadocType"/>
 </suppressions>

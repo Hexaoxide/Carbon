@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -36,7 +37,7 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public Audience audience() {
+    public @NotNull Audience audience() {
         return this.game.server();
     }
 
@@ -114,7 +115,7 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
         return CompletableFuture.supplyAsync(() ->
-            Sponge.server().gameProfileManager().basicProfile(uuid).join().name().get()
+            Sponge.server().gameProfileManager().basicProfile(uuid).join().name().orElse(null)
         );
     }
 

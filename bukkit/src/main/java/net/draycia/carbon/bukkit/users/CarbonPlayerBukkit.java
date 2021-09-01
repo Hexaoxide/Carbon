@@ -1,9 +1,9 @@
 package net.draycia.carbon.bukkit.users;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -13,20 +13,33 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements ForwardingAudience.Single {
 
     private final CarbonPlayer carbonPlayer;
+    private @MonotonicNonNull Scoreboard scoreboard = null;
 
     public CarbonPlayerBukkit(final CarbonPlayer carbonPlayer) {
         this.carbonPlayer = carbonPlayer;
+    }
+
+    private @NonNull Scoreboard scoreboard() {
+        if (this.scoreboard == null) {
+            this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        }
+
+        return this.scoreboard;
     }
 
     @Override
@@ -36,7 +49,10 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
         final @Nullable Player player = this.player();
 
         if (player != null) {
+            // Update player's name in chat
             player.displayName(displayName);
+
+            // Update player's name in the tab player list
             player.playerListName(displayName);
         }
     }
@@ -47,7 +63,18 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public Component displayName() {
+    public @Nullable Component displayName() {
+        //        if (this.carbonPlayer.displayName() != null) {
+        //            return this.carbonPlayer.displayName();
+        //        }
+
+        //        final @Nullable Player player = this.player();
+        //
+        //        if (player != null) {
+        //            return player.displayName();
+        //        }
+
+        //        return null;
         return this.carbonPlayer.displayName();
     }
 
@@ -57,7 +84,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public @NotNull Audience audience() {
         final @Nullable Player player = this.player();
 
         if (player == null) {
@@ -73,7 +100,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public @NonNull Component createItemHoverComponent() {
+    public Component createItemHoverComponent() {
         final @Nullable Player player = this.player(); // This is temporary (it's not)
 
         if (player == null) {
@@ -124,13 +151,10 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
             return "default";
         }
 
-        final String group = BukkitCapabilities.permission().getPrimaryGroup(this.player());
+        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
+        final String group = permission.getPrimaryGroup(this.player());
 
-        if (group != null) {
-            return group;
-        }
-
-        return "default";
+        return Objects.requireNonNullElse(group, "default");
     }
 
     @Override
@@ -139,7 +163,8 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
             return List.of("default");
         }
 
-        final String[] groups = BukkitCapabilities.permission().getPlayerGroups(this.player());
+        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
+        final String[] groups = permission.getPlayerGroups(this.player());
 
         if (groups != null && groups.length != 0) {
             return Arrays.asList(groups);
@@ -204,7 +229,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public @NonNull Identity identity() {
+    public Identity identity() {
         return this.carbonPlayer.identity();
     }
 

@@ -9,7 +9,6 @@ import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
@@ -37,7 +36,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         final PluginContainer pluginContainer,
         final ProxyServer proxyServer,
         final CarbonChatVelocity carbonChatVelocity
-    ) throws URISyntaxException {
+    ) {
         this.logger = logger;
         this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
@@ -47,7 +46,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
 
     @Provides
     @Singleton
-    protected @NonNull CommandManager<Commander> createCommandManager() {
+    protected CommandManager<Commander> createCommandManager() {
         final VelocityCommandManager<Commander> commandManager = new VelocityCommandManager<>(
             this.pluginContainer,
             this.proxyServer,

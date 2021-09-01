@@ -1,6 +1,6 @@
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.PluginDependency
-import java.util.Locale
+import java.util.*
 
 plugins {
   id("carbon.shadow-platform")

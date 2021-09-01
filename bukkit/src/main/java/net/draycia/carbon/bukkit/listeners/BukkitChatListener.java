@@ -14,12 +14,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 
+@DefaultQualifier(NonNull.class)
 public final class BukkitChatListener implements Listener {
 
     private final CarbonChatBukkit carbonChat;
@@ -75,11 +77,15 @@ public final class BukkitChatListener implements Listener {
             Component component = message;
 
             for (final var renderer : chatEvent.renderers()) {
-                if (viewer instanceof Player player) {
-                    final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(player).join();
-                    component = renderer.render(playerResult.player(), targetPlayer.player(), component, message);
-                } else {
-                    component = renderer.render(playerResult.player(), viewer, component, message);
+                try {
+                    if (viewer instanceof Player player) {
+                        final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(player).join();
+                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, message);
+                    } else {
+                        component = renderer.render(playerResult.player(), viewer, component, message);
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
                 }
             }
 

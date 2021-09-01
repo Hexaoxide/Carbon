@@ -1,6 +1,7 @@
 package net.draycia.carbon.bukkit;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -41,7 +43,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         final PaperCommandManager<Commander> commandManager;
 
         try {
-            commandManager = new PaperCommandManager<Commander>(
+            commandManager = new PaperCommandManager<>(
                 this.carbonChat,
                 AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
                 commandSender -> {
@@ -59,7 +61,8 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
 
-        final var brigadierManager = commandManager.brigadierManager();
+        final @Nullable CloudBrigadierManager<Commander, ?> brigadierManager =
+            commandManager.brigadierManager();
 
         if (brigadierManager != null) {
             brigadierManager.setNativeNumberSuggestions(false);
