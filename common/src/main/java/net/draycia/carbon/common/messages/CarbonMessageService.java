@@ -35,4 +35,10 @@ public interface CarbonMessageService {
     @Message("mute.spy.prefix")
     Component muteSpyPrefix(final Audience audience);
 
+    @Message("channel.change")
+    void changedChannels(
+        final Audience audience,
+        @Placeholder final String channel // TODO: allow MiniMessage based channel "names"
+    );
+
 }

@@ -1,5 +1,7 @@
 package net.draycia.carbon.common.channels;
 
+import cloud.commandframework.CommandManager;
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -11,8 +13,11 @@ import java.util.stream.Stream;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
 import net.kyori.registry.DefaultedRegistry;
 import net.kyori.registry.RegistryImpl;
@@ -47,6 +52,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
     private final PrimaryConfig primaryConfig;
     private @MonotonicNonNull Key defaultKey;
     private @MonotonicNonNull ChatChannel basicChannel;
+    private final CarbonMessageService messageService;
 
     @Inject
     public CarbonChannelRegistry(
@@ -54,13 +60,15 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         @ForCarbon final Path dataDirectory,
         final Injector injector,
         final Logger logger,
-        final PrimaryConfig primaryConfig
+        final PrimaryConfig primaryConfig,
+        final CarbonMessageService messageService
     ) {
         this.configLoader = configLoader;
         this.dataDirectory = dataDirectory;
         this.injector = injector;
         this.logger = logger;
         this.primaryConfig = primaryConfig;
+        this.messageService = messageService;
     }
 
     public void loadChannels() {
@@ -95,6 +103,9 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
 
         try (final Stream<Path> paths = Files.walk(channelDirectory)) {
+            final CommandManager<Commander> commandManager = (CommandManager<Commander>)
+                this.injector.getInstance(com.google.inject.Key.get(new TypeToken<CommandManager<Commander>>() {}.getType()));
+
             paths.forEach(path -> {
                 final String fileName = path.getFileName().toString();
 
@@ -102,8 +113,22 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
                     final @Nullable ChatChannel channel = this.loadChannel(path);
 
                     if (channel != null) {
-                        this.logger.info("Registering channel with key [" + channel.key() + "]");
-                        register(channel.key(), channel);
+                        final Key channelKey = channel.key();
+
+                        this.logger.info("Registering channel with key [" + channelKey + "]");
+                        register(channelKey, channel);
+
+                        var command = commandManager.commandBuilder(channelKey.value())
+                            //.literal(channelKey.toString(), channelKey.value())
+                            .permission("carbon.channel." + channelKey)
+                            .senderType(PlayerCommander.class)
+                            .handler(handler -> {
+                                ((PlayerCommander)handler.getSender()).carbonPlayer().selectedChannel(channel);
+                                this.messageService.changedChannels(handler.getSender(), channel.key().value());
+                            })
+                            .build(); // TODO: command aliases
+
+                        commandManager.command(command);
                     }
                 }
             });

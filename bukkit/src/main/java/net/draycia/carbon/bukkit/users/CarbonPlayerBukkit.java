@@ -58,7 +58,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public void temporaryDisplayName(@Nullable Component displayName) {
+    public void temporaryDisplayName(final @Nullable Component displayName) {
         this.carbonPlayer.temporaryDisplayName(displayName);
 
         final @Nullable Player player = this.player();
