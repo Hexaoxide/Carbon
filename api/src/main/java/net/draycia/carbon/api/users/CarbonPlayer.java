@@ -3,6 +3,7 @@ package net.draycia.carbon.api.users;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
@@ -171,5 +172,15 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     void spying(final boolean spying);
+
+    /**
+     * Sends the message as the player.
+     *
+     * @param message the message to be sent
+     * //@return the message result
+     * @since 2.0.0
+     */
+    // TODO: change return type, provide information useful like what message was actually sent?
+    void sendMessageAsPlayer(final String message);
 
 }

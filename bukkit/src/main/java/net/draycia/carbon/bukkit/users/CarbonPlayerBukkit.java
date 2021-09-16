@@ -253,4 +253,11 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
         return this.carbonPlayer.identity();
     }
 
+    @Override
+    public void sendMessageAsPlayer(String message) {
+        Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("CarbonChat"), () -> {
+            Objects.requireNonNull(this.player()).chat(message);
+        });
+    }
+
 }

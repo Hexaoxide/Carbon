@@ -1,6 +1,8 @@
 package net.draycia.carbon.common.channels;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.CommandArgument;
+import cloud.commandframework.arguments.standard.StringArgument;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -119,12 +121,18 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
                         register(channelKey, channel);
 
                         var command = commandManager.commandBuilder(channelKey.value())
-                            //.literal(channelKey.toString(), channelKey.value())
+                            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build())
                             .permission("carbon.channel." + channelKey)
                             .senderType(PlayerCommander.class)
                             .handler(handler -> {
-                                ((PlayerCommander)handler.getSender()).carbonPlayer().selectedChannel(channel);
-                                this.messageService.changedChannels(handler.getSender(), channel.key().value());
+                                if (handler.contains("message")) {
+                                    final String message = handler.get("message");
+
+                                    ((PlayerCommander)handler.getSender()).carbonPlayer().sendMessageAsPlayer(message);
+                                } else {
+                                    ((PlayerCommander)handler.getSender()).carbonPlayer().selectedChannel(channel);
+                                    this.messageService.changedChannels(handler.getSender(), channel.key().value());
+                                }
                             })
                             .build(); // TODO: command aliases
 
