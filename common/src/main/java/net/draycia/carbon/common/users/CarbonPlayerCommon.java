@@ -126,6 +126,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     public void sendMessageAsPlayer(String message) { }
 
     @Override
+    public boolean online() {
+        return false;
+    }
+
+    @Override
     public Identity identity() {
         return Identity.identity(this.uuid);
     }

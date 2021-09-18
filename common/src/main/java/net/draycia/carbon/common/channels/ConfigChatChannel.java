@@ -11,10 +11,10 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageService;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
-import net.draycia.carbon.common.messages.CarbonMessageRenderer;
-import net.draycia.carbon.common.messages.CarbonMessageSender;
+import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.channels.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
-import net.draycia.carbon.common.messages.ReceiverResolver;
+import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
@@ -22,6 +22,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
+import net.kyori.moonshine.message.IMessageRenderer;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -68,7 +69,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final Component originalMessage
     ) {
         return this.messageService().chatFormat(
-            recipient,
+            new SourcedAudience(sender, recipient),
             sender.uuid(),
             Objects.requireNonNullElseGet(sender.displayName(), () -> Component.text(sender.username())),
             sender.username(),
@@ -121,19 +122,19 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     private @Nullable ConfigChannelMessageService createMessageService() {
-        final ReceiverResolver serverReceiverResolver = new ReceiverResolver();
-        final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
-        final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
-        final StringPlaceholderResolver<Audience> stringPlaceholderResolver = new StringPlaceholderResolver<>();
-        final CarbonMessageRenderer carbonMessageRenderer = new CarbonMessageRenderer();
-        final CarbonMessageSender carbonMessageSender = new CarbonMessageSender();
+        final SourcedReceiverResolver serverReceiverResolver = new SourcedReceiverResolver();
+        final ComponentPlaceholderResolver<SourcedAudience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
+        final UUIDPlaceholderResolver<SourcedAudience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
+        final StringPlaceholderResolver<SourcedAudience> stringPlaceholderResolver = new StringPlaceholderResolver<>();
+        final IMessageRenderer<SourcedAudience, String, Component, Component> configMessageRenderer = CarbonChatProvider.carbonChat().messageRenderer();
+        final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
         try {
-            return Moonshine.<ConfigChannelMessageService, Audience>builder(new TypeToken<>() {
+            return Moonshine.<ConfigChannelMessageService, SourcedAudience>builder(new TypeToken<>() {
             })
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
-                .rendered(carbonMessageRenderer)
+                .rendered(configMessageRenderer)
                 .sent(carbonMessageSender)
                 .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)

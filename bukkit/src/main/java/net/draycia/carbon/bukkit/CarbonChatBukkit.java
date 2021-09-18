@@ -12,13 +12,18 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
+import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
@@ -140,6 +145,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     @Override
     public final @NonNull CarbonEventHandler eventHandler() {
         return this.eventHandler;
+    }
+
+    @Override
+    public IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer() {
+        return new BukkitMessageRenderer();
     }
 
 }

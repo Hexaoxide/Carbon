@@ -260,4 +260,9 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
         });
     }
 
+    @Override
+    public boolean online() {
+        return this.player() != null;
+    }
+
 }

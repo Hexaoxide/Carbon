@@ -183,4 +183,12 @@ public interface CarbonPlayer extends Audience, Identified {
     // TODO: change return type, provide information useful like what message was actually sent?
     void sendMessageAsPlayer(final String message);
 
+    /**
+     * Returns whether or not the player is online.
+     *
+     * @return if the player is online.
+     * @since 2.0.0
+     */
+    boolean online();
+
 }

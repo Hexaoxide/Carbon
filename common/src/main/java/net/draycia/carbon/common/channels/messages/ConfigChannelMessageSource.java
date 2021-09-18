@@ -3,6 +3,7 @@ package net.draycia.carbon.common.channels.messages;
 import java.util.Locale;
 import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.message.IMessageSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -13,7 +14,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
-public class ConfigChannelMessageSource implements IMessageSource<Audience, String> {
+public class ConfigChannelMessageSource implements IMessageSource<SourcedAudience, String> {
 
     // Map<String, String> -> Map<Group, Format>
     // "default" key will be configurable but let's not worry about that for now
@@ -37,11 +38,11 @@ public class ConfigChannelMessageSource implements IMessageSource<Audience, Stri
         Map.of("default", "<displayname>: <message>"));
 
     @Override
-    public String messageOf(final Audience receiver, final String messageKey) {
-        if (receiver instanceof CarbonPlayer player) {
+    public String messageOf(final SourcedAudience receiver, final String messageKey) {
+        if (receiver.recipient() instanceof CarbonPlayer player) {
             return this.forPlayer(messageKey, player);
         } else {
-            return this.forAudience(messageKey, receiver);
+            return this.forAudience(messageKey, receiver.recipient());
         }
     }
 

@@ -3,6 +3,9 @@ package net.draycia.carbon.api;
 import java.nio.file.Path;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.util.SourcedAudience;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -57,5 +60,7 @@ public interface CarbonChat {
      * @since 2.0.0
      */
     ChannelRegistry channelRegistry();
+
+    IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer();
 
 }
