@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.messages;
 
 import java.util.UUID;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
@@ -39,6 +40,20 @@ public interface CarbonMessageService {
     void changedChannels(
         final Audience audience,
         @Placeholder final String channel // TODO: allow MiniMessage based channel "names"
+    );
+
+    @Message("whisper.to")
+    void whisperSender(
+        final SourcedAudience audience,
+        @Placeholder Component senderDisplayName,
+        @Placeholder Component recipientDisplayName
+    );
+
+    @Message("whisper.from")
+    void whisperRecipient(
+        final SourcedAudience audience,
+        @Placeholder Component senderDisplayName,
+        @Placeholder Component recipientDisplayName
     );
 
 }
