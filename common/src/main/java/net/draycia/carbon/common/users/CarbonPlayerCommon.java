@@ -26,6 +26,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected boolean spying = false;
     protected @MonotonicNonNull String username;
     protected @MonotonicNonNull UUID uuid;
+    protected @Nullable UUID whisperReplyTarget = null;
 
     public CarbonPlayerCommon(
         final @Nullable Component displayName,
@@ -128,6 +129,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public boolean online() {
         return false;
+    }
+
+    @Override
+    public @Nullable UUID whisperReplyTarget() {
+        return this.whisperReplyTarget;
+    }
+
+    @Override
+    public void whisperReplyTarget(@Nullable UUID uuid) {
+        this.whisperReplyTarget = uuid;
     }
 
     @Override

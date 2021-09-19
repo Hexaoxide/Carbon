@@ -46,14 +46,16 @@ public interface CarbonMessageService {
     void whisperSender(
         final SourcedAudience audience,
         @Placeholder Component senderDisplayName,
-        @Placeholder Component recipientDisplayName
+        @Placeholder Component recipientDisplayName,
+        @Placeholder String message
     );
 
     @Message("whisper.from")
     void whisperRecipient(
         final SourcedAudience audience,
         @Placeholder Component senderDisplayName,
-        @Placeholder Component recipientDisplayName
+        @Placeholder Component recipientDisplayName,
+        @Placeholder String message
     );
 
 }
