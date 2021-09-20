@@ -30,7 +30,7 @@ public class WhisperCommand {
                 final CarbonPlayer recipient = handler.get("recipient");
 
                 if (sender.equals(recipient)) {
-                    // TODO: send error message "you cannot whisper yourself!"
+                    messageService.whisperSelfError(sender, sender.displayName());
                     return;
                 }
 

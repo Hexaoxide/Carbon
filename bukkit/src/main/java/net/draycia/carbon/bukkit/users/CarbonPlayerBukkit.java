@@ -266,6 +266,11 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
+    public void whisperReplyTarget(@Nullable UUID uuid) {
+        this.carbonPlayer.whisperReplyTarget(uuid);
+    }
+
+    @Override
     public @Nullable UUID whisperReplyTarget() {
         return this.carbonPlayer.whisperReplyTarget();
     }

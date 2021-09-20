@@ -32,7 +32,7 @@ public class ReplyCommand {
                 final UUID replyTarget = sender.whisperReplyTarget();
 
                 if (replyTarget == null) {
-                    // TODO: send error message "no reply target"
+                    messageService.replyTargetNotSet(sender, sender.displayName());
                     return;
                 }
 
@@ -40,12 +40,12 @@ public class ReplyCommand {
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (recipient == null) {
-                    // TODO: send error message "reply target not online"
+                    messageService.replyTargetOffline(sender, sender.displayName());
                     return;
                 }
 
                 if (sender.equals(recipient)) {
-                    // TODO: send error message "you cannot whisper yourself!"
+                    messageService.whisperSelfError(sender, sender.displayName());
                     return;
                 }
 

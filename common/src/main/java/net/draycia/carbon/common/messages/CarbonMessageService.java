@@ -58,4 +58,22 @@ public interface CarbonMessageService {
         @Placeholder String message
     );
 
+    @Message("reply.target.missing")
+    void replyTargetNotSet(
+        final Audience audience,
+        @Placeholder Component senderDisplayName
+    );
+
+    @Message("reply.target.offline")
+    void replyTargetOffline(
+        final Audience audience,
+        @Placeholder Component senderDisplayName
+    );
+
+    @Message("reply.target.self")
+    void whisperSelfError(
+        final Audience audience,
+        @Placeholder Component senderDisplayName
+    );
+
 }
