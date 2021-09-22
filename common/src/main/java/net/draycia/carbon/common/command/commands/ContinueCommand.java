@@ -13,34 +13,34 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
-public class ReplyCommand {
+public class ContinueCommand {
 
     @Inject
-    public ReplyCommand(
+    public ContinueCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
         final CarbonChat carbonChat
-        ) {
-        var command = commandManager.commandBuilder("reply", "r")
+    ) {
+        var command = commandManager.commandBuilder("continue", "c")
             .argument(StringArgument.greedy("message"))
-            .permission("carbon.whisper.reply") // TODO: carbon.whisper.spy
+            .permission("carbon.whisper.continue") // TODO: carbon.whisper.spy
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
 
                 final String message = handler.get("message");
-                final UUID replyTarget = sender.whisperReplyTarget();
+                final UUID whisperTarget = sender.lastWhisperTarget();
 
-                if (replyTarget == null) {
-                    messageService.replyTargetNotSet(sender, sender.displayName());
+                if (whisperTarget == null) {
+                    messageService.whisperTargetNotSet(sender, sender.displayName());
                     return;
                 }
 
-                final ComponentPlayerResult result = carbonChat.server().player(replyTarget).join();
+                final ComponentPlayerResult result = carbonChat.server().player(whisperTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (recipient == null) {
-                    messageService.replyTargetOffline(sender, sender.displayName());
+                    messageService.whisperTargetOffline(sender, sender.displayName());
                     return;
                 }
 

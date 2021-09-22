@@ -40,6 +40,7 @@ public class WhisperCommand {
                 messageService.whisperRecipient(new SourcedAudience(sender, recipient),
                     sender.displayName(), recipient.displayName(), message);
 
+                sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());
                 recipient.whisperReplyTarget(sender.uuid());
             }) // TODO: let command name and aliases be configurable, because why not

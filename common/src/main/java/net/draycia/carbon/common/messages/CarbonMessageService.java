@@ -76,4 +76,16 @@ public interface CarbonMessageService {
         @Placeholder Component senderDisplayName
     );
 
+    @Message("continue.target.missing")
+    void whisperTargetNotSet(
+        final Audience audience,
+        @Placeholder Component senderDisplayName
+    );
+
+    @Message("continue.target.offline")
+    void whisperTargetOffline(
+        final Audience audience,
+        @Placeholder Component senderDisplayName
+    );
+
 }

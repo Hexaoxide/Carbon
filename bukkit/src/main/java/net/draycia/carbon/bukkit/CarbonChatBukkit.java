@@ -18,6 +18,7 @@ import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.commands.ContinueCommand;
 import net.draycia.carbon.common.command.commands.ReplyCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.listeners.DeafenHandler;
@@ -90,12 +91,13 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         }
 
         // Listeners
-        injector.getInstance(MuteHandler.class);
         injector.getInstance(DeafenHandler.class);
+        injector.getInstance(MuteHandler.class);
 
         // Commands
-        injector.getInstance(WhisperCommand.class);
+        injector.getInstance(ContinueCommand.class);
         injector.getInstance(ReplyCommand.class);
+        injector.getInstance(WhisperCommand.class);
 
         final long saveDelay = 5 * 60 * 20;
 

@@ -206,4 +206,20 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void whisperReplyTarget(final @Nullable UUID uuid);
 
+    /**
+     * The last player this player has whispered.
+     *
+     * @return the player's last whisper target
+     * @since 2.0.0
+     */
+    @Nullable UUID lastWhisperTarget();
+
+    /**
+     * Sets the last player this player has whispered.
+     *
+     * @param uuid the uuid of the whisper target
+     * @since 2.0.0
+     */
+    void lastWhisperTarget(final @Nullable UUID uuid);
+
 }
