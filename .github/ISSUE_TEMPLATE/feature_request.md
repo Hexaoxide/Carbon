@@ -1,7 +1,9 @@
 ---
 name: "⚡ Feature request"
-about: Suggest an idea for Carbon title: "[Feature]"
-labels: proposed enhancement assignees: ''
+about: Suggest an idea for Carbon
+title: "[Feature]"
+labels: proposed enhancement
+assignees: ''
 
 ---
 
