@@ -17,6 +17,8 @@ public class PrimaryConfig {
     private final Key defaultChannel = Key.key("carbon", "basic");
     @Comment("The service that will be used to store and load player information.")
     private final StorageType storageType = StorageType.JSON;
+    @Comment("Should we hide join/quit and death messages of muted players?")
+    private final boolean hideMutedJoinLeaveQuit = false;
 
     public Locale defaultLocale() {
         return this.defaultLocale;
@@ -28,6 +30,10 @@ public class PrimaryConfig {
 
     public StorageType storageType() {
         return this.storageType;
+    }
+
+    public boolean hideMutedJoinLeaveQuit() {
+        return this.hideMutedJoinLeaveQuit;
     }
 
     public enum StorageType {
