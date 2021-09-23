@@ -9,6 +9,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static net.kyori.adventure.text.Component.empty;
@@ -58,6 +59,14 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients);
+
+    /**
+     * Messages will be sent in this channel if they start with this prefix.
+     *
+     * @return the message prefix that sends messages in this channel
+     * @since 2.0.0
+     */
+    @Nullable String quickPrefix();
 
     /**
      * Represents the result of a channel permission check.

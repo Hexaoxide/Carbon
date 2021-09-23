@@ -10,6 +10,7 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,14 +37,27 @@ public final class BukkitChatListener implements Listener {
     @EventHandler
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
         final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final var sender = playerResult.player();
 
-        if (playerResult.player() == null) {
+        if (sender == null) {
             return;
         }
 
-        final var sender = playerResult.player();
-        final var channel = requireNonNullElse(playerResult.player().selectedChannel(),
+        var channel = requireNonNullElse(sender.selectedChannel(),
             this.registry.defaultValue());
+
+        var originalMessage = PlainComponentSerializer.plain().serialize(event.originalMessage());
+
+        for (var chatChannel : this.registry) {
+            if (chatChannel.quickPrefix() == null) {
+                continue;
+            }
+
+            if (originalMessage.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
+                channel = chatChannel;
+                break;
+            }
+        }
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
         //   or ChatChannel#filterRecipients
@@ -80,9 +94,9 @@ public final class BukkitChatListener implements Listener {
                 try {
                     if (viewer instanceof Player player) {
                         final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(player).join();
-                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, message);
+                        component = renderer.render(sender, targetPlayer.player(), component, message);
                     } else {
-                        component = renderer.render(playerResult.player(), viewer, component, message);
+                        component = renderer.render(sender, viewer, component, message);
                     }
                 } catch (final Exception e) {
                     e.printStackTrace();

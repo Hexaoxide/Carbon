@@ -45,7 +45,7 @@ public final class ConfigChatChannel implements ChatChannel {
         The key can stay "carbon".
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private final Key key = Key.key("carbon", "basic");
+    private Key key = Key.key("carbon", "basic");
 
     @Comment("""
         The permission required to use the channel.
@@ -53,13 +53,25 @@ public final class ConfigChatChannel implements ChatChannel {
         To send messages you must have the permission carbon.channel.basic.speak
         If you want to give both, grant carbon.channel.basic or carbon.channel.basic.*
         """)
-    private final String permission = "carbon.channel.basic";
+    private String permission = "carbon.channel.basic";
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private final ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    private ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+
+    @Comment("Messages will be sent in this channel if they start with this prefix.")
+    private @Nullable String quickPrefix = "";
 
     private transient @Nullable ConfigChannelMessageService messageService = null;
+
+    @Override
+    public @Nullable String quickPrefix() {
+        if (this.quickPrefix == null || this.quickPrefix.isBlank()) {
+            return null;
+        }
+
+        return this.quickPrefix;
+    }
 
     @Override
     public @NotNull Component render(
