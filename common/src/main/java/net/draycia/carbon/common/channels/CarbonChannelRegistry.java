@@ -137,6 +137,13 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
                             .build(); // TODO: command aliases
 
                         commandManager.command(command);
+
+                        var channelCommand = commandManager.commandBuilder("channel", "ch")
+                            .literal(channelKey.value())
+                            .proxies(command)
+                            .build();
+
+                        commandManager.command(channelCommand);
                     }
                 }
             });
