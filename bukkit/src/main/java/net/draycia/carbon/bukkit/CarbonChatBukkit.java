@@ -101,7 +101,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         final long saveDelay = 5 * 60 * 20;
 
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this,
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this,
             this::savePlayers, saveDelay, saveDelay);
 
         ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();

@@ -10,7 +10,7 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,7 +46,7 @@ public final class BukkitChatListener implements Listener {
         var channel = requireNonNullElse(sender.selectedChannel(),
             this.registry.defaultValue());
 
-        var originalMessage = PlainComponentSerializer.plain().serialize(event.originalMessage());
+        var originalMessage = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
 
         for (var chatChannel : this.registry) {
             if (chatChannel.quickPrefix() == null) {
