@@ -5,16 +5,16 @@ metadata:
 
 plugins:
   net.kyori.blossom: 1.3.0
-  net.minecrell.plugin-yml.bukkit: 0.4.0
-  org.spongepowered.gradle.plugin: 1.1.1
-  xyz.jpenilla.run-paper: 1.0.3
+  net.minecrell.plugin-yml.bukkit: 0.5.0
+  org.spongepowered.gradle.plugin: 2.0.0
+  xyz.jpenilla.run-paper: 1.0.4
 
 versions:
   indra: 2.0.5
   # todo: temporary until shadow bumps jdependency for Record support
   shadow: 7.1.0-hexaoxide-SNAPSHOT
-  adventure: 4.7.0
-  minimessage: 4.1.0-SNAPSHOT
+  adventure: 4.9.1
+  minimessage: 4.2.0-SNAPSHOT
   cloud: 1.6.0-SNAPSHOT
   configurate: 4.1.1
   typesafeConfig: 1.4.1
@@ -31,6 +31,7 @@ versions:
   log4j: 2.11.2
   guice: 5.0.1
   velocityApi: 3.0.0-SNAPSHOT
+  geantyref: 1.3.11
 
 dependencies:
   adventureBom:
@@ -57,6 +58,11 @@ dependencies:
     group: net.kyori
     name: adventure-text-minimessage
     version: { ref: minimessage }
+
+  geantyref:
+    group: io.leangen.geantyref
+    name: geantyref
+    version: { ref: geantyref }
 
   log4jBom:
     group: org.apache.logging.log4j
@@ -87,26 +93,25 @@ dependencies:
     name: moonshine-standard
     version: { ref: kyoriMoonshine }
 
+  cloudBom:
+    group: cloud.commandframework
+    name: cloud-bom
+    version: { ref: cloud }
   cloudCore:
     group: cloud.commandframework
     name: cloud-core
-    version: { ref: cloud }
   cloudMinecraftExtras:
     group: cloud.commandframework
     name: cloud-minecraft-extras
-    version: { ref: cloud }
   cloudPaper:
     group: cloud.commandframework
     name: cloud-paper
-    version: { ref: cloud }
   cloudSponge:
     group: cloud.commandframework
     name: cloud-sponge
-    version: { ref: cloud }
   cloudVelocity:
     group: cloud.commandframework
     name: cloud-velocity
-    version: { ref: cloud }
 
   configurateCore:
     group: org.spongepowered

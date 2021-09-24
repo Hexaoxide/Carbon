@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -13,6 +14,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,10 +46,16 @@ public final class BasicChatChannel implements ChatChannel {
         return this.service.basicChatFormat(
             recipient,
             sender.uuid(),
-            sender.displayName(),
+            Objects.requireNonNullElseGet(sender.displayName(), () -> Component.text(sender.username())),
             sender.username(),
             message
         );
+    }
+
+    @Override
+    public @Nullable String quickPrefix() {
+        // todo
+        return null;
     }
 
     @Override

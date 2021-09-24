@@ -9,10 +9,14 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonChatCommon;
+import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -25,7 +29,7 @@ import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
-import org.spongepowered.plugin.jvm.Plugin;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 @Plugin("carbonchat")
 @DefaultQualifier(NonNull.class)
@@ -45,6 +49,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     private final PluginContainer pluginContainer;
     private final UserManager userManager;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
+    private final IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer;
 
     @Inject
     public CarbonChatSponge(
@@ -67,6 +72,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerSponge = this.injector.getInstance(CarbonServerSponge.class);
         this.userManager = this.injector.getInstance(UserManager.class);
+        this.messageRenderer = this.injector.getInstance(SpongeMessageRenderer.class);
         this.dataDirectory = dataDirectory;
 
         for (final Class<?> clazz : LISTENER_CLASSES) {
@@ -125,6 +131,11 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     @Override
     public ChannelRegistry channelRegistry() {
         return this.channelRegistry;
+    }
+
+    @Override
+    public IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer() {
+        return this.messageRenderer;
     }
 
     public CarbonMessageService messageService() {

@@ -17,6 +17,7 @@ tasks {
   withType<JavaCompile> {
     // disable 'warning: No processor claimed any of these annotations' spam
     options.compilerArgs.add("-Xlint:-processing")
+    options.compilerArgs.add("-parameters")
   }
 }
 

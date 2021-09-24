@@ -41,7 +41,7 @@ public class LocaleSerializerConfigurate implements TypeSerializer<Locale> {
         if (obj == null) {
             node.set(null);
         } else {
-            node.set(obj.toLanguageTag());
+            node.set(obj.toString());
         }
     }
 

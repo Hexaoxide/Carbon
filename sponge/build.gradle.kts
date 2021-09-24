@@ -1,5 +1,5 @@
 import org.spongepowered.gradle.plugin.config.PluginLoaders
-import org.spongepowered.plugin.metadata.PluginDependency
+import org.spongepowered.plugin.metadata.model.PluginDependency
 import java.util.*
 
 plugins {
@@ -27,12 +27,16 @@ tasks {
 
 sponge {
   injectRepositories(false) // We specify repositories in settings.gradle.kts
-  apiVersion("8.0.0")
+  apiVersion("8.0.0-SNAPSHOT")
   plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
-    loader(PluginLoaders.JAVA_PLAIN)
+    loader {
+      name(PluginLoaders.JAVA_PLAIN)
+      version("1.0")
+    }
     displayName(rootProject.name)
-    mainClass("net.draycia.carbon.sponge.CarbonChatSponge")
+    entrypoint("net.draycia.carbon.sponge.CarbonChatSponge")
     description(project.description)
+    license("GPLv3")
     links {
       homepage(GITHUB_REPO_URL)
       source(GITHUB_REPO_URL)

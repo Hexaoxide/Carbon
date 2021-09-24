@@ -1,12 +1,11 @@
 package net.draycia.carbon.common.channels;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -105,8 +104,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
 
         try (final Stream<Path> paths = Files.walk(channelDirectory)) {
-            final CommandManager<Commander> commandManager = (CommandManager<Commander>)
-                this.injector.getInstance(com.google.inject.Key.get(new TypeToken<CommandManager<Commander>>() {}.getType()));
+            final CommandManager<Commander> commandManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
 
             paths.forEach(path -> {
                 final String fileName = path.getFileName().toString();

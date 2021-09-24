@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.event.Cause;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
 import org.spongepowered.api.util.locale.LocaleSource;
@@ -50,7 +51,12 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     }
 
     @Override
-    public Component displayName() {
+    public boolean hasCustomDisplayName() {
+        return this.carbonPlayer.hasCustomDisplayName();
+    }
+
+    @Override
+    public @Nullable Component displayName() {
         return this.carbonPlayer.displayName();
     }
 
@@ -65,6 +71,11 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
                 player.remove(Keys.CUSTOM_NAME);
             }
         });
+    }
+
+    @Override
+    public void temporaryDisplayName(@Nullable Component displayName) {
+        this.carbonPlayer.temporaryDisplayName(displayName);
     }
 
     @Override
@@ -156,6 +167,37 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     @Override
     public void spying(final boolean spying) {
         this.carbonPlayer.spying(spying);
+    }
+
+    @Override
+    public void sendMessageAsPlayer(final String message) {
+        this.player().ifPresent(player -> player.simulateChat(Component.text(message), Cause.builder().build()));
+    }
+
+    @Override
+    public boolean online() {
+        final var player = this.player();
+        return player.isPresent() && player.get().isOnline();
+    }
+
+    @Override
+    public @Nullable UUID whisperReplyTarget() {
+        return this.carbonPlayer.whisperReplyTarget();
+    }
+
+    @Override
+    public void whisperReplyTarget(final @Nullable UUID uuid) {
+        this.carbonPlayer.whisperReplyTarget(uuid);
+    }
+
+    @Override
+    public @Nullable UUID lastWhisperTarget() {
+        return this.carbonPlayer.lastWhisperTarget();
+    }
+
+    @Override
+    public void lastWhisperTarget(final @Nullable UUID uuid) {
+        this.carbonPlayer.lastWhisperTarget(uuid);
     }
 
     @Override

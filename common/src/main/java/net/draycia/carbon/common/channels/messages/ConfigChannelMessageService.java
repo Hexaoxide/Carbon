@@ -16,7 +16,7 @@ public interface ConfigChannelMessageService {
     Component chatFormat(
         final SourcedAudience audience,
         @Placeholder UUID uuid,
-        @Placeholder("displayname") Component displayName,
+        @Placeholder Component displayname,
         @Placeholder String username,
         @Placeholder Component message
     );
