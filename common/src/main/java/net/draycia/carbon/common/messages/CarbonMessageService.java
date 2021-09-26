@@ -88,4 +88,17 @@ public interface CarbonMessageService {
         @Placeholder Component senderDisplayName
     );
 
+    @Message("nickname.set")
+    void nicknameSet(
+        final Audience audience,
+        @Placeholder Component nickname
+    );
+
+    @Message("nickname.set.others")
+    void nicknameSetOthers(
+        final Audience audience,
+        @Placeholder Component target,
+        @Placeholder Component nickname
+    );
+
 }
