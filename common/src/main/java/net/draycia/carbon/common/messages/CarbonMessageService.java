@@ -97,8 +97,34 @@ public interface CarbonMessageService {
     @Message("nickname.set.others")
     void nicknameSetOthers(
         final Audience audience,
-        @Placeholder Component target,
+        @Placeholder String target,
         @Placeholder Component nickname
+    );
+
+    @Message("nickname.show.others")
+    void nicknameShowOthers(
+        final Audience audience,
+        @Placeholder String target,
+        @Placeholder Component nickname
+    );
+
+    @Message("nickname.show.others.unset")
+    void nicknameShowOthersUnset(
+        final Audience audience,
+        @Placeholder String target
+    );
+
+    @Message("nickname.show")
+    void nicknameShow(
+        final Audience audience,
+        @Placeholder String target,
+        @Placeholder Component nickname
+    );
+
+    @Message("nickname.show.unset")
+    void nicknameShowUnset(
+        final Audience audience,
+        @Placeholder String target
     );
 
 }
