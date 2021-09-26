@@ -92,11 +92,6 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public @Nullable String quickPrefix() {
-        return null;
-    }
-
-    @Override
     public @NonNull Key key() {
         return this.key;
     }
