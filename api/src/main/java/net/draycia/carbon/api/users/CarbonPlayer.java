@@ -57,10 +57,11 @@ public interface CarbonPlayer extends Audience, Identified {
      * If the player logs off or is otherwise disconnected from the server,
      *  their temporary display name will be reset.
      *
-     * @param displayName the new display name
+     * @param temporaryDisplayName the new display name
+     * @param expirationEpoch when the display name expires, in milliseconds from Unix epoch, or -1 for no expiration
      * @since 2.0.0
      */
-    void temporaryDisplayName(final @Nullable Component displayName);
+    void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch);
 
     /**
      * The player's UUID, often used for identification purposes.

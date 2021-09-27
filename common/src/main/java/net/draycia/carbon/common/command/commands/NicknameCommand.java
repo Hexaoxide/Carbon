@@ -2,8 +2,16 @@ package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.compound.FlagArgument;
+import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
@@ -11,6 +19,7 @@ import net.draycia.carbon.common.command.arguments.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.arguments.OptionValueParser;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 public class NicknameCommand {
 
@@ -26,11 +35,11 @@ public class NicknameCommand {
             .build();
 
         var command = commandManager.commandBuilder("nickname", "nick")
-            //.flag(commandManager.flagBuilder("duration")
-            //    .withAliases("d")
-            //    .withArgument()
-            //    .withPermission(Permission.of("carbon.nickname.duration"))
-            //)
+            .flag(commandManager.flagBuilder("duration")
+                .withAliases("d")
+                .withArgument(StringArgument.optional("duration"))
+                .withPermission(Permission.of("carbon.nickname.duration"))
+            )
             .flag(commandManager.flagBuilder("player")
                 .withAliases("p")
                 .withArgument(carbonPlayerArgument.newInstance(true, "recipient"))
@@ -46,28 +55,43 @@ public class NicknameCommand {
             .handler(handler -> {
                 CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
                 long expirationTime = -1; // TODO: implement timed nicknames
+                @MonotonicNonNull String durationFormat = null;
 
                 if (handler.flags().contains("duration")) {
-                    expirationTime = handler.flags().get("duration");
+                    durationFormat = handler.flags().get("duration");
+                    expirationTime = this.parsePeriod(durationFormat);
                 }
 
                 // Setting nickname
                 if (handler.flags().contains("nickname")) {
                     final var nickname = MiniMessage.get().parse(handler.flags().get("nickname"));
 
+                    final @MonotonicNonNull CarbonPlayer target = handler.flags().get("player");
+
                     // Setting other player's nickname
-                    if (handler.flags().contains("player")) {
-                        final CarbonPlayer target = handler.flags().get("player");
-                        target.displayName(nickname);
-                        messageService.nicknameSet(target, nickname);
-                        messageService.nicknameSetOthers(sender, target.username(), nickname);
+                    if (target != null && !target.equals(sender)) {
+                        if (expirationTime > -1) {
+                            target.temporaryDisplayName(nickname, expirationTime);
+                            messageService.temporaryNicknameSet(target, nickname, durationFormat);
+                            messageService.temporaryNicknameSetOthers(sender, target.username(), nickname, durationFormat);
+                        } else {
+                            target.displayName(nickname);
+                            messageService.nicknameSet(target, nickname);
+                            messageService.nicknameSetOthers(sender, target.username(), nickname);
+                        }
                     } else {
                         // Setting own nickname
-                        sender.displayName(nickname);
-                        messageService.nicknameSet(sender, nickname);
+                        if (expirationTime > -1) {
+                            sender.temporaryDisplayName(nickname, expirationTime);
+                            messageService.temporaryNicknameSet(sender, nickname, durationFormat);
+                        } else {
+                            sender.displayName(nickname);
+                            messageService.nicknameSet(sender, nickname);
+                        }
                     }
                 } else if (handler.flags().contains("player")) {
                     // Checking other player's nickname
+                    // TODO: show temporary display name durations, create inverse parsePeriod method
                     final CarbonPlayer target = handler.flags().get("player");
 
                     if (target.displayName() != null) {
@@ -87,6 +111,33 @@ public class NicknameCommand {
             .build();
 
         commandManager.command(command);
+    }
+
+    // https://stackoverflow.com/a/56395975
+    private final Pattern periodPattern = Pattern.compile("([0-9]+)([smhdWMY])");
+
+    private Long parsePeriod(@MonotonicNonNull String period) {
+        period = Objects.requireNonNull(period).toLowerCase(Locale.ENGLISH);
+
+        final Matcher matcher = periodPattern.matcher(period);
+        Instant instant = Instant.now();
+
+        while (matcher.find()) {
+            final int num = Integer.parseInt(matcher.group(1));
+            final String typ = matcher.group(2);
+
+            switch (typ) {
+                case "s" -> instant = instant.plus(Duration.ofSeconds(num));
+                case "m" -> instant = instant.plus(Duration.ofMinutes(num));
+                case "h" -> instant = instant.plus(Duration.ofHours(num));
+                case "d" -> instant = instant.plus(Duration.ofDays(num));
+                case "W" -> instant = instant.plus(Period.ofWeeks(num));
+                case "M" -> instant = instant.plus(Period.ofMonths(num));
+                case "Y" -> instant = instant.plus(Period.ofYears(num));
+            }
+        }
+
+        return instant.toEpochMilli();
     }
 
 }

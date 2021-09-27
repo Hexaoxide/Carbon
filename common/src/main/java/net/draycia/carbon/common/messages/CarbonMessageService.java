@@ -94,11 +94,26 @@ public interface CarbonMessageService {
         @Placeholder Component nickname
     );
 
+    @Message("nickname.set.temporary")
+    void temporaryNicknameSet(
+        final Audience audience,
+        @Placeholder Component nickname,
+        @Placeholder String duration
+    );
+
     @Message("nickname.set.others")
     void nicknameSetOthers(
         final Audience audience,
         @Placeholder String target,
         @Placeholder Component nickname
+    );
+
+    @Message("nickname.set.others.temporary")
+    void temporaryNicknameSetOthers(
+        final Audience audience,
+        @Placeholder String target,
+        @Placeholder Component nickname,
+        @Placeholder String duration
     );
 
     @Message("nickname.show.others")

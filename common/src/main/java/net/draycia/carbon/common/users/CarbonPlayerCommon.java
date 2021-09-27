@@ -20,14 +20,15 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     protected boolean deafened = false;
     protected @Nullable Component displayName;
-    protected transient @Nullable Component temporaryDisplayName; // Don't persist temp names
+    protected @Nullable UUID lastWhisperTarget = null;
     protected boolean muted = false;
     protected @Nullable ChatChannel selectedChannel;
     protected boolean spying = false;
+    protected @Nullable Component temporaryDisplayName = null;
+    protected long temporaryDisplayNameExpiration = -1;
     protected @MonotonicNonNull String username;
     protected @MonotonicNonNull UUID uuid;
     protected @Nullable UUID whisperReplyTarget = null;
-    protected @Nullable UUID lastWhisperTarget = null;
 
     public CarbonPlayerCommon(
         final @Nullable Component displayName,
@@ -61,12 +62,13 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable Component displayName() {
-        // TODO: redesign this "temporary display name" feature. idk which value should override which.
-        if (this.displayName != null) {
-            return this.displayName;
-        } else if (this.temporaryDisplayName != null) {
+        if (this.temporaryDisplayName != null && System.currentTimeMillis() < this.temporaryDisplayNameExpiration) {
             return this.temporaryDisplayName;
         }
+
+        if (this.displayName != null) {
+            return this.displayName;
+        } else
 
         return null;
     }
@@ -77,9 +79,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void temporaryDisplayName(final @Nullable Component temporaryDisplayName) {
-        // TODO: support durations (expires after X time)
+    public void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch) {
+        // TODO: see why these aren't persisting
         this.temporaryDisplayName = temporaryDisplayName;
+        this.temporaryDisplayNameExpiration = expirationEpoch;
     }
 
     @Override

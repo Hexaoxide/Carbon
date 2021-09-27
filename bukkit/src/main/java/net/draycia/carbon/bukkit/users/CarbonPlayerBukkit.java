@@ -17,8 +17,6 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Scoreboard;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -28,18 +26,9 @@ import org.jetbrains.annotations.NotNull;
 public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements ForwardingAudience.Single {
 
     private final CarbonPlayer carbonPlayer;
-    private @MonotonicNonNull Scoreboard scoreboard = null;
 
     public CarbonPlayerBukkit(final CarbonPlayer carbonPlayer) {
         this.carbonPlayer = carbonPlayer;
-    }
-
-    private @NonNull Scoreboard scoreboard() {
-        if (this.scoreboard == null) {
-            this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        }
-
-        return this.scoreboard;
     }
 
     @Override
@@ -49,6 +38,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
         final @Nullable Player player = this.player();
 
         if (player != null) {
+            // TODO: don't run this block when the player has a temporary display name already set
             // Update player's name in chat
             player.displayName(displayName);
 
@@ -58,8 +48,8 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public void temporaryDisplayName(final @Nullable Component displayName) {
-        this.carbonPlayer.temporaryDisplayName(displayName);
+    public void temporaryDisplayName(final @Nullable Component displayName, final long expirationEpoch) {
+        this.carbonPlayer.temporaryDisplayName(displayName, expirationEpoch);
 
         final @Nullable Player player = this.player();
 
@@ -69,6 +59,8 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
 
             // Update player's name in the tab player list
             player.playerListName(displayName);
+
+            // TODO: schedule task to unset temporary display name when it expires
         }
     }
 
@@ -84,17 +76,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
 
     @Override
     public @Nullable Component displayName() {
-        //        if (this.carbonPlayer.displayName() != null) {
-        //            return this.carbonPlayer.displayName();
-        //        }
-
-        //        final @Nullable Player player = this.player();
-        //
-        //        if (player != null) {
-        //            return player.displayName();
-        //        }
-
-        //        return null;
         return this.carbonPlayer.displayName();
     }
 
