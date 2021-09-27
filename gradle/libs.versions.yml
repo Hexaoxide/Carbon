@@ -14,7 +14,7 @@ versions:
   # todo: temporary until shadow bumps jdependency for Record support
   shadow: 7.1.0-hexaoxide-SNAPSHOT
   adventure: 4.9.1
-  minimessage: 4.2.0-SNAPSHOT
+  minimessage: 4.2.1-SNAPSHOT
   cloud: 1.6.0-SNAPSHOT
   configurate: 4.1.1
   typesafeConfig: 1.4.1

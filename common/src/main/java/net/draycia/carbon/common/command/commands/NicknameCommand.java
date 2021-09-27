@@ -1,7 +1,7 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.arguments.compound.FlagArgument;
 import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -20,8 +20,12 @@ public class NicknameCommand {
         final CarbonMessageService messageService,
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
+        final var nicknameArgument = FlagArgument.<Commander, String>ofType(String.class, "value")
+            .withParser(new OptionValueParser<>())
+            .asOptional()
+            .build();
+
         var command = commandManager.commandBuilder("nickname", "nick")
-            .argument(StringArgument.greedy("nickname"))
             //.flag(commandManager.flagBuilder("duration")
             //    .withAliases("d")
             //    .withArgument()
@@ -34,7 +38,7 @@ public class NicknameCommand {
             )
             .flag(commandManager.flagBuilder("nickname")
                 .withAliases("n")
-                .withArgument(StringArgument.newBuilder("nickname").greedy().withParser(new OptionValueParser<>()))
+                .withArgument(nicknameArgument)
                 .withPermission(Permission.of("carbon.nickname.set"))
             )
             .permission("carbon.nickname.self")
@@ -43,17 +47,17 @@ public class NicknameCommand {
                 CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
                 long expirationTime = -1; // TODO: implement timed nicknames
 
-                if (handler.contains("duration")) {
-                    expirationTime = handler.get("duration");
+                if (handler.flags().contains("duration")) {
+                    expirationTime = handler.flags().get("duration");
                 }
 
                 // Setting nickname
-                if (handler.contains("nickname")) {
-                    final var nickname = MiniMessage.get().parse(handler.get("nickname"));
+                if (handler.flags().contains("nickname")) {
+                    final var nickname = MiniMessage.get().parse(handler.flags().get("nickname"));
 
                     // Setting other player's nickname
-                    if (handler.contains("player")) {
-                        final CarbonPlayer target = handler.get("player");
+                    if (handler.flags().contains("player")) {
+                        final CarbonPlayer target = handler.flags().get("player");
                         target.displayName(nickname);
                         messageService.nicknameSet(target, nickname);
                         messageService.nicknameSetOthers(sender, target.username(), nickname);
@@ -62,9 +66,9 @@ public class NicknameCommand {
                         sender.displayName(nickname);
                         messageService.nicknameSet(sender, nickname);
                     }
-                } else if (handler.contains("player")) {
+                } else if (handler.flags().contains("player")) {
                     // Checking other player's nickname
-                    final CarbonPlayer target = handler.get("player");
+                    final CarbonPlayer target = handler.flags().get("player");
 
                     if (target.displayName() != null) {
                         messageService.nicknameShowOthers(sender, target.username(), target.displayName());

@@ -61,11 +61,14 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable Component displayName() {
-        if (this.temporaryDisplayName != null) {
+        // TODO: redesign this "temporary display name" feature. idk which value should override which.
+        if (this.displayName != null) {
+            return this.displayName;
+        } else if (this.temporaryDisplayName != null) {
             return this.temporaryDisplayName;
         }
 
-        return this.displayName;
+        return null;
     }
 
     @Override

@@ -3,9 +3,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
   repositories {
-    mavenLocal {
-      content { includeGroup("net.kyori.moonshine") }
-    }
     mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     // Paper API
@@ -37,6 +34,7 @@ dependencyResolutionManagement {
     maven("https://jitpack.io") {
       content { includeGroupByRegex("com\\.github\\..*") }
     }
+    mavenLocal()
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
