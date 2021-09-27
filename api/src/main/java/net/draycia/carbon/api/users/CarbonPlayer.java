@@ -64,6 +64,21 @@ public interface CarbonPlayer extends Audience, Identified {
     void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch);
 
     /**
+     * The player's temporary display name.
+     *
+     * @return the player's temporary display name.
+     */
+    // TODO: improve javadocs here
+    @Nullable Component temporaryDisplayName();
+
+    /**
+     * The expiration date in milliseconds for the temporary display name.
+     *
+     * @return the temporary display name's expiration in MS since Unix Epoch
+     */
+    long temporaryDisplayNameExpiration();
+
+    /**
      * The player's UUID, often used for identification purposes.
      *
      * @return the player's UUID

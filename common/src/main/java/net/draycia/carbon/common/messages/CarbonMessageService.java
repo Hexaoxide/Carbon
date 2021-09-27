@@ -123,6 +123,14 @@ public interface CarbonMessageService {
         @Placeholder Component nickname
     );
 
+    @Message("nickname.show.others.temporary")
+    void temporaryNicknameShowOthers(
+        final Audience audience,
+        @Placeholder String target,
+        @Placeholder Component nickname,
+        @Placeholder String duration
+    );
+
     @Message("nickname.show.others.unset")
     void nicknameShowOthersUnset(
         final Audience audience,
@@ -134,6 +142,14 @@ public interface CarbonMessageService {
         final Audience audience,
         @Placeholder String target,
         @Placeholder Component nickname
+    );
+
+    @Message("nickname.show.temporary")
+    void temporaryNicknameShow(
+        final Audience audience,
+        @Placeholder String target,
+        @Placeholder Component nickname,
+        @Placeholder String duration
     );
 
     @Message("nickname.show.unset")

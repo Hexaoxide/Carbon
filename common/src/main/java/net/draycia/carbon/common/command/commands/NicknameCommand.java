@@ -8,8 +8,12 @@ import com.google.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -58,8 +62,8 @@ public class NicknameCommand {
                 @MonotonicNonNull String durationFormat = null;
 
                 if (handler.flags().contains("duration")) {
-                    durationFormat = handler.flags().get("duration");
-                    expirationTime = this.parsePeriod(durationFormat);
+                    expirationTime = this.parsePeriod(handler.flags().get("duration"));
+                    durationFormat = this.formatMillisDuration(expirationTime);
                 }
 
                 // Setting nickname
@@ -91,17 +95,22 @@ public class NicknameCommand {
                     }
                 } else if (handler.flags().contains("player")) {
                     // Checking other player's nickname
-                    // TODO: show temporary display name durations, create inverse parsePeriod method
                     final CarbonPlayer target = handler.flags().get("player");
 
-                    if (target.displayName() != null) {
+                    if (target.temporaryDisplayName() != null) {
+                        messageService.temporaryNicknameShowOthers(sender, target.username(),target.displayName(),
+                            this.formatMillisDuration(target.temporaryDisplayNameExpiration()));
+                    } else if (target.displayName() != null) {
                         messageService.nicknameShowOthers(sender, target.username(), target.displayName());
                     } else {
                         messageService.nicknameShowOthersUnset(sender, target.username());
                     }
                 } else {
                     // Checking own nickname
-                    if (sender.displayName() != null) {
+                    if (sender.temporaryDisplayName() != null) {
+                        messageService.temporaryNicknameShow(sender, sender.username(),sender.displayName(),
+                            this.formatMillisDuration(sender.temporaryDisplayNameExpiration()));
+                    } else if (sender.displayName() != null){
                         messageService.nicknameShow(sender, sender.username(), sender.displayName());
                     } else {
                         messageService.nicknameShowUnset(sender, sender.username());
@@ -138,6 +147,30 @@ public class NicknameCommand {
         }
 
         return instant.toEpochMilli();
+    }
+
+    private final List<TemporalUnit> temporalUnits = List.of(ChronoUnit.YEARS, ChronoUnit.MONTHS, ChronoUnit.WEEKS,
+        ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES, ChronoUnit.SECONDS);
+
+    private String formatMillisDuration(final long millisSinceEpoch) {
+        final var millisBetween = millisSinceEpoch - System.currentTimeMillis();
+        var duration = Duration.ofMillis(millisBetween);
+        var stringJoiner = new StringJoiner(", ");
+
+        for (final var temporalUnit : temporalUnits) {
+            final var count = duration.get(temporalUnit);
+
+            // Check if == 0 instead of > 0 in case the millisSinceEpoch refers to the past
+            // !! the distinction is important
+            if (count != 0) {
+                duration = duration.minus(count, temporalUnit);
+                stringJoiner.add(String.format("%d %s", count, temporalUnit));
+            }
+        }
+
+        final var suffix = millisBetween > 0 ? "" : " ago";
+
+        return stringJoiner + suffix;
     }
 
 }
