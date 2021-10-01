@@ -15,11 +15,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.ForCarbon;
-import net.draycia.carbon.common.serialisation.gson.CarbonPlayerSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -32,7 +30,7 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
-public class JSONUserManager implements UserManager {
+public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
 
     private final Logger logger;
     private final Gson serializer;
@@ -56,75 +54,78 @@ public class JSONUserManager implements UserManager {
 
         this.serializer = GsonComponentSerializer.gson().populator()
             .apply(new GsonBuilder())
-            .registerTypeAdapter(CarbonPlayerCommon.class, injector.getInstance(CarbonPlayerSerializerGson.class))
             .registerTypeAdapter(ChatChannel.class, injector.getInstance(ChatChannelSerializerGson.class))
             .registerTypeAdapter(UUID.class, injector.getInstance(UUIDSerializerGson.class))
+            .setPrettyPrinting()
             .create();
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult> carbonPlayer(final UUID uuid) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
 
             if (cachedPlayer != null) {
-                return new ComponentPlayerResult(cachedPlayer, empty());
+                return new ComponentPlayerResult<>(cachedPlayer, empty());
             }
 
             final Path userFile = this.userDirectory.resolve(uuid + ".json");
 
             if (Files.exists(userFile)) {
                 try {
-                    final CarbonPlayerCommon player =
+                    final @Nullable CarbonPlayerCommon player =
                         this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
+
+                    if (player == null) {
+                        return new ComponentPlayerResult<>(null, text("Player file found but was empty."));
+                    }
 
                     this.userCache.put(uuid, player);
 
                     // TODO: supply reason if fromJson returns null
-                    return new ComponentPlayerResult(player, empty());
+                    return new ComponentPlayerResult<>(player, empty());
                 } catch (final IOException exception) {
-                    return new ComponentPlayerResult(null, text(exception.getMessage()));
+                    return new ComponentPlayerResult<>(null, text(exception.getMessage()));
                 }
             }
 
             final String name = Objects.requireNonNull(
                 this.carbonChat.server().resolveName(uuid).join());
 
-            final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
-                null, name, uuid);
+            final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
             this.userCache.put(uuid, player);
 
-            return new ComponentPlayerResult(player, empty());
+            return new ComponentPlayerResult<>(player, empty());
         });
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult> savePlayer(final CarbonPlayer player) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
         return CompletableFuture.supplyAsync(() -> {
             this.logger.info("Saving player data for [{}], [{}]", player.username(), player.uuid());
             final Path userFile = this.userDirectory.resolve(player.uuid() + ".json");
 
             try {
+                final String json = this.serializer.toJson(player);
+
+                if (json == null || json.isBlank()) {
+                    return new ComponentPlayerResult<>(null, text("No data to save - toJson returned null or blank."));
+                }
+
                 if (!Files.exists(userFile)) {
                     Files.createFile(userFile);
                 }
 
-                try {
-                    final String json = this.serializer.toJson(player, CarbonPlayerCommon.class);
+                Files.writeString(userFile, json,
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
 
-                    Files.writeString(userFile, json,
-                        StandardOpenOption.WRITE,
-                        StandardOpenOption.TRUNCATE_EXISTING);
-                } catch (final ClassCastException exception) {
-                    exception.printStackTrace();
-                }
-
-                return new ComponentPlayerResult(player, text(String.format("Saving player data for [%s], [%s]",
+                return new ComponentPlayerResult<>(player, text(String.format("Saving player data for [%s], [%s]",
                     player.username(), player.uuid())));
             } catch (final IOException exception) {
                 exception.printStackTrace();
-                return new ComponentPlayerResult(null, text(exception.getMessage()));
+                return new ComponentPlayerResult<>(null, text(exception.getMessage()));
             }
         });
     }

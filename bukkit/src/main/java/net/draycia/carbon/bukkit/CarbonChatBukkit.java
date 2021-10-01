@@ -3,6 +3,7 @@ package net.draycia.carbon.bukkit;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import io.papermc.lib.PaperLib;
 import java.nio.file.Path;
 import java.util.Set;
@@ -15,7 +16,6 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
-import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
@@ -25,7 +25,8 @@ import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.messages.CarbonMessageService;
-import net.kyori.adventure.audience.Audience;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +50,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     private static final int BSTATS_PLUGIN_ID = 8720;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
     private @MonotonicNonNull Injector injector;
-    private @MonotonicNonNull UserManager userManager;
+    private @MonotonicNonNull UserManager<CarbonPlayerCommon> userManager;
     private @MonotonicNonNull Logger logger;
     private @MonotonicNonNull CarbonServerBukkit carbonServerBukkit;
     private @MonotonicNonNull CarbonMessageService messageService;
@@ -77,7 +78,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         this.messageService = this.injector.getInstance(CarbonMessageService.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerBukkit = this.injector.getInstance(CarbonServerBukkit.class);
-        this.userManager = this.injector.getInstance(UserManager.class);
+        this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
     }
 
     @Override
@@ -115,16 +116,24 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     private void savePlayers() {
+        // TODO: move to common or CarbonServer?
         for (final var player : this.server().players()) {
-            this.userManager().savePlayer(((CarbonPlayerBukkit) player).carbonPlayer()).thenAccept(result -> {
+            final var saveResult = this.userManager().savePlayer(((WrappedCarbonPlayer) player).carbonPlayerCommon());
+
+            saveResult.thenAccept(result -> {
                 if (result.player() == null) {
                     this.server().console().sendMessage(result.reason());
                 }
             });
+
+            saveResult.exceptionally(exception -> {
+               exception.getCause().printStackTrace();
+                return null;
+            });
         }
     }
 
-    public UserManager userManager() {
+    public UserManager<CarbonPlayerCommon> userManager() {
         return this.userManager;
     }
 

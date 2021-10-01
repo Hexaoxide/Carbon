@@ -10,7 +10,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class BukkitPlayerJoinListener implements Listener {
 
     private final CarbonChat carbonChat;
@@ -27,13 +31,12 @@ public class BukkitPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(final PlayerJoinEvent event) {
-        final ComponentPlayerResult result = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final @Nullable CarbonPlayer player = result.player();
 
-        if (result.player() == null) {
+        if (player == null) {
             return;
         }
-
-        final CarbonPlayer player = result.player();
 
         // Don't show join messages when muted
         if (this.primaryConfig.hideMutedJoinLeaveQuit() && player.muted()) {
@@ -48,7 +51,7 @@ public class BukkitPlayerJoinListener implements Listener {
             return;
         }
 
-        final ComponentPlayerResult result = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
         if (result.player() == null) {
             return;

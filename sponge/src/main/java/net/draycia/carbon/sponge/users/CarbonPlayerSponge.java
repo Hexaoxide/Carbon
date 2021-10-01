@@ -74,11 +74,6 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     }
 
     @Override
-    public void temporaryDisplayName(@Nullable Component displayName) {
-        this.carbonPlayer.temporaryDisplayName(displayName);
-    }
-
-    @Override
     public UUID uuid() {
         return this.carbonPlayer.uuid();
     }

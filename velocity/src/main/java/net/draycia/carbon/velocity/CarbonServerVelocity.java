@@ -82,9 +82,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                 final @Nullable String name = this.resolveName(uuid).join();
 
                 if (name != null) {
-                    final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
-                        null, name, uuid);
-
+                    final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
                     return new ComponentPlayerResult(new CarbonPlayerVelocity(this.server, player), Component.empty());
                 }
 

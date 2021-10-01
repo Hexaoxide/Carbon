@@ -11,7 +11,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @since 2.0.0
  */
 @DefaultQualifier(NonNull.class)
-public interface UserManager {
+public interface UserManager<C extends CarbonPlayer> {
 
     /**
      * Loads and returns a {@link CarbonPlayer} with the given {@link UUID}.
@@ -20,7 +20,7 @@ public interface UserManager {
      * @return the result
      * @since 2.0.0
      */
-    CompletableFuture<ComponentPlayerResult> carbonPlayer(final UUID uuid);
+    CompletableFuture<ComponentPlayerResult<C>> carbonPlayer(final UUID uuid);
 
     /**
      * Saves the {@link CarbonPlayer} and returns the result.
@@ -29,6 +29,6 @@ public interface UserManager {
      * @return the result
      * @since 2.0.0
      */
-    CompletableFuture<ComponentPlayerResult> savePlayer(final CarbonPlayer player);
+    CompletableFuture<ComponentPlayerResult<C>> savePlayer(final C player);
 
 }

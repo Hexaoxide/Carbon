@@ -40,7 +40,7 @@ public interface CarbonServer extends Audience {
      * @return the result
      * @since 2.0.0
      */
-    CompletableFuture<ComponentPlayerResult> player(final UUID uuid);
+    CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final UUID uuid);
 
     /**
      * Obtains a {@link CarbonPlayer} instance for the specified username.
@@ -49,7 +49,7 @@ public interface CarbonServer extends Audience {
      * @return the result
      * @since 2.0.0
      */
-    CompletableFuture<ComponentPlayerResult> player(final String username);
+    CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final String username);
 
     /**
      * Obtains the desired user's UUID.

@@ -20,6 +20,7 @@ import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.ReceiverResolver;
 import net.draycia.carbon.common.messages.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.JSONUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -36,7 +37,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public UserManager userManager(
+    public UserManager<CarbonPlayerCommon> userManager(
         final PrimaryConfig primaryConfig,
         final Injector injector
     ) {

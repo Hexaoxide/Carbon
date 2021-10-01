@@ -10,6 +10,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @param reason the reason of the result, typically empty unless {@link #player} is null
  * @since 2.0.0
  */
-public record ComponentPlayerResult(@Nullable CarbonPlayer player, Component reason) {
+public record ComponentPlayerResult<C extends CarbonPlayer>(@Nullable C player, Component reason) {
 
 }

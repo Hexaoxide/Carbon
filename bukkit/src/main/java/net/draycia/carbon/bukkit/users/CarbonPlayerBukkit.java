@@ -4,14 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.UUID;
-import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.bukkit.util.BukkitCapabilities;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -23,17 +20,37 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements ForwardingAudience.Single {
+public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
-    private final CarbonPlayer carbonPlayer;
+    private final CarbonPlayerCommon carbonPlayerCommon;
 
-    public CarbonPlayerBukkit(final CarbonPlayer carbonPlayer) {
-        this.carbonPlayer = carbonPlayer;
+    public CarbonPlayerBukkit(final CarbonPlayerCommon carbonPlayerCommon) {
+        this.carbonPlayerCommon = carbonPlayerCommon;
+    }
+
+    private @Nullable Player player() {
+        return Bukkit.getPlayer(this.carbonPlayerCommon.uuid());
+    }
+
+    @Override
+    public CarbonPlayerCommon carbonPlayerCommon() {
+        return this.carbonPlayerCommon;
+    }
+
+    @Override
+    public @NotNull Audience audience() {
+        final @Nullable Player player = this.player();
+
+        if (player == null) {
+            return Audience.empty();
+        }
+
+        return player;
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
-        this.carbonPlayer.displayName(displayName);
+        this.carbonPlayerCommon.displayName(displayName);
 
         final @Nullable Player player = this.player();
 
@@ -49,7 +66,7 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
 
     @Override
     public void temporaryDisplayName(final @Nullable Component displayName, final long expirationEpoch) {
-        this.carbonPlayer.temporaryDisplayName(displayName, expirationEpoch);
+        this.carbonPlayerCommon.temporaryDisplayName(displayName, expirationEpoch);
 
         final @Nullable Player player = this.player();
 
@@ -62,42 +79,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
 
             // TODO: schedule task to unset temporary display name when it expires
         }
-    }
-
-    @Override
-    public String username() {
-        return this.carbonPlayer.username();
-    }
-
-    @Override
-    public boolean hasCustomDisplayName() {
-        return this.carbonPlayer.hasCustomDisplayName();
-    }
-
-    @Override
-    public @Nullable Component displayName() {
-        return this.carbonPlayer.displayName();
-    }
-
-    @Override
-    public UUID uuid() {
-        return this.carbonPlayer.uuid();
-    }
-
-    @Override
-    public @NotNull Audience audience() {
-        final @Nullable Player player = this.player();
-
-        if (player == null) {
-            return Audience.empty();
-        }
-
-        return player;
-    }
-
-    @Override
-    public CarbonPlayer carbonPlayer() {
-        return this.carbonPlayer;
     }
 
     @Override
@@ -175,36 +156,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     }
 
     @Override
-    public boolean muted() {
-        return this.carbonPlayer.muted();
-    }
-
-    @Override
-    public void muted(final boolean muted) {
-        this.carbonPlayer.muted(muted);
-    }
-
-    @Override
-    public boolean deafened() {
-        return this.carbonPlayer.deafened();
-    }
-
-    @Override
-    public void deafened(final boolean deafened) {
-        this.carbonPlayer.deafened(deafened);
-    }
-
-    @Override
-    public boolean spying() {
-        return this.carbonPlayer.spying();
-    }
-
-    @Override
-    public void spying(final boolean spying) {
-        this.carbonPlayer.spying(spying);
-    }
-
-    @Override
     public @Nullable Locale locale() {
         final @Nullable Player player = this.player();
 
@@ -213,25 +164,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
         } else {
             return null;
         }
-    }
-
-    private @Nullable Player player() {
-        return Bukkit.getPlayer(this.carbonPlayer.uuid());
-    }
-
-    @Override
-    public @Nullable ChatChannel selectedChannel() {
-        return this.carbonPlayer.selectedChannel();
-    }
-
-    @Override
-    public void selectedChannel(final ChatChannel chatChannel) {
-        this.carbonPlayer.selectedChannel(chatChannel);
-    }
-
-    @Override
-    public Identity identity() {
-        return this.carbonPlayer.identity();
     }
 
     @Override
@@ -244,26 +176,6 @@ public final class CarbonPlayerBukkit extends CarbonPlayerCommon implements Forw
     @Override
     public boolean online() {
         return this.player() != null;
-    }
-
-    @Override
-    public void whisperReplyTarget(@Nullable UUID uuid) {
-        this.carbonPlayer.whisperReplyTarget(uuid);
-    }
-
-    @Override
-    public @Nullable UUID whisperReplyTarget() {
-        return this.carbonPlayer.whisperReplyTarget();
-    }
-
-    @Override
-    public void lastWhisperTarget(@Nullable UUID uuid) {
-        this.carbonPlayer.lastWhisperTarget(uuid);
-    }
-
-    @Override
-    public @Nullable UUID lastWhisperTarget() {
-        return this.carbonPlayer.lastWhisperTarget();
     }
 
 }

@@ -63,4 +63,7 @@ public interface CarbonChat {
 
     IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer();
 
+    // TODO: Redis as MariaDB cache
+    // TODO: Adopt egg82/Messenger for use with databases?
+
 }

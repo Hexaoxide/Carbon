@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Objects.requireNonNullElse;
@@ -37,7 +39,7 @@ public final class BukkitChatListener implements Listener {
     @EventHandler
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
         final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
-        final var sender = playerResult.player();
+        final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {
             return;

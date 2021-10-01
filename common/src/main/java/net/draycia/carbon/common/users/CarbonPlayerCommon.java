@@ -19,25 +19,22 @@ import org.jetbrains.annotations.NotNull;
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
     protected boolean deafened = false;
-    protected @Nullable Component displayName;
+    protected @Nullable Component displayName = null;
     protected @Nullable UUID lastWhisperTarget = null;
     protected boolean muted = false;
-    protected @Nullable ChatChannel selectedChannel;
+    protected @Nullable ChatChannel selectedChannel = null;
     protected boolean spying = false;
     protected @Nullable Component temporaryDisplayName = null;
     protected long temporaryDisplayNameExpiration = -1;
-    protected @MonotonicNonNull String username;
-    protected @MonotonicNonNull UUID uuid;
     protected @Nullable UUID whisperReplyTarget = null;
 
+    protected @MonotonicNonNull String username;
+    protected @MonotonicNonNull UUID uuid;
+
     public CarbonPlayerCommon(
-        final @Nullable Component displayName,
-        final @Nullable ChatChannel selectedChannel,
         final String username,
         final UUID uuid
     ) {
-        this.displayName = displayName;
-        this.selectedChannel = selectedChannel;
         this.username = username;
         this.uuid = uuid;
     }
@@ -83,6 +80,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         // TODO: see why these aren't persisting
         this.temporaryDisplayName = temporaryDisplayName;
         this.temporaryDisplayNameExpiration = expirationEpoch;
+    }
+
+    @Override
+    public @Nullable Component temporaryDisplayName() {
+        return this.temporaryDisplayName;
+    }
+
+    @Override
+    public long temporaryDisplayNameExpiration() {
+        return this.temporaryDisplayNameExpiration;
     }
 
     @Override

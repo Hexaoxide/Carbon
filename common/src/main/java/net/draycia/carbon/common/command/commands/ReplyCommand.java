@@ -12,7 +12,11 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class ReplyCommand {
 
     @Inject
@@ -29,14 +33,14 @@ public class ReplyCommand {
                 final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
 
                 final String message = handler.get("message");
-                final UUID replyTarget = sender.whisperReplyTarget();
+                final @Nullable UUID replyTarget = sender.whisperReplyTarget();
 
                 if (replyTarget == null) {
                     messageService.replyTargetNotSet(sender, sender.displayName());
                     return;
                 }
 
-                final ComponentPlayerResult result = carbonChat.server().player(replyTarget).join();
+                final ComponentPlayerResult<CarbonPlayer> result = carbonChat.server().player(replyTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (recipient == null) {

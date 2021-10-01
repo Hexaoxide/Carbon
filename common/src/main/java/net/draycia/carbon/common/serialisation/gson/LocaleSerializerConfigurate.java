@@ -37,7 +37,7 @@ public class LocaleSerializerConfigurate implements TypeSerializer<Locale> {
     }
 
     @Override
-    public void serialize(final Type type, @Nullable final Locale obj, final ConfigurationNode node) throws SerializationException {
+    public void serialize(final Type type, final @Nullable Locale obj, final ConfigurationNode node) throws SerializationException {
         if (obj == null) {
             node.set(null);
         } else {

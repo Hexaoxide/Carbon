@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Locale;
@@ -149,21 +150,29 @@ public class NicknameCommand {
         return instant.toEpochMilli();
     }
 
-    private final List<TemporalUnit> temporalUnits = List.of(ChronoUnit.YEARS, ChronoUnit.MONTHS, ChronoUnit.WEEKS,
+    private final List<ChronoUnit> temporalUnits = List.of(ChronoUnit.YEARS, ChronoUnit.MONTHS, ChronoUnit.WEEKS,
         ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES, ChronoUnit.SECONDS);
 
     private String formatMillisDuration(final long millisSinceEpoch) {
         final var millisBetween = millisSinceEpoch - System.currentTimeMillis();
-        var duration = Duration.ofMillis(millisBetween);
+        var period = Period.from(Duration.ofMillis(millisBetween)); // TODO: this doesn't work
         var stringJoiner = new StringJoiner(", ");
 
         for (final var temporalUnit : temporalUnits) {
-            final var count = duration.get(temporalUnit);
+            final var count = period.get(temporalUnit);
 
             // Check if == 0 instead of > 0 in case the millisSinceEpoch refers to the past
             // !! the distinction is important
             if (count != 0) {
-                duration = duration.minus(count, temporalUnit);
+                period = switch (temporalUnit) {
+                    case YEARS -> period.minusYears(count);
+                    case MONTHS -> period.minusMonths(count);
+                    case WEEKS -> period.minus(Period.ofWeeks((int)count));
+                    case DAYS -> period.minusDays(count);
+                    case HOURS, MINUTES, SECONDS -> period.minus(Duration.of(count, temporalUnit));
+                    default -> period;
+                };
+
                 stringJoiner.add(String.format("%d %s", count, temporalUnit));
             }
         }

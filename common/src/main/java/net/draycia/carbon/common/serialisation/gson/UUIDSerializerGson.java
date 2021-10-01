@@ -6,14 +6,19 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.UUID;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class UUIDSerializerGson extends TypeAdapter<UUID> {
 
     @Override
-    public void write(final JsonWriter jsonWriter, final UUID uuid) throws IOException {
-        jsonWriter.value(uuid.toString());
+    public void write(final JsonWriter jsonWriter, final @Nullable UUID uuid) throws IOException {
+        if (uuid != null) {
+            jsonWriter.value(uuid.toString());
+        } else {
+            jsonWriter.value((String)null);
+        }
     }
 
     @Override
