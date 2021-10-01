@@ -8,7 +8,10 @@ import net.draycia.carbon.common.config.PrimaryConfig;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class BukkitPlayerDeathListener implements Listener {
 
     private final CarbonChat carbonChat;
@@ -30,7 +33,7 @@ public class BukkitPlayerDeathListener implements Listener {
             return;
         }
 
-        final ComponentPlayerResult result = this.carbonChat.server().player(event.getEntity().getUniqueId()).join();
+        final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.getEntity().getUniqueId()).join();
 
         if (result.player() == null) {
             return;
@@ -38,7 +41,7 @@ public class BukkitPlayerDeathListener implements Listener {
 
         final CarbonPlayer player = result.player();
 
-        if (player.muted()) {
+        if (!player.muteEntries().isEmpty()) {
             event.deathMessage(null);
         }
     }

@@ -48,9 +48,9 @@ public final class BukkitChatListener implements Listener {
         var channel = requireNonNullElse(sender.selectedChannel(),
             this.registry.defaultValue());
 
-        var originalMessage = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        final var originalMessage = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
 
-        for (var chatChannel : this.registry) {
+        for (final var chatChannel : this.registry) {
             if (chatChannel.quickPrefix() == null) {
                 continue;
             }
@@ -69,7 +69,7 @@ public final class BukkitChatListener implements Listener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers);
+        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers, channel);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {

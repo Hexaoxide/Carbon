@@ -93,14 +93,14 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         }
 
         // Listeners
-        injector.getInstance(DeafenHandler.class);
-        injector.getInstance(MuteHandler.class);
+        this.injector.getInstance(DeafenHandler.class);
+        this.injector.getInstance(MuteHandler.class);
 
         // Commands
-        injector.getInstance(ContinueCommand.class);
-        injector.getInstance(NicknameCommand.class);
-        injector.getInstance(ReplyCommand.class);
-        injector.getInstance(WhisperCommand.class);
+        this.injector.getInstance(ContinueCommand.class);
+        this.injector.getInstance(NicknameCommand.class);
+        this.injector.getInstance(ReplyCommand.class);
+        this.injector.getInstance(WhisperCommand.class);
 
         final long saveDelay = 5 * 60 * 20;
 
@@ -127,7 +127,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
             });
 
             saveResult.exceptionally(exception -> {
-               exception.getCause().printStackTrace();
+                exception.getCause().printStackTrace();
                 return null;
             });
         }
@@ -162,7 +162,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     @Override
-    public final @NonNull CarbonEventHandler eventHandler() {
+    public @NonNull CarbonEventHandler eventHandler() {
         return this.eventHandler;
     }
 

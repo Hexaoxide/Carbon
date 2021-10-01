@@ -2,6 +2,7 @@ package net.draycia.carbon.common.users;
 
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -95,13 +96,18 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public boolean muted() {
-        return this.carbonPlayerCommon().muted();
+    public List<MuteEntry> muteEntries() {
+        return this.carbonPlayerCommon().muteEntries();
     }
 
     @Override
-    public void muted(boolean muted) {
-        this.carbonPlayerCommon().muted(muted);
+    public boolean muted(final ChatChannel chatChannel) {
+        return this.carbonPlayerCommon().muted(chatChannel);
+    }
+
+    @Override
+    public void muted(final ChatChannel chatChannel, final boolean muted, final @Nullable UUID cause) {
+        this.carbonPlayerCommon().muted(chatChannel, muted, cause);
     }
 
     @Override

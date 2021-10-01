@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.text.Component;
@@ -144,19 +145,31 @@ public interface CarbonPlayer extends Audience, Identified {
     List<String> groups();
 
     /**
-     * Returns if the player is muted and unable to speak in chat.
+     * The mute entries the player has.
      *
-     * @return if the player is muted
+     * @return the player's mute entries
      * @since 2.0.0
      */
-    boolean muted();
+    List<MuteEntry> muteEntries();
 
     /**
-     * Mutes and unmutes the player.
+     * Returns if the player is muted for the channel and unable to speak in it.
      *
+     * @param chatChannel the chat channel
+     * @return if the player is muted in the channel
      * @since 2.0.0
      */
-    void muted(final boolean muted);
+    boolean muted(final ChatChannel chatChannel);
+
+    /**
+     * Mutes and unmutes the player for the specified channel.
+     *
+     * @param chatChannel the channel to mute/unmute for
+     * @param muted if the player should be muted for the channel
+     * @param cause the UUID of the cause of the mute, typically a player UUID
+     * @since 2.0.0
+     */
+    void muted(final ChatChannel chatChannel, final boolean muted, final @Nullable UUID cause);
 
     /**
      * Returns if the player is deafened and unable to read messages.

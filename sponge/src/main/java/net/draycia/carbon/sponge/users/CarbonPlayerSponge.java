@@ -135,13 +135,13 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     }
 
     @Override
-    public boolean muted() {
-        return this.carbonPlayer.muted();
+    public boolean globallyMuted() {
+        return this.carbonPlayer.globallyMuted();
     }
 
     @Override
-    public void muted(final boolean muted) {
-        this.carbonPlayer.muted(muted);
+    public void globallyMuted(final boolean muted) {
+        this.carbonPlayer.globallyMuted(muted);
     }
 
     @Override

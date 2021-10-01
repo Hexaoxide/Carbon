@@ -1,6 +1,8 @@
 package net.draycia.carbon.api.events;
 
 import java.util.List;
+
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
@@ -22,6 +24,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     private final CarbonPlayer sender;
     private final Component originalMessage;
     private final List<? extends Audience> recipients;
+    private final ChatChannel chatChannel;
     private Component message;
     private Result result = Result.ALLOWED;
 
@@ -32,19 +35,22 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      * @param originalMessage the original message that was sent
      * @param recipients      the recipients of the message
      * @param renderers       the renderers of the message
+     * @param chatChannel     the channel the message was sent in
      * @since 2.0.0
      */
     public CarbonChatEvent(
         final CarbonPlayer sender,
         final Component originalMessage,
         final List<? extends Audience> recipients,
-        final List<KeyedRenderer> renderers
-    ) {
+        final List<KeyedRenderer> renderers,
+        final ChatChannel chatChannel
+        ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
         this.message = originalMessage;
         this.recipients = recipients;
         this.renderers = renderers;
+        this.chatChannel = chatChannel;
     }
 
     /**
@@ -95,6 +101,16 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      */
     public void message(final Component message) {
         this.message = message;
+    }
+
+    /**
+     * The chat channel the message was sent in.
+     *
+     * @return the chat channel
+     * @since 2.0.0
+     */
+    public ChatChannel chatChannel() {
+        return this.chatChannel;
     }
 
     /**

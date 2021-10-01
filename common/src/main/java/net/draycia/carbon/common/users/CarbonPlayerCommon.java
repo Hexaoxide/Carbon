@@ -1,10 +1,12 @@
 package net.draycia.carbon.common.users;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -19,17 +21,26 @@ import org.jetbrains.annotations.NotNull;
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
     protected boolean deafened = false;
-    protected @Nullable Component displayName = null;
-    protected @Nullable UUID lastWhisperTarget = null;
-    protected boolean muted = false;
     protected @Nullable ChatChannel selectedChannel = null;
-    protected boolean spying = false;
-    protected @Nullable Component temporaryDisplayName = null;
-    protected long temporaryDisplayNameExpiration = -1;
-    protected @Nullable UUID whisperReplyTarget = null;
 
+    // All players have these
     protected @MonotonicNonNull String username;
     protected @MonotonicNonNull UUID uuid;
+
+    // Display information
+    protected @Nullable Component displayName = null;
+    protected @Nullable Component temporaryDisplayName = null;
+    protected long temporaryDisplayNameExpiration = -1;
+
+    // Whispers
+    protected @Nullable UUID lastWhisperTarget = null;
+    protected @Nullable UUID whisperReplyTarget = null;
+
+    // Administrative
+    protected boolean spying = false;
+
+    // Punishments
+    protected List<MuteEntry> muteEntries = new ArrayList<>();
 
     public CarbonPlayerCommon(
         final String username,
@@ -108,13 +119,37 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public boolean muted() {
-        return this.muted;
+    public List<MuteEntry> muteEntries() {
+        return this.muteEntries;
     }
 
     @Override
-    public void muted(final boolean muted) {
-        this.muted = muted;
+    public boolean muted(final ChatChannel chatChannel) {
+        for (final var muteEntry : this.muteEntries) {
+            if (muteEntry.channel() != null && chatChannel.key().equals(muteEntry.channel())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public void muted(final ChatChannel chatChannel, final boolean muted, final @Nullable UUID cause) {
+        final var iterator = this.muteEntries.iterator();
+        MuteEntry muteEntry;
+
+        while (iterator.hasNext()) {
+            muteEntry = iterator.next();
+
+            if (muteEntry.channel() != null && chatChannel.key().equals(muteEntry.channel())) {
+                iterator.remove();
+            }
+        }
+
+        if (muted) {
+            this.muteEntries.add(new MuteEntry(System.currentTimeMillis(), cause, -1, chatChannel.key()));
+        }
     }
 
     @Override

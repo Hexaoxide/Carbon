@@ -31,12 +31,15 @@ public class MuteHandler {
         this.messageService = messageService;
 
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 100, false, event -> {
-            if (!event.sender().muted()) {
-                return;
+            for (final var muteEntry : event.sender().muteEntries()) {
+                if (muteEntry.channel() != null && event.chatChannel().key().equals(muteEntry.channel())) {
+                    return;
+                }
             }
 
             event.renderers().add(this.renderer);
 
+            // TODO: ShadowMuteHandler? Include that logic in here?
             event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
                 !carbonPlayer.spying());
         });
