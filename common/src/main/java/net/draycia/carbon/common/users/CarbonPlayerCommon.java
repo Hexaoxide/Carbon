@@ -126,7 +126,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public boolean muted(final ChatChannel chatChannel) {
         for (final var muteEntry : this.muteEntries) {
-            if (muteEntry.channel() != null && chatChannel.key().equals(muteEntry.channel())) {
+            if (!muteEntry.valid()) {
+                continue;
+            }
+
+            if (muteEntry.channel() == null || chatChannel.key().equals(muteEntry.channel())) {
                 return true;
             }
         }
