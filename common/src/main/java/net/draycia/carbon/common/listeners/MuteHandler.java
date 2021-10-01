@@ -32,8 +32,19 @@ public class MuteHandler {
 
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 100, false, event -> {
             for (final var muteEntry : event.sender().muteEntries()) {
-                if (muteEntry.channel() != null && event.chatChannel().key().equals(muteEntry.channel())) {
-                    return;
+                // Entry expired
+                if (!muteEntry.valid()) {
+                    continue;
+                }
+
+                // Muted in all channels
+                if (muteEntry.channel() == null) {
+                    break;
+                }
+
+                // Muted in the channel the message was sent in
+                if (event.chatChannel().key().equals(muteEntry.channel())) {
+                    break;
                 }
             }
 

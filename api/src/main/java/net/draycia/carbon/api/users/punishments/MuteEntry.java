@@ -10,4 +10,8 @@ import java.util.UUID;
 @DefaultQualifier(NonNull.class)
 public record MuteEntry(long muteEpoch, @Nullable UUID muteCause, long expirationEpoch, @Nullable Key channel) {
 
+    public boolean valid() {
+        return System.currentTimeMillis() < expirationEpoch;
+    }
+
 }
