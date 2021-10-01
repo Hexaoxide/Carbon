@@ -9,12 +9,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -154,32 +151,34 @@ public class NicknameCommand {
         ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES, ChronoUnit.SECONDS);
 
     private String formatMillisDuration(final long millisSinceEpoch) {
-        final var millisBetween = millisSinceEpoch - System.currentTimeMillis();
-        var period = Period.from(Duration.ofMillis(millisBetween)); // TODO: this doesn't work
-        var stringJoiner = new StringJoiner(", ");
+        return String.format("%d milliseconds", millisSinceEpoch);
 
-        for (final var temporalUnit : temporalUnits) {
-            final var count = period.get(temporalUnit);
-
-            // Check if == 0 instead of > 0 in case the millisSinceEpoch refers to the past
-            // !! the distinction is important
-            if (count != 0) {
-                period = switch (temporalUnit) {
-                    case YEARS -> period.minusYears(count);
-                    case MONTHS -> period.minusMonths(count);
-                    case WEEKS -> period.minus(Period.ofWeeks((int)count));
-                    case DAYS -> period.minusDays(count);
-                    case HOURS, MINUTES, SECONDS -> period.minus(Duration.of(count, temporalUnit));
-                    default -> period;
-                };
-
-                stringJoiner.add(String.format("%d %s", count, temporalUnit));
-            }
-        }
-
-        final var suffix = millisBetween > 0 ? "" : " ago";
-
-        return stringJoiner + suffix;
+        //final var millisBetween = millisSinceEpoch - System.currentTimeMillis();
+        //var period = Period.from(Duration.ofMillis(millisBetween)); // TODO: this doesn't work
+        //var stringJoiner = new StringJoiner(", ");
+        //
+        //for (final var temporalUnit : temporalUnits) {
+        //    final var count = period.get(temporalUnit);
+        //
+        //    // Check if == 0 instead of > 0 in case the millisSinceEpoch refers to the past
+        //    // !! the distinction is important
+        //    if (count != 0) {
+        //        period = switch (temporalUnit) {
+        //            case YEARS -> period.minusYears(count);
+        //            case MONTHS -> period.minusMonths(count);
+        //            case WEEKS -> period.minus(Period.ofWeeks((int)count));
+        //            case DAYS -> period.minusDays(count);
+        //            case HOURS, MINUTES, SECONDS -> period.minus(Duration.of(count, temporalUnit));
+        //            default -> period;
+        //        };
+        //
+        //        stringJoiner.add(String.format("%d %s", count, temporalUnit));
+        //    }
+        //}
+        //
+        //final var suffix = millisBetween > 0 ? "" : " ago";
+        //
+        //return stringJoiner + suffix;
     }
 
 }
