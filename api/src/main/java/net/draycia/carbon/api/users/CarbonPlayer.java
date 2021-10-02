@@ -117,7 +117,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param chatChannel the channel
      * @since 2.0.0
      */
-    void selectedChannel(final ChatChannel chatChannel);
+    void selectedChannel(final @Nullable ChatChannel chatChannel);
 
     /**
      * Checks if the player has the specified permission.

@@ -168,9 +168,9 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
 
     @Override
     public void sendMessageAsPlayer(final String message) {
-        Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("CarbonChat"), () -> {
-            Objects.requireNonNull(this.player()).chat(message);
-        });
+        // TODO: ensure method is not executed from main thread
+        // bukkit doesn't like that
+        Objects.requireNonNull(this.player()).chat(message);
     }
 
     @Override
