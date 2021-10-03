@@ -1,9 +1,7 @@
 package net.draycia.carbon.common.users;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
+
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
@@ -120,7 +118,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public List<MuteEntry> muteEntries() {
-        return this.muteEntries;
+        return Collections.unmodifiableList(this.muteEntries);
     }
 
     @Override
@@ -139,20 +137,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void muted(final ChatChannel chatChannel, final boolean muted, final @Nullable UUID cause) {
-        final var iterator = this.muteEntries.iterator();
-        MuteEntry muteEntry;
-
-        while (iterator.hasNext()) {
-            muteEntry = iterator.next();
-
-            if (muteEntry.channel() != null && chatChannel.key().equals(muteEntry.channel())) {
-                iterator.remove();
-            }
-        }
-
+    public void addMuteEntry(
+        final @Nullable ChatChannel chatChannel,
+        final boolean muted,
+        final @Nullable UUID cause,
+        final long duration,
+        final @Nullable String reason
+    ) {
         if (muted) {
-            this.muteEntries.add(new MuteEntry(System.currentTimeMillis(), cause, -1, chatChannel.key()));
+            this.muteEntries.add(new MuteEntry(System.currentTimeMillis(), cause, duration,
+                reason, chatChannel != null ? chatChannel.key() : null, UUID.randomUUID()));
         }
     }
 

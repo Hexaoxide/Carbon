@@ -1,11 +1,14 @@
 package net.draycia.carbon.common.messages;
 
 import java.util.UUID;
+
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
 import net.kyori.moonshine.annotation.Placeholder;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface CarbonMessageService {
 
@@ -156,6 +159,75 @@ public interface CarbonMessageService {
     void nicknameShowUnset(
         final Audience audience,
         @Placeholder String target
+    );
+
+    // pls stop
+    @Message("mute.notify.permanent.reason.channel")
+    void broadcastPlayerChannelMutedPermanentlyReason(
+        final Audience audience,
+        final String sender,
+        final String target,
+        final String reason,
+        final ChatChannel channel
+    );
+
+    @Message("mute.notify.temporary.reason.channel")
+    void broadcastPlayerChannelMutedDurationReason(
+        final Audience audience,
+        final String sender,
+        final String target,
+        final String reason,
+        final ChatChannel channel,
+        final long duration
+    );
+
+    @Message("mute.notify.permanent.reason")
+    void broadcastPlayerMutedPermanentlyReason(
+        final Audience audience,
+        final String sender,
+        final String target,
+        final String reason
+    );
+
+    @Message("mute.notify.temporary.reason")
+    void broadcastPlayerMutedDurationReason(
+        final Audience audience,
+        final String sender,
+        final String target,
+        final String reason,
+        final long duration
+    );
+
+    @Message("mute.notify.permanent.channel")
+    void broadcastPlayerChannelMutedPermanently(
+        final Audience audience,
+        final String sender,
+        final String target,
+        final ChatChannel channel
+    );
+
+    @Message("mute.notify.temporary.channel")
+    void broadcastPlayerChannelMutedDuration(
+        final Audience audience,
+        final String sender,
+        final String target,
+        final ChatChannel channel,
+        final long duration
+    );
+
+    @Message("mute.notify.permanent")
+    void broadcastPlayerMutedPermanently(
+        final Audience audience,
+        final String sender,
+        final String target
+    );
+
+    @Message("mute.notify.temporary")
+    void broadcastPlayerMutedDuration(
+        final Audience audience,
+        final String sender,
+        final String target,
+        final long duration
     );
 
 }

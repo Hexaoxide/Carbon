@@ -145,9 +145,9 @@ public interface CarbonPlayer extends Audience, Identified {
     List<String> groups();
 
     /**
-     * The mute entries the player has.
+     * A copy of the mute entries the player has.
      *
-     * @return the player's mute entries
+     * @return a copy of the player's mute entries
      * @since 2.0.0
      */
     List<MuteEntry> muteEntries();
@@ -167,9 +167,17 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param chatChannel the channel to mute/unmute for
      * @param muted if the player should be muted for the channel
      * @param cause the UUID of the cause of the mute, typically a player UUID
+     * @param duration the duration of the mute, or -1 if it does not expire
+     * @param reason the reason the player was muted
      * @since 2.0.0
      */
-    void muted(final ChatChannel chatChannel, final boolean muted, final @Nullable UUID cause);
+    void addMuteEntry(
+        final @Nullable ChatChannel chatChannel,
+        final boolean muted,
+        final @Nullable UUID cause,
+        final long duration,
+        final @Nullable String reason
+    );
 
     /**
      * Returns if the player is deafened and unable to read messages.
