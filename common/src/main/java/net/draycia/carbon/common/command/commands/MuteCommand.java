@@ -1,7 +1,6 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.StringArgument;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -30,7 +29,7 @@ public class MuteCommand {
                 final CarbonPlayer target = handler.get("player");
 
                 if (target.hasPermission("carbon.mute.exempt")) {
-                    // TODO: "target is exempt from being muted"
+                    messageService.muteExempt(sender);
                     return;
                 }
 

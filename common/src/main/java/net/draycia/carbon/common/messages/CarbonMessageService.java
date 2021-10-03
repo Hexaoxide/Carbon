@@ -230,4 +230,7 @@ public interface CarbonMessageService {
         final long duration
     );
 
+    @Message("mute.exempt")
+    void muteExempt(final Audience audience);
+
 }
