@@ -22,7 +22,7 @@ public class MuteCommand {
     ) {
         var command = commandManager.commandBuilder("mute")
             .argument(carbonPlayerArgument.newInstance(true, "player"))
-            .permission("carbon.mute.") // TODO: carbon.whisper.spy
+            .permission("carbon.mute.mute") // TODO: carbon.whisper.spy
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
@@ -40,58 +40,70 @@ public class MuteCommand {
                 // Intentionally directly pass in the flags, they're null if not present
                 target.addMuteEntry(channel, true, target.uuid(), duration, reason);
 
-                // TODO: tell sender "player is now muted"
-                // TODO: tell target "you are now muted"
-
-                // TODO: broadcast to mods "player is now muted"
                 for (final var player : carbonChat.server().players()) {
-                    if (!player.hasPermission("carbon.mute.notify")) {
+                    if (!player.equals(sender) && !player.hasPermission("carbon.mute.notify")) {
                         continue;
                     }
 
-                    // oh no
-                    if (reason != null && player.hasPermission("carbon.mute.notify.reason")) {
-                        if (channel != null) {
-                            if (duration == -1) {
-                                messageService.broadcastPlayerChannelMutedPermanentlyReason(player, target.username(),
-                                    sender.username(), reason, channel);
-                            } else {
-                                messageService.broadcastPlayerChannelMutedDurationReason(player,target.username(),
-                                    sender.username(), reason, channel, duration);
-                            }
-                        } else {
-                            if (duration == -1) {
-                                messageService.broadcastPlayerMutedPermanentlyReason(player, target.username(),
-                                    sender.username(), reason);
-                            } else {
-                                messageService.broadcastPlayerMutedDurationReason(player, sender.username(),
-                                    reason, target.username(), duration);
-                            }
-                        }
-                    } else {
-                        if (channel != null) {
-                            if (duration == -1) {
-                                messageService.broadcastPlayerChannelMutedPermanently(player, target.username(),
-                                    sender.username(), channel);
-                            } else {
-                                messageService.broadcastPlayerChannelMutedDuration(player, target.username(),
-                                    sender.username(), channel, duration);
-                            }
-                        } else {
-                            if (duration == -1) {
-                                messageService.broadcastPlayerMutedPermanently(player, sender.username(),
-                                    target.username());
-                            } else {
-                                messageService.broadcastPlayerMutedDuration(player, sender.username(),
-                                    target.username(), duration);
-                            }
-                        }
-                    }
+                    sendMuteMessage(messageService, sender, target, player, reason, channel, duration);
                 }
             })
             .build();
 
         commandManager.command(command);
+    }
+
+    private void sendMuteMessage(
+        final CarbonMessageService messageService,
+        final CarbonPlayer sender,
+        final CarbonPlayer target,
+        final CarbonPlayer recipient,
+        final @Nullable String reason,
+        final @Nullable ChatChannel channel,
+        final long duration
+    ) {
+        if (target.equals(recipient)) {
+            // TODO: "you have been muted"
+        }
+
+        // Oh no
+        if (reason != null && target.hasPermission("carbon.mute.notify.reason")) {
+            if (channel != null) {
+                if (duration == -1) {
+                    messageService.broadcastPlayerChannelMutedPermanentlyReason(recipient, target.username(),
+                        sender.username(), reason, channel);
+                } else {
+                    messageService.broadcastPlayerChannelMutedDurationReason(recipient,target.username(),
+                        sender.username(), reason, channel, duration);
+                }
+            } else {
+                if (duration == -1) {
+                    messageService.broadcastPlayerMutedPermanentlyReason(recipient, target.username(),
+                        sender.username(), reason);
+                } else {
+                    messageService.broadcastPlayerMutedDurationReason(recipient, sender.username(),
+                        reason, target.username(), duration);
+                }
+            }
+        } else {
+            if (channel != null) {
+                if (duration == -1) {
+                    messageService.broadcastPlayerChannelMutedPermanently(recipient, target.username(),
+                        sender.username(), channel);
+                } else {
+                    messageService.broadcastPlayerChannelMutedDuration(recipient, target.username(),
+                        sender.username(), channel, duration);
+                }
+            } else {
+                if (duration == -1) {
+                    messageService.broadcastPlayerMutedPermanently(recipient, sender.username(),
+                        target.username());
+                } else {
+                    messageService.broadcastPlayerMutedDuration(recipient, sender.username(),
+                        target.username(), duration);
+                }
+            }
+        }
     }
 
 }
