@@ -95,7 +95,7 @@ public final class BukkitChatListener implements Listener {
             for (final var renderer : chatEvent.renderers()) {
                 try {
                     if (viewer instanceof Player player) {
-                        final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(player).join();
+                        final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
                         component = renderer.render(sender, targetPlayer.player(), component, message);
                     } else {
                         component = renderer.render(sender, viewer, component, message);

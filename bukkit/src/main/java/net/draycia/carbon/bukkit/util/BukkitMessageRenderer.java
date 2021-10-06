@@ -18,7 +18,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, String, Component, Component> {
 
-    private final PlaceholderAPIMiniMessageParser parser = PlaceholderAPIMiniMessageParser.create(MiniMessage.get());
+    private final PlaceholderAPIMiniMessageParser parser = PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
 
     @Override
     public Component render(
@@ -43,7 +43,7 @@ public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, 
             }
         }
 
-        return MiniMessage.get().parse(intermediateMessage, templates);
+        return MiniMessage.miniMessage().parse(intermediateMessage, templates);
     }
 
 }
