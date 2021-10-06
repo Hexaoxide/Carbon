@@ -5,6 +5,7 @@ import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
 import net.kyori.moonshine.annotation.Placeholder;
@@ -168,7 +169,7 @@ public interface CarbonMessageService {
         final String sender,
         final String target,
         final String reason,
-        final ChatChannel channel
+        final Key channel
     );
 
     @Message("mute.notify.temporary.reason.channel")
@@ -177,7 +178,7 @@ public interface CarbonMessageService {
         final String sender,
         final String target,
         final String reason,
-        final ChatChannel channel,
+        final Key channel,
         final long duration
     );
 
@@ -203,7 +204,7 @@ public interface CarbonMessageService {
         final Audience audience,
         final String sender,
         final String target,
-        final ChatChannel channel
+        final Key channel
     );
 
     @Message("mute.notify.temporary.channel")
@@ -211,7 +212,7 @@ public interface CarbonMessageService {
         final Audience audience,
         final String sender,
         final String target,
-        final ChatChannel channel,
+        final Key channel,
         final long duration
     );
 
@@ -232,5 +233,8 @@ public interface CarbonMessageService {
 
     @Message("mute.exempt")
     void muteExempt(final Audience audience);
+
+    @Message("mute.notify.player")
+    void playerAlertMuted(final Audience audience);
 
 }

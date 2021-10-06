@@ -14,7 +14,7 @@ public record MuteEntry(
     long expirationEpoch,
     @Nullable String reason,
     @Nullable Key channel,
-    UUID entryId
+    UUID muteId
 ) {
 
     public boolean valid() {
