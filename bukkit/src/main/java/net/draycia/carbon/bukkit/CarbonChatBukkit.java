@@ -22,6 +22,7 @@ import net.draycia.carbon.common.command.commands.ContinueCommand;
 import net.draycia.carbon.common.command.commands.MuteCommand;
 import net.draycia.carbon.common.command.commands.NicknameCommand;
 import net.draycia.carbon.common.command.commands.ReplyCommand;
+import net.draycia.carbon.common.command.commands.UnmuteCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
@@ -102,6 +103,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         this.injector.getInstance(MuteCommand.class);
         this.injector.getInstance(NicknameCommand.class);
         this.injector.getInstance(ReplyCommand.class);
+        this.injector.getInstance(UnmuteCommand.class);
         this.injector.getInstance(WhisperCommand.class);
 
         final long saveDelay = 5 * 60 * 20;

@@ -12,8 +12,12 @@ import net.draycia.carbon.common.command.arguments.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class MuteCommand {
+
+    private final CommandManager<Commander> commandManager;
 
     @Inject
     public MuteCommand(
@@ -22,9 +26,11 @@ public class MuteCommand {
         final CarbonChat carbonChat,
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
+        this.commandManager = commandManager;
+
         var command = commandManager.commandBuilder("mute")
             .argument(carbonPlayerArgument.newInstance(true, "player"))
-            .permission("carbon.mute.mute") // TODO: carbon.whisper.spy
+            .permission("carbon.mute.mute")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
@@ -47,7 +53,7 @@ public class MuteCommand {
                         continue;
                     }
 
-                    sendMuteMessage(messageService, muteEntry, sender, target, player);
+                    sendMuteMessage(messageService, muteEntry, (PlayerCommander)handler.getSender(), sender, target, player);
                 }
             })
             .build();
@@ -58,14 +64,15 @@ public class MuteCommand {
     private void sendMuteMessage(
         final CarbonMessageService messageService,
         final MuteEntry muteEntry,
+        final PlayerCommander playerCommander,
         final CarbonPlayer sender,
         final CarbonPlayer target,
         final CarbonPlayer recipient
     ) {
         if (target.equals(recipient)) {
             messageService.playerAlertMuted(target);
-            // TODO: make target run the "baninfo" command
-            // Remember that Carbon command names will be user configurable, account for this!
+            this.commandManager.executeCommand(playerCommander, "/baninfo -u " + muteEntry.muteId());
+            // TODO: Carbon command names will be user configurable, account for this!
         }
 
         // Oh no

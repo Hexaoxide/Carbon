@@ -234,7 +234,13 @@ public interface CarbonMessageService {
     @Message("mute.exempt")
     void muteExempt(final Audience audience);
 
-    @Message("mute.notify.player")
+    @Message("mute.notify.player.muted")
     void playerAlertMuted(final Audience audience);
+
+    @Message("mute.notify.player.unmuted")
+    void playerAlertUnmuted(final Audience audience);
+
+    @Message("mute.notify.unmuted")
+    void broadcastPlayerUnmuted(final Audience audience, final String target);
 
 }
