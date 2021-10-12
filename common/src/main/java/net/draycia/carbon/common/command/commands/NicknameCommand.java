@@ -66,7 +66,7 @@ public class NicknameCommand {
 
                 // Setting nickname
                 if (handler.flags().contains("nickname")) {
-                    final var nickname = MiniMessage.get().parse(handler.flags().get("nickname"));
+                    final var nickname = MiniMessage.miniMessage().parse(handler.flags().get("nickname"));
 
                     final @MonotonicNonNull CarbonPlayer target = handler.flags().get("player");
 

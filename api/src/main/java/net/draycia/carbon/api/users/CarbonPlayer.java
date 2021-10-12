@@ -171,7 +171,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param reason the reason the player was muted
      * @since 2.0.0
      */
-    MuteEntry addMuteEntry(
+    @Nullable MuteEntry addMuteEntry(
         final @Nullable ChatChannel chatChannel,
         final boolean muted,
         final @Nullable UUID cause,

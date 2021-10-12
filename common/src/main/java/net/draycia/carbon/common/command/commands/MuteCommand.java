@@ -46,14 +46,16 @@ public class MuteCommand {
                 final @Nullable String reason = handler.flags().get("reason");
 
                 // Intentionally directly pass in the flags, they're null if not present
-                final var muteEntry = target.addMuteEntry(channel, true, target.uuid(), duration, reason);
+                final @Nullable MuteEntry muteEntry = target.addMuteEntry(channel, true,
+                    target.uuid(), duration, reason);
 
                 for (final var player : carbonChat.server().players()) {
                     if (!player.equals(sender) && !player.hasPermission("carbon.mute.notify")) {
                         continue;
                     }
 
-                    sendMuteMessage(messageService, muteEntry, (PlayerCommander)handler.getSender(), sender, target, player);
+                    sendMuteMessage(messageService, muteEntry, (PlayerCommander)handler.getSender(),
+                        sender, target, player);
                 }
             })
             .build();

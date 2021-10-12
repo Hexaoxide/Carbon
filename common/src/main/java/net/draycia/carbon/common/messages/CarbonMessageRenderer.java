@@ -30,7 +30,7 @@ public class CarbonMessageRenderer implements IMessageRenderer<Audience, String,
             templates.add(Template.of(entry.getKey(), entry.getValue()));
         }
         
-        return MiniMessage.get().parse(intermediateMessage, templates);
+        return MiniMessage.miniMessage().parse(intermediateMessage, templates);
     }
 
 }

@@ -7,6 +7,7 @@ import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.message.IMessageSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
@@ -38,7 +39,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Map.of("default", "<displayname>: <message>"));
 
     @Override
-    public String messageOf(final SourcedAudience receiver, final String messageKey) {
+    public @Nullable String messageOf(final SourcedAudience receiver, final String messageKey) {
         if (receiver.recipient() instanceof CarbonPlayer player) {
             return this.forPlayer(messageKey, player);
         } else {
@@ -46,34 +47,37 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         }
     }
 
-    private String forPlayer(final String key, final CarbonPlayer player) {
-        // TODO: rewrite and reimplement
-        //        final Map<String, String> formats = this.locales.get(player.locale());
-        //
-        //        if (formats != null) {
-        //            final String format = formats.get(player.primaryGroup());
-        //
-        //            if (format != null) {
-        //                return format;
-        //            }
-        //
-        //            final String defaultFormat = formats.get("default");
-        //
-        //            if (defaultFormat != null) {
-        //                return defaultFormat;
-        //            }
-        //        }
+    private @Nullable String forPlayer(final String key, final CarbonPlayer player) {
+        if (player.locale() != null && this.locales.containsKey(player.locale())) {
+            final @Nullable String localeFormat = this.locateFormat(this.locales.get(player.locale()), player);
 
-        final String format = this.defaults.get(player.primaryGroup());
+            if (localeFormat != null) {
+                return localeFormat;
+            }
+        }
+
+        return this.locateFormat(this.defaults, player);
+    }
+
+    private @Nullable String locateFormat(final Map<String, String> formats, final CarbonPlayer player) {
+        final @Nullable String format = formats.get(player.primaryGroup());
 
         if (format != null) {
             return format;
         }
 
-        return this.defaults.get("default");
+        for (final var groupEntry : player.groups()) {
+            final @Nullable String groupFormat = formats.get(groupEntry);
+
+            if (groupFormat != null) {
+                return groupFormat;
+            }
+        }
+
+        return null;
     }
 
-    private String forAudience(final String key, final Audience audience) {
+    private @Nullable String forAudience(final String key, final Audience audience) {
         return this.defaults.get("console");
     }
 

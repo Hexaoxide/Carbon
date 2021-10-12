@@ -12,6 +12,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ContinueCommand {
 
@@ -36,7 +37,8 @@ public class ContinueCommand {
                     return;
                 }
 
-                final ComponentPlayerResult result = carbonChat.server().player(whisperTarget).join();
+                final ComponentPlayerResult<@NonNull CarbonPlayer> result = carbonChat.server()
+                    .player(whisperTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (recipient == null) {

@@ -137,7 +137,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void addMuteEntry(
+    public @Nullable MuteEntry addMuteEntry(
         final @Nullable ChatChannel chatChannel,
         final boolean muted,
         final @Nullable UUID cause,
@@ -145,8 +145,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final @Nullable String reason
     ) {
         if (muted) {
-            this.muteEntries.add(new MuteEntry(System.currentTimeMillis(), cause, duration,
-                reason, chatChannel != null ? chatChannel.key() : null, UUID.randomUUID()));
+            final var muteEntry = new MuteEntry(System.currentTimeMillis(), cause, duration,
+                reason, chatChannel != null ? chatChannel.key() : null, UUID.randomUUID());
+            this.muteEntries.add(muteEntry);
+            return muteEntry;
+        } else {
+            return null;
         }
     }
 

@@ -106,14 +106,14 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void addMuteEntry(
+    public @Nullable MuteEntry addMuteEntry(
         final @Nullable ChatChannel chatChannel,
         final boolean muted,
         final @Nullable UUID cause,
         final long duration,
         final @Nullable String reason
     ) {
-        this.carbonPlayerCommon().addMuteEntry(chatChannel, muted, cause, duration, reason);
+        return this.carbonPlayerCommon().addMuteEntry(chatChannel, muted, cause, duration, reason);
     }
 
     @Override
