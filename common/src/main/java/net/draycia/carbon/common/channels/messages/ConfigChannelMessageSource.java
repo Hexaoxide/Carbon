@@ -83,7 +83,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
             }
         }
 
-        return null;
+        return this.defaults.get("default");
     }
 
     private @Nullable String forAudience(final String key, final Audience audience) {
