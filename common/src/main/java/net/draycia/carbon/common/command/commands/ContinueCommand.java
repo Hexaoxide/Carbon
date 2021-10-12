@@ -51,6 +51,11 @@ public class ContinueCommand {
                     return;
                 }
 
+                if (!recipient.online()) {
+                    messageService.whisperTargetOffline(sender, sender.displayName());
+                    return;
+                }
+
                 messageService.whisperSender(new SourcedAudience(sender, sender),
                     sender.displayName(), recipient.displayName(), message);
 
