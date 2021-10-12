@@ -13,8 +13,8 @@ public class SourcedMessageSender implements IMessageSender<SourcedAudience, Com
 
     @Override
     public void send(final SourcedAudience receiver, final Component renderedMessage) {
-        if (receiver.sender() instanceof CarbonPlayer player && !player.hasPermission("carbon.noidentity")) {
-            receiver.recipient().sendMessage(Identity.identity(player.uuid()), renderedMessage);
+        if (receiver.sender() instanceof CarbonPlayer sender) {
+            receiver.recipient().sendMessage(Identity.identity(sender.uuid()), renderedMessage);
         } else {
             receiver.recipient().sendMessage(Identity.nil(), renderedMessage);
         }
