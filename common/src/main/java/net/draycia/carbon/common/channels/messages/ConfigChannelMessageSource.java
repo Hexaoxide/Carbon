@@ -48,35 +48,42 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
     );
 
     @Override
-    public @Nullable String messageOf(final SourcedAudience receiver, final String messageKey) {
-        if (receiver.recipient() instanceof CarbonPlayer player) {
-            return this.forPlayer(messageKey, player);
+    public @Nullable String messageOf(final SourcedAudience sourcedAudience, final String messageKey) {
+        if (sourcedAudience.recipient() instanceof CarbonPlayer) {
+            return this.forPlayer(messageKey, sourcedAudience);
         } else {
-            return this.forAudience(messageKey, receiver.recipient());
+            return this.forAudience(messageKey, sourcedAudience.recipient());
         }
     }
 
-    private @Nullable String forPlayer(final String key, final CarbonPlayer player) {
-        if (player.locale() != null && this.locales.containsKey(player.locale())) {
-            final @Nullable String localeFormat = this.locateFormat(this.locales.get(player.locale()), player);
+    private @Nullable String forPlayer(final String key, final SourcedAudience sourcedAudience) {
+        final var sender = (CarbonPlayer) sourcedAudience.sender();
 
-            if (localeFormat != null) {
-                return localeFormat;
+        if (sender.locale() != null) {
+            final var formats = this.locales.get(sender.locale());
+            final @Nullable String format = formats.get(sender.primaryGroup());
+
+            if (format != null) {
+                return format;
+            }
+
+            for (final var groupEntry : sender.groups()) {
+                final @Nullable String groupFormat = formats.get(groupEntry);
+
+                if (groupFormat != null) {
+                    return groupFormat;
+                }
             }
         }
 
-        return this.locateFormat(this.defaults, player);
-    }
-
-    private @Nullable String locateFormat(final Map<String, String> formats, final CarbonPlayer player) {
-        final @Nullable String format = formats.get(player.primaryGroup());
+        final @Nullable String format = this.defaults.get(sender.primaryGroup());
 
         if (format != null) {
             return format;
         }
 
-        for (final var groupEntry : player.groups()) {
-            final @Nullable String groupFormat = formats.get(groupEntry);
+        for (final var groupEntry : sender.groups()) {
+            final @Nullable String groupFormat = this.defaults.get(groupEntry);
 
             if (groupFormat != null) {
                 return groupFormat;
