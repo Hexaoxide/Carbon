@@ -2,6 +2,7 @@ package net.draycia.carbon.common.channels.messages;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
@@ -47,8 +48,10 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Locale.US, Map.of("default_format", "<displayname>: <message>")
     );
 
+    private static final String FALLBACK_FORMAT = "<red><</red><username><red>></red> <message>";
+
     @Override
-    public @Nullable String messageOf(final SourcedAudience sourcedAudience, final String messageKey) {
+    public String messageOf(final SourcedAudience sourcedAudience, final String messageKey) {
         if (sourcedAudience.recipient() instanceof CarbonPlayer) {
             return this.forPlayer(messageKey, sourcedAudience);
         } else {
@@ -56,7 +59,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         }
     }
 
-    private @Nullable String forPlayer(final String key, final SourcedAudience sourcedAudience) {
+    private String forPlayer(final String key, final SourcedAudience sourcedAudience) {
         final var sender = (CarbonPlayer) sourcedAudience.sender();
         final var recipient = (CarbonPlayer) sourcedAudience.recipient();
 
@@ -94,11 +97,11 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
             }
         }
 
-        return this.defaults.get("default_format");
+        return Objects.requireNonNullElse(this.defaults.get("default_format"), FALLBACK_FORMAT);
     }
 
-    private @Nullable String forAudience(final String key, final Audience audience) {
-        return this.defaults.get("console");
+    private String forAudience(final String key, final Audience audience) {
+        return Objects.requireNonNullElse(this.defaults.get("console"), FALLBACK_FORMAT);
     }
 
 }
