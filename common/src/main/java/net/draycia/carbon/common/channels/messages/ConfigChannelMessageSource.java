@@ -58,9 +58,10 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
 
     private @Nullable String forPlayer(final String key, final SourcedAudience sourcedAudience) {
         final var sender = (CarbonPlayer) sourcedAudience.sender();
+        final var recipient = (CarbonPlayer) sourcedAudience.recipient();
 
-        if (sender.locale() != null) {
-            final var formats = this.locales.get(sender.locale());
+        if (recipient.locale() != null) {
+            final var formats = this.locales.get(recipient.locale());
             final @Nullable String format = formats.get(sender.primaryGroup());
 
             if (format != null) {
