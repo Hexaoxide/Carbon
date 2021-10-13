@@ -243,4 +243,22 @@ public interface CarbonMessageService {
     @Message("mute.notify.unmuted")
     void broadcastPlayerUnmuted(final Audience audience, final String target);
 
+    @Message("error.command.no_permission")
+    Component errorCommandNoPermission();
+
+    @Message("error.command.command_execution")
+    Component errorCommandCommandExecution(
+        final Component throwableMessage,
+        final String stacktrace
+    );
+
+    @Message("error.command.argument_parsing")
+    Component errorCommandArgumentParsing(final Component throwableMessage);
+
+    @Message("error.command.invalid_sender")
+    Component errorCommandInvalidSender(final String senderType);
+
+    @Message("error.command.invalid_syntax")
+    Component errorCommandInvalidSyntax(final Component syntax);
+
 }
