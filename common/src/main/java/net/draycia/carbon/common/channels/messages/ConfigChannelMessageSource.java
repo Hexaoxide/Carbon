@@ -62,17 +62,20 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
 
         if (recipient.locale() != null) {
             final var formats = this.locales.get(recipient.locale());
-            final @Nullable String format = formats.get(sender.primaryGroup());
 
-            if (format != null) {
-                return format;
-            }
+            if (formats != null) {
+                final @Nullable String format = formats.get(sender.primaryGroup());
 
-            for (final var groupEntry : sender.groups()) {
-                final @Nullable String groupFormat = formats.get(groupEntry);
+                if (format != null) {
+                    return format;
+                }
 
-                if (groupFormat != null) {
-                    return groupFormat;
+                for (final var groupEntry : sender.groups()) {
+                    final @Nullable String groupFormat = formats.get(groupEntry);
+
+                    if (groupFormat != null) {
+                        return groupFormat;
+                    }
                 }
             }
         }
