@@ -2,6 +2,7 @@ package net.draycia.carbon.api.users;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
@@ -19,6 +20,16 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  */
 @DefaultQualifier(NonNull.class)
 public interface CarbonPlayer extends Audience, Identified {
+
+    static Component renderName(final CarbonPlayer player) {
+        if (player.temporaryDisplayName() != null && player.temporaryDisplayNameExpiration() > System.currentTimeMillis()) {
+            return Objects.requireNonNull(player.temporaryDisplayName());
+        } else if (player.hasCustomDisplayName()) {
+            return Objects.requireNonNull(player.displayName());
+        } else {
+            return Component.text(player.username());
+        }
+    }
 
     /**
      * Gets the player's username.

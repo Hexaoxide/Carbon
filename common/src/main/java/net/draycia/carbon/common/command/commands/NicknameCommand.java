@@ -106,10 +106,10 @@ public class NicknameCommand {
                 } else {
                     // Checking own nickname
                     if (sender.temporaryDisplayName() != null) {
-                        messageService.temporaryNicknameShow(sender, sender.username(),sender.displayName(),
+                        messageService.temporaryNicknameShow(sender, sender.username(),CarbonPlayer.renderName(sender),
                             this.formatMillisDuration(sender.temporaryDisplayNameExpiration()));
-                    } else if (sender.displayName() != null){
-                        messageService.nicknameShow(sender, sender.username(), sender.displayName());
+                    } else if (CarbonPlayer.renderName(sender) != null){
+                        messageService.nicknameShow(sender, sender.username(), CarbonPlayer.renderName(sender));
                     } else {
                         messageService.nicknameShowUnset(sender, sender.username());
                     }

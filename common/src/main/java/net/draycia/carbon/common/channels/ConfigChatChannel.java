@@ -83,7 +83,7 @@ public final class ConfigChatChannel implements ChatChannel {
         return this.messageService().chatFormat(
             new SourcedAudience(sender, recipient),
             sender.uuid(),
-            Objects.requireNonNullElseGet(sender.displayName(), () -> Component.text(sender.username())),
+            Objects.requireNonNullElseGet(CarbonPlayer.renderName(sender), () -> Component.text(sender.username())),
             sender.username(),
             message
         );
