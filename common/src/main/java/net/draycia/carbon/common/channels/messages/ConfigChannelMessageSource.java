@@ -22,19 +22,19 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
     @Setting("basic")
     @Comment("""
         Basic chat formats.
-        The "default" format is the main one you want to edit.
+        The "default_format" format is the main one you want to edit.
         The "console" format is what's shown to console.
         The keys are group names, the values are chat formats (MiniMessage).
         For example:
             basic {
-                default="<<username>> <message>"
+                default_format="<<username>> <message>"
                 vip="[VIP] <<username>> <message>"
                 admin="<white>[</white>%luckperms_prefix%<white>]</white> <displayname><white>: <message></white>"
             }
         """)
     private final Map<String, String> defaults = Map.of(
-        "default", "<displayname>: <message>",
-        "console", "<username> - <uuid>: <message>"
+        "default_format", "<displayname>: <message>",
+        "console", "[<channel>] <username> - <uuid>: <message>"
     );
 
     // TODO: Move the default to the advanced config?
@@ -44,7 +44,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Will fall back to the defaults section if no format was found for the player.
         """)
     private final Map<Locale, Map<String, String>> locales = Map.of(
-        Locale.US, Map.of("default", "<displayname>: <message>")
+        Locale.US, Map.of("default_format", "<displayname>: <message>")
     );
 
     @Override
@@ -91,7 +91,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
             }
         }
 
-        return this.defaults.get("default");
+        return this.defaults.get("default_format");
     }
 
     private @Nullable String forAudience(final String key, final Audience audience) {

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.bukkit.util.BukkitCapabilities;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -176,6 +177,16 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     @Override
     public boolean online() {
         return this.player() != null;
+    }
+
+    @Override
+    public @Nullable ChatChannel selectedChannel() {
+        return this.carbonPlayerCommon.selectedChannel();
+    }
+
+    @Override
+    public void selectedChannel(final @Nullable ChatChannel chatChannel) {
+        this.carbonPlayerCommon.selectedChannel(chatChannel);
     }
 
 }

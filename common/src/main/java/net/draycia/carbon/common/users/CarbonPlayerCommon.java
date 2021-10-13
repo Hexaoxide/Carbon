@@ -218,7 +218,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void selectedChannel(final ChatChannel chatChannel) {
+    public void selectedChannel(final @Nullable ChatChannel chatChannel) {
         this.selectedChannel = chatChannel;
     }
 
