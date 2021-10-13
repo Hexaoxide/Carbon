@@ -15,7 +15,7 @@ public class CarbonMessageSender implements IMessageSender<Audience, Component> 
     @Override
     public void send(final Audience receiver, final Component renderedMessage) {
         if (receiver instanceof SourcedAudience sourcedAudience) {
-            if (sourcedAudience.sender() instanceof CarbonPlayer sender) {
+            if (sourcedAudience.sender() instanceof CarbonPlayer sender && !sender.hasPermission("carbon.hideidentity")) {
                 sourcedAudience.recipient().sendMessage(Identity.identity(sender.uuid()), renderedMessage);
             } else {
                 sourcedAudience.recipient().sendMessage(Identity.nil(), renderedMessage);
