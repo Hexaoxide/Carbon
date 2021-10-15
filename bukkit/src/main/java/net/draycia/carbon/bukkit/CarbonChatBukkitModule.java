@@ -34,6 +34,9 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkitModule extends AbstractModule {
 
+    private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
+    private static final Component NULL = Component.text("null");
+
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonChatBukkit carbonChat;
     private final Path dataDirectory;
@@ -67,8 +70,6 @@ public final class CarbonChatBukkitModule extends AbstractModule {
             throw new RuntimeException("Failed to initialize command manager.", ex);
         }
 
-        // Super jank solution
-        // These will slowly be converted to MiniMessage in the locale if possible
         new MinecraftExceptionHandler<Commander>()
             .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, exception -> {
                 final var throwableMessage = message(exception.getCause());
@@ -82,12 +83,10 @@ public final class CarbonChatBukkitModule extends AbstractModule {
                 return this.carbonChat.messageService().errorCommandInvalidSender(senderType);
             })
             .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, exception -> {
-                final var syntax = this.highlight(
-                    Component.text(
-                        String.format("/%s", ((InvalidSyntaxException) exception).getCorrectSyntax()),
-                        NamedTextColor.GRAY
-                    )
-                );
+                final var syntax =
+                    Component.text(((InvalidSyntaxException) exception).getCorrectSyntax()).replaceText(
+                        config -> config.match(SPECIAL_CHARACTERS_PATTERN)
+                              .replacement(match -> match.color(NamedTextColor.WHITE)));
 
                 return this.carbonChat.messageService().errorCommandInvalidSyntax(syntax);
             })
@@ -131,19 +130,8 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
     }
 
-    private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
-
-    private static Component highlight(final @NonNull Component component) {
-        return component.replaceText(config -> {
-            config.match(SPECIAL_CHARACTERS_PATTERN);
-            config.replacement(match -> match.color(NamedTextColor.WHITE));
-        });
-    }
-
-    private static final Component NULL = Component.text("null");
-
     private static Component message(final Throwable throwable) {
-        final Component msg = ComponentMessageThrowable.getOrConvertMessage(throwable);
+        final @Nullable Component msg = ComponentMessageThrowable.getOrConvertMessage(throwable);
         return msg == null ? NULL : msg;
     }
 
