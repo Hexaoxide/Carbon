@@ -71,7 +71,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         // These will slowly be converted to MiniMessage in the locale if possible
         new MinecraftExceptionHandler<Commander>()
             .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, exception -> {
-                final var throwableMessage = ComponentMessageThrowable.getMessage(exception.getCause());
+                final var throwableMessage = message(exception.getCause());
 
                 return this.carbonChat.messageService().errorCommandArgumentParsing(throwableMessage);
             })
@@ -101,7 +101,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
                 final StringWriter writer = new StringWriter();
                 cause.printStackTrace(new PrintWriter(writer));
                 final String stackTrace = writer.toString().replaceAll("\t", "    ");
-                final @Nullable Component throwableMessage = ComponentMessageThrowable.getMessage(cause);
+                final @Nullable Component throwableMessage = message(cause);
 
                 return this.carbonChat.messageService().errorCommandCommandExecution(throwableMessage, stackTrace);
             })
@@ -133,11 +133,18 @@ public final class CarbonChatBukkitModule extends AbstractModule {
 
     private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
 
-    private Component highlight(final @NonNull Component component) {
+    private static Component highlight(final @NonNull Component component) {
         return component.replaceText(config -> {
             config.match(SPECIAL_CHARACTERS_PATTERN);
             config.replacement(match -> match.color(NamedTextColor.WHITE));
         });
+    }
+
+    private static final Component NULL = Component.text("null");
+
+    private static Component message(final Throwable throwable) {
+        final Component msg = ComponentMessageThrowable.getOrConvertMessage(throwable);
+        return msg == null ? NULL : msg;
     }
 
 }
