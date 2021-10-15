@@ -29,7 +29,7 @@ public interface CarbonMessageService {
     Component basicChatFormat(
         final Audience audience,
         final @Placeholder UUID uuid,
-        final @Placeholder Component displayname,
+        final @Placeholder Component displayName,
         final @Placeholder String username,
         final @Placeholder Component message
     );
@@ -155,6 +155,24 @@ public interface CarbonMessageService {
 
     @Message("nickname.show.unset")
     void nicknameShowUnset(
+        final Audience audience,
+        final @Placeholder String target
+    );
+
+    @Message("nickname.reset")
+    void nicknameReset(final Audience audience);
+
+    @Message("nickname.reset.others")
+    void nicknameResetOthers(
+        final Audience audience,
+        final @Placeholder String target
+    );
+
+    @Message("nickname.reset.temporary")
+    void temporaryNicknameReset(final Audience audience);
+
+    @Message("nickname.reset.others.temporary")
+    void temporaryNicknameResetOthers(
         final Audience audience,
         final @Placeholder String target
     );
