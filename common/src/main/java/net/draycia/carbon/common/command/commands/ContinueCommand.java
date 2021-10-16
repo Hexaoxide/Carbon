@@ -12,6 +12,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class ContinueCommand {
 
@@ -32,28 +33,34 @@ public class ContinueCommand {
                 final UUID whisperTarget = sender.lastWhisperTarget();
 
                 if (whisperTarget == null) {
-                    messageService.whisperTargetNotSet(sender, sender.displayName());
+                    messageService.whisperTargetNotSet(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
-                final ComponentPlayerResult result = carbonChat.server().player(whisperTarget).join();
+                final ComponentPlayerResult<@NonNull CarbonPlayer> result = carbonChat.server()
+                    .player(whisperTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (recipient == null) {
-                    messageService.whisperTargetOffline(sender, sender.displayName());
+                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
                 if (sender.equals(recipient)) {
-                    messageService.whisperSelfError(sender, sender.displayName());
+                    messageService.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                    return;
+                }
+
+                if (!recipient.online()) {
+                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
                 messageService.whisperSender(new SourcedAudience(sender, sender),
-                    sender.displayName(), recipient.displayName(), message);
+                    CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient), message);
 
                 messageService.whisperRecipient(new SourcedAudience(sender, recipient),
-                    sender.displayName(), recipient.displayName(), message);
+                    CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient), message);
 
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());

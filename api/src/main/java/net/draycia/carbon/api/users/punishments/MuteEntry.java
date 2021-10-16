@@ -8,7 +8,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import java.util.UUID;
 
 @DefaultQualifier(NonNull.class)
-public record MuteEntry(long muteEpoch, @Nullable UUID muteCause, long expirationEpoch, @Nullable Key channel) {
+public record MuteEntry(
+    long muteEpoch,
+    @Nullable UUID muteCause,
+    long expirationEpoch,
+    @Nullable String reason,
+    @Nullable Key channel,
+    UUID muteId
+) {
 
     public boolean valid() {
         return System.currentTimeMillis() < expirationEpoch;

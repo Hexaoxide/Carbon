@@ -17,12 +17,14 @@ import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
+import net.draycia.carbon.common.messages.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.ReceiverResolver;
 import net.draycia.carbon.common.messages.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.JSONUserManager;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
@@ -68,6 +70,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
         final StringPlaceholderResolver<Audience> stringPlaceholderResolver,
+        final KeyPlaceholderResolver<Audience> keyPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageSender carbonMessageSender,
         final CarbonMessageRenderer carbonMessageRenderer
@@ -81,6 +84,7 @@ public final class CarbonCommonModule extends AbstractModule {
             .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
             .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
             .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
+            .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
             .create(this.getClass().getClassLoader());
     }
 

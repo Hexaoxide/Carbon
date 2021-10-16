@@ -10,6 +10,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
@@ -84,29 +85,55 @@ public final class BukkitChatListener implements Listener {
 
         try {
             event.viewers().clear();
-            event.viewers().addAll(chatEvent.recipients());
-        } catch (final UnsupportedOperationException ignored) {
-            // Do we log something here? Would get spammy fast.
+        } catch (final UnsupportedOperationException exception) {
+            exception.printStackTrace();
         }
 
-        event.renderer((source, sourceDisplayName, message, viewer) -> {
-            Component component = message;
+        if (sender.hasPermission("carbon.hideidentity")) {
+            for (final var recipient : chatEvent.recipients()) {
+                var component = chatEvent.message();
 
-            for (final var renderer : chatEvent.renderers()) {
-                try {
-                    if (viewer instanceof Player player) {
-                        final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(player).join();
-                        component = renderer.render(sender, targetPlayer.player(), component, message);
-                    } else {
-                        component = renderer.render(sender, viewer, component, message);
+                for (final var renderer : chatEvent.renderers()) {
+                    try {
+                        if (recipient instanceof Player player) {
+                            final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
+                            component = renderer.render(sender, targetPlayer.player(), component, chatEvent.message());
+                        } else {
+                            component = renderer.render(sender, recipient, component, chatEvent.message());
+                        }
+                    } catch (final Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (final Exception e) {
-                    e.printStackTrace();
                 }
+
+                recipient.sendMessage(Identity.nil(), component);
+            }
+        } else {
+            try {
+                event.viewers().addAll(chatEvent.recipients());
+            } catch (final UnsupportedOperationException exception) {
+                exception.printStackTrace();
             }
 
-            return component;
-        });
+            event.renderer((source, sourceDisplayName, message, viewer) -> {
+                Component component = message;
+
+                for (final var renderer : chatEvent.renderers()) {
+                    try {
+                        if (viewer instanceof Player player) {
+                            final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
+                            component = renderer.render(sender, targetPlayer.player(), component, message);
+                        } else {
+                            component = renderer.render(sender, viewer, component, message);
+                        }
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                return component;
+            });
+        }
     }
 
 }

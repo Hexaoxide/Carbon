@@ -36,7 +36,7 @@ public class ReplyCommand {
                 final @Nullable UUID replyTarget = sender.whisperReplyTarget();
 
                 if (replyTarget == null) {
-                    messageService.replyTargetNotSet(sender, sender.displayName());
+                    messageService.replyTargetNotSet(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
@@ -44,20 +44,25 @@ public class ReplyCommand {
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (recipient == null) {
-                    messageService.replyTargetOffline(sender, sender.displayName());
+                    messageService.replyTargetOffline(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
                 if (sender.equals(recipient)) {
-                    messageService.whisperSelfError(sender, sender.displayName());
+                    messageService.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                    return;
+                }
+
+                if (!recipient.online()) {
+                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
                 messageService.whisperSender(new SourcedAudience(sender, sender),
-                    sender.displayName(), recipient.displayName(), message);
+                    CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient), message);
 
                 messageService.whisperRecipient(new SourcedAudience(sender, recipient),
-                    sender.displayName(), recipient.displayName(), message);
+                    CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient), message);
 
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());

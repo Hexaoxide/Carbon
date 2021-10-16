@@ -14,6 +14,7 @@ import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
+import net.draycia.carbon.common.messages.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
@@ -83,7 +84,8 @@ public final class ConfigChatChannel implements ChatChannel {
         return this.messageService().chatFormat(
             new SourcedAudience(sender, recipient),
             sender.uuid(),
-            Objects.requireNonNullElseGet(sender.displayName(), () -> Component.text(sender.username())),
+            this.key(),
+            Objects.requireNonNull(CarbonPlayer.renderName(sender)),
             sender.username(),
             message
         );
@@ -138,6 +140,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final ComponentPlaceholderResolver<SourcedAudience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
         final UUIDPlaceholderResolver<SourcedAudience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
         final StringPlaceholderResolver<SourcedAudience> stringPlaceholderResolver = new StringPlaceholderResolver<>();
+        final KeyPlaceholderResolver<SourcedAudience> keyPlaceholderResolver = new KeyPlaceholderResolver<>();
         final IMessageRenderer<SourcedAudience, String, Component, Component> configMessageRenderer = CarbonChatProvider.carbonChat().messageRenderer();
         final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
@@ -152,6 +155,7 @@ public final class ConfigChatChannel implements ChatChannel {
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
+                .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
                 .create(this.getClass().getClassLoader());
         } catch (final UnscannableMethodException e) {
             e.printStackTrace();

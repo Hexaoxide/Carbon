@@ -1,6 +1,8 @@
 package net.draycia.carbon.common.channels.messages;
 
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -11,7 +13,11 @@ public class SourcedMessageSender implements IMessageSender<SourcedAudience, Com
 
     @Override
     public void send(final SourcedAudience receiver, final Component renderedMessage) {
-        receiver.recipient().sendMessage(renderedMessage);
+        if (receiver.sender() instanceof CarbonPlayer sender) {
+            receiver.recipient().sendMessage(Identity.identity(sender.uuid()), renderedMessage);
+        } else {
+            receiver.recipient().sendMessage(Identity.nil(), renderedMessage);
+        }
     }
 
 }

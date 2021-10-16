@@ -105,7 +105,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
 
         try (final Stream<Path> paths = Files.walk(channelDirectory)) {
-            final CommandManager<Commander> commandManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<>() {}));
+            final CommandManager<Commander> commandManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
 
             paths.forEach(path -> {
                 final String fileName = path.getFileName().toString();

@@ -22,6 +22,7 @@ import net.draycia.carbon.common.command.arguments.OptionValueParser;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class NicknameCommand {
 
@@ -52,12 +53,41 @@ public class NicknameCommand {
                 .withArgument(nicknameArgument)
                 .withPermission(Permission.of("carbon.nickname.set"))
             )
-            .permission("carbon.nickname.self")
+            .flag(commandManager.flagBuilder("reset")
+                .withAliases("r")
+                .withPermission(Permission.of("carbon.nickname.reset"))
+            )
+            .permission("carbon.nickname")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
                 long expirationTime = -1; // TODO: implement timed nicknames
                 @MonotonicNonNull String durationFormat = null;
+
+                if (handler.flags().contains("reset")) {
+                    final CarbonPlayer target = handler.flags().contains("player") ?
+                        handler.flags().get("player") : sender;
+
+                    if (handler.flags().contains("duration")) {
+                        target.temporaryDisplayName(null, -1);
+
+                        messageService.temporaryNicknameReset(target);
+
+                        if (sender != target) {
+                            messageService.temporaryNicknameResetOthers(sender, target.username());
+                        }
+                    } else {
+                        target.displayName(null);
+
+                        messageService.nicknameReset(target);
+
+                        if (sender != target) {
+                            messageService.nicknameResetOthers(sender, target.username());
+                        }
+                    }
+
+                    return;
+                }
 
                 if (handler.flags().contains("duration")) {
                     expirationTime = this.parsePeriod(handler.flags().get("duration"));
@@ -66,7 +96,7 @@ public class NicknameCommand {
 
                 // Setting nickname
                 if (handler.flags().contains("nickname")) {
-                    final var nickname = MiniMessage.get().parse(handler.flags().get("nickname"));
+                    final var nickname = MiniMessage.miniMessage().parse(handler.flags().get("nickname"));
 
                     final @MonotonicNonNull CarbonPlayer target = handler.flags().get("player");
 
@@ -106,7 +136,7 @@ public class NicknameCommand {
                 } else {
                     // Checking own nickname
                     if (sender.temporaryDisplayName() != null) {
-                        messageService.temporaryNicknameShow(sender, sender.username(),sender.displayName(),
+                        messageService.temporaryNicknameShow(sender, sender.username(),CarbonPlayer.renderName(sender),
                             this.formatMillisDuration(sender.temporaryDisplayNameExpiration()));
                     } else if (sender.displayName() != null){
                         messageService.nicknameShow(sender, sender.username(), sender.displayName());
