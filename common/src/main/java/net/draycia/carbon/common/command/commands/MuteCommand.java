@@ -1,7 +1,11 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.UUIDArgument;
+import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
+import java.util.Objects;
+import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -29,12 +33,25 @@ public class MuteCommand {
         this.commandManager = commandManager;
 
         var command = commandManager.commandBuilder("mute")
-            .argument(carbonPlayerArgument.newInstance(true, "player"))
+            .argument(carbonPlayerArgument.newInstance(false, "player"))
+            .flag(commandManager.flagBuilder("uuid")
+                .withAliases("u")
+                .withArgument(UUIDArgument.optional("uuid"))
+            )
             .permission("carbon.mute.mute")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
-                final CarbonPlayer target = handler.get("player");
+                final CarbonPlayer target;
+
+                if (handler.contains("player")) {
+                    target = handler.get("player");
+                } else if (handler.flags().contains("uuid")) {
+                    final var result = carbonChat.server().player(handler.<UUID>get("uuid")).join();
+                    target = Objects.requireNonNull(result.player(), "No player found for UUID.");
+                } else {
+                    throw new IllegalStateException("No target found to unmute.");
+                }
 
                 if (target.hasPermission("carbon.mute.exempt")) {
                     messageService.muteExempt(sender);
