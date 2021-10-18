@@ -34,7 +34,7 @@ public class WhisperCommand {
                     return;
                 }
 
-                if (!recipient.online()) {
+                if (!recipient.online() || !sender.awareOf(recipient)) {
                     messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
