@@ -68,13 +68,9 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable Component displayName() {
-        if (this.temporaryDisplayName != null && System.currentTimeMillis() < this.temporaryDisplayNameExpiration) {
-            return this.temporaryDisplayName;
-        }
-
         if (this.displayName != null) {
             return this.displayName;
-        } else
+        }
 
         return null;
     }
@@ -99,6 +95,13 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public long temporaryDisplayNameExpiration() {
         return this.temporaryDisplayNameExpiration;
+    }
+
+    @Override
+    public boolean hasActiveTemporaryDisplayName() {
+        return this.temporaryDisplayName != null
+            && (this.temporaryDisplayNameExpiration == -1
+            || this.temporaryDisplayNameExpiration > System.currentTimeMillis());
     }
 
     @Override

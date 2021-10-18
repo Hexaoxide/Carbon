@@ -124,8 +124,8 @@ public class NicknameCommand {
                     // Checking other player's nickname
                     final CarbonPlayer target = handler.flags().get("player");
 
-                    if (target.temporaryDisplayName() != null) {
-                        messageService.temporaryNicknameShowOthers(sender, target.username(),target.displayName(),
+                    if (target.hasActiveTemporaryDisplayName()) {
+                        messageService.temporaryNicknameShowOthers(sender, target.username(), target.temporaryDisplayName(),
                             this.formatMillisDuration(target.temporaryDisplayNameExpiration()));
                     } else if (target.displayName() != null) {
                         messageService.nicknameShowOthers(sender, target.username(), target.displayName());
@@ -134,8 +134,8 @@ public class NicknameCommand {
                     }
                 } else {
                     // Checking own nickname
-                    if (sender.temporaryDisplayName() != null) {
-                        messageService.temporaryNicknameShow(sender, sender.username(),CarbonPlayer.renderName(sender),
+                    if (sender.hasActiveTemporaryDisplayName()) {
+                        messageService.temporaryNicknameShow(sender, sender.username(), sender.temporaryDisplayName(),
                             this.formatMillisDuration(sender.temporaryDisplayNameExpiration()));
                     } else if (sender.displayName() != null){
                         messageService.nicknameShow(sender, sender.username(), sender.displayName());
