@@ -34,7 +34,12 @@ public class WhisperCommand {
                     return;
                 }
 
-                if (!recipient.online() || !sender.awareOf(recipient)) {
+                if (!recipient.online()) {
+                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
+                    return;
+                }
+
+                if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.whisper")) {
                     messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
                     return;
                 }

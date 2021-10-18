@@ -31,8 +31,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected long temporaryDisplayNameExpiration = -1;
 
     // Whispers
-    protected @Nullable UUID lastWhisperTarget = null;
-    protected @Nullable UUID whisperReplyTarget = null;
+    protected transient @Nullable UUID lastWhisperTarget = null;
+    protected transient @Nullable UUID whisperReplyTarget = null;
 
     // Administrative
     protected boolean spying = false;

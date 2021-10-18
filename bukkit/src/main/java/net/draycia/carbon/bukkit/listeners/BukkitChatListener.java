@@ -37,7 +37,7 @@ public final class BukkitChatListener implements Listener {
         this.registry = registry;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerChat(final @NonNull AsyncChatEvent event) {
         final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();

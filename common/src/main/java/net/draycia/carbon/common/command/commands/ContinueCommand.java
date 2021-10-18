@@ -46,6 +46,11 @@ public class ContinueCommand {
                     return;
                 }
 
+                if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.continue")) {
+                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
+                    return;
+                }
+
                 if (sender.equals(recipient)) {
                     messageService.whisperSelfError(sender, CarbonPlayer.renderName(sender));
                     return;

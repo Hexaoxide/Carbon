@@ -26,7 +26,6 @@ public class UnmuteCommand {
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
         final var command = commandManager.commandBuilder("unmute")
-            // TODO: only suggest muted players :D
             .argument(carbonPlayerArgument.newInstance(false, "player",
                 CarbonPlayerArgument.NO_SENDER.and((sender, player) -> {
                     return !player.muteEntries().isEmpty();
@@ -49,6 +48,7 @@ public class UnmuteCommand {
                 } else {
                     throw new IllegalStateException("No target found to unmute.");
                 }
+
                 messageService.playerAlertUnmuted(target);
                 messageService.broadcastPlayerUnmuted(sender, target.username());
 

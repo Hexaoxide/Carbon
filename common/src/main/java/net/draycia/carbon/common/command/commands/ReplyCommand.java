@@ -48,6 +48,11 @@ public class ReplyCommand {
                     return;
                 }
 
+                if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.reply")) {
+                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
+                    return;
+                }
+
                 if (sender.equals(recipient)) {
                     messageService.whisperSelfError(sender, CarbonPlayer.renderName(sender));
                     return;
