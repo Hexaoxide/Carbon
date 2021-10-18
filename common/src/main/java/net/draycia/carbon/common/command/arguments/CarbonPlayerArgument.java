@@ -7,12 +7,17 @@ import cloud.commandframework.context.CommandContext;
 import com.google.inject.Inject;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.StreamSupport;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.PlayerCommander;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class CarbonPlayerArgument {
 
     private final CarbonServer server;
@@ -22,13 +27,34 @@ public class CarbonPlayerArgument {
         this.server = server;
     }
 
-    public CommandArgument<Commander, CarbonPlayer> newInstance(boolean required, final String name) {
-        return new CarbonPlayerArgumentImpl(required, name, new CarbonPlayerArgumentParser(this.server), CarbonPlayer.class);
+    public static BiPredicate<CarbonPlayer, CarbonPlayer> NO_FILTER = (sender, target) -> true;
+    public static BiPredicate<CarbonPlayer, CarbonPlayer> NO_SENDER = (sender, target) -> !sender.equals(target);
+
+    public CommandArgument<Commander, CarbonPlayer> newInstance(
+        final boolean required,
+        final String name,
+        final BiPredicate<CarbonPlayer, CarbonPlayer> filter
+    ) {
+        return new CarbonPlayerArgumentImpl(required, name,
+            new CarbonPlayerArgumentParser(this.server, filter), CarbonPlayer.class);
+    }
+
+    public CommandArgument<Commander, CarbonPlayer> newInstance(
+        final boolean required,
+        final String name
+    ) {
+        return new CarbonPlayerArgumentImpl(required, name,
+            new CarbonPlayerArgumentParser(this.server, NO_FILTER), CarbonPlayer.class);
     }
 
     public static final class CarbonPlayerArgumentImpl extends CommandArgument<Commander, CarbonPlayer> {
 
-        CarbonPlayerArgumentImpl(boolean required, @NonNull String name, @NonNull ArgumentParser<Commander, CarbonPlayer> parser, @NonNull Class<CarbonPlayer> valueType) {
+        CarbonPlayerArgumentImpl(
+            final boolean required,
+            final String name,
+            final ArgumentParser<Commander, CarbonPlayer> parser,
+            final Class<CarbonPlayer> valueType
+        ) {
             super(required, name, parser, valueType);
         }
 
@@ -37,15 +63,23 @@ public class CarbonPlayerArgument {
     private static final class CarbonPlayerArgumentParser implements ArgumentParser<Commander, CarbonPlayer> {
 
         final CarbonServer server;
+        final BiPredicate<CarbonPlayer, CarbonPlayer> filter;
 
         @Inject
-        public CarbonPlayerArgumentParser(final CarbonServer carbonServer) {
+        public CarbonPlayerArgumentParser(
+            final CarbonServer carbonServer,
+            final BiPredicate<CarbonPlayer, CarbonPlayer> filter
+        ) {
             this.server = carbonServer;
+            this.filter = filter;
         }
 
         @Override
-        public @NonNull ArgumentParseResult<@NonNull CarbonPlayer> parse(@NonNull CommandContext<@NonNull Commander> commandContext, @NonNull Queue<@NonNull String> inputQueue) {
-            final String input = inputQueue.peek();
+        public ArgumentParseResult<CarbonPlayer> parse(
+            final CommandContext<Commander> commandContext,
+            final Queue<String> inputQueue
+        ) {
+            final @Nullable String input = inputQueue.peek();
 
             for (var player : this.server.players()) {
                 if (player.username().equalsIgnoreCase(input)) {
@@ -58,10 +92,21 @@ public class CarbonPlayerArgument {
         }
 
         @Override
-        public @NonNull List<@NonNull String> suggestions(@NonNull CommandContext<Commander> commandContext, @NonNull String input) {
-            return StreamSupport.stream(this.server.players().spliterator(), false)
-                .map(CarbonPlayer::username)
-                .toList();
+        public List<String> suggestions(
+            final CommandContext<Commander> commandContext,
+            final String input
+        ) {
+            if (commandContext.getSender() instanceof PlayerCommander sender) {
+                return this.server.players().stream()
+                    .filter(it -> filter.test(sender.carbonPlayer(), it))
+                    .filter(sender.carbonPlayer()::awareOf)
+                    .map(CarbonPlayer::username)
+                    .toList();
+            } else {
+                return this.server.players().stream()
+                    .map(CarbonPlayer::username)
+                    .toList();
+            }
         }
 
     }
@@ -72,12 +117,12 @@ public class CarbonPlayerArgument {
         private final String input;
 
         public PlayerParseException(
-            final @NonNull String input
+            final String input
         ) {
             this.input = input;
         }
 
-        public @NonNull String input() {
+        public String input() {
             return this.input;
         }
 

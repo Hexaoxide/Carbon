@@ -5,6 +5,7 @@ import cloud.commandframework.arguments.standard.UUIDArgument;
 import com.google.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.BiPredicate;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
@@ -25,7 +26,11 @@ public class UnmuteCommand {
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
         final var command = commandManager.commandBuilder("unmute")
-            .argument(carbonPlayerArgument.newInstance(false, "player"))
+            // TODO: only suggest muted players :D
+            .argument(carbonPlayerArgument.newInstance(false, "player",
+                CarbonPlayerArgument.NO_SENDER.and((sender, player) -> {
+                    return !player.muteEntries().isEmpty();
+                })))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
                 .withArgument(UUIDArgument.optional("uuid"))

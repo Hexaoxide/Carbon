@@ -203,6 +203,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
+    public boolean vanished() {
+        return false;
+    }
+
+    @Override
+    public boolean awareOf(CarbonPlayer other) {
+        return true;
+    }
+
+    @Override
     public Identity identity() {
         return Identity.identity(this.uuid);
     }

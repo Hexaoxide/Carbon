@@ -22,7 +22,6 @@ import net.draycia.carbon.common.command.arguments.OptionValueParser;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class NicknameCommand {
 

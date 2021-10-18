@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.bukkit.util.BukkitCapabilities;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -15,6 +16,7 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -177,6 +179,31 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     @Override
     public boolean online() {
         return this.player() != null;
+    }
+
+    @Override
+    public boolean vanished() {
+        return this.hasVanishMeta();
+    }
+
+    // Supported by PremiumVanish, SuperVanish, VanishNoPacket
+    private boolean hasVanishMeta() {
+        for (final MetadataValue meta : this.player().getMetadata("vanished")) {
+            if (meta.asBoolean()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean awareOf(final CarbonPlayer other) {
+        if (other.vanished()) {
+            return this.hasPermission("carbon.seevanished");
+        }
+
+        return true;
     }
 
     @Override

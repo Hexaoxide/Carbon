@@ -19,7 +19,7 @@ public class WhisperCommand {
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
         var command = commandManager.commandBuilder("whisper", "w", "message", "msg")
-            .argument(carbonPlayerArgument.newInstance(true, "recipient"))
+            .argument(carbonPlayerArgument.newInstance(true, "recipient", CarbonPlayerArgument.NO_SENDER))
             .argument(StringArgument.greedy("message"))
             .permission("carbon.whisper.send") // TODO: carbon.whisper.spy
             .senderType(PlayerCommander.class)

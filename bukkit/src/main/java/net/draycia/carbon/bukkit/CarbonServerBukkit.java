@@ -3,6 +3,7 @@ package net.draycia.carbon.bukkit;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -50,7 +51,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public Iterable<? extends CarbonPlayer> players() {
+    public List<? extends CarbonPlayer> players() {
         final var players = new ArrayList<CarbonPlayer>();
 
         for (final var player : this.chatBukkitEntry.getServer().getOnlinePlayers()) {

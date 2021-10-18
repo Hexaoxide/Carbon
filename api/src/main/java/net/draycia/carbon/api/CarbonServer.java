@@ -1,5 +1,6 @@
 package net.draycia.carbon.api;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -31,7 +32,7 @@ public interface CarbonServer extends Audience {
      * @return the online players
      * @since 2.0.0
      */
-    Iterable<? extends CarbonPlayer> players();
+    List<? extends CarbonPlayer> players();
 
     /**
      * Obtains a {@link CarbonPlayer} instance for the specified uuid.

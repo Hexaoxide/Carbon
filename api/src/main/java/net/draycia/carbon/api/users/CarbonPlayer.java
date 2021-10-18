@@ -270,4 +270,23 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void lastWhisperTarget(final @Nullable UUID uuid);
 
+    /**
+     * If this player is vanished in another supported plugin.
+     * Other players will be unaware of this player.
+     * There is no way to set this state through Carbon, we do not store this information; but merely bridge it.
+     *
+     * @return If this player is vanished in another plugin.
+     * @since 2.0.0
+     */
+    boolean vanished();
+
+    /**
+     * Whether this player can see the other player.
+     *
+     * @param other the other, potentially vanished, player
+     * @return if this player is aware of the other player
+     * @since 2.0.0
+     */
+    boolean awareOf(final CarbonPlayer other);
+
 }

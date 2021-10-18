@@ -33,7 +33,7 @@ public class MuteCommand {
         this.commandManager = commandManager;
 
         var command = commandManager.commandBuilder("mute")
-            .argument(carbonPlayerArgument.newInstance(false, "player"))
+            .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
                 .withArgument(UUIDArgument.optional("uuid"))
