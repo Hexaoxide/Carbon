@@ -30,11 +30,11 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
             basic {
                 default_format="<<username>> <message>"
                 vip="[VIP] <<username>> <message>"
-                admin="<white>[</white>%luckperms_prefix%<white>]</white> <displayname><white>: <message></white>"
+                admin="<white>[</white>%luckperms_prefix%<white>]</white> <displayName><white>: <message></white>"
             }
         """)
     private final Map<String, String> defaults = Map.of(
-        "default_format", "<displayname>: <message>",
+        "default_format", "<displayName>: <message>",
         "console", "[<channel>] <username> - <uuid>: <message>"
     );
 
@@ -45,7 +45,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Will fall back to the defaults section if no format was found for the player.
         """)
     private final Map<Locale, Map<String, String>> locales = Map.of(
-        Locale.US, Map.of("default_format", "<displayname>: <message>")
+        Locale.US, Map.of("default_format", "<displayName>: <message>")
     );
 
     private static final String FALLBACK_FORMAT = "<red><</red><username><red>></red> <message>";

@@ -46,7 +46,7 @@ public final class BasicChatChannel implements ChatChannel {
         return this.service.basicChatFormat(
             recipient,
             sender.uuid(),
-            Objects.requireNonNullElseGet(CarbonPlayer.renderName(sender), () -> Component.text(sender.username())),
+            CarbonPlayer.renderName(sender),
             sender.username(),
             message
         );

@@ -18,7 +18,7 @@ public interface ConfigChannelMessageService {
         final SourcedAudience audience,
         @Placeholder UUID uuid,
         @Placeholder Key channel,
-        @Placeholder Component displayname,
+        @Placeholder Component displayName,
         @Placeholder String username,
         @Placeholder Component message
     );

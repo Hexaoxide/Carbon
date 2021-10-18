@@ -22,7 +22,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public interface CarbonPlayer extends Audience, Identified {
 
     static Component renderName(final CarbonPlayer player) {
-        if (player.temporaryDisplayName() != null && player.temporaryDisplayNameExpiration() > System.currentTimeMillis()) {
+        if (player.hasActiveTemporaryDisplayName()) {
             return Objects.requireNonNull(player.temporaryDisplayName());
         } else if (player.hasCustomDisplayName()) {
             return Objects.requireNonNull(player.displayName());
@@ -89,6 +89,8 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the temporary display name's expiration in MS since Unix Epoch
      */
     long temporaryDisplayNameExpiration();
+
+    boolean hasActiveTemporaryDisplayName();
 
     /**
      * The player's UUID, often used for identification purposes.
