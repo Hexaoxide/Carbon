@@ -29,7 +29,7 @@ public interface CarbonMessageService {
     Component basicChatFormat(
         final Audience audience,
         final @Placeholder UUID uuid,
-        final @Placeholder Component displayName,
+        final @Placeholder Component display_name,
         final @Placeholder String username,
         final @Placeholder Component message
     );
@@ -46,47 +46,47 @@ public interface CarbonMessageService {
     @Message("whisper.to")
     void whisperSender(
         final SourcedAudience audience,
-        final @Placeholder Component senderDisplayName,
-        final @Placeholder Component recipientDisplayName,
+        final @Placeholder Component sender_display_name,
+        final @Placeholder Component recipient_display_name,
         final @Placeholder String message
     );
 
     @Message("whisper.from")
     void whisperRecipient(
         final SourcedAudience audience,
-        final @Placeholder Component senderDisplayName,
-        final @Placeholder Component recipientDisplayName,
+        final @Placeholder Component sender_display_name,
+        final @Placeholder Component recipient_display_name,
         final @Placeholder String message
     );
 
     @Message("reply.target.missing")
     void replyTargetNotSet(
         final Audience audience,
-        final @Placeholder Component senderDisplayName
+        final @Placeholder Component sender_display_name
     );
 
     @Message("reply.target.offline")
     void replyTargetOffline(
         final Audience audience,
-        final @Placeholder Component senderDisplayName
+        final @Placeholder Component sender_display_name
     );
 
     @Message("reply.target.self")
     void whisperSelfError(
         final Audience audience,
-        final @Placeholder Component senderDisplayName
+        final @Placeholder Component sender_display_name
     );
 
     @Message("continue.target.missing")
     void whisperTargetNotSet(
         final Audience audience,
-        final @Placeholder Component senderDisplayName
+        final @Placeholder Component sender_display_name
     );
 
     @Message("continue.target.offline")
     void whisperTargetOffline(
         final Audience audience,
-        final @Placeholder Component senderDisplayName
+        final @Placeholder Component sender_display_name
     );
 
     @Message("nickname.set")
@@ -266,15 +266,15 @@ public interface CarbonMessageService {
 
     @Message("error.command.command_execution")
     Component errorCommandCommandExecution(
-        final @Placeholder Component throwableMessage,
+        final @Placeholder Component throwable_message,
         final @Placeholder String stacktrace
     );
 
     @Message("error.command.argument_parsing")
-    Component errorCommandArgumentParsing(final @Placeholder Component throwableMessage);
+    Component errorCommandArgumentParsing(final @Placeholder Component throwable_message);
 
     @Message("error.command.invalid_sender")
-    Component errorCommandInvalidSender(final @Placeholder String senderType);
+    Component errorCommandInvalidSender(final @Placeholder String sender_type);
 
     @Message("error.command.invalid_syntax")
     Component errorCommandInvalidSyntax(final @Placeholder Component syntax);
