@@ -3,6 +3,7 @@ package net.draycia.carbon.common.users;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
+import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -60,8 +61,8 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public Component createItemHoverComponent() {
-        return this.carbonPlayerCommon().createItemHoverComponent();
+    public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
+        return this.carbonPlayerCommon().createItemHoverComponent(slot);
     }
 
     @Override

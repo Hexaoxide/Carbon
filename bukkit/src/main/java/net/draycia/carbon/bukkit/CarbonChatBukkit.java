@@ -26,6 +26,7 @@ import net.draycia.carbon.common.command.commands.ReplyCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.listeners.DeafenHandler;
+import net.draycia.carbon.common.listeners.ItemLinkHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -97,6 +98,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         // Listeners
         this.injector.getInstance(DeafenHandler.class);
+        this.injector.getInstance(ItemLinkHandler.class);
         this.injector.getInstance(MuteHandler.class);
 
         // Commands

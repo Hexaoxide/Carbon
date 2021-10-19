@@ -10,6 +10,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -89,14 +90,14 @@ public final class PlaceholderAPIMiniMessageParser {
             } else {
                 final String key = "papi_generated_template_" + id;
                 id++;
-                templates.add(Template.of(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
+                templates.add(Template.template(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
                 matcher.appendReplacement(builder, "<" + key + ">");
             }
         }
 
         matcher.appendTail(builder);
 
-        return this.miniMessage.parse(builder.toString(), templates);
+        return this.miniMessage.deserialize(builder.toString(), TemplateResolver.templates(templates));
     }
 
 }

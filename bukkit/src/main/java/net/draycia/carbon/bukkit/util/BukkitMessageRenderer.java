@@ -10,6 +10,7 @@ import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -31,7 +32,7 @@ public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, 
         final List<Template> templates = new ArrayList<>();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
-            templates.add(Template.of(entry.getKey(), entry.getValue()));
+            templates.add(Template.template(entry.getKey(), entry.getValue()));
         }
 
         if (receiver.sender() instanceof CarbonPlayer sender && sender.online()) {
@@ -43,7 +44,7 @@ public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, 
             }
         }
 
-        return MiniMessage.miniMessage().parse(intermediateMessage, templates);
+        return MiniMessage.miniMessage().deserialize(intermediateMessage, TemplateResolver.templates(templates));
     }
 
 }

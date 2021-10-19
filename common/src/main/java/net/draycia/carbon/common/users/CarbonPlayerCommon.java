@@ -5,6 +5,7 @@ import java.util.*;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
+import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -62,8 +63,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public Component createItemHoverComponent() {
-        return Component.empty();
+    public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
+        return null;
     }
 
     @Override

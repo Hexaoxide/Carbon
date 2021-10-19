@@ -142,7 +142,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      */
     public record Result(boolean cancelled, Component reason) implements ResultedCarbonEvent.Result {
 
-        private static final Result ALLOWED = new Result(true, empty());
+        private static final Result ALLOWED = new Result(false, empty());
 
         /**
          * Returns a Result that denotes the event was allowed and not cancelled.
@@ -162,7 +162,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
          * @since 2.0.0
          */
         public static Result denied(final Component reason) {
-            return new Result(false, reason);
+            return new Result(true, reason);
         }
 
     }

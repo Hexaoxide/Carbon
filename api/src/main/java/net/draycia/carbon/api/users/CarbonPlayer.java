@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
+import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.text.Component;
@@ -101,12 +102,13 @@ public interface CarbonPlayer extends Audience, Identified {
     UUID uuid();
 
     /**
-     * Creates a {@link Component} with a content and item hover given the player's actively held item.
+     * Creates the chat component for the item in the {@link InventorySlot}, or null if the slot is empty.
      *
-     * @return the player's held item as an item hover component
+     * @param slot the inventory slot containing the item
+     * @return the chat component for the item in the slot, or null if the slot is empty
      * @since 2.0.0
      */
-    Component createItemHoverComponent();
+    @Nullable Component createItemHoverComponent(final InventorySlot slot);
 
     /**
      * The player's locale.

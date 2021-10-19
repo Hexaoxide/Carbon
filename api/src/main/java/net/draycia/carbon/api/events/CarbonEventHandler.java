@@ -20,6 +20,7 @@ public final class CarbonEventHandler {
         if (event instanceof ResultedCarbonEvent<@NonNull ?> rce) {
             return !rce.result().cancelled();
         }
+
         return true;
     });
 

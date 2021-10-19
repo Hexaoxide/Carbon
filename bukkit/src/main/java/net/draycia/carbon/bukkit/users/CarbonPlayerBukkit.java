@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.util.Objects;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.InventorySlot;
+import net.draycia.carbon.api.util.InventorySlots;
 import net.draycia.carbon.bukkit.util.BukkitCapabilities;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -15,6 +17,8 @@ import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -90,35 +94,41 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public Component createItemHoverComponent() {
+    public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
         final @Nullable Player player = this.player(); // This is temporary (it's not)
 
         if (player == null) {
-            return Component.empty();
+            return null;
         }
 
-        final @Nullable ItemStack itemStack;
+        final EquipmentSlot equipmentSlot;
 
-        final @Nullable ItemStack mainHand = player.getInventory().getItemInMainHand();
-
-        if (mainHand != null && !mainHand.getType().isAir()) {
-            itemStack = mainHand;
+        if (slot.equals(InventorySlots.MAIN_HAND)) {
+            equipmentSlot = EquipmentSlot.HAND;
+        } else if (slot.equals(InventorySlots.OFF_HAND)) {
+            equipmentSlot = EquipmentSlot.OFF_HAND;
+        } else if (slot.equals(InventorySlots.HELMET)) {
+            equipmentSlot = EquipmentSlot.HEAD;
+        } else if (slot.equals(InventorySlots.CHEST)) {
+            equipmentSlot = EquipmentSlot.CHEST;
+        } else if (slot.equals(InventorySlots.LEGS)) {
+            equipmentSlot = EquipmentSlot.LEGS;
+        } else if (slot.equals(InventorySlots.BOOTS)) {
+            equipmentSlot = EquipmentSlot.FEET;
         } else {
-            final @Nullable ItemStack offHand = player.getInventory().getItemInOffHand();
-
-            if (offHand != null && !offHand.getType().isAir()) {
-                itemStack = offHand;
-            } else {
-                itemStack = null;
-            }
+            return null;
         }
 
-        if (itemStack == null) {
-            return Component.empty();
+        final @Nullable EntityEquipment equipment = player.getEquipment();
+
+        if (equipment == null) {
+            return null;
         }
 
-        if (itemStack.getType().isAir()) {
-            return Component.empty();
+        final @Nullable ItemStack itemStack = equipment.getItem(equipmentSlot);
+
+        if (itemStack == null || itemStack.getType().isAir()) {
+            return null;
         }
 
         return itemStack.displayName();
