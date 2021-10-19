@@ -13,6 +13,10 @@ public class ItemLinkHandler {
         final CarbonChat carbonChat
     ) {
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 1, true, event -> {
+            if (!event.sender().hasPermission("carbon.itemlink")) {
+                return;
+            }
+
             for (final var slot : InventorySlots.VALUES) {
                 for (final var placeholder : slot.placeholders()) {
                     event.message(
