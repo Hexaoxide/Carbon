@@ -12,10 +12,8 @@ dependencyResolutionManagement {
     // Velocity API
     maven("https://nexus.velocitypowered.com/repository/maven-public/")
     // Velocity Proxy for run config
-    //ivy("https://versions.velocitypowered.com/download/") {
-    ivy("https://ci.velocitypowered.com/job/velocity-3.0.0/lastSuccessfulBuild/artifact/proxy/build/libs/") {
-      //patternLayout { artifact("[revision].[ext]") }
-      patternLayout { artifact("velocity-proxy-3.0.0-SNAPSHOT-all.jar") }
+    ivy("https://versions.velocitypowered.com/download/") {
+      patternLayout { artifact("[revision].[ext]") }
       metadataSources { artifact() }
       content { includeModule("com.velocitypowered", "velocity-proxy") }
     }
@@ -40,10 +38,6 @@ dependencyResolutionManagement {
 }
 
 pluginManagement {
-  repositories {
-    gradlePluginPortal()
-    maven("https://repo.jpenilla.xyz/snapshots/") // for shadow snapshot
-  }
   includeBuild("build-logic")
 }
 

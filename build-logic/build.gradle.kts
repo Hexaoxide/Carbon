@@ -4,7 +4,6 @@ plugins {
 
 repositories {
   gradlePluginPortal()
-  maven("https://repo.jpenilla.xyz/snapshots/") // todo: for shadow snapshot
 }
 
 dependencies {

@@ -36,6 +36,7 @@ tasks {
     }
   }
   register<JavaExec>("runProxy") {
+    group = "carbon"
     standardInput = System.`in`
     classpath(velocityRun.asFileTree)
     workingDir = layout.projectDirectory.dir("run").asFile
