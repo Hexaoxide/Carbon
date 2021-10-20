@@ -9,7 +9,6 @@ import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import com.google.inject.Inject;
 import java.util.List;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
@@ -81,13 +80,6 @@ public final class HelpCommand {
 
         help.messageProvider((sender, key, args) -> {
             final String messageKey = "command.help." + key;
-            final String forAudience;
-            // todo: Should CarbonMessageSource unwrap PlayerCommanders?
-            if (sender instanceof PlayerCommander playerCommander) {
-                forAudience = messageSource.messageOf(playerCommander.carbonPlayer(), messageKey);
-            } else {
-                forAudience = messageSource.messageOf(sender, messageKey);
-            }
             final TemplateResolver resolver;
 
             // Total hack but works for now
@@ -100,7 +92,7 @@ public final class HelpCommand {
                 resolver = TemplateResolver.empty();
             }
 
-            return MiniMessage.miniMessage().deserialize(forAudience, resolver);
+            return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), resolver);
         });
 
         return help;

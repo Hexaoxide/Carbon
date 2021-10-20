@@ -2,7 +2,6 @@ package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
-import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
@@ -12,7 +11,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.arguments.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;

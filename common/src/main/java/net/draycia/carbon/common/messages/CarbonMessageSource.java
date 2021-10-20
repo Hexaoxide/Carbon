@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.translation.Translator;
@@ -110,10 +111,17 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
     @Override
     public String messageOf(final Audience receiver, final String messageKey) {
-        if (receiver instanceof CarbonPlayer player) {
+        Audience audience = receiver;
+
+        // Unwrap PlayerCommanders
+        if (audience instanceof PlayerCommander playerCommander) {
+            audience = playerCommander.carbonPlayer();
+        }
+
+        if (audience instanceof CarbonPlayer player) {
             return this.forPlayer(messageKey, player);
         } else {
-            return this.forAudience(messageKey, receiver);
+            return this.forAudience(messageKey, audience);
         }
     }
 

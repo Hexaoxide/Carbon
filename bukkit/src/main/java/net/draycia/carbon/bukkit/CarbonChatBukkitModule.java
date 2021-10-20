@@ -2,10 +2,12 @@ package net.draycia.carbon.bukkit;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
+import cloud.commandframework.exceptions.ArgumentParseException;
+import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.exceptions.InvalidCommandSenderException;
 import cloud.commandframework.exceptions.InvalidSyntaxException;
+import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -21,6 +23,7 @@ import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;
@@ -70,41 +73,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
             throw new RuntimeException("Failed to initialize command manager.", ex);
         }
 
-        new MinecraftExceptionHandler<Commander>()
-            .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, exception -> {
-                final var throwableMessage = message(exception.getCause());
-
-                return this.carbonChat.messageService().errorCommandArgumentParsing(throwableMessage);
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SENDER, exception -> {
-                final var senderType = ((InvalidCommandSenderException) exception)
-                    .getRequiredSender().getSimpleName();
-
-                return this.carbonChat.messageService().errorCommandInvalidSender(senderType);
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, exception -> {
-                final var syntax =
-                    Component.text(((InvalidSyntaxException) exception).getCorrectSyntax()).replaceText(
-                        config -> config.match(SPECIAL_CHARACTERS_PATTERN)
-                              .replacement(match -> match.color(NamedTextColor.WHITE)));
-
-                return this.carbonChat.messageService().errorCommandInvalidSyntax(syntax);
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, exception -> {
-                return this.carbonChat.messageService().errorCommandNoPermission();
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.COMMAND_EXECUTION, exception -> {
-                final Throwable cause = exception.getCause();
-                cause.printStackTrace();
-
-                final StringWriter writer = new StringWriter();
-                cause.printStackTrace(new PrintWriter(writer));
-                final String stackTrace = writer.toString().replaceAll("\t", "    ");
-                final @Nullable Component throwableMessage = message(cause);
-
-                return this.carbonChat.messageService().errorCommandCommandExecution(throwableMessage, stackTrace);
-            })
-            .apply(commandManager, commander -> commander);
+        decorateCommandManager(commandManager, this.carbonChat.messageService());
 
         commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
@@ -117,6 +86,52 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         }
 
         return commandManager;
+    }
+
+    // This should be in common and applied to every platforms command manager, not in bukkit module
+    private static void decorateCommandManager(
+        final CommandManager<Commander> commandManager,
+        final CarbonMessageService messageService
+    ) {
+        registerExceptionHandlers(commandManager, messageService);
+    }
+
+    private static void registerExceptionHandlers(
+        final CommandManager<Commander> commandManager,
+        final CarbonMessageService messageService
+    ) {
+        commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, exception) -> {
+            final var throwableMessage = message(exception.getCause());
+
+            messageService.errorCommandArgumentParsing(sender, throwableMessage);
+        });
+        commandManager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, exception) -> {
+            final var senderType = exception.getRequiredSender().getSimpleName();
+
+            messageService.errorCommandInvalidSender(sender, senderType);
+        });
+        commandManager.registerExceptionHandler(InvalidSyntaxException.class, (sender, exception) -> {
+            final var syntax =
+                Component.text(exception.getCorrectSyntax()).replaceText(
+                    config -> config.match(SPECIAL_CHARACTERS_PATTERN)
+                        .replacement(match -> match.color(NamedTextColor.WHITE)));
+
+            messageService.errorCommandInvalidSyntax(sender, syntax);
+        });
+        commandManager.registerExceptionHandler(NoPermissionException.class, (sender, exception) -> {
+            messageService.errorCommandNoPermission(sender);
+        });
+        commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
+            final Throwable cause = exception.getCause();
+            cause.printStackTrace();
+
+            final StringWriter writer = new StringWriter();
+            cause.printStackTrace(new PrintWriter(writer));
+            final String stackTrace = writer.toString().replaceAll("\t", "    ");
+            final @Nullable Component throwableMessage = message(cause);
+
+            messageService.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
+        });
     }
 
     @Override

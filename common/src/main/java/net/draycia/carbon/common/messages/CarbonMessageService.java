@@ -262,21 +262,22 @@ public interface CarbonMessageService {
     );
 
     @Message("error.command.no_permission")
-    Component errorCommandNoPermission();
+    void errorCommandNoPermission(final Audience audience);
 
     @Message("error.command.command_execution")
-    Component errorCommandCommandExecution(
+    void errorCommandCommandExecution(
+        final Audience audience,
         final @Placeholder("throwable_message") Component throwableMessage,
         final @Placeholder String stacktrace
     );
 
     @Message("error.command.argument_parsing")
-    Component errorCommandArgumentParsing(final @Placeholder("throwable_message") Component throwableMessage);
+    void errorCommandArgumentParsing(final Audience audience, final @Placeholder("throwable_message") Component throwableMessage);
 
     @Message("error.command.invalid_sender")
-    Component errorCommandInvalidSender(final @Placeholder String sender_type);
+    void errorCommandInvalidSender(final Audience audience, final @Placeholder String sender_type);
 
     @Message("error.command.invalid_syntax")
-    Component errorCommandInvalidSyntax(final @Placeholder Component syntax);
+    void errorCommandInvalidSyntax(final Audience audience, final @Placeholder Component syntax);
 
 }

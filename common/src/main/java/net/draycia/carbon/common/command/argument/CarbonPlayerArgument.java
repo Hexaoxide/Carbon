@@ -1,4 +1,4 @@
-package net.draycia.carbon.common.command.arguments;
+package net.draycia.carbon.common.command.argument;
 
 import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;

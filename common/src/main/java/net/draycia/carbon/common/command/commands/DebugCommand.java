@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.arguments.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
