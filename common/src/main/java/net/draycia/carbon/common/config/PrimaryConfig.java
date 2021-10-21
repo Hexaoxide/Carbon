@@ -12,13 +12,19 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class PrimaryConfig {
 
     @Comment("The default locale for plugin messages.")
-    private final Locale defaultLocale = Locale.US;
+    private Locale defaultLocale = Locale.US;
+
     @Comment("The default channel that new players will be in when they join.")
-    private final Key defaultChannel = Key.key("carbon", "basic");
+    private Key defaultChannel = Key.key("carbon", "basic");
+
     @Comment("The service that will be used to store and load player information.")
-    private final StorageType storageType = StorageType.JSON;
+    private StorageType storageType = StorageType.JSON;
+
     @Comment("Should we hide join/quit and death messages of muted players?")
-    private final boolean hideMutedJoinLeaveQuit = false;
+    private boolean hideMutedJoinLeaveQuit = false;
+
+    @Comment("Various ClearChat command settings.")
+    private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
     public Locale defaultLocale() {
         return this.defaultLocale;
@@ -34,6 +40,10 @@ public class PrimaryConfig {
 
     public boolean hideMutedJoinLeaveQuit() {
         return this.hideMutedJoinLeaveQuit;
+    }
+
+    public ClearChatSettings clearChatSettings() {
+        return this.clearChatSettings;
     }
 
     public enum StorageType {

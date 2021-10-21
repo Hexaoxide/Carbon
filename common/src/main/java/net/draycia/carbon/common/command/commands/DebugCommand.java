@@ -20,7 +20,7 @@ public class DebugCommand {
     ) {
         var command = commandManager.commandBuilder("carbondebug", "cdebug")
             .argument(carbonPlayerArgument.newInstance(false, "player"))
-            .permission("carbon.debug") // TODO: carbon.whisper.spy
+            .permission("carbon.debug")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
