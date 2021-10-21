@@ -10,7 +10,9 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
+import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.util.CloudUtils;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -49,7 +51,10 @@ public class ReplyCommand {
                 }
 
                 if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.reply")) {
-                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
+                    final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
+                    final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);
+
+                    messageService.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;
                 }
 

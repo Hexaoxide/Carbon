@@ -9,6 +9,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.util.CloudUtils;
 
 public class WhisperCommand {
 
@@ -40,7 +41,10 @@ public class WhisperCommand {
                 }
 
                 if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.whisper")) {
-                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
+                    final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
+                    final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);
+
+                    messageService.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;
                 }
 

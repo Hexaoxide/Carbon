@@ -24,6 +24,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;
@@ -38,7 +39,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonChatBukkitModule extends AbstractModule {
 
     private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
-    private static final Component NULL = Component.text("null");
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonChatBukkit carbonChat;
@@ -101,7 +101,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         final CarbonMessageService messageService
     ) {
         commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, exception) -> {
-            final var throwableMessage = message(exception.getCause());
+            final var throwableMessage = CloudUtils.message(exception.getCause());
 
             messageService.errorCommandArgumentParsing(sender, throwableMessage);
         });
@@ -128,7 +128,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
             final StringWriter writer = new StringWriter();
             cause.printStackTrace(new PrintWriter(writer));
             final String stackTrace = writer.toString().replaceAll("\t", "    ");
-            final @Nullable Component throwableMessage = message(cause);
+            final @Nullable Component throwableMessage = CloudUtils.message(cause);
 
             messageService.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
         });
@@ -143,11 +143,6 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
-    }
-
-    private static Component message(final Throwable throwable) {
-        final @Nullable Component msg = ComponentMessageThrowable.getOrConvertMessage(throwable);
-        return msg == null ? NULL : msg;
     }
 
 }
