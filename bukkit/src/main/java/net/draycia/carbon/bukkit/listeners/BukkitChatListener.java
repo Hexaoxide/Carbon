@@ -116,7 +116,7 @@ public final class BukkitChatListener implements Listener {
             }
 
             event.renderer((source, sourceDisplayName, message, viewer) -> {
-                Component component = message;
+                Component component = chatEvent.message();
 
                 for (final var renderer : chatEvent.renderers()) {
                     try {
