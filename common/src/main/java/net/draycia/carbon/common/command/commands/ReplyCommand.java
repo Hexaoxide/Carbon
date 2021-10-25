@@ -45,7 +45,7 @@ public class ReplyCommand {
                 final ComponentPlayerResult<CarbonPlayer> result = carbonChat.server().player(replyTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
-                if (recipient == null) {
+                if (recipient == null || !recipient.online()) {
                     messageService.replyTargetOffline(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
