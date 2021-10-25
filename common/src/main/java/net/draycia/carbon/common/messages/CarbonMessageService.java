@@ -46,47 +46,47 @@ public interface CarbonMessageService {
     @Message("whisper.to")
     void whisperSender(
         final SourcedAudience audience,
-        final @Placeholder("display_name") Component senderDisplayName,
-        final @Placeholder("display_name") Component recipientDisplayName,
+        final @Placeholder("sender_display_name") Component senderDisplayName,
+        final @Placeholder("recipient_display_name") Component recipientDisplayName,
         final @Placeholder String message
     );
 
     @Message("whisper.from")
     void whisperRecipient(
         final SourcedAudience audience,
-        final @Placeholder("display_name") Component senderDisplayName,
-        final @Placeholder("display_name") Component recipientDisplayName,
+        final @Placeholder("sender_display_name") Component senderDisplayName,
+        final @Placeholder("recipient_display_name") Component recipientDisplayName,
         final @Placeholder String message
     );
 
     @Message("reply.target.missing")
     void replyTargetNotSet(
         final Audience audience,
-        final @Placeholder("display_name") Component senderDisplayName
+        final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
     @Message("reply.target.offline")
     void replyTargetOffline(
         final Audience audience,
-        final @Placeholder("display_name") Component senderDisplayName
+        final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
     @Message("reply.target.self")
     void whisperSelfError(
         final Audience audience,
-        final @Placeholder("display_name") Component senderDisplayName
+        final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
     @Message("continue.target.missing")
     void whisperTargetNotSet(
         final Audience audience,
-        final @Placeholder("display_name") Component senderDisplayName
+        final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
     @Message("continue.target.offline")
     void whisperTargetOffline(
         final Audience audience,
-        final @Placeholder("display_name") Component senderDisplayName
+        final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
     @Message("nickname.set")
