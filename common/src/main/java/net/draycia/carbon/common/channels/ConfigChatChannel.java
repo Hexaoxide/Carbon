@@ -43,7 +43,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Comment("""
         The channel's key, used to track the channel.
-        The key can stay "carbon".
+        You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
     private Key key = Key.key("carbon", "basic");

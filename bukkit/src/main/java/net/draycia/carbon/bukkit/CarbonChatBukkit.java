@@ -180,7 +180,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     @Override
     public IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer() {
-        return new BukkitMessageRenderer();
+        return this.injector.getInstance(BukkitMessageRenderer.class);
     }
 
 }

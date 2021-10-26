@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.config;
 
 import java.util.Locale;
+import java.util.Map;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -14,7 +15,10 @@ public class PrimaryConfig {
     @Comment("The default locale for plugin messages.")
     private Locale defaultLocale = Locale.US;
 
-    @Comment("The default channel that new players will be in when they join.")
+    @Comment("""
+    The default channel that new players will be in when they join.
+    If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.
+    """)
     private Key defaultChannel = Key.key("carbon", "basic");
 
     @Comment("The service that will be used to store and load player information.")
@@ -25,6 +29,15 @@ public class PrimaryConfig {
 
     @Comment("Various ClearChat command settings.")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
+
+    @Comment("""
+    Plugin-wide custom placeholders.
+    These will be parsed in all messages rendered and sent by Carbon.
+    This includes chat, command feedback, and others.
+    Make sure to close your tags so they do not bleed into other formats.
+    Only a single pass is done so custom placeholders will not work within each other.
+    """)
+    private Map<String, String> customPlaceholders = Map.of();
 
     public Locale defaultLocale() {
         return this.defaultLocale;
@@ -44,6 +57,10 @@ public class PrimaryConfig {
 
     public ClearChatSettings clearChatSettings() {
         return this.clearChatSettings;
+    }
+
+    public Map<String, String> customPlaceholders() {
+        return this.customPlaceholders;
     }
 
     public enum StorageType {
