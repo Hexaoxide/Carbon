@@ -35,12 +35,10 @@ public class WhisperCommand {
                     return;
                 }
 
-                if (!recipient.online()) {
-                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
-                    return;
-                }
-
-                if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.whisper")) {
+                if (!recipient.online()
+                    || (!sender.awareOf(recipient)
+                    && !sender.hasPermission("carbon.seevanish.whisper"))
+                ) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
                     final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);
 

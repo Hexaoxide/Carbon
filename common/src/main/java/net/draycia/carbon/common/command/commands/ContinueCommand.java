@@ -43,12 +43,10 @@ public class ContinueCommand {
                     .player(whisperTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
-                if (recipient == null || !recipient.online()) {
-                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
-                    return;
-                }
-
-                if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.continue")) {
+                if (!recipient.online()
+                    || (!sender.awareOf(recipient)
+                    && !sender.hasPermission("carbon.seevanish.whisper"))
+                ) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
                     final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);
 

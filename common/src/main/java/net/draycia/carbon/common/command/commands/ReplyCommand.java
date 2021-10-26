@@ -45,12 +45,10 @@ public class ReplyCommand {
                 final ComponentPlayerResult<CarbonPlayer> result = carbonChat.server().player(replyTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
-                if (recipient == null || !recipient.online()) {
-                    messageService.replyTargetOffline(sender, CarbonPlayer.renderName(sender));
-                    return;
-                }
-
-                if (!sender.awareOf(recipient) && !sender.hasPermission("carbon.seevanish.reply")) {
+                if (!recipient.online()
+                    || (!sender.awareOf(recipient)
+                    && !sender.hasPermission("carbon.seevanish.whisper"))
+                ) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
                     final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);
 
