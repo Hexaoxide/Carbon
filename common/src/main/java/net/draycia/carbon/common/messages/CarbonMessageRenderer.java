@@ -12,6 +12,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.transformation.TransformationRegistry;
+import net.kyori.adventure.text.minimessage.transformation.TransformationType;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -20,10 +22,18 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class CarbonMessageRenderer implements IMessageRenderer<Audience, String, Component, Component> {
 
     private final PrimaryConfig config;
+    private final MiniMessage miniMessage;
 
     @Inject
     public CarbonMessageRenderer(final PrimaryConfig config) {
         this.config = config;
+
+        final var transformationNames = TransformationType.acceptingNames("image_font");
+        final var transformationType = TransformationType.transformationType(transformationNames,
+            (name, args) -> new ImageFontTransformation(args));
+        final var registry = TransformationRegistry.standard().toBuilder().add(transformationType).build();
+
+        this.miniMessage = MiniMessage.builder().transformations(registry).build();
     }
 
     @Override
@@ -49,7 +59,7 @@ public class CarbonMessageRenderer implements IMessageRenderer<Audience, String,
                 entry.getValue());
         }
         
-        return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
+        return this.miniMessage.deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
     }
 
 }

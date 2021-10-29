@@ -9,10 +9,13 @@ import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.messages.ImageFontTransformation;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.transformation.TransformationRegistry;
+import net.kyori.adventure.text.minimessage.transformation.TransformationType;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -21,12 +24,21 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, String, Component, Component> {
 
-    private final PlaceholderAPIMiniMessageParser parser = PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
-    private final PrimaryConfig config;
+    private final MiniMessage miniMessage;
+    private final PlaceholderAPIMiniMessageParser parser;
+    private final PrimaryConfig primaryConfig;
 
     @Inject
-    public BukkitMessageRenderer(final PrimaryConfig config) {
-        this.config = config;
+    public BukkitMessageRenderer(final PrimaryConfig primaryConfig) {
+        final var transformationNames = TransformationType.acceptingNames("image_font");
+        final var transformationType = TransformationType.transformationType(transformationNames,
+            (name, args) -> new ImageFontTransformation(args));
+        final var registry = TransformationRegistry.standard().toBuilder().add(transformationType).build();
+
+        this.miniMessage = MiniMessage.builder().transformations(registry).build();
+        this.parser = PlaceholderAPIMiniMessageParser.create(this.miniMessage);
+        this.primaryConfig = primaryConfig;
+
     }
 
     @Override
@@ -47,7 +59,7 @@ public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, 
         // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
         String placeholderResolvedMessage = intermediateMessage;
 
-        for (final var entry : this.config.customPlaceholders().entrySet()) {
+        for (final var entry : this.primaryConfig.customPlaceholders().entrySet()) {
             placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }
@@ -61,7 +73,7 @@ public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, 
             }
         }
 
-        return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
+        return this.miniMessage.deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
     }
 
 }
