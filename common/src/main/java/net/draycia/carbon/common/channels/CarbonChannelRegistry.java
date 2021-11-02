@@ -19,6 +19,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistry;
@@ -138,7 +139,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
                                     // TODO: trigger platform events related to chat
                                     // TODO: also make sure carbon events are also emitted properly?
                                     for (final var recipient : channel.recipients(sender)) {
-                                        recipient.sendMessage(channel.render(sender, recipient, component, component));
+                                        recipient.sendMessage(channel.render(sender, recipient, component, component), MessageType.CHAT);
                                     }
                                 } else {
                                     sender.selectedChannel(channel);

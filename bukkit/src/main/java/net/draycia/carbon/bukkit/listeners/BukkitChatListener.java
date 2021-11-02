@@ -10,6 +10,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -106,7 +107,7 @@ public final class BukkitChatListener implements Listener {
                     }
                 }
 
-                recipient.sendMessage(Identity.nil(), component);
+                recipient.sendMessage(Identity.nil(), component, MessageType.CHAT);
             }
         } else {
             try {

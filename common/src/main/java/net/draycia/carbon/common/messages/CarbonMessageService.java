@@ -2,7 +2,9 @@ package net.draycia.carbon.common.messages;
 
 import java.util.UUID;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
@@ -10,22 +12,8 @@ import net.kyori.moonshine.annotation.Placeholder;
 
 public interface CarbonMessageService {
 
-    @Message("example.command.hello")
-    void exampleCommandFeedback(
-        final Audience audience,
-        final @Placeholder Component plugin
-    );
-
-    @Message("unsupported.legacy")
-    void unsupportedLegacyChar(
-        final Audience audience,
-        final @Placeholder String message
-    );
-
-    @Message("test.phrase")
-    void localeTestMessage(final Audience audience);
-
     @Message("channel.format.basic")
+    @ChatType(MessageType.CHAT)
     Component basicChatFormat(
         final Audience audience,
         final @Placeholder UUID uuid,
@@ -44,6 +32,7 @@ public interface CarbonMessageService {
     );
 
     @Message("whisper.to")
+    @ChatType(MessageType.CHAT)
     void whisperSender(
         final SourcedAudience audience,
         final @Placeholder("sender_display_name") Component senderDisplayName,
@@ -52,6 +41,7 @@ public interface CarbonMessageService {
     );
 
     @Message("whisper.from")
+    @ChatType(MessageType.CHAT)
     void whisperRecipient(
         final SourcedAudience audience,
         final @Placeholder("sender_display_name") Component senderDisplayName,

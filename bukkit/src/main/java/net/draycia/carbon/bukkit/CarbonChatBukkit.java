@@ -13,6 +13,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
@@ -179,7 +180,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     @Override
-    public IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer() {
+    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer() {
         return this.injector.getInstance(BukkitMessageRenderer.class);
     }
 

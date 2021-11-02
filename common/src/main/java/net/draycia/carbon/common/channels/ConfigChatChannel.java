@@ -9,10 +9,11 @@ import java.util.UUID;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageService;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.api.util.SourcedAudience;
-import net.draycia.carbon.common.channels.messages.SourcedMessageSender;
+import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
@@ -141,7 +142,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final UUIDPlaceholderResolver<SourcedAudience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
         final StringPlaceholderResolver<SourcedAudience> stringPlaceholderResolver = new StringPlaceholderResolver<>();
         final KeyPlaceholderResolver<SourcedAudience> keyPlaceholderResolver = new KeyPlaceholderResolver<>();
-        final IMessageRenderer<SourcedAudience, String, Component, Component> configMessageRenderer = CarbonChatProvider.carbonChat().messageRenderer();
+        final IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> configMessageRenderer = CarbonChatProvider.carbonChat().messageRenderer();
         final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
         try {
