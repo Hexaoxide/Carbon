@@ -103,7 +103,6 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
         return CompletableFuture.supplyAsync(() -> {
-            this.logger.info("Saving player data for [{}], [{}]", player.username(), player.uuid());
             final Path userFile = this.userDirectory.resolve(player.uuid() + ".json");
 
             try {
@@ -124,6 +123,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
                 return new ComponentPlayerResult<>(player, text(String.format("Saving player data for [%s], [%s]",
                     player.username(), player.uuid())));
             } catch (final IOException exception) {
+                this.logger.error("Exception caught while saving data for player [{}]", player.username());
                 exception.printStackTrace();
                 return new ComponentPlayerResult<>(null, text(exception.getMessage()));
             }
