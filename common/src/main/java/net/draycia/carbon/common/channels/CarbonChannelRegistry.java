@@ -139,7 +139,8 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
                                     // TODO: trigger platform events related to chat
                                     // TODO: also make sure carbon events are also emitted properly?
                                     for (final var recipient : channel.recipients(sender)) {
-                                        recipient.sendMessage(channel.render(sender, recipient, component, component), MessageType.CHAT);
+                                        final var renderedMessage = channel.render(sender, recipient, component, component);
+                                        recipient.sendMessage(renderedMessage.component(), renderedMessage.messageType());
                                     }
                                 } else {
                                     sender.selectedChannel(channel);

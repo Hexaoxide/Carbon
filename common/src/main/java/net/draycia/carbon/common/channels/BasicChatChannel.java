@@ -4,11 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -37,7 +37,7 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull Component render(
+    public @NotNull RenderedMessage render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,

@@ -76,7 +76,7 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull Component render(
+    public @NotNull RenderedMessage render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,

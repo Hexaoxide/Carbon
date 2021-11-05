@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.messages;
 
 import java.util.UUID;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.Audience;
@@ -14,7 +15,7 @@ public interface CarbonMessageService {
 
     @Message("channel.format.basic")
     @ChatType(MessageType.CHAT)
-    Component basicChatFormat(
+    RenderedMessage basicChatFormat(
         final Audience audience,
         final @Placeholder UUID uuid,
         final @Placeholder("display_name") Component displayName,
@@ -23,7 +24,7 @@ public interface CarbonMessageService {
     );
 
     @Message("mute.spy.prefix")
-    Component muteSpyPrefix(final Audience audience);
+    RenderedMessage muteSpyPrefix(final Audience audience);
 
     @Message("channel.change")
     void changedChannels(

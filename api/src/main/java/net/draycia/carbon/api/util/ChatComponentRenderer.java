@@ -5,6 +5,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Renderer used to construct chat components on a per-player basis.
@@ -27,8 +28,8 @@ public interface ChatComponentRenderer {
      *     or empty if the recipient should not receive the message
      * @since 2.0.0
      */
-    @NonNull
-    Component render(final CarbonPlayer sender,
+    @NotNull
+    RenderedMessage render(final CarbonPlayer sender,
                      final Audience recipient,
                      final Component message,
                      final Component originalMessage);

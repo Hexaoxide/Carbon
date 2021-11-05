@@ -1,6 +1,7 @@
 package net.draycia.carbon.common.channels.messages;
 
 import java.util.UUID;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.MessageType;
@@ -17,7 +18,7 @@ public interface ConfigChannelMessageService {
     // TODO: locale placeholders?
     @Message("channel.format")
     @ChatType(MessageType.CHAT)
-    Component chatFormat(
+    RenderedMessage chatFormat(
         final SourcedAudience audience,
         @Placeholder UUID uuid,
         @Placeholder Key channel,

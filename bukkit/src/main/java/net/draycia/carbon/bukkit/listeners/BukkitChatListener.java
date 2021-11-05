@@ -9,10 +9,10 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -92,22 +92,23 @@ public final class BukkitChatListener implements Listener {
 
         if (sender.hasPermission("carbon.hideidentity")) {
             for (final var recipient : chatEvent.recipients()) {
-                var component = chatEvent.message();
+                var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (recipient instanceof Player player) {
                             final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
-                            component = renderer.render(sender, targetPlayer.player(), component, chatEvent.message());
+
+                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
                         } else {
-                            component = renderer.render(sender, recipient, component, chatEvent.message());
+                            renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
                         }
                     } catch (final Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                recipient.sendMessage(Identity.nil(), component, MessageType.CHAT);
+                recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
             }
         } else {
             try {
@@ -117,22 +118,22 @@ public final class BukkitChatListener implements Listener {
             }
 
             event.renderer((source, sourceDisplayName, message, viewer) -> {
-                Component component = chatEvent.message();
+                var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (viewer instanceof Player player) {
                             final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
-                            component = renderer.render(sender, targetPlayer.player(), component, message);
+                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), message);
                         } else {
-                            component = renderer.render(sender, viewer, component, message);
+                            renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), message);
                         }
                     } catch (final Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                return component;
+                return renderedMessage.component();
             });
         }
     }

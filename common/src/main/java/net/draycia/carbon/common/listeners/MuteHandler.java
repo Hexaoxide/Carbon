@@ -5,6 +5,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -20,8 +21,12 @@ public class MuteHandler {
     private CarbonMessageService messageService;
 
     private final KeyedRenderer renderer =
-        keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) ->
-            this.messageService.muteSpyPrefix(recipient).append(message));
+        keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
+            // This is an annoying side effect of the RenderedComponent change
+            final var prefix = this.messageService.muteSpyPrefix(recipient);
+
+            return new RenderedMessage(prefix.component().append(message), prefix.messageType());
+        });
 
     @Inject
     public MuteHandler(

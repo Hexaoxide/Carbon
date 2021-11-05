@@ -7,6 +7,7 @@ import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A chat renderer that's identifiable by key.
@@ -36,7 +37,7 @@ public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
     record Impl(Key key, ChatComponentRenderer renderer) implements KeyedRenderer {
 
         @Override
-        public Component render(
+        public @NotNull RenderedMessage render(
             final CarbonPlayer sender,
             final Audience recipient,
             final Component message,
