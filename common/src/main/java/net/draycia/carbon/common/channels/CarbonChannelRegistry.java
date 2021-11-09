@@ -19,7 +19,6 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigLoader;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.CarbonMessageService;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistry;

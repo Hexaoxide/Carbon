@@ -146,8 +146,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
         try {
-            return Moonshine.<ConfigChannelMessageService, SourcedAudience>builder(new TypeToken<>() {
-            })
+            return Moonshine.<ConfigChannelMessageService, SourcedAudience>builder(new TypeToken<ConfigChannelMessageService>() {})
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
                 .rendered(configMessageRenderer)
