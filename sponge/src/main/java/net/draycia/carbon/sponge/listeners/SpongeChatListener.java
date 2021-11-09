@@ -6,6 +6,7 @@ import java.util.Optional;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.sponge.CarbonChatSponge;
@@ -59,7 +60,7 @@ public final class SpongeChatListener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(playerResult.player(), event.message(), recipients, renderers);
+        final var chatEvent = new CarbonChatEvent(playerResult.player(), event.message(), recipients, renderers, channel);
         final var eventResult = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!eventResult.wasSuccessful()) {
@@ -84,10 +85,10 @@ public final class SpongeChatListener {
 
             for (final var renderer : chatEvent.renderers()) {
                 if (target instanceof ServerPlayer serverPlayer) {
-                    final ComponentPlayerResult targetPlayer = this.carbonChat.server().player(serverPlayer).join();
-                    component = renderer.render(playerResult.player(), targetPlayer.player(), component, message);
+                    final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(serverPlayer).join();
+                    component = renderer.render(playerResult.player(), targetPlayer.player(), component, message).component();
                 } else {
-                    component = renderer.render(playerResult.player(), target, component, message);
+                    component = renderer.render(playerResult.player(), target, component, message).component();
                 }
             }
 

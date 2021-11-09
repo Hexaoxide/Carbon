@@ -9,12 +9,13 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonChatCommon;
-import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
+import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
@@ -47,9 +48,9 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     private final Logger logger;
     private final Path dataDirectory;
     private final PluginContainer pluginContainer;
-    private final UserManager userManager;
+    private final UserManager<CarbonPlayerSponge> userManager;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
-    private final IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer;
+    private final IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer;
 
     @Inject
     public CarbonChatSponge(
@@ -101,7 +102,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
 
     private void savePlayers() {
         for (final var player : this.server().players()) {
-            this.userManager().savePlayer(player.carbonPlayer()).thenAccept(result -> {
+            this.userManager().savePlayer(player).thenAccept(result -> {
                 if (result.player() == null) {
                     this.server().console().sendMessage(result.reason());
                 }
@@ -109,7 +110,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
         }
     }
 
-    public UserManager userManager() {
+    public UserManager<CarbonPlayerSponge> userManager() {
         return this.userManager;
     }
 
@@ -134,7 +135,7 @@ public final class CarbonChatSponge extends CarbonChatCommon {
     }
 
     @Override
-    public IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer() {
+    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer() {
         return this.messageRenderer;
     }
 

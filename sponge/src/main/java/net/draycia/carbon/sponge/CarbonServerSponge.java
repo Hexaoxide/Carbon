@@ -3,9 +3,11 @@ package net.draycia.carbon.sponge;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -28,10 +30,10 @@ import static net.kyori.adventure.text.Component.text;
 public final class CarbonServerSponge implements CarbonServer, ForwardingAudience.Single {
 
     private final Game game;
-    private final UserManager userManager;
+    private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
-    private CarbonServerSponge(final UserManager userManager, final Game game) {
+    private CarbonServerSponge(final UserManager<CarbonPlayerCommon> userManager, final Game game) {
         this.game = game;
         this.userManager = userManager;
     }
@@ -47,11 +49,11 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public Iterable<CarbonPlayerSponge> players() {
+    public List<CarbonPlayerSponge> players() {
         final var players = new ArrayList<CarbonPlayerSponge>();
 
         for (final var player : Sponge.server().onlinePlayers()) {
-            final ComponentPlayerResult result = this.player(player).join();
+            final ComponentPlayerResult<CarbonPlayer> result = this.player(player).join();
 
             if (result.player() != null) {
                 players.add((CarbonPlayerSponge) result.player());
@@ -61,34 +63,33 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
         return players;
     }
 
-    private CompletableFuture<ComponentPlayerResult> wrapPlayer(final UUID uuid) {
+    private CompletableFuture<ComponentPlayerResult<CarbonPlayer>> wrapPlayer(final UUID uuid) {
         return this.userManager.carbonPlayer(uuid).thenCompose(result -> {
             return CompletableFuture.supplyAsync(() -> {
                 if (result.player() != null) {
-                    new ComponentPlayerResult(new CarbonPlayerSponge(result.player()), Component.empty());
+                    new ComponentPlayerResult<>(new CarbonPlayerSponge(result.player()), Component.empty());
                 }
 
                 final @Nullable String name = this.resolveName(uuid).join();
 
                 if (name != null) {
-                    final CarbonPlayerCommon player = new CarbonPlayerCommon(null,
-                        null, name, uuid);
+                    final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-                    return new ComponentPlayerResult(new CarbonPlayerSponge(player), Component.empty());
+                    return new ComponentPlayerResult<>(new CarbonPlayerSponge(player), Component.empty());
                 }
 
-                return new ComponentPlayerResult(null, text("Name not found for uuid!"));
+                return new ComponentPlayerResult<>(null, text("Name not found for uuid!"));
             });
         });
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult> player(final UUID uuid) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final UUID uuid) {
         return this.wrapPlayer(uuid);
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult> player(final String username) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final String username) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable UUID uuid = this.resolveUUID(username).join();
 
@@ -96,11 +97,11 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
                 return this.player(uuid).join();
             }
 
-            return new ComponentPlayerResult(null, text("No UUID found for name."));
+            return new ComponentPlayerResult<>(null, text("No UUID found for name."));
         });
     }
 
-    public CompletableFuture<ComponentPlayerResult> player(final ServerPlayer player) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final ServerPlayer player) {
         return this.player(player.uniqueId());
     }
 
