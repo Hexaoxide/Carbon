@@ -16,8 +16,12 @@ import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.common.util.ListenerUtils;
+import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
+import net.draycia.carbon.sponge.listeners.SpongePlayerDeathListener;
+import net.draycia.carbon.sponge.listeners.SpongePlayerJoinListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
@@ -38,9 +42,9 @@ import org.spongepowered.plugin.builtin.jvm.Plugin;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatSponge implements CarbonChat {
 
-    private static final Set<Class<?>> LISTENER_CLASSES = Set.of(
-        SpongeChatListener.class
-    );
+    private static final Set<Class<?>> LISTENER_CLASSES = Set.of(SpongeChatListener.class,
+        SpongePlayerDeathListener.class, SpongePlayerJoinListener.class);
+
     private static final int BSTATS_PLUGIN_ID = 11279;
 
     private final CarbonMessageService messageService;
@@ -79,37 +83,32 @@ public final class CarbonChatSponge implements CarbonChat {
         for (final Class<?> clazz : LISTENER_CLASSES) {
             game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(clazz));
         }
+
         //metricsFactory.make(BSTATS_PLUGIN_ID);
+
+        // Listeners
+        ListenerUtils.registerCommonListeners(this.injector);
+
+        // Commands
+        CloudUtils.registerCommands(this.injector);
     }
 
     @Listener
     public void onInitialize(final StartingEngineEvent<Server> event) {
+        // Player data saving
         Sponge.asyncScheduler().submit(Task.builder()
             .interval(5, TimeUnit.MINUTES)
             .plugin(this.pluginContainer)
-            .execute(this::savePlayers)
+            .execute(() -> PlayerUtils.savePlayers(this.carbonServerSponge, this.userManager))
             .build());
 
+        // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
     }
 
     @Listener
     public void onDisable(final StoppingEngineEvent<Server> event) {
-        this.savePlayers();
-    }
-
-    private void savePlayers() {
-        for (final var player : this.server().players()) {
-            this.userManager().savePlayer(((WrappedCarbonPlayer) player).carbonPlayerCommon()).thenAccept(result -> {
-                if (result.player() == null) {
-                    this.server().console().sendMessage(result.reason());
-                }
-            });
-        }
-    }
-
-    public UserManager<CarbonPlayerCommon> userManager() {
-        return this.userManager;
+        PlayerUtils.savePlayers(this.carbonServerSponge, this.userManager);
     }
 
     @Override

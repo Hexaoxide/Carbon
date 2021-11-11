@@ -19,21 +19,11 @@ import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.command.commands.ClearChatCommand;
-import net.draycia.carbon.common.command.commands.ContinueCommand;
-import net.draycia.carbon.common.command.commands.DebugCommand;
-import net.draycia.carbon.common.command.commands.HelpCommand;
-import net.draycia.carbon.common.command.commands.MuteCommand;
-import net.draycia.carbon.common.command.commands.NicknameCommand;
-import net.draycia.carbon.common.command.commands.ReplyCommand;
-import net.draycia.carbon.common.command.commands.UnmuteCommand;
-import net.draycia.carbon.common.command.commands.WhisperCommand;
-import net.draycia.carbon.common.listeners.DeafenHandler;
-import net.draycia.carbon.common.listeners.ItemLinkHandler;
-import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.common.util.ListenerUtils;
+import net.draycia.carbon.common.util.PlayerUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
@@ -98,54 +88,24 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         }
 
         // Listeners
-        this.injector.getInstance(DeafenHandler.class);
-        this.injector.getInstance(ItemLinkHandler.class);
-        this.injector.getInstance(MuteHandler.class);
+        ListenerUtils.registerCommonListeners(this.injector);
 
         // Commands
-        this.injector.getInstance(ClearChatCommand.class);
-        this.injector.getInstance(ContinueCommand.class);
-        this.injector.getInstance(DebugCommand.class);
-        this.injector.getInstance(MuteCommand.class);
-        this.injector.getInstance(HelpCommand.class);
-        this.injector.getInstance(NicknameCommand.class);
-        this.injector.getInstance(ReplyCommand.class);
-        this.injector.getInstance(UnmuteCommand.class);
-        this.injector.getInstance(WhisperCommand.class);
+        CloudUtils.registerCommands(this.injector);
 
+        // Player data saving
         final long saveDelay = 5 * 60 * 20;
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this,
-            this::savePlayers, saveDelay, saveDelay);
+            () -> PlayerUtils.savePlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
 
+        // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
     }
 
     @Override
     public void onDisable() {
-        this.savePlayers();
-    }
-
-    private void savePlayers() {
-        // TODO: move to common or CarbonServer?
-        for (final var player : this.server().players()) {
-            final var saveResult = this.userManager().savePlayer(((WrappedCarbonPlayer) player).carbonPlayerCommon());
-
-            saveResult.thenAccept(result -> {
-                if (result.player() == null) {
-                    this.server().console().sendMessage(result.reason());
-                }
-            });
-
-            saveResult.exceptionally(exception -> {
-                exception.getCause().printStackTrace();
-                return null;
-            });
-        }
-    }
-
-    public UserManager<CarbonPlayerCommon> userManager() {
-        return this.userManager;
+        PlayerUtils.savePlayers(this.carbonServerBukkit, this.userManager);
     }
 
     @Override

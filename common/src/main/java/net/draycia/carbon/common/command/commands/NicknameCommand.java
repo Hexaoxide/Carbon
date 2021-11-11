@@ -170,6 +170,7 @@ public class NicknameCommand {
                 case "W" -> instant.plus(Period.ofWeeks(num));
                 case "M" -> instant.plus(Period.ofMonths(num));
                 case "Y" -> instant.plus(Period.ofYears(num));
+                default -> instant;
             };
         }
 

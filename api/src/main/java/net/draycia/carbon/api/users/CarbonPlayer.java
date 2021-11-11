@@ -165,6 +165,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return a copy of the player's mute entries
      * @since 2.0.0
      */
+    // TODO: ensure this never returns expired entries
     List<MuteEntry> muteEntries();
 
     /**
