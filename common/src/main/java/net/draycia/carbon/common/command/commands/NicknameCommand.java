@@ -162,15 +162,15 @@ public class NicknameCommand {
             final int num = Integer.parseInt(matcher.group(1));
             final String typ = matcher.group(2);
 
-            switch (typ) {
-                case "s" -> instant = instant.plus(Duration.ofSeconds(num));
-                case "m" -> instant = instant.plus(Duration.ofMinutes(num));
-                case "h" -> instant = instant.plus(Duration.ofHours(num));
-                case "d" -> instant = instant.plus(Duration.ofDays(num));
-                case "W" -> instant = instant.plus(Period.ofWeeks(num));
-                case "M" -> instant = instant.plus(Period.ofMonths(num));
-                case "Y" -> instant = instant.plus(Period.ofYears(num));
-            }
+            instant = switch (typ) {
+                case "s" -> instant.plus(Duration.ofSeconds(num));
+                case "m" -> instant.plus(Duration.ofMinutes(num));
+                case "h" -> instant.plus(Duration.ofHours(num));
+                case "d" -> instant.plus(Duration.ofDays(num));
+                case "W" -> instant.plus(Period.ofWeeks(num));
+                case "M" -> instant.plus(Period.ofMonths(num));
+                case "Y" -> instant.plus(Period.ofYears(num));
+            };
         }
 
         return instant.toEpochMilli();
