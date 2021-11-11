@@ -37,8 +37,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkitModule extends AbstractModule {
 
-    private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
-
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonChatBukkit carbonChat;
     private final Path dataDirectory;
@@ -72,7 +70,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
             throw new RuntimeException("Failed to initialize command manager.", ex);
         }
 
-        decorateCommandManager(commandManager, this.carbonChat.messageService());
+        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.messageService());
 
         commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
@@ -85,52 +83,6 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         }
 
         return commandManager;
-    }
-
-    // This should be in common and applied to every platforms command manager, not in bukkit module
-    private static void decorateCommandManager(
-        final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
-    ) {
-        registerExceptionHandlers(commandManager, messageService);
-    }
-
-    private static void registerExceptionHandlers(
-        final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
-    ) {
-        commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, exception) -> {
-            final var throwableMessage = CloudUtils.message(exception.getCause());
-
-            messageService.errorCommandArgumentParsing(sender, throwableMessage);
-        });
-        commandManager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, exception) -> {
-            final var senderType = exception.getRequiredSender().getSimpleName();
-
-            messageService.errorCommandInvalidSender(sender, senderType);
-        });
-        commandManager.registerExceptionHandler(InvalidSyntaxException.class, (sender, exception) -> {
-            final var syntax =
-                Component.text(exception.getCorrectSyntax()).replaceText(
-                    config -> config.match(SPECIAL_CHARACTERS_PATTERN)
-                        .replacement(match -> match.color(NamedTextColor.WHITE)));
-
-            messageService.errorCommandInvalidSyntax(sender, syntax);
-        });
-        commandManager.registerExceptionHandler(NoPermissionException.class, (sender, exception) -> {
-            messageService.errorCommandNoPermission(sender);
-        });
-        commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
-            final Throwable cause = exception.getCause();
-            cause.printStackTrace();
-
-            final StringWriter writer = new StringWriter();
-            cause.printStackTrace(new PrintWriter(writer));
-            final String stackTrace = writer.toString().replaceAll("\t", "    ");
-            final @Nullable Component throwableMessage = CloudUtils.message(cause);
-
-            messageService.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
-        });
     }
 
     @Override

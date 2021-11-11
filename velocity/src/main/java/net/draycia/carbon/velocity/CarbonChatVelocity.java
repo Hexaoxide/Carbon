@@ -13,7 +13,6 @@ import java.util.Set;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.common.CarbonChatCommon;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;

@@ -78,9 +78,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         CarbonChatProvider.register(this);
 
-        this.injector = Guice.createInjector(new CarbonChatBukkitModule(
-            this, this.getDataFolder().toPath()));
-
+        this.injector = Guice.createInjector(new CarbonChatBukkitModule(this, this.getDataFolder().toPath()));
         this.logger = LogManager.getLogger("CarbonChat");
         this.messageService = this.injector.getInstance(CarbonMessageService.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
