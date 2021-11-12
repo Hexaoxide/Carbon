@@ -89,9 +89,21 @@ public final class CarbonChatSponge implements CarbonChat {
         // Listeners
         ListenerUtils.registerCommonListeners(this.injector);
 
+        // Load channels
+        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+
         // Commands
         CloudUtils.registerCommands(this.injector);
     }
+
+    //    @Listener
+    //    public void onRegisterCommandEvent(final RegisterCommandEvent<Command.Raw> event) {
+    //        // Load channels
+    //        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+    //
+    //        // Commands
+    //        CloudUtils.registerCommands(this.injector);
+    //    }
 
     @Listener
     public void onInitialize(final StartingEngineEvent<Server> event) {
@@ -101,9 +113,6 @@ public final class CarbonChatSponge implements CarbonChat {
             .plugin(this.pluginContainer)
             .execute(() -> PlayerUtils.savePlayers(this.carbonServerSponge, this.userManager))
             .build());
-
-        // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
     }
 
     @Listener
