@@ -38,11 +38,17 @@ dependencyResolutionManagement {
 }
 
 pluginManagement {
+  repositories {
+    gradlePluginPortal()
+    maven("https://maven.fabricmc.net/")
+    maven("https://repo.jpenilla.xyz/snapshots/")
+  }
   includeBuild("build-logic")
 }
 
 plugins {
   id("ca.stellardrift.polyglot-version-catalogs") version "5.0.0"
+  id("quiet-fabric-loom") version "0.8-SNAPSHOT"
 }
 
 rootProject.name = "CarbonChat"
@@ -52,6 +58,7 @@ sequenceOf(
   "common",
   "bukkit",
   "sponge",
+  "fabric",
   "velocity"
 ).forEach {
   include("carbonchat-$it")
