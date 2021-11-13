@@ -36,11 +36,11 @@ public enum FabricChatCallback {
     private @Nullable ExecutorService chatExecutor;
     private final List<Consumer<Chat>> listeners = new LinkedList<>();
 
-    public void initExecutor() {
+    private void initExecutor() {
         this.chatExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory("CarbonChat-ChatThread"));
     }
 
-    public void shutdownExecutor() {
+    private void shutdownExecutor() {
         final @Nullable ExecutorService executor = this.chatExecutor;
         if (executor == null) {
             LOGGER.warn("Tried to shutdown null executor!");
