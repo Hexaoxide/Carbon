@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "minVersion": "0.8.4",
+    "package": "net.draycia.carbon.fabric.mixin",
+    "compatibilityLevel": "JAVA_16",
+    "mixins": [
+        "ServerGamePacketListenerImplMixin"
+    ],
+    "client": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+  }
+}
