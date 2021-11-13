@@ -1,8 +1,8 @@
 package net.draycia.carbon.fabric.callback;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +34,7 @@ public enum FabricChatCallback {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private @Nullable ExecutorService chatExecutor;
-    private final List<Consumer<Chat>> listeners = new LinkedList<>();
+    private final List<Consumer<Chat>> listeners = new CopyOnWriteArrayList<>();
 
     private void initExecutor() {
         this.chatExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory("CarbonChat-ChatThread"));
