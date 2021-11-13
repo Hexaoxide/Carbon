@@ -10,12 +10,20 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import java.util.Set;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.common.util.ListenerUtils;
+import net.draycia.carbon.sponge.VelocityMessageRenderer;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -30,7 +38,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
     authors = {"Draycia"}
 )
 @DefaultQualifier(NonNull.class)
-public class CarbonChatVelocity extends CarbonChatCommon {
+public class CarbonChatVelocity implements CarbonChat {
 
     private static final Set<Class<?>> LISTENER_CLASSES = Set.of(
         VelocityChatListener.class
@@ -45,6 +53,8 @@ public class CarbonChatVelocity extends CarbonChatCommon {
     private final ChannelRegistry channelRegistry;
     private final CarbonServerVelocity carbonServer;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
+
+    private final IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer;
 
     @Inject
     public CarbonChatVelocity(
@@ -69,17 +79,23 @@ public class CarbonChatVelocity extends CarbonChatCommon {
         this.messageService = injector.getInstance(CarbonMessageService.class);
         this.channelRegistry = injector.getInstance(ChannelRegistry.class);
         this.carbonServer = injector.getInstance(CarbonServerVelocity.class);
+        this.messageRenderer = this.injector.getInstance(VelocityMessageRenderer.class);
     }
 
     @Subscribe
     public void onProxyInitialization(final ProxyInitializeEvent event) {
-        super.initialize(this.injector);
-
         for (final Class<?> clazz : LISTENER_CLASSES) {
             this.proxyServer.getEventManager().register(this, this.injector.getInstance(clazz));
         }
 
+        // Listeners
+        ListenerUtils.registerCommonListeners(this.injector);
+
+        // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+
+        // Commands
+        CloudUtils.registerCommands(this.injector);
     }
 
     @Override
@@ -100,6 +116,11 @@ public class CarbonChatVelocity extends CarbonChatCommon {
     @Override
     public ChannelRegistry channelRegistry() {
         return this.channelRegistry;
+    }
+
+    @Override
+    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer() {
+        return this.messageRenderer;
     }
 
     public CarbonMessageService messageService() {

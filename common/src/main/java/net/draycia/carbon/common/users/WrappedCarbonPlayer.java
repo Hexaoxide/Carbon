@@ -56,6 +56,11 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
+    public boolean hasActiveTemporaryDisplayName() {
+        return this.carbonPlayerCommon().hasActiveTemporaryDisplayName();
+    }
+
+    @Override
     public UUID uuid() {
         return this.carbonPlayerCommon().uuid();
     }

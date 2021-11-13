@@ -4,12 +4,13 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
-import net.draycia.carbon.api.channels.ChatChannel;
+import java.util.Optional;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -17,40 +18,19 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
+public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
     private final ProxyServer server;
-    private final CarbonPlayer carbonPlayer;
+    private final CarbonPlayerCommon carbonPlayerCommon;
 
-    public CarbonPlayerVelocity(final ProxyServer server, final CarbonPlayer carbonPlayer) {
+    public CarbonPlayerVelocity(final ProxyServer server, final CarbonPlayerCommon carbonPlayerCommon) {
         this.server = server;
-        this.carbonPlayer = carbonPlayer;
-    }
-
-    @Override
-    public String username() {
-        return this.carbonPlayer.username();
-    }
-
-    @Override
-    public Component displayName() {
-        return this.carbonPlayer.displayName();
-    }
-
-    @Override
-    public UUID uuid() {
-        return this.carbonPlayer.uuid();
+        this.carbonPlayerCommon = carbonPlayerCommon;
     }
 
     @Override
     public @NotNull Audience audience() {
-        final @Nullable Player player = this.player();
-
-        if (player == null) {
-            return Audience.empty();
-        }
-
-        return player;
+        return this.player().map(value -> (Audience) value).orElse(Audience.empty());
     }
 
     @Override
@@ -64,84 +44,42 @@ public final class CarbonPlayerVelocity extends CarbonPlayerCommon {
     }
 
     @Override
-    public boolean globallyMuted() {
-        return this.carbonPlayer.globallyMuted();
+    public boolean vanished() {
+        return false;
     }
 
     @Override
-    public void globallyMuted(final boolean muted) {
-        this.carbonPlayer.globallyMuted(muted);
+    public boolean awareOf(final CarbonPlayer other) {
+        return true;
+    }
+
+    private Optional<Player> player() {
+        return this.server.getPlayer(this.uuid());
     }
 
     @Override
-    public boolean deafened() {
-        return this.carbonPlayer.deafened();
-    }
-
-    @Override
-    public void deafened(final boolean deafened) {
-        this.carbonPlayer.deafened(deafened);
-    }
-
-    @Override
-    public boolean spying() {
-        return this.carbonPlayer.spying();
-    }
-
-    @Override
-    public void spying(final boolean spying) {
-        this.carbonPlayer.spying(spying);
-    }
-
-    @Override
-    public @Nullable ChatChannel selectedChannel() {
-        return this.carbonPlayer.selectedChannel();
-    }
-
-    @Override
-    public void selectedChannel(final ChatChannel chatChannel) {
-        this.carbonPlayer.selectedChannel(chatChannel);
-    }
-
-    @Override
-    public @NotNull Identity identity() {
-        return this.carbonPlayer.identity();
-    }
-
-    @Override
-    public CarbonPlayer carbonPlayer() {
-        return this.carbonPlayer;
-    }
-
-    private @Nullable Player player() {
-        return this.server.getPlayer(this.uuid).orElse(null);
+    public CarbonPlayerCommon carbonPlayerCommon() {
+        return this.carbonPlayerCommon;
     }
 
     @Override
     public @Nullable Locale locale() {
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            return player.getPlayerSettings().getLocale();
-        } else {
-            return null;
-        }
+        return this.player().map(value -> value.getPlayerSettings().getLocale()).orElse(null);
     }
 
     @Override
-    public Component createItemHoverComponent() {
-        return Component.empty();
+    public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
+        return null;
     }
 
     @Override
     public boolean hasPermission(final String permission) {
-        final @Nullable Player player = this.player();
+        return this.player().map(value -> value.hasPermission(permission)).orElse(false);
+    }
 
-        if (player != null) {
-            return player.hasPermission(permission);
-        }
-
-        return false;
+    @Override
+    public boolean online() {
+        return this.player().isPresent();
     }
 
 }

@@ -47,17 +47,16 @@ public final class BukkitChatListener implements Listener {
             return;
         }
 
-        var channel = requireNonNullElse(sender.selectedChannel(),
-            this.registry.defaultValue());
+        var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
 
-        final var originalMessage = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
 
         for (final var chatChannel : this.registry) {
             if (chatChannel.quickPrefix() == null) {
                 continue;
             }
 
-            if (originalMessage.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
+            if (messageContents.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
                 channel = chatChannel;
                 break;
             }

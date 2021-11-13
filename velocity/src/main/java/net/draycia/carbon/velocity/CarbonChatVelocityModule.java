@@ -46,7 +46,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
 
     @Provides
     @Singleton
-    protected CommandManager<Commander> createCommandManager() {
+    public CommandManager<Commander> createCommandManager() {
         final VelocityCommandManager<Commander> commandManager = new VelocityCommandManager<>(
             this.pluginContainer,
             this.proxyServer,

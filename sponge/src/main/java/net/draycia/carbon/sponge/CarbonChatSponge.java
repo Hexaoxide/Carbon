@@ -96,15 +96,6 @@ public final class CarbonChatSponge implements CarbonChat {
         CloudUtils.registerCommands(this.injector);
     }
 
-    //    @Listener
-    //    public void onRegisterCommandEvent(final RegisterCommandEvent<Command.Raw> event) {
-    //        // Load channels
-    //        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
-    //
-    //        // Commands
-    //        CloudUtils.registerCommands(this.injector);
-    //    }
-
     @Listener
     public void onInitialize(final StartingEngineEvent<Server> event) {
         // Player data saving

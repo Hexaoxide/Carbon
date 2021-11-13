@@ -3,7 +3,6 @@ package net.draycia.carbon.sponge.users;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.api.util.InventorySlots;
@@ -24,6 +23,9 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.equipment.EquipmentType;
 import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
 import org.spongepowered.api.util.locale.LocaleSource;
+
+import static net.kyori.adventure.text.Component.translatable;
+import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements ForwardingAudience.Single {
@@ -49,39 +51,6 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
     private Optional<ServerPlayer> player() {
         return Sponge.server().player(this.carbonPlayerCommon.uuid());
     }
-
-    //    @Override
-    //    public Component createItemHoverComponent() {
-    //        final @Nullable ServerPlayer player = this.player().orElse(null);
-    //        if (player == null) {
-    //            return Component.empty();
-    //        }
-    //
-    //        final @Nullable ItemStack itemStack = player.equipped(EquipmentTypes.MAIN_HAND)
-    //            .filter(it -> !it.isEmpty())
-    //            .orElseGet(() -> player.equipped(EquipmentTypes.OFF_HAND).orElse(null));
-    //
-    //        if (itemStack == null || itemStack.isEmpty()) {
-    //            return Component.empty();
-    //        }
-    //
-    //        return this.fromStack(itemStack);
-    //    }
-
-    //    private Component fromStack(final ItemStack stack) {
-    //        return stack.get(Keys.DISPLAY_NAME)
-    //
-    //            // This is here as a fallback, but really, every ItemStack should
-    //            // have a DISPLAY_NAME which is already formatted properly for us by the game.
-    //            .orElseGet(() -> translatable()
-    //                .key("chat.square_brackets")
-    //                .args(stack.get(Keys.CUSTOM_NAME)
-    //                    .map(name -> name.decorate(ITALIC))
-    //                    .orElseGet(() -> stack.type().asComponent()))
-    //                .hoverEvent(stack.createSnapshot())
-    //                .apply(builder -> stack.get(Keys.ITEM_RARITY).ifPresent(rarity -> builder.color(rarity.color())))
-    //                .build());
-    //    }
 
     //    @Override
     //    public void displayName(final @Nullable Component displayName) {
@@ -118,47 +87,17 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
 
     @Override
     public @Nullable Locale locale() {
-        return this.player()
-            .map(LocaleSource::locale)
-            .orElse(null);
+        return this.player().map(LocaleSource::locale).orElse(null);
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon.displayName(displayName);
-        //
-        //        final Optional<ServerPlayer> player = this.player();
-        //
-        //        if (player.isPresent()) {
-        //            // TODO: don't run this block when the player has a temporary display name already set
-        //            // Update player's name in chat
-        //            player.get().displayName(displayName);
-        //
-        //            // Update player's name in the tab player list
-        //            player.get().playerListName(displayName);
-        //        }
     }
 
     @Override
     public void temporaryDisplayName(final @Nullable Component displayName, final long expirationEpoch) {
         this.carbonPlayerCommon.temporaryDisplayName(displayName, expirationEpoch);
-        //
-        //        final Optional<ServerPlayer> player = this.player();
-        //
-        //        if (player.isPresent()) {
-        //            // Update player's name in chat
-        //            player.get().displayName(displayName);
-        //
-        //            // Update player's name in the tab player list
-        //            player.get().playerListName(displayName);
-        //
-        //            // TODO: schedule task to unset temporary display name when it expires
-        //        }
-    }
-
-    @Override
-    public boolean hasActiveTemporaryDisplayName() {
-        return this.carbonPlayerCommon.hasActiveTemporaryDisplayName();
     }
 
     @Override
@@ -196,50 +135,36 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
 
         final @Nullable ItemStack itemStack = equipment.get();
 
-        return itemStack.get(Keys.DISPLAY_NAME).orElse(null);
+        return this.fromStack(itemStack);
+    }
+
+    private Component fromStack(final ItemStack stack) {
+        return stack.get(Keys.DISPLAY_NAME)
+
+            // This is here as a fallback, but really, every ItemStack should
+            // have a DISPLAY_NAME which is already formatted properly for us by the game.
+            .orElseGet(() -> translatable()
+                .key("chat.square_brackets")
+                .args(stack.get(Keys.CUSTOM_NAME)
+                    .map(name -> name.decorate(ITALIC))
+                    .orElseGet(() -> stack.type().asComponent()))
+                .hoverEvent(stack.createSnapshot())
+                .apply(builder -> stack.get(Keys.ITEM_RARITY).ifPresent(rarity -> builder.color(rarity.color())))
+                .build());
     }
 
     @Override
     public String primaryGroup() {
-        //        if (!BukkitCapabilities.vaultEnabled()) {
         return "default";
-        //        }
-        //
-        //        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
-        //        final String group = permission.getPrimaryGroup(this.player());
-        //
-        //        return Objects.requireNonNullElse(group, "default");
     }
 
     @Override
     public List<String> groups() {
-        //        if (!BukkitCapabilities.vaultEnabled()) {
-        //            return List.of("default");
-        //        }
-        //
-        //        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
-        //        final String[] groups = permission.getPlayerGroups(this.player());
-        //
-        //        if (groups != null && groups.length != 0) {
-        //            return Arrays.asList(groups);
-        //        }
-
         return List.of("default"); // TODO: implement
     }
 
     @Override
     public boolean vanished() {
-        return this.hasVanishMeta();
-    }
-
-    // Supported by PremiumVanish, SuperVanish, VanishNoPacket
-    private boolean hasVanishMeta() {
-        //        for (final MetadataValue meta : this.player().getMetadata("vanished")) {
-        //            if (meta.asBoolean()) {
-        //                return true;
-        //            }
-        //        }
-
         return false;
     }
 
@@ -250,16 +175,6 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
         }
 
         return true;
-    }
-
-    @Override
-    public @Nullable ChatChannel selectedChannel() {
-        return this.carbonPlayerCommon.selectedChannel();
-    }
-
-    @Override
-    public void selectedChannel(final @Nullable ChatChannel chatChannel) {
-        this.carbonPlayerCommon.selectedChannel(chatChannel);
     }
 
 }

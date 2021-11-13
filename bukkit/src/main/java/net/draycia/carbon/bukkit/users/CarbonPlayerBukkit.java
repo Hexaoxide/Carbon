@@ -89,11 +89,6 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public boolean hasActiveTemporaryDisplayName() {
-        return this.carbonPlayerCommon.hasActiveTemporaryDisplayName();
-    }
-
-    @Override
     public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
         final @Nullable Player player = this.player(); // This is temporary (it's not)
 

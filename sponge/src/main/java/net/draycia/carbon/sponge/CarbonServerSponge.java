@@ -21,7 +21,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.entity.living.player.Player;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -101,7 +101,7 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
         });
     }
 
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final ServerPlayer player) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final Player player) {
         return this.player(player.uniqueId());
     }
 
