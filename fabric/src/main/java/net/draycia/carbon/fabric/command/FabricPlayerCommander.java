@@ -1,35 +1,36 @@
 package net.draycia.carbon.fabric.command;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.minecraft.commands.CommandSource;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+
 import static java.util.Objects.requireNonNull;
 
+@DefaultQualifier(NonNull.class)
 public record FabricPlayerCommander(
-    @NonNull MinecraftServer server,
-    @NonNull CarbonChat carbon,
-    @NonNull CommandSource commandSource
+    CarbonChat carbon,
+    CommandSourceStack commandSourceStack
 ) implements PlayerCommander, FabricCommander {
 
-    @Override
-    public @NonNull CommandSource commandSource() {
-        return this.commandSource;
+    public ServerPlayer player() {
+        try {
+            return this.commandSourceStack.getPlayerOrException();
+        } catch (final CommandSyntaxException e) {
+            throw new IllegalStateException("FabricPlayerCommander was created for non-player CommandSourceStack!", e);
+        }
     }
 
     @Override
-    public @NonNull Audience audience() {
-        return FabricServerAudiences.of(this.server).audience(this.commandSource);
-    }
-
-    @Override
-    public @NonNull CarbonPlayer carbonPlayer() {
-        return requireNonNull(this.carbon.server().player(((Player) this.commandSource).getUUID()).join().player(), "No CarbonPlayer for logged in Player!");
+    public CarbonPlayer carbonPlayer() {
+        return requireNonNull(
+            this.carbon.server().player(this.player().getUUID()).join().player(),
+            "No CarbonPlayer for logged in Player!"
+        );
     }
 
 }

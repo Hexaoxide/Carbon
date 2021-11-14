@@ -67,7 +67,6 @@ public final class CloudUtils {
             .orElse(recipient.username());
     }
 
-    // This should be in common and applied to every platforms command manager, not in bukkit module
     public static void decorateCommandManager(
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService

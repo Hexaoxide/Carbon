@@ -20,6 +20,9 @@ import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.fabric.callback.FabricChatCallback;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import net.minecraft.server.MinecraftServer;
@@ -27,12 +30,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+
+import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
+    private @Nullable MinecraftServer minecraftServer;
+    private @MonotonicNonNull ModContainer modContainer;
     private @MonotonicNonNull Injector injector;
     private @MonotonicNonNull UserManager<CarbonPlayerCommon> userManager;
     private @MonotonicNonNull Logger logger;
@@ -42,10 +50,13 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
     @Override
     public void onInitialize() {
+        this.modContainer = FabricLoader.getInstance().getModContainer("carbonchat").orElseThrow(() ->
+            new IllegalStateException("Could not find ModContainer for carbonchat."));
+
         CarbonChatProvider.register(this);
 
-        this.injector = Guice.createInjector(new CarbonChatFabricModule(this, this.dataDirectory()));
-        this.logger = LogManager.getLogger("CarbonChat");
+        this.logger = LogManager.getLogger(this.modContainer.getMetadata().getName());
+        this.injector = Guice.createInjector(new CarbonChatFabricModule(this, this.logger, this.dataDirectory()));
         this.messageService = this.injector.getInstance(CarbonMessageService.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerFabric = this.injector.getInstance(CarbonServerFabric.class);
@@ -54,6 +65,12 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         // Platform Listeners
         FabricChatCallback.setup();
         FabricChatCallback.INSTANCE.registerListener(new FabricChatListener());
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            this.minecraftServer = server;
+        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            this.minecraftServer = null;
+        });
 
         // Listeners
         ListenerUtils.registerCommonListeners(this.injector);
@@ -76,7 +93,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
     @Override
     public Path dataDirectory() {
-        return this.dataDirectory;
+        return FabricLoader.getInstance().getConfigDir().resolve(this.modContainer.getMetadata().getId());
     }
 
     @Override
@@ -100,7 +117,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     public MinecraftServer minecraftServer() {
-
+        return requireNonNull(this.minecraftServer, "Attempted to get the MinecraftServer instance when one is not active.");
     }
 
     public CarbonMessageService messageService() {
