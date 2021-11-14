@@ -16,7 +16,7 @@
   "environment": "server",
   "entrypoints": {
     "main": [
-      "net.draycia.carbon.fabric.CarbonFabricEntry"
+      "net.draycia.carbon.fabric.CarbonChatFabric"
     ]
   },
   "mixins": [
