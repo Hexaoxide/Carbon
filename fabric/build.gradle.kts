@@ -13,7 +13,7 @@ configurations.implementation {
 
 dependencies {
   minecraft(libs.fabricMinecraft)
-  mappings(minecraft.officialMojangMappings())
+  mappings(loom.officialMojangMappings())
   modImplementation(libs.fabricLoader)
 
   carbon(projects.carbonchatCommon) {
