@@ -1,12 +1,10 @@
-package net.draycia.carbon.velocity;
+package net.draycia.carbon.fabric;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
-import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.util.UuidUtils;
+import com.google.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,16 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.FastUuidSansHyphens;
-import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
+import net.minecraft.world.entity.player.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -34,40 +34,43 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.text.Component.text;
 
+@Singleton
 @DefaultQualifier(NonNull.class)
-public final class CarbonServerVelocity implements CarbonServer, ForwardingAudience.Single {
+public final class CarbonServerFabric implements CarbonServer, ForwardingAudience.Single {
 
-    private final ProxyServer server;
+    private final CarbonChatFabric carbonChatFabric;
     private final UserManager<CarbonPlayerCommon> userManager;
+
+    private final Map<UUID, CarbonPlayerFabric> userCache = new ConcurrentHashMap<>();
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
 
     @Inject
-    private CarbonServerVelocity(final ProxyServer server, final UserManager<CarbonPlayerCommon> userManager) {
-        this.server = server;
+    private CarbonServerFabric(final CarbonChatFabric carbonChatFabric, final UserManager<CarbonPlayerCommon> userManager) {
+        this.carbonChatFabric = carbonChatFabric;
         this.userManager = userManager;
     }
 
     @Override
     public @NotNull Audience audience() {
-        return Audience.audience(this.console(), Audience.audience(this.players()));
+        return FabricServerAudiences.of(this.carbonChatFabric.minecraftServer()).all();
     }
 
     @Override
     public Audience console() {
-        return this.server.getConsoleCommandSource();
+        return FabricServerAudiences.of(this.carbonChatFabric.minecraftServer()).console();
     }
 
     @Override
-    public List<CarbonPlayerVelocity> players() {
-        final var players = new ArrayList<CarbonPlayerVelocity>();
+    public List<? extends CarbonPlayer> players() {
+        final var players = new ArrayList<CarbonPlayer>();
 
-        for (final var player : this.server.getAllPlayers()) {
-            final @Nullable ComponentPlayerResult<CarbonPlayer> carbonPlayer = this.player(player).join();
+        for (final var player : this.carbonChatFabric.minecraftServer().getPlayerList().getPlayers()) {
+            final @Nullable ComponentPlayerResult<CarbonPlayer> result = this.player(player).join();
 
-            if (carbonPlayer.player() != null) {
-                players.add((CarbonPlayerVelocity) carbonPlayer.player());
+            if (result.player() != null) {
+                players.add(result.player());
             }
         }
 
@@ -75,22 +78,35 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
     }
 
     private CompletableFuture<ComponentPlayerResult<CarbonPlayer>> wrapPlayer(final UUID uuid) {
-        return this.userManager.carbonPlayer(uuid).thenCompose(result -> {
-            return CompletableFuture.supplyAsync(() -> {
-                if (result.player() != null) {
-                    new ComponentPlayerResult<>(new CarbonPlayerVelocity(this.server, result.player()), Component.empty());
-                }
+        return CompletableFuture.supplyAsync(() -> {
+            final @Nullable CarbonPlayerFabric cachedPlayer = this.userCache.get(uuid);
 
-                final @Nullable String name = this.resolveName(uuid).join();
+            if (cachedPlayer != null) {
+                return new ComponentPlayerResult<>(cachedPlayer, Component.empty());
+            }
 
-                if (name != null) {
-                    final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
+            final ComponentPlayerResult<CarbonPlayerCommon> result = this.userManager.carbonPlayer(uuid).join();
 
-                    return new ComponentPlayerResult<>(new CarbonPlayerVelocity(this.server, player), Component.empty());
-                }
+            if (result.player() != null) {
+                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(result.player());
 
-                return new ComponentPlayerResult<>(null, text("Name not found for uuid!"));
-            });
+                this.userCache.put(uuid, carbonPlayerFabric);
+
+                return new ComponentPlayerResult<>(carbonPlayerFabric, Component.empty());
+            }
+
+            final @Nullable String name = this.resolveName(uuid).join();
+
+            if (name != null) {
+                final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
+                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(player);
+
+                this.userCache.put(uuid, carbonPlayerFabric);
+
+                return new ComponentPlayerResult<>(carbonPlayerFabric, Component.empty());
+            }
+
+            return new ComponentPlayerResult<>(null, text("Name not found for uuid!"));
         });
     }
 
@@ -113,7 +129,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
     }
 
     public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final Player player) {
-        return this.player(player.getUniqueId());
+        return this.player(player.getUUID());
     }
 
     @Override
