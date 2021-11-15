@@ -69,7 +69,6 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).toInstance(this.carbonChatVelocity);
-        this.bind(CarbonChatVelocity.class).toInstance(this.carbonChatVelocity);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);
