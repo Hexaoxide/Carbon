@@ -76,9 +76,9 @@ public class CarbonChatVelocity implements CarbonChat {
 
         this.injector = injector.createChildInjector(carbonVelocityModule);
 
-        this.messageService = injector.getInstance(CarbonMessageService.class);
-        this.channelRegistry = injector.getInstance(ChannelRegistry.class);
-        this.carbonServer = injector.getInstance(CarbonServerVelocity.class);
+        this.messageService = this.injector.getInstance(CarbonMessageService.class);
+        this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
+        this.carbonServer = this.injector.getInstance(CarbonServerVelocity.class);
         this.messageRenderer = this.injector.getInstance(VelocityMessageRenderer.class);
     }
 
