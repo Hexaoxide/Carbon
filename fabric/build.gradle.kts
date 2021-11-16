@@ -28,7 +28,9 @@ dependencies {
 
   modImplementation(libs.cloudFabric)
   include(libs.cloudFabric)
-  modImplementation(libs.adventurePlatformFabric)
+  modImplementation(libs.adventurePlatformFabric) {
+    exclude("ca.stellardrift", "colonel") // causes classloading issues when running in dev
+  }
   include(libs.adventurePlatformFabric)
 
   modImplementation("me.lucko", "fabric-permissions-api", "0.1-SNAPSHOT")
@@ -56,9 +58,6 @@ tasks {
   remapJar {
     archiveClassifier.set(null as String?)
     input.set(shadowJar.flatMap { it.archiveFile })
-  }
-  runServer {
-    standardInput = System.`in`
   }
   processResources {
     val props = mapOf(
