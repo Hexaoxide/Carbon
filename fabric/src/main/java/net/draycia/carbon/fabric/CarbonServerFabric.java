@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -22,7 +21,6 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.util.FastUuidSansHyphens;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -91,7 +89,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
             final ComponentPlayerResult<CarbonPlayerCommon> result = this.userManager.carbonPlayer(uuid).join();
 
             if (result.player() != null) {
-                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(result.player(), carbonChatFabric);
+                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(result.player(), this.carbonChatFabric);
 
                 this.userCache.put(uuid, carbonPlayerFabric);
 
@@ -102,7 +100,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
 
             if (name != null) {
                 final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
-                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(player, carbonChatFabric);
+                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(player, this.carbonChatFabric);
 
                 this.userCache.put(uuid, carbonPlayerFabric);
 

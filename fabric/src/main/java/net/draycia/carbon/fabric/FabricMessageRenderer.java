@@ -1,5 +1,10 @@
 package net.draycia.carbon.fabric;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.util.ChatType;
@@ -12,12 +17,6 @@ import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @DefaultQualifier(NonNull.class)
 public class FabricMessageRenderer implements IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> {
@@ -48,4 +47,5 @@ public class FabricMessageRenderer implements IMessageRenderer<SourcedAudience, 
 
         return new RenderedMessage(message, messageType);
     }
+
 }

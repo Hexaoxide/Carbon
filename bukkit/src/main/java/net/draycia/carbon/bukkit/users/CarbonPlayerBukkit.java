@@ -1,20 +1,15 @@
 package net.draycia.carbon.bukkit.users;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.api.util.InventorySlots;
-import net.draycia.carbon.bukkit.util.BukkitCapabilities;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
@@ -130,45 +125,6 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public boolean hasPermission(final String permission) {
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            return player.hasPermission(permission);
-        }
-
-        return false;
-    }
-
-    @Override
-    public String primaryGroup() {
-        if (!BukkitCapabilities.vaultEnabled()) {
-            return "default";
-        }
-
-        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
-        final String group = permission.getPrimaryGroup(this.player());
-
-        return Objects.requireNonNullElse(group, "default");
-    }
-
-    @Override
-    public List<String> groups() {
-        if (!BukkitCapabilities.vaultEnabled()) {
-            return List.of("default");
-        }
-
-        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
-        final String[] groups = permission.getPlayerGroups(this.player());
-
-        if (groups != null && groups.length != 0) {
-            return Arrays.asList(groups);
-        }
-
-        return List.of("default"); // TODO: implement
-    }
-
-    @Override
     public @Nullable Locale locale() {
         final @Nullable Player player = this.player();
 
@@ -205,15 +161,6 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
         }
 
         return false;
-    }
-
-    @Override
-    public boolean awareOf(final CarbonPlayer other) {
-        if (other.vanished()) {
-            return this.hasPermission("carbon.seevanished");
-        }
-
-        return true;
     }
 
     @Override

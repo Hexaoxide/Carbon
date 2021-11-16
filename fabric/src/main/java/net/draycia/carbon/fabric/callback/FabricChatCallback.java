@@ -58,7 +58,6 @@ public enum FabricChatCallback {
         }
     }
 
-
     public void registerListener(final Consumer<Chat> listener) {
         this.listeners.add(listener);
     }

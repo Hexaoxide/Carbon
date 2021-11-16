@@ -1,10 +1,7 @@
 package net.draycia.carbon.fabric.users;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.api.util.InventorySlots;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -28,7 +25,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     private final CarbonPlayerCommon carbonPlayerCommon;
     private final CarbonChatFabric carbonChatFabric;
 
-    public CarbonPlayerFabric(CarbonPlayerCommon carbonPlayerCommon, CarbonChatFabric carbonChatFabric) {
+    public CarbonPlayerFabric(final CarbonPlayerCommon carbonPlayerCommon, final CarbonChatFabric carbonChatFabric) {
         this.carbonPlayerCommon = carbonPlayerCommon;
         this.carbonChatFabric = carbonChatFabric;
     }
@@ -53,11 +50,6 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     }
 
     @Override
-    public boolean awareOf(final CarbonPlayer other) {
-        return true;
-    }
-
-    @Override
     public @Nullable Locale locale() {
         return this.player().map(PlayerLocales::locale).orElse(null);
     }
@@ -70,16 +62,6 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     @Override
     public CarbonPlayerCommon carbonPlayerCommon() {
         return this.carbonPlayerCommon;
-    }
-
-    @Override
-    public String primaryGroup() {
-        return "default"; // TODO: implement
-    }
-
-    @Override
-    public List<String> groups() {
-        return List.of("default"); // TODO: implement
     }
 
     @Override
@@ -115,13 +97,6 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
         }
 
         return FabricServerAudiences.of(player.server).toAdventure(item.getDisplayName());
-    }
-
-    @Override
-    public boolean hasPermission(final String permission) {
-        return this.player()
-            .map(value -> Permissions.check(value, permission, value.server.getOperatorUserPermissionLevel()))
-            .orElse(false);
     }
 
 }

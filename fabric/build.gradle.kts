@@ -33,7 +33,7 @@ dependencies {
   }
   include(libs.adventurePlatformFabric)
 
-  modImplementation("me.lucko", "fabric-permissions-api", "0.1-SNAPSHOT")
+  modImplementation(libs.luckPerms)
 }
 
 carbonPlatform {

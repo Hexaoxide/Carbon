@@ -1,9 +1,7 @@
 package net.draycia.carbon.sponge.users;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.api.util.InventorySlots;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -52,28 +50,6 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
         return Sponge.server().player(this.carbonPlayerCommon.uuid());
     }
 
-    //    @Override
-    //    public void displayName(final @Nullable Component displayName) {
-    //        this.carbonPlayer.displayName(displayName);
-    //
-    //        this.player().ifPresent(player -> {
-    //            if (displayName != null) {
-    //                player.offer(Keys.CUSTOM_NAME, displayName);
-    //            } else {
-    //                player.remove(Keys.CUSTOM_NAME);
-    //            }
-    //        });
-    //    }
-
-    @Override
-    public boolean hasPermission(final String permission) {
-        final var player = this.player();
-
-        // Ignore inspection. Don't make code harder to read, IntelliJ.
-        return player.map(serverPlayer -> serverPlayer.hasPermission(permission))
-            .orElse(false);
-    }
-
     @Override
     public void sendMessageAsPlayer(final String message) {
         this.player().ifPresent(player -> player.simulateChat(Component.text(message), Cause.builder().build()));
@@ -81,8 +57,7 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
 
     @Override
     public boolean online() {
-        final var player = this.player();
-        return player.isPresent() && player.get().isOnline();
+        return this.player().map(ServerPlayer::isOnline).orElse(false);
     }
 
     @Override
@@ -154,27 +129,8 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public String primaryGroup() {
-        return "default";
-    }
-
-    @Override
-    public List<String> groups() {
-        return List.of("default"); // TODO: implement
-    }
-
-    @Override
     public boolean vanished() {
         return false;
-    }
-
-    @Override
-    public boolean awareOf(final CarbonPlayer other) {
-        if (other.vanished()) {
-            return this.hasPermission("carbon.seevanished");
-        }
-
-        return true;
     }
 
 }

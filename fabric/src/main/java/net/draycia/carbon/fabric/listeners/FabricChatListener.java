@@ -30,7 +30,7 @@ public class FabricChatListener implements Consumer<FabricChatCallback.Chat> {
     private final CarbonChatFabric carbonChatFabric;
     private final ChannelRegistry channelRegistry;
 
-    public FabricChatListener(CarbonChatFabric carbonChatFabric, ChannelRegistry channelRegistry) {
+    public FabricChatListener(final CarbonChatFabric carbonChatFabric, final ChannelRegistry channelRegistry) {
         this.carbonChatFabric = carbonChatFabric;
         this.channelRegistry = channelRegistry;
     }
@@ -80,7 +80,7 @@ public class FabricChatListener implements Consumer<FabricChatCallback.Chat> {
             chat.identity(Identity.nil());
         }
 
-        chat.formatter(((sender1, message, viewer) -> {
+        chat.formatter((sender1, message, viewer) -> {
             var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
             for (final var renderer : chatEvent.renderers()) {
@@ -99,7 +99,7 @@ public class FabricChatListener implements Consumer<FabricChatCallback.Chat> {
             }
 
             return renderedMessage.component();
-        }));
+        });
     }
 
 }
