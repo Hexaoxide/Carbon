@@ -18,6 +18,9 @@ dependencies {
 
   carbon(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
+    exclude("net.kyori", "adventure-text-serializer-gson")
+    exclude("cloud.commandframework")
+    exclude("io.leangen.geantyref")
   }
 
   modImplementation(libs.cloudFabric)
@@ -37,6 +40,8 @@ tasks {
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
     archiveClassifier.set("dev-all")
+
+    relocateGuice()
   }
   remapJar {
     archiveClassifier.set(null as String?)
