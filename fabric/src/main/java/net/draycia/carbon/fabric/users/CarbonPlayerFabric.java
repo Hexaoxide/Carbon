@@ -7,10 +7,14 @@ import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.fabric.PlayerLocales;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Locale;
 
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerFabric extends WrappedCarbonPlayer implements ForwardingAudience.Single {
@@ -41,6 +45,16 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     @Override
     public boolean awareOf(CarbonPlayer other) {
         return false;
+    }
+
+    @Override
+    public @Nullable Locale locale() {
+        return PlayerLocales.locale(player());
+    }
+
+    @Override
+    public boolean online() {
+        return this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(player().getUUID()) != null;
     }
 
     @Override

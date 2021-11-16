@@ -64,7 +64,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
         // Platform Listeners
         FabricChatCallback.setup();
-        FabricChatCallback.INSTANCE.registerListener(new FabricChatListener());
+        FabricChatCallback.INSTANCE.registerListener(new FabricChatListener(this, channelRegistry));
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             this.minecraftServer = server;
         });
