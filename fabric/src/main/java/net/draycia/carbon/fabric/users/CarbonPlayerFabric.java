@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerFabric extends WrappedCarbonPlayer implements ForwardingAudience.Single {
@@ -35,7 +34,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public @NonNull Audience audience() {
         return this.player()
             .map(p -> FabricServerAudiences.of(p.server).audience(p))
             .orElseThrow();
