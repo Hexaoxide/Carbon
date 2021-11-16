@@ -21,12 +21,15 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("net.kyori.event")
   relocateDependency("net.kyori.moonshine")
   relocateDependency("net.kyori.registry")
-  relocateDependency("cloud.commandframework")
   relocateDependency("org.spongepowered.configurate")
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.common")
   relocateDependency("com.google.thirdparty.publicsuffix")
   relocateDependency("it.unimi.dsi.fastutil")
+}
+
+fun ShadowJar.relocateCloud() {
+  relocateDependency("cloud.commandframework")
 }
 
 fun ShadowJar.relocateGuice() {

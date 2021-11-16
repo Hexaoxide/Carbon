@@ -33,6 +33,11 @@ carbonPlatform {
   jarTask.set(tasks.remapJar)
 }
 
+carbonShadowPlatform {
+  relocateGuice.set(true)
+  relocateCloud.set(false)
+}
+
 tasks {
   jar {
     archiveClassifier.set("dev")
@@ -40,8 +45,6 @@ tasks {
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
     archiveClassifier.set("dev-all")
-
-    relocateGuice()
   }
   remapJar {
     archiveClassifier.set(null as String?)

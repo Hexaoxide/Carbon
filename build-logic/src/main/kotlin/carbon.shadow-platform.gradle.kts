@@ -3,6 +3,8 @@ plugins {
   id("com.github.johnrengelman.shadow")
 }
 
+val shadowPlatform = extensions.create<CarbonShadowPlatformExtension>("carbonShadowPlatform", project)
+
 tasks {
   jar {
     archiveClassifier.set("unshaded")
@@ -15,4 +17,15 @@ tasks {
 
 extensions.configure<CarbonPlatformExtension> {
   jarTask.set(tasks.shadowJar)
+}
+
+afterEvaluate {
+  tasks.shadowJar {
+    if (shadowPlatform.relocateGuice.get()) {
+      relocateGuice()
+    }
+    if (shadowPlatform.relocateCloud.get()) {
+      relocateCloud()
+    }
+  }
 }
