@@ -21,6 +21,33 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     public abstract CarbonPlayerCommon carbonPlayerCommon();
 
     @Override
+    public boolean awareOf(final CarbonPlayer other) {
+        if (other.vanished()) {
+            return this.hasPermission("carbon.seevanished");
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        // TODO: LuckPerms
+        return this.carbonPlayerCommon().hasPermission(permission);
+    }
+
+    @Override
+    public String primaryGroup() {
+        // TODO: LuckPerms
+        return this.carbonPlayerCommon().primaryGroup();
+    }
+
+    @Override
+    public List<String> groups() {
+        // TODO: LuckPerms
+        return this.carbonPlayerCommon().groups();
+    }
+
+    @Override
     public String username() {
         return this.carbonPlayerCommon().username();
     }
@@ -81,24 +108,8 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void selectedChannel(ChatChannel chatChannel) {
+    public void selectedChannel(@Nullable ChatChannel chatChannel) {
         this.carbonPlayerCommon().selectedChannel(chatChannel);
-    }
-
-    // TODO: move to Permissible class or one similarly named?
-    @Override
-    public boolean hasPermission(String permission) {
-        return this.carbonPlayerCommon().hasPermission(permission);
-    }
-
-    @Override
-    public String primaryGroup() {
-        return this.carbonPlayerCommon().primaryGroup();
-    }
-
-    @Override
-    public List<String> groups() {
-        return this.carbonPlayerCommon().groups();
     }
 
     @Override

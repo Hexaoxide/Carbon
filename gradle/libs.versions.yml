@@ -34,6 +34,7 @@ versions:
   fabricMinecraft: 1.17.1
   fabricLoader: 0.12.5
   adventurePlatformFabric: 4.1.0-SNAPSHOT
+  luckPerms: 5.3
 
 dependencies:
   adventureBom:
@@ -200,5 +201,10 @@ dependencies:
     group: gradle.plugin.com.github.johnrengelman
     name: shadow
     version: { ref: shadow }
+
+  luckPerms:
+    group: net.luckperms
+    name: api
+    version: { ref: luckPerms }
 
 bundles:

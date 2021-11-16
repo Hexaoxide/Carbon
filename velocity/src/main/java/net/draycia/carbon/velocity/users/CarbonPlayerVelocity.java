@@ -2,10 +2,8 @@ package net.draycia.carbon.velocity.users;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -34,23 +32,8 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
     }
 
     @Override
-    public String primaryGroup() {
-        return "default"; // TODO: implement
-    }
-
-    @Override
-    public List<String> groups() {
-        return List.of("default"); // TODO: implement
-    }
-
-    @Override
     public boolean vanished() {
         return false;
-    }
-
-    @Override
-    public boolean awareOf(final CarbonPlayer other) {
-        return true;
     }
 
     private Optional<Player> player() {
@@ -70,11 +53,6 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
     @Override
     public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
         return null;
-    }
-
-    @Override
-    public boolean hasPermission(final String permission) {
-        return this.player().map(value -> value.hasPermission(permission)).orElse(false);
     }
 
     @Override
