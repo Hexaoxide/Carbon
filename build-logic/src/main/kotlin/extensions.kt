@@ -29,6 +29,12 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("it.unimi.dsi.fastutil")
 }
 
+fun ShadowJar.relocateGuice() {
+  relocateDependency("com.google.inject")
+  relocateDependency("org.aopalliance")
+  relocateDependency("javax.inject")
+}
+
 fun ShadowJar.configureShadowJar() {
   minimize()
   standardRelocations()

@@ -27,10 +27,7 @@ tasks {
     relocateDependency("io.papermc.lib")
     relocateDependency("io.leangen.geantyref")
 
-    // Guice
-    relocateDependency("com.google.inject")
-    relocateDependency("org.aopalliance")
-    relocateDependency("javax.inject")
+    relocateGuice()
   }
   runServer {
     minecraftVersion("1.17.1")
