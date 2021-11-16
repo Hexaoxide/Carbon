@@ -13,7 +13,7 @@
     "issues": "${github_url}/issues"
   },
   "license": "GPLv3",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "net.draycia.carbon.fabric.CarbonChatFabric"

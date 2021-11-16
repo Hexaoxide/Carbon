@@ -19,7 +19,10 @@ dependencies {
   carbon(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
     exclude("net.kyori", "adventure-text-serializer-gson")
-    exclude("cloud.commandframework")
+    exclude("net.kyori", "adventure-text-serializer-plain")
+    exclude("cloud.commandframework", "cloud-core")
+    exclude("cloud.commandframework", "cloud-services")
+    exclude("cloud.commandframework", "cloud-brigadier")
     exclude("io.leangen.geantyref")
   }
 
@@ -27,6 +30,8 @@ dependencies {
   include(libs.cloudFabric)
   modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
+
+  modImplementation("me.lucko", "fabric-permissions-api", "0.1-SNAPSHOT")
 }
 
 carbonPlatform {
@@ -45,6 +50,8 @@ tasks {
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
     archiveClassifier.set("dev-all")
+
+    relocateDependency("cloud.commandframework.minecraft.extras")
   }
   remapJar {
     archiveClassifier.set(null as String?)
