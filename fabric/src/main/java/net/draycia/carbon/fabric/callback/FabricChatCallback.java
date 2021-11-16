@@ -38,7 +38,7 @@ public enum FabricChatCallback {
     private final List<Consumer<Chat>> listeners = new CopyOnWriteArrayList<>();
 
     private void initExecutor() {
-        this.chatExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory("CarbonChat-ChatThread"));
+        this.chatExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory("CarbonChat-Chat-Thread"));
     }
 
     private void shutdownExecutor() {
