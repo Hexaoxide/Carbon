@@ -22,12 +22,14 @@ dependencies {
   compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 }
 
+carbonShadowPlatform {
+  relocateGuice.set(true)
+}
+
 tasks {
   shadowJar {
     relocateDependency("io.papermc.lib")
     relocateDependency("io.leangen.geantyref")
-
-    relocateGuice()
   }
   runServer {
     minecraftVersion("1.17.1")
