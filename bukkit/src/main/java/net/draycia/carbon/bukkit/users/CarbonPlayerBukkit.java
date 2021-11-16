@@ -1,7 +1,8 @@
 package net.draycia.carbon.bukkit.users;
 
+import java.util.Collection;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.Optional;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.api.util.InventorySlots;
@@ -30,8 +31,8 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
         this.carbonPlayerCommon = carbonPlayerCommon;
     }
 
-    private @Nullable Player player() {
-        return Bukkit.getPlayer(this.carbonPlayerCommon.uuid());
+    private Optional<Player> player() {
+        return Optional.ofNullable(Bukkit.getPlayer(this.carbonPlayerCommon.uuid()));
     }
 
     @Override
@@ -41,38 +42,31 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
 
     @Override
     public @NotNull Audience audience() {
-        final @Nullable Player player = this.player();
-
-        if (player == null) {
-            return Audience.empty();
-        }
-
-        return player;
+        return this.player().map(player -> (Audience) player).orElse(Audience.empty());
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon.displayName(displayName);
 
-        final @Nullable Player player = this.player();
+        if (this.hasActiveTemporaryDisplayName()) {
+            return;
+        }
 
-        if (player != null) {
-            // TODO: don't run this block when the player has a temporary display name already set
+        this.player().ifPresent(player -> {
             // Update player's name in chat
             player.displayName(displayName);
 
             // Update player's name in the tab player list
             player.playerListName(displayName);
-        }
+        });
     }
 
     @Override
     public void temporaryDisplayName(final @Nullable Component displayName, final long expirationEpoch) {
         this.carbonPlayerCommon.temporaryDisplayName(displayName, expirationEpoch);
 
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
+        this.player().ifPresent(player -> {
             // Update player's name in chat
             player.displayName(displayName);
 
@@ -80,14 +74,14 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
             player.playerListName(displayName);
 
             // TODO: schedule task to unset temporary display name when it expires
-        }
+        });
     }
 
     @Override
     public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
-        final @Nullable Player player = this.player(); // This is temporary (it's not)
+        final Optional<Player> player = this.player(); // This is temporary (it's not)
 
-        if (player == null) {
+        if (player.isEmpty()) {
             return null;
         }
 
@@ -109,7 +103,7 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
             return null;
         }
 
-        final @Nullable EntityEquipment equipment = player.getEquipment();
+        final @Nullable EntityEquipment equipment = player.get().getEquipment();
 
         if (equipment == null) {
             return null;
@@ -126,25 +120,19 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
 
     @Override
     public @Nullable Locale locale() {
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            return player.locale();
-        } else {
-            return null;
-        }
+        return this.player().map(Player::locale).orElse(null);
     }
 
     @Override
     public void sendMessageAsPlayer(final String message) {
         // TODO: ensure method is not executed from main thread
         // bukkit doesn't like that
-        Objects.requireNonNull(this.player()).chat(message);
+        this.player().ifPresent(player -> player.chat(message));
     }
 
     @Override
     public boolean online() {
-        return this.player() != null;
+        return this.player().isPresent();
     }
 
     @Override
@@ -154,13 +142,11 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
 
     // Supported by PremiumVanish, SuperVanish, VanishNoPacket
     private boolean hasVanishMeta() {
-        for (final MetadataValue meta : this.player().getMetadata("vanished")) {
-            if (meta.asBoolean()) {
-                return true;
-            }
-        }
-
-        return false;
+        return this.player().stream()
+            .map(player -> player.getMetadata("vanished"))
+            .flatMap(Collection::stream)
+            .filter(value -> value.value() instanceof Boolean)
+            .anyMatch(MetadataValue::asBoolean);
     }
 
     @Override
