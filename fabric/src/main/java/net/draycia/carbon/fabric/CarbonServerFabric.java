@@ -13,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,7 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.FastUuidSansHyphens;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
@@ -88,7 +90,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
             final ComponentPlayerResult<CarbonPlayerCommon> result = this.userManager.carbonPlayer(uuid).join();
 
             if (result.player() != null) {
-                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(result.player());
+                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(result.player(), carbonChatFabric);
 
                 this.userCache.put(uuid, carbonPlayerFabric);
 
@@ -99,7 +101,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
 
             if (name != null) {
                 final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
-                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(player);
+                final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(player, carbonChatFabric);
 
                 this.userCache.put(uuid, carbonPlayerFabric);
 
@@ -135,42 +137,16 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
         return CompletableFuture.supplyAsync(() -> {
-            final var serverPlayer = this.server.getPlayer(username);
-
-            if (serverPlayer.isPresent()) {
-                return serverPlayer.get().getUniqueId();
-            }
-
-            try {
-                final @Nullable JsonObject json = this.queryMojang(new URI("https://api.mojang.com/users/profiles/minecraft/" + username));
-
-                return FastUuidSansHyphens.parseUuid(json.get("uuid").getAsString());
-            } catch (final URISyntaxException exception) {
-                exception.printStackTrace();
-            }
-
-            return null;
+            final var serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username);
+            return serverPlayer.getUUID();
         });
     }
 
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final var serverPlayer = this.server.getPlayer(uuid);
-
-            if (serverPlayer.isPresent()) {
-                return serverPlayer.get().getUsername();
-            }
-
-            try {
-                final @Nullable JsonObject json = this.queryMojang(new URI("https://sessionserver.mojang.com/session/minecraft/profile/" + UuidUtils.toUndashed(uuid)));
-
-                return json.get("name").getAsString();
-            } catch (final URISyntaxException exception) {
-                exception.printStackTrace();
-            }
-
-            return null;
+            final var serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid);
+            return serverPlayer.getName().getString();
         });
     }
 
