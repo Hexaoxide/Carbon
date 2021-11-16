@@ -6,6 +6,7 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -24,11 +25,12 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public @NotNull Audience audience() {
-        return (Audience) this.player();
+        final ServerPlayer player = this.player();
+        return FabricServerAudiences.of(player.server).audience(player);
     }
 
     private ServerPlayer player() {
-        return carbonChatFabric.minecraftServer().getPlayerList().getPlayer(this.carbonPlayerCommon.uuid());
+        return this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(this.carbonPlayerCommon.uuid());
     }
 
     @Override
