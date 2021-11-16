@@ -28,6 +28,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -136,18 +137,20 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
 
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        return CompletableFuture.supplyAsync(() -> {
-            final var serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username);
-            return serverPlayer.getUUID();
-        });
+        final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username);
+        if (serverPlayer == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return CompletableFuture.completedFuture(serverPlayer.getUUID());
     }
 
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            final var serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid);
-            return serverPlayer.getName().getString();
-        });
+        final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid);
+        if (serverPlayer == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return CompletableFuture.completedFuture(serverPlayer.getGameProfile().getName());
     }
 
     private @Nullable JsonObject queryMojang(final URI uri) {
