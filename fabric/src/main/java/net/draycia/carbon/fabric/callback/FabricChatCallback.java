@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
@@ -94,7 +95,7 @@ public enum FabricChatCallback {
         for (final ServerPlayer player : c.recipients()) {
             final @Nullable Component rendered = formatter.format(sender, chat, fabricServerAudiences.audience(player));
             if (rendered != null) {
-                fabricServerAudiences.audience(player).sendMessage(identity(sender.getUUID()), rendered, MessageType.CHAT);
+                fabricServerAudiences.audience(player).sendMessage(c.identity(), rendered, MessageType.CHAT);
             }
         }
     }
@@ -127,6 +128,10 @@ public enum FabricChatCallback {
 
         ServerPlayer sender();
 
+        Identity identity();
+
+        void identity(final Identity identity);
+
         String message();
 
         void formatter(MessageFormatter formatter);
@@ -147,6 +152,7 @@ public enum FabricChatCallback {
 
         private final ServerPlayer sender;
         private final String message;
+        private Identity identity;
         private boolean cancelled = false;
         private @Nullable MessageFormatter formatter = null;
         private final List<ServerPlayer> recipients;
@@ -154,12 +160,23 @@ public enum FabricChatCallback {
         private ChatImpl(final ServerPlayer sender, final String message, final List<ServerPlayer> players) {
             this.sender = sender;
             this.message = message;
+            this.identity = Identity.identity(sender.getUUID());
             this.recipients = new ArrayList<>(players);
         }
 
         @Override
         public ServerPlayer sender() {
             return this.sender;
+        }
+
+        @Override
+        public Identity identity() {
+            return this.identity;
+        }
+
+        @Override
+        public void identity(final Identity identity) {
+            this.identity = identity;
         }
 
         @Override

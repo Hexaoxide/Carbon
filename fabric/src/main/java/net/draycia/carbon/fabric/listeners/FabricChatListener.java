@@ -56,6 +56,7 @@ public class FabricChatListener implements Consumer<FabricChatCallback.Chat> {
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
         final var originalMessage = chat.message();
+
         for (final var chatChannel : this.channelRegistry) {
             if (chatChannel.quickPrefix() == null) {
                 continue;
@@ -65,53 +66,49 @@ public class FabricChatListener implements Consumer<FabricChatCallback.Chat> {
                 channel = chatChannel;
                 break;
             }
-
-            final var recipients = channel.recipients(sender);
-
-            final var renderers = new ArrayList<KeyedRenderer>();
-            renderers.add(keyedRenderer(key("carbon", "default"), channel));
-
-            final var chatEvent = new CarbonChatEvent(sender, Component.text(chat.message()), recipients, renderers, channel);
-            final var result = this.carbonChatFabric.eventHandler().emit(chatEvent);
-
-            if (!result.wasSuccessful()) {
-                final var message = chatEvent.result().reason();
-
-                if (!message.equals(empty())) {
-                    sender.sendMessage(message);
-                }
-
-                return;
-            }
-
-            for (final var recipient : chatEvent.recipients()) {
-                var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
-
-                for (final var renderer : chatEvent.renderers()) {
-                    try {
-                        if (recipient instanceof ServerPlayer player) {
-                            final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChatFabric.server().player(player.getUUID()).join();
-
-                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
-                        } else {
-                            renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
-                        }
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                final Identity identity;
-
-                if (sender.hasPermission("carbon.hideidentity")) {
-                    identity = Identity.nil();
-                } else {
-                    identity = sender.identity();
-                }
-
-                recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
-            }
         }
+
+        final var recipients = channel.recipients(sender);
+
+        final var renderers = new ArrayList<KeyedRenderer>();
+        renderers.add(keyedRenderer(key("carbon", "default"), channel));
+
+        final var chatEvent = new CarbonChatEvent(sender, Component.text(chat.message()), recipients, renderers, channel);
+        final var result = this.carbonChatFabric.eventHandler().emit(chatEvent);
+
+        if (!result.wasSuccessful()) {
+            final var message = chatEvent.result().reason();
+
+            if (!message.equals(empty())) {
+                sender.sendMessage(message);
+            }
+
+            return;
+        }
+
+        if (sender.hasPermission("carbon.hideidentity")) {
+            chat.identity(Identity.nil());
+        }
+
+        chat.formatter(((sender1, message, viewer) -> {
+            var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+
+            for (final var renderer : chatEvent.renderers()) {
+                try {
+                    if (viewer instanceof ServerPlayer player) {
+                        final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChatFabric.server().player(player.getUUID()).join();
+
+                        renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
+                    } else {
+                        renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), chatEvent.message());
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return renderedMessage.component();
+        }));
     }
 
 }
