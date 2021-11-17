@@ -23,12 +23,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static net.kyori.adventure.identity.Identity.identity;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.translatable;
 
 @DefaultQualifier(NonNull.class)
-public enum FabricChatCallback {
+public enum ChatCallback {
 
     INSTANCE;
 

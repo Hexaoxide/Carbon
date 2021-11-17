@@ -17,7 +17,7 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
-import net.draycia.carbon.fabric.callback.FabricChatCallback;
+import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -63,14 +63,10 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
 
         // Platform Listeners
-        FabricChatCallback.setup();
-        FabricChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry));
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            this.minecraftServer = server;
-        });
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            this.minecraftServer = null;
-        });
+        ChatCallback.setup();
+        ChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry));
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.minecraftServer = null);
 
         // Listeners
         ListenerUtils.registerCommonListeners(this.injector);

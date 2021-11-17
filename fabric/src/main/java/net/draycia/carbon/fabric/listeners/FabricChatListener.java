@@ -11,7 +11,7 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.fabric.CarbonChatFabric;
-import net.draycia.carbon.fabric.callback.FabricChatCallback;
+import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -25,7 +25,7 @@ import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 
 @DefaultQualifier(NonNull.class)
-public class FabricChatListener implements Consumer<FabricChatCallback.Chat> {
+public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
     private final CarbonChatFabric carbonChatFabric;
     private final ChannelRegistry channelRegistry;
@@ -36,7 +36,7 @@ public class FabricChatListener implements Consumer<FabricChatCallback.Chat> {
     }
 
     @Override
-    public void accept(final FabricChatCallback.Chat chat) {
+    public void accept(final ChatCallback.Chat chat) {
         final var playerResult = this.carbonChatFabric.server().player(chat.sender().getUUID()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
