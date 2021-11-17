@@ -1,4 +1,4 @@
-package net.draycia.carbon.sponge;
+package net.draycia.carbon.velocity;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;

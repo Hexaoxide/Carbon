@@ -10,13 +10,16 @@ dependencies {
   api(libs.adventureSerializerConfigurate4) {
     isTransitive = false
   }
-  api(libs.adventureTextSerializerGson) {
+  api(libs.typesafeConfig)
+
+  // Cloud
+  api(platform(libs.cloudBom))
+  api(libs.cloudCore)
+  api(libs.cloudMinecraftExtras) {
     isTransitive = false
   }
-  api(libs.typesafeConfig)
 
   // Other
   api(libs.guice)
-  api(libs.cloudMinecraftExtras)
   compileOnlyApi(libs.luckPermsApi)
 }

@@ -27,12 +27,6 @@ dependencies {
   api(libs.kyoriMoonshineCore)
   api(libs.kyoriMoonshineStandard)
 
-  api(platform(libs.cloudBom))
-  api(libs.cloudCore)
-  api(libs.cloudMinecraftExtras) {
-    isTransitive = false
-  }
-
   // we shade and relocate a newer version than minecraft provides
   api(libs.guava)
 

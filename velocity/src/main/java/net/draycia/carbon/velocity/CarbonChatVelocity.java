@@ -21,7 +21,6 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
-import net.draycia.carbon.sponge.VelocityMessageRenderer;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
