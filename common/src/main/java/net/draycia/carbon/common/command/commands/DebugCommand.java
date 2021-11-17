@@ -18,12 +18,12 @@ public class DebugCommand {
         final CommandManager<Commander> commandManager,
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
-        var command = commandManager.commandBuilder("carbondebug", "cdebug")
+        final var command = commandManager.commandBuilder("carbondebug", "cdebug")
             .argument(carbonPlayerArgument.newInstance(false, "player"))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {

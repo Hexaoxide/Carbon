@@ -19,13 +19,13 @@ public class WhisperCommand {
         final CarbonMessageService messageService,
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
-        var command = commandManager.commandBuilder("whisper", "w", "message", "msg")
+        final var command = commandManager.commandBuilder("whisper", "w", "message", "msg")
             .argument(carbonPlayerArgument.newInstance(true, "recipient", CarbonPlayerArgument.NO_SENDER))
             .argument(StringArgument.greedy("message"))
             .permission("carbon.whisper.send") // TODO: carbon.whisper.spy
             .senderType(PlayerCommander.class)
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                 final String message = handler.get("message");
                 final CarbonPlayer recipient = handler.get("recipient");

@@ -3,7 +3,6 @@ package net.draycia.carbon.sponge.users;
 import java.util.Locale;
 import java.util.Optional;
 import net.draycia.carbon.api.util.InventorySlot;
-import net.draycia.carbon.api.util.InventorySlots;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
@@ -86,17 +85,17 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
         final ServerPlayer player = optionalPlayer.get();
         final EquipmentType equipmentSlot;
 
-        if (slot.equals(InventorySlots.MAIN_HAND)) {
+        if (slot.equals(InventorySlot.MAIN_HAND)) {
             equipmentSlot = EquipmentTypes.MAIN_HAND.get();
-        } else if (slot.equals(InventorySlots.OFF_HAND)) {
+        } else if (slot.equals(InventorySlot.OFF_HAND)) {
             equipmentSlot = EquipmentTypes.OFF_HAND.get();
-        } else if (slot.equals(InventorySlots.HELMET)) {
+        } else if (slot.equals(InventorySlot.HELMET)) {
             equipmentSlot = EquipmentTypes.HEAD.get();
-        } else if (slot.equals(InventorySlots.CHEST)) {
+        } else if (slot.equals(InventorySlot.CHEST)) {
             equipmentSlot = EquipmentTypes.CHEST.get();
-        } else if (slot.equals(InventorySlots.LEGS)) {
+        } else if (slot.equals(InventorySlot.LEGS)) {
             equipmentSlot = EquipmentTypes.LEGS.get();
-        } else if (slot.equals(InventorySlots.BOOTS)) {
+        } else if (slot.equals(InventorySlot.BOOTS)) {
             equipmentSlot = EquipmentTypes.FEET.get();
         } else {
             return null;

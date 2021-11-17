@@ -20,12 +20,12 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
+import java.util.Queue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Queue;
-
 public final class OptionValueParser<C> implements ArgumentParser<C, String> {
+
     private static final char ESCAPE = '\\';
     private static final String FLAG_STARTER = "-";
 
@@ -111,6 +111,7 @@ public final class OptionValueParser<C> implements ArgumentParser<C, String> {
         public String getMessage() {
             return "Missing end quote for input: '" + this.input + "'";
         }
+
     }
 
 }

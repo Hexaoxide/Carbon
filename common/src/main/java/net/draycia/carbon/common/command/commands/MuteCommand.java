@@ -31,7 +31,7 @@ public class MuteCommand {
     ) {
         this.commandManager = commandManager;
 
-        var command = commandManager.commandBuilder("mute")
+        final var command = commandManager.commandBuilder("mute")
             .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
@@ -40,7 +40,7 @@ public class MuteCommand {
             .permission("carbon.mute.mute")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {
@@ -70,7 +70,7 @@ public class MuteCommand {
                         continue;
                     }
 
-                    sendMuteMessage(messageService, muteEntry, (PlayerCommander)handler.getSender(),
+                    this.sendMuteMessage(messageService, muteEntry, (PlayerCommander) handler.getSender(),
                         sender, target, player);
                 }
             })
@@ -100,7 +100,7 @@ public class MuteCommand {
                     messageService.broadcastPlayerChannelMutedPermanentlyReason(recipient, target.username(),
                         sender.username(), muteEntry.reason(), muteEntry.channel());
                 } else {
-                    messageService.broadcastPlayerChannelMutedDurationReason(recipient,target.username(),
+                    messageService.broadcastPlayerChannelMutedDurationReason(recipient, target.username(),
                         sender.username(), muteEntry.reason(), muteEntry.channel(), muteEntry.expirationEpoch());
                 }
             } else {

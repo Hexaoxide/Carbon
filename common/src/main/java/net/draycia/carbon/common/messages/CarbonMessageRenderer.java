@@ -53,7 +53,7 @@ public class CarbonMessageRenderer implements IMessageRenderer<Audience, String,
                 entry.getValue());
         }
 
-        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage,TemplateResolver.templates(templates));
+        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
         final MessageType messageType;
         final @Nullable ChatType chatType = method.getAnnotation(ChatType.class);
 

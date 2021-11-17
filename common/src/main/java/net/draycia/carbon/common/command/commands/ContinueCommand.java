@@ -24,12 +24,12 @@ public class ContinueCommand {
         final CarbonMessageService messageService,
         final CarbonChat carbonChat
     ) {
-        var command = commandManager.commandBuilder("continue", "c")
+        final var command = commandManager.commandBuilder("continue", "c")
             .argument(StringArgument.greedy("message"))
             .permission("carbon.whisper.continue") // TODO: carbon.whisper.spy
             .senderType(PlayerCommander.class)
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                 final String message = handler.get("message");
                 final UUID whisperTarget = sender.lastWhisperTarget();

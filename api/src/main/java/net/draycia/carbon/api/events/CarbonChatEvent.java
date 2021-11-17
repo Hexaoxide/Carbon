@@ -1,7 +1,6 @@
 package net.draycia.carbon.api.events;
 
 import java.util.List;
-
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -44,7 +43,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         final List<? extends Audience> recipients,
         final List<KeyedRenderer> renderers,
         final ChatChannel chatChannel
-        ) {
+    ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
         this.message = originalMessage;

@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import javax.inject.Singleton;
 import net.draycia.carbon.api.util.SourcedAudience;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.receiver.IReceiverLocator;
 import net.kyori.moonshine.receiver.IReceiverLocatorResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;

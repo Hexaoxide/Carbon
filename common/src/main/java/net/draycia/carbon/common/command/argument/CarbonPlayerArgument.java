@@ -26,8 +26,8 @@ public class CarbonPlayerArgument {
         this.server = server;
     }
 
-    public static BiPredicate<CarbonPlayer, CarbonPlayer> NO_FILTER = (sender, target) -> true;
-    public static BiPredicate<CarbonPlayer, CarbonPlayer> NO_SENDER = (sender, target) -> !sender.equals(target);
+    public static final BiPredicate<CarbonPlayer, CarbonPlayer> NO_FILTER = (sender, target) -> true;
+    public static final BiPredicate<CarbonPlayer, CarbonPlayer> NO_SENDER = (sender, target) -> !sender.equals(target);
 
     public CommandArgument<Commander, CarbonPlayer> newInstance(
         final boolean required,
@@ -65,7 +65,7 @@ public class CarbonPlayerArgument {
         final BiPredicate<CarbonPlayer, CarbonPlayer> filter;
 
         @Inject
-        public CarbonPlayerArgumentParser(
+        CarbonPlayerArgumentParser(
             final CarbonServer carbonServer,
             final BiPredicate<CarbonPlayer, CarbonPlayer> filter
         ) {
@@ -80,7 +80,7 @@ public class CarbonPlayerArgument {
         ) {
             final @Nullable String input = inputQueue.peek();
 
-            for (var player : this.server.players()) {
+            for (final var player : this.server.players()) {
                 if (player.username().equalsIgnoreCase(input)) {
                     inputQueue.remove();
                     return ArgumentParseResult.success(player);
@@ -97,7 +97,7 @@ public class CarbonPlayerArgument {
         ) {
             if (commandContext.getSender() instanceof PlayerCommander sender) {
                 return this.server.players().stream()
-                    .filter(it -> filter.test(sender.carbonPlayer(), it))
+                    .filter(it -> this.filter.test(sender.carbonPlayer(), it))
                     .filter(sender.carbonPlayer()::awareOf)
                     .map(CarbonPlayer::username)
                     .toList();

@@ -15,7 +15,7 @@ public class ClearChatCommand {
         final CommandManager<Commander> commandManager,
         final PrimaryConfig config
     ) {
-        var command = commandManager.commandBuilder("clearchat", "chatclear", "cc")
+        final var command = commandManager.commandBuilder("clearchat", "chatclear", "cc")
             .permission("carbon.clearchat")
             .senderType(PlayerCommander.class)
             .handler(handler -> {

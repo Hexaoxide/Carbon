@@ -32,8 +32,6 @@ dependencies {
     exclude("ca.stellardrift", "colonel") // causes classloading issues when running in dev
   }
   include(libs.adventurePlatformFabric)
-
-  modImplementation(libs.luckPerms)
 }
 
 carbonPlatform {

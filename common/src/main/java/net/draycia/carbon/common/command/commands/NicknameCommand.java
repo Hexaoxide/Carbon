@@ -36,7 +36,7 @@ public class NicknameCommand {
             .asOptional()
             .build();
 
-        var command = commandManager.commandBuilder("nickname", "nick")
+        final var command = commandManager.commandBuilder("nickname", "nick")
             .flag(commandManager.flagBuilder("duration")
                 .withAliases("d")
                 .withArgument(StringArgument.optional("duration"))
@@ -59,7 +59,7 @@ public class NicknameCommand {
             .permission("carbon.nickname")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
-                CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 long expirationTime = -1; // TODO: implement timed nicknames
                 @MonotonicNonNull String durationFormat = null;
 
@@ -137,7 +137,7 @@ public class NicknameCommand {
                     if (sender.hasActiveTemporaryDisplayName()) {
                         messageService.temporaryNicknameShow(sender, sender.username(), sender.temporaryDisplayName(),
                             this.formatMillisDuration(sender.temporaryDisplayNameExpiration()));
-                    } else if (sender.displayName() != null){
+                    } else if (sender.displayName() != null) {
                         messageService.nicknameShow(sender, sender.username(), sender.displayName());
                     } else {
                         messageService.nicknameShowUnset(sender, sender.username());
@@ -150,7 +150,7 @@ public class NicknameCommand {
     }
 
     // https://stackoverflow.com/a/56395975
-    private final Pattern periodPattern = Pattern.compile("([0-9]+)([smhdWMY])");
+    private static final Pattern periodPattern = Pattern.compile("([0-9]+)([smhdWMY])");
 
     private Long parsePeriod(@MonotonicNonNull String period) {
         period = Objects.requireNonNull(period).toLowerCase(Locale.ENGLISH);

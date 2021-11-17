@@ -1,5 +1,8 @@
 package net.draycia.carbon.common.users;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
@@ -10,10 +13,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
 
 @DefaultQualifier(NonNull.class)
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
@@ -30,7 +29,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(final String permission) {
         // TODO: LuckPerms
         return this.carbonPlayerCommon().hasPermission(permission);
     }
@@ -63,12 +62,12 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void displayName(@Nullable Component displayName) {
+    public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon().displayName(displayName);
     }
 
     @Override
-    public void temporaryDisplayName(@Nullable Component temporaryDisplayName, long expirationEpoch) {
+    public void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch) {
         this.carbonPlayerCommon().temporaryDisplayName(temporaryDisplayName, expirationEpoch);
     }
 
@@ -108,7 +107,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void selectedChannel(@Nullable ChatChannel chatChannel) {
+    public void selectedChannel(final @Nullable ChatChannel chatChannel) {
         this.carbonPlayerCommon().selectedChannel(chatChannel);
     }
 
@@ -139,7 +138,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void deafened(boolean deafened) {
+    public void deafened(final boolean deafened) {
         this.carbonPlayerCommon().deafened(deafened);
     }
 
@@ -149,12 +148,12 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void spying(boolean spying) {
+    public void spying(final boolean spying) {
         this.carbonPlayerCommon().spying(spying);
     }
 
     @Override
-    public void sendMessageAsPlayer(String message) {
+    public void sendMessageAsPlayer(final String message) {
         this.carbonPlayerCommon().sendMessageAsPlayer(message);
     }
 
@@ -169,7 +168,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void whisperReplyTarget(@Nullable UUID uuid) {
+    public void whisperReplyTarget(final @Nullable UUID uuid) {
         this.carbonPlayerCommon().whisperReplyTarget(uuid);
     }
 
@@ -179,7 +178,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void lastWhisperTarget(@Nullable UUID uuid) {
+    public void lastWhisperTarget(final @Nullable UUID uuid) {
         this.carbonPlayerCommon().lastWhisperTarget(uuid);
     }
 

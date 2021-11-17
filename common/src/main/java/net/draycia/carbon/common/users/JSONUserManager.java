@@ -45,7 +45,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
         final Injector injector,
         final Logger logger,
         final CarbonChat carbonChat
-        ) throws IOException {
+    ) throws IOException {
         this.logger = logger;
         this.userDirectory = dataDirectory.resolve("users");
         this.carbonChat = carbonChat;

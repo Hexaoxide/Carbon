@@ -34,7 +34,7 @@ versions:
   fabricMinecraft: 1.17.1
   fabricLoader: 0.12.5
   adventurePlatformFabric: 4.1.0-SNAPSHOT
-  luckPerms: 5.3
+  luckPermsApi: 5.3
 
 dependencies:
   adventureBom:
@@ -113,12 +113,15 @@ dependencies:
   cloudPaper:
     group: cloud.commandframework
     name: cloud-paper
+    version: { ref: cloud }
   cloudSponge:
     group: cloud.commandframework
     name: cloud-sponge
+    version: { ref: cloud }
   cloudVelocity:
     group: cloud.commandframework
     name: cloud-velocity
+    version: { ref: cloud }
   cloudFabric:
     group: cloud.commandframework
     name: cloud-fabric
@@ -202,9 +205,9 @@ dependencies:
     name: shadow
     version: { ref: shadow }
 
-  luckPerms:
+  luckPermsApi:
     group: net.luckperms
     name: api
-    version: { ref: luckPerms }
+    version: { ref: luckPermsApi }
 
 bundles:

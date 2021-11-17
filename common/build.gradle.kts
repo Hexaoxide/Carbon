@@ -18,5 +18,4 @@ dependencies {
   // Other
   api(libs.guice)
   api(libs.cloudMinecraftExtras)
-  api(libs.luckPerms)
 }

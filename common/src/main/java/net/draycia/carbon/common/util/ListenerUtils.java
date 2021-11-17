@@ -6,7 +6,7 @@ import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.ItemLinkHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 
-public class ListenerUtils {
+public final class ListenerUtils {
 
     private ListenerUtils() {
 

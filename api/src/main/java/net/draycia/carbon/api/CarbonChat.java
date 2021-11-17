@@ -62,6 +62,12 @@ public interface CarbonChat {
      */
     ChannelRegistry channelRegistry();
 
+    /**
+     * The message renderer, tailored for the current platform.
+     *
+     * @return the message renderer
+     * @since 2.0.0
+     */
     IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer();
 
     // TODO: Redis as MariaDB cache

@@ -17,7 +17,7 @@ public class UUIDSerializerGson extends TypeAdapter<UUID> {
         if (uuid != null) {
             jsonWriter.value(uuid.toString());
         } else {
-            jsonWriter.value((String)null);
+            jsonWriter.value((String) null);
         }
     }
 

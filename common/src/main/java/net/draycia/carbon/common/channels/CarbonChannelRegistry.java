@@ -119,12 +119,12 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
                         this.logger.info("Registering channel with key [" + channelKey + "]");
                         register(channelKey, channel);
 
-                        var command = commandManager.commandBuilder(channelKey.value())
+                        final var command = commandManager.commandBuilder(channelKey.value())
                             .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build())
                             .permission("carbon.channel." + channelKey)
                             .senderType(PlayerCommander.class)
                             .handler(handler -> {
-                                var sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                                final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                                 if (sender.muted(channel)) {
                                     // TODO: "you are muted in this channel!!!!"
@@ -150,7 +150,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
 
                         commandManager.command(command);
 
-                        var channelCommand = commandManager.commandBuilder("channel", "ch")
+                        final var channelCommand = commandManager.commandBuilder("channel", "ch")
                             .literal(channelKey.value())
                             .proxies(command)
                             .build();

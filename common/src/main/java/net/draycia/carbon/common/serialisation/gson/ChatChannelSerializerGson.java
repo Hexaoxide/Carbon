@@ -27,7 +27,7 @@ public class ChatChannelSerializerGson extends TypeAdapter<ChatChannel> {
     @Override
     public void write(final JsonWriter out, final @Nullable ChatChannel value) throws IOException {
         if (value == null) {
-            out.value((String)null);
+            out.value((String) null);
         } else {
             out.value(value.key().asString());
         }
