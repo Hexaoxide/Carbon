@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
@@ -35,7 +36,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
     version = "$[VERSION]",
     description = "$[DESCRIPTION]",
     url = "$[URL]",
-    authors = {"Draycia"}
+    authors = {"Draycia"},
+    dependencies = {@Dependency(id = "luckperms")}
 )
 @DefaultQualifier(NonNull.class)
 public class CarbonChatVelocity implements CarbonChat {
