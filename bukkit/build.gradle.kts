@@ -19,7 +19,6 @@ dependencies {
 
   // Plugins
   compileOnly("me.clip:placeholderapi:2.10.9")
-  compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 }
 
 carbonShadowPlatform {
@@ -43,7 +42,8 @@ bukkit {
   main = "net.draycia.carbon.bukkit.CarbonChatBukkit"
   apiVersion = "1.16"
   author = "Draycia"
-  softDepend = listOf("PlaceholderAPI", "Vault")
+  depend = listOf("LuckPerms")
+  softDepend = listOf("PlaceholderAPI")
   loadBefore = listOf("Essentials")
   website = GITHUB_REPO_URL
 }

@@ -38,7 +38,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
-@Plugin("carbonchat")
+@Plugin("carbonchat") // TODO: hard depend on LuckPerms
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatSponge implements CarbonChat {
 

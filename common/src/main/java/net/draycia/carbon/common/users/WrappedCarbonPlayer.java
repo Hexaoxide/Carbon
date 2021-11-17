@@ -1,7 +1,9 @@
 package net.draycia.carbon.common.users;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -9,6 +11,9 @@ import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.util.Tristate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -18,6 +23,10 @@ import org.jetbrains.annotations.NotNull;
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     public abstract CarbonPlayerCommon carbonPlayerCommon();
+
+    public User user() {
+        return Objects.requireNonNull(LuckPermsProvider.get().getUserManager().getUser(this.uuid()));
+    }
 
     @Override
     public boolean awareOf(final CarbonPlayer other) {
@@ -30,20 +39,24 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     @Override
     public boolean hasPermission(final String permission) {
-        // TODO: LuckPerms
-        return this.carbonPlayerCommon().hasPermission(permission);
+        final var data = this.user().getCachedData().getPermissionData(this.user().getQueryOptions());
+        return data.checkPermission(permission) == Tristate.TRUE;
     }
 
     @Override
     public String primaryGroup() {
-        // TODO: LuckPerms
-        return this.carbonPlayerCommon().primaryGroup();
+        return this.user().getPrimaryGroup();
     }
 
     @Override
     public List<String> groups() {
-        // TODO: LuckPerms
-        return this.carbonPlayerCommon().groups();
+        final var groups = new ArrayList<String>();
+
+        for (final var group : this.user().getInheritedGroups(this.user().getQueryOptions())) {
+            groups.add(group.getName());
+        }
+
+        return groups;
     }
 
     @Override
