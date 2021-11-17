@@ -3,7 +3,6 @@ package net.draycia.carbon.fabric.users;
 import java.util.Locale;
 import java.util.Optional;
 import net.draycia.carbon.api.util.InventorySlot;
-import net.draycia.carbon.api.util.InventorySlots;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.fabric.CarbonChatFabric;
@@ -74,17 +73,17 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
         final EquipmentSlot equipmentSlot;
 
-        if (slot.equals(InventorySlots.MAIN_HAND)) {
+        if (slot.equals(InventorySlot.MAIN_HAND)) {
             equipmentSlot = EquipmentSlot.MAINHAND;
-        } else if (slot.equals(InventorySlots.OFF_HAND)) {
+        } else if (slot.equals(InventorySlot.OFF_HAND)) {
             equipmentSlot = EquipmentSlot.OFFHAND;
-        } else if (slot.equals(InventorySlots.HELMET)) {
+        } else if (slot.equals(InventorySlot.HELMET)) {
             equipmentSlot = EquipmentSlot.HEAD;
-        } else if (slot.equals(InventorySlots.CHEST)) {
+        } else if (slot.equals(InventorySlot.CHEST)) {
             equipmentSlot = EquipmentSlot.CHEST;
-        } else if (slot.equals(InventorySlots.LEGS)) {
+        } else if (slot.equals(InventorySlot.LEGS)) {
             equipmentSlot = EquipmentSlot.LEGS;
-        } else if (slot.equals(InventorySlots.BOOTS)) {
+        } else if (slot.equals(InventorySlot.BOOTS)) {
             equipmentSlot = EquipmentSlot.FEET;
         } else {
             return null;

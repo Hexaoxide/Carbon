@@ -36,7 +36,7 @@ public class UnmuteCommand {
             .permission("carbon.mute.unmute")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {

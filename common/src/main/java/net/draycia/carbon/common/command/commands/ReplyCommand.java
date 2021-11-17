@@ -26,13 +26,13 @@ public class ReplyCommand {
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
         final CarbonChat carbonChat
-        ) {
-        var command = commandManager.commandBuilder("reply", "r")
+    ) {
+        final var command = commandManager.commandBuilder("reply", "r")
             .argument(StringArgument.greedy("message"))
             .permission("carbon.whisper.reply") // TODO: carbon.whisper.spy
             .senderType(PlayerCommander.class)
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                 final String message = handler.get("message");
                 final @Nullable UUID replyTarget = sender.whisperReplyTarget();

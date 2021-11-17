@@ -1,12 +1,14 @@
 package net.draycia.carbon.common.util;
 
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
-public class PlayerUtils {
+@DefaultQualifier(NonNull.class)
+public final class PlayerUtils {
 
     private PlayerUtils() {
 
@@ -27,6 +29,6 @@ public class PlayerUtils {
                 return null;
             });
         }
-
     }
+
 }

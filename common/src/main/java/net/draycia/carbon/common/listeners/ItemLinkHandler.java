@@ -3,7 +3,7 @@ package net.draycia.carbon.common.listeners;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.util.InventorySlots;
+import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.text.TextReplacementConfig;
 
 public class ItemLinkHandler {
@@ -17,7 +17,7 @@ public class ItemLinkHandler {
                 return;
             }
 
-            for (final var slot : InventorySlots.VALUES) {
+            for (final var slot : InventorySlot.SLOTS) {
                 for (final var placeholder : slot.placeholders()) {
                     event.message(
                         event.message()

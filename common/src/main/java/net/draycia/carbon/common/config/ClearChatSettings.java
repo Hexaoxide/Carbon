@@ -25,8 +25,8 @@ public class ClearChatSettings {
     private @MonotonicNonNull Component messageComponent = null;
 
     public Component message() {
-        if (messageComponent == null) {
-            this.messageComponent = MiniMessage.miniMessage().deserialize(message);
+        if (this.messageComponent == null) {
+            this.messageComponent = MiniMessage.miniMessage().deserialize(this.message);
         }
 
         return this.messageComponent;
@@ -39,8 +39,8 @@ public class ClearChatSettings {
     private @MonotonicNonNull Component broadcastComponent = null;
 
     public Component broadcast() {
-        if (broadcastComponent == null) {
-            this.broadcastComponent = MiniMessage.miniMessage().deserialize(broadcast);
+        if (this.broadcastComponent == null) {
+            this.broadcastComponent = MiniMessage.miniMessage().deserialize(this.broadcast);
         }
 
         return this.broadcastComponent;

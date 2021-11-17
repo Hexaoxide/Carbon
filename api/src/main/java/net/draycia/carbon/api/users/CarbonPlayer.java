@@ -22,6 +22,13 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface CarbonPlayer extends Audience, Identified {
 
+    /**
+     * Returns the appropriate {@link Component} to represent the player's name.
+     *
+     * @param player the player
+     * @return the player's name
+     * @since 2.0.0
+     */
     static Component renderName(final CarbonPlayer player) {
         if (player.hasActiveTemporaryDisplayName()) {
             return Objects.requireNonNull(player.temporaryDisplayName());
@@ -41,9 +48,10 @@ public interface CarbonPlayer extends Audience, Identified {
     String username();
 
     /**
-     * Checks if the player has a display name set through {@link CarbonPlayer#displayName(Component)}
+     * Checks if the player has a display name set through {@link CarbonPlayer#displayName(Component)}.
      *
      * @return if the player has a display name set through {@link CarbonPlayer#displayName(Component)}
+     * @since 2.0.0
      */
     boolean hasCustomDisplayName();
 
@@ -80,6 +88,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * The player's temporary display name.
      *
      * @return the player's temporary display name.
+     * @since 2.0.0
      */
     // TODO: improve javadocs here
     @Nullable Component temporaryDisplayName();
@@ -88,9 +97,16 @@ public interface CarbonPlayer extends Audience, Identified {
      * The expiration date in milliseconds for the temporary display name.
      *
      * @return the temporary display name's expiration in MS since Unix Epoch
+     * @since 2.0.0
      */
     long temporaryDisplayNameExpiration();
 
+    /**
+     * If the player has a temporary display name and it is not expired.
+     *
+     * @return if the player's temporary display name is active
+     * @since 2.0.0
+     */
     boolean hasActiveTemporaryDisplayName();
 
     /**
@@ -229,7 +245,6 @@ public interface CarbonPlayer extends Audience, Identified {
      * Sends the message as the player.
      *
      * @param message the message to be sent
-     * //@return the message result
      * @since 2.0.0
      */
     // TODO: change return type, provide information useful like what message was actually sent?

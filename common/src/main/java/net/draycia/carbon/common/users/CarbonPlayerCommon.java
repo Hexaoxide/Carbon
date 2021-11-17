@@ -1,7 +1,10 @@
 package net.draycia.carbon.common.users;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
@@ -179,7 +182,9 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void sendMessageAsPlayer(String message) { }
+    public void sendMessageAsPlayer(final String message) {
+
+    }
 
     @Override
     public boolean online() {
@@ -192,7 +197,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void whisperReplyTarget(@Nullable UUID uuid) {
+    public void whisperReplyTarget(final @Nullable UUID uuid) {
         this.whisperReplyTarget = uuid;
     }
 
@@ -202,7 +207,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void lastWhisperTarget(@Nullable UUID uuid) {
+    public void lastWhisperTarget(final @Nullable UUID uuid) {
         this.lastWhisperTarget = uuid;
     }
 
@@ -212,7 +217,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public boolean awareOf(CarbonPlayer other) {
+    public boolean awareOf(final CarbonPlayer other) {
         return true;
     }
 
