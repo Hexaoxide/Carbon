@@ -68,7 +68,7 @@ public final class PlayerStatusMessageEvents {
         }
 
         @Override
-        public Component message() {
+        public @Nullable Component message() {
             return this.message;
         }
 
