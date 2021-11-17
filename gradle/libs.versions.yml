@@ -113,15 +113,12 @@ dependencies:
   cloudPaper:
     group: cloud.commandframework
     name: cloud-paper
-    version: { ref: cloud }
   cloudSponge:
     group: cloud.commandframework
     name: cloud-sponge
-    version: { ref: cloud }
   cloudVelocity:
     group: cloud.commandframework
     name: cloud-velocity
-    version: { ref: cloud }
   cloudFabric:
     group: cloud.commandframework
     name: cloud-fabric
