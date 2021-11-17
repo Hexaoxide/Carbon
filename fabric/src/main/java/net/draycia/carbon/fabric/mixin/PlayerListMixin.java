@@ -32,7 +32,7 @@ abstract class PlayerListMixin {
     public Map<Thread, Triplet<Component, ChatType, UUID>> carbon$joinMsg = new ConcurrentHashMap<>();
 
     @Redirect(
-        method = "placeNewPlayer",
+        method = "placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"
@@ -44,7 +44,7 @@ abstract class PlayerListMixin {
     }
 
     @Inject(
-        method = "placeNewPlayer",
+        method = "placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V",
         at = @At("RETURN")
     )
     public void injectJoin(final Connection connection, final ServerPlayer serverPlayer, final CallbackInfo ci) {
