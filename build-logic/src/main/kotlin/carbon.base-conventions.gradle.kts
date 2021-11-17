@@ -3,6 +3,7 @@ plugins {
   id("net.kyori.indra.git")
   id("net.kyori.indra.checkstyle")
   id("net.kyori.indra.publishing")
+  id("net.kyori.indra.license-header")
 }
 
 indra {
@@ -11,6 +12,10 @@ indra {
     target(16)
   }
   github(GITHUB_ORGANIZATION, GITHUB_REPO)
+}
+
+license {
+  header.set(resources.text.fromFile(rootProject.file("LICENSE_HEADER")))
 }
 
 tasks {

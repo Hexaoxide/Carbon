@@ -11,6 +11,7 @@ plugins:
 
 versions:
   indra: 2.0.5
+  licenser: 0.6.1
   shadow: 7.1.0
   adventure: 4.9.3
   minimessage: 4.2.0-SNAPSHOT
@@ -201,6 +202,10 @@ dependencies:
     group: gradle.plugin.com.github.johnrengelman
     name: shadow
     version: { ref: shadow }
+  licenser:
+    group: org.cadixdev.licenser
+    name: org.cadixdev.licenser.gradle.plugin
+    version: { ref: licenser }
 
   luckPermsApi:
     group: net.luckperms
