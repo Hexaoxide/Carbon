@@ -19,7 +19,10 @@
  */
 package net.draycia.carbon.common.util;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -30,24 +33,36 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class PlayerUtils {
 
     private PlayerUtils() {
-
     }
 
-    public static void savePlayers(final CarbonServer carbonServer, final UserManager<CarbonPlayerCommon> userManager) {
-        for (final var player : carbonServer.players()) {
-            final var saveResult = userManager.savePlayer(((WrappedCarbonPlayer) player).carbonPlayerCommon());
+    public static List<CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>>> saveLoggedInPlayers(
+        final CarbonServer carbonServer,
+        final UserManager<CarbonPlayerCommon> userManager
+    ) {
+        return carbonServer.players().stream()
+            .map(player -> savePlayer(carbonServer, userManager, (WrappedCarbonPlayer) player))
+            .toList();
+    }
 
-            saveResult.thenAccept(result -> {
-                if (result.player() == null) {
-                    carbonServer.console().sendMessage(result.reason());
-                }
-            });
+    private static CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(
+        final CarbonServer carbonServer,
+        final UserManager<CarbonPlayerCommon> userManager,
+        final WrappedCarbonPlayer player
+    ) {
+        final var saveResult = userManager.savePlayer(player.carbonPlayerCommon());
 
-            saveResult.exceptionally(exception -> {
-                exception.getCause().printStackTrace();
-                return null;
-            });
-        }
+        saveResult.thenAccept(result -> {
+            if (result.player() == null) {
+                carbonServer.console().sendMessage(result.reason());
+            }
+        });
+
+        saveResult.exceptionally(exception -> {
+            exception.getCause().printStackTrace();
+            return null;
+        });
+
+        return saveResult;
     }
 
 }

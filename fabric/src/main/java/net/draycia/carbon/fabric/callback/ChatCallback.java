@@ -101,7 +101,7 @@ public enum ChatCallback {
             return;
         }
 
-        final Chat.MessageFormatter formatter = c.formatter == null ? defaultFormatter() : c.formatter;
+        final MessageFormatter formatter = c.formatter == null ? defaultFormatter() : c.formatter;
 
         final Audience console = fabricServerAudiences.console();
         final @Nullable Component msgForConsole = formatter.format(sender, chat, console);
@@ -122,8 +122,8 @@ public enum ChatCallback {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> INSTANCE.shutdownExecutor());
     }
 
-    private static Chat.MessageFormatter defaultFormatter() {
-        return new Chat.MessageFormatter() {
+    private static MessageFormatter defaultFormatter() {
+        return new MessageFormatter() {
             private @MonotonicNonNull Component rendered;
 
             @Override
@@ -157,11 +157,12 @@ public enum ChatCallback {
 
         List<ServerPlayer> recipients();
 
-        interface MessageFormatter {
+    }
 
-            @Nullable Component format(ServerPlayer sender, String message, Audience viewer);
+    @FunctionalInterface
+    public interface MessageFormatter {
 
-        }
+        @Nullable Component format(ServerPlayer sender, String message, Audience viewer);
 
     }
 

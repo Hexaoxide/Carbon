@@ -24,6 +24,7 @@ import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -121,13 +122,13 @@ public final class CarbonChatSponge implements CarbonChat {
         Sponge.asyncScheduler().submit(Task.builder()
             .interval(5, TimeUnit.MINUTES)
             .plugin(this.pluginContainer)
-            .execute(() -> PlayerUtils.savePlayers(this.carbonServerSponge, this.userManager))
+            .execute(() -> PlayerUtils.saveLoggedInPlayers(this.carbonServerSponge, this.userManager))
             .build());
     }
 
     @Listener
     public void onDisable(final StoppingEngineEvent<Server> event) {
-        PlayerUtils.savePlayers(this.carbonServerSponge, this.userManager);
+        PlayerUtils.saveLoggedInPlayers(this.carbonServerSponge, this.userManager).forEach(CompletableFuture::join);
     }
 
     @Override

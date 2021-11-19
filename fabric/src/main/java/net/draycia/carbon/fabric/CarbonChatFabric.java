@@ -23,6 +23,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.CarbonServer;
@@ -36,10 +37,12 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
+import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.text.Component;
@@ -82,10 +85,9 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
 
         // Platform Listeners
-        ChatCallback.setup();
-        ChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry));
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.minecraftServer = null);
+        this.registerChatListener();
+        this.registerServerLifecycleListeners();
+        this.registerTickListeners();
 
         // Listeners
         ListenerUtils.registerCommonListeners(this.injector);
@@ -93,12 +95,29 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         // Commands
         CloudUtils.registerCommands(this.injector);
 
-        // TODO: save player data, find scheduler or use java's
-
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+    }
 
-        // TODO: save player data on shutdown
+    private void registerChatListener() {
+        ChatCallback.setup();
+        ChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry));
+    }
+
+    private void registerServerLifecycleListeners() {
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
+        ServerLifecycleEvents.SERVER_STOPPING.register($ -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager).forEach(CompletableFuture::join));
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.minecraftServer = null);
+    }
+
+    private void registerTickListeners() {
+        final long saveDelay = 5 * 60 * 20; // 5 minutes
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getTickCount() != 0 && server.getTickCount() % saveDelay == 0) {
+                PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager);
+            }
+        });
     }
 
     @Override

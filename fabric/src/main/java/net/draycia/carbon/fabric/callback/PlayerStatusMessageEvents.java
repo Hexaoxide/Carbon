@@ -73,6 +73,7 @@ public final class PlayerStatusMessageEvents {
         }
     }
 
+    @FunctionalInterface
     public interface MessageEventListener {
         void onMessage(final MessageEvent event);
     }

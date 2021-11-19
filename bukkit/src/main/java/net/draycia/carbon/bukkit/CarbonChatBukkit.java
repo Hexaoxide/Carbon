@@ -26,6 +26,7 @@ import com.google.inject.TypeLiteral;
 import io.papermc.lib.PaperLib;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -116,7 +117,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         final long saveDelay = 5 * 60 * 20;
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this,
-            () -> PlayerUtils.savePlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
+            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
 
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
@@ -124,7 +125,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     @Override
     public void onDisable() {
-        PlayerUtils.savePlayers(this.carbonServerBukkit, this.userManager);
+        PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager).forEach(CompletableFuture::join);
     }
 
     @Override
