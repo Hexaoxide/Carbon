@@ -21,6 +21,8 @@ package net.draycia.carbon.common.config;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -55,14 +57,10 @@ public class ClearChatSettings {
         return this.iterations;
     }
 
-    private @MonotonicNonNull Component broadcastComponent = null;
 
-    public Component broadcast() {
-        if (this.broadcastComponent == null) {
-            this.broadcastComponent = MiniMessage.miniMessage().deserialize(this.broadcast);
-        }
-
-        return this.broadcastComponent;
+    public Component broadcast(final Component displayName) {
+        return MiniMessage.miniMessage().deserialize(this.broadcast,
+            TemplateResolver.templates(Template.template("display_name", displayName)));
     }
 
 }

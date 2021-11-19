@@ -22,9 +22,11 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.CommandManager;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.PrimaryConfig;
+import net.kyori.adventure.text.Component;
 
 public class ClearChatCommand {
 
@@ -48,7 +50,15 @@ public class ClearChatCommand {
                     }
                 }
 
-                carbonChat.server().sendMessage(config.clearChatSettings().broadcast());
+                final Component senderName;
+
+                if (handler.getSender() instanceof PlayerCommander player) {
+                    senderName = CarbonPlayer.renderName(player.carbonPlayer());
+                } else {
+                    senderName = Component.text("Console");
+                }
+
+                carbonChat.server().sendMessage(config.clearChatSettings().broadcast(senderName));
             })
             .build();
 
