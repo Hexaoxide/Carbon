@@ -8,9 +8,14 @@ plugins {
 
 indra {
   gpl3OnlyLicense()
+
+  publishReleasesTo("parksReleases", "https://repo.parks.dev/repository/maven-releases/")
+  publishSnapshotsTo("parksSnapshots", "https://repo.parks.dev/repository/maven-snapshots/")
+
   javaVersions {
     target(16)
   }
+
   github(GITHUB_ORGANIZATION, GITHUB_REPO)
 }
 
