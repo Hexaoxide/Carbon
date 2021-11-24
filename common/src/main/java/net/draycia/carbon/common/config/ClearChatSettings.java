@@ -57,7 +57,6 @@ public class ClearChatSettings {
         return this.iterations;
     }
 
-
     public Component broadcast(final Component displayName) {
         return MiniMessage.miniMessage().deserialize(this.broadcast,
             TemplateResolver.templates(Template.template("display_name", displayName)));

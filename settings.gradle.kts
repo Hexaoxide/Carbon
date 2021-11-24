@@ -4,6 +4,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 dependencyResolutionManagement {
   repositories {
     mavenCentral()
+    maven("https://repo.parks.dev/repository/maven-public/")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     // Paper API
     maven("https://papermc.io/repo/repository/maven-public/")
@@ -32,7 +33,6 @@ dependencyResolutionManagement {
     maven("https://jitpack.io") {
       content { includeGroupByRegex("com\\.github\\..*") }
     }
-    mavenLocal()
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
