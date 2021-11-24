@@ -50,4 +50,13 @@ public interface UserManager<C extends CarbonPlayer> {
      */
     CompletableFuture<ComponentPlayerResult<C>> savePlayer(final C player);
 
+    /**
+     * Saves the {@link CarbonPlayer}, returns the result, and invalidates the player entry.
+     *
+     * @param player the player to save
+     * @return the result
+     * @since 2.0.0
+     */
+    CompletableFuture<ComponentPlayerResult<C>> saveAndInvalidatePlayer(final C player);
+
 }

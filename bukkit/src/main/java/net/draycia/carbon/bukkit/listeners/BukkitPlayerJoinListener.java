@@ -23,7 +23,11 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
+import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.util.PlayerUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -38,19 +42,23 @@ public class BukkitPlayerJoinListener implements Listener {
 
     private final CarbonChat carbonChat;
     private final PrimaryConfig primaryConfig;
+    private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
     public BukkitPlayerJoinListener(
         final CarbonChat carbonChat,
-        final PrimaryConfig primaryConfig
-    ) {
+        final PrimaryConfig primaryConfig,
+        final UserManager<CarbonPlayerCommon> userManager
+        ) {
         this.carbonChat = carbonChat;
         this.primaryConfig = primaryConfig;
+        this.userManager = userManager;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerLogin(final PlayerJoinEvent event) {
-        final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+    public void handleJoinMessages(final PlayerJoinEvent event) {
+        final ComponentPlayerResult<CarbonPlayer> result =
+            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer player = result.player();
 
         if (player == null) {
@@ -64,13 +72,14 @@ public class BukkitPlayerJoinListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerQuit(final PlayerQuitEvent event) {
+    public void handleQuitMessages(final PlayerQuitEvent event) {
         // Early exit in case "hide muted join / leave messages when muted" is disabled
         if (!this.primaryConfig.hideMutedJoinLeaveQuit()) {
             return;
         }
 
-        final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final ComponentPlayerResult<CarbonPlayer> result =
+            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
         if (result.player() == null) {
             return;
@@ -82,6 +91,20 @@ public class BukkitPlayerJoinListener implements Listener {
         if (!player.muteEntries().isEmpty()) {
             event.quitMessage(null);
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void saveOnQuit(final PlayerQuitEvent event) {
+        final ComponentPlayerResult<CarbonPlayer> result =
+            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+
+        if (result.player() == null) {
+            return;
+        }
+
+        final CarbonPlayer player = result.player();
+
+        PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerBukkit) player);
     }
 
 }

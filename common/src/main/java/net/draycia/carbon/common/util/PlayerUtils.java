@@ -44,12 +44,35 @@ public final class PlayerUtils {
             .toList();
     }
 
-    private static CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(
+    public static CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(
         final CarbonServer carbonServer,
         final UserManager<CarbonPlayerCommon> userManager,
         final WrappedCarbonPlayer player
     ) {
-        final var saveResult = userManager.savePlayer(player.carbonPlayerCommon());
+        final var saveResult =
+            userManager.savePlayer(player.carbonPlayerCommon());
+
+        saveResult.thenAccept(result -> {
+            if (result.player() == null) {
+                carbonServer.console().sendMessage(result.reason());
+            }
+        });
+
+        saveResult.exceptionally(exception -> {
+            exception.getCause().printStackTrace();
+            return null;
+        });
+
+        return saveResult;
+    }
+
+    public static CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(
+        final CarbonServer carbonServer,
+        final UserManager<CarbonPlayerCommon> userManager,
+        final WrappedCarbonPlayer player
+    ) {
+        final var saveResult =
+            userManager.saveAndInvalidatePlayer(player.carbonPlayerCommon());
 
         saveResult.thenAccept(result -> {
             if (result.player() == null) {
