@@ -150,7 +150,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(CarbonPlayerCommon player) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(final CarbonPlayerCommon player) {
         return this.savePlayer(player).thenApply(result -> {
             this.userCache.remove(player.uuid());
 

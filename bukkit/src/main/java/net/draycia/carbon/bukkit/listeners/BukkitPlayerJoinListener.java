@@ -49,7 +49,7 @@ public class BukkitPlayerJoinListener implements Listener {
         final CarbonChat carbonChat,
         final PrimaryConfig primaryConfig,
         final UserManager<CarbonPlayerCommon> userManager
-        ) {
+    ) {
         this.carbonChat = carbonChat;
         this.primaryConfig = primaryConfig;
         this.userManager = userManager;
@@ -71,30 +71,8 @@ public class BukkitPlayerJoinListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handleQuitMessages(final PlayerQuitEvent event) {
-        // Early exit in case "hide muted join / leave messages when muted" is disabled
-        if (!this.primaryConfig.hideMutedJoinLeaveQuit()) {
-            return;
-        }
-
-        final ComponentPlayerResult<CarbonPlayer> result =
-            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
-
-        if (result.player() == null) {
-            return;
-        }
-
-        final CarbonPlayer player = result.player();
-
-        // Don't show quit messages when muted
-        if (!player.muteEntries().isEmpty()) {
-            event.quitMessage(null);
-        }
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
-    public void saveOnQuit(final PlayerQuitEvent event) {
+    public void onQuit(final PlayerQuitEvent event) {
         final ComponentPlayerResult<CarbonPlayer> result =
             this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
@@ -103,6 +81,12 @@ public class BukkitPlayerJoinListener implements Listener {
         }
 
         final CarbonPlayer player = result.player();
+
+        if (this.primaryConfig.hideMutedJoinLeaveQuit()) {
+            if (!player.muteEntries().isEmpty()) {
+                event.quitMessage(null);
+            }
+        }
 
         PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerBukkit) player);
     }
