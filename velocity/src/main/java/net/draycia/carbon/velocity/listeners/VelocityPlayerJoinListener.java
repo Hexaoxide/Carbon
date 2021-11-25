@@ -17,61 +17,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.sponge.listeners;
+package net.draycia.carbon.velocity.listeners;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
-import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
-import net.kyori.adventure.audience.Audience;
+import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 
 @DefaultQualifier(NonNull.class)
-public class SpongePlayerJoinListener {
+public class VelocityPlayerJoinListener {
 
     private final CarbonChat carbonChat;
-    private final PrimaryConfig primaryConfig;
     private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
-    public SpongePlayerJoinListener(
+    public VelocityPlayerJoinListener(
         final CarbonChat carbonChat,
-        final PrimaryConfig primaryConfig,
         final UserManager<CarbonPlayerCommon> userManager
     ) {
         this.carbonChat = carbonChat;
-        this.primaryConfig = primaryConfig;
         this.userManager = userManager;
     }
 
-    @Listener
-    public void onPlayerLogin(final ServerSideConnectionEvent.Join event) {
-        final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.player().uniqueId()).join();
-        final @Nullable CarbonPlayer player = result.player();
-
-        if (player == null) {
-            return;
-        }
-
-        // Don't show join messages when muted
-        if (this.primaryConfig.hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
-            event.setMessageCancelled(true);
-        }
-    }
-
-    @Listener
-    public void onPlayerQuit(final ServerSideConnectionEvent.Disconnect event) {
+    @Subscribe
+    public void onPlayerLeave(final DisconnectEvent event) {
         final ComponentPlayerResult<CarbonPlayer> result =
-            this.carbonChat.server().player(event.player().uniqueId()).join();
+            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
 
         if (result.player() == null) {
             return;
@@ -79,13 +58,7 @@ public class SpongePlayerJoinListener {
 
         final CarbonPlayer player = result.player();
 
-        if (this.primaryConfig.hideMutedJoinLeaveQuit()) {
-            if (!player.muteEntries().isEmpty()) {
-                event.setAudience(Audience.empty());
-            }
-        }
-
-        PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerSponge) player);
+        PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerVelocity) player);
     }
 
 }

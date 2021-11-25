@@ -39,7 +39,11 @@ import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.ChatCallback;
+import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
+import net.draycia.carbon.fabric.listeners.FabricPlayerDeathListener;
+import net.draycia.carbon.fabric.listeners.FabricPlayerJoinListener;
+import net.draycia.carbon.fabric.listeners.FabricPlayerLeaveListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -87,6 +91,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         // Platform Listeners
         this.registerChatListener();
         this.registerServerLifecycleListeners();
+        this.registerPlayerStatusListeners();
         this.registerTickListeners();
 
         // Listeners
@@ -108,6 +113,12 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
         ServerLifecycleEvents.SERVER_STOPPING.register($ -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager).forEach(CompletableFuture::join));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.minecraftServer = null);
+    }
+
+    private void registerPlayerStatusListeners() {
+        PlayerStatusMessageEvents.JOIN_MESSAGE.register(this.injector.getInstance(FabricPlayerJoinListener.class));
+        PlayerStatusMessageEvents.QUIT_MESSAGE.register(this.injector.getInstance(FabricPlayerLeaveListener.class));
+        PlayerStatusMessageEvents.DEATH_MESSAGE.register(this.injector.getInstance(FabricPlayerDeathListener.class));
     }
 
     private void registerTickListeners() {

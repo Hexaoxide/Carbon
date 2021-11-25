@@ -41,6 +41,7 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
+import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
@@ -61,7 +62,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class CarbonChatVelocity implements CarbonChat {
 
     private static final Set<Class<?>> LISTENER_CLASSES = Set.of(
-        VelocityChatListener.class
+        VelocityChatListener.class,
+        VelocityPlayerJoinListener.class
     );
 
     private final Path dataDirectory;
