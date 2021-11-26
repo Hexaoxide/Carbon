@@ -290,4 +290,13 @@ public interface CarbonMessageService {
     @Message("error.command.invalid_syntax")
     void errorCommandInvalidSyntax(final Audience audience, final @Placeholder Component syntax);
 
+    @Message("ignore.exempt")
+    void ignoreExempt(final Audience audience, final @Placeholder Component target);
+
+    @Message("ignore.now_ignoring")
+    void nowIgnoring(final Audience audience, final @Placeholder Component target);
+
+    @Message("ignore.no_longer_ignoring")
+    void noLongerIgnoring(final Audience audience, final @Placeholder Component target);
+
 }
