@@ -231,6 +231,24 @@ public interface CarbonPlayer extends Audience, Identified {
     );
 
     /**
+     * Checks if the sender is being ignored by this player.
+     *
+     * @param sender the potential source of a message
+     * @return if this player is ignoring the sender
+     * @since 2.0.0
+     */
+    boolean ignoring(final CarbonPlayer sender);
+
+    /**
+     * Adds the player to and removes the player from the ignore list.
+     *
+     * @param player the player to be added/removed
+     * @param nowIgnoring if the player should be ignored
+     * @since 2.0.0
+     */
+    void ignoring(final CarbonPlayer player, boolean nowIgnoring);
+
+    /**
      * Returns if the player is deafened and unable to read messages.
      *
      * @return if the player is deafened
