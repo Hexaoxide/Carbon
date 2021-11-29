@@ -57,6 +57,16 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
+    public boolean ignoring(final CarbonPlayer sender) {
+        return this.carbonPlayerCommon().ignoring(sender);
+    }
+
+    @Override
+    public void ignoring(final CarbonPlayer player, final boolean nowIgnoring) {
+        this.carbonPlayerCommon().ignoring(player, nowIgnoring);
+    }
+
+    @Override
     public boolean hasPermission(final String permission) {
         final var data = this.user().getCachedData().getPermissionData(this.user().getQueryOptions());
         return data.checkPermission(permission) == Tristate.TRUE;

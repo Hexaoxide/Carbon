@@ -62,6 +62,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     // Punishments
     protected List<MuteEntry> muteEntries = new ArrayList<>();
+    protected List<UUID> ignoredPlayers = new ArrayList<>();
 
     public CarbonPlayerCommon(
         final String username,
@@ -177,6 +178,20 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             return muteEntry;
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public boolean ignoring(final CarbonPlayer sender) {
+        return this.ignoredPlayers.contains(sender.uuid());
+    }
+
+    @Override
+    public void ignoring(final CarbonPlayer player, final boolean nowIgnoring) {
+        if (nowIgnoring) {
+            this.ignoredPlayers.add(player.uuid());
+        } else {
+            this.ignoredPlayers.remove(player.uuid());
         }
     }
 
