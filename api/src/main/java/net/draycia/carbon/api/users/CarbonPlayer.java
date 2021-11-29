@@ -346,4 +346,22 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     boolean awareOf(final CarbonPlayer other);
 
+    /**
+     * If this player is ignoring and hiding the messages of the sender.
+     *
+     * @param sender the player that may or may not be ignored
+     * @return if this player is ignoring the sender
+     * @since 2.0.0
+     */
+    boolean ignoring(CarbonPlayer sender);
+
+    /**
+     * Ignores/unignores the player.
+     *
+     * @param player the player to ignore/unignore
+     * @param nowIgnoring if the player will be ignored
+     * @since 2.0.0
+     */
+    void ignoring(CarbonPlayer player, boolean nowIgnoring);
+
 }
