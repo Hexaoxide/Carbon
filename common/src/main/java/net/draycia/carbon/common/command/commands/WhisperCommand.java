@@ -65,6 +65,16 @@ public class WhisperCommand {
                     return;
                 }
 
+                if (sender.ignoring(recipient)) {
+                    messageService.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
+                    return;
+                }
+
+                if (recipient.ignoring(sender)) {
+                    messageService.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
+                    return;
+                }
+
                 messageService.whisperSender(new SourcedAudience(sender, sender),
                     CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient), message);
 

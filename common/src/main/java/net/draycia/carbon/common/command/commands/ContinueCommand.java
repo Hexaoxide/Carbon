@@ -62,6 +62,11 @@ public class ContinueCommand {
                     .player(whisperTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
+                if (sender.equals(recipient)) {
+                    messageService.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                    return;
+                }
+
                 if (!recipient.online()
                     || (!sender.awareOf(recipient)
                     && !sender.hasPermission("carbon.seevanish.whisper"))
@@ -73,13 +78,13 @@ public class ContinueCommand {
                     return;
                 }
 
-                if (sender.equals(recipient)) {
-                    messageService.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                if (sender.ignoring(recipient)) {
+                    messageService.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
                     return;
                 }
 
-                if (!recipient.online()) {
-                    messageService.whisperTargetOffline(sender, CarbonPlayer.renderName(sender));
+                if (recipient.ignoring(sender)) {
+                    messageService.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
                     return;
                 }
 
