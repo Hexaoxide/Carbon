@@ -17,28 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.util;
+package net.draycia.carbon.common.listeners;
 
-import com.google.inject.Injector;
-import java.util.List;
-import net.draycia.carbon.common.listeners.DeafenHandler;
-import net.draycia.carbon.common.listeners.IgnoreHandler;
-import net.draycia.carbon.common.listeners.ItemLinkHandler;
-import net.draycia.carbon.common.listeners.MuteHandler;
+import com.google.inject.Inject;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
-public final class ListenerUtils {
+@DefaultQualifier(NonNull.class)
+public class IgnoreHandler {
 
-    private ListenerUtils() {
-
-    }
-
-    public static final List<Class<?>> LISTENER_CLASSES = List.of(DeafenHandler.class, IgnoreHandler.class,
-        ItemLinkHandler.class, MuteHandler.class);
-
-    public static void registerCommonListeners(final Injector injector) {
-        for (final var listenerClass : LISTENER_CLASSES) {
-            injector.getInstance(listenerClass);
-        }
+    @Inject
+    public IgnoreHandler(
+        final CarbonChat carbonChat
+    ) {
+        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 0, false, event -> {
+            event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
+                carbonPlayer.ignoring(event.sender()));
+        });
     }
 
 }
