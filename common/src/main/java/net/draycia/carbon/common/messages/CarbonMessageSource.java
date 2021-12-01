@@ -97,7 +97,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                     return;
                 }
 
-                this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile); // todo - debug
+                this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile);
 
                 final Properties properties = new Properties();
 

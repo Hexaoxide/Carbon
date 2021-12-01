@@ -101,7 +101,6 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
 
                     this.userCache.put(uuid, player);
 
-                    // TODO: supply reason if fromJson returns null
                     return new ComponentPlayerResult<>(player, empty());
                 } catch (final IOException exception) {
                     return new ComponentPlayerResult<>(null, text(exception.getMessage()));

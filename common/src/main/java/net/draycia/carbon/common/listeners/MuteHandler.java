@@ -61,7 +61,6 @@ public class MuteHandler {
 
             event.renderers().add(this.renderer);
 
-            // TODO: ShadowMuteHandler? Include that logic in here?
             event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
                 !carbonPlayer.spying());
         });

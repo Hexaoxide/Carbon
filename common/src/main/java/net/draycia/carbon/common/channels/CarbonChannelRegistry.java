@@ -270,7 +270,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                     this.messageService.changedChannels(sender, channel.key().value());
                 }
             })
-            .build(); // TODO: command aliases
+            .build();
 
         commandManager.command(command);
 
@@ -298,9 +298,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             }
         }
 
-        // TODO: option to specify if the channel should invoke ChatChannel#recipients
-        //   or ChatChannel#filterRecipients
-        //   for now we will just always invoke ChatChannel#recipients
         final var recipients = channel.recipients(sender);
 
         final var renderers = new ArrayList<KeyedRenderer>();

@@ -86,9 +86,6 @@ public final class VelocityChatListener {
             }
         }
 
-        // TODO: option to specify if the channel should invoke ChatChannel#recipients
-        //   or ChatChannel#filterRecipients
-        //   for now we will just always invoke ChatChannel#recipients
         final var recipients = channel.recipients(sender);
 
         final var renderers = new ArrayList<KeyedRenderer>();

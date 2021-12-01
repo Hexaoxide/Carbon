@@ -224,7 +224,6 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param message the message to be sent
      * @since 2.0.0
      */
-    // TODO: change return type, provide information useful like what message was actually sent?
     void sendMessageAsPlayer(final String message);
 
     /**
