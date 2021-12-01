@@ -24,7 +24,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
@@ -36,17 +36,17 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class FabricPlayerLeaveListener implements PlayerStatusMessageEvents.MessageEventListener {
 
     private final CarbonChat carbonChat;
-    private final PrimaryConfig primaryConfig;
+    private final ConfigFactory configFactory;
     private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
     public FabricPlayerLeaveListener(
         final CarbonChat carbonChat,
-        final PrimaryConfig primaryConfig,
+        final ConfigFactory configFactory,
         final UserManager<CarbonPlayerCommon> userManager
     ) {
         this.carbonChat = carbonChat;
-        this.primaryConfig = primaryConfig;
+        this.configFactory = configFactory;
         this.userManager = userManager;
     }
 
@@ -61,7 +61,7 @@ public class FabricPlayerLeaveListener implements PlayerStatusMessageEvents.Mess
 
         final CarbonPlayer player = result.player();
 
-        if (this.primaryConfig.hideMutedJoinLeaveQuit()) {
+        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
             if (!player.muteEntries().isEmpty()) {
                 event.disableMessage();
             }

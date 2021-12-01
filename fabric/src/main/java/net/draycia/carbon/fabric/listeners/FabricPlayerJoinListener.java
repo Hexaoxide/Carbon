@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -33,15 +33,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class FabricPlayerJoinListener implements PlayerStatusMessageEvents.MessageEventListener {
 
     private final CarbonChat carbonChat;
-    private final PrimaryConfig primaryConfig;
+    private final ConfigFactory configFactory;
 
     @Inject
-    public FabricPlayerJoinListener(
-        final CarbonChat carbonChat,
-        final PrimaryConfig primaryConfig
-    ) {
+    public FabricPlayerJoinListener(final CarbonChat carbonChat, final ConfigFactory configFactory) {
         this.carbonChat = carbonChat;
-        this.primaryConfig = primaryConfig;
+        this.configFactory = configFactory;
     }
 
     @Override
@@ -55,7 +52,7 @@ public class FabricPlayerJoinListener implements PlayerStatusMessageEvents.Messa
         }
 
         // Don't show join messages when muted
-        if (this.primaryConfig.hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
+        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
             event.disableMessage();
         }
     }

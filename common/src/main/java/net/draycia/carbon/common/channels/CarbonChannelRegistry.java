@@ -35,8 +35,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.ConfigLoader;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -66,36 +65,36 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
     }
 
-    private final ConfigLoader configLoader;
+    private final ConfigFactory configLoader;
     private final Path dataDirectory;
     private final Injector injector;
     private final Logger logger;
-    private final PrimaryConfig primaryConfig;
+    private final ConfigFactory configFactory;
     private @MonotonicNonNull Key defaultKey;
     private @MonotonicNonNull ChatChannel basicChannel;
     private final CarbonMessageService messageService;
 
     @Inject
     public CarbonChannelRegistry(
-        final ConfigLoader configLoader,
+        final ConfigFactory configLoader,
         @ForCarbon final Path dataDirectory,
         final Injector injector,
         final Logger logger,
-        final PrimaryConfig primaryConfig,
+        final ConfigFactory configFactory,
         final CarbonMessageService messageService
     ) {
         this.configLoader = configLoader;
         this.dataDirectory = dataDirectory;
         this.injector = injector;
         this.logger = logger;
-        this.primaryConfig = primaryConfig;
+        this.configFactory = configFactory;
         this.messageService = messageService;
     }
 
     public void loadChannels() {
         final Path channelDirectory = this.dataDirectory.resolve("channels");
         this.basicChannel = this.injector.getInstance(BasicChatChannel.class);
-        this.defaultKey = this.primaryConfig.defaultChannel();
+        this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
         if (!Files.exists(channelDirectory)) {
             // folder doesn't exist, no channels setup

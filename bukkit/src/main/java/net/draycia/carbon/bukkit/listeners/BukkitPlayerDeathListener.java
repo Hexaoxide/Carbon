@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -34,21 +34,18 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class BukkitPlayerDeathListener implements Listener {
 
     private final CarbonChat carbonChat;
-    private final PrimaryConfig primaryConfig;
+    private final ConfigFactory configFactory;
 
     @Inject
-    public BukkitPlayerDeathListener(
-        final CarbonChat carbonChat,
-        final PrimaryConfig primaryConfig
-    ) {
+    public BukkitPlayerDeathListener(final CarbonChat carbonChat, final ConfigFactory configFactory) {
         this.carbonChat = carbonChat;
-        this.primaryConfig = primaryConfig;
+        this.configFactory = configFactory;
     }
 
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event) {
         // Early exit in case "hide muted join / leave messages when muted" is disabled
-        if (!this.primaryConfig.hideMutedJoinLeaveQuit()) {
+        if (!this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
             return;
         }
 

@@ -24,13 +24,12 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
-import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.config.ConfigLoader;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageService;
@@ -50,7 +49,6 @@ import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -59,27 +57,14 @@ public final class CarbonCommonModule extends AbstractModule {
     @Provides
     @Singleton
     public UserManager<CarbonPlayerCommon> userManager(
-        final PrimaryConfig primaryConfig,
+        final ConfigFactory configFactory,
         final Injector injector
     ) {
-        switch (primaryConfig.storageType()) {
+        switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
             default -> {
                 return injector.getInstance(JSONUserManager.class);
             }
         }
-    }
-
-    @Provides
-    @Singleton
-    public PrimaryConfig primaryConfig(final ConfigLoader configLoader) throws IOException {
-        final @Nullable PrimaryConfig primaryConfig =
-            configLoader.load(PrimaryConfig.class, "config.conf");
-
-        if (primaryConfig == null) {
-            throw new IllegalStateException("Primary configuration was unable to load!");
-        }
-
-        return primaryConfig;
     }
 
     @Provides

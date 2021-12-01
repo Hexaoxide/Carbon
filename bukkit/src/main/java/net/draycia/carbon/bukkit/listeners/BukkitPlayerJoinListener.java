@@ -25,7 +25,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
 import org.bukkit.event.EventHandler;
@@ -41,17 +41,17 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class BukkitPlayerJoinListener implements Listener {
 
     private final CarbonChat carbonChat;
-    private final PrimaryConfig primaryConfig;
+    private final ConfigFactory configFactory;
     private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
     public BukkitPlayerJoinListener(
         final CarbonChat carbonChat,
-        final PrimaryConfig primaryConfig,
+        final ConfigFactory configFactory,
         final UserManager<CarbonPlayerCommon> userManager
     ) {
         this.carbonChat = carbonChat;
-        this.primaryConfig = primaryConfig;
+        this.configFactory = configFactory;
         this.userManager = userManager;
     }
 
@@ -66,7 +66,7 @@ public class BukkitPlayerJoinListener implements Listener {
         }
 
         // Don't show join messages when muted
-        if (this.primaryConfig.hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
+        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
             event.joinMessage(null);
         }
     }
@@ -82,7 +82,7 @@ public class BukkitPlayerJoinListener implements Listener {
 
         final CarbonPlayer player = result.player();
 
-        if (this.primaryConfig.hideMutedJoinLeaveQuit()) {
+        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
             if (!player.muteEntries().isEmpty()) {
                 event.quitMessage(null);
             }
