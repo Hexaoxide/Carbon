@@ -88,6 +88,30 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     @Nullable String quickPrefix();
 
     /**
+     * If commands should be registered for this channel.
+     *
+     * @return if commands should be registered for this channel.
+     * @since 2.0.0
+     */
+    boolean shouldRegisterCommands();
+
+    /**
+     * The text that can be used to refer to this channel in commands.
+     *
+     * @return this channel's name when used in commands
+     * @since 2.0.0
+     */
+    String commandName();
+
+    /**
+     * Alternative command names for this channel.
+     *
+     * @return alternative command names
+     * @since 2.0.0
+     */
+    List<String> commandAliases();
+
+    /**
      * Represents the result of a channel permission check.
      *
      * @since 2.0.0

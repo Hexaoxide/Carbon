@@ -21,6 +21,7 @@ package net.draycia.carbon.common.channels;
 
 import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -66,7 +67,7 @@ public final class ConfigChatChannel implements ChatChannel {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private Key key = Key.key("carbon", "basic");
+    private @Nullable Key key = Key.key("carbon", "basic");
 
     @Comment("""
         The permission required to use the channel.
@@ -74,14 +75,20 @@ public final class ConfigChatChannel implements ChatChannel {
         To send messages you must have the permission carbon.channel.basic.speak
         If you want to give both, grant carbon.channel.basic or carbon.channel.basic.*
         """)
-    private String permission = "carbon.channel.basic";
+    private @Nullable String permission = "carbon.channel.basic";
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    private @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
     @Comment("Messages will be sent in this channel if they start with this prefix.")
     private @Nullable String quickPrefix = "";
+
+    private @Nullable Boolean shouldRegisterCommands = true;
+
+    private @Nullable String commandName = null;
+
+    private @Nullable List<String> commandAliases = Collections.emptyList();
 
     private transient @Nullable ConfigChannelMessageService messageService = null;
 
@@ -92,6 +99,22 @@ public final class ConfigChatChannel implements ChatChannel {
         }
 
         return this.quickPrefix;
+    }
+
+    @Override
+    public boolean shouldRegisterCommands() {
+        return Objects.requireNonNullElse(this.shouldRegisterCommands, true);
+
+    }
+
+    @Override
+    public String commandName() {
+        return Objects.requireNonNullElse(this.commandName, this.key.value());
+    }
+
+    @Override
+    public List<String> commandAliases() {
+        return Objects.requireNonNullElse(this.commandAliases, Collections.emptyList());
     }
 
     @Override

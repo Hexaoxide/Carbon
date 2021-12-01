@@ -123,59 +123,69 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
 
         try (final Stream<Path> paths = Files.walk(channelDirectory)) {
-            final CommandManager<Commander> commandManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
+            final CommandManager<Commander> commandManager =
+                this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
 
             paths.forEach(path -> {
                 final String fileName = path.getFileName().toString();
 
-                if (fileName.endsWith(".conf")) {
-                    final @Nullable ChatChannel channel = this.loadChannel(path);
-
-                    if (channel != null) {
-                        final Key channelKey = channel.key();
-
-                        this.logger.info("Registering channel with key [" + channelKey + "]");
-                        register(channelKey, channel);
-
-                        final var command = commandManager.commandBuilder(channelKey.value())
-                            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build())
-                            .permission("carbon.channel." + channelKey)
-                            .senderType(PlayerCommander.class)
-                            .handler(handler -> {
-                                final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-
-                                if (sender.muted(channel)) {
-                                    // TODO: "you are muted in this channel!!!!"
-                                    return;
-                                }
-
-                                if (handler.contains("message")) {
-                                    final String message = handler.get("message");
-                                    final var component = Component.text(message);
-
-                                    // TODO: trigger platform events related to chat
-                                    // TODO: also make sure carbon events are also emitted properly?
-                                    for (final var recipient : channel.recipients(sender)) {
-                                        final var renderedMessage = channel.render(sender, recipient, component, component);
-                                        recipient.sendMessage(renderedMessage.component(), renderedMessage.messageType());
-                                    }
-                                } else {
-                                    sender.selectedChannel(channel);
-                                    this.messageService.changedChannels(sender, channel.key().value());
-                                }
-                            })
-                            .build(); // TODO: command aliases
-
-                        commandManager.command(command);
-
-                        final var channelCommand = commandManager.commandBuilder("channel", "ch")
-                            .literal(channelKey.value())
-                            .proxies(command)
-                            .build();
-
-                        commandManager.command(channelCommand);
-                    }
+                if (!fileName.endsWith(".conf")) {
+                    return;
                 }
+
+                final @Nullable ChatChannel channel = this.loadChannel(path);
+
+                if (channel == null) {
+                    return;
+                }
+
+                final Key channelKey = channel.key();
+
+                this.logger.info("Registering channel with key [" + channelKey + "]");
+                register(channelKey, channel);
+
+                if (!channel.shouldRegisterCommands()) {
+                    return;
+                }
+
+                final var command = commandManager.commandBuilder(channel.commandName(),
+                        channel.commandAliases(), commandManager.createDefaultCommandMeta())
+                    .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build())
+                    .permission("carbon.channel." + channelKey)
+                    .senderType(PlayerCommander.class)
+                    .handler(handler -> {
+                        final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+
+                        if (sender.muted(channel)) {
+                            // TODO: "you are muted in this channel!!!!"
+                            return;
+                        }
+
+                        if (handler.contains("message")) {
+                            final String message = handler.get("message");
+                            final var component = Component.text(message);
+
+                            // TODO: trigger platform events related to chat
+                            // TODO: also make sure carbon events are also emitted properly?
+                            for (final var recipient : channel.recipients(sender)) {
+                                final var renderedMessage = channel.render(sender, recipient, component, component);
+                                recipient.sendMessage(renderedMessage.component(), renderedMessage.messageType());
+                            }
+                        } else {
+                            sender.selectedChannel(channel);
+                            this.messageService.changedChannels(sender, channel.key().value());
+                        }
+                    })
+                    .build(); // TODO: command aliases
+
+                commandManager.command(command);
+
+                final var channelCommand = commandManager.commandBuilder("channel", "ch")
+                    .literal(channelKey.value())
+                    .proxies(command)
+                    .build();
+
+                commandManager.command(channelCommand);
             });
         } catch (final IOException exception) {
             exception.printStackTrace();

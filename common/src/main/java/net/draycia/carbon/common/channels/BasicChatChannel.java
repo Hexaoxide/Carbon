@@ -22,6 +22,7 @@ package net.draycia.carbon.common.channels;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import net.draycia.carbon.api.CarbonChat;
@@ -75,6 +76,21 @@ public final class BasicChatChannel implements ChatChannel {
     public @Nullable String quickPrefix() {
         // todo
         return null;
+    }
+
+    @Override
+    public boolean shouldRegisterCommands() {
+        return false;
+    }
+
+    @Override
+    public String commandName() {
+        return "basic";
+    }
+
+    @Override
+    public List<String> commandAliases() {
+        return Collections.emptyList();
     }
 
     @Override
