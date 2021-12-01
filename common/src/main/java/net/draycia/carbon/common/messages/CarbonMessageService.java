@@ -311,4 +311,20 @@ public interface CarbonMessageService {
     @Message("config.reload.failed")
     void configReloadFailed(final Audience audience);
 
+    @Message("muteinfo.selfnotmuted")
+    void muteInfoSelfNotMuted(final Audience audience);
+
+    @Message("muteinfo.notmuted")
+    void muteInfoNotMuted(
+        final Audience audience,
+        final @Placeholder Component target
+    );
+
+    @Message("muteinfo.info")
+    void muteInfoChannels(
+        final Audience audience,
+        final @Placeholder Component target,
+        final @Placeholder Component channels
+    );
+
 }
