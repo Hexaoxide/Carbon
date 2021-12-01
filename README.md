@@ -2,7 +2,7 @@
 
 ### Dev Builds
 
-Carbon is currently in early development and as such, developer / preview builds are not offered.
+Dev builds can be found at https://jenkins.ocelotpotpie.com:8443/job/Carbon/
 
 ### Support
 
