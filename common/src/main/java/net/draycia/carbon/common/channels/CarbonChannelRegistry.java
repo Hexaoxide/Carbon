@@ -33,18 +33,26 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistry;
@@ -57,6 +65,9 @@ import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.SerializationException;
+
+import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
+import static net.kyori.adventure.text.Component.empty;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
@@ -80,6 +91,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     private @MonotonicNonNull Key defaultKey;
     private @MonotonicNonNull ChatChannel basicChannel;
     private final CarbonMessageService messageService;
+    private final CarbonChat carbonChat;
 
     private final BiMap<Key, ChatChannel> map = Maps.synchronizedBiMap(HashBiMap.create());
 
@@ -91,7 +103,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final Logger logger,
         final ConfigFactory configFactory,
         final CarbonMessageService messageService,
-        final BasicChatChannel basicChannel
+        final BasicChatChannel basicChannel,
+        final CarbonChat carbonChat
     ) {
         this.configLoader = configLoader;
         this.configChannelDir = dataDirectory.resolve("channels");
@@ -100,6 +113,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         this.configFactory = configFactory;
         this.messageService = messageService;
         this.basicChannel = basicChannel;
+        this.carbonChat = carbonChat;
     }
 
     public void reloadRegisteredConfigChannels() {
@@ -248,14 +262,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
                 if (handler.contains("message")) {
                     final String message = handler.get("message");
-                    final var component = Component.text(message);
 
                     // TODO: trigger platform events related to chat
-                    // TODO: also make sure carbon events are also emitted properly?
-                    for (final var recipient : channel.recipients(sender)) {
-                        final var renderedMessage = channel.render(sender, recipient, component, component);
-                        recipient.sendMessage(renderedMessage.component(), renderedMessage.messageType());
-                    }
+                    this.sendMessageInChannelAsPlayer(sender, channel, message);
                 } else {
                     sender.selectedChannel(channel);
                     this.messageService.changedChannels(sender, channel.key().value());
@@ -271,6 +280,59 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             .build();
 
         commandManager.command(channelCommand);
+    }
+
+    private void sendMessageInChannelAsPlayer(
+        final CarbonPlayer sender,
+        ChatChannel channel,
+        final String plainMessage
+    ) {
+        for (final var chatChannel : this) {
+            if (chatChannel.quickPrefix() == null) {
+                continue;
+            }
+
+            if (plainMessage.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
+                channel = chatChannel;
+                break;
+            }
+        }
+
+        // TODO: option to specify if the channel should invoke ChatChannel#recipients
+        //   or ChatChannel#filterRecipients
+        //   for now we will just always invoke ChatChannel#recipients
+        final var recipients = channel.recipients(sender);
+
+        final var renderers = new ArrayList<KeyedRenderer>();
+        renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
+
+        final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel);
+        final var result = this.carbonChat.eventHandler().emit(chatEvent);
+
+        if (!result.wasSuccessful()) {
+            final var message = chatEvent.result().reason();
+
+            if (!message.equals(empty())) {
+                sender.sendMessage(message);
+            }
+
+            return;
+        }
+
+        for (final var recipient : chatEvent.recipients()) {
+            var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+
+            for (final var renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
+            }
+
+            if (sender.hasPermission("carbon.hideidentity")) {
+                recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
+            } else {
+                recipient.sendMessage(sender.identity(), renderedMessage.component(), renderedMessage.messageType());
+
+            }
+        }
     }
 
     private boolean isPathEmpty(final Path path) {
