@@ -21,6 +21,7 @@ package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
 import com.google.inject.Inject;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.PrimaryConfig;
@@ -37,12 +38,15 @@ public class ReloadCommand {
     public ReloadCommand(
         final CommandManager<Commander> commandManager,
         final ConfigFactory configFactory,
+        final CarbonChannelRegistry channelRegistry,
         final CarbonMessageService messageService
     ) {
         final var command = commandManager.commandBuilder("creload", "carbonreload")
             .permission("carbon.reload")
             .senderType(Commander.class)
             .handler(handler -> {
+                channelRegistry.reloadRegisteredConfigChannels();
+
                 final @Nullable PrimaryConfig config = configFactory.reloadPrimaryConfig();
 
                 if (config != null) {
@@ -50,6 +54,7 @@ public class ReloadCommand {
                 } else {
                     messageService.configReloadFailed(handler.getSender());
                 }
+
             })
             .build();
 

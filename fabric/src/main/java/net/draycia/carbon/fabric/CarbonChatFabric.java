@@ -101,7 +101,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         CloudUtils.registerCommands(this.injector);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
     }
 
     private void registerChatListener() {

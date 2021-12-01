@@ -110,7 +110,7 @@ public final class CarbonChatSponge implements CarbonChat {
         ListenerUtils.registerCommonListeners(this.injector);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
 
         // Commands
         CloudUtils.registerCommands(this.injector);

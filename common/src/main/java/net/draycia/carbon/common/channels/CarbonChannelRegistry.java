@@ -21,6 +21,10 @@ package net.draycia.carbon.common.channels;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -29,7 +33,10 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -41,7 +48,6 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistry;
-import net.kyori.registry.RegistryImpl;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -54,7 +60,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implements ChannelRegistry, DefaultedRegistry<Key, ChatChannel> {
+public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry<Key, ChatChannel> {
 
     private static @MonotonicNonNull ObjectMapper<ConfigChatChannel> MAPPER;
 
@@ -67,13 +73,15 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
     }
 
     private final ConfigFactory configLoader;
-    private final Path dataDirectory;
+    private final Path configChannelDir;
     private final Injector injector;
     private final Logger logger;
     private final ConfigFactory configFactory;
     private @MonotonicNonNull Key defaultKey;
     private @MonotonicNonNull ChatChannel basicChannel;
     private final CarbonMessageService messageService;
+
+    private final BiMap<Key, ChatChannel> map = Maps.synchronizedBiMap(HashBiMap.create());
 
     @Inject
     public CarbonChannelRegistry(
@@ -82,48 +90,57 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         final Injector injector,
         final Logger logger,
         final ConfigFactory configFactory,
-        final CarbonMessageService messageService
+        final CarbonMessageService messageService,
+        final BasicChatChannel basicChannel
     ) {
         this.configLoader = configLoader;
-        this.dataDirectory = dataDirectory;
+        this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
         this.configFactory = configFactory;
         this.messageService = messageService;
+        this.basicChannel = basicChannel;
     }
 
-    public void loadChannels() {
-        final Path channelDirectory = this.dataDirectory.resolve("channels");
-        this.basicChannel = this.injector.getInstance(BasicChatChannel.class);
+    public void reloadRegisteredConfigChannels() {
+        try (final Stream<Path> paths = Files.walk(this.configChannelDir)) {
+            paths.forEach(path -> {
+                final String fileName = path.getFileName().toString();
+
+                if (!fileName.endsWith(".conf")) {
+                    return;
+                }
+
+                final @Nullable ChatChannel chatChannel = this.registerChannelFromPath(path);
+
+                if (chatChannel == null) {
+                    return;
+                }
+
+                final @Nullable ChatChannel existingChannel = this.get(chatChannel.key());
+
+                if (existingChannel == null) {
+                    return;
+                }
+
+                this.register(chatChannel.key(), chatChannel);
+            });
+        } catch (final IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void loadConfigChannels() {
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
-        if (!Files.exists(channelDirectory) || isPathEmpty(channelDirectory)) {
-            // folder doesn't exist, no channels setup
-            try {
-                Files.createDirectories(channelDirectory);
-
-                this.register(this.basicChannel.key(), this.basicChannel);
-
-                final Path configFile = channelDirectory.resolve("basic-channel.conf.example");
-
-                final var loader = this.configLoader.configurationLoader(configFile);
-                final var node = loader.load();
-
-                final var configChannel = this.injector.getInstance(ConfigChatChannel.class);
-                node.set(ConfigChatChannel.class, configChannel);
-
-                loader.save(node);
-
-                // TODO: create advanced-channel.conf.example
-                // TODO: log in console, "no channels found - adding example configs"
-            } catch (final IOException exception) {
-                exception.printStackTrace();
-            }
-
+        if (!Files.exists(this.configChannelDir) || this.isPathEmpty(this.configChannelDir)) {
+            // no channels to register, register default channel
+            this.registerDefaultChannel();
             return;
         }
 
-        try (final Stream<Path> paths = Files.walk(channelDirectory)) {
+        // otherwise, register all channels found
+        try (final Stream<Path> paths = Files.walk(this.configChannelDir)) {
             final CommandManager<Commander> commandManager =
                 this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
 
@@ -134,59 +151,11 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
                     return;
                 }
 
-                final @Nullable ChatChannel channel = this.loadChannel(path);
+                final @Nullable ChatChannel chatChannel = this.registerChannelFromPath(path);
 
-                if (channel == null) {
-                    return;
+                if (chatChannel != null && chatChannel.shouldRegisterCommands()) {
+                    this.registerChannelCommands(chatChannel, commandManager);
                 }
-
-                final Key channelKey = channel.key();
-
-                this.logger.info("Registering channel with key [" + channelKey + "]");
-                register(channelKey, channel);
-
-                if (!channel.shouldRegisterCommands()) {
-                    return;
-                }
-
-                final var command = commandManager.commandBuilder(channel.commandName(),
-                        channel.commandAliases(), commandManager.createDefaultCommandMeta())
-                    .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build())
-                    .permission("carbon.channel." + channelKey)
-                    .senderType(PlayerCommander.class)
-                    .handler(handler -> {
-                        final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-
-                        if (sender.muted(channel)) {
-                            // TODO: "you are muted in this channel!!!!"
-                            return;
-                        }
-
-                        if (handler.contains("message")) {
-                            final String message = handler.get("message");
-                            final var component = Component.text(message);
-
-                            // TODO: trigger platform events related to chat
-                            // TODO: also make sure carbon events are also emitted properly?
-                            for (final var recipient : channel.recipients(sender)) {
-                                final var renderedMessage = channel.render(sender, recipient, component, component);
-                                recipient.sendMessage(renderedMessage.component(), renderedMessage.messageType());
-                            }
-                        } else {
-                            sender.selectedChannel(channel);
-                            this.messageService.changedChannels(sender, channel.key().value());
-                        }
-                    })
-                    .build(); // TODO: command aliases
-
-                commandManager.command(command);
-
-                final var channelCommand = commandManager.commandBuilder("channel", "ch")
-                    .literal(channelKey.value())
-                    .proxies(command)
-                    .build();
-
-                commandManager.command(channelCommand);
             });
         } catch (final IOException exception) {
             exception.printStackTrace();
@@ -226,6 +195,85 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         return this.defaultValue();
     }
 
+    private void registerDefaultChannel() {
+        try {
+            Files.createDirectories(this.configChannelDir);
+
+            this.register(this.basicChannel.key(), this.basicChannel);
+
+            final Path configFile = this.configChannelDir.resolve("basic-channel.conf.example");
+
+            final var loader = this.configLoader.configurationLoader(configFile);
+            final var node = loader.load();
+
+            final var configChannel = this.injector.getInstance(ConfigChatChannel.class);
+            node.set(ConfigChatChannel.class, configChannel);
+
+            loader.save(node);
+
+            // TODO: create advanced-channel.conf.example
+            // TODO: log in console, "no channels found - adding example configs"
+        } catch (final IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private @Nullable ChatChannel registerChannelFromPath(final Path channelPath) {
+        final @Nullable ChatChannel channel = this.loadChannel(channelPath);
+
+        if (channel == null) {
+            return null;
+        }
+
+        final Key channelKey = channel.key();
+
+        this.logger.info("Registering channel with key [" + channelKey + "]");
+        this.register(channelKey, channel);
+
+        return channel;
+    }
+
+    private void registerChannelCommands(final ChatChannel channel, final CommandManager<Commander> commandManager) {
+        final var command = commandManager.commandBuilder(channel.commandName(),
+                channel.commandAliases(), commandManager.createDefaultCommandMeta())
+            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build())
+            .permission("carbon.channel." + channel.key().value())
+            .senderType(PlayerCommander.class)
+            .handler(handler -> {
+                final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+
+                if (sender.muted(channel)) {
+                    // TODO: "you are muted in this channel!!!!"
+                    return;
+                }
+
+                if (handler.contains("message")) {
+                    final String message = handler.get("message");
+                    final var component = Component.text(message);
+
+                    // TODO: trigger platform events related to chat
+                    // TODO: also make sure carbon events are also emitted properly?
+                    for (final var recipient : channel.recipients(sender)) {
+                        final var renderedMessage = channel.render(sender, recipient, component, component);
+                        recipient.sendMessage(renderedMessage.component(), renderedMessage.messageType());
+                    }
+                } else {
+                    sender.selectedChannel(channel);
+                    this.messageService.changedChannels(sender, channel.key().value());
+                }
+            })
+            .build(); // TODO: command aliases
+
+        commandManager.command(command);
+
+        final var channelCommand = commandManager.commandBuilder("channel", "ch")
+            .literal(channel.key().value())
+            .proxies(command)
+            .build();
+
+        commandManager.command(channelCommand);
+    }
+
     private boolean isPathEmpty(final Path path) {
         try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
             return !directory.iterator().hasNext();
@@ -234,6 +282,32 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
 
         return false;
+    }
+
+    @Override
+    public @NonNull ChatChannel register(final @NonNull Key key, final @NonNull ChatChannel value) {
+        this.map.put(key, value);
+        return value;
+    }
+
+    @Override
+    public @Nullable ChatChannel get(final @NonNull Key key) {
+        return this.map.get(key);
+    }
+
+    @Override
+    public @Nullable Key key(final @NonNull ChatChannel value) {
+        return this.map.inverse().get(value);
+    }
+
+    @Override
+    public @NonNull Set<Key> keySet() {
+        return Collections.unmodifiableSet(this.map.keySet());
+    }
+
+    @Override
+    public @NonNull Iterator<ChatChannel> iterator() {
+        return Iterators.unmodifiableIterator(this.map.values().iterator());
     }
 
 }

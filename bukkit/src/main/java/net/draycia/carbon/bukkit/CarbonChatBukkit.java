@@ -120,7 +120,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
     }
 
     @Override

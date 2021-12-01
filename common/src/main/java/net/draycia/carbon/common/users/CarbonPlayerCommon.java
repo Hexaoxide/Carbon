@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.punishments.MuteEntry;
@@ -31,6 +32,7 @@ import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -42,7 +44,7 @@ import org.jetbrains.annotations.NotNull;
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
     protected boolean deafened = false;
-    protected @Nullable ChatChannel selectedChannel = null;
+    protected @Nullable Key selectedChannel = null;
 
     // All players have these
     protected @MonotonicNonNull String username;
@@ -267,12 +269,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable ChatChannel selectedChannel() {
-        return this.selectedChannel;
+        return CarbonChatProvider.carbonChat().channelRegistry().get(this.selectedChannel);
     }
 
     @Override
     public void selectedChannel(final @Nullable ChatChannel chatChannel) {
-        this.selectedChannel = chatChannel;
+        this.selectedChannel = chatChannel.key();
     }
 
     @Override
