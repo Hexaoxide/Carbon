@@ -26,6 +26,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -96,7 +97,7 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         this.basicChannel = this.injector.getInstance(BasicChatChannel.class);
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
-        if (!Files.exists(channelDirectory)) {
+        if (!Files.exists(channelDirectory) || isPathEmpty(channelDirectory)) {
             // folder doesn't exist, no channels setup
             try {
                 Files.createDirectories(channelDirectory);
@@ -223,6 +224,16 @@ public class CarbonChannelRegistry extends RegistryImpl<Key, ChatChannel> implem
         }
 
         return this.defaultValue();
+    }
+
+    private boolean isPathEmpty(final Path path) {
+        try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
+            return !directory.iterator().hasNext();
+        } catch (final IOException exception) {
+            exception.printStackTrace();
+        }
+
+        return false;
     }
 
 }
