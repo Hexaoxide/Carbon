@@ -40,6 +40,7 @@ import net.draycia.carbon.common.command.commands.HelpCommand;
 import net.draycia.carbon.common.command.commands.IgnoreCommand;
 import net.draycia.carbon.common.command.commands.MuteCommand;
 import net.draycia.carbon.common.command.commands.NicknameCommand;
+import net.draycia.carbon.common.command.commands.ReloadCommand;
 import net.draycia.carbon.common.command.commands.ReplyCommand;
 import net.draycia.carbon.common.command.commands.UnignoreCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
@@ -58,9 +59,9 @@ public final class CloudUtils {
     private static final Component NULL = Component.text("null");
     private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
 
-    public static final List<Class<?>> COMMAND_CLASSES = List.of(ClearChatCommand.class, ContinueCommand.class, DebugCommand.class,
-        HelpCommand.class, IgnoreCommand.class, MuteCommand.class, NicknameCommand.class, ReplyCommand.class, UnignoreCommand.class,
-        UnmuteCommand.class, WhisperCommand.class);
+    public static final List<Class<?>> COMMAND_CLASSES = List.of(ClearChatCommand.class, ContinueCommand.class,
+        DebugCommand.class, HelpCommand.class, IgnoreCommand.class, MuteCommand.class, NicknameCommand.class,
+        ReloadCommand.class, ReplyCommand.class, UnignoreCommand.class, UnmuteCommand.class, WhisperCommand.class);
 
     private CloudUtils() {
 
