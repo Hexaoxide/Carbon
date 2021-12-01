@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
@@ -84,11 +83,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable CarbonPlayerCommon cachedPlayer;
-
-            synchronized (this.userCache) {
-                cachedPlayer = this.userCache.get(uuid);
-            }
+            final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
 
             if (cachedPlayer != null) {
                 return new ComponentPlayerResult<>(cachedPlayer, empty());
@@ -105,9 +100,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
                         return new ComponentPlayerResult<>(null, text("Player file found but was empty."));
                     }
 
-                    synchronized (this.userCache) {
-                        this.userCache.put(uuid, player);
-                    }
+                    this.userCache.put(uuid, player);
 
                     return new ComponentPlayerResult<>(player, empty());
                 } catch (final IOException exception) {
@@ -120,9 +113,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
 
             final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-            synchronized (this.userCache) {
-                this.userCache.put(uuid, player);
-            }
+            this.userCache.put(uuid, player);
 
             return new ComponentPlayerResult<>(player, empty());
         });
@@ -161,9 +152,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(final CarbonPlayerCommon player) {
         return this.savePlayer(player).thenApply(result -> {
-            synchronized (this.userCache) {
-                this.userCache.remove(player.uuid());
-            }
+            this.userCache.remove(player.uuid());
 
             return result;
         });
