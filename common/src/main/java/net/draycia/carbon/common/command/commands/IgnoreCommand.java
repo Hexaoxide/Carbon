@@ -43,7 +43,7 @@ public class IgnoreCommand {
         final CarbonChat carbonChat,
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
-        final var command = commandManager.commandBuilder("ignore")
+        final var command = commandManager.commandBuilder("ignore", "block")
             .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
