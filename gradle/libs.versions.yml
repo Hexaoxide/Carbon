@@ -32,9 +32,9 @@ versions:
   guice: 5.0.1
   velocityApi: 3.1.0
   geantyref: 1.3.11
-  fabricMinecraft: 1.17.1
-  fabricLoader: 0.12.5
-  adventurePlatformFabric: 4.1.0-SNAPSHOT
+  fabricMinecraft: 1.18
+  fabricLoader: 0.12.8
+  adventurePlatformFabric: 5.0.0
   luckPermsApi: 5.3
 
 dependencies:
