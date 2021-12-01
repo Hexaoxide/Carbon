@@ -21,6 +21,7 @@ package net.draycia.carbon.sponge.listeners;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -31,6 +32,7 @@ import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -91,10 +93,23 @@ public final class SpongeChatListener {
             }
         }
 
-        // TODO: option to specify if the channel should invoke ChatChannel#recipients
-        //   or ChatChannel#filterRecipients
-        //   for now we will just always invoke ChatChannel#recipients
-        final var recipients = channel.recipients(sender);
+        final List<Audience> recipients;
+
+        if (event.audience().isPresent()) {
+            final var audience = event.audience().get();
+
+            if (audience instanceof ForwardingAudience forwardingAudience) {
+                recipients = new ArrayList<>();
+
+                for (final var entry : forwardingAudience.audiences()) {
+                    recipients.add(entry);
+                }
+            } else {
+                recipients = channel.recipients(sender);
+            }
+        } else {
+            recipients = channel.recipients(sender);
+        }
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
