@@ -83,8 +83,7 @@ public final class BukkitChatListener implements Listener {
 
         // TODO: option to specify if the channel should invoke ChatChannel#recipients
         //   or ChatChannel#filterRecipients
-        //   for now we will just always invoke ChatChannel#recipients
-        final var recipients = channel.recipients(sender);
+        final var recipients = new ArrayList<>(channel.filterRecipients(sender, event.viewers()));
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));

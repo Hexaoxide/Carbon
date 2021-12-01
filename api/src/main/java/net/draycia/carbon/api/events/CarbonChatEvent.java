@@ -59,7 +59,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     public CarbonChatEvent(
         final CarbonPlayer sender,
         final Component originalMessage,
-        final List<? extends Audience> recipients,
+        final List<Audience> recipients,
         final List<KeyedRenderer> renderers,
         final ChatChannel chatChannel
     ) {
