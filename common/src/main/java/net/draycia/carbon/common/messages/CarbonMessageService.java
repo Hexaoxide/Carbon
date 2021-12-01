@@ -25,7 +25,6 @@ import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
 import net.kyori.moonshine.annotation.Placeholder;
@@ -75,12 +74,6 @@ public interface CarbonMessageService {
         final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
-    @Message("reply.target.offline")
-    void replyTargetOffline(
-        final Audience audience,
-        final @Placeholder("sender_display_name") Component senderDisplayName
-    );
-
     @Message("reply.target.self")
     void whisperSelfError(
         final Audience audience,
@@ -89,12 +82,6 @@ public interface CarbonMessageService {
 
     @Message("continue.target.missing")
     void whisperTargetNotSet(
-        final Audience audience,
-        final @Placeholder("sender_display_name") Component senderDisplayName
-    );
-
-    @Message("continue.target.offline")
-    void whisperTargetOffline(
         final Audience audience,
         final @Placeholder("sender_display_name") Component senderDisplayName
     );
@@ -187,89 +174,8 @@ public interface CarbonMessageService {
         final @Placeholder String target
     );
 
-    // pls stop
-    @Message("mute.notify.permanent.reason.channel")
-    void broadcastPlayerChannelMutedPermanentlyReason(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target,
-        final @Placeholder String reason,
-        final @Placeholder Key channel
-    );
-
-    @Message("mute.notify.temporary.reason.channel")
-    void broadcastPlayerChannelMutedDurationReason(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target,
-        final @Placeholder String reason,
-        final @Placeholder Key channel,
-        final @Placeholder long duration
-    );
-
-    @Message("mute.notify.permanent.reason")
-    void broadcastPlayerMutedPermanentlyReason(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target,
-        final @Placeholder String reason
-    );
-
-    @Message("mute.notify.temporary.reason")
-    void broadcastPlayerMutedDurationReason(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target,
-        final @Placeholder String reason,
-        final @Placeholder long duration
-    );
-
-    @Message("mute.notify.permanent.channel")
-    void broadcastPlayerChannelMutedPermanently(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target,
-        final @Placeholder Key channel
-    );
-
-    @Message("mute.notify.temporary.channel")
-    void broadcastPlayerChannelMutedDuration(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target,
-        final @Placeholder Key channel,
-        final @Placeholder long duration
-    );
-
-    @Message("mute.notify.permanent")
-    void broadcastPlayerMutedPermanently(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target
-    );
-
-    @Message("mute.notify.temporary")
-    void broadcastPlayerMutedDuration(
-        final Audience audience,
-        final @Placeholder String sender,
-        final @Placeholder String target,
-        final @Placeholder long duration
-    );
-
     @Message("mute.exempt")
     void muteExempt(final Audience audience);
-
-    @Message("mute.notify.player.muted")
-    void playerAlertMuted(final Audience audience);
-
-    @Message("mute.notify.player.unmuted")
-    void playerAlertUnmuted(final Audience audience);
-
-    @Message("mute.notify.unmuted")
-    void broadcastPlayerUnmuted(
-        final Audience audience,
-        final @Placeholder String target
-    );
 
     @Message("error.command.no_permission")
     void errorCommandNoPermission(final Audience audience);
@@ -314,20 +220,38 @@ public interface CarbonMessageService {
     @Message("config.reload.failed")
     void configReloadFailed(final Audience audience);
 
-    @Message("muteinfo.selfnotmuted")
+    @Message("muteinfo.self.muted")
+    void muteInfoSelfMuted(final Audience audience);
+
+    @Message("muteinfo.self.not_muted")
     void muteInfoSelfNotMuted(final Audience audience);
 
-    @Message("muteinfo.notmuted")
+    @Message("muteinfo.not_muted")
     void muteInfoNotMuted(
         final Audience audience,
         final @Placeholder Component target
     );
 
-    @Message("muteinfo.info")
-    void muteInfoChannels(
+    @Message("muteinfo.muted")
+    void muteInfoMuted(
         final Audience audience,
         final @Placeholder Component target,
-        final @Placeholder Component channels
+        final @Placeholder boolean muted
     );
+
+    @Message("unmute.alert.target")
+    void unmuteAlertRecipient(final Audience audience);
+
+    @Message("unmute.alert.players")
+    void unmuteAlertPlayers(final Audience audience, final @Placeholder Component target);
+
+    @Message("mute.alert.target")
+    void muteAlertRecipient(final Audience audience);
+
+    @Message("mute.alert.players")
+    void muteAlertPlayers(final Audience audience, final @Placeholder Component target);
+
+    @Message("mute.cannot_speak")
+    void muteCannotSpeak(final Audience audience);
 
 }

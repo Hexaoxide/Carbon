@@ -62,7 +62,7 @@ public class FabricPlayerLeaveListener implements PlayerStatusMessageEvents.Mess
         final CarbonPlayer player = result.player();
 
         if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            if (!player.muteEntries().isEmpty()) {
+            if (player.muted()) {
                 event.disableMessage();
             }
         }

@@ -79,7 +79,7 @@ public class NicknameCommand {
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-                long expirationTime = -1; // TODO: implement timed nicknames
+                long expirationTime = -1;
                 @MonotonicNonNull String durationFormat = null;
 
                 if (handler.flags().contains("reset")) {

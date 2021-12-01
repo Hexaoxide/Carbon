@@ -58,7 +58,7 @@ public class SpongePlayerDeathListener {
 
         final CarbonPlayer carbonPlayer = result.player();
 
-        if (!carbonPlayer.muteEntries().isEmpty()) {
+        if (carbonPlayer.muted()) {
             event.setMessageCancelled(true);
         }
     }

@@ -50,6 +50,11 @@ public class ContinueCommand {
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
+                if (sender.muted()) {
+                    messageService.muteCannotSpeak(sender);
+                    return;
+                }
+
                 final String message = handler.get("message");
                 final UUID whisperTarget = sender.lastWhisperTarget();
 

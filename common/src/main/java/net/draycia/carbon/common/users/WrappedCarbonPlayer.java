@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -154,24 +153,13 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public List<MuteEntry> muteEntries() {
-        return this.carbonPlayerCommon().muteEntries();
+    public boolean muted() {
+        return this.carbonPlayerCommon().muted();
     }
 
     @Override
-    public boolean muted(final ChatChannel chatChannel) {
-        return this.carbonPlayerCommon().muted(chatChannel);
-    }
-
-    @Override
-    public @Nullable MuteEntry addMuteEntry(
-        final @Nullable ChatChannel chatChannel,
-        final boolean muted,
-        final @Nullable UUID cause,
-        final long duration,
-        final @Nullable String reason
-    ) {
-        return this.carbonPlayerCommon().addMuteEntry(chatChannel, muted, cause, duration, reason);
+    public void muted(final boolean muted) {
+        this.carbonPlayerCommon().muted(muted);
     }
 
     @Override

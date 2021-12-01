@@ -55,7 +55,7 @@ public class FabricPlayerDeathListener implements PlayerStatusMessageEvents.Mess
 
         final CarbonPlayer player = result.player();
 
-        if (!player.muteEntries().isEmpty()) {
+        if (player.muted()) {
             event.disableMessage();
         }
     }

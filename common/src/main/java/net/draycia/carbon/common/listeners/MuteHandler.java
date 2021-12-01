@@ -55,7 +55,7 @@ public class MuteHandler {
         this.messageService = messageService;
 
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 100, false, event -> {
-            if (!event.sender().muted(event.chatChannel())) {
+            if (!event.sender().muted()) {
                 return;
             }
 

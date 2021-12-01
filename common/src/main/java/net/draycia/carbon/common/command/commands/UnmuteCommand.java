@@ -45,9 +45,7 @@ public class UnmuteCommand {
     ) {
         final var command = commandManager.commandBuilder("unmute")
             .argument(carbonPlayerArgument.newInstance(false, "player",
-                CarbonPlayerArgument.NO_SENDER.and((sender, player) -> {
-                    return !player.muteEntries().isEmpty();
-                })))
+                CarbonPlayerArgument.NO_SENDER.and((sender, player) -> player.muted())))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
                 .withArgument(UUIDArgument.optional("uuid"))
@@ -67,20 +65,17 @@ public class UnmuteCommand {
                     throw new IllegalStateException("No target found to unmute.");
                 }
 
-                messageService.playerAlertUnmuted(target);
-                messageService.broadcastPlayerUnmuted(sender, target.username());
+                messageService.unmuteAlertRecipient(target);
 
                 for (final var player : carbonChat.server().players()) {
-                    if (player.equals(sender) || player.equals(target)) {
+                    if (!player.equals(sender) && !player.hasPermission("carbon.mute.notify")) {
                         continue;
                     }
 
-                    if (!player.hasPermission("carbon.mute.notify")) {
-                        continue;
-                    }
-
-                    messageService.broadcastPlayerUnmuted(player, target.username());
+                    messageService.unmuteAlertPlayers(player, CarbonPlayer.renderName(target));
                 }
+
+                target.muted(false);
             })
             .build();
 

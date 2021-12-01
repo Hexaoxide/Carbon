@@ -211,8 +211,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             loader.save(node);
 
-            // TODO: create advanced-channel.conf.example
-            // TODO: log in console, "no channels found - adding example configs"
+            this.logger.info("No custom channels defined! Using basic handler.");
         } catch (final IOException exception) {
             exception.printStackTrace();
         }
@@ -242,8 +241,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             .handler(handler -> {
                 final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
-                if (sender.muted(channel)) {
-                    // TODO: "you are muted in this channel!!!!"
+                if (sender.muted()) {
+                    this.messageService.muteCannotSpeak(sender);
                     return;
                 }
 

@@ -66,7 +66,7 @@ public class BukkitPlayerJoinListener implements Listener {
         }
 
         // Don't show join messages when muted
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
+        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && player.muted()) {
             event.joinMessage(null);
         }
     }
@@ -83,7 +83,7 @@ public class BukkitPlayerJoinListener implements Listener {
         final CarbonPlayer player = result.player();
 
         if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            if (!player.muteEntries().isEmpty()) {
+            if (player.muted()) {
                 event.quitMessage(null);
             }
         }

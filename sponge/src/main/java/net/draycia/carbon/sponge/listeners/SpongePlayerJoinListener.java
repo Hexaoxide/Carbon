@@ -63,7 +63,7 @@ public class SpongePlayerJoinListener {
         }
 
         // Don't show join messages when muted
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
+        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && player.muted()) {
             event.setMessageCancelled(true);
         }
     }
@@ -80,7 +80,7 @@ public class SpongePlayerJoinListener {
         final CarbonPlayer player = result.player();
 
         if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            if (!player.muteEntries().isEmpty()) {
+            if (player.muted()) {
                 event.setAudience(Audience.empty());
             }
         }

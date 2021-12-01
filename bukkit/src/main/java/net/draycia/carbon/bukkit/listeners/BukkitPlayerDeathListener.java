@@ -57,7 +57,7 @@ public class BukkitPlayerDeathListener implements Listener {
 
         final CarbonPlayer player = result.player();
 
-        if (!player.muteEntries().isEmpty()) {
+        if (player.muted()) {
             event.deathMessage(null);
         }
     }

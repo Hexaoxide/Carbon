@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
@@ -195,40 +194,20 @@ public interface CarbonPlayer extends Audience, Identified {
     List<String> groups();
 
     /**
-     * A copy of the mute entries the player has.
+     * Returns if the player is muted.
      *
-     * @return a copy of the player's mute entries
+     * @return if the player is muted
      * @since 2.0.0
      */
-    // TODO: ensure this never returns expired entries
-    List<MuteEntry> muteEntries();
+    boolean muted();
 
     /**
-     * Returns if the player is muted for the channel and unable to speak in it.
+     * Mutes and unmutes the player.
      *
-     * @param chatChannel the chat channel
-     * @return if the player is muted in the channel
+     * @param muted if the player is now muted
      * @since 2.0.0
      */
-    boolean muted(final ChatChannel chatChannel);
-
-    /**
-     * Mutes and unmutes the player for the specified channel.
-     *
-     * @param chatChannel the channel to mute/unmute for
-     * @param muted if the player should be muted for the channel
-     * @param cause the UUID of the cause of the mute, typically a player UUID
-     * @param duration the duration of the mute, or -1 if it does not expire
-     * @param reason the reason the player was muted
-     * @since 2.0.0
-     */
-    @Nullable MuteEntry addMuteEntry(
-        final @Nullable ChatChannel chatChannel,
-        final boolean muted,
-        final @Nullable UUID cause,
-        final long duration,
-        final @Nullable String reason
-    );
+    void muted(boolean muted);
 
     /**
      * Checks if the sender is being ignored by this player.

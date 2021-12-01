@@ -22,8 +22,6 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
 import com.google.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
@@ -32,9 +30,6 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.JoinConfiguration;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -69,31 +64,23 @@ public class MuteInfoCommand {
                     target = sender;
                 }
 
-                if (target.muteEntries().isEmpty()) {
+                if (!target.muted()) {
                     if (sender.equals(target)) {
-                        messageService.muteInfoSelfNotMuted(sender);
+                        messageService.muteInfoSelfMuted(sender);
                     } else {
                         messageService.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
                     }
 
                     return;
-                }
-
-                final Component channelList;
-                final List<ComponentLike> channelNames = new ArrayList<>();
-
-                for (final var muteEntry : target.muteEntries()) {
-                    if (muteEntry.valid()) {
-                        if (muteEntry.channel() != null) {
-                            channelNames.add(Component.text(muteEntry.channel().value()));
-                        } else {
-                            channelNames.add(Component.text("all"));
-                        }
+                } else {
+                    if (sender.equals(target)) {
+                        messageService.muteInfoSelfNotMuted(sender);
+                    } else {
+                        messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
                     }
                 }
 
-                channelList = Component.join(JoinConfiguration.separator(Component.text(", ")), channelNames);
-                messageService.muteInfoChannels(sender, CarbonPlayer.renderName(target), channelList);
+                messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
             })
             .build();
 

@@ -52,7 +52,7 @@ public class FabricPlayerJoinListener implements PlayerStatusMessageEvents.Messa
         }
 
         // Don't show join messages when muted
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && !player.muteEntries().isEmpty()) {
+        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && player.muted()) {
             event.disableMessage();
         }
     }

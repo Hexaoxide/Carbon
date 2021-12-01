@@ -74,7 +74,6 @@ public final class BasicChatChannel implements ChatChannel {
 
     @Override
     public @Nullable String quickPrefix() {
-        // todo
         return null;
     }
 

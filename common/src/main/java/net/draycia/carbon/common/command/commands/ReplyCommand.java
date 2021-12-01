@@ -53,6 +53,11 @@ public class ReplyCommand {
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
+                if (sender.muted()) {
+                    messageService.muteCannotSpeak(sender);
+                    return;
+                }
+
                 final String message = handler.get("message");
                 final @Nullable UUID replyTarget = sender.whisperReplyTarget();
 

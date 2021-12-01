@@ -20,14 +20,12 @@
 package net.draycia.carbon.common.users;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -43,7 +41,9 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
+    protected boolean muted = false;
     protected boolean deafened = false;
+
     protected @Nullable Key selectedChannel = null;
 
     // All players have these
@@ -63,7 +63,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected boolean spying = false;
 
     // Punishments
-    protected List<MuteEntry> muteEntries = new ArrayList<>();
     protected List<UUID> ignoredPlayers = new ArrayList<>();
 
     public CarbonPlayerCommon(
@@ -137,50 +136,22 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public String primaryGroup() {
-        return "default"; // TODO: implement
+        return "default";
     }
 
     @Override
     public List<String> groups() {
-        return List.of("default"); // TODO: implement
+        return List.of("default");
     }
 
     @Override
-    public List<MuteEntry> muteEntries() {
-        return Collections.unmodifiableList(this.muteEntries);
+    public boolean muted() {
+        return this.muted;
     }
 
     @Override
-    public boolean muted(final ChatChannel chatChannel) {
-        for (final var muteEntry : this.muteEntries) {
-            if (!muteEntry.valid()) {
-                continue;
-            }
-
-            if (muteEntry.channel() == null || chatChannel.key().equals(muteEntry.channel())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public @Nullable MuteEntry addMuteEntry(
-        final @Nullable ChatChannel chatChannel,
-        final boolean muted,
-        final @Nullable UUID cause,
-        final long duration,
-        final @Nullable String reason
-    ) {
-        if (muted) {
-            final var muteEntry = new MuteEntry(System.currentTimeMillis(), cause, duration,
-                reason, chatChannel != null ? chatChannel.key() : null, UUID.randomUUID());
-            this.muteEntries.add(muteEntry);
-            return muteEntry;
-        } else {
-            return null;
-        }
+    public void muted(final boolean muted) {
+        this.muted = muted;
     }
 
     @Override
