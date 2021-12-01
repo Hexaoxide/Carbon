@@ -126,7 +126,6 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
 
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        // TODO: user cache?
         return CompletableFuture.supplyAsync(() ->
             Sponge.server().gameProfileManager().basicProfile(username).join().uuid()
         );

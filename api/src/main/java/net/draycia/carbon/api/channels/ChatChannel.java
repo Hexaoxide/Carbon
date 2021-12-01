@@ -141,7 +141,6 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
             return new ChannelPermissionResult(false, reason);
         }
 
-        // TODO: redo this / reconsider this
         public static ChannelPermissionResult allowedIf(
             final Component reason,
             final Supplier<Boolean> supplier

@@ -47,7 +47,7 @@ public interface CarbonMessageService {
     @Message("channel.change")
     void changedChannels(
         final Audience audience,
-        final @Placeholder String channel // TODO: allow MiniMessage based channel "names"
+        final @Placeholder String channel
     );
 
     @Message("whisper.to")
