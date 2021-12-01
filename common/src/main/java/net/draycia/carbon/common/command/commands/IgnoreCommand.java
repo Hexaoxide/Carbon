@@ -61,7 +61,8 @@ public class IgnoreCommand {
                     final var result = carbonChat.server().player(handler.<UUID>get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    throw new IllegalStateException("No target found to unmute.");
+                    messageService.ignoreTargetInvalid(sender);
+                    return;
                 }
 
                 if (target.hasPermission("carbon.ignore.exempt")) {

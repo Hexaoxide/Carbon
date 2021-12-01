@@ -299,6 +299,9 @@ public interface CarbonMessageService {
     @Message("ignore.no_longer_ignoring")
     void noLongerIgnoring(final Audience audience, final @Placeholder Component target);
 
+    @Message("ignore.invalid_target")
+    void ignoreTargetInvalid(final Audience audience);
+
     @Message("whisper.ignoring_target")
     void whisperIgnoringTarget(final Audience audience, final @Placeholder Component target);
 
