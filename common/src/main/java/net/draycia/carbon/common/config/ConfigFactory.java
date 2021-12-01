@@ -35,18 +35,37 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 
 @DefaultQualifier(NonNull.class)
-public class ConfigLoader {
+public class ConfigFactory {
 
     private final Path dataDirectory;
     private final LocaleSerializerConfigurate locale;
+    private @Nullable PrimaryConfig primaryConfig = null;
 
     @Inject
-    public ConfigLoader(
+    public ConfigFactory(
         @ForCarbon final Path dataDirectory,
         final LocaleSerializerConfigurate locale
     ) {
         this.dataDirectory = dataDirectory;
         this.locale = locale;
+    }
+
+    public @Nullable PrimaryConfig reloadPrimaryConfig() {
+        try {
+            this.primaryConfig = this.load(PrimaryConfig.class, "config.conf");
+        } catch (final IOException exception) {
+            exception.printStackTrace();
+        }
+
+        return this.primaryConfig;
+    }
+
+    public @Nullable PrimaryConfig primaryConfig() {
+        if (this.primaryConfig == null) {
+            return this.reloadPrimaryConfig();
+        }
+
+        return this.primaryConfig;
     }
 
     public ConfigurationLoader<?> configurationLoader(final Path file) {

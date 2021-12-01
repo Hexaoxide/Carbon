@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -32,21 +32,18 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class FabricPlayerDeathListener implements PlayerStatusMessageEvents.MessageEventListener {
 
     private final CarbonChat carbonChat;
-    private final PrimaryConfig primaryConfig;
+    private final ConfigFactory configFactory;
 
     @Inject
-    public FabricPlayerDeathListener(
-        final CarbonChat carbonChat,
-        final PrimaryConfig primaryConfig
-    ) {
+    public FabricPlayerDeathListener(final CarbonChat carbonChat, final ConfigFactory configFactory) {
         this.carbonChat = carbonChat;
-        this.primaryConfig = primaryConfig;
+        this.configFactory = configFactory;
     }
 
     @Override
     public void onMessage(final PlayerStatusMessageEvents.MessageEvent event) {
         // Early exit in case "hide muted join / leave messages when muted" is disabled
-        if (!this.primaryConfig.hideMutedJoinLeaveQuit()) {
+        if (!this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
             return;
         }
 

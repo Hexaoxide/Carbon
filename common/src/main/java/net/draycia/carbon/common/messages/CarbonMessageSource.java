@@ -38,13 +38,14 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.translation.Translator;
 import net.kyori.moonshine.message.IMessageSource;
@@ -65,13 +66,13 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     @Inject
     private CarbonMessageSource(
         final @ForCarbon Path dataDirectory,
-        final PrimaryConfig primaryConfig,
+        final ConfigFactory configFactory,
         final Logger logger
     ) throws IOException {
         this.pluginJar = pluginJar();
         this.logger = logger;
 
-        this.defaultLocale = primaryConfig.defaultLocale();
+        this.defaultLocale = Objects.requireNonNull(configFactory.primaryConfig()).defaultLocale();
 
         final Path localeDirectory = dataDirectory.resolve("locale");
 
