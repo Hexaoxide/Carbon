@@ -119,35 +119,4 @@ public class NicknameCommand {
         commandManager.command(command);
     }
 
-    private String formatMillisDuration(final long millisSinceEpoch) {
-        return String.format("%d milliseconds", millisSinceEpoch);
-
-        //final var millisBetween = millisSinceEpoch - System.currentTimeMillis();
-        //var period = Period.from(Duration.ofMillis(millisBetween)); // TODO: this doesn't work
-        //var stringJoiner = new StringJoiner(", ");
-        //
-        //for (final var temporalUnit : temporalUnits) {
-        //    final var count = period.get(temporalUnit);
-        //
-        //    // Check if == 0 instead of > 0 in case the millisSinceEpoch refers to the past
-        //    // !! the distinction is important
-        //    if (count != 0) {
-        //        period = switch (temporalUnit) {
-        //            case YEARS -> period.minusYears(count);
-        //            case MONTHS -> period.minusMonths(count);
-        //            case WEEKS -> period.minus(Period.ofWeeks((int)count));
-        //            case DAYS -> period.minusDays(count);
-        //            case HOURS, MINUTES, SECONDS -> period.minus(Duration.of(count, temporalUnit));
-        //            default -> period;
-        //        };
-        //
-        //        stringJoiner.add(String.format("%d %s", count, temporalUnit));
-        //    }
-        //}
-        //
-        //final var suffix = millisBetween > 0 ? "" : " ago";
-        //
-        //return stringJoiner + suffix;
-    }
-
 }
