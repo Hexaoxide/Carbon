@@ -67,31 +67,12 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon.displayName(displayName);
 
-        if (this.hasActiveTemporaryDisplayName()) {
-            return;
-        }
-
         this.player().ifPresent(player -> {
             // Update player's name in chat
             player.displayName(displayName);
 
             // Update player's name in the tab player list
             player.playerListName(displayName);
-        });
-    }
-
-    @Override
-    public void temporaryDisplayName(final @Nullable Component displayName, final long expirationEpoch) {
-        this.carbonPlayerCommon.temporaryDisplayName(displayName, expirationEpoch);
-
-        this.player().ifPresent(player -> {
-            // Update player's name in chat
-            player.displayName(displayName);
-
-            // Update player's name in the tab player list
-            player.playerListName(displayName);
-
-            // TODO: schedule task to unset temporary display name when it expires
         });
     }
 

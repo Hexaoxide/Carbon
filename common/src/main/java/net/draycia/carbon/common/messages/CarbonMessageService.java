@@ -92,13 +92,6 @@ public interface CarbonMessageService {
         final @Placeholder Component nickname
     );
 
-    @Message("nickname.set.temporary")
-    void temporaryNicknameSet(
-        final Audience audience,
-        final @Placeholder Component nickname,
-        final @Placeholder String duration
-    );
-
     @Message("nickname.set.others")
     void nicknameSetOthers(
         final Audience audience,
@@ -106,27 +99,11 @@ public interface CarbonMessageService {
         final @Placeholder Component nickname
     );
 
-    @Message("nickname.set.others.temporary")
-    void temporaryNicknameSetOthers(
-        final Audience audience,
-        final @Placeholder String target,
-        final @Placeholder Component nickname,
-        final @Placeholder String duration
-    );
-
     @Message("nickname.show.others")
     void nicknameShowOthers(
         final Audience audience,
         final @Placeholder String target,
         final @Placeholder Component nickname
-    );
-
-    @Message("nickname.show.others.temporary")
-    void temporaryNicknameShowOthers(
-        final Audience audience,
-        final @Placeholder String target,
-        final @Placeholder Component nickname,
-        final @Placeholder String duration
     );
 
     @Message("nickname.show.others.unset")
@@ -142,14 +119,6 @@ public interface CarbonMessageService {
         final @Placeholder Component nickname
     );
 
-    @Message("nickname.show.temporary")
-    void temporaryNicknameShow(
-        final Audience audience,
-        final @Placeholder String target,
-        final @Placeholder Component nickname,
-        final @Placeholder String duration
-    );
-
     @Message("nickname.show.unset")
     void nicknameShowUnset(
         final Audience audience,
@@ -161,15 +130,6 @@ public interface CarbonMessageService {
 
     @Message("nickname.reset.others")
     void nicknameResetOthers(
-        final Audience audience,
-        final @Placeholder String target
-    );
-
-    @Message("nickname.reset.temporary")
-    void temporaryNicknameReset(final Audience audience);
-
-    @Message("nickname.reset.others.temporary")
-    void temporaryNicknameResetOthers(
         final Audience audience,
         final @Placeholder String target
     );

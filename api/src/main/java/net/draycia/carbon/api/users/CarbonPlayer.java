@@ -48,9 +48,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     static Component renderName(final CarbonPlayer player) {
-        if (player.hasActiveTemporaryDisplayName()) {
-            return Objects.requireNonNull(player.temporaryDisplayName());
-        } else if (player.hasCustomDisplayName()) {
+        if (player.hasCustomDisplayName()) {
             return Objects.requireNonNull(player.displayName());
         } else {
             return Component.text(player.username());
@@ -89,43 +87,6 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     void displayName(final @Nullable Component displayName);
-
-    /**
-     * Temporarily sets the player's display name.<br>
-     * Setting null is equivalent to setting the display name to the username.
-     * If the player logs off or is otherwise disconnected from the server,
-     *  their temporary display name will be reset.
-     *
-     * @param temporaryDisplayName the new display name
-     * @param expirationEpoch when the display name expires, in milliseconds from Unix epoch, or -1 for no expiration
-     * @since 2.0.0
-     */
-    void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch);
-
-    /**
-     * The player's temporary display name.
-     *
-     * @return the player's temporary display name.
-     * @since 2.0.0
-     */
-    // TODO: improve javadocs here
-    @Nullable Component temporaryDisplayName();
-
-    /**
-     * The expiration date in milliseconds for the temporary display name.
-     *
-     * @return the temporary display name's expiration in MS since Unix Epoch
-     * @since 2.0.0
-     */
-    long temporaryDisplayNameExpiration();
-
-    /**
-     * If the player has a temporary display name and it is not expired.
-     *
-     * @return if the player's temporary display name is active
-     * @since 2.0.0
-     */
-    boolean hasActiveTemporaryDisplayName();
 
     /**
      * The player's UUID, often used for identification purposes.

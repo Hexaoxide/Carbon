@@ -108,26 +108,6 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch) {
-        this.carbonPlayerCommon().temporaryDisplayName(temporaryDisplayName, expirationEpoch);
-    }
-
-    @Override
-    public @Nullable Component temporaryDisplayName() {
-        return this.carbonPlayerCommon().temporaryDisplayName();
-    }
-
-    @Override
-    public long temporaryDisplayNameExpiration() {
-        return this.carbonPlayerCommon().temporaryDisplayNameExpiration();
-    }
-
-    @Override
-    public boolean hasActiveTemporaryDisplayName() {
-        return this.carbonPlayerCommon().hasActiveTemporaryDisplayName();
-    }
-
-    @Override
     public UUID uuid() {
         return this.carbonPlayerCommon().uuid();
     }

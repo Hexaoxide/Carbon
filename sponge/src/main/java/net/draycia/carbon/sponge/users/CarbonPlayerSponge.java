@@ -89,11 +89,6 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public void temporaryDisplayName(final @Nullable Component displayName, final long expirationEpoch) {
-        this.carbonPlayerCommon.temporaryDisplayName(displayName, expirationEpoch);
-    }
-
-    @Override
     public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
         final Optional<ServerPlayer> optionalPlayer = this.player(); // This is temporary (it's not)
 

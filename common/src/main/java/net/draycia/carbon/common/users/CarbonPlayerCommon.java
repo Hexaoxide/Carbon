@@ -52,8 +52,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     // Display information
     protected @Nullable Component displayName = null;
-    protected @Nullable Component temporaryDisplayName = null;
-    protected long temporaryDisplayNameExpiration = -1;
 
     // Whispers
     protected transient @Nullable UUID lastWhisperTarget = null;
@@ -103,30 +101,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void displayName(final @Nullable Component displayName) {
         this.displayName = displayName;
-    }
-
-    @Override
-    public void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch) {
-        // TODO: see why these aren't persisting
-        this.temporaryDisplayName = temporaryDisplayName;
-        this.temporaryDisplayNameExpiration = expirationEpoch;
-    }
-
-    @Override
-    public @Nullable Component temporaryDisplayName() {
-        return this.temporaryDisplayName;
-    }
-
-    @Override
-    public long temporaryDisplayNameExpiration() {
-        return this.temporaryDisplayNameExpiration;
-    }
-
-    @Override
-    public boolean hasActiveTemporaryDisplayName() {
-        return this.temporaryDisplayName != null
-            && (this.temporaryDisplayNameExpiration == -1
-            || this.temporaryDisplayNameExpiration > System.currentTimeMillis());
     }
 
     @Override
