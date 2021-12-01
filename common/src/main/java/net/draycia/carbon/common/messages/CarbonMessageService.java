@@ -305,4 +305,10 @@ public interface CarbonMessageService {
     @Message("whisper.ignored_by_target")
     void whisperTargetIgnoring(final Audience audience, final @Placeholder Component target);
 
+    @Message("config.reload.success")
+    void configReloaded(final Audience audience);
+
+    @Message("config.reload.failed")
+    void configReloadFailed(final Audience audience);
+
 }
