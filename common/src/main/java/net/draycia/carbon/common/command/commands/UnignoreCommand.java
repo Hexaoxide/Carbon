@@ -65,7 +65,7 @@ public class UnignoreCommand {
                     return;
                 }
 
-                sender.ignoring(target, true);
+                sender.ignoring(target, false);
                 messageService.noLongerIgnoring(sender, CarbonPlayer.renderName(target));
             })
             .build();
