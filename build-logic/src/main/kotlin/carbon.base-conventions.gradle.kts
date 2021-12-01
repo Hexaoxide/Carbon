@@ -13,7 +13,7 @@ indra {
   publishSnapshotsTo("parksSnapshots", "https://repo.parks.dev/repository/maven-snapshots/")
 
   javaVersions {
-    target(16)
+    target(17)
   }
 
   github(GITHUB_ORGANIZATION, GITHUB_REPO)
