@@ -43,7 +43,7 @@ public class UnignoreCommand {
         final CarbonChat carbonChat,
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
-        final var command = commandManager.commandBuilder("unignore")
+        final var command = commandManager.commandBuilder("unignore", "unblock")
             .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
