@@ -191,7 +191,9 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void ignoring(final CarbonPlayer player, final boolean nowIgnoring) {
         if (nowIgnoring) {
-            this.ignoredPlayers.add(player.uuid());
+            if (!this.ignoredPlayers.contains(player.uuid())) {
+                this.ignoredPlayers.add(player.uuid());
+            }
         } else {
             this.ignoredPlayers.remove(player.uuid());
         }
