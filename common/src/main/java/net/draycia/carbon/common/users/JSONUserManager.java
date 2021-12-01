@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -56,7 +58,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     private final Path userDirectory;
     private final CarbonChat carbonChat;
 
-    private final Map<UUID, CarbonPlayerCommon> userCache = new ConcurrentHashMap<>();
+    private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
 
     @Inject
     public JSONUserManager(
@@ -82,7 +84,11 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
+            final @Nullable CarbonPlayerCommon cachedPlayer;
+
+            synchronized (this.userCache) {
+                cachedPlayer = this.userCache.get(uuid);
+            }
 
             if (cachedPlayer != null) {
                 return new ComponentPlayerResult<>(cachedPlayer, empty());
@@ -99,7 +105,9 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
                         return new ComponentPlayerResult<>(null, text("Player file found but was empty."));
                     }
 
-                    this.userCache.put(uuid, player);
+                    synchronized (this.userCache) {
+                        this.userCache.put(uuid, player);
+                    }
 
                     return new ComponentPlayerResult<>(player, empty());
                 } catch (final IOException exception) {
@@ -112,7 +120,9 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
 
             final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-            this.userCache.put(uuid, player);
+            synchronized (this.userCache) {
+                this.userCache.put(uuid, player);
+            }
 
             return new ComponentPlayerResult<>(player, empty());
         });
@@ -151,7 +161,9 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(final CarbonPlayerCommon player) {
         return this.savePlayer(player).thenApply(result -> {
-            this.userCache.remove(player.uuid());
+            synchronized (this.userCache) {
+                this.userCache.remove(player.uuid());
+            }
 
             return result;
         });
