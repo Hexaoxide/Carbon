@@ -58,7 +58,7 @@ public class NicknameCommand {
             )
             .flag(commandManager.flagBuilder("reset")
                 .withAliases("r")
-                .withPermission(Permission.of("carbon.nickname.reset"))
+                .withPermission(Permission.of("carbon.nickname.set"))
             )
             .permission("carbon.nickname")
             .senderType(PlayerCommander.class)
@@ -93,6 +93,12 @@ public class NicknameCommand {
                         messageService.nicknameSetOthers(sender, target.username(), nickname);
                     } else {
                         // Setting own nickname
+                        // TODO: Require .set and .self
+                        if (!sender.hasPermission("carbon.nickname.self")) {
+                            messageService.nicknameCannotSetOwn(sender);
+                            return;
+                        }
+
                         sender.displayName(nickname);
                         messageService.nicknameSet(sender, nickname);
                     }
@@ -106,7 +112,13 @@ public class NicknameCommand {
                         messageService.nicknameShowOthersUnset(sender, target.username());
                     }
                 } else {
+                    // TODO: Require .see and .self
                     // Checking own nickname
+                    if (!sender.hasPermission("carbon.nickname.self")) {
+                        messageService.nicknameCannotSeeOwn(sender);
+                        return;
+                    }
+
                     if (sender.displayName() != null) {
                         messageService.nicknameShow(sender, sender.username(), sender.displayName());
                     } else {

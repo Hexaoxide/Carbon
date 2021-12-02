@@ -49,7 +49,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     @Override
     public boolean awareOf(final CarbonPlayer other) {
         if (other.vanished()) {
-            return this.hasPermission("carbon.seevanished");
+            return this.hasPermission("carbon.whisper.vanished");
         }
 
         return true;

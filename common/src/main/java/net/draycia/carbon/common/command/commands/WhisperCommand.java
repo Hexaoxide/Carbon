@@ -41,7 +41,7 @@ public class WhisperCommand {
         final var command = commandManager.commandBuilder("whisper", "w", "message", "msg")
             .argument(carbonPlayerArgument.newInstance(true, "recipient", CarbonPlayerArgument.NO_SENDER))
             .argument(StringArgument.greedy("message"))
-            .permission("carbon.whisper.send") // TODO: carbon.whisper.spy
+            .permission("carbon.whisper.message") // TODO: carbon.whisper.spy
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
@@ -61,7 +61,7 @@ public class WhisperCommand {
 
                 if (!recipient.online()
                     || (!sender.awareOf(recipient)
-                    && !sender.hasPermission("carbon.seevanish.whisper"))
+                    && !sender.hasPermission("carbon.whisper.vanished"))
                 ) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
                     final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);

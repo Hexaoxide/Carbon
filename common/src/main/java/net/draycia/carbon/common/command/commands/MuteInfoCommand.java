@@ -49,7 +49,7 @@ public class MuteInfoCommand {
                 .withAliases("u")
                 .withArgument(UUIDArgument.optional("uuid"))
             )
-            .permission("carbon.mute.muteinfo")
+            .permission("carbon.mute.info")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();

@@ -74,7 +74,7 @@ public class ContinueCommand {
 
                 if (!recipient.online()
                     || (!sender.awareOf(recipient)
-                    && !sender.hasPermission("carbon.seevanish.whisper"))
+                    && !sender.hasPermission("carbon.whisper.vanished"))
                 ) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
                     final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);

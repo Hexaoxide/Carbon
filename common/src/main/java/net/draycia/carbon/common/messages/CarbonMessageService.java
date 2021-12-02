@@ -80,7 +80,7 @@ public interface CarbonMessageService {
         final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
-    @Message("continue.target.missing")
+    @Message("whisper.continue.target_missing")
     void whisperTargetNotSet(
         final Audience audience,
         final @Placeholder("sender_display_name") Component senderDisplayName
@@ -134,6 +134,12 @@ public interface CarbonMessageService {
         final @Placeholder String target
     );
 
+    @Message("nickname.set.self.error")
+    void nicknameCannotSetOwn(final Audience audience);
+
+    @Message("nickname.see.self.error")
+    void nicknameCannotSeeOwn(final Audience audience);
+
     @Message("mute.exempt")
     void muteExempt(final Audience audience);
 
@@ -180,29 +186,29 @@ public interface CarbonMessageService {
     @Message("config.reload.failed")
     void configReloadFailed(final Audience audience);
 
-    @Message("muteinfo.self.muted")
+    @Message("mute.info.self.muted")
     void muteInfoSelfMuted(final Audience audience);
 
-    @Message("muteinfo.self.not_muted")
+    @Message("mute.info.self.not_muted")
     void muteInfoSelfNotMuted(final Audience audience);
 
-    @Message("muteinfo.not_muted")
+    @Message("mute.info.not_muted")
     void muteInfoNotMuted(
         final Audience audience,
         final @Placeholder Component target
     );
 
-    @Message("muteinfo.muted")
+    @Message("mute.info.muted")
     void muteInfoMuted(
         final Audience audience,
         final @Placeholder Component target,
         final @Placeholder boolean muted
     );
 
-    @Message("unmute.alert.target")
+    @Message("mute.unmute.alert.target")
     void unmuteAlertRecipient(final Audience audience);
 
-    @Message("unmute.alert.players")
+    @Message("mute.unmute.alert.players")
     void unmuteAlertPlayers(final Audience audience, final @Placeholder Component target);
 
     @Message("mute.alert.target")

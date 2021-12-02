@@ -37,7 +37,7 @@ public class ClearChatCommand {
         final PrimaryConfig config
     ) {
         final var command = commandManager.commandBuilder("clearchat", "chatclear", "cc")
-            .permission("carbon.clearchat")
+            .permission("carbon.clearchat.clear")
             .senderType(PlayerCommander.class)
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
