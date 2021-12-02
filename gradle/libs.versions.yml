@@ -15,7 +15,7 @@ versions:
   shadow: 7.1.0
   adventure: 4.9.3
   minimessage: 4.2.0-SNAPSHOT
-  cloud: 1.6.0-SNAPSHOT
+  cloud: 1.7.0-SNAPSHOT
   configurate: 4.1.2
   typesafeConfig: 1.4.1
   checkerQual: 3.19.0
