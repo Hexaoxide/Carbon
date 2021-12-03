@@ -50,7 +50,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.TriState;
 import net.kyori.moonshine.message.IMessageRenderer;
+import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,6 +75,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private @MonotonicNonNull CarbonServerFabric carbonServerFabric;
     private @MonotonicNonNull CarbonMessageService messageService;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
+    private TriState luckPermsLoaded = TriState.NOT_SET;
 
     @Override
     public void onInitialize() {
@@ -167,6 +170,19 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
     public CarbonMessageService messageService() {
         return this.messageService;
+    }
+
+    public boolean luckPermsLoaded() {
+        if (this.luckPermsLoaded == TriState.NOT_SET) {
+            try {
+                LuckPermsProvider.get();
+                this.luckPermsLoaded = TriState.TRUE;
+            } catch (final NoClassDefFoundError exception) {
+                this.luckPermsLoaded = TriState.FALSE;
+            }
+        }
+
+        return this.luckPermsLoaded == TriState.TRUE;
     }
 
 }

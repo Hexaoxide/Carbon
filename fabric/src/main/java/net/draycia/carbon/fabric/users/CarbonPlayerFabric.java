@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.fabric.users;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -115,6 +117,39 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
         }
 
         return FabricServerAudiences.of(player.server).toAdventure(item.getDisplayName());
+    }
+
+    @Override
+    public boolean hasPermission(final String permission) {
+        if (!this.carbonChatFabric.luckPermsLoaded()) {
+            return true;
+        }
+
+        return this.carbonPlayerCommon().hasPermission(permission);
+    }
+
+    @Override
+    public String primaryGroup() {
+        if (!this.carbonChatFabric.luckPermsLoaded()) {
+            return "default";
+        }
+
+        return this.user().getPrimaryGroup();
+    }
+
+    @Override
+    public List<String> groups() {
+        if (!this.carbonChatFabric.luckPermsLoaded()) {
+            return List.of("default");
+        }
+
+        final var groups = new ArrayList<String>();
+
+        for (final var group : this.user().getInheritedGroups(this.user().getQueryOptions())) {
+            groups.add(group.getName());
+        }
+
+        return groups;
     }
 
 }
