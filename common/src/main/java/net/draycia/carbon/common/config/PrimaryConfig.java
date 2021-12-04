@@ -58,6 +58,9 @@ public class PrimaryConfig {
     """)
     private Map<String, String> customPlaceholders = Map.of();
 
+    @Comment("Various settings related to pinging players in channels.")
+    private PingSettings pingSettings = new PingSettings();
+
     public Locale defaultLocale() {
         return this.defaultLocale;
     }
@@ -80,6 +83,10 @@ public class PrimaryConfig {
 
     public Map<String, String> customPlaceholders() {
         return this.customPlaceholders;
+    }
+
+    public PingSettings pings() {
+        return this.pingSettings;
     }
 
     public enum StorageType {
