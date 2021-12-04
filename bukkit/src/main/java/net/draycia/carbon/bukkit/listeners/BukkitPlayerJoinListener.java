@@ -57,6 +57,10 @@ public class BukkitPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void handleJoinMessages(final PlayerJoinEvent event) {
+        if (!this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
+            return;
+        }
+
         final ComponentPlayerResult<CarbonPlayer> result =
             this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer player = result.player();
@@ -66,7 +70,7 @@ public class BukkitPlayerJoinListener implements Listener {
         }
 
         // Don't show join messages when muted
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && player.muted()) {
+        if (player.muted()) {
             event.joinMessage(null);
         }
     }

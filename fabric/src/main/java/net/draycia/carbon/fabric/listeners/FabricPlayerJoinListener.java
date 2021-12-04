@@ -43,6 +43,10 @@ public class FabricPlayerJoinListener implements PlayerStatusMessageEvents.Messa
 
     @Override
     public void onMessage(final PlayerStatusMessageEvents.MessageEvent event) {
+        if (!this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
+            return;
+        }
+
         final ComponentPlayerResult<CarbonPlayer> result =
             this.carbonChat.server().player(event.player().getUUID()).join();
         final @Nullable CarbonPlayer player = result.player();
@@ -52,7 +56,7 @@ public class FabricPlayerJoinListener implements PlayerStatusMessageEvents.Messa
         }
 
         // Don't show join messages when muted
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && player.muted()) {
+        if (player.muted()) {
             event.disableMessage();
         }
     }

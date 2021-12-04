@@ -55,6 +55,10 @@ public class SpongePlayerJoinListener {
 
     @Listener
     public void onPlayerLogin(final ServerSideConnectionEvent.Join event) {
+        if (!this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
+            return;
+        }
+
         final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.player().uniqueId()).join();
         final @Nullable CarbonPlayer player = result.player();
 
@@ -63,7 +67,7 @@ public class SpongePlayerJoinListener {
         }
 
         // Don't show join messages when muted
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit() && player.muted()) {
+        if (player.muted()) {
             event.setMessageCancelled(true);
         }
     }
