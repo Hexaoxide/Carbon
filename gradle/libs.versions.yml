@@ -27,7 +27,7 @@ versions:
   paperLib: 1.0.6
   kyoriEventApi: 5.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT
-  kyoriMoonshine: 2.0.0+CARBON-SNAPSHOT
+  kyoriMoonshine: 2.0.4
   log4j: 2.14.1
   guice: 5.0.1
   velocityApi: 3.1.0
