@@ -24,11 +24,13 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import com.google.inject.Inject;
 import java.util.List;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
@@ -62,6 +64,7 @@ public final class HelpCommand {
                 .withSuggestionsProvider(this::suggestQueries)
                 .asOptional())
             .permission("carbon.help")
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Carbon command list."))
             .handler(this::execute)
             .build();
 

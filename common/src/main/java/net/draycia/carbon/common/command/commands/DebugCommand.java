@@ -19,7 +19,9 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -38,9 +40,11 @@ public class DebugCommand {
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
         final var command = commandManager.commandBuilder("carbondebug", "cdebug")
-            .argument(carbonPlayerArgument.newInstance(false, "player"))
+            .argument(carbonPlayerArgument.newInstance(false, "player"),
+                ArgumentDescription.of("The player to check the groups of."))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Shows the permission groups of players."))
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

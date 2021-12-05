@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -39,6 +40,7 @@ public class ClearChatCommand {
         final var command = commandManager.commandBuilder("clearchat", "chatclear", "cc")
             .permission("carbon.clearchat.clear")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Clears the chat window for all players."))
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?
