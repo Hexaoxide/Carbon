@@ -117,7 +117,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
             this.userCache.put(uuid, player);
 
             return new ComponentPlayerResult<>(player, empty());
-        }).orTimeout(30, TimeUnit.SECONDS);
+        }).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
     }
 
     @Override
