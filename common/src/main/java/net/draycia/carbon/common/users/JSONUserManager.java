@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
@@ -97,14 +98,14 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
                         this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
 
                     if (player == null) {
-                        return new ComponentPlayerResult<>(null, text("Player file found but was empty."));
+                        return new ComponentPlayerResult<CarbonPlayerCommon>(null, text("Player file found but was empty."));
                     }
 
                     this.userCache.put(uuid, player);
 
                     return new ComponentPlayerResult<>(player, empty());
                 } catch (final IOException exception) {
-                    return new ComponentPlayerResult<>(null, text(exception.getMessage()));
+                    return new ComponentPlayerResult<CarbonPlayerCommon>(null, text(exception.getMessage()));
                 }
             }
 
@@ -116,7 +117,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
             this.userCache.put(uuid, player);
 
             return new ComponentPlayerResult<>(player, empty());
-        });
+        }).orTimeout(30, TimeUnit.SECONDS);
     }
 
     @Override
