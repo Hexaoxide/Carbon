@@ -19,8 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
@@ -30,6 +32,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -44,13 +47,16 @@ public class IgnoreCommand {
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
         final var command = commandManager.commandBuilder("ignore", "block")
-            .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER))
+            .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER),
+                ArgumentDescription.of("The name of the player to ignore."))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
+                .withDescription(ArgumentDescription.of("The UUID of the player to ignore."))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.ignore.ignore")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Hides all incoming messages from ignored players."))
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

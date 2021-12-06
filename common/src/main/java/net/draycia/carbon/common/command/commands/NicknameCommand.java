@@ -19,8 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.compound.FlagArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -29,6 +31,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.OptionValueParser;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
@@ -40,28 +43,30 @@ public class NicknameCommand {
         final CarbonMessageService messageService,
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
-        final var nicknameArgument = FlagArgument.<Commander, String>ofType(String.class, "value")
-            .withParser(new OptionValueParser<>())
-            .asOptional()
-            .build();
-
         final var command = commandManager.commandBuilder("nickname", "nick")
             .flag(commandManager.flagBuilder("player")
                 .withAliases("p")
+                .withDescription(ArgumentDescription.of("The name of the target player. Without this flag, the sender is the target."))
                 .withArgument(carbonPlayerArgument.newInstance(true, "recipient"))
                 .withPermission(Permission.of("carbon.nickname.others"))
             )
             .flag(commandManager.flagBuilder("nickname")
                 .withAliases("n")
-                .withArgument(nicknameArgument)
+                .withDescription(ArgumentDescription.of("The nickname to set."))
+                .withArgument(FlagArgument.<Commander, String>ofType(String.class, "value")
+                    .withParser(new OptionValueParser<>())
+                    .asOptional()
+                    .build())
                 .withPermission(Permission.of("carbon.nickname.set"))
             )
             .flag(commandManager.flagBuilder("reset")
                 .withAliases("r")
+                .withDescription(ArgumentDescription.of("Removes any set nickname from the player."))
                 .withPermission(Permission.of("carbon.nickname.set"))
             )
             .permission("carbon.nickname")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Sets and shows player nicknames."))
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
