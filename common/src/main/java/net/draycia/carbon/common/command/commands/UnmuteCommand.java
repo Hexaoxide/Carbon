@@ -22,7 +22,6 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
-import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.Objects;

@@ -20,6 +20,7 @@ package net.draycia.carbon.common.messages;
 import java.util.Iterator;
 
 public final class PrefixedDelegateIterator<T> implements Iterator<T> {
+
     private final T prefix;
     private final Iterator<T> delegate;
     private boolean seenPrefix = false;
@@ -52,4 +53,5 @@ public final class PrefixedDelegateIterator<T> implements Iterator<T> {
 
         this.delegate.remove();
     }
+
 }

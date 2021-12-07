@@ -17,8 +17,6 @@
  */
 package net.draycia.carbon.common.messages;
 
-import static java.util.Collections.emptyNavigableSet;
-
 import io.leangen.geantyref.GenericTypeReflector;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -39,9 +37,11 @@ import net.kyori.moonshine.strategy.supertype.ISupertypeStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static java.util.Collections.emptyNavigableSet;
+
 @ThreadSafe
-public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> implements
-    IPlaceholderResolverStrategy<R, I, F> {
+public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> implements IPlaceholderResolverStrategy<R, I, F> {
+
     private final ISupertypeStrategy supertypeStrategy = new StandardSupertypeThenInterfaceSupertypeStrategy(false);
 
     @Override
@@ -149,4 +149,5 @@ public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> impl
             }
         }
     }
+
 }
