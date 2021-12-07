@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.messages;
+package net.draycia.carbon.common.messages.placeholders;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -27,24 +27,21 @@ import net.kyori.moonshine.placeholder.ConclusionValue;
 import net.kyori.moonshine.placeholder.ContinuanceValue;
 import net.kyori.moonshine.placeholder.IPlaceholderResolver;
 import net.kyori.moonshine.util.Either;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 
-@DefaultQualifier(NonNull.class)
-public class ComponentPlaceholderResolver<R> implements IPlaceholderResolver<R, Component, Component> {
+public class StringPlaceholderResolver<R> implements IPlaceholderResolver<R, String, Component> {
 
     @Override
     public @Nullable Map<String, Either<ConclusionValue<? extends Component>, ContinuanceValue<?>>>
     resolve(
         final String placeholderName,
-        final Component value,
+        final String value,
         final R receiver,
         final Type owner,
         final Method method,
         final @Nullable Object[] parameters
     ) {
-        return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(value)));
+        return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(Component.text(value))));
     }
 
 }
