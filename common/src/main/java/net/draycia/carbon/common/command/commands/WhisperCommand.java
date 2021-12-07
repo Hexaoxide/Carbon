@@ -21,6 +21,8 @@ package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -38,14 +40,16 @@ public class WhisperCommand {
     public WhisperCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
-        final CarbonPlayerArgument carbonPlayerArgument,
         final CarbonServer carbonServer
     ) {
         final var command = commandManager.commandBuilder("whisper", "w", "message", "msg")
-            .argument(carbonPlayerArgument.newInstance(true, "recipient", CarbonPlayerArgument.NO_SENDER))
-            .argument(StringArgument.greedy("message"))
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asRequired(),
+                RichDescription.of(messageService.commandWhisperArgumentPlayer().component()))
+            .argument(StringArgument.greedy("message"),
+                RichDescription.of(messageService.commandWhisperArgumentMessage().component()))
             .permission("carbon.whisper.message")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandWhisperDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
@@ -55,7 +59,7 @@ public class WhisperCommand {
                 }
 
                 final String message = handler.get("message");
-                final CarbonPlayer recipient = handler.get("recipient");
+                final CarbonPlayer recipient = handler.get("player");
 
                 if (sender.equals(recipient)) {
                     messageService.whisperSelfError(sender, CarbonPlayer.renderName(sender));
@@ -67,7 +71,7 @@ public class WhisperCommand {
                     && !sender.hasPermission("carbon.whisper.vanished"))
                 ) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);
+                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, messageService);
 
                     messageService.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;

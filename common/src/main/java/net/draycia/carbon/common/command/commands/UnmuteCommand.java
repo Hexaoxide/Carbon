@@ -19,10 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,7 +32,6 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -43,21 +42,19 @@ public class UnmuteCommand {
     public UnmuteCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
-        final CarbonChat carbonChat,
-        final CarbonPlayerArgument carbonPlayerArgument
+        final CarbonChat carbonChat
     ) {
-        final var command = commandManager.commandBuilder("unmute",
-                ArgumentDescription.of("The name of the player to unmute."))
-            .argument(carbonPlayerArgument.newInstance(false, "player",
-                CarbonPlayerArgument.NO_SENDER.and((sender, player) -> player.muted())))
+        final var command = commandManager.commandBuilder("unmute")
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asOptional(),
+                RichDescription.of(messageService.commandUnmuteArgumentPlayer().component()))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(ArgumentDescription.of("The UUID of the player to unmute."))
+                .withDescription(RichDescription.of(messageService.commandUnmuteArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.unmute")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Unmutes players, allowing them to use chat and whisper other players."))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandUnmuteDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

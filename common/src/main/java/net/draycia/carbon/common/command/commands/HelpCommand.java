@@ -24,13 +24,13 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.List;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
@@ -52,19 +52,19 @@ public final class HelpCommand {
     @Inject
     public HelpCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageSource messageSource
+        final CarbonMessageSource messageSource,
+        final CarbonMessageService messageService
     ) {
         this.manager = commandManager;
         this.help = createHelp(commandManager, messageSource);
 
         final var command = commandManager.commandBuilder("carbon")
-            .literal("help")
+            .literal("help",
+                RichDescription.of(messageService.commandHelpDescription().component()))
             .argument(StringArgument.<Commander>newBuilder("query")
-                .greedy()
-                .withSuggestionsProvider(this::suggestQueries)
-                .asOptional())
+                    .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
+                RichDescription.of(messageService.commandHelpArgumentQuery().component()))
             .permission("carbon.help")
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Carbon command list."))
             .handler(this::execute)
             .build();
 
@@ -101,7 +101,7 @@ public final class HelpCommand {
         );
 
         help.messageProvider((sender, key, args) -> {
-            final String messageKey = "command.help." + key;
+            final String messageKey = "command.help.misc." + key;
             final TemplateResolver resolver;
 
             // Total hack but works for now

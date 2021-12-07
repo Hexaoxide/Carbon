@@ -21,6 +21,7 @@ indra {
 
 license {
   header.set(resources.text.fromFile(rootProject.file("LICENSE_HEADER")))
+  exclude("net/draycia/carbon/common/command/argument/CarbonPlayerArgument.java")
   exclude("net/draycia/carbon/common/command/argument/OptionValueParser.java")
   exclude("net/draycia/carbon/common/messages/PrefixedDelegateIterator.java")
   exclude("net/draycia/carbon/common/messages/StandardPlaceholderResolverStrategyButDifferent.java")

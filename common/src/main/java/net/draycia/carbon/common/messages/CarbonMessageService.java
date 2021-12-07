@@ -230,10 +230,115 @@ public interface CarbonMessageService {
     @Message("error.command.argument_parsing")
     void errorCommandArgumentParsing(final Audience audience, @Placeholder("throwable_message") final Component throwableMessage);
 
+    @Message("error.command.invalid_player")
+    RenderedMessage errorCommandInvalidPlayer(final Audience audience, final String input);
+
     @Message("error.command.invalid_sender")
     void errorCommandInvalidSender(final Audience audience, final String sender_type);
 
     @Message("error.command.invalid_syntax")
     void errorCommandInvalidSyntax(final Audience audience, final Component syntax);
+
+    /*
+     * =============================================================
+     * =================== Command Documentation ===================
+     * =============================================================
+     */
+
+    @Message("command.clearchat.description")
+    RenderedMessage commandClearChatDescription();
+
+    @Message("command.continue.argument.message")
+    RenderedMessage commandContinueArgumentMessage();
+
+    @Message("command.continue.description")
+    RenderedMessage commandContinueDescription();
+
+    @Message("command.debug.argument.player")
+    RenderedMessage commandDebugArgumentPlayer();
+
+    @Message("command.debug.description")
+    RenderedMessage commandDebugDescription();
+
+    @Message("command.help.argument.query")
+    RenderedMessage commandHelpArgumentQuery();
+
+    @Message("command.help.description")
+    RenderedMessage commandHelpDescription();
+
+    @Message("command.ignore.argument.player")
+    RenderedMessage commandIgnoreArgumentPlayer();
+
+    @Message("command.ignore.argument.uuid")
+    RenderedMessage commandIgnoreArgumentUUID();
+
+    @Message("command.ignore.description")
+    RenderedMessage commandIgnoreDescription();
+
+    @Message("command.mute.argument.player")
+    RenderedMessage commandMuteArgumentPlayer();
+
+    @Message("command.mute.argument.uuid")
+    RenderedMessage commandMuteArgumentUUID();
+
+    @Message("command.mute.description")
+    RenderedMessage commandMuteDescription();
+
+    @Message("command.muteinfo.argument.player")
+    RenderedMessage commandMuteInfoArgumentPlayer();
+
+    @Message("command.muteinfo.argument.uuid")
+    RenderedMessage commandMuteInfoArgumentUUID();
+
+    @Message("command.muteinfo.description")
+    RenderedMessage commandMuteInfoDescription();
+
+    @Message("command.nickname.argument.player")
+    RenderedMessage commandNicknameArgumentPlayer();
+
+    @Message("command.nickname.argument.nickname")
+    RenderedMessage commandNicknameArgumentNickname();
+
+    @Message("command.nickname.argument.reset")
+    RenderedMessage commandNicknameArgumentReset();
+
+    @Message("command.nickname.description")
+    RenderedMessage commandNicknameDescription();
+
+    @Message("command.reload.description")
+    RenderedMessage commandReloadDescription();
+
+    @Message("command.reply.argument.message")
+    RenderedMessage commandReplyArgumentMessage();
+
+    @Message("command.reply.description")
+    RenderedMessage commandReplyDescription();
+
+    @Message("command.unignore.argument.player")
+    RenderedMessage commandUnignoreArgumentPlayer();
+
+    @Message("command.unignore.argument.uuid")
+    RenderedMessage commandUnignoreArgumentUUID();
+
+    @Message("command.unignore.description")
+    RenderedMessage commandUnignoreDescription();
+
+    @Message("command.unmute.argument.player")
+    RenderedMessage commandUnmuteArgumentPlayer();
+
+    @Message("command.unmute.argument.uuid")
+    RenderedMessage commandUnmuteArgumentUUID();
+
+    @Message("command.unmute.description")
+    RenderedMessage commandUnmuteDescription();
+
+    @Message("command.whisper.argument.player")
+    RenderedMessage commandWhisperArgumentPlayer();
+
+    @Message("command.whisper.argument.message")
+    RenderedMessage commandWhisperArgumentMessage();
+
+    @Message("command.whisper.description")
+    RenderedMessage commandWhisperDescription();
 
 }

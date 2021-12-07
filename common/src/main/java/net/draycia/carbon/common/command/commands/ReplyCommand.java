@@ -19,10 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
@@ -50,10 +50,11 @@ public class ReplyCommand {
         final CarbonChat carbonChat
     ) {
         final var command = commandManager.commandBuilder("reply", "r")
-            .argument(StringArgument.greedy("message"), ArgumentDescription.of("The message to reply with."))
+            .argument(StringArgument.greedy("message"),
+                RichDescription.of(messageService.commandReplyArgumentMessage().component()))
             .permission("carbon.whisper.reply")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Sends a message to the last player that messaged you."))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandReplyDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
@@ -83,7 +84,7 @@ public class ReplyCommand {
                     && !sender.hasPermission("carbon.whisper.vanished"))
                 ) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.PlayerParseException(rawNameInput);
+                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, messageService);
 
                     messageService.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;

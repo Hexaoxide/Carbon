@@ -19,15 +19,16 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,14 +38,14 @@ public class DebugCommand {
     @Inject
     public DebugCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonPlayerArgument carbonPlayerArgument
+        final CarbonMessageService messageService
     ) {
         final var command = commandManager.commandBuilder("carbondebug", "cdebug")
-            .argument(carbonPlayerArgument.newInstance(false, "player"),
-                ArgumentDescription.of("The player to check the groups of."))
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asOptional(),
+                RichDescription.of(messageService.commandDebugArgumentPlayer().component()))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Shows the permission groups of players."))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandDebugDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
