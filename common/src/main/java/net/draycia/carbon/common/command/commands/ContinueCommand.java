@@ -48,7 +48,7 @@ public class ContinueCommand {
     ) {
         final var command = commandManager.commandBuilder("continue", "c")
             .argument(StringArgument.greedy("message"), ArgumentDescription.of("The message to send."))
-            .permission("carbon.whisper.continue") // TODO: carbon.whisper.spy
+            .permission("carbon.whisper.continue")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Sends a message to the last person you messaged."))
             .handler(handler -> {

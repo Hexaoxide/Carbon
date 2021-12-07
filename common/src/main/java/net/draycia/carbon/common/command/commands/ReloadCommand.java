@@ -20,12 +20,14 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -43,6 +45,7 @@ public class ReloadCommand {
         final var command = commandManager.commandBuilder("creload", "carbonreload")
             .permission("carbon.reload")
             .senderType(Commander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Reloads carbon's config, channel settings, and translations. Will not load or unload any channels."))
             .handler(handler -> {
                 channelRegistry.reloadRegisteredConfigChannels();
 

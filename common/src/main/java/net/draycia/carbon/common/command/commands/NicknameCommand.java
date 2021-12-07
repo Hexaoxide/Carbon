@@ -98,7 +98,6 @@ public class NicknameCommand {
                         messageService.nicknameSetOthers(sender, target.username(), nickname);
                     } else {
                         // Setting own nickname
-                        // TODO: Require .set and .self
                         if (!sender.hasPermission("carbon.nickname.self")) {
                             messageService.nicknameCannotSetOwn(sender);
                             return;
@@ -117,7 +116,6 @@ public class NicknameCommand {
                         messageService.nicknameShowOthersUnset(sender, target.username());
                     }
                 } else {
-                    // TODO: Require .see and .self
                     // Checking own nickname
                     if (!sender.hasPermission("carbon.nickname.self")) {
                         messageService.nicknameCannotSeeOwn(sender);

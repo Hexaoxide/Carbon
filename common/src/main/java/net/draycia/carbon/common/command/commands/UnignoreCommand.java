@@ -19,8 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
@@ -30,6 +32,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -44,13 +47,17 @@ public class UnignoreCommand {
         final CarbonPlayerArgument carbonPlayerArgument
     ) {
         final var command = commandManager.commandBuilder("unignore", "unblock")
-            .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER))
+            // TODO: Filter, and only show muted players, but allow inputting any player name.
+            .argument(carbonPlayerArgument.newInstance(false, "player"),
+                ArgumentDescription.of("The name of the player to unignore."))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
+                .withDescription(ArgumentDescription.of("The UUID of the player to unignore."))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.ignore.unignore")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Stops hiding messages from the specified player."))
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

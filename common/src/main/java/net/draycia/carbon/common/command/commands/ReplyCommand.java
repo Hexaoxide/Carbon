@@ -19,8 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
@@ -32,6 +34,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.util.CloudUtils;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -47,9 +50,10 @@ public class ReplyCommand {
         final CarbonChat carbonChat
     ) {
         final var command = commandManager.commandBuilder("reply", "r")
-            .argument(StringArgument.greedy("message"))
-            .permission("carbon.whisper.reply") // TODO: carbon.whisper.spy
+            .argument(StringArgument.greedy("message"), ArgumentDescription.of("The message to reply with."))
+            .permission("carbon.whisper.reply")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Component.text("Sends a message to the last player that messaged you."))
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
