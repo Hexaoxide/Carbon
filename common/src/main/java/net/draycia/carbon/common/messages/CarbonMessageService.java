@@ -119,6 +119,14 @@ public interface CarbonMessageService {
         final String message
     );
 
+    @Message("whisper.console")
+    void whisperConsoleLog(
+        final Audience audience,
+        @Placeholder("sender_display_name") final Component senderDisplayName,
+        @Placeholder("recipient_display_name") final Component recipientDisplayName,
+        final String message
+    );
+
     @Message("reply.target.missing")
     void replyTargetNotSet(final Audience audience, @Placeholder("sender_display_name") final Component senderDisplayName);
 

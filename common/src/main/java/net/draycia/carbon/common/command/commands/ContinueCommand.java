@@ -97,11 +97,12 @@ public class ContinueCommand {
                     return;
                 }
 
-                messageService.whisperSender(new SourcedAudience(sender, sender),
-                    CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient), message);
+                final Component senderName = CarbonPlayer.renderName(sender);
+                final Component recipientName = CarbonPlayer.renderName(recipient);
 
-                messageService.whisperRecipient(new SourcedAudience(sender, recipient),
-                    CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient), message);
+                messageService.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
+                messageService.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
+                messageService.whisperConsoleLog(carbonChat.server().console(), senderName, recipientName, message);
 
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());
