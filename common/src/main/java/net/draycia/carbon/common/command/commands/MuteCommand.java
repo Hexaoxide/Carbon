@@ -22,6 +22,7 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
+import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.Objects;
@@ -67,7 +68,9 @@ public class MuteCommand {
                     final var result = carbonChat.server().player(handler.<UUID>get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    throw new IllegalStateException("No target found to unmute.");
+                    messageService.muteNoTarget(sender);
+                    // TODO: send command syntax
+                    return;
                 }
 
                 if (target.hasPermission("carbon.mute.exempt")) {

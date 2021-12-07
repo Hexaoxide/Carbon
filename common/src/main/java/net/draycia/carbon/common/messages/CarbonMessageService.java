@@ -74,6 +74,9 @@ public interface CarbonMessageService {
     @Message("mute.unmute.alert.players")
     void unmuteAlertPlayers(final Audience audience, final Component target);
 
+    @Message("mute.unmute.no_target")
+    void unmuteNoTarget(final Audience audience);
+
     @Message("mute.exempt")
     void muteExempt(final Audience audience);
 
@@ -85,6 +88,9 @@ public interface CarbonMessageService {
 
     @Message("mute.cannot_speak")
     void muteCannotSpeak(final Audience audience);
+
+    @Message("mute.no_target")
+    void muteNoTarget(final Audience audience);
 
     @Message("mute.spy.prefix")
     RenderedMessage muteSpyPrefix(final Audience audience);
