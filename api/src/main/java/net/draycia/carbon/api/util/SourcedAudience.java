@@ -44,7 +44,7 @@ public record SourcedAudience(Audience sender, Audience recipient) implements Fo
 
     @Override
     public @NotNull Audience audience() {
-        return Audience.audience(this.sender, this.recipient);
+        return this.recipient;
     }
 
 }

@@ -35,6 +35,7 @@ import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ReceiverResolver;
+import net.draycia.carbon.common.messages.StandardPlaceholderResolverStrategyButDifferent;
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
@@ -46,8 +47,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
-import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
-import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -84,7 +83,7 @@ public final class CarbonCommonModule extends AbstractModule {
             .sourced(carbonMessageSource)
             .rendered(carbonMessageRenderer)
             .sent(carbonMessageSender)
-            .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
+            .resolvingWithStrategy(new StandardPlaceholderResolverStrategyButDifferent<>())
             .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
             .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
             .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)

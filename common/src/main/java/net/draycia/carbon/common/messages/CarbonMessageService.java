@@ -41,14 +41,14 @@ public interface CarbonMessageService {
     @ChatType(MessageType.CHAT)
     RenderedMessage basicChatFormat(
         final Audience audience,
-        final @Placeholder UUID uuid,
-        final @Placeholder("display_name") Component displayName,
-        final @Placeholder String username,
-        final @Placeholder Component message
+        final UUID uuid,
+        @Placeholder("display_name") final Component displayName,
+        final String username,
+        final Component message
     );
 
     @Message("channel.change")
-    void changedChannels(final Audience audience, final @Placeholder String channel);
+    void changedChannels(final Audience audience, final String channel);
 
     /*
      * =============================================================
@@ -63,16 +63,16 @@ public interface CarbonMessageService {
     void muteInfoSelfNotMuted(final Audience audience);
 
     @Message("mute.info.not_muted")
-    void muteInfoNotMuted(final Audience audience, final @Placeholder Component target);
+    void muteInfoNotMuted(final Audience audience, final Component target);
 
     @Message("mute.info.muted")
-    void muteInfoMuted(final Audience audience, final @Placeholder Component target, final @Placeholder boolean muted);
+    void muteInfoMuted(final Audience audience, final Component target, final boolean muted);
 
     @Message("mute.unmute.alert.target")
     void unmuteAlertRecipient(final Audience audience);
 
     @Message("mute.unmute.alert.players")
-    void unmuteAlertPlayers(final Audience audience, final @Placeholder Component target);
+    void unmuteAlertPlayers(final Audience audience, final Component target);
 
     @Message("mute.exempt")
     void muteExempt(final Audience audience);
@@ -81,7 +81,7 @@ public interface CarbonMessageService {
     void muteAlertRecipient(final Audience audience);
 
     @Message("mute.alert.players")
-    void muteAlertPlayers(final Audience audience, final @Placeholder Component target);
+    void muteAlertPlayers(final Audience audience, final Component target);
 
     @Message("mute.cannot_speak")
     void muteCannotSpeak(final Audience audience);
@@ -99,37 +99,37 @@ public interface CarbonMessageService {
     @ChatType(MessageType.CHAT)
     void whisperSender(
         final SourcedAudience audience,
-        final @Placeholder("sender_display_name") Component senderDisplayName,
-        final @Placeholder("recipient_display_name") Component recipientDisplayName,
-        final @Placeholder String message
+        @Placeholder("sender_display_name") final Component senderDisplayName,
+        @Placeholder("recipient_display_name") final Component recipientDisplayName,
+        final String message
     );
 
     @Message("whisper.from")
     @ChatType(MessageType.CHAT)
     void whisperRecipient(
         final SourcedAudience audience,
-        final @Placeholder("sender_display_name") Component senderDisplayName,
-        final @Placeholder("recipient_display_name") Component recipientDisplayName,
-        final @Placeholder String message
+        @Placeholder("sender_display_name") final Component senderDisplayName,
+        @Placeholder("recipient_display_name") final Component recipientDisplayName,
+        final String message
     );
 
     @Message("reply.target.missing")
-    void replyTargetNotSet(final Audience audience, final @Placeholder("sender_display_name") Component senderDisplayName);
+    void replyTargetNotSet(final Audience audience, @Placeholder("sender_display_name") final Component senderDisplayName);
 
     @Message("reply.target.self")
-    void whisperSelfError(final Audience audience, final @Placeholder("sender_display_name") Component senderDisplayName);
+    void whisperSelfError(final Audience audience, @Placeholder("sender_display_name") final Component senderDisplayName);
 
     @Message("whisper.continue.target_missing")
     void whisperTargetNotSet(
         final Audience audience,
-        final @Placeholder("sender_display_name") Component senderDisplayName
+        @Placeholder("sender_display_name") final Component senderDisplayName
     );
 
     @Message("whisper.ignoring_target")
-    void whisperIgnoringTarget(final Audience audience, final @Placeholder Component target);
+    void whisperIgnoringTarget(final Audience audience, final Component target);
 
     @Message("whisper.ignored_by_target")
-    void whisperTargetIgnoring(final Audience audience, final @Placeholder Component target);
+    void whisperTargetIgnoring(final Audience audience, final Component target);
 
     /*
      * =============================================================
@@ -138,28 +138,28 @@ public interface CarbonMessageService {
      */
 
     @Message("nickname.set")
-    void nicknameSet(final Audience audience, final @Placeholder Component nickname);
+    void nicknameSet(final Audience audience, final Component nickname);
 
     @Message("nickname.set.others")
-    void nicknameSetOthers(final Audience audience, final @Placeholder String target, final @Placeholder Component nickname);
+    void nicknameSetOthers(final Audience audience, final String target, final Component nickname);
 
     @Message("nickname.show.others")
-    void nicknameShowOthers(final Audience audience, final @Placeholder String target, final @Placeholder Component nickname);
+    void nicknameShowOthers(final Audience audience, final String target, final Component nickname);
 
     @Message("nickname.show.others.unset")
-    void nicknameShowOthersUnset(final Audience audience, final @Placeholder String target);
+    void nicknameShowOthersUnset(final Audience audience, final String target);
 
     @Message("nickname.show")
-    void nicknameShow(final Audience audience, final @Placeholder String target, final @Placeholder Component nickname);
+    void nicknameShow(final Audience audience, final String target, final Component nickname);
 
     @Message("nickname.show.unset")
-    void nicknameShowUnset(final Audience audience, final @Placeholder String target);
+    void nicknameShowUnset(final Audience audience, final String target);
 
     @Message("nickname.reset")
     void nicknameReset(final Audience audience);
 
     @Message("nickname.reset.others")
-    void nicknameResetOthers(final Audience audience, final @Placeholder String target);
+    void nicknameResetOthers(final Audience audience, final String target);
 
     @Message("nickname.set.self.error")
     void nicknameCannotSetOwn(final Audience audience);
@@ -174,13 +174,13 @@ public interface CarbonMessageService {
      */
 
     @Message("ignore.exempt")
-    void ignoreExempt(final Audience audience, final @Placeholder Component target);
+    void ignoreExempt(final Audience audience, final Component target);
 
     @Message("ignore.now_ignoring")
-    void nowIgnoring(final Audience audience, final @Placeholder Component target);
+    void nowIgnoring(final Audience audience, final Component target);
 
     @Message("ignore.no_longer_ignoring")
-    void noLongerIgnoring(final Audience audience, final @Placeholder Component target);
+    void noLongerIgnoring(final Audience audience, final Component target);
 
     @Message("ignore.invalid_target")
     void ignoreTargetInvalid(final Audience audience);
@@ -209,17 +209,17 @@ public interface CarbonMessageService {
     @Message("error.command.command_execution")
     void errorCommandCommandExecution(
         final Audience audience,
-        final @Placeholder("throwable_message") Component throwableMessage,
-        final @Placeholder String stacktrace
+        @Placeholder("throwable_message") final Component throwableMessage,
+        final String stacktrace
     );
 
     @Message("error.command.argument_parsing")
-    void errorCommandArgumentParsing(final Audience audience, final @Placeholder("throwable_message") Component throwableMessage);
+    void errorCommandArgumentParsing(final Audience audience, @Placeholder("throwable_message") final Component throwableMessage);
 
     @Message("error.command.invalid_sender")
-    void errorCommandInvalidSender(final Audience audience, final @Placeholder String sender_type);
+    void errorCommandInvalidSender(final Audience audience, final String sender_type);
 
     @Message("error.command.invalid_syntax")
-    void errorCommandInvalidSyntax(final Audience audience, final @Placeholder Component syntax);
+    void errorCommandInvalidSyntax(final Audience audience, final Component syntax);
 
 }

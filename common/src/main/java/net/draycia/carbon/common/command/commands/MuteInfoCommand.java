@@ -71,7 +71,7 @@ public class MuteInfoCommand {
 
                 if (!target.muted()) {
                     if (sender.equals(target)) {
-                        messageService.muteInfoSelfMuted(sender);
+                        messageService.muteInfoSelfNotMuted(sender);
                     } else {
                         messageService.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
                     }
@@ -79,7 +79,7 @@ public class MuteInfoCommand {
                     return;
                 } else {
                     if (sender.equals(target)) {
-                        messageService.muteInfoSelfNotMuted(sender);
+                        messageService.muteInfoSelfMuted(sender);
                     } else {
                         messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
                     }

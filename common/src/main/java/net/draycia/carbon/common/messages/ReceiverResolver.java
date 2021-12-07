@@ -62,12 +62,16 @@ public final class ReceiverResolver implements IReceiverLocatorResolver<Audience
     private static final class Resolver implements IReceiverLocator<Audience> {
         @Override
         public Audience locate(final Method method, final Object proxy, final @Nullable Object[] parameters) {
-            for (final Object parameter : parameters) {
-                if (parameter instanceof SourcedAudience sourcedAudience) {
-                    return sourcedAudience.recipient();
-                } else if (parameter instanceof Audience audience) {
-                    return audience;
-                }
+            if (parameters.length == 0) {
+                return Audience.empty();
+            }
+
+            final @Nullable Object parameter = parameters[0];
+
+            if (parameter instanceof SourcedAudience sourcedAudience) {
+                return sourcedAudience.recipient();
+            } else if (parameter instanceof Audience audience) {
+                return audience;
             }
 
             return Audience.empty();
