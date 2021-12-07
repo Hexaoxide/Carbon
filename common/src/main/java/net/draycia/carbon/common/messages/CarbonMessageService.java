@@ -31,6 +31,12 @@ import net.kyori.moonshine.annotation.Placeholder;
 
 public interface CarbonMessageService {
 
+    /*
+     * =============================================================
+     * ======================== Basic Chat =========================
+     * =============================================================
+     */
+
     @Message("channel.format.basic")
     @ChatType(MessageType.CHAT)
     RenderedMessage basicChatFormat(
@@ -41,14 +47,53 @@ public interface CarbonMessageService {
         final @Placeholder Component message
     );
 
+    @Message("channel.change")
+    void changedChannels(final Audience audience, final @Placeholder String channel);
+
+    /*
+     * =============================================================
+     * =========================== Mutes ===========================
+     * =============================================================
+     */
+
+    @Message("mute.info.self.muted")
+    void muteInfoSelfMuted(final Audience audience);
+
+    @Message("mute.info.self.not_muted")
+    void muteInfoSelfNotMuted(final Audience audience);
+
+    @Message("mute.info.not_muted")
+    void muteInfoNotMuted(final Audience audience, final @Placeholder Component target);
+
+    @Message("mute.info.muted")
+    void muteInfoMuted(final Audience audience, final @Placeholder Component target, final @Placeholder boolean muted);
+
+    @Message("mute.unmute.alert.target")
+    void unmuteAlertRecipient(final Audience audience);
+
+    @Message("mute.unmute.alert.players")
+    void unmuteAlertPlayers(final Audience audience, final @Placeholder Component target);
+
+    @Message("mute.exempt")
+    void muteExempt(final Audience audience);
+
+    @Message("mute.alert.target")
+    void muteAlertRecipient(final Audience audience);
+
+    @Message("mute.alert.players")
+    void muteAlertPlayers(final Audience audience, final @Placeholder Component target);
+
+    @Message("mute.cannot_speak")
+    void muteCannotSpeak(final Audience audience);
+
     @Message("mute.spy.prefix")
     RenderedMessage muteSpyPrefix(final Audience audience);
 
-    @Message("channel.change")
-    void changedChannels(
-        final Audience audience,
-        final @Placeholder String channel
-    );
+    /*
+     * =============================================================
+     * ====================== Direct Messages ======================
+     * =============================================================
+     */
 
     @Message("whisper.to")
     @ChatType(MessageType.CHAT)
@@ -69,16 +114,10 @@ public interface CarbonMessageService {
     );
 
     @Message("reply.target.missing")
-    void replyTargetNotSet(
-        final Audience audience,
-        final @Placeholder("sender_display_name") Component senderDisplayName
-    );
+    void replyTargetNotSet(final Audience audience, final @Placeholder("sender_display_name") Component senderDisplayName);
 
     @Message("reply.target.self")
-    void whisperSelfError(
-        final Audience audience,
-        final @Placeholder("sender_display_name") Component senderDisplayName
-    );
+    void whisperSelfError(final Audience audience, final @Placeholder("sender_display_name") Component senderDisplayName);
 
     @Message("whisper.continue.target_missing")
     void whisperTargetNotSet(
@@ -86,53 +125,41 @@ public interface CarbonMessageService {
         final @Placeholder("sender_display_name") Component senderDisplayName
     );
 
+    @Message("whisper.ignoring_target")
+    void whisperIgnoringTarget(final Audience audience, final @Placeholder Component target);
+
+    @Message("whisper.ignored_by_target")
+    void whisperTargetIgnoring(final Audience audience, final @Placeholder Component target);
+
+    /*
+     * =============================================================
+     * ========================= Nicknames =========================
+     * =============================================================
+     */
+
     @Message("nickname.set")
-    void nicknameSet(
-        final Audience audience,
-        final @Placeholder Component nickname
-    );
+    void nicknameSet(final Audience audience, final @Placeholder Component nickname);
 
     @Message("nickname.set.others")
-    void nicknameSetOthers(
-        final Audience audience,
-        final @Placeholder String target,
-        final @Placeholder Component nickname
-    );
+    void nicknameSetOthers(final Audience audience, final @Placeholder String target, final @Placeholder Component nickname);
 
     @Message("nickname.show.others")
-    void nicknameShowOthers(
-        final Audience audience,
-        final @Placeholder String target,
-        final @Placeholder Component nickname
-    );
+    void nicknameShowOthers(final Audience audience, final @Placeholder String target, final @Placeholder Component nickname);
 
     @Message("nickname.show.others.unset")
-    void nicknameShowOthersUnset(
-        final Audience audience,
-        final @Placeholder String target
-    );
+    void nicknameShowOthersUnset(final Audience audience, final @Placeholder String target);
 
     @Message("nickname.show")
-    void nicknameShow(
-        final Audience audience,
-        final @Placeholder String target,
-        final @Placeholder Component nickname
-    );
+    void nicknameShow(final Audience audience, final @Placeholder String target, final @Placeholder Component nickname);
 
     @Message("nickname.show.unset")
-    void nicknameShowUnset(
-        final Audience audience,
-        final @Placeholder String target
-    );
+    void nicknameShowUnset(final Audience audience, final @Placeholder String target);
 
     @Message("nickname.reset")
     void nicknameReset(final Audience audience);
 
     @Message("nickname.reset.others")
-    void nicknameResetOthers(
-        final Audience audience,
-        final @Placeholder String target
-    );
+    void nicknameResetOthers(final Audience audience, final @Placeholder String target);
 
     @Message("nickname.set.self.error")
     void nicknameCannotSetOwn(final Audience audience);
@@ -140,8 +167,41 @@ public interface CarbonMessageService {
     @Message("nickname.see.self.error")
     void nicknameCannotSeeOwn(final Audience audience);
 
-    @Message("mute.exempt")
-    void muteExempt(final Audience audience);
+    /*
+     * =============================================================
+     * ========================== Ignore ===========================
+     * =============================================================
+     */
+
+    @Message("ignore.exempt")
+    void ignoreExempt(final Audience audience, final @Placeholder Component target);
+
+    @Message("ignore.now_ignoring")
+    void nowIgnoring(final Audience audience, final @Placeholder Component target);
+
+    @Message("ignore.no_longer_ignoring")
+    void noLongerIgnoring(final Audience audience, final @Placeholder Component target);
+
+    @Message("ignore.invalid_target")
+    void ignoreTargetInvalid(final Audience audience);
+
+    /*
+     * =============================================================
+     * ========================== Reload ===========================
+     * =============================================================
+     */
+
+    @Message("config.reload.success")
+    void configReloaded(final Audience audience);
+
+    @Message("config.reload.failed")
+    void configReloadFailed(final Audience audience);
+
+    /*
+     * =============================================================
+     * ====================== Cloud Messages =======================
+     * =============================================================
+     */
 
     @Message("error.command.no_permission")
     void errorCommandNoPermission(final Audience audience);
@@ -161,63 +221,5 @@ public interface CarbonMessageService {
 
     @Message("error.command.invalid_syntax")
     void errorCommandInvalidSyntax(final Audience audience, final @Placeholder Component syntax);
-
-    @Message("ignore.exempt")
-    void ignoreExempt(final Audience audience, final @Placeholder Component target);
-
-    @Message("ignore.now_ignoring")
-    void nowIgnoring(final Audience audience, final @Placeholder Component target);
-
-    @Message("ignore.no_longer_ignoring")
-    void noLongerIgnoring(final Audience audience, final @Placeholder Component target);
-
-    @Message("ignore.invalid_target")
-    void ignoreTargetInvalid(final Audience audience);
-
-    @Message("whisper.ignoring_target")
-    void whisperIgnoringTarget(final Audience audience, final @Placeholder Component target);
-
-    @Message("whisper.ignored_by_target")
-    void whisperTargetIgnoring(final Audience audience, final @Placeholder Component target);
-
-    @Message("config.reload.success")
-    void configReloaded(final Audience audience);
-
-    @Message("config.reload.failed")
-    void configReloadFailed(final Audience audience);
-
-    @Message("mute.info.self.muted")
-    void muteInfoSelfMuted(final Audience audience);
-
-    @Message("mute.info.self.not_muted")
-    void muteInfoSelfNotMuted(final Audience audience);
-
-    @Message("mute.info.not_muted")
-    void muteInfoNotMuted(
-        final Audience audience,
-        final @Placeholder Component target
-    );
-
-    @Message("mute.info.muted")
-    void muteInfoMuted(
-        final Audience audience,
-        final @Placeholder Component target,
-        final @Placeholder boolean muted
-    );
-
-    @Message("mute.unmute.alert.target")
-    void unmuteAlertRecipient(final Audience audience);
-
-    @Message("mute.unmute.alert.players")
-    void unmuteAlertPlayers(final Audience audience, final @Placeholder Component target);
-
-    @Message("mute.alert.target")
-    void muteAlertRecipient(final Audience audience);
-
-    @Message("mute.alert.players")
-    void muteAlertPlayers(final Audience audience, final @Placeholder Component target);
-
-    @Message("mute.cannot_speak")
-    void muteCannotSpeak(final Audience audience);
 
 }
