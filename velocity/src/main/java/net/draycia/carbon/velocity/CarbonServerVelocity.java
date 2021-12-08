@@ -147,7 +147,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
             try {
                 final @Nullable JsonObject json = this.queryMojang(new URI("https://api.mojang.com/users/profiles/minecraft/" + username));
 
-                return FastUuidSansHyphens.parseUuid(json.get("uuid").getAsString());
+                return FastUuidSansHyphens.parseUuid(json.get("id").getAsString());
             } catch (final URISyntaxException exception) {
                 exception.printStackTrace();
             }
@@ -188,8 +188,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
                 this.client.send(request, HttpResponse.BodyHandlers.ofString());
             final String mojangResponse = response.body();
 
-            final JsonArray jsonArray = this.gson.fromJson(mojangResponse, JsonObject.class).getAsJsonArray();
-            return (JsonObject) jsonArray.get(1);
+            return this.gson.fromJson(mojangResponse, JsonObject.class);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return null;
