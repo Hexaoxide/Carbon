@@ -41,6 +41,7 @@ import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
@@ -142,12 +143,17 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Override
     public ChannelPermissionResult hearingPermitted(final Audience audience) {
-        if (audience instanceof CarbonPlayer carbonPlayer) {
-            return ChannelPermissionResult.allowedIf(text("Insufficient permissions!"), () ->
-                carbonPlayer.hasPermission(this.permission + ".see")); // carbon.channels.local.see
-        } else {
+        final var permission = audience.get(PermissionChecker.POINTER);
+
+        if (permission.isEmpty()) {
             return ChannelPermissionResult.allowed();
         }
+
+        if (permission.get().test(this.permission + ".see")) {
+            return ChannelPermissionResult.allowed();
+        }
+
+        return ChannelPermissionResult.denied(text("Insufficient permissions!"));
     }
 
     @Override
