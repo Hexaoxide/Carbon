@@ -22,13 +22,11 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
-import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -36,9 +34,8 @@ public class ReloadCommand {
 
     @Inject
     public ReloadCommand(
+        final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final ConfigFactory configFactory,
-        final CarbonChannelRegistry channelRegistry,
         final CarbonMessageService messageService
     ) {
         final var command = commandManager.commandBuilder("creload", "carbonreload")
@@ -46,16 +43,9 @@ public class ReloadCommand {
             .senderType(Commander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandReloadDescription().component())
             .handler(handler -> {
-                channelRegistry.reloadRegisteredConfigChannels();
-
-                final @Nullable PrimaryConfig config = configFactory.reloadPrimaryConfig();
-
-                if (config != null) {
-                    messageService.configReloaded(handler.getSender());
-                } else {
-                    messageService.configReloadFailed(handler.getSender());
-                }
-
+                // TODO: Check if all listeners succeeded
+                carbonChat.eventHandler().emit(new CarbonReloadEvent());
+                messageService.configReloaded(handler.getSender());
             })
             .build();
 

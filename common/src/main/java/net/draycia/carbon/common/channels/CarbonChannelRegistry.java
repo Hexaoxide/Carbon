@@ -50,6 +50,7 @@ import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
@@ -114,6 +115,10 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         this.messageService = messageService;
         this.basicChannel = basicChannel;
         this.carbonChat = carbonChat;
+
+        carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
+            this.reloadRegisteredConfigChannels();
+        });
     }
 
     public void reloadRegisteredConfigChannels() {

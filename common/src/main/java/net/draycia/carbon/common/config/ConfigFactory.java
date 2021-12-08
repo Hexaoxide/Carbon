@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.draycia.carbon.common.serialisation.gson.LocaleSerializerConfigurate;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -43,11 +45,16 @@ public class ConfigFactory {
 
     @Inject
     public ConfigFactory(
+        final CarbonChat carbonChat,
         @ForCarbon final Path dataDirectory,
         final LocaleSerializerConfigurate locale
     ) {
         this.dataDirectory = dataDirectory;
         this.locale = locale;
+
+        carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
+            this.reloadPrimaryConfig();
+        });
     }
 
     public @Nullable PrimaryConfig reloadPrimaryConfig() {

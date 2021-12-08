@@ -42,10 +42,12 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.translation.Translator;
 import net.kyori.moonshine.message.IMessageSource;
@@ -62,19 +64,47 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     private final Map<Locale, Properties> locales = new HashMap<>();
     private final Path pluginJar;
     private final Logger logger;
+    private final Path dataDirectory;
 
     @Inject
     private CarbonMessageSource(
+        final CarbonChat carbonChat,
         final @ForCarbon Path dataDirectory,
         final ConfigFactory configFactory,
         final Logger logger
     ) throws IOException {
+        this.dataDirectory = dataDirectory;
         this.pluginJar = pluginJar();
         this.logger = logger;
 
         this.defaultLocale = Objects.requireNonNull(configFactory.primaryConfig()).defaultLocale();
 
-        final Path localeDirectory = dataDirectory.resolve("locale");
+        this.reloadTranslations();
+
+        carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
+            this.reloadTranslations();
+        });
+    }
+
+    private static @NonNull Path pluginJar() {
+        try {
+            URL sourceUrl = CarbonMessageSource.class.getProtectionDomain().getCodeSource().getLocation();
+            // Some class loaders give the full url to the class, some give the URL to its jar.
+            // We want the containing jar, so we will unwrap jar-schema code sources.
+            if (sourceUrl.getProtocol().equals("jar")) {
+                final int exclamationIdx = sourceUrl.getPath().lastIndexOf('!');
+                if (exclamationIdx != -1) {
+                    sourceUrl = new URL(sourceUrl.getPath().substring(0, exclamationIdx));
+                }
+            }
+            return Paths.get(sourceUrl.toURI());
+        } catch (final URISyntaxException | MalformedURLException ex) {
+            throw new RuntimeException("Could not locate plugin jar", ex);
+        }
+    }
+
+    private void reloadTranslations() throws IOException {
+        final Path localeDirectory = this.dataDirectory.resolve("locale");
 
         // Create locale directory
         if (!Files.exists(localeDirectory)) {
@@ -110,23 +140,6 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                     this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, localeFile, ex);
                 }
             }));
-    }
-
-    private static @NonNull Path pluginJar() {
-        try {
-            URL sourceUrl = CarbonMessageSource.class.getProtectionDomain().getCodeSource().getLocation();
-            // Some class loaders give the full url to the class, some give the URL to its jar.
-            // We want the containing jar, so we will unwrap jar-schema code sources.
-            if (sourceUrl.getProtocol().equals("jar")) {
-                final int exclamationIdx = sourceUrl.getPath().lastIndexOf('!');
-                if (exclamationIdx != -1) {
-                    sourceUrl = new URL(sourceUrl.getPath().substring(0, exclamationIdx));
-                }
-            }
-            return Paths.get(sourceUrl.toURI());
-        } catch (final URISyntaxException | MalformedURLException ex) {
-            throw new RuntimeException("Could not locate plugin jar", ex);
-        }
     }
 
     @Override
