@@ -28,7 +28,7 @@ import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
@@ -45,11 +45,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> {
 
     private final PlaceholderAPIMiniMessageParser parser = PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
-    private final PrimaryConfig config;
+    private final ConfigFactory configFactory;
 
     @Inject
-    public BukkitMessageRenderer(final PrimaryConfig config) {
-        this.config = config;
+    public BukkitMessageRenderer(final ConfigFactory configFactory) {
+        this.configFactory = configFactory;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class BukkitMessageRenderer implements IMessageRenderer<SourcedAudience, 
         // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
         String placeholderResolvedMessage = intermediateMessage;
 
-        for (final var entry : this.config.customPlaceholders().entrySet()) {
+        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
             placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }
