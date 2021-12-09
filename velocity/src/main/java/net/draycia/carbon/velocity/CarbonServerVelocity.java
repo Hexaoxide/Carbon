@@ -20,7 +20,6 @@
 package net.draycia.carbon.velocity;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.velocitypowered.api.proxy.Player;

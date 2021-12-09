@@ -74,7 +74,6 @@ public final class ConfigChatChannel implements ChatChannel {
         The permission required to use the channel.
         To read messages you must have the permission carbon.channel.basic.see
         To send messages you must have the permission carbon.channel.basic.speak
-        If you want to give both, grant carbon.channel.basic or carbon.channel.basic.*
         """)
     private @Nullable String permission = "carbon.channel.basic";
 
