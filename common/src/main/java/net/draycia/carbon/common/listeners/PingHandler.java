@@ -26,7 +26,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -43,22 +43,22 @@ public class PingHandler {
     private final KeyedRenderer renderer;
 
     @Inject
-    public PingHandler(final CarbonChat carbonChat, final PrimaryConfig primaryConfig) {
+    public PingHandler(final CarbonChat carbonChat, final ConfigFactory configFactory) {
         this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
                 return new RenderedMessage(message, MessageType.CHAT);
             }
 
-            final String prefix = primaryConfig.pings().prefix();
+            final String prefix = configFactory.primaryConfig().pings().prefix();
 
             return new RenderedMessage(message.replaceText(TextReplacementConfig.builder()
                 .match(Pattern.compile(Pattern.quote(prefix + recipientPlayer.username()), Pattern.CASE_INSENSITIVE))
                 .replacement(matchedText -> {
-                    if (primaryConfig.pings().playSound()) {
-                        recipient.playSound(primaryConfig.pings().sound());
+                    if (configFactory.primaryConfig().pings().playSound()) {
+                        recipient.playSound(configFactory.primaryConfig().pings().sound());
                     }
 
-                    return matchedText.color(primaryConfig.pings().highlightTextColor());
+                    return matchedText.color(configFactory.primaryConfig().pings().highlightTextColor());
                 })
                 .build()), MessageType.CHAT);
         });

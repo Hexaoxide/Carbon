@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
@@ -42,11 +42,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class CarbonMessageRenderer implements IMessageRenderer<Audience, String, RenderedMessage, Component> {
 
-    private final PrimaryConfig config;
+    private final ConfigFactory configFactory;
 
     @Inject
-    public CarbonMessageRenderer(final PrimaryConfig config) {
-        this.config = config;
+    public CarbonMessageRenderer(final ConfigFactory configFactory) {
+        this.configFactory = configFactory;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CarbonMessageRenderer implements IMessageRenderer<Audience, String,
         // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
         String placeholderResolvedMessage = intermediateMessage;
 
-        for (final var entry : this.config.customPlaceholders().entrySet()) {
+        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
             placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }

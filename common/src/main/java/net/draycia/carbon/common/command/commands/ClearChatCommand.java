@@ -26,7 +26,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.Component;
 
@@ -36,7 +36,7 @@ public class ClearChatCommand {
     public ClearChatCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final PrimaryConfig config,
+        final ConfigFactory configFactory,
         final CarbonMessageService messageService
     ) {
         final var command = commandManager.commandBuilder("clearchat", "chatclear", "cc")
@@ -46,10 +46,10 @@ public class ClearChatCommand {
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?
-                for (int i = 0; i < config.clearChatSettings().iterations(); i++) {
+                for (int i = 0; i < configFactory.primaryConfig().clearChatSettings().iterations(); i++) {
                     for (final var player : carbonChat.server().players()) {
                         if (!player.hasPermission("carbon.clearchat.exempt")) {
-                            player.sendMessage(config.clearChatSettings().message());
+                            player.sendMessage(configFactory.primaryConfig().clearChatSettings().message());
                         }
                     }
                 }
@@ -62,7 +62,7 @@ public class ClearChatCommand {
                     senderName = Component.text("Console");
                 }
 
-                carbonChat.server().sendMessage(config.clearChatSettings().broadcast(senderName));
+                carbonChat.server().sendMessage(configFactory.primaryConfig().clearChatSettings().broadcast(senderName));
             })
             .build();
 
