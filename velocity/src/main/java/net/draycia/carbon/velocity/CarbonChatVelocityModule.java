@@ -74,12 +74,15 @@ public final class CarbonChatVelocityModule extends AbstractModule {
                 if (commandSender instanceof Player player) {
                     return new VelocityPlayerCommander(this.carbonChatVelocity, player);
                 }
+
                 return VelocityCommander.from(commandSender);
             },
             commander -> ((VelocityCommander) commander).commandSource()
         );
+
         final var brigadierManager = commandManager.brigadierManager();
         brigadierManager.setNativeNumberSuggestions(false);
+
         return commandManager;
     }
 
