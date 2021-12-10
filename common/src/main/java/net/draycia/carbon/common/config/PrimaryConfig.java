@@ -43,9 +43,6 @@ public class PrimaryConfig {
     @Comment("The service that will be used to store and load player information.")
     private StorageType storageType = StorageType.JSON;
 
-    @Comment("Should we hide join/quit and death messages of muted players?")
-    private boolean hideMutedJoinLeaveQuit = false;
-
     @Comment("Various ClearChat command settings.")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
@@ -71,10 +68,6 @@ public class PrimaryConfig {
 
     public StorageType storageType() {
         return this.storageType;
-    }
-
-    public boolean hideMutedJoinLeaveQuit() {
-        return this.hideMutedJoinLeaveQuit;
     }
 
     public ClearChatSettings clearChatSettings() {

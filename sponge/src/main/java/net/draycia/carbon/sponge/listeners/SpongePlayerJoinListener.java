@@ -21,16 +21,11 @@ package net.draycia.carbon.sponge.listeners;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
-import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
@@ -39,57 +34,26 @@ import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 public class SpongePlayerJoinListener {
 
     private final CarbonChat carbonChat;
-    private final ConfigFactory configFactory;
     private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
     public SpongePlayerJoinListener(
         final CarbonChat carbonChat,
-        final ConfigFactory configFactory,
         final UserManager<CarbonPlayerCommon> userManager
     ) {
         this.carbonChat = carbonChat;
-        this.configFactory = configFactory;
         this.userManager = userManager;
     }
 
     @Listener
-    public void onPlayerLogin(final ServerSideConnectionEvent.Join event) {
-        if (!this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            return;
-        }
-
-        final ComponentPlayerResult<CarbonPlayer> result = this.carbonChat.server().player(event.player().uniqueId()).join();
-        final @Nullable CarbonPlayer player = result.player();
-
-        if (player == null) {
-            return;
-        }
-
-        // Don't show join messages when muted
-        if (player.muted()) {
-            event.setMessageCancelled(true);
-        }
-    }
-
-    @Listener
     public void onPlayerQuit(final ServerSideConnectionEvent.Disconnect event) {
-        final ComponentPlayerResult<CarbonPlayer> result =
-            this.carbonChat.server().player(event.player().uniqueId()).join();
-
-        if (result.player() == null) {
-            return;
-        }
-
-        final CarbonPlayer player = result.player();
-
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            if (player.muted()) {
-                event.setAudience(Audience.empty());
+        this.carbonChat.server().player(event.player().uniqueId()).thenAccept(result -> {
+            if (result.player() == null) {
+                return;
             }
-        }
 
-        PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerSponge) player);
+            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerSponge) result.player());
+        });
     }
 
 }

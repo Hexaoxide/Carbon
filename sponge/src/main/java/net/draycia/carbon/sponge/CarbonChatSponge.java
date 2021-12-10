@@ -40,7 +40,6 @@ import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
-import net.draycia.carbon.sponge.listeners.SpongePlayerDeathListener;
 import net.draycia.carbon.sponge.listeners.SpongePlayerJoinListener;
 import net.draycia.carbon.sponge.listeners.SpongeReloadListener;
 import net.kyori.adventure.text.Component;
@@ -64,7 +63,7 @@ import org.spongepowered.plugin.builtin.jvm.Plugin;
 public final class CarbonChatSponge implements CarbonChat {
 
     private static final Set<Class<?>> LISTENER_CLASSES = Set.of(SpongeChatListener.class,
-        SpongePlayerDeathListener.class, SpongePlayerJoinListener.class, SpongeReloadListener.class);
+        SpongePlayerJoinListener.class, SpongeReloadListener.class);
 
     private static final int BSTATS_PLUGIN_ID = 11279;
 

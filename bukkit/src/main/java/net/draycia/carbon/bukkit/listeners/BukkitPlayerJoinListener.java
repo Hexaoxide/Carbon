@@ -21,78 +21,41 @@ package net.draycia.carbon.bukkit.listeners;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
-import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class BukkitPlayerJoinListener implements Listener {
 
     private final CarbonChat carbonChat;
-    private final ConfigFactory configFactory;
     private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
     public BukkitPlayerJoinListener(
         final CarbonChat carbonChat,
-        final ConfigFactory configFactory,
         final UserManager<CarbonPlayerCommon> userManager
     ) {
         this.carbonChat = carbonChat;
-        this.configFactory = configFactory;
         this.userManager = userManager;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handleJoinMessages(final PlayerJoinEvent event) {
-        if (!this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            return;
-        }
-
-        final ComponentPlayerResult<CarbonPlayer> result =
-            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
-        final @Nullable CarbonPlayer player = result.player();
-
-        if (player == null) {
-            return;
-        }
-
-        // Don't show join messages when muted
-        if (player.muted()) {
-            event.joinMessage(null);
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(final PlayerQuitEvent event) {
-        final ComponentPlayerResult<CarbonPlayer> result =
-            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
-
-        if (result.player() == null) {
-            return;
-        }
-
-        final CarbonPlayer player = result.player();
-
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            if (player.muted()) {
-                event.quitMessage(null);
+        this.carbonChat.server().player(event.getPlayer().getUniqueId()).thenAccept(result -> {
+            if (result.player() == null) {
+                return;
             }
-        }
 
-        PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerBukkit) player);
+            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerBukkit) result.player());
+        });
     }
 
 }

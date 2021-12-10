@@ -21,10 +21,7 @@ package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
@@ -36,38 +33,26 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class FabricPlayerLeaveListener implements PlayerStatusMessageEvents.MessageEventListener {
 
     private final CarbonChat carbonChat;
-    private final ConfigFactory configFactory;
     private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
     public FabricPlayerLeaveListener(
         final CarbonChat carbonChat,
-        final ConfigFactory configFactory,
         final UserManager<CarbonPlayerCommon> userManager
     ) {
         this.carbonChat = carbonChat;
-        this.configFactory = configFactory;
         this.userManager = userManager;
     }
 
     @Override
     public void onMessage(final PlayerStatusMessageEvents.MessageEvent event) {
-        final ComponentPlayerResult<CarbonPlayer> result =
-            this.carbonChat.server().player(event.player().getUUID()).join();
-
-        if (result.player() == null) {
-            return;
-        }
-
-        final CarbonPlayer player = result.player();
-
-        if (this.configFactory.primaryConfig().hideMutedJoinLeaveQuit()) {
-            if (player.muted()) {
-                event.disableMessage();
+        this.carbonChat.server().player(event.player().getUUID()).thenAccept(result -> {
+            if (result.player() == null) {
+                return;
             }
-        }
 
-        PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerFabric) player);
+            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerFabric) result.player());
+        });
     }
 
 }

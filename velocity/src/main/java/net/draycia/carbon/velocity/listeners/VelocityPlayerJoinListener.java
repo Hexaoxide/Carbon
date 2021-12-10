@@ -23,8 +23,6 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
@@ -49,16 +47,13 @@ public class VelocityPlayerJoinListener {
 
     @Subscribe
     public void onPlayerLeave(final DisconnectEvent event) {
-        final ComponentPlayerResult<CarbonPlayer> result =
-            this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        this.carbonChat.server().player(event.getPlayer().getUniqueId()).thenAccept(result -> {
+            if (result.player() == null) {
+                return;
+            }
 
-        if (result.player() == null) {
-            return;
-        }
-
-        final CarbonPlayer player = result.player();
-
-        PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerVelocity) player);
+            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerVelocity) result.player());
+        });
     }
 
 }
