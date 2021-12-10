@@ -152,10 +152,12 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     public void loadConfigChannels() {
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
-        if (!Files.exists(this.configChannelDir) || this.isPathEmpty(this.configChannelDir)) {
+        if (!Files.exists(this.configChannelDir)) {
             // no channels to register, register default channel
             this.registerDefaultChannel();
             return;
+        } else if (this.isPathEmpty(this.configChannelDir)) {
+            this.register(this.basicChannel.key(), this.basicChannel);
         }
 
         // otherwise, register all channels found
@@ -218,19 +220,17 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         try {
             Files.createDirectories(this.configChannelDir);
 
-            this.register(this.basicChannel.key(), this.basicChannel);
-
-            final Path configFile = this.configChannelDir.resolve("basic-channel.conf.example");
+            final Path configFile = this.configChannelDir.resolve("global.conf");
 
             final var loader = this.configLoader.configurationLoader(configFile);
             final var node = loader.load();
 
             final var configChannel = this.injector.getInstance(ConfigChatChannel.class);
-            node.set(ConfigChatChannel.class, configChannel);
 
+            node.set(ConfigChatChannel.class, configChannel);
             loader.save(node);
 
-            this.logger.info("No custom channels defined! Using basic handler.");
+            this.register(configChannel.key(), configChannel);
         } catch (final IOException exception) {
             exception.printStackTrace();
         }

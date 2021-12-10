@@ -68,14 +68,14 @@ public final class ConfigChatChannel implements ChatChannel {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private @Nullable Key key = Key.key("carbon", "basic");
+    private @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
         The permission required to use the channel.
         To read messages you must have the permission carbon.channel.basic.see
         To send messages you must have the permission carbon.channel.basic.speak
         """)
-    private @Nullable String permission = "carbon.channel.basic";
+    private @Nullable String permission = "carbon.channel.global";
 
     @Setting("format")
     @Comment("The chat formats for this channel.")

@@ -38,7 +38,7 @@ public class PrimaryConfig {
     The default channel that new players will be in when they join.
     If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.
     """)
-    private Key defaultChannel = Key.key("carbon", "basic");
+    private Key defaultChannel = Key.key("carbon", "global");
 
     @Comment("The service that will be used to store and load player information.")
     private StorageType storageType = StorageType.JSON;
