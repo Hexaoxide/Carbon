@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.sponge;
 
+import com.google.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
@@ -39,6 +41,13 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class SpongeMessageRenderer implements IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> {
+
+    private final ConfigFactory configFactory;
+
+    @Inject
+    public SpongeMessageRenderer(final ConfigFactory configFactory) {
+        this.configFactory = configFactory;
+    }
 
     @Override
     public RenderedMessage render(
@@ -54,7 +63,16 @@ public class SpongeMessageRenderer implements IMessageRenderer<SourcedAudience, 
             templates.add(Template.template(entry.getKey(), entry.getValue()));
         }
 
-        final Component message = MiniMessage.miniMessage().deserialize(intermediateMessage, TemplateResolver.templates(templates));
+        // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
+        // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
+        String placeholderResolvedMessage = intermediateMessage;
+
+        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
+            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
+                entry.getValue());
+        }
+
+        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
         final MessageType messageType;
         final @Nullable ChatType chatType = method.getAnnotation(ChatType.class);
 
