@@ -22,13 +22,11 @@ package net.draycia.carbon.velocity.listeners;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.proxy.Player;
 import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
@@ -108,28 +106,16 @@ public final class VelocityChatListener {
             var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
             for (final var renderer : chatEvent.renderers()) {
-                try {
-                    if (recipient instanceof Player player) {
-                        final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
-
-                        renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
-                    } else {
-                        renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
-                    }
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
+                renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
             }
 
-            final Identity identity;
+            final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
 
-            if (sender.hasPermission("carbon.hideidentity")) {
-                identity = Identity.nil();
+            if (!(recipient instanceof CarbonPlayer)) {
+                recipient.sendMessage(identity, renderedMessage.component());
             } else {
-                identity = sender.identity();
+                recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
             }
-
-            recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
         }
 
         event.setResult(PlayerChatEvent.ChatResult.denied());

@@ -328,11 +328,12 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
             }
 
-            if (sender.hasPermission("carbon.hideidentity")) {
-                recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
-            } else {
-                recipient.sendMessage(sender.identity(), renderedMessage.component(), renderedMessage.messageType());
+            final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
 
+            if (!(recipient instanceof CarbonPlayer)) {
+                recipient.sendMessage(identity, renderedMessage.component());
+            } else {
+                recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
             }
         }
     }
