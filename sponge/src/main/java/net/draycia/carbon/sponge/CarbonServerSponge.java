@@ -86,7 +86,7 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
         return this.userManager.carbonPlayer(uuid).thenCompose(result -> {
             return CompletableFuture.supplyAsync(() -> {
                 if (result.player() != null) {
-                    new ComponentPlayerResult<>(new CarbonPlayerSponge(result.player()), Component.empty());
+                    return new ComponentPlayerResult<>(new CarbonPlayerSponge(result.player()), Component.empty());
                 }
 
                 final @Nullable String name = this.resolveName(uuid).join();

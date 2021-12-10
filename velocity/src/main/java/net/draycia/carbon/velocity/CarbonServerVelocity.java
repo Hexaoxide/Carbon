@@ -96,7 +96,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
         return this.userManager.carbonPlayer(uuid).thenCompose(result -> {
             return CompletableFuture.supplyAsync(() -> {
                 if (result.player() != null) {
-                    new ComponentPlayerResult<>(new CarbonPlayerVelocity(this.server, result.player()), Component.empty());
+                    return new ComponentPlayerResult<>(new CarbonPlayerVelocity(this.server, result.player()), Component.empty());
                 }
 
                 final @Nullable String name = this.resolveName(uuid).join();

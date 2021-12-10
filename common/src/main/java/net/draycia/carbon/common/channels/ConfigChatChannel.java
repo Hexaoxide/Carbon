@@ -137,7 +137,7 @@ public final class ConfigChatChannel implements ChatChannel {
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer carbonPlayer) {
         return ChannelPermissionResult.allowedIf(text("Insufficient permissions!"), () ->
-            carbonPlayer.hasPermission(this.permission + ".speak")); // carbon.channels.local.speak
+            carbonPlayer.hasPermission(this.permission() + ".speak")); // carbon.channels.local.speak
     }
 
     @Override
@@ -148,7 +148,7 @@ public final class ConfigChatChannel implements ChatChannel {
             return ChannelPermissionResult.allowed();
         }
 
-        if (permission.get().test(this.permission + ".see")) {
+        if (permission.get().test(this.permission())) {
             return ChannelPermissionResult.allowed();
         }
 
@@ -217,6 +217,14 @@ public final class ConfigChatChannel implements ChatChannel {
         }
 
         return requireNonNull(this.messageService, "Channel message service must not be null!");
+    }
+
+    public String permission() {
+        if (this.permission == null) {
+            return "carbon.channel.basic";
+        }
+
+        return this.permission;
     }
 
 }

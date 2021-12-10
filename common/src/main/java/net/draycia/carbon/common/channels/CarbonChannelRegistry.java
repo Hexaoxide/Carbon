@@ -252,11 +252,15 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     private void registerChannelCommands(final ChatChannel channel, final CommandManager<Commander> commandManager) {
-        final var command = commandManager.commandBuilder(channel.commandName(),
+        var builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
-            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build())
-            .permission("carbon.channel." + channel.key().value())
-            .senderType(PlayerCommander.class)
+            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
+
+        if (channel instanceof ConfigChatChannel chatChannel) {
+            builder = builder.permission(chatChannel.permission());
+        }
+
+        final var command = builder.senderType(PlayerCommander.class)
             .handler(handler -> {
                 final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 

@@ -22,7 +22,6 @@ package net.draycia.carbon.bukkit.users;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -146,16 +145,6 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
             .flatMap(Collection::stream)
             .filter(value -> value.value() instanceof Boolean)
             .anyMatch(MetadataValue::asBoolean);
-    }
-
-    @Override
-    public @Nullable ChatChannel selectedChannel() {
-        return this.carbonPlayerCommon.selectedChannel();
-    }
-
-    @Override
-    public void selectedChannel(final @Nullable ChatChannel chatChannel) {
-        this.carbonPlayerCommon.selectedChannel(chatChannel);
     }
 
 }
