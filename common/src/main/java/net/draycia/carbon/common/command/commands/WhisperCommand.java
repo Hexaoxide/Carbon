@@ -42,7 +42,7 @@ public class WhisperCommand {
         final CarbonMessageService messageService,
         final CarbonServer carbonServer
     ) {
-        final var command = commandManager.commandBuilder("whisper", "w", "message", "msg")
+        final var command = commandManager.commandBuilder("whisper", "w", "message", "msg", "m", "tell")
             .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asRequired(),
                 RichDescription.of(messageService.commandWhisperArgumentPlayer().component()))
             .argument(StringArgument.greedy("message"),
