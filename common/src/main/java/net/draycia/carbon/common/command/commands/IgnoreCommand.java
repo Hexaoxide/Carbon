@@ -52,7 +52,7 @@ public class IgnoreCommand {
                 .withDescription(RichDescription.of(messageService.commandIgnoreArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
-            .permission("carbon.ignore.ignore")
+            .permission("carbon.ignore")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandIgnoreDescription().component())
             .handler(handler -> {
