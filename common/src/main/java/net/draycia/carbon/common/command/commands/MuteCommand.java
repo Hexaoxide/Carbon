@@ -52,7 +52,7 @@ public class MuteCommand {
                 .withDescription(RichDescription.of(messageService.commandMuteArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
-            .permission("carbon.mute.mute")
+            .permission("carbon.mute")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandMuteDescription().component())
             .handler(handler -> {
