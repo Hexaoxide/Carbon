@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
