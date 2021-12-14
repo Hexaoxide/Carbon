@@ -31,7 +31,7 @@ tasks {
     relocateDependency("io.leangen.geantyref")
   }
   runServer {
-    minecraftVersion("1.17.1")
+    minecraftVersion("1.18.1")
   }
 }
 
