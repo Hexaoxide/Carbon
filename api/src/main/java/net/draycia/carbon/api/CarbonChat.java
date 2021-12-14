@@ -24,6 +24,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
@@ -87,7 +88,7 @@ public interface CarbonChat {
      * @return the message renderer
      * @since 2.0.0
      */
-    IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer();
+    <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer();
 
     // TODO: Redis as MariaDB cache
     // TODO: Adopt egg82/Messenger for use with databases?

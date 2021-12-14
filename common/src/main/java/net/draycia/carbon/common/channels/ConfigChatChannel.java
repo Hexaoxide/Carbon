@@ -189,14 +189,13 @@ public final class ConfigChatChannel implements ChatChannel {
         final UUIDPlaceholderResolver<SourcedAudience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
         final StringPlaceholderResolver<SourcedAudience> stringPlaceholderResolver = new StringPlaceholderResolver<>();
         final KeyPlaceholderResolver<SourcedAudience> keyPlaceholderResolver = new KeyPlaceholderResolver<>();
-        final IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> configMessageRenderer = CarbonChatProvider.carbonChat().messageRenderer();
         final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
         try {
             return Moonshine.<ConfigChannelMessageService, SourcedAudience>builder(new TypeToken<ConfigChannelMessageService>() {})
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
-                .rendered(configMessageRenderer)
+                .rendered(CarbonChatProvider.carbonChat().messageRenderer())
                 .sent(carbonMessageSender)
                 .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
