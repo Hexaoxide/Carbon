@@ -32,7 +32,6 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -42,6 +41,7 @@ import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
 import net.draycia.carbon.sponge.listeners.SpongePlayerJoinListener;
 import net.draycia.carbon.sponge.listeners.SpongeReloadListener;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
@@ -76,7 +76,6 @@ public final class CarbonChatSponge implements CarbonChat {
     private final PluginContainer pluginContainer;
     private final UserManager<CarbonPlayerCommon> userManager;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
-    private final IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer;
 
     @Inject
     public CarbonChatSponge(
@@ -97,7 +96,6 @@ public final class CarbonChatSponge implements CarbonChat {
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerSponge = this.injector.getInstance(CarbonServerSponge.class);
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
-        this.messageRenderer = this.injector.getInstance(SpongeMessageRenderer.class);
         this.dataDirectory = dataDirectory;
 
         for (final Class<?> clazz : LISTENER_CLASSES) {
@@ -152,8 +150,8 @@ public final class CarbonChatSponge implements CarbonChat {
     }
 
     @Override
-    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer() {
-        return this.messageRenderer;
+    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
+        return this.injector.getInstance(SpongeMessageRenderer.class);
     }
 
     public CarbonMessageService messageService() {

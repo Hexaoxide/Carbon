@@ -35,13 +35,13 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
@@ -76,8 +76,6 @@ public class CarbonChatVelocity implements CarbonChat {
     private final CarbonServerVelocity carbonServer;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
 
-    private final IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer;
-
     @Inject
     public CarbonChatVelocity(
         @DataDirectory final Path dataDirectory,
@@ -101,7 +99,6 @@ public class CarbonChatVelocity implements CarbonChat {
         this.messageService = this.injector.getInstance(CarbonMessageService.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServer = this.injector.getInstance(CarbonServerVelocity.class);
-        this.messageRenderer = this.injector.getInstance(VelocityMessageRenderer.class);
     }
 
     @Subscribe
@@ -141,8 +138,8 @@ public class CarbonChatVelocity implements CarbonChat {
     }
 
     @Override
-    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer() {
-        return this.messageRenderer;
+    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
+        return this.injector.getInstance(VelocityMessageRenderer.class);
     }
 
     public CarbonMessageService messageService() {

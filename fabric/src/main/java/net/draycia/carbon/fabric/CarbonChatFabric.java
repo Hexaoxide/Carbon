@@ -31,7 +31,6 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -47,6 +46,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -156,7 +156,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     @Override
-    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> messageRenderer() {
+    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
         return this.injector.getInstance(FabricMessageRenderer.class);
     }
 

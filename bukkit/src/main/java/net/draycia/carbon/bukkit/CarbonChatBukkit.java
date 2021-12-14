@@ -45,7 +45,6 @@ import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,7 +72,6 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     private @MonotonicNonNull CarbonServerBukkit carbonServerBukkit;
     private @MonotonicNonNull CarbonMessageService messageService;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
-    private @MonotonicNonNull MiniMessage miniMessage;
 
     @Override
     public void onLoad() {
