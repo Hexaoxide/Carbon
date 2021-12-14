@@ -22,7 +22,6 @@ package net.draycia.carbon.common.users;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -42,8 +41,8 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     public abstract CarbonPlayerCommon carbonPlayerCommon();
 
-    public User user() {
-        return Objects.requireNonNull(LuckPermsProvider.get().getUserManager().getUser(this.uuid()));
+    public @Nullable User user() {
+        return LuckPermsProvider.get().getUserManager().getUser(this.uuid());
     }
 
     @Override
@@ -67,20 +66,38 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     @Override
     public boolean hasPermission(final String permission) {
-        final var data = this.user().getCachedData().getPermissionData(this.user().getQueryOptions());
+        final @Nullable User user = this.user();
+
+        if (user == null) {
+            return false;
+        }
+
+        final var data = user.getCachedData().getPermissionData(user.getQueryOptions());
         return data.checkPermission(permission) == Tristate.TRUE;
     }
 
     @Override
     public String primaryGroup() {
-        return this.user().getPrimaryGroup();
+        final @Nullable User user = this.user();
+
+        if (user == null) {
+            return "default";
+        }
+
+        return user.getPrimaryGroup();
     }
 
     @Override
     public List<String> groups() {
+        final @Nullable User user = this.user();
+
+        if (user == null) {
+            return List.of("default");
+        }
+
         final var groups = new ArrayList<String>();
 
-        for (final var group : this.user().getInheritedGroups(this.user().getQueryOptions())) {
+        for (final var group : user.getInheritedGroups(user.getQueryOptions())) {
             groups.add(group.getName());
         }
 
