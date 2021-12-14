@@ -175,7 +175,12 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
                 final @Nullable ChatChannel chatChannel = this.registerChannelFromPath(path);
 
-                if (chatChannel != null && chatChannel.shouldRegisterCommands()) {
+                if (chatChannel == null) {
+                    this.logger.warn("Failed to load channel from file [" + fileName + "]");
+                    return;
+                }
+
+                if (chatChannel.shouldRegisterCommands()) {
                     this.registerChannelCommands(chatChannel, commandManager);
                 }
             });
