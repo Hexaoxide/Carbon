@@ -181,17 +181,18 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             });
 
             if (!this.channelMap.containsKey(this.defaultKey)) {
-                final List<String> channelList = new ArrayList<>();
-
-                for (final ChatChannel chatChannel : this.channelMap.values()) {
-                    channelList.add(chatChannel.key().asString());
-                }
-
-                final String channels = String.join(", ", channelList);
-
                 this.logger.warn("No default channel found! Default channel key: [" + this.defaultKey().asString() + "]");
-                this.logger.warn("Registered channels: [" + channels + "]");
             }
+
+            final List<String> channelList = new ArrayList<>();
+
+            for (final ChatChannel chatChannel : this.channelMap.values()) {
+                channelList.add(chatChannel.key().asString());
+            }
+
+            final String channels = String.join(", ", channelList);
+
+            this.logger.warn("Registered channels: [" + channels + "]");
         } catch (final IOException exception) {
             exception.printStackTrace();
         }
@@ -260,9 +261,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final Key channelKey = channel.key();
 
         if (this.defaultKey.equals(channelKey)) {
-            this.logger.info("Registering default channel with key [" + channelKey + "]");
-        } else {
-            this.logger.info("Registering channel with key [" + channelKey + "]");
+            this.logger.info("Default channel is [" + channelKey + "]");
         }
 
         this.register(channelKey, channel);
