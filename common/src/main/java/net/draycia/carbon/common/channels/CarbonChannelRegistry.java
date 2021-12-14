@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -94,7 +95,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     private final CarbonMessageService messageService;
     private final CarbonChat carbonChat;
 
-    private final BiMap<Key, ChatChannel> map = Maps.synchronizedBiMap(HashBiMap.create());
+    private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
     @Inject
     public CarbonChannelRegistry(
@@ -178,6 +179,19 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                     this.registerChannelCommands(chatChannel, commandManager);
                 }
             });
+
+            if (!this.channelMap.containsKey(this.defaultKey)) {
+                final List<String> channelList = new ArrayList<>();
+
+                for (final ChatChannel chatChannel : this.channelMap.values()) {
+                    channelList.add(chatChannel.key().asString());
+                }
+
+                final String channels = String.join(", ", channelList);
+
+                this.logger.warn("No default channel found! Default channel key: [" + this.defaultKey().asString() + "]");
+                this.logger.warn("Registered channels: [" + channels + "]");
+            }
         } catch (final IOException exception) {
             exception.printStackTrace();
         }
@@ -245,7 +259,12 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
         final Key channelKey = channel.key();
 
-        this.logger.info("Registering channel with key [" + channelKey + "]");
+        if (this.defaultKey.equals(channelKey)) {
+            this.logger.info("Registering default channel with key [" + channelKey + "]");
+        } else {
+            this.logger.info("Registering channel with key [" + channelKey + "]");
+        }
+
         this.register(channelKey, channel);
 
         return channel;
@@ -354,28 +373,28 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Override
     public @NonNull ChatChannel register(final @NonNull Key key, final @NonNull ChatChannel value) {
-        this.map.put(key, value);
+        this.channelMap.put(key, value);
         return value;
     }
 
     @Override
     public @Nullable ChatChannel get(final @NonNull Key key) {
-        return this.map.get(key);
+        return this.channelMap.get(key);
     }
 
     @Override
     public @Nullable Key key(final @NonNull ChatChannel value) {
-        return this.map.inverse().get(value);
+        return this.channelMap.inverse().get(value);
     }
 
     @Override
     public @NonNull Set<Key> keySet() {
-        return Collections.unmodifiableSet(this.map.keySet());
+        return Collections.unmodifiableSet(this.channelMap.keySet());
     }
 
     @Override
     public @NonNull Iterator<ChatChannel> iterator() {
-        return Iterators.unmodifiableIterator(this.map.values().iterator());
+        return Iterators.unmodifiableIterator(this.channelMap.values().iterator());
     }
 
 }
