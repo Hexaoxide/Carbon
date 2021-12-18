@@ -19,9 +19,11 @@
  */
 package net.draycia.carbon.bukkit.users;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -30,6 +32,7 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -126,6 +129,14 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
         // TODO: ensure method is not executed from main thread
         // bukkit doesn't like that
         this.player().ifPresent(player -> player.chat(message));
+    }
+
+    @Override
+    public boolean speechPermitted(final String message) {
+        // ...........
+        return new AsyncPlayerChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), message, Set.of()).callEvent()
+            && new AsyncChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), Set.of(),
+            (player, name, msg, receiver) -> msg, Component.text(message), Component.text(message)).callEvent();
     }
 
     @Override

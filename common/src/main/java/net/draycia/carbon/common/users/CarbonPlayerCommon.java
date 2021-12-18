@@ -170,6 +170,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
+    public boolean speechPermitted(final String message) {
+        return true;
+    }
+
+    @Override
     public boolean online() {
         return false;
     }

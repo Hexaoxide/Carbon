@@ -319,6 +319,11 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         ChatChannel channel,
         final String plainMessage
     ) {
+        // Should we silent exit here? Chances are whatever caused the
+        if (!sender.speechPermitted(plainMessage)) {
+            return;
+        }
+
         for (final var chatChannel : this) {
             if (chatChannel.quickPrefix() == null) {
                 continue;

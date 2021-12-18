@@ -214,4 +214,9 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return this.carbonPlayerCommon().identity();
     }
 
+    @Override
+    public boolean speechPermitted(final String message) {
+        return this.carbonPlayerCommon().speechPermitted(message);
+    }
+
 }

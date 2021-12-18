@@ -172,7 +172,11 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Override
     public Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients) {
-        recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
+        try {
+            recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
+        } catch (final UnsupportedOperationException ignored) {
+
+        }
 
         return recipients;
     }
