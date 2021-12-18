@@ -147,7 +147,7 @@ public final class ConfigChatChannel implements ChatChannel {
             return ChannelPermissionResult.allowed();
         }
 
-        if (permission.get().test(this.permission())) {
+        if (permission.get().test(this.permission() + ".see")) {
             return ChannelPermissionResult.allowed();
         }
 

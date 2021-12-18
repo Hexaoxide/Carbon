@@ -56,6 +56,7 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistry;
 import org.apache.logging.log4j.Logger;
@@ -281,6 +282,13 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
         if (channel instanceof ConfigChatChannel chatChannel) {
             builder = builder.permission(chatChannel.permission());
+
+            // Add to LuckPerms permission suggestions... lol
+            this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
+                checker.test(chatChannel.permission());
+                checker.test(chatChannel.permission() + ".see");
+                checker.test(chatChannel.permission() + ".speak");
+            });
         }
 
         final var command = builder.senderType(PlayerCommander.class)
