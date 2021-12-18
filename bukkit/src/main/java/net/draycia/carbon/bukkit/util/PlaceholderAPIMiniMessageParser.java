@@ -105,12 +105,12 @@ public final class PlaceholderAPIMiniMessageParser {
             final String replaced = placeholderResolver.apply(match);
 
             if (match.equals(replaced) || !containsLegacyColorCodes(replaced)) {
-                matcher.appendReplacement(builder, replaced);
+                matcher.appendReplacement(builder, Matcher.quoteReplacement(replaced));
             } else {
                 final String key = "papi_generated_template_" + id;
                 id++;
                 templates.add(Template.template(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
-                matcher.appendReplacement(builder, "<" + key + ">");
+                matcher.appendReplacement(builder, Matcher.quoteReplacement("<" + key + ">"));
             }
         }
 
