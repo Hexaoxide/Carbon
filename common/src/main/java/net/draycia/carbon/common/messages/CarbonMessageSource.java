@@ -219,9 +219,9 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         boolean write = !Files.isRegularFile(savedFile);
 
         // Read the file in the jar and add missing entries
-        try (final InputStream stream = Files.newInputStream(localeFile)) {
+        try (final Reader reader = new InputStreamReader(Files.newInputStream(localeFile), StandardCharsets.UTF_8)) {
             final Properties packaged = new Properties();
-            packaged.load(stream);
+            packaged.load(reader);
 
             for (final Map.Entry<Object, Object> entry : packaged.entrySet()) {
                 write |= properties.putIfAbsent(entry.getKey(), entry.getValue()) == null;
