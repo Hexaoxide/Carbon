@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabricHolder;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
@@ -39,6 +40,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerList.class)
 abstract class PlayerListMixin {
@@ -81,4 +83,11 @@ abstract class PlayerListMixin {
         }
     }
 
+    @Inject(
+        method = "respawn(Lnet/minecraft/server/level/ServerPlayer;Z)Lnet/minecraft/server/level/ServerPlayer;",
+        at = @At(value = "RETURN")
+    )
+    public void injectRespawn(final ServerPlayer originalPlayer, final boolean var2, final CallbackInfoReturnable<ServerPlayer> cir) {
+        ((CarbonPlayerFabricHolder) cir.getReturnValue()).setCarbonPlayer(((CarbonPlayerFabricHolder) originalPlayer).carbon());
+    }
 }

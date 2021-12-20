@@ -31,16 +31,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabricHolder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
@@ -61,7 +60,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
     private final CarbonChatFabric carbonChatFabric;
     private final UserManager<CarbonPlayerCommon> userManager;
 
-    private final Map<UUID, CarbonPlayerFabric> userCache = new ConcurrentHashMap<>();
+    // private final Map<UUID, CarbonPlayerFabric> userCache = new ConcurrentHashMap<>();
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
@@ -87,30 +86,18 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
         final var players = new ArrayList<CarbonPlayer>();
 
         for (final var player : this.carbonChatFabric.minecraftServer().getPlayerList().getPlayers()) {
-            final @Nullable ComponentPlayerResult<CarbonPlayer> result = this.player(player).join();
-
-            if (result.player() != null) {
-                players.add(result.player());
-            }
+            players.add(((CarbonPlayerFabricHolder) player).carbon());
         }
 
         return players;
     }
 
-    private CompletableFuture<ComponentPlayerResult<CarbonPlayer>> wrapPlayer(final UUID uuid) {
+    private CompletableFuture<ComponentPlayerResult<CarbonPlayer>> load(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable CarbonPlayerFabric cachedPlayer = this.userCache.get(uuid);
-
-            if (cachedPlayer != null) {
-                return new ComponentPlayerResult<>(cachedPlayer, Component.empty());
-            }
-
             final ComponentPlayerResult<CarbonPlayerCommon> result = this.userManager.carbonPlayer(uuid).join();
 
             if (result.player() != null) {
                 final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(result.player(), this.carbonChatFabric);
-
-                this.userCache.put(uuid, carbonPlayerFabric);
 
                 return new ComponentPlayerResult<>(carbonPlayerFabric, Component.empty());
             }
@@ -121,8 +108,6 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
                 final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
                 final CarbonPlayerFabric carbonPlayerFabric = new CarbonPlayerFabric(player, this.carbonChatFabric);
 
-                this.userCache.put(uuid, carbonPlayerFabric);
-
                 return new ComponentPlayerResult<>(carbonPlayerFabric, Component.empty());
             }
 
@@ -132,20 +117,22 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final UUID uuid) {
-        return this.wrapPlayer(uuid);
+        return CompletableFuture.completedFuture(
+            new ComponentPlayerResult<>(
+                ((CarbonPlayerFabricHolder) this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid)).carbon(),
+                Component.empty()
+            )
+        );
     }
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final String username) {
-        return CompletableFuture.supplyAsync(() -> {
-            final @Nullable UUID uuid = this.resolveUUID(username).join();
-
-            if (uuid != null) {
-                return this.player(uuid).join();
-            }
-
-            return new ComponentPlayerResult<>(null, text("No UUID found for name."));
-        });
+        return CompletableFuture.completedFuture(
+            new ComponentPlayerResult<>(
+                ((CarbonPlayerFabricHolder) this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username)).carbon(),
+                Component.empty()
+            )
+        );
     }
 
     public CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final Player player) {
@@ -189,4 +176,9 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
         }
     }
 
+    public void initPlayer(final ServerPlayer player) {
+        ((CarbonPlayerFabricHolder) player).setCarbonPlayer(
+            ((CarbonPlayerFabric) this.load(player.getUUID()).join().player())
+        );
+    }
 }

@@ -21,6 +21,8 @@ package net.draycia.carbon.fabric.mixin;
 
 import java.util.UUID;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabricHolder;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
@@ -36,9 +38,21 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ServerPlayer.class)
-abstract class ServerPlayerMixin {
+abstract class ServerPlayerMixin implements CarbonPlayerFabricHolder {
 
     @Shadow @Final public MinecraftServer server;
+
+    private CarbonPlayerFabric carbonPlayerFabric = null;
+
+    @Override
+    public CarbonPlayerFabric carbon() {
+        return this.carbonPlayerFabric;
+    }
+
+    @Override
+    public void setCarbonPlayer(CarbonPlayerFabric carbonPlayer) {
+        this.carbonPlayerFabric = carbonPlayer;
+    }
 
     @Redirect(
         method = "die(Lnet/minecraft/world/damagesource/DamageSource;)V",

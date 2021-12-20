@@ -117,6 +117,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     private void registerPlayerStatusListeners() {
+        PlayerStatusMessageEvents.JOIN_MESSAGE.register(event -> this.carbonServerFabric.initPlayer(event.player()));
         PlayerStatusMessageEvents.QUIT_MESSAGE.register(this.injector.getInstance(FabricPlayerLeaveListener.class));
     }
 
