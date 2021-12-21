@@ -43,6 +43,9 @@ public class PrimaryConfig {
     @Comment("The service that will be used to store and load player information.")
     private StorageType storageType = StorageType.JSON;
 
+    @Comment("")
+    private DatabaseSettings databaseSettings = new DatabaseSettings();
+
     @Comment("Various ClearChat command settings.")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
@@ -68,6 +71,10 @@ public class PrimaryConfig {
 
     public StorageType storageType() {
         return this.storageType;
+    }
+
+    public DatabaseSettings databaseSettings() {
+        return this.databaseSettings;
     }
 
     public ClearChatSettings clearChatSettings() {

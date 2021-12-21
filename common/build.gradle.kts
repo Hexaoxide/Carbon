@@ -22,4 +22,10 @@ dependencies {
   // Other
   api(libs.guice)
   compileOnlyApi(libs.luckPermsApi)
+
+  // Storage
+  api(libs.jdbiCore)
+  api(libs.jdbiObject)
+  api(libs.hikariCP)
+  api(libs.flyway)
 }

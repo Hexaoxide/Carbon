@@ -43,12 +43,14 @@ import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.JSONUserManager;
+import net.draycia.carbon.common.users.db.MariaDBUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -61,6 +63,17 @@ public final class CarbonCommonModule extends AbstractModule {
         final Injector injector
     ) {
         switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
+            case MYSQL -> {
+                final @Nullable UserManager<CarbonPlayerCommon> userManager = MariaDBUserManager.manager(
+                    configFactory.primaryConfig().databaseSettings(), this.getClass().getClassLoader());
+
+                if (userManager == null) {
+                    throw new IllegalStateException("Failure connecting to database.");
+                }
+
+                return userManager;
+            }
+            case PSQL -> throw new UnsupportedOperationException("PostgreSQL is not supported yet.");
             default -> {
                 return injector.getInstance(JSONUserManager.class);
             }
