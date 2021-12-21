@@ -36,6 +36,10 @@ versions:
   fabricLoader: 0.12.12
   adventurePlatformFabric: 5.0.0
   luckPermsApi: 5.3
+  jdbi: 3.25.0
+  hikari: 5.0.0
+  mariadb: 2.1.2
+  flyway: 8.2.3
 
 dependencies:
   adventureBom:
@@ -169,6 +173,23 @@ dependencies:
     group: com.google.inject
     name: guice
     version: { ref: guice }
+
+  jdbiCore:
+    group: org.jdbi
+    name: jdbi3-core
+    version: { ref: jdbi }
+  jdbiObject:
+    group: org.jdbi
+    name: jdbi3-sqlobject
+    version: { ref: jdbi }
+  hikariCP:
+    group: com.zaxxer
+    name: HikariCP
+    version: { ref: hikari }
+  flyway:
+    group: org.flywaydb
+    name: flyway-core
+    version: { ref: flyway }
 
   paperApi:
     group: com.destroystokyo.paper

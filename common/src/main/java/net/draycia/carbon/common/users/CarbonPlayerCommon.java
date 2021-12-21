@@ -64,6 +64,28 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected List<UUID> ignoredPlayers = new ArrayList<>();
 
     public CarbonPlayerCommon(
+        final boolean muted,
+        final boolean deafened,
+        final Key selectedChannel,
+        final String username,
+        final UUID uuid,
+        final Component displayName,
+        final UUID lastWhisperTarget,
+        final UUID whisperReplyTarget,
+        final boolean spying
+    ) {
+        this.muted = muted;
+        this.deafened = deafened;
+        this.selectedChannel = selectedChannel;
+        this.username = username;
+        this.uuid = uuid;
+        this.displayName = displayName;
+        this.lastWhisperTarget = lastWhisperTarget;
+        this.whisperReplyTarget = whisperReplyTarget;
+        this.spying = spying;
+    }
+
+    public CarbonPlayerCommon(
         final String username,
         final UUID uuid
     ) {
@@ -129,19 +151,29 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public boolean ignoring(final CarbonPlayer sender) {
-        return this.ignoredPlayers.contains(sender.uuid());
+    public boolean ignoring(final UUID player) {
+        return this.ignoredPlayers.contains(player);
+    }
+
+    @Override
+    public boolean ignoring(final CarbonPlayer player) {
+        return this.ignoring(player.uuid());
+    }
+
+    @Override
+    public void ignoring(final UUID player, final boolean nowIgnoring) {
+        if (nowIgnoring) {
+            if (!this.ignoredPlayers.contains(player)) {
+                this.ignoredPlayers.add(player);
+            }
+        } else {
+            this.ignoredPlayers.remove(player);
+        }
     }
 
     @Override
     public void ignoring(final CarbonPlayer player, final boolean nowIgnoring) {
-        if (nowIgnoring) {
-            if (!this.ignoredPlayers.contains(player.uuid())) {
-                this.ignoredPlayers.add(player.uuid());
-            }
-        } else {
-            this.ignoredPlayers.remove(player.uuid());
-        }
+        this.ignoring(player.uuid(), nowIgnoring);
     }
 
     @Override
