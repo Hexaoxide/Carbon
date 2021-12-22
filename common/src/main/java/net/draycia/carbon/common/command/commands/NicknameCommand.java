@@ -30,6 +30,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.OptionValueParser;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -39,14 +40,15 @@ public class NicknameCommand {
     @Inject
     public NicknameCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
+        final CarbonMessageService messageService,
+        final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("nickname", "nick")
             // TODO: Allow UUID input for target player
             .flag(commandManager.flagBuilder("player")
                 .withAliases("p")
                 .withDescription(RichDescription.of(messageService.commandNicknameArgumentPlayer().component()))
-                .withArgument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asOptional())
+                .withArgument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).asOptional())
                 .withPermission(Permission.of("carbon.nickname.others"))
             )
             .flag(commandManager.flagBuilder("nickname")

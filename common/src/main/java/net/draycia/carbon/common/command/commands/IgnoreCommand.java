@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.arguments.standard.UUIDArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
@@ -31,6 +32,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -42,10 +44,11 @@ public class IgnoreCommand {
     public IgnoreCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
-        final CarbonChat carbonChat
+        final CarbonChat carbonChat,
+        final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("ignore", "block")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asOptional(),
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).asOptional(),
                 RichDescription.of(messageService.commandIgnoreArgumentPlayer().component()))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")

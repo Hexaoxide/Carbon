@@ -22,6 +22,7 @@ package net.draycia.carbon.fabric;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.fabric.FabricServerCommandManager;
+import cloud.commandframework.fabric.argument.FabricArgumentParsers;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -31,6 +32,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
@@ -86,6 +88,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerFabric.class);
+        this.bind(PlayerSuggestions.class).toInstance(FabricArgumentParsers.<Commander>singlePlayerSelector()::suggestions);
     }
 
 }

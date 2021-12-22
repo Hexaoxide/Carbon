@@ -165,13 +165,13 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
                     commandContext
                 ));
             }
-            inputQueue.remove();
-
             final var playerResult = CarbonChatProvider.carbonChat().server().player(input).join();
 
             if (playerResult.player() == null) {
                 return ArgumentParseResult.failure(new CarbonPlayerParseException(input, commandContext, this.messageService));
             }
+
+            inputQueue.remove();
 
             return ArgumentParseResult.success(playerResult.player());
         }
@@ -181,19 +181,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
             final @NonNull CommandContext<Commander> commandContext,
             final @NonNull String input
         ) {
-            final List<String> output = new ArrayList<>();
-
-            for (final CarbonPlayer player : CarbonChatProvider.carbonChat().server().players()) {
-                if (commandContext.getSender() instanceof PlayerCommander playerCommander) {
-                    if (!playerCommander.carbonPlayer().awareOf(player)) {
-                        continue;
-                    }
-                }
-
-                output.add(player.username());
-            }
-
-            return output;
+            throw new UnsupportedOperationException("Suggestions provider must be overridden.");
         }
 
     }

@@ -31,6 +31,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -42,10 +43,11 @@ public class MuteInfoCommand {
     public MuteInfoCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
-        final CarbonChat carbonChat
+        final CarbonChat carbonChat,
+        final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("muteinfo", "muted")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asOptional(),
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).asOptional(),
                 RichDescription.of(messageService.commandMuteInfoArgumentPlayer().component()))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
