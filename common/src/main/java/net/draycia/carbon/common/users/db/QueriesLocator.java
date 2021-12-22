@@ -9,13 +9,18 @@ public final class QueriesLocator {
 
     private static final Splitter SPLITTER = Splitter.on(';');
     private final ClasspathSqlLocator locator = ClasspathSqlLocator.create();
+    private final DBType dbType;
+
+    public QueriesLocator(final DBType dbType) {
+        this.dbType = dbType;
+    }
 
     public @NonNull String query(final @NonNull String name) {
-        return this.locator.locate("queries/" + name);
+        return this.locator.locate(this.dbType.basePath() + name);
     }
 
     public @NonNull List<@NonNull String> queries(final @NonNull String name) {
-        return SPLITTER.splitToList(this.locator.locate("queries/" + name));
+        return SPLITTER.splitToList(this.locator.locate(this.dbType.basePath() + name));
     }
 
 }
