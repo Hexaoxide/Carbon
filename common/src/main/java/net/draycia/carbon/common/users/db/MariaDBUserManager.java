@@ -101,7 +101,7 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
 
                     final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-                    this.bindArguments(handle.createUpdate(this.locator.query("insert-player")), player)
+                    this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
                         .execute();
 
                     return new ComponentPlayerResult<CarbonPlayerCommon>(null, text(""));
@@ -114,7 +114,7 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
         return CompletableFuture.supplyAsync(() -> {
             return this.jdbi.withHandle(handle -> {
-                this.bindArguments(handle.createUpdate(this.locator.query("save-player")), player)
+                this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
                     .execute();
 
                 // TODO: save ignoredplayers
@@ -123,7 +123,7 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
         });
     }
 
-    private Update bindArguments(final Update update, final CarbonPlayerCommon player) {
+    private Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
         return update
             .bind("uuid", player.uuid())
             .bind("muted", player.muted())
