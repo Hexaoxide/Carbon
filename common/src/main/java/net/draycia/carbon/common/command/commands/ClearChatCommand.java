@@ -55,14 +55,18 @@ public class ClearChatCommand {
                 }
 
                 final Component senderName;
+                final String username;
 
                 if (handler.getSender() instanceof PlayerCommander player) {
                     senderName = CarbonPlayer.renderName(player.carbonPlayer());
+                    username = player.carbonPlayer().username();
                 } else {
                     senderName = Component.text("Console");
+                    username = "Console";
                 }
 
-                carbonChat.server().sendMessage(configFactory.primaryConfig().clearChatSettings().broadcast(senderName));
+                carbonChat.server().sendMessage(configFactory.primaryConfig().clearChatSettings()
+                    .broadcast(senderName, username));
             })
             .build();
 

@@ -54,11 +54,11 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     /**
      * Checks if the player may receive messages from this channel.
      *
-     * @param audience the audience that's receiving messages
+     * @param player the player that's receiving messages
      * @return if the player may receive messages
      * @since 2.0.0
      */
-    ChannelPermissionResult hearingPermitted(final Audience audience);
+    ChannelPermissionResult hearingPermitted(final CarbonPlayer player);
 
     /**
      * Returns a list of all recipients that will receive messages from the sender.
@@ -77,7 +77,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @return the recipients that may receive messages
      * @since 2.0.0
      */
-    Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients);
+    Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients);
 
     /**
      * Messages will be sent in this channel if they start with this prefix.

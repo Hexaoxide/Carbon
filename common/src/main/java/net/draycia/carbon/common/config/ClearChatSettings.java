@@ -57,9 +57,10 @@ public class ClearChatSettings {
         return this.iterations;
     }
 
-    public Component broadcast(final Component displayName) {
+    public Component broadcast(final Component displayName, final String username) {
         return MiniMessage.miniMessage().deserialize(this.broadcast,
-            TemplateResolver.templates(Template.template("display_name", displayName)));
+            TemplateResolver.templates(Template.template("display_name", displayName),
+                Template.template("username", username)));
     }
 
 }

@@ -41,7 +41,6 @@ import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
@@ -56,6 +55,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import static java.util.Objects.requireNonNull;
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 @ConfigSerializable
@@ -140,18 +140,8 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public ChannelPermissionResult hearingPermitted(final Audience audience) {
-        final var permission = audience.get(PermissionChecker.POINTER);
-
-        if (permission.isEmpty()) {
-            return ChannelPermissionResult.allowed();
-        }
-
-        if (permission.get().test(this.permission() + ".see")) {
-            return ChannelPermissionResult.allowed();
-        }
-
-        return ChannelPermissionResult.denied(text("Insufficient permissions!"));
+    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
+        return ChannelPermissionResult.allowedIf(empty(), () -> player.hasPermission(this.permission() + ".see"));
     }
 
     @Override
@@ -171,7 +161,7 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients) {
+    public Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients) {
         try {
             recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
         } catch (final UnsupportedOperationException ignored) {

@@ -98,7 +98,7 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public ChannelPermissionResult hearingPermitted(final Audience audience) {
+    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
         return ChannelPermissionResult.allowed();
     }
 
@@ -119,7 +119,7 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients) {
+    public Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients) {
         recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
 
         return recipients;

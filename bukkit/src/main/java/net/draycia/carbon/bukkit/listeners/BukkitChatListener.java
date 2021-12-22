@@ -85,7 +85,7 @@ public final class BukkitChatListener implements Listener {
             }
         }
 
-        final var recipients = new ArrayList<>(channel.filterRecipients(sender, event.viewers()));
+        final var recipients = new ArrayList<>(channel.recipients(sender));
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
