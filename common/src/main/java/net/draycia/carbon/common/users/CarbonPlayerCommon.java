@@ -257,6 +257,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return CarbonChatProvider.carbonChat().channelRegistry().get(this.selectedChannel);
     }
 
+    public @Nullable Key selectedChannelKey() {
+        return this.selectedChannel;
+    }
+
     @Override
     public void selectedChannel(final @Nullable ChatChannel chatChannel) {
         this.selectedChannel = chatChannel.key();
