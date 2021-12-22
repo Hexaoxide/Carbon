@@ -49,7 +49,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -63,7 +62,7 @@ public final class CarbonCommonModule extends AbstractModule {
     ) {
         switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
             case MYSQL -> {
-                final @Nullable UserManager<CarbonPlayerCommon> userManager = MariaDBUserManager.manager(
+                final UserManager<CarbonPlayerCommon> userManager = MariaDBUserManager.manager(
                     configFactory.primaryConfig().databaseSettings(), this.getClass().getClassLoader());
 
                 if (userManager == null) {
