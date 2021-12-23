@@ -32,8 +32,8 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -102,16 +102,16 @@ public final class HelpCommand {
 
         help.messageProvider((sender, key, args) -> {
             final String messageKey = "command.help.misc." + key;
-            final TemplateResolver resolver;
+            final PlaceholderResolver resolver;
 
             // Total hack but works for now
             if (args.length == 2) {
-                resolver = TemplateResolver.templates(
-                    Template.template("page", text(args[0])),
-                    Template.template("max_pages", text(args[1]))
+                resolver = PlaceholderResolver.placeholders(
+                    Placeholder.component("page", text(args[0])),
+                    Placeholder.component("max_pages", text(args[1]))
                 );
             } else {
-                resolver = TemplateResolver.empty();
+                resolver = PlaceholderResolver.empty();
             }
 
             return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), resolver);

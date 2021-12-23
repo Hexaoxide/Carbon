@@ -36,8 +36,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -71,10 +71,10 @@ public class BukkitMessageRenderer<T extends Audience> implements IMessageRender
         final Method method,
         final Type owner
     ) {
-        final List<Template> templates = new ArrayList<>();
+        final List<Placeholder<?>> placeholders = new ArrayList<>();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
-            templates.add(Template.template(entry.getKey(), entry.getValue()));
+            placeholders.add(Placeholder.component(entry.getKey(), entry.getValue()));
         }
 
         // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
@@ -92,15 +92,15 @@ public class BukkitMessageRenderer<T extends Audience> implements IMessageRender
             if (sourced.sender() instanceof CarbonPlayer sender && sender.online()) {
                 if (sourced.recipient() instanceof CarbonPlayer recipient && recipient.online()) {
                     message = this.parser.parseRelational(Bukkit.getPlayer(sender.uuid()),
-                        Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, templates);
+                        Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, placeholders);
                 } else {
-                    message = this.parser.parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, templates);
+                    message = this.parser.parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, placeholders);
                 }
             } else {
-                message = this.miniMessage.deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
+                message = this.miniMessage.deserialize(placeholderResolvedMessage, PlaceholderResolver.placeholders(placeholders));
             }
         } else {
-            message = this.miniMessage.deserialize(placeholderResolvedMessage, TemplateResolver.templates(templates));
+            message = this.miniMessage.deserialize(placeholderResolvedMessage, PlaceholderResolver.placeholders(placeholders));
         }
 
         final MessageType messageType;

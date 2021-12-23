@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -63,12 +63,12 @@ public final class PlaceholderAPIMiniMessageParser {
         return false;
     }
 
-    public Component parse(final OfflinePlayer player, final String input, final Collection<Template> templates) {
+    public Component parse(final OfflinePlayer player, final String input, final Collection<Placeholder<?>> placeholders) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(player, match),
             input,
-            templates
+            placeholders
         );
     }
 
@@ -76,12 +76,12 @@ public final class PlaceholderAPIMiniMessageParser {
         return this.parse(player, input, emptyList());
     }
 
-    public Component parseRelational(final Player one, final Player two, final String input, final Collection<Template> templates) {
+    public Component parseRelational(final Player one, final Player two, final String input, final Collection<Placeholder<?>> placeholders) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(one, PlaceholderAPI.setRelationalPlaceholders(one, two, match)),
             input,
-            templates
+            placeholders
         );
     }
 
@@ -93,10 +93,10 @@ public final class PlaceholderAPIMiniMessageParser {
         final Pattern pattern,
         final UnaryOperator<String> placeholderResolver,
         final String input,
-        final Collection<Template> originalTemplates
+        final Collection<Placeholder<?>> originalPlaceholders
     ) {
         final Matcher matcher = pattern.matcher(input);
-        final List<Template> templates = new ArrayList<>(originalTemplates);
+        final List<Placeholder<?>> placeholders = new ArrayList<>(originalPlaceholders);
         final StringBuilder builder = new StringBuilder();
         int id = 0;
 
@@ -109,14 +109,14 @@ public final class PlaceholderAPIMiniMessageParser {
             } else {
                 final String key = "papi_generated_template_" + id;
                 id++;
-                templates.add(Template.template(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
+                placeholders.add(Placeholder.component(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
                 matcher.appendReplacement(builder, Matcher.quoteReplacement("<" + key + ">"));
             }
         }
 
         matcher.appendTail(builder);
 
-        return this.miniMessage.deserialize(builder.toString(), TemplateResolver.templates(templates));
+        return this.miniMessage.deserialize(builder.toString(), PlaceholderResolver.placeholders(placeholders));
     }
 
 }
