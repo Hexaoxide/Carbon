@@ -39,7 +39,7 @@ versions:
   discordsrv: 1.26.0-SNAPSHOT
   jdbi: 3.25.0
   hikari: 5.0.0
-  mariadb: 2.1.2
+  mysql: 8.0.12
   flyway: 8.2.3
 
 dependencies:
@@ -191,6 +191,14 @@ dependencies:
     group: org.flywaydb
     name: flyway-core
     version: { ref: flyway }
+  flywayMysql:
+    group: org.flywaydb
+    name: flyway-mysql
+    version: { ref: flyway }
+  mysql:
+    group: mysql
+    name: mysql-connector-java
+    version: { ref: mysql }
 
   paperApi:
     group: io.papermc.paper

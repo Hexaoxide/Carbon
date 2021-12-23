@@ -1,1 +1,1 @@
-SELECT * from carbon_users WHERE (uuid = <uuid>);
+SELECT * from carbon_users WHERE (id = :id);
