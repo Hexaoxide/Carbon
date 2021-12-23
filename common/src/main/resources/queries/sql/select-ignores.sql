@@ -1,1 +1,1 @@
-SELECT ignoredplayer FROM carbon_ignores WHERE (uuid = <uuid>);
+SELECT ignoredplayer FROM carbon_ignores WHERE (id = :id);

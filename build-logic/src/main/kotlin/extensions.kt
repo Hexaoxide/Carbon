@@ -26,6 +26,7 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("com.google.common")
   relocateDependency("com.google.thirdparty.publicsuffix")
   relocateDependency("it.unimi.dsi.fastutil")
+  relocateDependency("org.flywaydb")
 }
 
 fun ShadowJar.relocateCloud() {

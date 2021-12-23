@@ -21,6 +21,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
@@ -42,23 +43,24 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
         final DatabaseSettings databaseSettings,
         final ClassLoader classLoader
     ) {
-        final HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(databaseSettings.url());
-        hikariConfig.setUsername(databaseSettings.username());
-        hikariConfig.setPassword(databaseSettings.password());
-
-        final DataSource dataSource = new HikariDataSource(hikariConfig);
+        //        final HikariConfig hikariConfig = new HikariConfig();
+        //        hikariConfig.setJdbcUrl(databaseSettings.url());
+        //        hikariConfig.setUsername(databaseSettings.username());
+        //        hikariConfig.setPassword(databaseSettings.password());
+        //
+        //        final DataSource dataSource = new HikariDataSource(hikariConfig);
 
         Flyway.configure(classLoader)
             .baselineVersion("0")
             .baselineOnMigrate(true)
             .locations("queries/migrations")
-            .dataSource(dataSource)
+            .dataSource(databaseSettings.url(), databaseSettings.username(), databaseSettings.password())
+            //.dataSource(dataSource)
             .validateOnMigrate(true)
             .load()
             .migrate();
 
-        final Jdbi jdbi = Jdbi.create(dataSource)
+        final Jdbi jdbi = Jdbi.create(databaseSettings.url(), databaseSettings.username(), databaseSettings.password())
             .registerArrayType(UUID.class, "uuid")
             .registerArgument(new UUIDArgumentFactory())
             .registerColumnMapper(Component.class, new ComponentMapper())
@@ -80,13 +82,13 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
             return this.jdbi.withHandle(handle -> {
                 try {
                     final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
-                        .bind("uuid", uuid)
+                        .bind("id", uuid)
                         .mapTo(CarbonPlayerCommon.class)
                         .first();
 
                     if (carbonPlayerCommon != null) {
                         handle.createQuery(this.locator.query("select-ignores"))
-                            .bind("uuid", uuid)
+                            .bind("id", uuid)
                             .mapTo(UUID.class)
                             .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
                     }
@@ -94,8 +96,6 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
                     return new ComponentPlayerResult<>(carbonPlayerCommon, empty());
                 } catch (final IllegalStateException exception) {
                     // Player doesn't exist in the DB, create them!
-                    // TODO: create them
-
                     final String name = Objects.requireNonNull(
                         CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
 
@@ -117,6 +117,16 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
                 this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
                     .execute();
 
+                if (!player.ignoredPlayers().isEmpty()) {
+                    final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-ignores"));
+
+                    for (final UUID ignoredPlayer : player.ignoredPlayers()) {
+                        batch.bind("id", player.uuid()).bind("ignoredplayer", ignoredPlayer).add();
+                    }
+
+                    batch.execute();
+                }
+
                 // TODO: save ignoredplayers
                 return new ComponentPlayerResult<>(player, empty());
             });
@@ -125,7 +135,7 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
 
     private Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
         return update
-            .bind("uuid", player.uuid())
+            .bind("id", player.uuid())
             .bind("muted", player.muted())
             .bind("deafened", player.deafened())
             .bind("selectedchannel", player.selectedChannelKey())
