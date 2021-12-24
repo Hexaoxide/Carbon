@@ -1,11 +1,11 @@
 INSERT INTO carbon_users VALUES (
-    :uuid,
+    UUID_TO_BIN(:id),
     :muted,
     :deafened,
     :selectedchannel,
     :username,
     :displayname,
-    :lastwhispertarget,
-    :whisperreplytarget,
+    UUID_TO_BIN(:lastwhispertarget),
+    UUID_TO_BIN(:whisperreplytarget),
     :spying
 );

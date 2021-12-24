@@ -26,6 +26,7 @@ import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
@@ -64,7 +65,7 @@ public final class CarbonCommonModule extends AbstractModule {
         switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
             case MYSQL -> {
                 final UserManager<CarbonPlayerCommon> userManager = MariaDBUserManager.manager(
-                    configFactory.primaryConfig().databaseSettings(), this.getClass().getClassLoader());
+                    configFactory.primaryConfig().databaseSettings());
 
                 if (userManager == null) {
                     throw new IllegalStateException("Failure connecting to database.");

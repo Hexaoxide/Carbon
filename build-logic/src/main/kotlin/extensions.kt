@@ -26,6 +26,8 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("com.google.thirdparty.publicsuffix")
   relocateDependency("it.unimi.dsi.fastutil")
   relocateDependency("org.flywaydb")
+  relocateDependency("org.jdbi")
+  relocateDependency("com.github.benmanes")
 }
 
 fun ShadowJar.relocateCloud() {
@@ -39,7 +41,7 @@ fun ShadowJar.relocateGuice() {
 }
 
 fun ShadowJar.configureShadowJar() {
-  minimize()
+  //minimize()
   standardRelocations()
   dependencies {
     // not needed at runtime
