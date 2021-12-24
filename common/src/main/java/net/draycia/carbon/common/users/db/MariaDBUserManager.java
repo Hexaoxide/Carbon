@@ -40,27 +40,27 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
     }
 
     public static MariaDBUserManager manager(
-        final DatabaseSettings databaseSettings,
-        final ClassLoader classLoader
+        final DatabaseSettings databaseSettings
     ) {
-        //        final HikariConfig hikariConfig = new HikariConfig();
-        //        hikariConfig.setJdbcUrl(databaseSettings.url());
-        //        hikariConfig.setUsername(databaseSettings.username());
-        //        hikariConfig.setPassword(databaseSettings.password());
-        //
-        //        final DataSource dataSource = new HikariDataSource(hikariConfig);
+        final HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setMaximumPoolSize(20);
+        hikariConfig.setDriverClassName("org.mariadb.jdbc.Driver");
+        hikariConfig.setJdbcUrl(databaseSettings.url());
+        hikariConfig.setUsername(databaseSettings.username());
+        hikariConfig.setPassword(databaseSettings.password());
 
-        Flyway.configure(classLoader)
+        final DataSource dataSource = new HikariDataSource(hikariConfig);
+
+        Flyway.configure(CarbonChatProvider.carbonChat().getClass().getClassLoader())
             .baselineVersion("0")
             .baselineOnMigrate(true)
             .locations("queries/migrations")
-            .dataSource(databaseSettings.url(), databaseSettings.username(), databaseSettings.password())
-            //.dataSource(dataSource)
+            .dataSource(dataSource)
             .validateOnMigrate(true)
             .load()
             .migrate();
 
-        final Jdbi jdbi = Jdbi.create(databaseSettings.url(), databaseSettings.username(), databaseSettings.password())
+        final Jdbi jdbi = Jdbi.create(dataSource)
             .registerArrayType(UUID.class, "uuid")
             .registerArgument(new UUIDArgumentFactory())
             .registerColumnMapper(Component.class, new ComponentMapper())
