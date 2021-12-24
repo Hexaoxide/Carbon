@@ -22,6 +22,7 @@ package net.draycia.carbon.bukkit.listeners;
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
@@ -32,6 +33,7 @@ import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,6 +52,8 @@ public final class BukkitChatListener implements Listener {
 
     private final CarbonChatBukkit carbonChat;
     private final ChannelRegistry registry;
+
+    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     @Inject
     public BukkitChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
@@ -71,8 +75,15 @@ public final class BukkitChatListener implements Listener {
         }
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
+        var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
 
-        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        // Do not let players use tags in chat
+        // TODO: bypass permission
+        messageContents = MiniMessage.miniMessage().escapeTokens(messageContents);
+
+        // Make URLs clickable
+        // TODO: see why this doesn't work in rainbows/gradients
+        messageContents = DEFAULT_URL_PATTERN.matcher(messageContents).replaceAll(match -> String.format("<click:open_url:'%1$s'>%1$s</click>", match));
 
         for (final var chatChannel : this.registry) {
             if (chatChannel.quickPrefix() == null) {
