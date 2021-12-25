@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.users.db;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -23,12 +42,13 @@ import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
+
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
+public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
 
     private final Jdbi jdbi;
 
@@ -54,7 +74,7 @@ public class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
         Flyway.configure(CarbonChatProvider.carbonChat().getClass().getClassLoader())
             .baselineVersion("0")
             .baselineOnMigrate(true)
-            .locations("queries/migrations")
+            .locations("queries/migrations/sql")
             .dataSource(dataSource)
             .validateOnMigrate(true)
             .load()

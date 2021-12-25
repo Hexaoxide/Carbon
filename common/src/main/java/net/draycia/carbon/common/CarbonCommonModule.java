@@ -26,7 +26,6 @@ import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
