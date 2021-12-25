@@ -1,1 +1,1 @@
-SELECT ignoredplayer FROM carbon_ignores WHERE (id = :id);
+SELECT ignoredplayer FROM carbon_ignores WHERE (id = UNHEX(REPLACE(:id, '-', '')));
