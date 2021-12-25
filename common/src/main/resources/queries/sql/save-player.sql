@@ -1,12 +1,12 @@
 UPDATE carbon_users
 SET
-    id = UUID_TO_BIN(:id),
+    id = UNHEX(REPLACE(:id, '-', '')),
     muted = :muted,
     deafened = :deafened,
     selectedchannel = :selectedchannel,
     username= :username,
     displayname = :displayname,
-    lastwhispertarget = UUID_TO_BIN(:lastwhispertarget),
-    whisperreplytarget = UUID_TO_BIN(:whisperreplytarget),
+    lastwhispertarget = UNHEX(REPLACE(:lastwhispertarget, '-', '')),
+    whisperreplytarget = UNHEX(REPLACE(:whisperreplytarget, '-', '')),
     spying = :spying
-WHERE id = UUID_TO_BIN(:id);
+WHERE id = UNHEX(REPLACE(:id, '-', ''));
