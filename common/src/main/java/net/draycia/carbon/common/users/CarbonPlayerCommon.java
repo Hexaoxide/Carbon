@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -40,6 +41,8 @@ import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
+
+    private final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     protected boolean muted = false;
     protected boolean deafened = false;
@@ -123,6 +126,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void displayName(final @Nullable Component displayName) {
         this.displayName = displayName;
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.saveDisplayName(this.uuid(), displayName);
+        }
     }
 
     @Override
@@ -148,6 +155,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void muted(final boolean muted) {
         this.muted = muted;
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.saveMuted(this.uuid(), muted);
+        }
     }
 
     public List<UUID> ignoredPlayers() {
@@ -173,6 +184,14 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         } else {
             this.ignoredPlayers.remove(player);
         }
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            if (nowIgnoring) {
+                userManager.addIgnore(this.uuid, player);
+            } else {
+                userManager.removeIgnore(this.uuid, player);
+            }
+        }
     }
 
     @Override
@@ -188,6 +207,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void deafened(final boolean deafened) {
         this.deafened = deafened;
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.saveDeafened(this.uuid(), deafened);
+        }
     }
 
     @Override
@@ -198,6 +221,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void spying(final boolean spying) {
         this.spying = spying;
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.saveSpying(this.uuid(), spying);
+        }
     }
 
     @Override
@@ -221,8 +248,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void whisperReplyTarget(final @Nullable UUID uuid) {
-        this.whisperReplyTarget = uuid;
+    public void whisperReplyTarget(final @Nullable UUID whisperReplyTarget) {
+        this.whisperReplyTarget = whisperReplyTarget;
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.saveWhisperReplyTarget(this.uuid(), whisperReplyTarget);
+        }
     }
 
     @Override
@@ -231,8 +262,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void lastWhisperTarget(final @Nullable UUID uuid) {
-        this.lastWhisperTarget = uuid;
+    public void lastWhisperTarget(final @Nullable UUID lastWhisperTarget) {
+        this.lastWhisperTarget = lastWhisperTarget;
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.saveLastWhisperTarget(this.uuid(), lastWhisperTarget);
+        }
     }
 
     @Override
@@ -267,6 +302,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void selectedChannel(final @Nullable ChatChannel chatChannel) {
         this.selectedChannel = chatChannel.key();
+
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.saveSelectedChannel(this.uuid(), chatChannel.key());
+        }
     }
 
     @Override
