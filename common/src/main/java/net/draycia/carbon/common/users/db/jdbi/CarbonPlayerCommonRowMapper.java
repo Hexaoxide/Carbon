@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.jdbi;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +26,7 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.intellij.lang.annotations.Subst;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
@@ -35,17 +36,18 @@ public class CarbonPlayerCommonRowMapper implements RowMapper<CarbonPlayerCommon
     public CarbonPlayerCommon map(final ResultSet rs, final StatementContext ctx) throws SQLException {
         final String id = rs.getString("id");
         final @Nullable String lastWhisperTarget = rs.getString("lastwhispertarget");
-        final @Nullable String whisperreplytarget = rs.getString("whisperreplytarget");
+        final @Nullable String whisperReplyTarget = rs.getString("whisperreplytarget");
+        final @Nullable @Subst("carbon:global") String selectedChannel = rs.getString("selectedchannel");
 
         return new CarbonPlayerCommon(
             rs.getBoolean("muted"),
             rs.getBoolean("deafened"),
-            rs.getObject("selectedchannel", Key.class),
+            selectedChannel == null ? null : Key.key(selectedChannel),
             rs.getString("username"),
             UUID.fromString(id),
             rs.getObject("displayname", Component.class),
             lastWhisperTarget == null ? null : UUID.fromString(lastWhisperTarget),
-            whisperreplytarget == null ? null : UUID.fromString(whisperreplytarget),
+            whisperReplyTarget == null ? null : UUID.fromString(whisperReplyTarget),
             rs.getBoolean("spying")
         );
     }

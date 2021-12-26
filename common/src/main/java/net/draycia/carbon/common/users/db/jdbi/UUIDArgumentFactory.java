@@ -17,21 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.jdbi;
 
-public final class DBType {
+import java.sql.Types;
+import java.util.UUID;
+import org.jdbi.v3.core.argument.AbstractArgumentFactory;
+import org.jdbi.v3.core.argument.Argument;
+import org.jdbi.v3.core.config.ConfigRegistry;
 
-    private final String basePath;
+// https://github.com/broccolai/tickets/blob/55a23b5fcfdc8e4b4bfa861ea7ec620506bd0dfa/core/src/main/java/broccolai/tickets/core/storage/factory/UUIDArgumentFactory.java
+public final class UUIDArgumentFactory extends AbstractArgumentFactory<UUID> {
 
-    private DBType(final String basePath) {
-        this.basePath = basePath;
+    public UUIDArgumentFactory() {
+        super(Types.VARCHAR);
     }
 
-    public String basePath() {
-        return this.basePath;
+    @Override
+    public Argument build(final UUID value, final ConfigRegistry config) {
+        return (position, statement, ctx) -> statement.setString(position, value.toString());
     }
-
-    public static final DBType MYSQL = new DBType("queries/mysql/");
-    //public static final DBType POSTGRESQL = new DBType("queries/postgresql/");
 
 }

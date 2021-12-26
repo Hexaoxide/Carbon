@@ -157,21 +157,29 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
             final @NonNull Queue<@NonNull String> inputQueue
         ) {
             final String input = inputQueue.peek();
+
             if (input == null) {
                 return ArgumentParseResult.failure(new NoInputProvidedException(
                     CarbonPlayerParser.class,
                     commandContext
                 ));
             }
-            final var playerResult = CarbonChatProvider.carbonChat().server().player(input).join();
 
-            if (playerResult.player() == null) {
-                return ArgumentParseResult.failure(new CarbonPlayerParseException(input, commandContext, this.messageService));
-            }
+            return CarbonChatProvider.carbonChat().server().resolveUUID(input).thenApply(uuid -> {
+                if (uuid == null) {
+                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.messageService));
+                }
 
-            inputQueue.remove();
+                final var playerResult = CarbonChatProvider.carbonChat().server().userManager().carbonPlayer(uuid).join();
 
-            return ArgumentParseResult.success(playerResult.player());
+                if (playerResult.player() == null) {
+                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.messageService));
+                }
+
+                inputQueue.remove();
+
+                return ArgumentParseResult.<CarbonPlayer>success(playerResult.player());
+            }).join();
         }
 
         @Override
