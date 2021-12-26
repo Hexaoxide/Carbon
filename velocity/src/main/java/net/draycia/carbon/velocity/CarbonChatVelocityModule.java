@@ -22,6 +22,7 @@ package net.draycia.carbon.velocity;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.velocity.VelocityCommandManager;
+import cloud.commandframework.velocity.arguments.PlayerArgument;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -34,6 +35,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
 import org.apache.logging.log4j.Logger;
@@ -94,6 +96,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);
+        this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
     }
 
 }

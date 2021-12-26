@@ -20,7 +20,9 @@
 package net.draycia.carbon.bukkit;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
+import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
@@ -34,6 +36,7 @@ import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -102,6 +105,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
+        this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
     }
 
 }

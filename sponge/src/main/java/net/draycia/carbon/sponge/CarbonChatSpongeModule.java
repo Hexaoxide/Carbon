@@ -22,6 +22,8 @@ package net.draycia.carbon.sponge;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
+import cloud.commandframework.sponge.argument.SingleEntitySelectorArgument;
+import cloud.commandframework.sponge.argument.SinglePlayerSelectorArgument;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -31,6 +33,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.sponge.command.SpongeCommander;
 import net.draycia.carbon.sponge.command.SpongePlayerCommander;
@@ -86,6 +89,7 @@ public final class CarbonChatSpongeModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.configDir);
         this.bind(CarbonChat.class).toInstance(this.carbonChat);
         this.bind(CarbonServer.class).to(CarbonServerSponge.class);
+        this.bind(PlayerSuggestions.class).toInstance(new SinglePlayerSelectorArgument.Parser<Commander>()::suggestions);
     }
 
 }

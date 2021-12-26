@@ -30,6 +30,7 @@ import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.text.Component;
@@ -40,10 +41,11 @@ public class WhisperCommand {
     public WhisperCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
-        final CarbonServer carbonServer
+        final CarbonServer carbonServer,
+        final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("whisper", "w", "message", "msg", "m", "tell")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asRequired(),
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).withSuggestionsProvider(suggestionsParser).asRequired(),
                 RichDescription.of(messageService.commandWhisperArgumentPlayer().component()))
             .argument(StringArgument.greedy("message"),
                 RichDescription.of(messageService.commandWhisperArgumentMessage().component()))

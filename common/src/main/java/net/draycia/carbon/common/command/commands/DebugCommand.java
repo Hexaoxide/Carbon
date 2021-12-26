@@ -28,6 +28,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
@@ -38,10 +39,11 @@ public class DebugCommand {
     @Inject
     public DebugCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
+        final CarbonMessageService messageService,
+        final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("carbondebug", "cdebug")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).asOptional(),
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).asOptional(),
                 RichDescription.of(messageService.commandDebugArgumentPlayer().component()))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)
