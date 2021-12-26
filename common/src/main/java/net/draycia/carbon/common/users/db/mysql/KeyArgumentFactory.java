@@ -17,26 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db.jdbi;
+package net.draycia.carbon.common.users.db.mysql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Types;
+import java.util.UUID;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import org.jdbi.v3.core.mapper.ColumnMapper;
-import org.jdbi.v3.core.statement.StatementContext;
+import org.jdbi.v3.core.argument.AbstractArgumentFactory;
+import org.jdbi.v3.core.argument.Argument;
+import org.jdbi.v3.core.config.ConfigRegistry;
 
-public class KeyMapper implements ColumnMapper<Key> {
+public final class KeyArgumentFactory extends AbstractArgumentFactory<Key> {
 
-    @Override
-    public Key map(final ResultSet r, final int columnNumber, final StatementContext ctx) throws SQLException {
-        return Key.key(r.getString(columnNumber));
+    public KeyArgumentFactory() {
+        super(Types.VARCHAR);
     }
 
     @Override
-    public Key map(final ResultSet r, final String columnLabel, final StatementContext ctx) throws SQLException {
-        return Key.key(r.getString(columnLabel));
+    public Argument build(final Key value, final ConfigRegistry config) {
+        return (position, statement, ctx) -> statement.setString(position, value.toString());
     }
 
 }

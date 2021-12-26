@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db.jdbi;
+package net.draycia.carbon.common.users.db.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +25,7 @@ import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.intellij.lang.annotations.Subst;
 import org.jdbi.v3.core.mapper.RowMapper;
@@ -38,6 +39,7 @@ public class CarbonPlayerCommonRowMapper implements RowMapper<CarbonPlayerCommon
         final @Nullable String lastWhisperTarget = rs.getString("lastwhispertarget");
         final @Nullable String whisperReplyTarget = rs.getString("whisperreplytarget");
         final @Nullable @Subst("carbon:global") String selectedChannel = rs.getString("selectedchannel");
+        final @Nullable String displayName = rs.getString("displayname");
 
         return new CarbonPlayerCommon(
             rs.getBoolean("muted"),
@@ -45,7 +47,7 @@ public class CarbonPlayerCommonRowMapper implements RowMapper<CarbonPlayerCommon
             selectedChannel == null ? null : Key.key(selectedChannel),
             rs.getString("username"),
             UUID.fromString(id),
-            rs.getObject("displayname", Component.class),
+            displayName == null ? null : GsonComponentSerializer.gson().deserialize(displayName),
             lastWhisperTarget == null ? null : UUID.fromString(lastWhisperTarget),
             whisperReplyTarget == null ? null : UUID.fromString(whisperReplyTarget),
             rs.getBoolean("spying")

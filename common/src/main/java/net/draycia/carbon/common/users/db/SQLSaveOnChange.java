@@ -31,31 +31,31 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 @DefaultQualifier(NonNull.class)
 public interface SQLSaveOnChange extends SaveOnChange {
 
-    @SqlUpdate("UPDATE carbon_users SET (displayname = :displayname) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
-    int saveDisplayName(final UUID id, final @Nullable Component component);
+    @SqlUpdate("UPDATE carbon_users SET displayname = :displayName WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    int saveDisplayName(final UUID id, final @Nullable Component displayName);
 
-    @SqlUpdate("UPDATE carbon_users SET (muted = :muted) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    @SqlUpdate("UPDATE carbon_users SET muted = :muted WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveMuted(final UUID id, final boolean muted);
 
-    @SqlUpdate("UPDATE carbon_users SET (deafened = :deafened) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    @SqlUpdate("UPDATE carbon_users SET deafened = :deafened WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveDeafened(final UUID id, final boolean deafened);
 
-    @SqlUpdate("UPDATE carbon_users SET (spying = :spying) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    @SqlUpdate("UPDATE carbon_users SET spying = :spying WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveSpying(final UUID id, final boolean spying);
 
     @SqlUpdate("UPDATE carbon_users SET selectedchannel = :selectedChannel WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel);
 
-    @SqlUpdate("UPDATE carbon_users SET (lastwhispertarget = :lastWhisperTarget) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    @SqlUpdate("UPDATE carbon_users SET lastwhispertarget = :lastWhisperTarget WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget);
 
-    @SqlUpdate("UPDATE carbon_users SET (whisperreplytarget = :whisperReplyTarget) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    @SqlUpdate("UPDATE carbon_users SET whisperreplytarget = :whisperReplyTarget WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget);
 
-    @SqlUpdate("INSERT INTO carbon_ignores VALUES (id = UNHEX(REPLACE(:id, '-', '')), ignoredplayer = :ignoredPlayer)")
+    @SqlUpdate("INSERT INTO carbon_ignores VALUES id = UNHEX(REPLACE(:id, '-', ''), ignoredplayer = :ignoredPlayer)")
     int addIgnore(final UUID id, final UUID ignoredPlayer);
 
-    @SqlUpdate("DELETE FROM carbon_ignores WHERE (id = UNHEX(REPLACE(:id, '-', '')), ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', '')))")
+    @SqlUpdate("DELETE FROM carbon_ignores WHERE id = UNHEX(REPLACE(:id, '-', ''), ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', '')))")
     int removeIgnore(final UUID id, final UUID ignoredPlayer);
 
 }

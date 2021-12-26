@@ -29,7 +29,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface SaveOnChange {
 
-    int saveDisplayName(final UUID id, final @Nullable Component component);
+    int saveDisplayName(final UUID id, final @Nullable Component displayName);
 
     int saveMuted(final UUID id, final boolean muted);
 
