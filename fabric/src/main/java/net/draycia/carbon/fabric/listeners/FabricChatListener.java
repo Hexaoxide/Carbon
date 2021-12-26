@@ -70,7 +70,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
         }
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
-        var originalMessage = chat.message();
+        final var originalMessage = chat.message();
         Component eventMessage = text(chat.message());
 
         if (sender.hasPermission("carbon.chatlinks")) {
@@ -95,7 +95,6 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
                 break;
             }
         }
-
 
         final var recipients = channel.recipients(sender);
 

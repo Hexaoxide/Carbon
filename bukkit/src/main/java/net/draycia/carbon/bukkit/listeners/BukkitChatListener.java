@@ -77,7 +77,7 @@ public final class BukkitChatListener implements Listener {
         }
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-        var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
         var eventMessage = event.message();
 
         if (sender.hasPermission("carbon.chatlinks")) {

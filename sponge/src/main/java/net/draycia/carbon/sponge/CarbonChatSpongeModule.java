@@ -22,7 +22,6 @@ package net.draycia.carbon.sponge;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
-import cloud.commandframework.sponge.argument.SingleEntitySelectorArgument;
 import cloud.commandframework.sponge.argument.SinglePlayerSelectorArgument;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
