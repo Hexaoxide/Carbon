@@ -26,7 +26,6 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
-import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
@@ -65,7 +64,7 @@ public class IgnoreCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = carbonChat.server().player(handler.<UUID>get("uuid")).join();
+                    final var result = carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
                     messageService.ignoreTargetInvalid(sender);

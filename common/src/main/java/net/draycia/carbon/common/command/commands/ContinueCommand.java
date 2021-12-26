@@ -68,8 +68,8 @@ public class ContinueCommand {
                     return;
                 }
 
-                final ComponentPlayerResult<@NonNull CarbonPlayer> result = carbonChat.server()
-                    .player(whisperTarget).join();
+                final ComponentPlayerResult<@NonNull ? extends CarbonPlayer> result = carbonChat.server()
+                    .userManager().carbonPlayer(whisperTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (sender.equals(recipient)) {

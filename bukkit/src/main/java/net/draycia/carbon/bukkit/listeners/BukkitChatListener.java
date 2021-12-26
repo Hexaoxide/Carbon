@@ -31,6 +31,7 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
+import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -67,7 +68,7 @@ public final class BukkitChatListener implements Listener {
             return;
         }
 
-        final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {
@@ -127,7 +128,7 @@ public final class BukkitChatListener implements Listener {
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (recipient instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
+                            final ComponentPlayerResult<CarbonPlayerBukkit> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
 
                             renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
                         } else {
@@ -153,7 +154,7 @@ public final class BukkitChatListener implements Listener {
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (viewer instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
+                            final ComponentPlayerResult<CarbonPlayerBukkit> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
                             renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), message);
                         } else {
                             renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), message);

@@ -49,7 +49,7 @@ public class BukkitPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(final PlayerQuitEvent event) {
-        this.carbonChat.server().player(event.getPlayer().getUniqueId()).thenAccept(result -> {
+        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
             if (result.player() == null) {
                 return;
             }

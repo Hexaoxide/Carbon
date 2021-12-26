@@ -34,6 +34,13 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.SaveOnChange;
+import net.draycia.carbon.common.users.db.jdbi.CarbonPlayerCommonRowMapper;
+import net.draycia.carbon.common.users.db.jdbi.ComponentMapper;
+import net.draycia.carbon.common.users.db.jdbi.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.jdbi.KeyMapper;
+import net.draycia.carbon.common.users.db.jdbi.UUIDArgumentFactory;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -42,13 +49,14 @@ import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon> {
+public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon>, SaveOnChange {
 
     private final Jdbi jdbi;
 
@@ -74,7 +82,7 @@ public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon>
         Flyway.configure(CarbonChatProvider.carbonChat().getClass().getClassLoader())
             .baselineVersion("0")
             .baselineOnMigrate(true)
-            .locations("queries/migrations/sql")
+            .locations("queries/migrations/mysql")
             .dataSource(dataSource)
             .validateOnMigrate(true)
             .load()
@@ -83,8 +91,11 @@ public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon>
         final Jdbi jdbi = Jdbi.create(dataSource)
             .registerArrayType(UUID.class, "uuid")
             .registerArgument(new UUIDArgumentFactory())
+            .registerArgument(new KeyArgumentFactory())
             .registerColumnMapper(Component.class, new ComponentMapper())
-            .registerRowMapper(new CarbonPlayerCommonRowMapper());
+            .registerColumnMapper(Key.class, new KeyMapper())
+            .registerRowMapper(new CarbonPlayerCommonRowMapper())
+            .installPlugin(new SqlObjectPlugin());
 
         return new MariaDBUserManager(jdbi);
     }
@@ -173,6 +184,51 @@ public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon>
 
             return result;
         });
+    }
+
+    @Override
+    public int saveDisplayName(final UUID id, final @Nullable Component displayName) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveDisplayName(id, displayName));
+    }
+
+    @Override
+    public int saveMuted(UUID id, boolean muted) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
+    }
+
+    @Override
+    public int saveDeafened(UUID id, boolean deafened) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
+    }
+
+    @Override
+    public int saveSpying(UUID id, boolean spying) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
+    }
+
+    @Override
+    public int saveSelectedChannel(UUID id, @Nullable Key selectedChannel) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
+    }
+
+    @Override
+    public int saveLastWhisperTarget(UUID id, @Nullable UUID lastWhisperTarget) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
+    }
+
+    @Override
+    public int saveWhisperReplyTarget(UUID id, @Nullable UUID whisperReplyTarget) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
+    }
+
+    @Override
+    public int addIgnore(UUID id, UUID ignoredPlayer) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
+    }
+
+    @Override
+    public int removeIgnore(UUID id, UUID ignoredPlayer) {
+        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
     }
 
 }
