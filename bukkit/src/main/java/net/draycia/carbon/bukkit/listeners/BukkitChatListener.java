@@ -33,7 +33,8 @@ import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,6 +47,7 @@ import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
 public final class BukkitChatListener implements Listener {
@@ -76,14 +78,14 @@ public final class BukkitChatListener implements Listener {
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
         var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        var eventMessage = event.message();
 
-        // Do not let players use tags in chat
-        // TODO: bypass permission
-        messageContents = MiniMessage.miniMessage().escapeTokens(messageContents);
-
-        // Make URLs clickable
-        // TODO: see why this doesn't work in rainbows/gradients
-        messageContents = DEFAULT_URL_PATTERN.matcher(messageContents).replaceAll(match -> String.format("<click:open_url:'%1$s'>%1$s</click>", match));
+        if (sender.hasPermission("carbon.chatlinks")) {
+            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                    .match(DEFAULT_URL_PATTERN)
+                    .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
+                .build());
+        }
 
         for (final var chatChannel : this.registry) {
             if (chatChannel.quickPrefix() == null) {
@@ -92,6 +94,11 @@ public final class BukkitChatListener implements Listener {
 
             if (messageContents.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
                 channel = chatChannel;
+                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                    .once()
+                    .matchLiteral(channel.quickPrefix())
+                    .replacement(text())
+                    .build());
                 break;
             }
         }
@@ -101,7 +108,7 @@ public final class BukkitChatListener implements Listener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers, channel);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
