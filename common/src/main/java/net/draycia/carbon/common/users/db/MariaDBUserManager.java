@@ -35,11 +35,10 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
-import net.draycia.carbon.common.users.db.jdbi.CarbonPlayerCommonRowMapper;
-import net.draycia.carbon.common.users.db.jdbi.ComponentMapper;
-import net.draycia.carbon.common.users.db.jdbi.KeyArgumentFactory;
-import net.draycia.carbon.common.users.db.jdbi.KeyMapper;
-import net.draycia.carbon.common.users.db.jdbi.UUIDArgumentFactory;
+import net.draycia.carbon.common.users.db.mysql.CarbonPlayerCommonRowMapper;
+import net.draycia.carbon.common.users.db.mysql.ComponentArgumentFactory;
+import net.draycia.carbon.common.users.db.mysql.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.mysql.UUIDArgumentFactory;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -90,10 +89,9 @@ public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon>
 
         final Jdbi jdbi = Jdbi.create(dataSource)
             .registerArrayType(UUID.class, "uuid")
-            .registerArgument(new UUIDArgumentFactory())
+            .registerArgument(new ComponentArgumentFactory())
             .registerArgument(new KeyArgumentFactory())
-            .registerColumnMapper(Component.class, new ComponentMapper())
-            .registerColumnMapper(Key.class, new KeyMapper())
+            .registerArgument(new UUIDArgumentFactory())
             .registerRowMapper(new CarbonPlayerCommonRowMapper())
             .installPlugin(new SqlObjectPlugin());
 
