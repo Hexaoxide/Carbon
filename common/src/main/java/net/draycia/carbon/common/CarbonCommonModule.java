@@ -43,7 +43,7 @@ import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.JSONUserManager;
-import net.draycia.carbon.common.users.db.MariaDBUserManager;
+import net.draycia.carbon.common.users.db.MySQLUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -63,7 +63,7 @@ public final class CarbonCommonModule extends AbstractModule {
     ) {
         switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
             case MYSQL -> {
-                final UserManager<CarbonPlayerCommon> userManager = MariaDBUserManager.manager(
+                final UserManager<CarbonPlayerCommon> userManager = MySQLUserManager.manager(
                     configFactory.primaryConfig().databaseSettings());
 
                 if (userManager == null) {

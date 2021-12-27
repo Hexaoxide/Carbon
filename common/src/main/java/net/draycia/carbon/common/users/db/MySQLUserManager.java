@@ -55,23 +55,30 @@ import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon>, SaveOnChange {
+public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, SaveOnChange {
 
     private final Jdbi jdbi;
 
     private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
     private final QueriesLocator locator = new QueriesLocator(DBType.MYSQL);
 
-    private MariaDBUserManager(final Jdbi jdbi) {
+    private MySQLUserManager(final Jdbi jdbi) {
         this.jdbi = jdbi;
     }
 
-    public static MariaDBUserManager manager(
+    public static MySQLUserManager manager(
         final DatabaseSettings databaseSettings
     ) {
+        try {
+            //Class.forName("org.postgresql.Driver");
+            Class.forName("org.mariadb.jdbc.Driver");
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (final Exception ignored) {
+
+        }
+
         final HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setMaximumPoolSize(20);
-        hikariConfig.setDriverClassName("org.mariadb.jdbc.Driver");
         hikariConfig.setJdbcUrl(databaseSettings.url());
         hikariConfig.setUsername(databaseSettings.username());
         hikariConfig.setPassword(databaseSettings.password());
@@ -95,7 +102,7 @@ public final class MariaDBUserManager implements UserManager<CarbonPlayerCommon>
             .registerRowMapper(new CarbonPlayerCommonRowMapper())
             .installPlugin(new SqlObjectPlugin());
 
-        return new MariaDBUserManager(jdbi);
+        return new MySQLUserManager(jdbi);
     }
 
     @Override
