@@ -28,6 +28,7 @@ dependencies {
   api(libs.jdbiObject)
   api(libs.hikariCP)
   api(libs.flyway)
+  api(libs.flywayMysql)
   api(libs.mysql)
   api(libs.caffeine)
   api(libs.mariadb)
