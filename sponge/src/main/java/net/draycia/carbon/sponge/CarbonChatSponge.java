@@ -33,7 +33,7 @@ import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
@@ -69,7 +69,7 @@ public final class CarbonChatSponge implements CarbonChat {
 
     private static final int BSTATS_PLUGIN_ID = 11279;
 
-    private final CarbonMessageService messageService;
+    private final CarbonMessages carbonMessages;
     private final CarbonServerSponge carbonServerSponge;
     private final ChannelRegistry channelRegistry;
     private final Injector injector;
@@ -94,7 +94,7 @@ public final class CarbonChatSponge implements CarbonChat {
 
         this.injector = injector.createChildInjector(new CarbonChatSpongeModule(this, dataDirectory, pluginContainer));
         this.logger = logger;
-        this.messageService = this.injector.getInstance(CarbonMessageService.class);
+        this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerSponge = this.injector.getInstance(CarbonServerSponge.class);
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
@@ -259,8 +259,8 @@ public final class CarbonChatSponge implements CarbonChat {
         return this.injector.getInstance(SpongeMessageRenderer.class);
     }
 
-    public CarbonMessageService messageService() {
-        return this.messageService;
+    public CarbonMessages carbonMessages() {
+        return this.carbonMessages;
     }
 
     @Override

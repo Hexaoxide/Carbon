@@ -29,8 +29,8 @@ import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -41,19 +41,19 @@ public class ClearChatCommand extends CarbonCommand {
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
     final ConfigFactory configFactory;
-    final CarbonMessageService messageService;
+    final CarbonMessages carbonMessages;
 
     @Inject
     public ClearChatCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final ConfigFactory configFactory,
-        final CarbonMessageService messageService
+        final CarbonMessages carbonMessages
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.configFactory = configFactory;
-        this.messageService = messageService;
+        this.carbonMessages = carbonMessages;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ClearChatCommand extends CarbonCommand {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.clearchat.clear")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandClearChatDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandClearChatDescription().component())
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?

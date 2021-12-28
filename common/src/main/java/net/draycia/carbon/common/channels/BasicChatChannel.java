@@ -29,7 +29,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -44,12 +44,12 @@ public final class BasicChatChannel implements ChatChannel {
 
     private final Key key = Key.key("carbon", "basic");
 
-    private final CarbonMessageService service;
+    private final CarbonMessages service;
     private final CarbonChat carbonChat;
 
     @Inject
     private BasicChatChannel(
-        final CarbonMessageService service,
+        final CarbonMessages service,
         final CarbonChat carbonChat
     ) {
         this.carbonChat = carbonChat;

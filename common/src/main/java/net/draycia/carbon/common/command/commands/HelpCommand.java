@@ -31,7 +31,7 @@ import java.util.List;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -50,17 +50,17 @@ import static net.kyori.adventure.text.format.TextColor.color;
 public final class HelpCommand extends CarbonCommand {
 
     final CommandManager<Commander> commandManager;
-    final CarbonMessageService messageService;
+    final CarbonMessages carbonMessages;
     final MinecraftHelp<Commander> minecraftHelp;
 
     @Inject
     public HelpCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageSource messageSource,
-        final CarbonMessageService messageService
+        final CarbonMessages carbonMessages
     ) {
         this.commandManager = commandManager;
-        this.messageService = messageService;
+        this.carbonMessages = carbonMessages;
         this.minecraftHelp = createHelp(commandManager, messageSource);
     }
 
@@ -78,10 +78,10 @@ public final class HelpCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .literal("help",
-                RichDescription.of(this.messageService.commandHelpDescription().component()))
+                RichDescription.of(carbonMessages.commandHelpDescription().component()))
             .argument(StringArgument.<Commander>newBuilder("query")
                     .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
-                RichDescription.of(this.messageService.commandHelpArgumentQuery().component()))
+                RichDescription.of(carbonMessages.commandHelpArgumentQuery().component()))
             .permission("carbon.help")
             .handler(this::execute)
             .build();

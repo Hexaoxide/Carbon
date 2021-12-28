@@ -80,7 +80,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
             throw new RuntimeException("Failed to initialize command manager.", ex);
         }
 
-        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.messageService());
+        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.carbonMessages());
 
         commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();

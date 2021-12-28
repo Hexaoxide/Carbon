@@ -28,8 +28,14 @@ dependencies {
   api(libs.jdbiObject)
   api(libs.hikariCP)
   api(libs.flyway)
-  //api(libs.flywayMysql)
   api(libs.mysql)
   api(libs.caffeine)
   api(libs.mariadb)
+
+  // Messaging
+  api(libs.messenger)
+  api(libs.messengerNats)
+  api(libs.messengerRabbitmq)
+  api(libs.messengerRedis)
+  api(libs.netty)
 }
