@@ -17,15 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.command.argument;
+package net.draycia.carbon.api.events;
 
-import cloud.commandframework.context.CommandContext;
-import java.util.List;
-import java.util.function.BiFunction;
-import net.draycia.carbon.common.command.Commander;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-
-@DefaultQualifier(NonNull.class)
-public interface PlayerSuggestions extends BiFunction<CommandContext<Commander>, String, List<String>> {
+// TODO: emit event on server shutdown
+public class CarbonShutdownEvent implements CarbonEvent {
 }

@@ -31,7 +31,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -41,22 +41,22 @@ public class UnignoreCommand {
     @Inject
     public UnignoreCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService,
+        final CarbonMessages carbonMessages,
         final CarbonChat carbonChat,
         final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("unignore", "unblock")
             // TODO: Filter, and only show muted players, but allow inputting any player name.
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).asOptional(),
-                RichDescription.of(messageService.commandUnignoreArgumentPlayer().component()))
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(suggestionsParser).asOptional(),
+                RichDescription.of(carbonMessages.commandUnignoreArgumentPlayer().component()))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(messageService.commandUnignoreArgumentUUID().component()))
+                .withDescription(RichDescription.of(carbonMessages.commandUnignoreArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.ignore.unignore")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandUnignoreDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandUnignoreDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -67,12 +67,12 @@ public class UnignoreCommand {
                     final var result = carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    messageService.ignoreTargetInvalid(sender);
+                    carbonMessages.ignoreTargetInvalid(sender);
                     return;
                 }
 
                 sender.ignoring(target, false);
-                messageService.noLongerIgnoring(sender, CarbonPlayer.renderName(target));
+                carbonMessages.noLongerIgnoring(sender, CarbonPlayer.renderName(target));
             })
             .build();
 

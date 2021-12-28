@@ -29,7 +29,7 @@ import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.List;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
@@ -53,17 +53,17 @@ public final class HelpCommand {
     public HelpCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessageSource messageSource,
-        final CarbonMessageService messageService
+        final CarbonMessages carbonMessages
     ) {
         this.manager = commandManager;
         this.help = createHelp(commandManager, messageSource);
 
         final var command = commandManager.commandBuilder("carbon")
             .literal("help",
-                RichDescription.of(messageService.commandHelpDescription().component()))
+                RichDescription.of(carbonMessages.commandHelpDescription().component()))
             .argument(StringArgument.<Commander>newBuilder("query")
                     .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
-                RichDescription.of(messageService.commandHelpArgumentQuery().component()))
+                RichDescription.of(carbonMessages.commandHelpArgumentQuery().component()))
             .permission("carbon.help")
             .handler(this::execute)
             .build();

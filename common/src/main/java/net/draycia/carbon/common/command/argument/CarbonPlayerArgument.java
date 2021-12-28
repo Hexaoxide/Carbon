@@ -32,15 +32,13 @@ import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import cloud.commandframework.exceptions.parsing.ParserException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -57,9 +55,9 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
         final @Nullable BiFunction<@NonNull CommandContext<Commander>, @NonNull String,
             @NonNull List<@NonNull String>> suggestionsProvider,
         final @NonNull ArgumentDescription defaultDescription,
-        final @NonNull CarbonMessageService messageService
+        final @NonNull CarbonMessages carbonMessages
     ) {
-        super(required, name, new CarbonPlayerParser(messageService), defaultValue, CarbonPlayer.class, suggestionsProvider, defaultDescription);
+        super(required, name, new CarbonPlayerParser(carbonMessages), defaultValue, CarbonPlayer.class, suggestionsProvider, defaultDescription);
     }
 
     /**
@@ -108,7 +106,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
 
     public static final class Builder extends CommandArgument.Builder<Commander, CarbonPlayer> {
 
-        private CarbonMessageService messageService;
+        private CarbonMessages carbonMessages;
 
         private Builder(final @NonNull String name) {
             super(CarbonPlayer.class, name);
@@ -117,11 +115,11 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
         /**
          * Set the message service.
          *
-         * @param messageService the message service
+         * @param carbonMessages the message service
          * @return builder instance
          */
-        public Builder withMessageService(final @NonNull CarbonMessageService messageService) {
-            this.messageService = messageService;
+        public Builder withMessages(final @NonNull CarbonMessages carbonMessages) {
+            this.carbonMessages = carbonMessages;
             return this;
         }
 
@@ -138,7 +136,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
                 this.getDefaultValue(),
                 this.getSuggestionsProvider(),
                 this.getDefaultDescription(),
-                this.messageService
+                this.carbonMessages
             );
         }
 
@@ -146,10 +144,10 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
 
     public static final class CarbonPlayerParser implements ArgumentParser<Commander, CarbonPlayer> {
 
-        private final @NonNull CarbonMessageService messageService;
+        private final @NonNull CarbonMessages carbonMessages;
 
-        public CarbonPlayerParser(final @NonNull CarbonMessageService messageService) {
-            this.messageService = messageService;
+        public CarbonPlayerParser(final @NonNull CarbonMessages carbonMessages) {
+            this.carbonMessages = carbonMessages;
         }
 
         @Override
@@ -169,13 +167,13 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
 
             return CarbonChatProvider.carbonChat().server().resolveUUID(input).thenApply(uuid -> {
                 if (uuid == null) {
-                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.messageService));
+                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.carbonMessages));
                 }
 
                 final var playerResult = CarbonChatProvider.carbonChat().server().userManager().carbonPlayer(uuid).join();
 
                 if (playerResult.player() == null) {
-                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.messageService));
+                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.carbonMessages));
                 }
 
                 inputQueue.remove();
@@ -211,7 +209,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
         public CarbonPlayerParseException(
             final @NonNull String input,
             final @NonNull CommandContext<?> context,
-            final @NonNull CarbonMessageService messageService
+            final @NonNull CarbonMessages carbonMessages
         ) {
             super(
                 CarbonPlayerParser.class,

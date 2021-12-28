@@ -30,9 +30,10 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ReceiverResolver;
 import net.draycia.carbon.common.messages.StandardPlaceholderResolverStrategyButDifferent;
@@ -80,7 +81,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public CarbonMessageService messageService(
+    public CarbonMessages carbonMessages(
         final ReceiverResolver receiverResolver,
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
@@ -89,7 +90,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageSender carbonMessageSender
     ) throws UnscannableMethodException {
-        return Moonshine.<CarbonMessageService, Audience>builder(new TypeToken<>() {})
+        return Moonshine.<CarbonMessages, Audience>builder(new TypeToken<>() {})
             .receiverLocatorResolver(receiverResolver, 0)
             .sourced(carbonMessageSource)
             .rendered(CarbonChatProvider.carbonChat().messageRenderer())

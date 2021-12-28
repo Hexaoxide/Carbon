@@ -31,7 +31,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -41,21 +41,21 @@ public class UnmuteCommand {
     @Inject
     public UnmuteCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService,
+        final CarbonMessages carbonMessages,
         final CarbonChat carbonChat,
         final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("unmute")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).asOptional(),
-                RichDescription.of(messageService.commandUnmuteArgumentPlayer().component()))
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(suggestionsParser).asOptional(),
+                RichDescription.of(carbonMessages.commandUnmuteArgumentPlayer().component()))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(messageService.commandUnmuteArgumentUUID().component()))
+                .withDescription(RichDescription.of(carbonMessages.commandUnmuteArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.unmute")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandUnmuteDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandUnmuteDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -66,19 +66,19 @@ public class UnmuteCommand {
                     final var result = carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    messageService.unmuteNoTarget(sender);
+                    carbonMessages.unmuteNoTarget(sender);
                     // TODO: send command syntax
                     return;
                 }
 
-                messageService.unmuteAlertRecipient(target);
+                carbonMessages.unmuteAlertRecipient(target);
 
                 for (final var player : carbonChat.server().players()) {
                     if (!player.equals(sender) && !player.hasPermission("carbon.mute.notify")) {
                         continue;
                     }
 
-                    messageService.unmuteAlertPlayers(player, CarbonPlayer.renderName(target));
+                    carbonMessages.unmuteAlertPlayers(player, CarbonPlayer.renderName(target));
                 }
 
                 target.muted(false);

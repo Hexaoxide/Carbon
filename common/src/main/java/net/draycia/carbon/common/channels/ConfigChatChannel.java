@@ -31,7 +31,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
-import net.draycia.carbon.common.channels.messages.ConfigChannelMessageService;
+import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
@@ -89,7 +89,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private @Nullable List<String> commandAliases = Collections.emptyList();
 
-    private transient @Nullable ConfigChannelMessageService messageService = null;
+    private transient @Nullable ConfigChannelMessages carbonMessages = null;
 
     @Override
     public @Nullable String quickPrefix() {
@@ -123,7 +123,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final Component message,
         final Component originalMessage
     ) {
-        return this.messageService().chatFormat(
+        return this.carbonMessages().chatFormat(
             new SourcedAudience(sender, recipient),
             sender.uuid(),
             this.key(),
@@ -176,7 +176,7 @@ public final class ConfigChatChannel implements ChatChannel {
         return this.key;
     }
 
-    private @Nullable ConfigChannelMessageService createMessageService() {
+    private @Nullable ConfigChannelMessages loadMessages() {
         final SourcedReceiverResolver serverReceiverResolver = new SourcedReceiverResolver();
         final ComponentPlaceholderResolver<SourcedAudience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
         final UUIDPlaceholderResolver<SourcedAudience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
@@ -185,7 +185,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
         try {
-            return Moonshine.<ConfigChannelMessageService, SourcedAudience>builder(new TypeToken<ConfigChannelMessageService>() {})
+            return Moonshine.<ConfigChannelMessages, SourcedAudience>builder(new TypeToken<ConfigChannelMessages>() {})
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
                 .rendered(CarbonChatProvider.carbonChat().messageRenderer())
@@ -203,12 +203,12 @@ public final class ConfigChatChannel implements ChatChannel {
         return null;
     }
 
-    private ConfigChannelMessageService messageService() {
-        if (this.messageService == null) {
-            this.messageService = this.createMessageService();
+    private ConfigChannelMessages carbonMessages() {
+        if (this.carbonMessages == null) {
+            this.carbonMessages = this.loadMessages();
         }
 
-        return requireNonNull(this.messageService, "Channel message service must not be null!");
+        return requireNonNull(this.carbonMessages, "Channel message service must not be null!");
     }
 
     public String permission() {

@@ -72,7 +72,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
             commander -> ((FabricCommander) commander).commandSourceStack()
         );
 
-        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.messageService());
+        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.carbonMessages());
 
         commandManager.brigadierManager().setNativeNumberSuggestions(false);
 

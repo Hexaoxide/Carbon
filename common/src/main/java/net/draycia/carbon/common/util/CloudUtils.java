@@ -46,7 +46,7 @@ import net.draycia.carbon.common.command.commands.ReplyCommand;
 import net.draycia.carbon.common.command.commands.UnignoreCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;
@@ -93,24 +93,24 @@ public final class CloudUtils {
 
     public static void decorateCommandManager(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
+        final CarbonMessages carbonMessages
     ) {
-        registerExceptionHandlers(commandManager, messageService);
+        registerExceptionHandlers(commandManager, carbonMessages);
     }
 
     public static void registerExceptionHandlers(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
+        final CarbonMessages carbonMessages
     ) {
         commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, exception) -> {
             final var throwableMessage = CloudUtils.message(exception.getCause());
 
-            messageService.errorCommandArgumentParsing(sender, throwableMessage);
+            carbonMessages.errorCommandArgumentParsing(sender, throwableMessage);
         });
         commandManager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, exception) -> {
             final var senderType = exception.getRequiredSender().getSimpleName();
 
-            messageService.errorCommandInvalidSender(sender, senderType);
+            carbonMessages.errorCommandInvalidSender(sender, senderType);
         });
         commandManager.registerExceptionHandler(InvalidSyntaxException.class, (sender, exception) -> {
             final var syntax =
@@ -118,10 +118,10 @@ public final class CloudUtils {
                     config -> config.match(SPECIAL_CHARACTERS_PATTERN)
                         .replacement(match -> match.color(NamedTextColor.WHITE)));
 
-            messageService.errorCommandInvalidSyntax(sender, syntax);
+            carbonMessages.errorCommandInvalidSyntax(sender, syntax);
         });
         commandManager.registerExceptionHandler(NoPermissionException.class, (sender, exception) -> {
-            messageService.errorCommandNoPermission(sender);
+            carbonMessages.errorCommandNoPermission(sender);
         });
         commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
             final Throwable cause = exception.getCause();
@@ -132,7 +132,7 @@ public final class CloudUtils {
             final String stackTrace = writer.toString().replaceAll("\t", "    ");
             final @Nullable Component throwableMessage = CloudUtils.message(cause);
 
-            messageService.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
+            carbonMessages.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
         });
     }
 

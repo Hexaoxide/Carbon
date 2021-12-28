@@ -42,6 +42,8 @@ versions:
   flyway: 7.7.1
   caffeine: 3.0.5
   mariadb: 3.0.2-rc
+  messenger: 1.0.0-SNAPSHOT
+  netty: 4.1.68.Final
 
 dependencies:
   adventureBom:
@@ -208,6 +210,27 @@ dependencies:
     group: org.mariadb.jdbc
     name: mariadb-java-client
     version: { ref: mariadb }
+
+  messenger:
+    group: ninja.egg82
+    name: messenger-api
+    version: { ref: messenger }
+  messengerNats:
+    group: ninja.egg82
+    name: messenger-nats
+    version: { ref: messenger }
+  messengerRabbitmq:
+    group: ninja.egg82
+    name: messenger-rabbitmq
+    version: { ref: messenger }
+  messengerRedis:
+    group: ninja.egg82
+    name: messenger-redis
+    version: { ref: messenger }
+  netty:
+    group: io.netty
+    name: netty-all
+    version: { ref: netty }
 
   paperApi:
     group: com.destroystokyo.paper

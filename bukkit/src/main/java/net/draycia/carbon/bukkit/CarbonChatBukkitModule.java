@@ -20,7 +20,6 @@
 package net.draycia.carbon.bukkit;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
@@ -81,7 +80,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
             throw new RuntimeException("Failed to initialize command manager.", ex);
         }
 
-        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.messageService());
+        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.carbonMessages());
 
         commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();

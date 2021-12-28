@@ -31,7 +31,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -41,21 +41,21 @@ public class MuteInfoCommand {
     @Inject
     public MuteInfoCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService,
+        final CarbonMessages carbonMessages,
         final CarbonChat carbonChat,
         final PlayerSuggestions suggestionsParser
     ) {
         final var command = commandManager.commandBuilder("muteinfo", "muted")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(messageService).withSuggestionsProvider(suggestionsParser).asOptional(),
-                RichDescription.of(messageService.commandMuteInfoArgumentPlayer().component()))
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(suggestionsParser).asOptional(),
+                RichDescription.of(carbonMessages.commandMuteInfoArgumentPlayer().component()))
             .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(messageService.commandMuteInfoArgumentUUID().component()))
+                .withDescription(RichDescription.of(carbonMessages.commandMuteInfoArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.info")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandMuteInfoDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandMuteInfoDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -71,21 +71,21 @@ public class MuteInfoCommand {
 
                 if (!target.muted()) {
                     if (sender.equals(target)) {
-                        messageService.muteInfoSelfNotMuted(sender);
+                        carbonMessages.muteInfoSelfNotMuted(sender);
                     } else {
-                        messageService.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
+                        carbonMessages.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
                     }
 
                     return;
                 } else {
                     if (sender.equals(target)) {
-                        messageService.muteInfoSelfMuted(sender);
+                        carbonMessages.muteInfoSelfMuted(sender);
                     } else {
-                        messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
+                        carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
                     }
                 }
 
-                messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
+                carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
             })
             .build();
 

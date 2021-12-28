@@ -27,7 +27,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.text.Component;
 
 public class ClearChatCommand {
@@ -37,12 +37,12 @@ public class ClearChatCommand {
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final ConfigFactory configFactory,
-        final CarbonMessageService messageService
+        final CarbonMessages carbonMessages
     ) {
         final var command = commandManager.commandBuilder("clearchat", "chatclear", "cc")
             .permission("carbon.clearchat.clear")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandClearChatDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandClearChatDescription().component())
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?
