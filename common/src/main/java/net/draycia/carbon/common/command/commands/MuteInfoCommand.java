@@ -33,8 +33,8 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -43,19 +43,19 @@ public class MuteInfoCommand extends CarbonCommand {
 
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
-    final CarbonMessageService messageService;
+    final CarbonMessages carbonMessages;
     final PlayerSuggestions playerSuggestions;
 
     @Inject
     public MuteInfoCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService,
+        final CarbonMessages carbonMessages,
         final PlayerSuggestions playerSuggestions
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
-        this.messageService = messageService;
+        this.carbonMessages = carbonMessages;
         this.playerSuggestions = playerSuggestions;
     }
 
@@ -71,17 +71,17 @@ public class MuteInfoCommand extends CarbonCommand {
 
     @Override
     public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
-                RichDescription.of(this.messageService.commandMuteInfoArgumentPlayer().component()))
-            .flag(this.commandManager.flagBuilder("uuid")
+        final var command = commandManager.commandBuilder("muteinfo", "muted")
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(playerSuggestions).asOptional(),
+                RichDescription.of(carbonMessages.commandMuteInfoArgumentPlayer().component()))
+            .flag(commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.messageService.commandMuteInfoArgumentUUID().component()))
+                .withDescription(RichDescription.of(carbonMessages.commandMuteInfoArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.info")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandMuteInfoDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandMuteInfoDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -97,17 +97,19 @@ public class MuteInfoCommand extends CarbonCommand {
 
                 if (!target.muted()) {
                     if (sender.equals(target)) {
-                        this.messageService.muteInfoSelfNotMuted(sender);
+                        carbonMessages.muteInfoSelfNotMuted(sender);
                     } else {
-                        this.messageService.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
+                        carbonMessages.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
                     }
                 } else {
                     if (sender.equals(target)) {
-                        this.messageService.muteInfoSelfMuted(sender);
+                        carbonMessages.muteInfoSelfMuted(sender);
                     } else {
-                        this.messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
+                        carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
                     }
                 }
+
+                carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
             })
             .build();
 

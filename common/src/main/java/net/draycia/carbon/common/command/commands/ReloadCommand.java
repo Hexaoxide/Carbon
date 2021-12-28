@@ -27,8 +27,8 @@ import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.events.CarbonReloadEvent;
-import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -37,17 +37,17 @@ public class ReloadCommand extends CarbonCommand {
 
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
-    final CarbonMessageService messageService;
+    final CarbonMessages carbonMessages;
 
     @Inject
     public ReloadCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
+        final CarbonMessages carbonMessages
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
-        this.messageService = messageService;
+        this.carbonMessages = carbonMessages;
     }
 
     @Override
@@ -66,11 +66,11 @@ public class ReloadCommand extends CarbonCommand {
             .literal("reload")
             .permission("carbon.reload")
             .senderType(Commander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandReloadDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandReloadDescription().component())
             .handler(handler -> {
                 // TODO: Check if all listeners succeeded
-                this.carbonChat.eventHandler().emit(new CarbonReloadEvent());
-                this.messageService.configReloaded(handler.getSender());
+                carbonChat.eventHandler().emit(new CarbonReloadEvent());
+                carbonMessages.configReloaded(handler.getSender());
             })
             .build();
 

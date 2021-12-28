@@ -36,7 +36,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
@@ -71,7 +71,7 @@ public class CarbonChatVelocity implements CarbonChat {
     private final Logger logger;
     private final Injector injector;
 
-    private final CarbonMessageService messageService;
+    private final CarbonMessages carbonMessages;
     private final ChannelRegistry channelRegistry;
     private final CarbonServerVelocity carbonServer;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
@@ -96,7 +96,7 @@ public class CarbonChatVelocity implements CarbonChat {
 
         this.injector = injector.createChildInjector(carbonVelocityModule);
 
-        this.messageService = this.injector.getInstance(CarbonMessageService.class);
+        this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServer = this.injector.getInstance(CarbonServerVelocity.class);
     }
@@ -144,8 +144,8 @@ public class CarbonChatVelocity implements CarbonChat {
         return this.injector.getInstance(VelocityMessageRenderer.class);
     }
 
-    public CarbonMessageService messageService() {
-        return this.messageService;
+    public CarbonMessages carbonMessages() {
+        return this.carbonMessages;
     }
 
     @Override

@@ -29,7 +29,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
 import net.kyori.moonshine.annotation.Placeholder;
 
-public interface CarbonMessageService {
+public interface CarbonMessages {
 
     /*
      * =============================================================

@@ -32,7 +32,7 @@ import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
@@ -71,7 +71,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private @MonotonicNonNull UserManager<CarbonPlayerCommon> userManager;
     private @MonotonicNonNull Logger logger;
     private @MonotonicNonNull CarbonServerFabric carbonServerFabric;
-    private @MonotonicNonNull CarbonMessageService messageService;
+    private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
     private TriState luckPermsLoaded = TriState.NOT_SET;
 
@@ -84,7 +84,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
         this.logger = LogManager.getLogger(this.modContainer.getMetadata().getName());
         this.injector = Guice.createInjector(new CarbonChatFabricModule(this, this.logger, this.dataDirectory()));
-        this.messageService = this.injector.getInstance(CarbonMessageService.class);
+        this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerFabric = this.injector.getInstance(CarbonServerFabric.class);
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
@@ -166,8 +166,8 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         return requireNonNull(this.minecraftServer, "Attempted to get the MinecraftServer instance when one is not active.");
     }
 
-    public CarbonMessageService messageService() {
-        return this.messageService;
+    public CarbonMessages carbonMessages() {
+        return this.carbonMessages;
     }
 
     public boolean luckPermsLoaded() {

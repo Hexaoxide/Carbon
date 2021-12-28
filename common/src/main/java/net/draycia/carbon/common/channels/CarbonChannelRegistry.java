@@ -52,7 +52,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.events.CarbonReloadEvent;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
@@ -93,7 +93,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     private final ConfigFactory configFactory;
     private @MonotonicNonNull Key defaultKey;
     private @MonotonicNonNull ChatChannel basicChannel;
-    private final CarbonMessageService messageService;
+    private final CarbonMessages carbonMessages;
     private final CarbonChat carbonChat;
 
     private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
@@ -105,7 +105,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final Injector injector,
         final Logger logger,
         final ConfigFactory configFactory,
-        final CarbonMessageService messageService,
+        final CarbonMessages carbonMessages,
         final BasicChatChannel basicChannel,
         final CarbonChat carbonChat
     ) {
@@ -114,7 +114,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         this.injector = injector;
         this.logger = logger;
         this.configFactory = configFactory;
-        this.messageService = messageService;
+        this.carbonMessages = carbonMessages;
         this.basicChannel = basicChannel;
         this.carbonChat = carbonChat;
 
@@ -296,7 +296,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
-                    this.messageService.muteCannotSpeak(sender);
+                    this.carbonMessages.muteCannotSpeak(sender);
                     return;
                 }
 
@@ -307,7 +307,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                     this.sendMessageInChannelAsPlayer(sender, channel, message);
                 } else {
                     sender.selectedChannel(channel);
-                    this.messageService.changedChannels(sender, channel.key().value());
+                    this.carbonMessages.changedChannels(sender, channel.key().value());
                 }
             })
             .build();

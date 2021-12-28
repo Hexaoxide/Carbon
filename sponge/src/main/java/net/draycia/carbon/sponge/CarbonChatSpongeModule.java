@@ -74,7 +74,7 @@ public final class CarbonChatSpongeModule extends AbstractModule {
             }
         );
 
-        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.messageService());
+        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.carbonMessages());
 
         commandManager.parserMapper().cloudNumberSuggestions(true);
 

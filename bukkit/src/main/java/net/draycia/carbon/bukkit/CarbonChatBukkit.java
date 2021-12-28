@@ -39,7 +39,7 @@ import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.listeners.DiscordMessageListener;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
@@ -71,7 +71,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     private @MonotonicNonNull UserManager<CarbonPlayerCommon> userManager;
     private @MonotonicNonNull Logger logger;
     private @MonotonicNonNull CarbonServerBukkit carbonServerBukkit;
-    private @MonotonicNonNull CarbonMessageService messageService;
+    private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
 
     @Override
@@ -91,7 +91,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         this.injector = Guice.createInjector(new CarbonChatBukkitModule(this, this.dataDirectory()));
         this.logger = LogManager.getLogger("CarbonChat");
-        this.messageService = this.injector.getInstance(CarbonMessageService.class);
+        this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerBukkit = this.injector.getInstance(CarbonServerBukkit.class);
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
@@ -162,8 +162,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         return this.channelRegistry;
     }
 
-    public CarbonMessageService messageService() {
-        return this.messageService;
+    public CarbonMessages carbonMessages() {
+        return this.carbonMessages;
     }
 
     @Override
