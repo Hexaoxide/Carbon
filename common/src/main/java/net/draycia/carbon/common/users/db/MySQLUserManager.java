@@ -23,12 +23,15 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
@@ -73,8 +76,8 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
             //Class.forName("org.postgresql.Driver");
             Class.forName("org.mariadb.jdbc.Driver");
             Class.forName("com.mysql.jdbc.Driver");
-        } catch (final Exception ignored) {
-
+        } catch (final Exception exception) {
+            exception.printStackTrace();
         }
 
         final HikariConfig hikariConfig = new HikariConfig();
@@ -85,7 +88,7 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
 
         final DataSource dataSource = new HikariDataSource(hikariConfig);
 
-        Flyway.configure(CarbonChatProvider.carbonChat().getClass().getClassLoader())
+        Flyway.configure(CarbonChat.class.getClassLoader())
             .baselineVersion("0")
             .baselineOnMigrate(true)
             .locations("queries/migrations/mysql")
