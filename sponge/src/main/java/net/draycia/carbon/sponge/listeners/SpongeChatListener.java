@@ -120,9 +120,7 @@ public final class SpongeChatListener {
             if (audience instanceof ForwardingAudience forwardingAudience) {
                 recipients = new ArrayList<>();
 
-                for (final var entry : forwardingAudience.audiences()) {
-                    recipients.add(entry);
-                }
+                forwardingAudience.forEachAudience(recipients::add);
             } else {
                 recipients = channel.recipients(sender);
             }

@@ -28,9 +28,12 @@ import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.List;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
 import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
@@ -44,10 +47,11 @@ import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.TextColor.color;
 
 @DefaultQualifier(NonNull.class)
-public final class HelpCommand {
+public final class HelpCommand extends CarbonCommand {
 
-    private final CommandManager<Commander> manager;
-    private final MinecraftHelp<Commander> help;
+    final CommandManager<Commander> commandManager;
+    final CarbonMessageService messageService;
+    final MinecraftHelp<Commander> minecraftHelp;
 
     @Inject
     public HelpCommand(
@@ -55,28 +59,42 @@ public final class HelpCommand {
         final CarbonMessageSource messageSource,
         final CarbonMessageService messageService
     ) {
-        this.manager = commandManager;
-        this.help = createHelp(commandManager, messageSource);
+        this.commandManager = commandManager;
+        this.messageService = messageService;
+        this.minecraftHelp = createHelp(commandManager, messageSource);
+    }
 
-        final var command = commandManager.commandBuilder("carbon")
+    @Override
+    protected CommandSettings _commandSettings() {
+        return new CommandSettings("carbon");
+    }
+
+    @Override
+    public Key key() {
+        return Key.key("carbon", "help");
+    }
+
+    @Override
+    public void init() {
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .literal("help",
-                RichDescription.of(messageService.commandHelpDescription().component()))
+                RichDescription.of(this.messageService.commandHelpDescription().component()))
             .argument(StringArgument.<Commander>newBuilder("query")
                     .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
-                RichDescription.of(messageService.commandHelpArgumentQuery().component()))
+                RichDescription.of(this.messageService.commandHelpArgumentQuery().component()))
             .permission("carbon.help")
             .handler(this::execute)
             .build();
 
-        commandManager.command(command);
+        this.commandManager.command(command);
     }
 
     private void execute(final CommandContext<Commander> ctx) {
-        this.help.queryCommands(ctx.getOrDefault("query", ""), ctx.getSender());
+        this.minecraftHelp.queryCommands(ctx.getOrDefault("query", ""), ctx.getSender());
     }
 
     private List<String> suggestQueries(final CommandContext<Commander> ctx, final String input) {
-        final var topic = (CommandHelpHandler.IndexHelpTopic<Commander>) this.manager.getCommandHelpHandler().queryHelp(ctx.getSender(), "");
+        final var topic = (CommandHelpHandler.IndexHelpTopic<Commander>) this.commandManager.getCommandHelpHandler().queryHelp(ctx.getSender(), "");
         return topic.getEntries().stream().map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString).toList();
     }
 

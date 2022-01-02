@@ -41,7 +41,9 @@ public class ConfigFactory {
 
     private final Path dataDirectory;
     private final LocaleSerializerConfigurate locale;
+
     private @Nullable PrimaryConfig primaryConfig = null;
+    private @Nullable CommandConfig commandSettings = null;
 
     @Inject
     public ConfigFactory(
@@ -73,6 +75,24 @@ public class ConfigFactory {
         }
 
         return this.primaryConfig;
+    }
+
+    public @Nullable CommandConfig loadCommandSettings() {
+        try {
+            this.commandSettings = this.load(CommandConfig.class, "command-settings.conf");
+        } catch (final IOException exception) {
+            exception.printStackTrace();
+        }
+
+        return this.commandSettings;
+    }
+
+    public @Nullable CommandConfig commandSettings() {
+        if (this.commandSettings == null) {
+            return this.loadCommandSettings();
+        }
+
+        return this.commandSettings;
     }
 
     public ConfigurationLoader<?> configurationLoader(final Path file) {
