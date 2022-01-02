@@ -20,14 +20,17 @@
 package net.draycia.carbon.api;
 
 import java.nio.file.Path;
+import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
+import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -39,6 +42,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface CarbonChat {
 
+    UUID serverId();
+
     /**
      * The plugin's logger.<br>
      * All messages will be logged through this.
@@ -47,6 +52,14 @@ public interface CarbonChat {
      * @since 2.0.0
      */
     Logger logger();
+
+    /**
+     * The plugin's cross-server messaging service.
+     *
+     * @return the plugin's cross-server messaging service
+     * @since 2.1.0
+     */
+    @Nullable PacketService packetService();
 
     /**
      * The plugin's data storage directory.<br>
@@ -88,8 +101,5 @@ public interface CarbonChat {
      * @since 2.0.0
      */
     <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer();
-
-    // TODO: Redis as MariaDB cache
-    // TODO: Adopt egg82/Messenger for use with databases?
 
 }

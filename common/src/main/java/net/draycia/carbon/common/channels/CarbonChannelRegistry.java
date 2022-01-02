@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -53,12 +54,14 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistry;
+import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -291,9 +294,12 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             });
         }
 
+        final Key channelKey = channel.key();
+
         final var command = builder.senderType(PlayerCommander.class)
             .handler(handler -> {
                 final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final @Nullable ChatChannel chatChannel = this.get(channelKey);
 
                 if (sender.muted()) {
                     this.carbonMessages.muteCannotSpeak(sender);
@@ -304,10 +310,10 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                     final String message = handler.get("message");
 
                     // TODO: trigger platform events related to chat
-                    this.sendMessageInChannelAsPlayer(sender, channel, message);
+                    this.sendMessageInChannelAsPlayer(sender, chatChannel, message);
                 } else {
-                    sender.selectedChannel(channel);
-                    this.carbonMessages.changedChannels(sender, channel.key().value());
+                    sender.selectedChannel(chatChannel);
+                    this.carbonMessages.changedChannels(sender, channelKey.value());
                 }
             })
             .build();
@@ -315,7 +321,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         commandManager.command(command);
 
         final var channelCommand = commandManager.commandBuilder("channel", "ch")
-            .literal(channel.key().value())
+            .literal(channelKey.value())
             .proxies(command)
             .build();
 
@@ -330,17 +336,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         // Should we silent exit here? Chances are whatever caused the
         if (!sender.speechPermitted(plainMessage)) {
             return;
-        }
-
-        for (final var chatChannel : this) {
-            if (chatChannel.quickPrefix() == null) {
-                continue;
-            }
-
-            if (plainMessage.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
-                channel = chatChannel;
-                break;
-            }
         }
 
         final var recipients = channel.recipients(sender);
@@ -374,6 +369,19 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 recipient.sendMessage(identity, renderedMessage.component());
             } else {
                 recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
+            }
+        }
+
+        final @Nullable PacketService packetService = this.carbonChat.packetService();
+
+        if (packetService != null) {
+            if (channel instanceof ConfigChatChannel configChatChannel) {
+                final @Nullable String format = configChatChannel.messageFormat(sender);
+
+                packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
+                    configChatChannel.permission(), channel.key(), sender.username(), format,
+                    Map.of("username", sender.username(), "message", plainMessage)));
+                packetService.flushQueue();
             }
         }
     }

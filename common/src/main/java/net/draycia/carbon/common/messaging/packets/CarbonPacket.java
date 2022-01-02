@@ -17,10 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.messaging;
+package net.draycia.carbon.common.messaging.packets;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -53,6 +54,26 @@ public abstract class CarbonPacket extends AbstractPacket {
         final @Subst("carbon:channel") String value = this.readString(buffer);
 
         return Key.key(value);
+    }
+
+    protected final void writeStringMap(final Map<String, String> map, final ByteBuf buffer) {
+        this.writeVarInt(map.size(), buffer);
+
+        for (final Map.Entry<String, String> entry : map.entrySet()) {
+            this.writeString(entry.getKey(), buffer);
+            this.writeString(entry.getValue(), buffer);
+        }
+    }
+
+    protected final Map<String, String> readStringMap(final ByteBuf buffer) {
+        final int size = this.readVarInt(buffer);
+        final Map<String, String> map = new HashMap<>();
+
+        for (int i = 0; i < size; i++) {
+            map.put(this.readString(buffer), this.readString(buffer));
+        }
+
+        return map;
     }
 
 }
