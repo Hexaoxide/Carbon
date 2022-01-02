@@ -17,16 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.mysql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,10 +36,8 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
-import net.draycia.carbon.common.users.db.mysql.CarbonPlayerCommonRowMapper;
-import net.draycia.carbon.common.users.db.mysql.ComponentArgumentFactory;
-import net.draycia.carbon.common.users.db.mysql.KeyArgumentFactory;
-import net.draycia.carbon.common.users.db.mysql.UUIDArgumentFactory;
+import net.draycia.carbon.common.users.db.DBType;
+import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -196,47 +192,47 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
 
     @Override
     public int saveDisplayName(final UUID id, final @Nullable Component displayName) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveDisplayName(id, displayName));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveDisplayName(id, displayName));
     }
 
     @Override
     public int saveMuted(UUID id, boolean muted) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
     }
 
     @Override
     public int saveDeafened(UUID id, boolean deafened) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
     }
 
     @Override
     public int saveSpying(UUID id, boolean spying) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
     }
 
     @Override
     public int saveSelectedChannel(UUID id, @Nullable Key selectedChannel) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
     }
 
     @Override
     public int saveLastWhisperTarget(UUID id, @Nullable UUID lastWhisperTarget) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
     }
 
     @Override
     public int saveWhisperReplyTarget(UUID id, @Nullable UUID whisperReplyTarget) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
     }
 
     @Override
     public int addIgnore(UUID id, UUID ignoredPlayer) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
     }
 
     @Override
     public int removeIgnore(UUID id, UUID ignoredPlayer) {
-        return this.jdbi.withExtension(SQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
     }
 
 }
