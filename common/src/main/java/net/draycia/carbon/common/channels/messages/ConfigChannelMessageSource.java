@@ -71,15 +71,15 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
     private static final String FALLBACK_FORMAT = "<red><</red><username><red>></red> <message>";
 
     @Override
-    public String messageOf(final SourcedAudience sourcedAudience, final String messageKey) {
+    public String messageOf(final SourcedAudience sourcedAudience, final String ignored) {
         if (sourcedAudience.recipient() instanceof CarbonPlayer) {
-            return this.forPlayer(messageKey, sourcedAudience);
+            return this.forPlayer(sourcedAudience);
         } else {
-            return this.forAudience(messageKey, sourcedAudience.recipient());
+            return this.forAudience(sourcedAudience.recipient());
         }
     }
 
-    private String forPlayer(final String key, final SourcedAudience sourcedAudience) {
+    private String forPlayer(final SourcedAudience sourcedAudience) {
         final var sender = (CarbonPlayer) sourcedAudience.sender();
         final var recipient = (CarbonPlayer) sourcedAudience.recipient();
 
@@ -120,7 +120,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         return Objects.requireNonNullElse(this.defaults.get("default_format"), FALLBACK_FORMAT);
     }
 
-    private String forAudience(final String key, final Audience audience) {
+    private String forAudience(final Audience audience) {
         return Objects.requireNonNullElse(this.defaults.get("console"), FALLBACK_FORMAT);
     }
 

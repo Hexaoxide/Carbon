@@ -61,6 +61,8 @@ public class PrimaryConfig {
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
 
+    private MessagingSettings messagingSettings = new MessagingSettings();
+
     public Locale defaultLocale() {
         return this.defaultLocale;
     }
@@ -87,6 +89,10 @@ public class PrimaryConfig {
 
     public PingSettings pings() {
         return this.pingSettings;
+    }
+
+    public MessagingSettings messagingSettings() {
+        return this.messagingSettings;
     }
 
     public enum StorageType {
