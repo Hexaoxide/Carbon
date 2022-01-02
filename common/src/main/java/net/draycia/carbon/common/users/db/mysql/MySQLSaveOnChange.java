@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.mysql;
 
 import java.util.UUID;
 import net.draycia.carbon.common.users.SaveOnChange;
@@ -29,7 +29,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 @DefaultQualifier(NonNull.class)
-public interface SQLSaveOnChange extends SaveOnChange {
+public interface MySQLSaveOnChange extends SaveOnChange {
 
     @SqlUpdate("UPDATE carbon_users SET displayname = :displayName WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveDisplayName(final UUID id, final @Nullable Component displayName);
