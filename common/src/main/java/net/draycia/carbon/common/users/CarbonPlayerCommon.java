@@ -293,7 +293,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable ChatChannel selectedChannel() {
-        return CarbonChatProvider.carbonChat().channelRegistry().get(this.selectedChannel);
+        if (this.selectedChannel == null) {
+            return this.carbonChat.channelRegistry().defaultValue();
+        }
+
+        return this.carbonChat.channelRegistry().get(this.selectedChannel);
     }
 
     public @Nullable Key selectedChannelKey() {
@@ -302,10 +306,14 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public void selectedChannel(final @Nullable ChatChannel chatChannel) {
-        this.selectedChannel = chatChannel.key();
+        if (chatChannel == null) {
+            this.selectedChannel = null;
+        } else {
+            this.selectedChannel = chatChannel.key();
+        }
 
         if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
-            userManager.saveSelectedChannel(this.uuid(), chatChannel.key());
+            userManager.saveSelectedChannel(this.uuid(), this.selectedChannel);
         }
     }
 
