@@ -42,7 +42,7 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
-    private final CarbonChat carbonChat = CarbonChatProvider.carbonChat();
+    private final transient CarbonChat carbonChat = CarbonChatProvider.carbonChat();
 
     protected boolean muted = false;
     protected boolean deafened = false;
