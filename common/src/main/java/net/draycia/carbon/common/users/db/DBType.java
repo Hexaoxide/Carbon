@@ -32,6 +32,6 @@ public final class DBType {
     }
 
     public static final DBType MYSQL = new DBType("queries/mysql/");
-    //public static final DBType POSTGRESQL = new DBType("queries/postgresql/");
+    public static final DBType POSTGRESQL = new DBType("queries/postgresql/");
 
 }
