@@ -180,6 +180,10 @@ public final class ConfigChatChannel implements ChatChannel {
         return Objects.requireNonNull(this.key);
     }
 
+    public String messageFormat(final CarbonPlayer sender) {
+        return this.messageSource.messageOf(new SourcedAudience(sender, sender), "");
+    }
+
     private @Nullable ConfigChannelMessages loadMessages() {
         final SourcedReceiverResolver serverReceiverResolver = new SourcedReceiverResolver();
         final ComponentPlaceholderResolver<SourcedAudience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();

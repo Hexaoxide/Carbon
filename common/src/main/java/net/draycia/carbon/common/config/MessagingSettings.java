@@ -20,13 +20,13 @@
 package net.draycia.carbon.common.config;
 
 import net.draycia.carbon.common.messaging.MessagingManager;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 
-@DefaultQualifier(Nullable.class)
+@DefaultQualifier(MonotonicNonNull.class)
 @ConfigSerializable
 public class MessagingSettings {
 
@@ -34,22 +34,22 @@ public class MessagingSettings {
     private MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
 
     @Comment("")
-    private final String url = "127.0.0.1";
+    private String url = "127.0.0.1";
 
     @Comment("")
-    private final int port = 5672; // RabbitMQ 5672, NATS 4222, Redis 6379
+    private int port = 5672; // RabbitMQ 5672, NATS 4222, Redis 6379
 
     @Comment("RabbitMQ VHost")
-    private final @Nullable String vhost = "/"; // RabbitMQ only
+    private String vhost = "/"; // RabbitMQ only
 
     @Comment("NATS credentials file")
-    private final @Nullable String credentialsFile = ""; // NATS only
+    private String credentialsFile = ""; // NATS only
 
     @Comment("RabbitMQ username")
-    private final @Nullable String username = "username"; // RabbitMQ only
+    private String username = "username"; // RabbitMQ only
 
     @Comment("RabbitMQ and Redis password")
-    private final @Nullable String password = "password"; // RabbitMQ and Redis only
+    private String password = "password"; // RabbitMQ and Redis only
 
     public MessagingManager.@NonNull BrokerType brokerType() {
         return this.brokerType;

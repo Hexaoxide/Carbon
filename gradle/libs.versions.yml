@@ -43,8 +43,10 @@ versions:
   flyway: 7.7.1
   caffeine: 3.0.5
   mariadb: 3.0.2-rc
-  messenger: 1.0.0-SNAPSHOT
+  messenger: 1.0.0-parks-SNAPSHOT
   netty: 4.1.68.Final
+  zstdjni: 1.5.1-1
+  jedis: 3.7.0
 
 dependencies:
   adventureBom:
@@ -232,6 +234,14 @@ dependencies:
     group: io.netty
     name: netty-all
     version: { ref: netty }
+  zstdjni:
+    group: com.github.luben
+    name: zstd-jni
+    version: { ref: zstdjni }
+  jedis:
+    group: redis.clients
+    name: jedis
+    version: { ref: jedis }
 
   paperApi:
     group: io.papermc.paper

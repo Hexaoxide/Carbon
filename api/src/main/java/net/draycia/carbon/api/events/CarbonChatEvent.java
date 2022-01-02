@@ -26,6 +26,7 @@ import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static net.kyori.adventure.text.Component.empty;
@@ -42,7 +43,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     private final CarbonPlayer sender;
     private final Component originalMessage;
     private final List<? extends Audience> recipients;
-    private final ChatChannel chatChannel;
+    private final @Nullable ChatChannel chatChannel;
     private Component message;
     private Result result = Result.ALLOWED;
 
@@ -61,7 +62,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         final Component originalMessage,
         final List<Audience> recipients,
         final List<KeyedRenderer> renderers,
-        final ChatChannel chatChannel
+        final @Nullable ChatChannel chatChannel
     ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
@@ -127,7 +128,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      * @return the chat channel
      * @since 2.0.0
      */
-    public ChatChannel chatChannel() {
+    public @Nullable ChatChannel chatChannel() {
         return this.chatChannel;
     }
 

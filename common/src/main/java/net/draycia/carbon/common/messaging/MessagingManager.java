@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.common.messaging;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -26,57 +28,100 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.CarbonShutdownEvent;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;
+import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import ninja.egg82.messenger.MessagingService;
 import ninja.egg82.messenger.NATSMessagingService;
+import ninja.egg82.messenger.PacketManager;
 import ninja.egg82.messenger.RabbitMQMessagingService;
 import ninja.egg82.messenger.RedisMessagingService;
-import ninja.egg82.messenger.handler.AbstractMessagingHandler;
 import ninja.egg82.messenger.handler.AbstractServerMessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandlerImpl;
-import ninja.egg82.messenger.packets.Packet;
+import ninja.egg82.messenger.packets.MultiPacket;
+import ninja.egg82.messenger.packets.server.HeartbeatPacket;
 import ninja.egg82.messenger.packets.server.InitializationPacket;
 import ninja.egg82.messenger.packets.server.KeepAlivePacket;
+import ninja.egg82.messenger.packets.server.PacketVersionPacket;
+import ninja.egg82.messenger.packets.server.PacketVersionRequestPacket;
+import ninja.egg82.messenger.packets.server.ShutdownPacket;
 import ninja.egg82.messenger.services.PacketService;
 import org.jetbrains.annotations.NotNull;
 
+@Singleton
 public class MessagingManager {
 
-    private final UUID serverId = UUID.randomUUID();
-    private final ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(5);
+    private static final byte protocolVersion = 0;
 
-    private PacketService packetService;
+    private final ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(10);
+
+    private final PacketService packetService;
     private MessagingService messagingService;
+    private final CarbonChat carbonChat;
 
-    public void init(final MessagingSettings messagingSettings) {
-        this.packetService = new PacketService(4, false, (byte) 1);
+    @Inject
+    public MessagingManager(
+        final CarbonChannelRegistry channelRegistry,
+        final ConfigFactory configFactory,
+        final CarbonChat carbonChat
+    ) {
+        PacketManager.register(MultiPacket.class, MultiPacket::new);
+        PacketManager.register(KeepAlivePacket.class, KeepAlivePacket::new);
+        PacketManager.register(InitializationPacket.class, InitializationPacket::new);
+        PacketManager.register(PacketVersionPacket.class, PacketVersionPacket::new);
+        PacketManager.register(PacketVersionRequestPacket.class, PacketVersionRequestPacket::new);
+        PacketManager.register(ShutdownPacket.class, ShutdownPacket::new);
+        PacketManager.register(HeartbeatPacket.class, HeartbeatPacket::new);
+        PacketManager.register(ChatMessagePacket.class, ChatMessagePacket::new);
+
+        this.packetService = new PacketService(4, false, protocolVersion);
+        this.carbonChat = carbonChat;
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(packetService);
-        handlerImpl.addHandler(new CarbonServerHandler(serverId, packetService, handlerImpl));
-        handlerImpl.addHandler(new CarbonPacketHandler(packetService));
+        handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), packetService, handlerImpl));
+        handlerImpl.addHandler(new CarbonChatPacketHandler(this, channelRegistry));
 
         try {
-            this.initMessagingService(packetService, handlerImpl, new File("/"), messagingSettings);
+            this.initMessagingService(packetService, handlerImpl, new File("/"),
+                configFactory.primaryConfig().messagingSettings());
         } catch (final IOException | TimeoutException | InterruptedException e) {
             e.printStackTrace();
             return;
         }
 
-        packetService.queuePacket(new InitializationPacket(this.serverId, (byte) 1));
+        packetService.addMessenger(this.messagingService);
+
+        packetService.queuePacket(new InitializationPacket(carbonChat.serverId(), protocolVersion));
+        packetService.flushQueue();
+
+        // Broadcast keepalive packets
+        executorService.scheduleAtFixedRate(() -> {
+            packetService.queuePacket(new KeepAlivePacket(carbonChat.serverId()));
+            packetService.flushQueue();
+        }, 5, 10, TimeUnit.SECONDS);
+
+        // Broadcast heartbeat packets
+        executorService.scheduleAtFixedRate(() -> {
+            packetService.queuePacket(new HeartbeatPacket(carbonChat.serverId(), protocolVersion));
+            packetService.flushQueue();
+        }, 5, 5, TimeUnit.SECONDS);
 
         executorService.scheduleAtFixedRate(() -> {
-            packetService.queuePacket(new KeepAlivePacket(this.serverId));
-            packetService.flushQueue();
-        }, 1, 15, TimeUnit.SECONDS);
+            try {
+                packetService.flushQueue();
+            } catch (final IndexOutOfBoundsException ignored) {
+
+            }
+        }, 0, 1, TimeUnit.SECONDS);
 
         CarbonChatProvider.carbonChat().eventHandler().subscribe(CarbonShutdownEvent.class, 0, false, event -> {
             this.onShutdown();
         });
-
-        packetService.flushQueue();
     }
 
     public PacketService packetService() {
@@ -103,22 +148,39 @@ public class MessagingManager {
         final String name = "engine1";
         final String channelName = "carbon-data";
 
-        this.messagingService = switch (messagingSettings.brokerType()) {
-            case RABBITMQ -> RabbitMQMessagingService.builder(packetService, name, channelName, this.serverId, handlerImpl, 0L, false, packetDir)
-                .url(messagingSettings.url(), messagingSettings.port(), messagingSettings.vhost())
-                .credentials(messagingSettings.username(), messagingSettings.password())
-                .timeout(5000)
-                .build();
-            case NATS -> NATSMessagingService.builder(packetService, name, channelName, this.serverId, handlerImpl, 0L, false, packetDir)
-                .url(messagingSettings.url(), messagingSettings.port())
-                .credentials(messagingSettings.credentialsFile())
-                .life(5000)
-                .build();
-            case REDIS -> RedisMessagingService.builder(packetService, name, channelName, this.serverId, handlerImpl, 0L, false, packetDir)
-                .url(messagingSettings.url(), messagingSettings.port())
-                .credentials(messagingSettings.password())
-                .life(5000, 5000)
-                .build();
+        switch (messagingSettings.brokerType()) {
+            case RABBITMQ -> {
+                final RabbitMQMessagingService.Builder builder = RabbitMQMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
+                    .url(messagingSettings.url(), messagingSettings.port(), messagingSettings.vhost())
+                    .timeout(5000);
+
+                if (messagingSettings.username() != null && !messagingSettings.username().isBlank()) {
+                    builder.credentials(messagingSettings.username(), messagingSettings.password());
+                }
+
+                this.messagingService = builder.build();
+            }
+            case NATS -> {
+                final NATSMessagingService.Builder builder = NATSMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
+                    .url(messagingSettings.url(), messagingSettings.port())
+                    .life(5000);
+
+                if (messagingSettings.credentialsFile() != null && !messagingSettings.credentialsFile().isBlank()) {
+                    builder.credentials(messagingSettings.credentialsFile());
+                }
+
+                this.messagingService = builder.build();
+            }
+            case REDIS -> {
+                final RedisMessagingService.Builder builder = RedisMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
+                    .url(messagingSettings.url(), messagingSettings.port());
+
+                if (messagingSettings.password() != null && !messagingSettings.password().isBlank()) {
+                    builder.credentials(messagingSettings.password());
+                }
+
+                this.messagingService = builder.build();
+            }
             case NONE -> throw new IllegalStateException("MessagingManager initialized with no messaging broker selected!");
         };
     }
@@ -130,26 +192,13 @@ public class MessagingManager {
         REDIS,
     }
 
-    private static final class CarbonPacketHandler extends AbstractMessagingHandler {
-
-        private CarbonPacketHandler(@NotNull PacketService packetService) {
-            super(packetService);
-        }
-
-        @Override
-        protected boolean handlePacket(@NotNull Packet packet) {
-            if (packet instanceof ChatMessagePacket messagePacket) {
-
-            }
-
-            return false;
-        }
-
-    }
-
     private static final class CarbonServerHandler extends AbstractServerMessagingHandler {
 
-        private CarbonServerHandler(@NotNull UUID serverId, @NotNull PacketService packetService, @NotNull MessagingHandler messagingHandler) {
+        private CarbonServerHandler(
+            @NotNull UUID serverId,
+            @NotNull PacketService packetService,
+            @NotNull MessagingHandler messagingHandler
+        ) {
             super(serverId, packetService, messagingHandler);
         }
 

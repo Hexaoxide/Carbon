@@ -33,9 +33,11 @@ dependencies {
   api(libs.mariadb)
 
   // Messaging
-  api(libs.messenger)
   api(libs.messengerNats)
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)
   api(libs.netty)
+  api(libs.zstdjni)
+  api(libs.jedis)
+  // TODO: libraries for NATS and RabbitMQ
 }

@@ -27,6 +27,7 @@ import github.scarsz.discordsrv.DiscordSRV;
 import io.papermc.lib.PaperLib;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import net.draycia.carbon.api.CarbonChat;
@@ -42,6 +43,7 @@ import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.bukkit.util.CarbonChatHook;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
@@ -49,6 +51,7 @@ import net.draycia.carbon.common.util.PlayerUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
+import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
@@ -57,6 +60,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
@@ -75,6 +79,9 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     private @MonotonicNonNull CarbonServerBukkit carbonServerBukkit;
     private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
+    private final UUID serverId = UUID.randomUUID();
+
+    private @MonotonicNonNull MessagingManager messagingManager = null;
 
     @Override
     public void onLoad() {
@@ -97,6 +104,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerBukkit = this.injector.getInstance(CarbonServerBukkit.class);
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
+
+        this.packetService();
     }
 
     @Override
@@ -147,6 +156,20 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     @Override
     public void onDisable() {
         PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager).forEach(CompletableFuture::join);
+    }
+
+    @Override
+    public UUID serverId() {
+        return this.serverId;
+    }
+
+    @Override
+    public @Nullable PacketService packetService() {
+        if (this.messagingManager == null) {
+            this.messagingManager = this.injector.getInstance(MessagingManager.class);
+        }
+
+        return this.messagingManager.packetService();
     }
 
     @Override
