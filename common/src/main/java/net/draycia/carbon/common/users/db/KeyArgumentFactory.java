@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db.mysql;
+package net.draycia.carbon.common.users.db;
 
 import java.sql.Types;
 import java.util.UUID;

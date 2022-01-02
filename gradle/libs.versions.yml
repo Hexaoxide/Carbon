@@ -189,6 +189,10 @@ dependencies:
     group: org.jdbi
     name: jdbi3-sqlobject
     version: { ref: jdbi }
+  jdbiPostgres:
+    group: org.jdbi
+    name: jdbi3-postgres
+    version: { ref: jdbi }
   hikariCP:
     group: com.zaxxer
     name: HikariCP

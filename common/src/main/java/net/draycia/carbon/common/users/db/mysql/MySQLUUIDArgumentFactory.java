@@ -26,9 +26,9 @@ import org.jdbi.v3.core.argument.Argument;
 import org.jdbi.v3.core.config.ConfigRegistry;
 
 // https://github.com/broccolai/tickets/blob/55a23b5fcfdc8e4b4bfa861ea7ec620506bd0dfa/core/src/main/java/broccolai/tickets/core/storage/factory/UUIDArgumentFactory.java
-public final class UUIDArgumentFactory extends AbstractArgumentFactory<UUID> {
+public final class MySQLUUIDArgumentFactory extends AbstractArgumentFactory<UUID> {
 
-    public UUIDArgumentFactory() {
+    public MySQLUUIDArgumentFactory() {
         super(Types.VARCHAR);
     }
 

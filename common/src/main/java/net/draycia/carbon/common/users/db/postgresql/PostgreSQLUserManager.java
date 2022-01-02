@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db.mysql;
+package net.draycia.carbon.common.users.db.postgresql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -36,10 +36,10 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
-import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
-import net.draycia.carbon.common.users.db.KeyArgumentFactory;
 import net.draycia.carbon.common.users.db.QueriesLocator;
+import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
+import net.draycia.carbon.common.users.db.KeyArgumentFactory;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -49,6 +49,7 @@ import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
+import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 import static net.kyori.adventure.text.Component.empty;
@@ -56,24 +57,22 @@ import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, SaveOnChange {
+public final class PostgreSQLUserManager implements UserManager<CarbonPlayerCommon>, SaveOnChange {
 
     private final Jdbi jdbi;
 
     private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
     private final QueriesLocator locator = new QueriesLocator(DBType.MYSQL);
 
-    private MySQLUserManager(final Jdbi jdbi) {
+    private PostgreSQLUserManager(final Jdbi jdbi) {
         this.jdbi = jdbi;
     }
 
-    public static MySQLUserManager manager(
+    public static PostgreSQLUserManager manager(
         final DatabaseSettings databaseSettings
     ) {
         try {
-            //Class.forName("org.postgresql.Driver");
-            Class.forName("org.mariadb.jdbc.Driver");
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (final Exception exception) {
             exception.printStackTrace();
         }
@@ -89,7 +88,7 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
         Flyway.configure(CarbonChat.class.getClassLoader())
             .baselineVersion("0")
             .baselineOnMigrate(true)
-            .locations("queries/migrations/mysql")
+            .locations("queries/migrations/postgresql")
             .dataSource(dataSource)
             .validateOnMigrate(true)
             .load()
@@ -99,11 +98,11 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
             .registerArrayType(UUID.class, "uuid")
             .registerArgument(new ComponentArgumentFactory())
             .registerArgument(new KeyArgumentFactory())
-            .registerArgument(new MySQLUUIDArgumentFactory())
-            .registerRowMapper(new MySQLPlayerRowMapper())
-            .installPlugin(new SqlObjectPlugin());
+            .registerRowMapper(new PostgreSQLPlayerRowMapper())
+            .installPlugin(new SqlObjectPlugin())
+            .installPlugin(new PostgresPlugin());
 
-        return new MySQLUserManager(jdbi);
+        return new PostgreSQLUserManager(jdbi);
     }
 
     @Override
@@ -193,47 +192,47 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
 
     @Override
     public int saveDisplayName(final UUID id, final @Nullable Component displayName) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveDisplayName(id, displayName));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveDisplayName(id, displayName));
     }
 
     @Override
     public int saveMuted(UUID id, boolean muted) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
     }
 
     @Override
     public int saveDeafened(UUID id, boolean deafened) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
     }
 
     @Override
     public int saveSpying(UUID id, boolean spying) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
     }
 
     @Override
     public int saveSelectedChannel(UUID id, @Nullable Key selectedChannel) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
     }
 
     @Override
     public int saveLastWhisperTarget(UUID id, @Nullable UUID lastWhisperTarget) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
     }
 
     @Override
     public int saveWhisperReplyTarget(UUID id, @Nullable UUID whisperReplyTarget) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
     }
 
     @Override
     public int addIgnore(UUID id, UUID ignoredPlayer) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
     }
 
     @Override
     public int removeIgnore(UUID id, UUID ignoredPlayer) {
-        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
     }
 
 }
