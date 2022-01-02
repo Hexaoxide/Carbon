@@ -114,7 +114,9 @@ public class CarbonChatVelocity implements CarbonChat {
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
 
         // Commands
-        CloudUtils.registerCommands(this.injector);
+        CloudUtils.loadCommands(this.injector);
+        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
+        CloudUtils.registerCommands(commandSettings);
     }
 
     @Override

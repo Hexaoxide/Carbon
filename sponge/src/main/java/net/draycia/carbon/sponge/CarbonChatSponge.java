@@ -214,7 +214,9 @@ public final class CarbonChatSponge implements CarbonChat {
         });
 
         // Commands
-        CloudUtils.registerCommands(this.injector);
+        CloudUtils.loadCommands(this.injector);
+        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
+        CloudUtils.registerCommands(commandSettings);
     }
 
     @Listener

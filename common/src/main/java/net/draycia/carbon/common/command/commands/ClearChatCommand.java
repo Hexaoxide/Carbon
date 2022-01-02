@@ -24,13 +24,24 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
-public class ClearChatCommand {
+@DefaultQualifier(NonNull.class)
+public class ClearChatCommand extends CarbonCommand {
+
+    final CarbonChat carbonChat;
+    final CommandManager<Commander> commandManager;
+    final ConfigFactory configFactory;
+    final CarbonMessageService messageService;
 
     @Inject
     public ClearChatCommand(
@@ -39,17 +50,35 @@ public class ClearChatCommand {
         final ConfigFactory configFactory,
         final CarbonMessageService messageService
     ) {
-        final var command = commandManager.commandBuilder("clearchat", "chatclear", "cc")
+        this.carbonChat = carbonChat;
+        this.commandManager = commandManager;
+        this.configFactory = configFactory;
+        this.messageService = messageService;
+    }
+
+    @Override
+    protected CommandSettings _commandSettings() {
+        return new CommandSettings("clearchat", "chatclear", "cc");
+    }
+
+    @Override
+    public Key key() {
+        return Key.key("carbon", "clearchat");
+    }
+
+    @Override
+    public void init() {
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.clearchat.clear")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, messageService.commandClearChatDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandClearChatDescription().component())
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?
-                for (int i = 0; i < configFactory.primaryConfig().clearChatSettings().iterations(); i++) {
-                    for (final var player : carbonChat.server().players()) {
+                for (int i = 0; i < this.configFactory.primaryConfig().clearChatSettings().iterations(); i++) {
+                    for (final var player : this.carbonChat.server().players()) {
                         if (!player.hasPermission("carbon.clearchat.exempt")) {
-                            player.sendMessage(configFactory.primaryConfig().clearChatSettings().message());
+                            player.sendMessage(this.configFactory.primaryConfig().clearChatSettings().message());
                         }
                     }
                 }
@@ -65,12 +94,12 @@ public class ClearChatCommand {
                     username = "Console";
                 }
 
-                carbonChat.server().sendMessage(configFactory.primaryConfig().clearChatSettings()
+                this.carbonChat.server().sendMessage(this.configFactory.primaryConfig().clearChatSettings()
                     .broadcast(senderName, username));
             })
             .build();
 
-        commandManager.command(command);
+        this.commandManager.command(command);
     }
 
 }

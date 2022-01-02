@@ -111,7 +111,10 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         ListenerUtils.registerCommonListeners(this.injector);
 
         // Commands
-        CloudUtils.registerCommands(this.injector);
+        // This is a bit awkward looking
+        CloudUtils.loadCommands(this.injector);
+        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
+        CloudUtils.registerCommands(commandSettings);
 
         // Player data saving
         final long saveDelay = 5 * 60 * 20;
