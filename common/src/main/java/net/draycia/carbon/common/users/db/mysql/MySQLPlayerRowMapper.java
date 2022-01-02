@@ -31,7 +31,7 @@ import org.intellij.lang.annotations.Subst;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
-public class CarbonPlayerCommonRowMapper implements RowMapper<CarbonPlayerCommon> {
+public class MySQLPlayerRowMapper implements RowMapper<CarbonPlayerCommon> {
 
     @Override
     public CarbonPlayerCommon map(final ResultSet rs, final StatementContext ctx) throws SQLException {
