@@ -33,6 +33,9 @@ dependencyResolutionManagement {
     maven("https://jitpack.io") {
       content { includeGroupByRegex("com\\.github\\..*") }
     }
+    // EssentialsDiscord
+    //maven("https://repo.essentialsx.net/releases/")
+    maven("https://repo.essentialsx.net/snapshots/")
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }

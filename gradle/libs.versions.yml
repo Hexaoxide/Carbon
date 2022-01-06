@@ -36,6 +36,7 @@ versions:
   fabricLoader: 0.12.12
   adventurePlatformFabric: 5.0.0
   luckPermsApi: 5.3
+  essentialsx: 2.19.1-SNAPSHOT
 
 dependencies:
   adventureBom:
@@ -211,5 +212,10 @@ dependencies:
     group: net.luckperms
     name: api
     version: { ref: luckPermsApi }
+
+  essentialsXDiscord:
+    group: net.essentialsx
+    name: EssentialsXDiscord
+    version: { ref: essentialsx }
 
 bundles:
