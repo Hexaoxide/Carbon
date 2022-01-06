@@ -113,8 +113,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     List<String> commandAliases();
 
     /**
-     * The base permission players must have in order to use the channel.
-     *
+     * The base permission players must have in order to use the channel.<br>
      * Null return means players do not need any permission.
      *
      * @return the permission required to use the channel, or null
