@@ -10,7 +10,7 @@ plugins:
   xyz.jpenilla.run-paper: 1.0.6
 
 versions:
-  indra: 2.0.6
+  indra: 2.1.0-SNAPSHOT
   licenser: 0.6.1
   shadow: 7.1.1
   adventure: 4.9.3
