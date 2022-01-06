@@ -280,14 +280,14 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
 
-        if (channel instanceof ConfigChatChannel chatChannel) {
-            builder = builder.permission(chatChannel.permission());
+        if (channel.permission() != null) {
+            builder = builder.permission(channel.permission());
 
             // Add to LuckPerms permission suggestions... lol
             this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
-                checker.test(chatChannel.permission());
-                checker.test(chatChannel.permission() + ".see");
-                checker.test(chatChannel.permission() + ".speak");
+                checker.test(channel.permission());
+                checker.test(channel.permission() + ".see");
+                checker.test(channel.permission() + ".speak");
             });
         }
 

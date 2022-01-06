@@ -46,6 +46,7 @@ import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -211,11 +212,8 @@ public final class ConfigChatChannel implements ChatChannel {
         return requireNonNull(this.messageService, "Channel message service must not be null!");
     }
 
-    public String permission() {
-        if (this.permission == null) {
-            return "carbon.channel.basic";
-        }
-
+    @Override
+    public @MonotonicNonNull String permission() {
         return this.permission;
     }
 
