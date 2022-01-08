@@ -46,6 +46,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.internal.database.postgresql.PostgreSQLDatabaseType;
+import org.flywaydb.core.internal.plugin.PluginRegister;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
@@ -62,17 +64,16 @@ public final class PostgreSQLUserManager implements UserManager<CarbonPlayerComm
     private final Jdbi jdbi;
 
     private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
-    private final QueriesLocator locator = new QueriesLocator(DBType.MYSQL);
+    private final QueriesLocator locator = new QueriesLocator(DBType.POSTGRESQL);
 
     private PostgreSQLUserManager(final Jdbi jdbi) {
         this.jdbi = jdbi;
     }
 
-    public static PostgreSQLUserManager manager(
-        final DatabaseSettings databaseSettings
-    ) {
+    public static PostgreSQLUserManager manager(final DatabaseSettings databaseSettings) {
         try {
             Class.forName("org.postgresql.Driver");
+            PluginRegister.REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
         } catch (final Exception exception) {
             exception.printStackTrace();
         }
@@ -95,7 +96,6 @@ public final class PostgreSQLUserManager implements UserManager<CarbonPlayerComm
             .migrate();
 
         final Jdbi jdbi = Jdbi.create(dataSource)
-            .registerArrayType(UUID.class, "uuid")
             .registerArgument(new ComponentArgumentFactory())
             .registerArgument(new KeyArgumentFactory())
             .registerRowMapper(new PostgreSQLPlayerRowMapper())
@@ -121,12 +121,10 @@ public final class PostgreSQLUserManager implements UserManager<CarbonPlayerComm
                         .mapTo(CarbonPlayerCommon.class)
                         .first();
 
-                    if (carbonPlayerCommon != null) {
-                        handle.createQuery(this.locator.query("select-ignores"))
-                            .bind("id", uuid)
-                            .mapTo(UUID.class)
-                            .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
-                    }
+                    handle.createQuery(this.locator.query("select-ignores"))
+                        .bind("id", uuid)
+                        .mapTo(UUID.class)
+                        .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
 
                     return new ComponentPlayerResult<>(carbonPlayerCommon, empty());
                 } catch (final IllegalStateException exception) {
