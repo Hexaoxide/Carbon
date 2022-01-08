@@ -66,11 +66,16 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.units.qual.N;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
+import org.spongepowered.configurate.transformation.TransformAction;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.text.Component.empty;
@@ -124,6 +129,48 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
             this.reloadRegisteredConfigChannels();
         });
+    }
+
+    public static ConfigurationTransformation.Versioned versioned() {
+        return ConfigurationTransformation.versionedBuilder()
+            .addVersion(0, initialTransform())
+            .build();
+    }
+
+    private static ConfigurationTransformation initialTransform() {
+        return ConfigurationTransformation.builder()
+            .addAction(NodePath.path(), (path, value) -> {
+                value.node("radius").set(-1);
+
+                return null;
+            })
+            .build();
+    }
+
+    // https://github.com/SpongePowered/Configurate/blob/1ec74f6474237585aee858b636d9761d237839d5/examples/src/main/java/org/spongepowered/configurate/examples/Transformations.java#L107
+    /**
+     * Apply the transformations to a node.
+     *
+     * <p>This method also prints information about the version update that
+     * occurred</p>
+     *
+     * @param node the node to transform
+     * @param <N> node type
+     * @return provided node, after transformation
+     */
+    public static <N extends ConfigurationNode> N updateNode(final N node) throws ConfigurateException {
+        if (!node.virtual()) { // we only want to migrate existing data
+            final ConfigurationTransformation.Versioned trans = versioned();
+            final int startVersion = trans.version(node);
+            trans.apply(node);
+            final int endVersion = trans.version(node);
+
+            if (startVersion != endVersion) { // we might not have made any changes
+                System.out.println("Updated config schema from " + startVersion + " to " + endVersion);
+            }
+        }
+
+        return node;
     }
 
     public void reloadRegisteredConfigChannels() {
@@ -211,7 +258,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile);
 
         try {
-            return MAPPER.load(loader.load());
+            final var loaded = updateNode(loader.load());
+            loader.save(loaded);
+            return MAPPER.load(loaded);
         } catch (final ConfigurateException exception) {
             exception.printStackTrace();
         }
