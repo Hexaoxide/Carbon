@@ -95,6 +95,10 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private transient @Nullable ConfigChannelMessages carbonMessages = null;
 
+    private int radius = -1;
+
+    private transient @Nullable ConfigChannelMessages messageService = null;
+
     @Override
     public @Nullable String quickPrefix() {
         if (this.quickPrefix == null || this.quickPrefix.isBlank()) {
