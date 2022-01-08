@@ -90,6 +90,8 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private @Nullable List<String> commandAliases = Collections.emptyList();
 
+    private int radius = -1;
+
     private transient @Nullable ConfigChannelMessageService messageService = null;
 
     @Override
