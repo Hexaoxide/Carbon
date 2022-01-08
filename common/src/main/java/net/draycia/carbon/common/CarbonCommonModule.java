@@ -41,7 +41,8 @@ import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.JSONUserManager;
+import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
+import net.draycia.carbon.common.users.json.JSONUserManager;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -49,6 +50,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -60,22 +62,11 @@ public final class CarbonCommonModule extends AbstractModule {
         final ConfigFactory configFactory,
         final Injector injector
     ) {
-        switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            case MYSQL -> {
-                final UserManager<CarbonPlayerCommon> userManager = MySQLUserManager.manager(
-                    configFactory.primaryConfig().databaseSettings());
-
-                if (userManager == null) {
-                    throw new IllegalStateException("Failure connecting to database.");
-                }
-
-                return userManager;
-            }
-            case PSQL -> throw new UnsupportedOperationException("PostgreSQL is not supported yet.");
-            default -> {
-                return injector.getInstance(JSONUserManager.class);
-            }
-        }
+        return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
+            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            default -> injector.getInstance(JSONUserManager.class);
+        };
     }
 
     @Provides
