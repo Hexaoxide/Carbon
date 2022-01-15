@@ -42,6 +42,7 @@ import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
@@ -119,6 +120,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         // Listeners
         ListenerUtils.registerCommonListeners(this.injector);
+        this.injector.getInstance(RadiusListener.class);
 
         // Commands
         // This is a bit awkward looking

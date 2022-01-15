@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -82,6 +83,44 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     @Override
     public CarbonPlayerCommon carbonPlayerCommon() {
         return this.carbonPlayerCommon;
+    }
+
+    @Override
+    public double distanceSquaredFrom(final CarbonPlayer other) {
+        if (this.player().isEmpty()) {
+            return -1;
+        }
+
+        final @Nullable ServerPlayer player = this.player().orElse(null);
+        final @Nullable ServerPlayer otherPlayer = this.carbonChatFabric.minecraftServer()
+            .getPlayerList().getPlayer(other.uuid());
+
+        if (player == null || otherPlayer == null) {
+            return -1;
+        }
+
+        final double deltaX = player.position().x() - otherPlayer.position().x();
+        final double deltaY = player.position().y() - otherPlayer.position().y();
+        final double deltaZ = player.position().z() - otherPlayer.position().z();
+
+        return (deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ);
+    }
+
+    @Override
+    public boolean sameWorldAs(final CarbonPlayer other) {
+        if (this.player().isEmpty()) {
+            return false;
+        }
+
+        final Optional<ServerPlayer> player = this.player();
+        final @Nullable ServerPlayer otherPlayer = this.carbonChatFabric.minecraftServer()
+            .getPlayerList().getPlayer(other.uuid());
+
+        if (player.isEmpty() || otherPlayer == null) {
+            return false;
+        }
+
+        return player.get().getLevel().equals(otherPlayer.getLevel());
     }
 
     @Override
