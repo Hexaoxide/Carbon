@@ -127,7 +127,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * Return of '-1' means there is no radius.
      *
      * @return the channel radius
-     * @since 2.0.8
+     * @since 2.1.0
      */
     double radius();
 
