@@ -62,7 +62,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @param other the other player
      * @return the distance from the other player, or -1
-     * @since 2.0.8
+     * @since 2.1.0
      */
     double distanceSquaredFrom(final CarbonPlayer other);
 
@@ -71,7 +71,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @param other the other player
      * @return if both players are in the same world/server
-     * @since 2.0.8
+     * @since 2.1.0
      */
     boolean sameWorldAs(final CarbonPlayer other);
 
