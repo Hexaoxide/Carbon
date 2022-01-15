@@ -122,6 +122,16 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     @MonotonicNonNull String permission();
 
     /**
+     * The distance from the sender players must be to receive chat messages.<br>
+     * Return of '0' means players must be in the same world/server.<br>
+     * Return of '-1' means there is no radius.
+     *
+     * @return the channel radius
+     * @since 2.0.8
+     */
+    double radius();
+
+    /**
      * Represents the result of a channel permission check.
      *
      * @since 2.0.0

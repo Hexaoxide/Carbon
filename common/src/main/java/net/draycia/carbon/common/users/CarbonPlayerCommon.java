@@ -230,6 +230,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
+    public double distanceSquaredFrom(final CarbonPlayer other) {
+        return -1;
+    }
+
+    @Override
+    public boolean sameWorldAs(final CarbonPlayer other) {
+        return false;
+    }
+
+    @Override
     public String username() {
         return this.username;
     }
