@@ -58,6 +58,24 @@ public interface CarbonPlayer extends Audience, Identified {
     }
 
     /**
+     * Returns the distance from the other {@link CarbonPlayer}, or -1 if the players are not in the same world.
+     *
+     * @param other the other player
+     * @return the distance from the other player, or -1
+     * @since 2.0.8
+     */
+    double distanceSquaredFrom(final CarbonPlayer other);
+
+    /**
+     * Returns if both players are in the same world or server.
+     *
+     * @param other the other player
+     * @return if both players are in the same world/server
+     * @since 2.0.8
+     */
+    boolean sameWorldAs(final CarbonPlayer other);
+
+    /**
      * Gets the player's username.
      *
      * @return the player's username

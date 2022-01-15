@@ -23,6 +23,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.Locale;
 import java.util.Optional;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -67,6 +68,27 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
     @Override
     public @Nullable Locale locale() {
         return this.player().map(value -> value.getPlayerSettings().getLocale()).orElse(null);
+    }
+
+    @Override
+    public double distanceSquaredFrom(final CarbonPlayer other) {
+        return -1;
+    }
+
+    @Override
+    public boolean sameWorldAs(final CarbonPlayer other) {
+        final Optional<Player> player = this.player();
+        final Optional<Player> otherPlayer = this.server.getPlayer(other.uuid());
+
+        if (player.isEmpty() || otherPlayer.isEmpty()) {
+            return false;
+        }
+
+        if (player.get().getCurrentServer().isEmpty() || otherPlayer.get().getCurrentServer().isEmpty()) {
+            return false;
+        }
+
+        return player.get().getCurrentServer().get().equals(otherPlayer.get().getCurrentServer().get());
     }
 
     @Override

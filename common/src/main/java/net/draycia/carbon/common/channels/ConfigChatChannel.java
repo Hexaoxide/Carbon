@@ -95,6 +95,11 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private transient @Nullable ConfigChannelMessages carbonMessages = null;
 
+    @Comment("""
+        The distance players must be within to see each other's messages.
+        A value of '0' requires that both players are in the same world.
+        On velocity, '0' requires that both players are in the same server.
+        """)
     private int radius = -1;
 
     private transient @Nullable ConfigChannelMessages messageService = null;
@@ -228,6 +233,11 @@ public final class ConfigChatChannel implements ChatChannel {
     @Override
     public @MonotonicNonNull String permission() {
         return this.permission;
+    }
+
+    @Override
+    public double radius() {
+        return this.radius;
     }
 
 }
