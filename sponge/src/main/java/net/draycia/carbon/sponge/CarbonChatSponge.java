@@ -110,7 +110,7 @@ public final class CarbonChatSponge implements CarbonChat {
         ListenerUtils.registerCommonListeners(this.injector);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.messageService);
 
         // TODO: Register these in a central location, pull from that in this and plugin.yml
         Sponge.serviceProvider().provide(PermissionService.class).ifPresent(permissionService -> {

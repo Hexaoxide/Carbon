@@ -126,7 +126,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.messageService);
 
         this.discoverDiscordHooks();
     }
@@ -174,7 +174,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     @Override
-    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
+    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer() {
         return this.injector.getInstance(BukkitMessageRenderer.class);
     }
 

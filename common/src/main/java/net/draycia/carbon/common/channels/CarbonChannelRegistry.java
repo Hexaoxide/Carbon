@@ -89,36 +89,27 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
     }
 
-    private final ConfigFactory configLoader;
     private final Path configChannelDir;
     private final Injector injector;
     private final Logger logger;
     private final ConfigFactory configFactory;
     private @MonotonicNonNull Key defaultKey;
-    private @MonotonicNonNull ChatChannel basicChannel;
-    private final CarbonMessageService messageService;
     private final CarbonChat carbonChat;
 
     private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
     @Inject
     public CarbonChannelRegistry(
-        final ConfigFactory configLoader,
         @ForCarbon final Path dataDirectory,
         final Injector injector,
         final Logger logger,
         final ConfigFactory configFactory,
-        final CarbonMessageService messageService,
-        final BasicChatChannel basicChannel,
         final CarbonChat carbonChat
     ) {
-        this.configLoader = configLoader;
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
         this.configFactory = configFactory;
-        this.messageService = messageService;
-        this.basicChannel = basicChannel;
         this.carbonChat = carbonChat;
 
         carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
@@ -197,7 +188,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
     }
 
-    public void loadConfigChannels() {
+    public void loadConfigChannels(final CarbonMessageService messageService) {
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
         if (!Files.exists(this.configChannelDir)) {
@@ -205,7 +196,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             this.registerDefaultChannel();
             return;
         } else if (this.isPathEmpty(this.configChannelDir)) {
-            this.register(this.basicChannel.key(), this.basicChannel);
+            final ChatChannel basicChannel = this.injector.getInstance(BasicChatChannel.class);
+
+            this.register(basicChannel.key(), basicChannel);
         }
 
         // otherwise, register all channels found
@@ -228,7 +221,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 }
 
                 if (chatChannel.shouldRegisterCommands()) {
-                    this.registerChannelCommands(chatChannel, commandManager);
+                    this.registerChannelCommands(messageService, chatChannel, commandManager);
                 }
             });
 
@@ -251,7 +244,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile);
+        final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(channelFile);
 
         try {
             final var loaded = updateNode(loader.load());
@@ -266,7 +259,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Override
     public ChatChannel defaultValue() {
-        return Objects.requireNonNullElse(this.get(this.defaultKey), this.basicChannel);
+        return Objects.requireNonNull(this.get(this.defaultKey));
     }
 
     @Override
@@ -291,7 +284,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             final Path configFile = this.configChannelDir.resolve("global.conf");
 
-            final var loader = this.configLoader.configurationLoader(configFile);
+            final var loader = this.configFactory.configurationLoader(configFile);
             final var node = loader.load();
 
             final var configChannel = this.injector.getInstance(ConfigChatChannel.class);
@@ -323,7 +316,11 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         return channel;
     }
 
-    private void registerChannelCommands(final ChatChannel channel, final CommandManager<Commander> commandManager) {
+    private void registerChannelCommands(
+        final CarbonMessageService messageService,
+        final ChatChannel channel,
+        final CommandManager<Commander> commandManager
+    ) {
         var builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
@@ -344,7 +341,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
-                    this.messageService.muteCannotSpeak(sender);
+                    messageService.muteCannotSpeak(sender);
                     return;
                 }
 
@@ -355,7 +352,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                     this.sendMessageInChannelAsPlayer(sender, channel, message);
                 } else {
                     sender.selectedChannel(channel);
-                    this.messageService.changedChannels(sender, channel.key().value());
+                    messageService.changedChannels(sender, channel.key().value());
                 }
             })
             .build();
