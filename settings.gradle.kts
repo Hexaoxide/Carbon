@@ -33,6 +33,9 @@ dependencyResolutionManagement {
     maven("https://jitpack.io") {
       content { includeGroupByRegex("com\\.github\\..*") }
     }
+    // EssentialsDiscord
+    //maven("https://repo.essentialsx.net/releases/")
+    maven("https://repo.essentialsx.net/snapshots/")
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -43,6 +46,7 @@ pluginManagement {
     maven("https://maven.fabricmc.net/")
     maven("https://maven.quiltmc.org/repository/release/")
     maven("https://repo.jpenilla.xyz/snapshots/")
+    maven("https://repo.stellardrift.ca/repository/snapshots/")
   }
   includeBuild("build-logic")
 }

@@ -28,10 +28,15 @@ import cloud.commandframework.exceptions.NoPermissionException;
 import com.google.inject.Injector;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.commands.ClearChatCommand;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
@@ -46,7 +51,10 @@ import net.draycia.carbon.common.command.commands.ReplyCommand;
 import net.draycia.carbon.common.command.commands.UnignoreCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
+import net.draycia.carbon.common.config.CommandConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;
@@ -60,18 +68,53 @@ public final class CloudUtils {
     private static final Component NULL = Component.text("null");
     private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
 
-    public static final List<Class<?>> COMMAND_CLASSES = List.of(ClearChatCommand.class, ContinueCommand.class,
-        DebugCommand.class, HelpCommand.class, IgnoreCommand.class, MuteCommand.class, MuteInfoCommand.class,
-        NicknameCommand.class, ReloadCommand.class, ReplyCommand.class, UnignoreCommand.class, UnmuteCommand.class,
-        WhisperCommand.class);
+    public static final List<Class<? extends CarbonCommand>> COMMAND_CLASSES = List.of(ClearChatCommand.class,
+        ContinueCommand.class, DebugCommand.class, HelpCommand.class, IgnoreCommand.class, MuteCommand.class,
+        MuteInfoCommand.class, NicknameCommand.class, ReloadCommand.class, ReplyCommand.class, UnignoreCommand.class,
+        UnmuteCommand.class, WhisperCommand.class);
+
+    private static final List<CarbonCommand> CONSTRUCTED_COMMANDS = new ArrayList<>();
 
     private CloudUtils() {
 
     }
 
-    public static void registerCommands(final Injector injector) {
+    public static void loadCommands(final Injector injector) {
         for (final var commandClass : COMMAND_CLASSES) {
-            injector.getInstance(commandClass);
+            final CarbonCommand commandInstance = injector.getInstance(commandClass);
+            CONSTRUCTED_COMMANDS.add(commandInstance);
+
+            // TODO: load from command-settings.conf
+        }
+    }
+
+    public static Map<Key, CommandSettings> defaultCommandSettings() {
+        final Map<Key, CommandSettings> settings = new HashMap<>();
+
+        for (final var command : CONSTRUCTED_COMMANDS) {
+            settings.put(command.key(), command.commandSettings());
+        }
+
+        return settings;
+    }
+
+    public static Map<Key, CommandSettings> loadCommandSettings(final Injector injector) {
+        final @Nullable CommandConfig commandConfig = injector.getInstance(ConfigFactory.class).loadCommandSettings();
+
+        if (commandConfig == null) {
+            return CloudUtils.defaultCommandSettings();
+        }
+
+        return commandConfig.settings();
+    }
+
+    public static void registerCommands(final Map<Key, CommandSettings> settings) {
+        for (final var command : CONSTRUCTED_COMMANDS) {
+            command.commandSettings(settings.get(command.key()));
+
+            if (command.commandSettings().enabled()) {
+                command.init();
+            }
         }
     }
 

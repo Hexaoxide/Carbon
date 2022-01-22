@@ -17,15 +17,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.command.argument;
+package net.draycia.carbon.common.command;
 
-import cloud.commandframework.context.CommandContext;
-import java.util.List;
-import java.util.function.BiFunction;
-import net.draycia.carbon.common.command.Commander;
+import java.util.Objects;
+import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface PlayerSuggestions extends BiFunction<CommandContext<Commander>, String, List<String>> {
+public abstract class CarbonCommand {
+
+    private @Nullable CommandSettings commandSettings = null;
+
+    public CommandSettings commandSettings() {
+        return Objects.requireNonNullElseGet(this.commandSettings, this::_commandSettings);
+    }
+
+    public void commandSettings(final @NonNull CommandSettings commandSettings) {
+        this.commandSettings = commandSettings;
+    }
+
+    public abstract void init();
+
+    protected abstract CommandSettings _commandSettings();
+
+    public abstract Key key();
+
 }

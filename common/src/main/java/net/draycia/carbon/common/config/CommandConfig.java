@@ -17,15 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.command.argument;
+package net.draycia.carbon.common.config;
 
-import cloud.commandframework.context.CommandContext;
-import java.util.List;
-import java.util.function.BiFunction;
-import net.draycia.carbon.common.command.Commander;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import java.util.Map;
+import net.draycia.carbon.common.command.CommandSettings;
+import net.draycia.carbon.common.util.CloudUtils;
+import net.kyori.adventure.key.Key;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
-@DefaultQualifier(NonNull.class)
-public interface PlayerSuggestions extends BiFunction<CommandContext<Commander>, String, List<String>> {
+@ConfigSerializable
+@DefaultQualifier(MonotonicNonNull.class)
+public class CommandConfig {
+
+    private Map<Key, CommandSettings> settings = CloudUtils.defaultCommandSettings();
+
+    public CommandConfig() {
+
+    }
+
+    public CommandConfig(final Map<Key, CommandSettings> settings) {
+        this.settings = settings;
+    }
+
+    public Map<Key, CommandSettings> settings() {
+        return this.settings;
+    }
+
 }

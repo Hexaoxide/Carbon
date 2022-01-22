@@ -22,14 +22,16 @@ package net.draycia.carbon.sponge;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
-import cloud.commandframework.sponge.argument.SingleEntitySelectorArgument;
 import cloud.commandframework.sponge.argument.SinglePlayerSelectorArgument;
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
@@ -37,6 +39,9 @@ import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.sponge.command.SpongeCommander;
 import net.draycia.carbon.sponge.command.SpongePlayerCommander;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -80,6 +85,18 @@ public final class CarbonChatSpongeModule extends AbstractModule {
         commandManager.parserMapper().cloudNumberSuggestions(true);
 
         return commandManager;
+    }
+
+    @Provides
+    @Singleton
+    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer(final Injector injector) {
+        return injector.getInstance(SpongeMessageRenderer.class);
+    }
+
+    @Provides
+    @Singleton
+    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> sourcedRenderer(final Injector injector) {
+        return injector.getInstance(SpongeMessageRenderer.class);
     }
 
     @Override

@@ -4,6 +4,7 @@ plugins {
 
 repositories {
   gradlePluginPortal()
+  maven("https://repo.stellardrift.ca/repository/snapshots/")
 }
 
 dependencies {

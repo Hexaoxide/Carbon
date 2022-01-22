@@ -111,10 +111,12 @@ public class CarbonChatVelocity implements CarbonChat {
         ListenerUtils.registerCommonListeners(this.injector);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.messageService);
 
         // Commands
-        CloudUtils.registerCommands(this.injector);
+        CloudUtils.loadCommands(this.injector);
+        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
+        CloudUtils.registerCommands(commandSettings);
     }
 
     @Override

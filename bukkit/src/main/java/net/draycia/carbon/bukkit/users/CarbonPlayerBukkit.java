@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -63,6 +64,38 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     @Override
     public @NotNull Audience audience() {
         return this.player().map(player -> (Audience) player).orElse(Audience.empty());
+    }
+
+    @Override
+    public double distanceSquaredFrom(final CarbonPlayer other) {
+        if (this.player().isEmpty()) {
+            return -1;
+        }
+
+        final @Nullable Player player = this.player().orElse(null);
+        final @Nullable Player otherPlayer = Bukkit.getPlayer(other.uuid());
+
+        if (player == null || otherPlayer == null) {
+            return -1;
+        }
+
+        return player.getLocation().distanceSquared(otherPlayer.getLocation());
+    }
+
+    @Override
+    public boolean sameWorldAs(final CarbonPlayer other) {
+        if (this.player().isEmpty()) {
+            return false;
+        }
+
+        final Optional<Player> player = this.player();
+        final @Nullable Player otherPlayer = Bukkit.getPlayer(other.uuid());
+
+        if (player.isEmpty() || otherPlayer == null) {
+            return false;
+        }
+
+        return player.get().getWorld().equals(otherPlayer.getWorld());
     }
 
     @Override

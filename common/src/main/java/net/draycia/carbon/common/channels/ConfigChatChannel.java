@@ -46,6 +46,7 @@ import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -88,6 +89,13 @@ public final class ConfigChatChannel implements ChatChannel {
     private @Nullable String commandName = null;
 
     private @Nullable List<String> commandAliases = Collections.emptyList();
+
+    @Comment("""
+        The distance players must be within to see each other's messages.
+        A value of '0' requires that both players are in the same world.
+        On velocity, '0' requires that both players are in the same server.
+        """)
+    private int radius = -1;
 
     private transient @Nullable ConfigChannelMessageService messageService = null;
 
@@ -211,12 +219,14 @@ public final class ConfigChatChannel implements ChatChannel {
         return requireNonNull(this.messageService, "Channel message service must not be null!");
     }
 
-    public String permission() {
-        if (this.permission == null) {
-            return "carbon.channel.basic";
-        }
-
+    @Override
+    public @MonotonicNonNull String permission() {
         return this.permission;
+    }
+
+    @Override
+    public double radius() {
+        return this.radius;
     }
 
 }
