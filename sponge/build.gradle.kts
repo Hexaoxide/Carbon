@@ -54,7 +54,7 @@ sponge {
     }
     dependency("luckperms") {
       version(">=5.0.0")
-      optional(false)
+      optional(true)
     }
   }
 }
