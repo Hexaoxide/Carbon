@@ -92,7 +92,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
     }
 
-    private final ConfigFactory configLoader;
     private final Path configChannelDir;
     private final Injector injector;
     private final Logger logger;
@@ -106,7 +105,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Inject
     public CarbonChannelRegistry(
-        final ConfigFactory configLoader,
         @ForCarbon final Path dataDirectory,
         final Injector injector,
         final Logger logger,
@@ -115,7 +113,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final BasicChatChannel basicChannel,
         final CarbonChat carbonChat
     ) {
-        this.configLoader = configLoader;
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
@@ -200,7 +197,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
     }
 
-    public void loadConfigChannels() {
+    public void loadConfigChannels(final CarbonMessages carbonMessages) {
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
         if (!Files.exists(this.configChannelDir)) {
@@ -208,7 +205,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             this.registerDefaultChannel();
             return;
         } else if (this.isPathEmpty(this.configChannelDir)) {
-            this.register(this.basicChannel.key(), this.basicChannel);
+            final ChatChannel basicChannel = this.injector.getInstance(BasicChatChannel.class);
+
+            this.register(basicChannel.key(), basicChannel);
         }
 
         // otherwise, register all channels found
@@ -254,7 +253,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile);
+        final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(channelFile);
 
         try {
             final var loaded = updateNode(loader.load());
@@ -269,7 +268,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Override
     public ChatChannel defaultValue() {
-        return Objects.requireNonNullElse(this.get(this.defaultKey), this.basicChannel);
+        return Objects.requireNonNull(this.get(this.defaultKey));
     }
 
     @Override
@@ -294,7 +293,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             final Path configFile = this.configChannelDir.resolve("global.conf");
 
-            final var loader = this.configLoader.configurationLoader(configFile);
+            final var loader = this.configFactory.configurationLoader(configFile);
             final var node = loader.load();
 
             final var configChannel = this.injector.getInstance(ConfigChatChannel.class);
@@ -326,7 +325,10 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         return channel;
     }
 
-    private void registerChannelCommands(final ChatChannel channel, final CommandManager<Commander> commandManager) {
+    private void registerChannelCommands(
+        final ChatChannel channel,
+        final CommandManager<Commander> commandManager
+    ) {
         var builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
