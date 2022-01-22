@@ -25,18 +25,25 @@ import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
 import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
+import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
@@ -93,6 +100,18 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         }
 
         return commandManager;
+    }
+
+    @Provides
+    @Singleton
+    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer(final Injector injector) {
+        return injector.getInstance(BukkitMessageRenderer.class);
+    }
+
+    @Provides
+    @Singleton
+    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> sourcedRenderer(final Injector injector) {
+        return injector.getInstance(BukkitMessageRenderer.class);
     }
 
     @Override

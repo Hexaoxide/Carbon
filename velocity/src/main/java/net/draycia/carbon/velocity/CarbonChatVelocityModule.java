@@ -24,6 +24,7 @@ import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.velocity.VelocityCommandManager;
 import cloud.commandframework.velocity.arguments.PlayerArgument;
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginContainer;
@@ -32,12 +33,17 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -86,6 +92,18 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         brigadierManager.setNativeNumberSuggestions(false);
 
         return commandManager;
+    }
+
+    @Provides
+    @Singleton
+    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer(final Injector injector) {
+        return injector.getInstance(VelocityMessageRenderer.class);
+    }
+
+    @Provides
+    @Singleton
+    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> sourcedRenderer(final Injector injector) {
+        return injector.getInstance(VelocityMessageRenderer.class);
     }
 
     @Override

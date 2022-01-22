@@ -90,6 +90,13 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private @Nullable List<String> commandAliases = Collections.emptyList();
 
+    @Comment("""
+        The distance players must be within to see each other's messages.
+        A value of '0' requires that both players are in the same world.
+        On velocity, '0' requires that both players are in the same server.
+        """)
+    private int radius = -1;
+
     private transient @Nullable ConfigChannelMessageService messageService = null;
 
     @Override
@@ -215,6 +222,11 @@ public final class ConfigChatChannel implements ChatChannel {
     @Override
     public @MonotonicNonNull String permission() {
         return this.permission;
+    }
+
+    @Override
+    public double radius() {
+        return this.radius;
     }
 
 }

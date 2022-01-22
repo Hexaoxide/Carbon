@@ -21,6 +21,7 @@ package net.draycia.carbon.sponge.users;
 
 import java.util.Locale;
 import java.util.Optional;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -81,6 +82,42 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
     @Override
     public @Nullable Locale locale() {
         return this.player().map(LocaleSource::locale).orElse(null);
+    }
+
+    @Override
+    public double distanceSquaredFrom(final CarbonPlayer other) {
+        if (this.player().isEmpty()) {
+            return -1;
+        }
+
+        final @Nullable ServerPlayer player = this.player().orElse(null);
+        final @Nullable ServerPlayer otherPlayer = Sponge.server().player(other.uuid()).orElse(null);
+
+        if (player == null || otherPlayer == null) {
+            return -1;
+        }
+
+        final double deltaX = player.position().x() - otherPlayer.position().x();
+        final double deltaY = player.position().y() - otherPlayer.position().y();
+        final double deltaZ = player.position().z() - otherPlayer.position().z();
+
+        return (deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ);
+    }
+
+    @Override
+    public boolean sameWorldAs(final CarbonPlayer other) {
+        if (this.player().isEmpty()) {
+            return false;
+        }
+
+        final Optional<ServerPlayer> player = this.player();
+        final Optional<ServerPlayer> otherPlayer = Sponge.server().player(other.uuid());
+
+        if (player.isEmpty() || otherPlayer.isEmpty()) {
+            return false;
+        }
+
+        return player.get().world().equals(otherPlayer.get().world());
     }
 
     @Override
