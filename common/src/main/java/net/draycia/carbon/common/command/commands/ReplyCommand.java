@@ -95,7 +95,7 @@ public class ReplyCommand extends CarbonCommand {
                     return;
                 }
 
-                final ComponentPlayerResult<? extends CarbonPlayer> result = carbonChat.server().userManager().carbonPlayer(replyTarget).join();
+                final ComponentPlayerResult<? extends CarbonPlayer> result = this.carbonChat.server().userManager().carbonPlayer(replyTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (sender.equals(recipient)) {

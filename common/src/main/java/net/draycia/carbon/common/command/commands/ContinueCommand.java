@@ -94,7 +94,7 @@ public class ContinueCommand extends CarbonCommand {
                     return;
                 }
 
-                final ComponentPlayerResult<@NonNull ? extends CarbonPlayer> result = carbonChat.server()
+                final ComponentPlayerResult<? extends CarbonPlayer> result = this.carbonChat.server()
                     .userManager().carbonPlayer(whisperTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
