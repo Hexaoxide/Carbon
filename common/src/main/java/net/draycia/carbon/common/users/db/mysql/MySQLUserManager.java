@@ -197,42 +197,42 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
     }
 
     @Override
-    public int saveMuted(UUID id, boolean muted) {
+    public int saveMuted(final UUID id, final boolean muted) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
     }
 
     @Override
-    public int saveDeafened(UUID id, boolean deafened) {
+    public int saveDeafened(final UUID id, final boolean deafened) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
     }
 
     @Override
-    public int saveSpying(UUID id, boolean spying) {
+    public int saveSpying(final UUID id, final boolean spying) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
     }
 
     @Override
-    public int saveSelectedChannel(UUID id, @Nullable Key selectedChannel) {
+    public int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
     }
 
     @Override
-    public int saveLastWhisperTarget(UUID id, @Nullable UUID lastWhisperTarget) {
+    public int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
     }
 
     @Override
-    public int saveWhisperReplyTarget(UUID id, @Nullable UUID whisperReplyTarget) {
+    public int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
     }
 
     @Override
-    public int addIgnore(UUID id, UUID ignoredPlayer) {
+    public int addIgnore(final UUID id, final UUID ignoredPlayer) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
     }
 
     @Override
-    public int removeIgnore(UUID id, UUID ignoredPlayer) {
+    public int removeIgnore(final UUID id, final UUID ignoredPlayer) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
     }
 

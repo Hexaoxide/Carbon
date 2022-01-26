@@ -30,6 +30,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
@@ -45,7 +46,7 @@ public class ProxiedCachingUserManager implements UserManager<CarbonPlayerCommon
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(UUID uuid) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
 

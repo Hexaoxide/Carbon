@@ -47,7 +47,7 @@ public record FabricPlayerCommander(
     @Override
     public CarbonPlayer carbonPlayer() {
         return requireNonNull(
-            this.carbon.server().player(this.player().getUUID()).join().player(),
+            this.carbon.server().userManager().carbonPlayer(this.player().getUUID()).join().player(),
             "No CarbonPlayer for logged in Player!"
         );
     }

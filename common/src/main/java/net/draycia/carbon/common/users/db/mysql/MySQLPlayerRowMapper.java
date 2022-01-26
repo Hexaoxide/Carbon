@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.intellij.lang.annotations.Subst;
