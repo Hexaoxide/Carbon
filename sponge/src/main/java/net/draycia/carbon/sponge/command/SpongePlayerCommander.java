@@ -40,7 +40,7 @@ public record SpongePlayerCommander(
 
     @Override
     public CarbonPlayer carbonPlayer() {
-        return requireNonNull(this.carbon.server().player(this.player.uniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
+        return requireNonNull(this.carbon.server().userManager().carbonPlayer(this.player.uniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
     }
 
     @Override
