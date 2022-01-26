@@ -20,8 +20,6 @@
 package net.draycia.carbon.common.users.db;
 
 import java.sql.Types;
-import java.util.UUID;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;

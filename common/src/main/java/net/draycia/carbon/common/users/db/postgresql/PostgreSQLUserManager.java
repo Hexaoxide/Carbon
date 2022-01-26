@@ -36,10 +36,10 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
-import net.draycia.carbon.common.users.db.DBType;
-import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
+import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -194,42 +194,42 @@ public final class PostgreSQLUserManager implements UserManager<CarbonPlayerComm
     }
 
     @Override
-    public int saveMuted(UUID id, boolean muted) {
+    public int saveMuted(final UUID id, final boolean muted) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
     }
 
     @Override
-    public int saveDeafened(UUID id, boolean deafened) {
+    public int saveDeafened(final UUID id, final boolean deafened) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
     }
 
     @Override
-    public int saveSpying(UUID id, boolean spying) {
+    public int saveSpying(final UUID id, final boolean spying) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
     }
 
     @Override
-    public int saveSelectedChannel(UUID id, @Nullable Key selectedChannel) {
+    public int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
     }
 
     @Override
-    public int saveLastWhisperTarget(UUID id, @Nullable UUID lastWhisperTarget) {
+    public int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
     }
 
     @Override
-    public int saveWhisperReplyTarget(UUID id, @Nullable UUID whisperReplyTarget) {
+    public int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
     }
 
     @Override
-    public int addIgnore(UUID id, UUID ignoredPlayer) {
+    public int addIgnore(final UUID id, final UUID ignoredPlayer) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
     }
 
     @Override
-    public int removeIgnore(UUID id, UUID ignoredPlayer) {
+    public int removeIgnore(final UUID id, final UUID ignoredPlayer) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
     }
 

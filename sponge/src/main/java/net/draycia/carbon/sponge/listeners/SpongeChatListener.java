@@ -77,7 +77,7 @@ public final class SpongeChatListener {
     @Listener
     @IsCancelled(Tristate.FALSE)
     public void onPlayerChat(final PlayerChatEvent event, final @First Player source) {
-        final var playerResult = this.carbonChat.server().player(source.uniqueId()).join();
+        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(source.uniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {
@@ -158,7 +158,7 @@ public final class SpongeChatListener {
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (recipient instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
+                            final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.uniqueId()).join();
 
                             renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
                         } else {
@@ -177,7 +177,7 @@ public final class SpongeChatListener {
 
                 for (final var renderer : chatEvent.renderers()) {
                     if (target instanceof ServerPlayer serverPlayer) {
-                        final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(serverPlayer).join();
+                        final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(serverPlayer.uniqueId()).join();
                         component = renderer.render(playerResult.player(), targetPlayer.player(), component, msg).component();
                     } else {
                         component = renderer.render(playerResult.player(), target, component, msg).component();

@@ -22,7 +22,6 @@ package net.draycia.carbon.common.users.db;
 import com.google.common.base.Splitter;
 import java.util.List;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jdbi.v3.core.locator.ClasspathSqlLocator;
 import org.jdbi.v3.core.locator.internal.ClasspathBuilder;
@@ -46,7 +45,7 @@ public final class QueriesLocator {
     }
 
     private String locate(final String name) {
-        return locator.getResource(
+        return this.locator.getResource(
             CarbonChat.class.getClassLoader(),
             new ClasspathBuilder()
                 .appendDotPath(name)

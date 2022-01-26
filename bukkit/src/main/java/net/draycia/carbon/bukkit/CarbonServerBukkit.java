@@ -34,6 +34,7 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -66,7 +67,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
         final var players = new ArrayList<CarbonPlayer>();
 
         for (final var player : this.chatBukkitEntry.getServer().getOnlinePlayers()) {
-            final @Nullable ComponentPlayerResult<CarbonPlayerBukkit> result = this.userManager.carbonPlayer(player.getUniqueId()).join();
+            final ComponentPlayerResult<CarbonPlayerBukkit> result = this.userManager.carbonPlayer(player.getUniqueId()).join();
 
             if (result.player() != null) {
                 players.add(result.player());
@@ -84,13 +85,29 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
         // TODO: user cache?
-        return CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(username).getUniqueId());
+        return CompletableFuture.supplyAsync(() -> {
+            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
+
+            if (!offlinePlayer.hasPlayedBefore()) {
+                return null;
+            }
+
+            return offlinePlayer.getUniqueId();
+        });
     }
 
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
         // TODO: user cache?
-        return CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(uuid).getName());
+        return CompletableFuture.supplyAsync(() -> {
+            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+
+            if (!offlinePlayer.hasPlayedBefore()) {
+                return null;
+            }
+
+            return offlinePlayer.getName();
+        });
     }
 
 }
