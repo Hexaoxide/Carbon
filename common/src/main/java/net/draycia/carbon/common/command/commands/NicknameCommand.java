@@ -115,7 +115,7 @@ public class NicknameCommand extends CarbonCommand {
 
                 // Setting nickname
                 if (handler.flags().contains("nickname")) {
-                    final var nickname = MiniMessage.miniMessage().parse(handler.flags().get("nickname"));
+                    final var nickname = MiniMessage.miniMessage().deserialize(handler.flags().get("nickname"));
 
                     final @MonotonicNonNull CarbonPlayer target = handler.flags().get("player");
 

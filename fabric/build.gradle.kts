@@ -44,18 +44,9 @@ carbonShadowPlatform {
 }
 
 tasks {
-  jar {
-    archiveClassifier.set("dev")
-  }
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
-    archiveClassifier.set("dev-all")
-
     relocateDependency("cloud.commandframework.minecraft.extras")
-  }
-  remapJar {
-    archiveClassifier.set(null as String?)
-    input.set(shadowJar.flatMap { it.archiveFile })
   }
   processResources {
     val props = mapOf(

@@ -53,7 +53,7 @@ pluginManagement {
 
 plugins {
   id("ca.stellardrift.polyglot-version-catalogs") version "5.0.0"
-  id("quiet-fabric-loom") version "0.10-SNAPSHOT"
+  id("quiet-fabric-loom") version "0.11-SNAPSHOT"
 }
 
 rootProject.name = "CarbonChat"
