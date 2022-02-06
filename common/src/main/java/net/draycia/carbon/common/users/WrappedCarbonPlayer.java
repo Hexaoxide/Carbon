@@ -55,8 +55,18 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public boolean ignoring(final CarbonPlayer sender) {
-        return this.carbonPlayerCommon().ignoring(sender);
+    public boolean ignoring(final UUID player) {
+        return this.carbonPlayerCommon().ignoring(player);
+    }
+
+    @Override
+    public boolean ignoring(final CarbonPlayer player) {
+        return this.carbonPlayerCommon().ignoring(player);
+    }
+
+    @Override
+    public void ignoring(final UUID player, final boolean nowIgnoring) {
+        this.carbonPlayerCommon().ignoring(player, nowIgnoring);
     }
 
     @Override
@@ -217,6 +227,11 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     @Override
     public boolean speechPermitted(final String message) {
         return this.carbonPlayerCommon().speechPermitted(message);
+    }
+
+    @Override
+    public boolean vanished() {
+        return this.carbonPlayerCommon().vanished();
     }
 
 }

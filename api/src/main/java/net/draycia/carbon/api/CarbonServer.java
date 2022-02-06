@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
+import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -54,22 +54,12 @@ public interface CarbonServer extends Audience {
     List<? extends CarbonPlayer> players();
 
     /**
-     * Obtains a {@link CarbonPlayer} instance for the specified uuid.
+     * Manager used to load/obtain and save {@link CarbonPlayer CarbonPlayers}.
      *
-     * @param uuid the player's uuid
-     * @return the result
-     * @since 2.0.0
+     * @return the user manager
+     * @since 2.1.0
      */
-    CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final UUID uuid);
-
-    /**
-     * Obtains a {@link CarbonPlayer} instance for the specified username.
-     *
-     * @param username the player's username
-     * @return the result
-     * @since 2.0.0
-     */
-    CompletableFuture<ComponentPlayerResult<CarbonPlayer>> player(final String username);
+    UserManager<? extends CarbonPlayer> userManager();
 
     /**
      * Obtains the desired user's UUID.

@@ -47,7 +47,7 @@ public class SpongePlayerJoinListener {
 
     @Listener
     public void onPlayerQuit(final ServerSideConnectionEvent.Disconnect event) {
-        this.carbonChat.server().player(event.player().uniqueId()).thenAccept(result -> {
+        this.carbonChat.server().userManager().carbonPlayer(event.player().uniqueId()).thenAccept(result -> {
             if (result.player() == null) {
                 return;
             }

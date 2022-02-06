@@ -189,13 +189,31 @@ public interface CarbonPlayer extends Audience, Identified {
     void muted(boolean muted);
 
     /**
-     * Checks if the sender is being ignored by this player.
+     * Checks if the other player is being ignored by this player.
      *
-     * @param sender the potential source of a message
+     * @param player the potential source of a message
+     * @return if this player is ignoring the sender
+     * @since 2.0.5
+     */
+    boolean ignoring(final UUID player);
+
+    /**
+     * Checks if the other player is being ignored by this player.
+     *
+     * @param player the potential source of a message
      * @return if this player is ignoring the sender
      * @since 2.0.0
      */
-    boolean ignoring(final CarbonPlayer sender);
+    boolean ignoring(final CarbonPlayer player);
+
+    /**
+     * Adds the player to and removes the player from the ignore list.
+     *
+     * @param player the player to be added/removed
+     * @param nowIgnoring if the player should be ignored
+     * @since 2.0.0
+     */
+    void ignoring(final UUID player, final boolean nowIgnoring);
 
     /**
      * Adds the player to and removes the player from the ignore list.

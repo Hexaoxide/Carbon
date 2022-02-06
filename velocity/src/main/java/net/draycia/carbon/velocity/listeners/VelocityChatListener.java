@@ -28,6 +28,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
@@ -68,7 +69,7 @@ public final class VelocityChatListener {
 
         event.setResult(PlayerChatEvent.ChatResult.denied());
 
-        final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final ComponentPlayerResult<? extends CarbonPlayer> playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {

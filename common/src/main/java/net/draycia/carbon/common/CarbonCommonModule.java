@@ -41,7 +41,9 @@ import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.JSONUserManager;
+import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
+import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
+import net.draycia.carbon.common.users.json.JSONUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -60,11 +62,11 @@ public final class CarbonCommonModule extends AbstractModule {
         final ConfigFactory configFactory,
         final Injector injector
     ) {
-        switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            default -> {
-                return injector.getInstance(JSONUserManager.class);
-            }
-        }
+        return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
+            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            default -> injector.getInstance(JSONUserManager.class);
+        };
     }
 
     @Provides
