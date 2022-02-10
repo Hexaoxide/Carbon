@@ -142,8 +142,9 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
         }
 
         /**
-         * Returns a result denoting that the player is denied for the action.
+         * Returns a result denoting that the action is denied for the player.
          *
+         * @param reason the reason the action was denied
          * @return that the action is denied
          * @since 2.0.0
          */
@@ -151,6 +152,14 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
             return new ChannelPermissionResult(false, reason);
         }
 
+        /**
+         * If True is supplied, returns a result denoting that the action was allowed. Otherwise, a result denoting that the action was denied.
+         *
+         * @param reason the reason, if any, that the action was allowed
+         * @param supplier the supplier to check
+         * @return an allowed result if true, otherwise a denied result
+         * @since 2.0.0
+         */
         public static ChannelPermissionResult allowedIf(
             final Component reason,
             final Supplier<Boolean> supplier
