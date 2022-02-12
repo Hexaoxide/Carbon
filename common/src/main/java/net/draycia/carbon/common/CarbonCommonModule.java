@@ -36,6 +36,7 @@ import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.ReceiverResolver;
 import net.draycia.carbon.common.messages.StandardPlaceholderResolverStrategyButDifferent;
+import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
@@ -74,6 +75,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
         final StringPlaceholderResolver<Audience> stringPlaceholderResolver,
         final KeyPlaceholderResolver<Audience> keyPlaceholderResolver,
+        final BooleanPlaceholderResolver<Audience> booleanPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageSender carbonMessageSender
     ) throws UnscannableMethodException {
@@ -87,6 +89,7 @@ public final class CarbonCommonModule extends AbstractModule {
             .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
             .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
+            .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
             .create(this.getClass().getClassLoader());
     }
 

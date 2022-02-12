@@ -100,8 +100,16 @@ public class UnmuteCommand extends CarbonCommand {
 
                 this.messageService.unmuteAlertRecipient(target);
 
+                if (!sender.equals(target)) {
+                    this.messageService.unmuteAlertPlayers(sender, CarbonPlayer.renderName(target));
+                }
+
                 for (final var player : this.carbonChat.server().players()) {
-                    if (!player.equals(sender) && !player.hasPermission("carbon.mute.notify")) {
+                    if (player.equals(target) || player.equals(sender)) {
+                        continue;
+                    }
+
+                    if (!player.hasPermission("carbon.mute.notify")) {
                         continue;
                     }
 

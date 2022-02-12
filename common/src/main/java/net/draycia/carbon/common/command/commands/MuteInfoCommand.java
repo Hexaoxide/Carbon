@@ -102,8 +102,6 @@ public class MuteInfoCommand extends CarbonCommand {
                     } else {
                         this.messageService.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
                     }
-
-                    return;
                 } else {
                     if (sender.equals(target)) {
                         this.messageService.muteInfoSelfMuted(sender);
@@ -111,8 +109,6 @@ public class MuteInfoCommand extends CarbonCommand {
                         this.messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
                     }
                 }
-
-                this.messageService.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
             })
             .build();
 
