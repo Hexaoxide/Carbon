@@ -29,11 +29,14 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.CloudUtils;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -41,25 +44,47 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class ReplyCommand {
+public class ReplyCommand extends CarbonCommand {
+
+    final CarbonChat carbonChat;
+    final CommandManager<Commander> commandManager;
+    final CarbonMessageService messageService;
 
     @Inject
     public ReplyCommand(
+        final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
         final CarbonChat carbonChat
     ) {
-        final var command = commandManager.commandBuilder("reply", "r")
+        this.carbonChat = carbonChat;
+        this.commandManager = commandManager;
+        this.messageService = messageService;
+    }
+
+    @Override
+    protected CommandSettings _commandSettings() {
+        return new CommandSettings("reply", "r");
+    }
+
+    @Override
+    public Key key() {
+        return Key.key("carbon", "reply");
+    }
+
+    @Override
+    public void init() {
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(carbonMessages.commandReplyArgumentMessage().component()))
+                RichDescription.of(this.carbonMessages.commandReplyArgumentMessage().component()))
             .permission("carbon.whisper.reply")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandReplyDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReplyDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
-                    carbonMessages.muteCannotSpeak(sender);
+                    this.carbonMessages.muteCannotSpeak(sender);
                     return;
                 }
 
@@ -67,45 +92,42 @@ public class ReplyCommand {
                 final @Nullable UUID replyTarget = sender.whisperReplyTarget();
 
                 if (replyTarget == null) {
-                    carbonMessages.replyTargetNotSet(sender, CarbonPlayer.renderName(sender));
+                    this.carbonMessages.replyTargetNotSet(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
-                final ComponentPlayerResult<? extends CarbonPlayer> result = carbonChat.server().userManager().carbonPlayer(replyTarget).join();
+                final ComponentPlayerResult<? extends CarbonPlayer> result = this.carbonChat.server().userManager().carbonPlayer(replyTarget).join();
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (sender.equals(recipient)) {
-                    carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                    this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
-                if (!recipient.online()
-                    || (!sender.awareOf(recipient)
-                    && !sender.hasPermission("carbon.whisper.vanished"))
-                ) {
+                if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
                     final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, carbonMessages);
 
-                    carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
+                    this.carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;
                 }
 
                 if (sender.ignoring(recipient)) {
-                    carbonMessages.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
+                    this.carbonMessages.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
                     return;
                 }
 
                 if (recipient.ignoring(sender)) {
-                    carbonMessages.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
+                    this.carbonMessages.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
                     return;
                 }
 
                 final Component senderName = CarbonPlayer.renderName(sender);
                 final Component recipientName = CarbonPlayer.renderName(recipient);
 
-                carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
-                carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
-                carbonMessages.whisperConsoleLog(carbonChat.server().console(), senderName, recipientName, message);
+                this.carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
+                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
+                this.carbonMessages.whisperConsoleLog(carbonChat.server().console(), senderName, recipientName, message);
 
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());
@@ -113,7 +135,7 @@ public class ReplyCommand {
             })
             .build();
 
-        commandManager.command(command);
+        this.commandManager.command(command);
     }
 
 }

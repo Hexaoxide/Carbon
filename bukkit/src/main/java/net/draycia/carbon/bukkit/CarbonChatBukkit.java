@@ -37,10 +37,13 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
+import net.draycia.carbon.bukkit.listeners.DiscordMessageListener;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.listeners.RadiusListener;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
@@ -118,9 +121,13 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         // Listeners
         ListenerUtils.registerCommonListeners(this.injector);
+        this.injector.getInstance(RadiusListener.class);
 
         // Commands
-        CloudUtils.registerCommands(this.injector);
+        // This is a bit awkward looking
+        CloudUtils.loadCommands(this.injector);
+        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
+        CloudUtils.registerCommands(commandSettings);
 
         // Player data saving
         final long saveDelay = 5 * 60 * 20;
@@ -129,7 +136,17 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.messageService);
+
+        this.discoverDiscordHooks();
+    }
+
+    private void discoverDiscordHooks() {
+        if (Bukkit.getPluginManager().isPluginEnabled("EssentialsDiscord")) {
+            final DiscordMessageListener discordMessageListener = this.injector.getInstance(DiscordMessageListener.class);
+            Bukkit.getPluginManager().registerEvents(discordMessageListener, this);
+            discordMessageListener.init();
+        }
     }
 
     @Override
@@ -181,7 +198,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     @Override
-    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
+    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer() {
         return this.injector.getInstance(BukkitMessageRenderer.class);
     }
 

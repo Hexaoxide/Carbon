@@ -26,9 +26,9 @@ import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
@@ -41,13 +41,15 @@ import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.JSONUserManager;
-import net.draycia.carbon.common.users.db.MariaDBUserManager;
+import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
+import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
+import net.draycia.carbon.common.users.json.JSONUserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
+import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -60,22 +62,11 @@ public final class CarbonCommonModule extends AbstractModule {
         final ConfigFactory configFactory,
         final Injector injector
     ) {
-        switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            case MYSQL -> {
-                final UserManager<CarbonPlayerCommon> userManager = MariaDBUserManager.manager(
-                    configFactory.primaryConfig().databaseSettings());
-
-                if (userManager == null) {
-                    throw new IllegalStateException("Failure connecting to database.");
-                }
-
-                return userManager;
-            }
-            case PSQL -> throw new UnsupportedOperationException("PostgreSQL is not supported yet.");
-            default -> {
-                return injector.getInstance(JSONUserManager.class);
-            }
-        }
+        return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
+            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            default -> injector.getInstance(JSONUserManager.class);
+        };
     }
 
     @Provides
@@ -87,12 +78,13 @@ public final class CarbonCommonModule extends AbstractModule {
         final StringPlaceholderResolver<Audience> stringPlaceholderResolver,
         final KeyPlaceholderResolver<Audience> keyPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
-        final CarbonMessageSender carbonMessageSender
+        final CarbonMessageSender carbonMessageSender,
+        final IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer
     ) throws UnscannableMethodException {
         return Moonshine.<CarbonMessages, Audience>builder(new TypeToken<>() {})
             .receiverLocatorResolver(receiverResolver, 0)
             .sourced(carbonMessageSource)
-            .rendered(CarbonChatProvider.carbonChat().messageRenderer())
+            .rendered(messageRenderer)
             .sent(carbonMessageSender)
             .resolvingWithStrategy(new StandardPlaceholderResolverStrategyButDifferent<>())
             .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)

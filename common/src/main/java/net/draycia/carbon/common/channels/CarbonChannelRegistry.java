@@ -68,9 +68,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.text.Component.empty;
@@ -89,7 +92,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
     }
 
-    private final ConfigFactory configLoader;
     private final Path configChannelDir;
     private final Injector injector;
     private final Logger logger;
@@ -103,7 +105,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Inject
     public CarbonChannelRegistry(
-        final ConfigFactory configLoader,
         @ForCarbon final Path dataDirectory,
         final Injector injector,
         final Logger logger,
@@ -112,7 +113,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final BasicChatChannel basicChannel,
         final CarbonChat carbonChat
     ) {
-        this.configLoader = configLoader;
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
@@ -124,6 +124,49 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
             this.reloadRegisteredConfigChannels();
         });
+    }
+
+    public static ConfigurationTransformation.Versioned versioned() {
+        return ConfigurationTransformation.versionedBuilder()
+            .addVersion(0, initialTransform())
+            .build();
+    }
+
+    private static ConfigurationTransformation initialTransform() {
+        return ConfigurationTransformation.builder()
+            .addAction(NodePath.path(), (path, value) -> {
+                value.node("radius").set(-1);
+
+                return null;
+            })
+            .build();
+    }
+
+    // https://github.com/SpongePowered/Configurate/blob/1ec74f6474237585aee858b636d9761d237839d5/examples/src/main/java/org/spongepowered/configurate/examples/Transformations.java#L107
+    /**
+     * Apply the transformations to a node.
+     *
+     * <p>This method also prints information about the version update that
+     * occurred</p>
+     *
+     * @param node the node to transform
+     * @param <N> node type
+     * @return provided node, after transformation
+     */
+    public static <N extends ConfigurationNode> N updateNode(final N node) throws ConfigurateException {
+        if (!node.virtual()) { // we only want to migrate existing data
+            final ConfigurationTransformation.Versioned trans = versioned();
+            final int startVersion = trans.version(node);
+            trans.apply(node);
+            final int endVersion = trans.version(node);
+
+            if (startVersion != endVersion) { // we might not have made any changes
+                // TODO: use logger
+                System.out.println("Updated config schema from " + startVersion + " to " + endVersion);
+            }
+        }
+
+        return node;
     }
 
     public void reloadRegisteredConfigChannels() {
@@ -154,7 +197,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
     }
 
-    public void loadConfigChannels() {
+    public void loadConfigChannels(final CarbonMessageService messageService) {
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
         if (!Files.exists(this.configChannelDir)) {
@@ -162,7 +205,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             this.registerDefaultChannel();
             return;
         } else if (this.isPathEmpty(this.configChannelDir)) {
-            this.register(this.basicChannel.key(), this.basicChannel);
+            final ChatChannel basicChannel = this.injector.getInstance(BasicChatChannel.class);
+
+            this.register(basicChannel.key(), basicChannel);
         }
 
         // otherwise, register all channels found
@@ -185,7 +230,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 }
 
                 if (chatChannel.shouldRegisterCommands()) {
-                    this.registerChannelCommands(chatChannel, commandManager);
+                    this.registerChannelCommands(messageService, chatChannel, commandManager);
                 }
             });
 
@@ -208,10 +253,12 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.configLoader.configurationLoader(channelFile);
+        final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(channelFile);
 
         try {
-            return MAPPER.load(loader.load());
+            final var loaded = updateNode(loader.load());
+            loader.save(loaded);
+            return MAPPER.load(loaded);
         } catch (final ConfigurateException exception) {
             exception.printStackTrace();
         }
@@ -221,7 +268,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Override
     public ChatChannel defaultValue() {
-        return Objects.requireNonNullElse(this.get(this.defaultKey), this.basicChannel);
+        return Objects.requireNonNull(this.get(this.defaultKey));
     }
 
     @Override
@@ -246,7 +293,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             final Path configFile = this.configChannelDir.resolve("global.conf");
 
-            final var loader = this.configLoader.configurationLoader(configFile);
+            final var loader = this.configFactory.configurationLoader(configFile);
             final var node = loader.load();
 
             final var configChannel = this.injector.getInstance(ConfigChatChannel.class);
@@ -278,19 +325,23 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         return channel;
     }
 
-    private void registerChannelCommands(final ChatChannel channel, final CommandManager<Commander> commandManager) {
+    private void registerChannelCommands(
+        final CarbonMessageService messageService,
+        final ChatChannel channel,
+        final CommandManager<Commander> commandManager
+    ) {
         var builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
 
-        if (channel instanceof ConfigChatChannel chatChannel) {
-            builder = builder.permission(chatChannel.permission());
+        if (channel.permission() != null) {
+            builder = builder.permission(channel.permission());
 
             // Add to LuckPerms permission suggestions... lol
             this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
-                checker.test(chatChannel.permission());
-                checker.test(chatChannel.permission() + ".see");
-                checker.test(chatChannel.permission() + ".speak");
+                checker.test(channel.permission());
+                checker.test(channel.permission() + ".see");
+                checker.test(channel.permission() + ".speak");
             });
         }
 
@@ -303,6 +354,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
                 if (sender.muted()) {
                     this.carbonMessages.muteCannotSpeak(sender);
+                    messageService.muteCannotSpeak(sender);
                     return;
                 }
 

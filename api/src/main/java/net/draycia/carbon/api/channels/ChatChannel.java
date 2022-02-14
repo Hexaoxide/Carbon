@@ -27,6 +27,7 @@ import net.draycia.carbon.api.util.ChatComponentRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -110,6 +111,25 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     List<String> commandAliases();
+
+    /**
+     * The base permission players must have in order to use the channel.<br>
+     * Null return means players do not need any permission.
+     *
+     * @return the permission required to use the channel, or null
+     * @since 2.0.7
+     */
+    @MonotonicNonNull String permission();
+
+    /**
+     * The distance from the sender players must be to receive chat messages.<br>
+     * Return of '0' means players must be in the same world/server.<br>
+     * Return of '-1' means there is no radius.
+     *
+     * @return the channel radius
+     * @since 2.1.0
+     */
+    double radius();
 
     /**
      * Represents the result of a channel permission check.

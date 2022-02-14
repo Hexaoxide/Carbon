@@ -17,28 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db.mysql;
+package net.draycia.carbon.common.users.db;
 
 import java.sql.Types;
-import java.util.UUID;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;
 import org.jdbi.v3.core.argument.Argument;
 import org.jdbi.v3.core.config.ConfigRegistry;
 
-public final class ComponentArgumentFactory extends AbstractArgumentFactory<Component> {
+public final class KeyArgumentFactory extends AbstractArgumentFactory<Key> {
 
-    final GsonComponentSerializer serializer = GsonComponentSerializer.gson();
-
-    public ComponentArgumentFactory() {
+    public KeyArgumentFactory() {
         super(Types.VARCHAR);
     }
 
     @Override
-    public Argument build(final Component value, final ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setString(position, this.serializer.serialize(value));
+    public Argument build(final Key value, final ConfigRegistry config) {
+        return (position, statement, ctx) -> statement.setString(position, value.toString());
     }
 
 }

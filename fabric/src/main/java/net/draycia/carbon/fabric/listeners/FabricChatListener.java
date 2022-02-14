@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -34,6 +35,8 @@ import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -42,12 +45,15 @@ import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
 public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
     private final CarbonChatFabric carbonChatFabric;
     private final ChannelRegistry channelRegistry;
+
+    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     public FabricChatListener(final CarbonChatFabric carbonChatFabric, final ChannelRegistry channelRegistry) {
         this.carbonChatFabric = carbonChatFabric;
@@ -56,7 +62,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
     @Override
     public void accept(final ChatCallback.Chat chat) {
-        final var playerResult = this.carbonChatFabric.server().player(chat.sender().getUUID()).join();
+        final var playerResult = this.carbonChatFabric.server().userManager().carbonPlayer(chat.sender().getUUID()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {
@@ -65,6 +71,14 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
         final var originalMessage = chat.message();
+        Component eventMessage = text(chat.message());
+
+        if (sender.hasPermission("carbon.chatlinks")) {
+            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                .match(DEFAULT_URL_PATTERN)
+                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
+                .build());
+        }
 
         for (final var chatChannel : this.channelRegistry) {
             if (chatChannel.quickPrefix() == null) {
@@ -73,6 +87,11 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
             if (originalMessage.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
                 channel = chatChannel;
+                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                    .once()
+                    .matchLiteral(channel.quickPrefix())
+                    .replacement(text())
+                    .build());
                 break;
             }
         }
@@ -82,7 +101,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, Component.text(chat.message()), recipients, renderers, channel);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel);
         final var result = this.carbonChatFabric.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
@@ -106,7 +125,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
                 try {
                     final Optional<UUID> uuid = viewer.get(Identity.UUID);
                     if (uuid.isPresent()) {
-                        final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChatFabric.server().player(uuid.get()).join();
+                        final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChatFabric.server().userManager().carbonPlayer(uuid.get()).join();
 
                         renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
                     } else {

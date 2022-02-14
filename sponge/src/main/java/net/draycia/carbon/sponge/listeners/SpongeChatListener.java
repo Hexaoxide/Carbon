@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
@@ -36,6 +37,8 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -52,12 +55,15 @@ import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
 public final class SpongeChatListener {
 
     private final CarbonChatSponge carbonChat;
     private final ChannelRegistry registry;
+
+    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     @Inject
     private SpongeChatListener(
@@ -71,7 +77,7 @@ public final class SpongeChatListener {
     @Listener
     @IsCancelled(Tristate.FALSE)
     public void onPlayerChat(final PlayerChatEvent event, final @First Player source) {
-        final var playerResult = this.carbonChat.server().player(source.uniqueId()).join();
+        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(source.uniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {
@@ -81,6 +87,14 @@ public final class SpongeChatListener {
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
 
         final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        var eventMessage = event.message();
+
+        if (sender.hasPermission("carbon.chatlinks")) {
+            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                .match(DEFAULT_URL_PATTERN)
+                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
+                .build());
+        }
 
         for (final var chatChannel : this.registry) {
             if (chatChannel.quickPrefix() == null) {
@@ -89,6 +103,11 @@ public final class SpongeChatListener {
 
             if (messageContents.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
                 channel = chatChannel;
+                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                    .once()
+                    .matchLiteral(channel.quickPrefix())
+                        .replacement(text())
+                    .build());
                 break;
             }
         }
@@ -101,9 +120,7 @@ public final class SpongeChatListener {
             if (audience instanceof ForwardingAudience forwardingAudience) {
                 recipients = new ArrayList<>();
 
-                for (final var entry : forwardingAudience.audiences()) {
-                    recipients.add(entry);
-                }
+                forwardingAudience.forEachAudience(recipients::add);
             } else {
                 recipients = channel.recipients(sender);
             }
@@ -114,7 +131,7 @@ public final class SpongeChatListener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, event.message(), recipients, renderers, channel);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
@@ -141,7 +158,7 @@ public final class SpongeChatListener {
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (recipient instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(player).join();
+                            final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.uniqueId()).join();
 
                             renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
                         } else {
@@ -155,15 +172,15 @@ public final class SpongeChatListener {
                 recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
             }
         } else {
-            event.setChatFormatter((player, target, message, originalMessage) -> {
-                Component component = message;
+            event.setChatFormatter((player, target, msg, originalMessage) -> {
+                Component component = msg;
 
                 for (final var renderer : chatEvent.renderers()) {
                     if (target instanceof ServerPlayer serverPlayer) {
-                        final ComponentPlayerResult<CarbonPlayer> targetPlayer = this.carbonChat.server().player(serverPlayer).join();
-                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, message).component();
+                        final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(serverPlayer.uniqueId()).join();
+                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, msg).component();
                     } else {
-                        component = renderer.render(playerResult.player(), target, component, message).component();
+                        component = renderer.render(playerResult.player(), target, component, msg).component();
                     }
                 }
 

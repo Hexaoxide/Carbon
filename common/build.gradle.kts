@@ -26,9 +26,12 @@ dependencies {
   // Storage
   api(libs.jdbiCore)
   api(libs.jdbiObject)
+  api(libs.jdbiPostgres)
   api(libs.hikariCP)
   api(libs.flyway)
+  api(libs.flywayMysql)
   api(libs.mysql)
+  api(libs.postgresql)
   api(libs.caffeine)
   api(libs.mariadb)
 

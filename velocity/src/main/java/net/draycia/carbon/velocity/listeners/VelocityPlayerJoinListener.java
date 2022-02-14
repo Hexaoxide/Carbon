@@ -47,7 +47,7 @@ public class VelocityPlayerJoinListener {
 
     @Subscribe
     public void onPlayerLeave(final DisconnectEvent event) {
-        this.carbonChat.server().player(event.getPlayer().getUniqueId()).thenAccept(result -> {
+        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
             if (result.player() == null) {
                 return;
             }

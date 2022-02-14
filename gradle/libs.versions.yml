@@ -10,7 +10,7 @@ plugins:
   xyz.jpenilla.run-paper: 1.0.6
 
 versions:
-  indra: 2.0.6
+  indra: 2.1.0-SNAPSHOT
   licenser: 0.6.1
   shadow: 7.1.1
   adventure: 4.9.3
@@ -39,13 +39,15 @@ versions:
   jdbi: 3.25.0
   hikari: 5.0.0
   mysql: 8.0.12
-  flyway: 7.7.1
+  flyway: 8.3.0
   caffeine: 3.0.5
   mariadb: 3.0.2-rc
   messenger: 1.0.0-parks-SNAPSHOT
   netty: 4.1.68.Final
   zstdjni: 1.5.1-1
   jedis: 3.7.0
+  postgresql: 42.3.1
+  essentialsx: 2.19.1-SNAPSHOT
 
 dependencies:
   adventureBom:
@@ -188,6 +190,10 @@ dependencies:
     group: org.jdbi
     name: jdbi3-sqlobject
     version: { ref: jdbi }
+  jdbiPostgres:
+    group: org.jdbi
+    name: jdbi3-postgres
+    version: { ref: jdbi }
   hikariCP:
     group: com.zaxxer
     name: HikariCP
@@ -204,6 +210,10 @@ dependencies:
     group: mysql
     name: mysql-connector-java
     version: { ref: mysql }
+  postgresql:
+    group: org.postgresql
+    name: postgresql
+    version: { ref: postgresql }
   caffeine:
     group: com.github.ben-manes.caffeine
     name: caffeine
@@ -283,5 +293,10 @@ dependencies:
     group: net.luckperms
     name: api
     version: { ref: luckPermsApi }
+
+  essentialsXDiscord:
+    group: net.essentialsx
+    name: EssentialsXDiscord
+    version: { ref: essentialsx }
 
 bundles:

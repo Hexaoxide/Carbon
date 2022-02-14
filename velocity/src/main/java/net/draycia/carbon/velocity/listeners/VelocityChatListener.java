@@ -23,16 +23,20 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -41,12 +45,15 @@ import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
 public final class VelocityChatListener {
 
     private final CarbonChatVelocity carbonChat;
     private final ChannelRegistry registry;
+
+    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     @Inject
     private VelocityChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
@@ -62,7 +69,7 @@ public final class VelocityChatListener {
 
         event.setResult(PlayerChatEvent.ChatResult.denied());
 
-        final var playerResult = this.carbonChat.server().player(event.getPlayer().getUniqueId()).join();
+        final ComponentPlayerResult<? extends CarbonPlayer> playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {
@@ -72,6 +79,14 @@ public final class VelocityChatListener {
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
 
         final var originalMessage = event.getMessage();
+        Component eventMessage = text(event.getMessage());
+
+        if (sender.hasPermission("carbon.chatlinks")) {
+            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                .match(DEFAULT_URL_PATTERN)
+                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
+                .build());
+        }
 
         for (final var chatChannel : this.registry) {
             if (chatChannel.quickPrefix() == null) {
@@ -80,6 +95,11 @@ public final class VelocityChatListener {
 
             if (originalMessage.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
                 channel = chatChannel;
+                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                    .once()
+                    .matchLiteral(channel.quickPrefix())
+                    .replacement(text())
+                    .build());
                 break;
             }
         }
@@ -89,7 +109,7 @@ public final class VelocityChatListener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, Component.text(event.getMessage()), recipients, renderers, channel);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {

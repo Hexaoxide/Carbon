@@ -46,7 +46,7 @@ public class FabricPlayerLeaveListener implements PlayerStatusMessageEvents.Mess
 
     @Override
     public void onMessage(final PlayerStatusMessageEvents.MessageEvent event) {
-        this.carbonChat.server().player(event.player().getUUID()).thenAccept(result -> {
+        this.carbonChat.server().userManager().carbonPlayer(event.player().getUUID()).thenAccept(result -> {
             if (result.player() == null) {
                 return;
             }

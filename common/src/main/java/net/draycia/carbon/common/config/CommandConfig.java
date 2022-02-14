@@ -17,24 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db.mysql;
+package net.draycia.carbon.common.config;
 
-import java.sql.Types;
-import java.util.UUID;
+import java.util.Map;
+import net.draycia.carbon.common.command.CommandSettings;
+import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.key.Key;
-import org.jdbi.v3.core.argument.AbstractArgumentFactory;
-import org.jdbi.v3.core.argument.Argument;
-import org.jdbi.v3.core.config.ConfigRegistry;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
-public final class KeyArgumentFactory extends AbstractArgumentFactory<Key> {
+@ConfigSerializable
+@DefaultQualifier(MonotonicNonNull.class)
+public class CommandConfig {
 
-    public KeyArgumentFactory() {
-        super(Types.VARCHAR);
+    private Map<Key, CommandSettings> settings = CloudUtils.defaultCommandSettings();
+
+    public CommandConfig() {
+
     }
 
-    @Override
-    public Argument build(final Key value, final ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setString(position, value.toString());
+    public CommandConfig(final Map<Key, CommandSettings> settings) {
+        this.settings = settings;
+    }
+
+    public Map<Key, CommandSettings> settings() {
+        return this.settings;
     }
 
 }

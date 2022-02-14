@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.mysql;
 
 import java.util.UUID;
 import net.draycia.carbon.common.users.SaveOnChange;
@@ -29,7 +29,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 @DefaultQualifier(NonNull.class)
-public interface SQLSaveOnChange extends SaveOnChange {
+public interface MySQLSaveOnChange extends SaveOnChange {
 
     @SqlUpdate("UPDATE carbon_users SET displayname = :displayName WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveDisplayName(final UUID id, final @Nullable Component displayName);
@@ -52,10 +52,10 @@ public interface SQLSaveOnChange extends SaveOnChange {
     @SqlUpdate("UPDATE carbon_users SET whisperreplytarget = :whisperReplyTarget WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget);
 
-    @SqlUpdate("INSERT INTO carbon_ignores VALUES id = UNHEX(REPLACE(:id, '-', ''), ignoredplayer = :ignoredPlayer)")
+    @SqlUpdate("INSERT INTO carbon_ignores VALUES id = UNHEX(REPLACE(:id, '-', '')), ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', ''))")
     int addIgnore(final UUID id, final UUID ignoredPlayer);
 
-    @SqlUpdate("DELETE FROM carbon_ignores WHERE id = UNHEX(REPLACE(:id, '-', ''), ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', '')))")
+    @SqlUpdate("DELETE FROM carbon_ignores WHERE id = UNHEX(REPLACE(:id, '-', '')), ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', ''))")
     int removeIgnore(final UUID id, final UUID ignoredPlayer);
 
 }

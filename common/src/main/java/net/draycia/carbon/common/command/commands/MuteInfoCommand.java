@@ -27,6 +27,8 @@ import com.google.inject.Inject;
 import java.util.Objects;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
@@ -36,26 +38,50 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class MuteInfoCommand {
+public class MuteInfoCommand extends CarbonCommand {
+
+    final CarbonChat carbonChat;
+    final CommandManager<Commander> commandManager;
+    final CarbonMessageService messageService;
+    final PlayerSuggestions playerSuggestions;
 
     @Inject
     public MuteInfoCommand(
+        final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
         final CarbonChat carbonChat,
-        final PlayerSuggestions suggestionsParser
+        final PlayerSuggestions playerSuggestions
     ) {
-        final var command = commandManager.commandBuilder("muteinfo", "muted")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(suggestionsParser).asOptional(),
-                RichDescription.of(carbonMessages.commandMuteInfoArgumentPlayer().component()))
-            .flag(commandManager.flagBuilder("uuid")
+        this.carbonChat = carbonChat;
+        this.commandManager = commandManager;
+        this.messageService = messageService;
+        this.playerSuggestions = playerSuggestions;
+    }
+
+    @Override
+    protected CommandSettings _commandSettings() {
+        return new CommandSettings("muteinfo", "muted");
+    }
+
+    @Override
+    public Key key() {
+        return Key.key("carbon", "muteinfo");
+    }
+
+    @Override
+    public void init() {
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+                RichDescription.of(this.messageService.commandMuteInfoArgumentPlayer().component()))
+            .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(carbonMessages.commandMuteInfoArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.messageService.commandMuteInfoArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.info")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandMuteInfoDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandMuteInfoDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -63,7 +89,7 @@ public class MuteInfoCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
+                    final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
                     target = sender;
@@ -71,25 +97,25 @@ public class MuteInfoCommand {
 
                 if (!target.muted()) {
                     if (sender.equals(target)) {
-                        carbonMessages.muteInfoSelfNotMuted(sender);
+                        this.carbonMessages.muteInfoSelfNotMuted(sender);
                     } else {
-                        carbonMessages.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
+                        this.carbonMessages.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
                     }
 
                     return;
                 } else {
                     if (sender.equals(target)) {
-                        carbonMessages.muteInfoSelfMuted(sender);
+                        this.carbonMessages.muteInfoSelfMuted(sender);
                     } else {
-                        carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
+                        this.carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
                     }
                 }
 
-                carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
+                this.carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
             })
             .build();
 
-        commandManager.command(command);
+        this.commandManager.command(command);
     }
 
 }

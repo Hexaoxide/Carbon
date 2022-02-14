@@ -24,14 +24,13 @@ import java.sql.SQLException;
 import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.intellij.lang.annotations.Subst;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
-public class CarbonPlayerCommonRowMapper implements RowMapper<CarbonPlayerCommon> {
+public class MySQLPlayerRowMapper implements RowMapper<CarbonPlayerCommon> {
 
     @Override
     public CarbonPlayerCommon map(final ResultSet rs, final StatementContext ctx) throws SQLException {

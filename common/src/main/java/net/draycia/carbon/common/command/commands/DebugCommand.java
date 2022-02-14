@@ -25,6 +25,8 @@ import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
@@ -33,21 +35,45 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
-public class DebugCommand {
+@DefaultQualifier(NonNull.class)
+public class DebugCommand extends CarbonCommand {
+
+    final CommandManager<Commander> commandManager;
+    final CarbonMessageService messageService;
+    final PlayerSuggestions playerSuggestions;
 
     @Inject
     public DebugCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final PlayerSuggestions suggestionsParser
+        final PlayerSuggestions playerSuggestions
     ) {
-        final var command = commandManager.commandBuilder("carbondebug", "cdebug")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(suggestionsParser).asOptional(),
-                RichDescription.of(carbonMessages.commandDebugArgumentPlayer().component()))
+        this.commandManager = commandManager;
+        this.carbonMessages = carbonMessages;
+        this.playerSuggestions = playerSuggestions;
+    }
+
+    @Override
+    protected CommandSettings _commandSettings() {
+        return new CommandSettings("carbondebug", "cdebug");
+    }
+
+    @Override
+    public Key key() {
+        return Key.key("carbon", "debug");
+    }
+
+    @Override
+    public void init() {
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+                RichDescription.of(this.messageService.commandDebugArgumentPlayer().component()))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandDebugDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandDebugDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -84,7 +110,7 @@ public class DebugCommand {
             })
             .build();
 
-        commandManager.command(command);
+        this.commandManager.command(command);
     }
 
 }
