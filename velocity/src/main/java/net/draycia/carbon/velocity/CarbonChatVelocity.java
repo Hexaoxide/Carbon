@@ -30,6 +30,7 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -37,6 +38,7 @@ import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
@@ -44,9 +46,12 @@ import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
+import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Plugin(
@@ -75,6 +80,9 @@ public class CarbonChatVelocity implements CarbonChat {
     private final ChannelRegistry channelRegistry;
     private final CarbonServerVelocity carbonServer;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
+    private final UUID serverId = UUID.randomUUID();
+
+    private @MonotonicNonNull MessagingManager messagingManager = null;
 
     @Inject
     public CarbonChatVelocity(
@@ -111,12 +119,26 @@ public class CarbonChatVelocity implements CarbonChat {
         ListenerUtils.registerCommonListeners(this.injector);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.messageService);
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
 
         // Commands
         CloudUtils.loadCommands(this.injector);
         final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
         CloudUtils.registerCommands(commandSettings);
+    }
+
+    @Override
+    public UUID serverId() {
+        return this.serverId;
+    }
+
+    @Override
+    public @Nullable PacketService packetService() {
+        if (this.messagingManager == null) {
+            this.messagingManager = this.injector.getInstance(MessagingManager.class);
+        }
+
+        return this.messagingManager.packetService();
     }
 
     @Override

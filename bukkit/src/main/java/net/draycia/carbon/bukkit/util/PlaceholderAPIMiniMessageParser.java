@@ -19,24 +19,19 @@
  */
 package net.draycia.carbon.bukkit.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import static java.util.Collections.emptyList;
 
 @DefaultQualifier(NonNull.class)
 public final class PlaceholderAPIMiniMessageParser {
@@ -63,40 +58,40 @@ public final class PlaceholderAPIMiniMessageParser {
         return false;
     }
 
-    public Component parse(final OfflinePlayer player, final String input, final Collection<Placeholder<?>> placeholders) {
+    public Component parse(final OfflinePlayer player, final String input, final TagResolver tagResolver) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(player, match),
             input,
-            placeholders
+            tagResolver
         );
     }
 
     public Component parse(final OfflinePlayer player, final String input) {
-        return this.parse(player, input, emptyList());
+        return this.parse(player, input, TagResolver.empty());
     }
 
-    public Component parseRelational(final Player one, final Player two, final String input, final Collection<Placeholder<?>> placeholders) {
+    public Component parseRelational(final Player one, final Player two, final String input, final TagResolver tagResolver) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(one, PlaceholderAPI.setRelationalPlaceholders(one, two, match)),
             input,
-            placeholders
+            tagResolver
         );
     }
 
     public Component parseRelational(final Player one, final Player two, final String input) {
-        return this.parseRelational(one, two, input, emptyList());
+        return this.parseRelational(one, two, input, TagResolver.empty());
     }
 
     private Component parse(
         final Pattern pattern,
         final UnaryOperator<String> placeholderResolver,
         final String input,
-        final Collection<Placeholder<?>> originalPlaceholders
+        final TagResolver originalTags
     ) {
         final Matcher matcher = pattern.matcher(input);
-        final List<Placeholder<?>> placeholders = new ArrayList<>(originalPlaceholders);
+        final TagResolver.Builder tagResolver = TagResolver.builder().resolvers(originalTags);
         final StringBuilder builder = new StringBuilder();
         int id = 0;
 
@@ -109,14 +104,14 @@ public final class PlaceholderAPIMiniMessageParser {
             } else {
                 final String key = "papi_generated_template_" + id;
                 id++;
-                placeholders.add(Placeholder.component(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
+                tagResolver.tag(key, Tag.inserting(LegacyComponentSerializer.legacySection().deserialize(replaced)));
                 matcher.appendReplacement(builder, Matcher.quoteReplacement("<" + key + ">"));
             }
         }
 
         matcher.appendTail(builder);
 
-        return this.miniMessage.deserialize(builder.toString(), PlaceholderResolver.placeholders(placeholders));
+        return this.miniMessage.deserialize(builder.toString(), tagResolver.build());
     }
 
 }

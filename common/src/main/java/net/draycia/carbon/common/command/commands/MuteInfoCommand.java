@@ -35,6 +35,7 @@ import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -71,12 +72,12 @@ public class MuteInfoCommand extends CarbonCommand {
 
     @Override
     public void init() {
-        final var command = commandManager.commandBuilder("muteinfo", "muted")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(playerSuggestions).asOptional(),
-                RichDescription.of(carbonMessages.commandMuteInfoArgumentPlayer().component()))
-            .flag(commandManager.flagBuilder("uuid")
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+                RichDescription.of(this.carbonMessages.commandMuteInfoArgumentPlayer().component()))
+            .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(carbonMessages.commandMuteInfoArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandMuteInfoArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.info")

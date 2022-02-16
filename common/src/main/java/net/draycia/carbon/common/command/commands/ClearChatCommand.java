@@ -31,6 +31,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;

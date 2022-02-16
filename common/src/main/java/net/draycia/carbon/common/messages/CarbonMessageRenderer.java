@@ -22,8 +22,6 @@ package net.draycia.carbon.common.messages;
 import com.google.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -32,8 +30,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -57,10 +55,10 @@ public class CarbonMessageRenderer implements IMessageRenderer<Audience, String,
         final Method method,
         final Type owner
     ) {
-        final List<Placeholder<?>> templates = new ArrayList<>();
+        final TagResolver.Builder tagResolver = TagResolver.builder();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
-            templates.add(Placeholder.component(entry.getKey(), entry.getValue()));
+            tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
         // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
@@ -72,7 +70,7 @@ public class CarbonMessageRenderer implements IMessageRenderer<Audience, String,
                 entry.getValue());
         }
 
-        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, PlaceholderResolver.placeholders(templates));
+        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
         final MessageType messageType;
         final @Nullable ChatType chatType = method.getAnnotation(ChatType.class);
 

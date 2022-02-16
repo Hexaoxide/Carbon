@@ -28,30 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ChatMessagePacket extends CarbonPacket {
 
-    public UUID userId() {
-        return userId;
-    }
-
-    public String channelPermission() {
-        return this.channelPermission;
-    }
-
-    public Key channelKey() {
-        return channelKey;
-    }
-
-    public String username() {
-        return username;
-    }
-
-    public String intermediary() {
-        return intermediary;
-    }
-
-    public Map<String, String> getPlaceholders() {
-        return placeholders;
-    }
-
     // TODO: store item link placeholder components
     private UUID userId;
     private String channelPermission;
@@ -60,7 +36,31 @@ public final class ChatMessagePacket extends CarbonPacket {
     private String intermediary;
     private Map<String, String> placeholders;
 
-    public ChatMessagePacket(@NotNull UUID sender, @NotNull ByteBuf data) {
+    public UUID userId() {
+        return this.userId;
+    }
+
+    public String channelPermission() {
+        return this.channelPermission;
+    }
+
+    public Key channelKey() {
+        return this.channelKey;
+    }
+
+    public String username() {
+        return this.username;
+    }
+
+    public String intermediary() {
+        return this.intermediary;
+    }
+
+    public Map<String, String> placeholders() {
+        return this.placeholders;
+    }
+
+    public ChatMessagePacket(final @NotNull UUID sender, final @NotNull ByteBuf data) {
         super(sender);
         this.read(data);
     }
@@ -88,7 +88,7 @@ public final class ChatMessagePacket extends CarbonPacket {
     }
 
     @Override
-    public void read(io.netty.buffer.@NotNull ByteBuf buffer) {
+    public void read(final io.netty.buffer.@NotNull ByteBuf buffer) {
         this.userId = this.readUUID(buffer);
         this.channelPermission = this.readString(buffer);
         this.channelKey = this.readKey(buffer);
@@ -98,7 +98,7 @@ public final class ChatMessagePacket extends CarbonPacket {
     }
 
     @Override
-    public void write(io.netty.buffer.@NotNull ByteBuf buffer) {
+    public void write(final io.netty.buffer.@NotNull ByteBuf buffer) {
         this.writeUUID(this.userId, buffer);
         this.writeString(this.channelPermission, buffer);
         this.writeKey(this.channelKey, buffer);

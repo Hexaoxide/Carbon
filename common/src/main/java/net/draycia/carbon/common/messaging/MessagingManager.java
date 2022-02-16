@@ -82,38 +82,38 @@ public class MessagingManager {
         this.packetService = new PacketService(4, false, protocolVersion);
         this.carbonChat = carbonChat;
 
-        final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(packetService);
-        handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), packetService, handlerImpl));
+        final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
+        handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), this.packetService, handlerImpl));
         handlerImpl.addHandler(new CarbonChatPacketHandler(this, channelRegistry));
 
         try {
-            this.initMessagingService(packetService, handlerImpl, new File("/"),
+            this.initMessagingService(this.packetService, handlerImpl, new File("/"),
                 configFactory.primaryConfig().messagingSettings());
         } catch (final IOException | TimeoutException | InterruptedException e) {
             e.printStackTrace();
             return;
         }
 
-        packetService.addMessenger(this.messagingService);
+        this.packetService.addMessenger(this.messagingService);
 
-        packetService.queuePacket(new InitializationPacket(carbonChat.serverId(), protocolVersion));
-        packetService.flushQueue();
+        this.packetService.queuePacket(new InitializationPacket(carbonChat.serverId(), protocolVersion));
+        this.packetService.flushQueue();
 
         // Broadcast keepalive packets
-        executorService.scheduleAtFixedRate(() -> {
-            packetService.queuePacket(new KeepAlivePacket(carbonChat.serverId()));
-            packetService.flushQueue();
+        this.executorService.scheduleAtFixedRate(() -> {
+            this.packetService.queuePacket(new KeepAlivePacket(carbonChat.serverId()));
+            this.packetService.flushQueue();
         }, 5, 10, TimeUnit.SECONDS);
 
         // Broadcast heartbeat packets
-        executorService.scheduleAtFixedRate(() -> {
-            packetService.queuePacket(new HeartbeatPacket(carbonChat.serverId(), protocolVersion));
-            packetService.flushQueue();
+        this.executorService.scheduleAtFixedRate(() -> {
+            this.packetService.queuePacket(new HeartbeatPacket(carbonChat.serverId(), protocolVersion));
+            this.packetService.flushQueue();
         }, 5, 5, TimeUnit.SECONDS);
 
-        executorService.scheduleAtFixedRate(() -> {
+        this.executorService.scheduleAtFixedRate(() -> {
             try {
-                packetService.flushQueue();
+                this.packetService.flushQueue();
             } catch (final IndexOutOfBoundsException ignored) {
 
             }
@@ -195,9 +195,9 @@ public class MessagingManager {
     private static final class CarbonServerHandler extends AbstractServerMessagingHandler {
 
         private CarbonServerHandler(
-            @NotNull UUID serverId,
-            @NotNull PacketService packetService,
-            @NotNull MessagingHandler messagingHandler
+            final @NotNull UUID serverId,
+            final @NotNull PacketService packetService,
+            final @NotNull MessagingHandler messagingHandler
         ) {
             super(serverId, packetService, messagingHandler);
         }

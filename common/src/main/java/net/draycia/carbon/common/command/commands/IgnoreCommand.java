@@ -35,6 +35,7 @@ import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -71,10 +72,10 @@ public class IgnoreCommand extends CarbonCommand {
 
     @Override
     public void init() {
-        final var command = commandManager.commandBuilder("ignore", "block")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(playerSuggestions).asOptional(),
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
                 RichDescription.of(this.carbonMessages.commandIgnoreArgumentPlayer().component()))
-            .flag(commandManager.flagBuilder("uuid")
+            .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
                 .withDescription(RichDescription.of(this.carbonMessages.commandIgnoreArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))

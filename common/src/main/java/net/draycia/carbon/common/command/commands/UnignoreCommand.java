@@ -35,6 +35,7 @@ import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -73,9 +74,9 @@ public class UnignoreCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             // TODO: Filter, and only show muted players, but allow inputting any player name.
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(playerSuggestions).asOptional(),
-                RichDescription.of(carbonMessages.commandUnignoreArgumentPlayer().component()))
-            .flag(commandManager.flagBuilder("uuid")
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+                RichDescription.of(this.carbonMessages.commandUnignoreArgumentPlayer().component()))
+            .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
                 .withDescription(RichDescription.of(carbonMessages.commandUnignoreArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))

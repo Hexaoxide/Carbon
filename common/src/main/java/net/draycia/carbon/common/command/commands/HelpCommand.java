@@ -31,12 +31,12 @@ import java.util.List;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -120,19 +120,17 @@ public final class HelpCommand extends CarbonCommand {
 
         help.messageProvider((sender, key, args) -> {
             final String messageKey = "command.help.misc." + key;
-            final PlaceholderResolver resolver;
+            final TagResolver.Builder tagResolver = TagResolver.builder();
 
             // Total hack but works for now
             if (args.length == 2) {
-                resolver = PlaceholderResolver.placeholders(
-                    Placeholder.component("page", text(args[0])),
-                    Placeholder.component("max_pages", text(args[1]))
+                tagResolver
+                    .tag("page", Tag.inserting(text(args[0])))
+                    .tag("max_pages", Tag.inserting(text(args[1]))
                 );
-            } else {
-                resolver = PlaceholderResolver.empty();
             }
 
-            return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), resolver);
+            return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), tagResolver.build());
         });
 
         return help;

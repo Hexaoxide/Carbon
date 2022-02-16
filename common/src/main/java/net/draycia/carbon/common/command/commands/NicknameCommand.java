@@ -35,6 +35,7 @@ import net.draycia.carbon.common.command.argument.OptionValueParser;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -74,8 +75,8 @@ public class NicknameCommand extends CarbonCommand {
             // TODO: Allow UUID input for target player
             .flag(this.commandManager.flagBuilder("player")
                 .withAliases("p")
-                .withDescription(RichDescription.of(carbonMessages.commandNicknameArgumentPlayer().component()))
-                .withArgument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(playerSuggestions).asOptional())
+                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer().component()))
+                .withArgument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional())
                 .withPermission(Permission.of("carbon.nickname.others"))
             )
             .flag(this.commandManager.flagBuilder("nickname")
