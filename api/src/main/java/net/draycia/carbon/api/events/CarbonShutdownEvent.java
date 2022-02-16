@@ -20,5 +20,11 @@
 package net.draycia.carbon.api.events;
 
 // TODO: emit event on server shutdown
+
+/**
+ * An event that's called when the server shuts down.
+ *
+ * @since 2.1.0
+ */
 public class CarbonShutdownEvent implements CarbonEvent {
 }

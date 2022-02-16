@@ -73,14 +73,14 @@ public class WhisperCommand extends CarbonCommand {
 
     @Override
     public void init() {
-        final var command = commandManager.commandBuilder("whisper", "w", "message", "msg", "m", "tell")
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(carbonMessages).withSuggestionsProvider(playerSuggestions).asRequired(),
-                RichDescription.of(carbonMessages.commandWhisperArgumentPlayer().component()))
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asRequired(),
+                RichDescription.of(this.carbonMessages.commandWhisperArgumentPlayer().component()))
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(carbonMessages.commandWhisperArgumentMessage().component()))
+                RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage().component()))
             .permission("carbon.whisper.message")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandWhisperDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandWhisperDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
@@ -99,7 +99,7 @@ public class WhisperCommand extends CarbonCommand {
 
                 if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, carbonMessages);
+                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, this.carbonMessages);
 
                     carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;
@@ -118,9 +118,9 @@ public class WhisperCommand extends CarbonCommand {
                 final Component senderName = CarbonPlayer.renderName(sender);
                 final Component recipientName = CarbonPlayer.renderName(recipient);
 
-                carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
-                carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
-                carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, message);
+                this.carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
+                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
+                this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, message);
 
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());

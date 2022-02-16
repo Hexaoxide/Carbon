@@ -34,16 +34,16 @@ public abstract class CarbonPacket extends AbstractPacket {
 
     private final GsonComponentSerializer componentSerializer = GsonComponentSerializer.gson();
 
-    protected CarbonPacket(@NotNull UUID sender) {
+    protected CarbonPacket(final @NotNull UUID sender) {
         super(sender);
     }
 
     protected final void writeComponent(final Component component, final ByteBuf buffer) {
-        this.writeString(componentSerializer.serialize(component), buffer);
+        this.writeString(this.componentSerializer.serialize(component), buffer);
     }
 
     protected final Component readComponent(final ByteBuf buffer) {
-        return componentSerializer.deserialize(this.readString(buffer));
+        return this.componentSerializer.deserialize(this.readString(buffer));
     }
 
     protected final void writeKey(final Key key, final ByteBuf buffer) {

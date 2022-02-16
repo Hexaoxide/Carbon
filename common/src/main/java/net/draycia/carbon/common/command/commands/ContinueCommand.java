@@ -105,7 +105,7 @@ public class ContinueCommand extends CarbonCommand {
 
                 if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, carbonMessages);
+                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, this.carbonMessages);
 
                     carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;
@@ -124,9 +124,9 @@ public class ContinueCommand extends CarbonCommand {
                 final Component senderName = CarbonPlayer.renderName(sender);
                 final Component recipientName = CarbonPlayer.renderName(recipient);
 
-                carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
-                carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
-                carbonMessages.whisperConsoleLog(carbonChat.server().console(), senderName, recipientName, message);
+                this.carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
+                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
+                this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, message);
 
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());

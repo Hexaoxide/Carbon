@@ -42,6 +42,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface CarbonChat {
 
+    /**
+     * The server's ID, used for cross-server message handling.
+     *
+     * @return the server id
+     * @since 2.1.0
+     */
     UUID serverId();
 
     /**

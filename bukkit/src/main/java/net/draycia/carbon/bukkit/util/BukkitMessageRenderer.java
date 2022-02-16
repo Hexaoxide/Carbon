@@ -22,8 +22,6 @@ package net.draycia.carbon.bukkit.util;
 import com.google.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -36,7 +34,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
@@ -71,10 +69,10 @@ public class BukkitMessageRenderer<T extends Audience> implements IMessageRender
         final Method method,
         final Type owner
     ) {
-        final List<TagResolver> placeholders = new ArrayList<>();
+        final TagResolver.Builder tagResolver = TagResolver.builder();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
-            placeholders.add(Placeholder.component(entry.getKey(), entry.getValue()));
+            tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
         // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
@@ -92,15 +90,15 @@ public class BukkitMessageRenderer<T extends Audience> implements IMessageRender
             if (sourced.sender() instanceof CarbonPlayer sender && sender.online()) {
                 if (sourced.recipient() instanceof CarbonPlayer recipient && recipient.online()) {
                     message = this.parser.parseRelational(Bukkit.getPlayer(sender.uuid()),
-                        Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, placeholders);
+                        Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, tagResolver.build());
                 } else {
-                    message = this.parser.parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, placeholders);
+                    message = this.parser.parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, tagResolver.build());
                 }
             } else {
-                message = this.miniMessage.deserialize(placeholderResolvedMessage, TagResolver.resolver(placeholders));
+                message = this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
             }
         } else {
-            message = this.miniMessage.deserialize(placeholderResolvedMessage, TagResolver.resolver(placeholders));
+            message = this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
         }
 
         final MessageType messageType;

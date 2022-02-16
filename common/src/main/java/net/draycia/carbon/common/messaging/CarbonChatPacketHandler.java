@@ -1,13 +1,32 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.messaging;
 
-import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import ninja.egg82.messenger.handler.AbstractMessagingHandler;
 import ninja.egg82.messenger.packets.Packet;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -28,19 +47,19 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
     }
 
     @Override
-    protected boolean handlePacket(@NotNull Packet packet) {
+    protected boolean handlePacket(final @NotNull Packet packet) {
         if (!(packet instanceof ChatMessagePacket messagePacket)) {
             return false;
         }
 
-        final var placeholders = new ArrayList<Placeholder<?>>();
+        final TagResolver.Builder tagResolver = TagResolver.builder();
 
-        for (final var entry : messagePacket.getPlaceholders().entrySet()) {
-            placeholders.add(Placeholder.miniMessage(entry.getKey(), entry.getValue()));
+        for (final var entry : messagePacket.placeholders().entrySet()) {
+            tagResolver.tag(entry.getKey(), Tag.inserting(Component.text(entry.getValue())));
         }
 
         final var component = MiniMessage.miniMessage().deserialize(messagePacket.intermediary(),
-            PlaceholderResolver.placeholders(placeholders));
+            tagResolver.build());
 
         for (final var recipient : CarbonChatProvider.carbonChat().server().players()) {
             if (recipient.hasPermission(messagePacket.channelPermission() + ".see")) {

@@ -23,6 +23,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -33,6 +34,7 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
@@ -52,6 +54,7 @@ import net.kyori.adventure.util.TriState;
 import net.kyori.moonshine.message.IMessageRenderer;
 import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.server.MinecraftServer;
+import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -74,6 +77,9 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
     private TriState luckPermsLoaded = TriState.NOT_SET;
+    private final UUID serverId = UUID.randomUUID();
+
+    private @MonotonicNonNull MessagingManager messagingManager = null;
 
     @Override
     public void onInitialize() {
@@ -104,7 +110,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         CloudUtils.registerCommands(commandSettings);
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.messageService);
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
     }
 
     private void registerChatListener() {
@@ -130,6 +136,20 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
                 PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager);
             }
         });
+    }
+
+    @Override
+    public UUID serverId() {
+        return this.serverId;
+    }
+
+    @Override
+    public @Nullable PacketService packetService() {
+        if (this.messagingManager == null) {
+            this.messagingManager = this.injector.getInstance(MessagingManager.class);
+        }
+
+        return this.messagingManager.packetService();
     }
 
     @Override

@@ -21,7 +21,7 @@ package net.draycia.carbon.common.config;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -59,8 +59,10 @@ public class ClearChatSettings {
 
     public Component broadcast(final Component displayName, final String username) {
         return MiniMessage.miniMessage().deserialize(this.broadcast,
-            TagResolver.resolver(Placeholder.component("display_name", displayName),
-                Placeholder.component("username", Component.text(username))));
+            TagResolver.builder()
+                .tag("display_name", Tag.inserting(displayName))
+                .tag("username", Tag.inserting(Component.text(username)))
+                .build());
     }
 
 }

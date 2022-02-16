@@ -29,6 +29,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -66,7 +67,7 @@ public class ReloadCommand extends CarbonCommand {
             .literal("reload")
             .permission("carbon.reload")
             .senderType(Commander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandReloadDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReloadDescription().component())
             .handler(handler -> {
                 // TODO: Check if all listeners succeeded
                 carbonChat.eventHandler().emit(new CarbonReloadEvent());

@@ -22,8 +22,6 @@ package net.draycia.carbon.velocity;
 import com.google.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -32,7 +30,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -57,10 +55,10 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
         final Method method,
         final Type owner
     ) {
-        final List<TagResolver> placeholders = new ArrayList<>();
+        final TagResolver.Builder tagResolver = TagResolver.builder();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
-            placeholders.add(Placeholder.component(entry.getKey(), entry.getValue()));
+            tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
         // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
@@ -72,7 +70,7 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
                 entry.getValue());
         }
 
-        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, TagResolver.resolver(placeholders));
+        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
         final MessageType messageType;
         final @Nullable ChatType chatType = method.getAnnotation(ChatType.class);
 
