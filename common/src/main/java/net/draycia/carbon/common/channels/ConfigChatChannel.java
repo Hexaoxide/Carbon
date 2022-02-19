@@ -72,9 +72,11 @@ public final class ConfigChatChannel implements ChatChannel {
     private @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
-        The permission required to use the channel.
+        The permission required to use the /channel <channelname> and /<channelname> commands.
+        
+        Assuming permission = "carbon.channel.global"
         To read messages you must have the permission carbon.channel.global.see
-        To send messages you must have the permission carbon.channel.global
+        To send messages you must have the permission carbon.channel.global.speak
         """)
     private @Nullable String permission = "carbon.channel.global";
 
