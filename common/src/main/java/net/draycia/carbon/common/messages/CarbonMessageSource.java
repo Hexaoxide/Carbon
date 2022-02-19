@@ -140,6 +140,33 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                     this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, localeFile, ex);
                 }
             }));
+
+        Files.walk(localeDirectory).forEach(path -> {
+            final String localeString = path.getFileName().toString().substring("messages-".length()).replace(".properties", "");
+            final @Nullable Locale locale = Translator.parseLocale(localeString.replace("nb_NO", "no_NO"));
+
+            if (locale == null) {
+                this.logger.warn("Unknown locale '{}'?", localeString);
+                return;
+            }
+
+            if (this.locales.containsKey(locale)) {
+                return;
+            }
+
+            this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, path);
+
+            final Properties properties = new Properties();
+
+            try {
+                this.loadProperties(properties, localeDirectory, path);
+                this.locales.put(locale, properties);
+
+                this.logger.info("Successfully loaded locale {} ({})", locale.getDisplayName(), locale);
+            } catch (final IOException ex) {
+                this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, path, ex);
+            }
+        });
     }
 
     @Override
