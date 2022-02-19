@@ -141,7 +141,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                 }
             }));
 
-        Files.walk(localeDirectory).forEach(path -> {
+        Files.walk(localeDirectory).filter(Files::isRegularFile).forEach(path -> {
             final String localeString = path.getFileName().toString().substring("messages-".length()).replace(".properties", "");
             final @Nullable Locale locale = Translator.parseLocale(localeString.replace("nb_NO", "no_NO"));
 
