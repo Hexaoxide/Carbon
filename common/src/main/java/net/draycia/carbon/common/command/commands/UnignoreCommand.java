@@ -33,7 +33,6 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -78,12 +77,12 @@ public class UnignoreCommand extends CarbonCommand {
                 RichDescription.of(this.carbonMessages.commandUnignoreArgumentPlayer().component()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(carbonMessages.commandUnignoreArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandUnignoreArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.ignore.unignore")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandUnignoreDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandUnignoreDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -94,12 +93,12 @@ public class UnignoreCommand extends CarbonCommand {
                     final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    carbonMessages.ignoreTargetInvalid(sender);
+                    this.carbonMessages.ignoreTargetInvalid(sender);
                     return;
                 }
 
                 sender.ignoring(target, false);
-                carbonMessages.noLongerIgnoring(sender, CarbonPlayer.renderName(target));
+                this.carbonMessages.noLongerIgnoring(sender, CarbonPlayer.renderName(target));
             })
             .build();
 

@@ -78,10 +78,10 @@ public final class HelpCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .literal("help",
-                RichDescription.of(carbonMessages.commandHelpDescription().component()))
+                RichDescription.of(this.carbonMessages.commandHelpDescription().component()))
             .argument(StringArgument.<Commander>newBuilder("query")
                     .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
-                RichDescription.of(carbonMessages.commandHelpArgumentQuery().component()))
+                RichDescription.of(this.carbonMessages.commandHelpArgumentQuery().component()))
             .permission("carbon.help")
             .handler(this::execute)
             .build();

@@ -33,7 +33,6 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -114,7 +113,7 @@ public class MuteCommand extends CarbonCommand {
                         continue;
                     }
 
-                    carbonMessages.muteAlertPlayers(player, CarbonPlayer.renderName(target));
+                    this.carbonMessages.muteAlertPlayers(player, CarbonPlayer.renderName(target));
                 }
 
                 target.muted(true);

@@ -230,11 +230,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 }
 
                 if (chatChannel.shouldRegisterCommands()) {
-<<<<<<< HEAD
-                    this.registerChannelCommands(chatChannel, commandManager);
-=======
                     this.registerChannelCommands(carbonMessages, chatChannel, commandManager);
->>>>>>> 4f15ab66 (Various compilation/merge issues)
                 }
             });
 
@@ -330,10 +326,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     private void registerChannelCommands(
-<<<<<<< HEAD
-=======
         final CarbonMessages carbonMessages,
->>>>>>> 4f15ab66 (Various compilation/merge issues)
         final ChatChannel channel,
         final CommandManager<Commander> commandManager
     ) {
@@ -361,10 +354,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
                 if (sender.muted()) {
                     this.carbonMessages.muteCannotSpeak(sender);
-<<<<<<< HEAD
-=======
-                    carbonMessages.muteCannotSpeak(sender);
->>>>>>> 4f15ab66 (Various compilation/merge issues)
                     return;
                 }
 

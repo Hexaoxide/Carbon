@@ -33,7 +33,6 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -82,7 +81,7 @@ public class UnmuteCommand extends CarbonCommand {
             )
             .permission("carbon.mute.unmute")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandUnmuteDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandUnmuteDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
@@ -93,12 +92,12 @@ public class UnmuteCommand extends CarbonCommand {
                     final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    carbonMessages.unmuteNoTarget(sender);
+                    this.carbonMessages.unmuteNoTarget(sender);
                     // TODO: send command syntax
                     return;
                 }
 
-                carbonMessages.unmuteAlertRecipient(target);
+                this.carbonMessages.unmuteAlertRecipient(target);
 
                 if (!sender.equals(target)) {
                     this.carbonMessages.unmuteAlertPlayers(sender, CarbonPlayer.renderName(target));
@@ -113,7 +112,7 @@ public class UnmuteCommand extends CarbonCommand {
                         continue;
                     }
 
-                    carbonMessages.unmuteAlertPlayers(player, CarbonPlayer.renderName(target));
+                    this.carbonMessages.unmuteAlertPlayers(player, CarbonPlayer.renderName(target));
                 }
 
                 target.muted(false);
