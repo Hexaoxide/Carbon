@@ -33,7 +33,6 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.OptionValueParser;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -81,7 +80,7 @@ public class NicknameCommand extends CarbonCommand {
             )
             .flag(this.commandManager.flagBuilder("nickname")
                 .withAliases("n")
-                .withDescription(RichDescription.of(carbonMessages.commandNicknameArgumentNickname().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname().component()))
                 .withArgument(FlagArgument.<Commander, String>ofType(String.class, "value")
                     .withParser(new OptionValueParser<>())
                     .asOptional()
@@ -90,12 +89,12 @@ public class NicknameCommand extends CarbonCommand {
             )
             .flag(this.commandManager.flagBuilder("reset")
                 .withAliases("r")
-                .withDescription(RichDescription.of(carbonMessages.commandNicknameArgumentReset().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentReset().component()))
                 .withPermission(Permission.of("carbon.nickname.set"))
             )
             .permission("carbon.nickname")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandNicknameDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
@@ -105,10 +104,10 @@ public class NicknameCommand extends CarbonCommand {
 
                     target.displayName(null);
 
-                    carbonMessages.nicknameReset(target);
+                    this.carbonMessages.nicknameReset(target);
 
                     if (sender != target) {
-                        carbonMessages.nicknameResetOthers(sender, target.username());
+                        this.carbonMessages.nicknameResetOthers(sender, target.username());
                     }
 
                     return;
@@ -123,38 +122,38 @@ public class NicknameCommand extends CarbonCommand {
                     // Setting other player's nickname
                     if (target != null && !target.equals(sender)) {
                         target.displayName(nickname);
-                        carbonMessages.nicknameSet(target, nickname);
-                        carbonMessages.nicknameSetOthers(sender, target.username(), nickname);
+                        this.carbonMessages.nicknameSet(target, nickname);
+                        this.carbonMessages.nicknameSetOthers(sender, target.username(), nickname);
                     } else {
                         // Setting own nickname
                         if (!sender.hasPermission("carbon.nickname.self")) {
-                            carbonMessages.nicknameCannotSetOwn(sender);
+                            this.carbonMessages.nicknameCannotSetOwn(sender);
                             return;
                         }
 
                         sender.displayName(nickname);
-                        carbonMessages.nicknameSet(sender, nickname);
+                        this.carbonMessages.nicknameSet(sender, nickname);
                     }
                 } else if (handler.flags().contains("player")) {
                     // Checking other player's nickname
                     final CarbonPlayer target = handler.flags().get("player");
 
                     if (target.displayName() != null) {
-                        carbonMessages.nicknameShowOthers(sender, target.username(), target.displayName());
+                        this.carbonMessages.nicknameShowOthers(sender, target.username(), target.displayName());
                     } else {
-                        carbonMessages.nicknameShowOthersUnset(sender, target.username());
+                        this.carbonMessages.nicknameShowOthersUnset(sender, target.username());
                     }
                 } else {
                     // Checking own nickname
                     if (!sender.hasPermission("carbon.nickname.self")) {
-                        carbonMessages.nicknameCannotSeeOwn(sender);
+                        this.carbonMessages.nicknameCannotSeeOwn(sender);
                         return;
                     }
 
                     if (sender.displayName() != null) {
-                        carbonMessages.nicknameShow(sender, sender.username(), sender.displayName());
+                        this.carbonMessages.nicknameShow(sender, sender.username(), sender.displayName());
                     } else {
-                        carbonMessages.nicknameShowUnset(sender, sender.username());
+                        this.carbonMessages.nicknameShowUnset(sender, sender.username());
                     }
                 }
             })

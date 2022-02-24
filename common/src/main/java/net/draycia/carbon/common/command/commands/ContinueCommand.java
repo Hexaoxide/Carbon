@@ -74,15 +74,15 @@ public class ContinueCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(carbonMessages.commandContinueArgumentMessage().component()))
+                RichDescription.of(this.carbonMessages.commandContinueArgumentMessage().component()))
             .permission("carbon.whisper.continue")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, carbonMessages.commandContinueDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandContinueDescription().component())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
-                    carbonMessages.muteCannotSpeak(sender);
+                    this.carbonMessages.muteCannotSpeak(sender);
                     return;
                 }
 
@@ -90,7 +90,7 @@ public class ContinueCommand extends CarbonCommand {
                 final UUID whisperTarget = sender.lastWhisperTarget();
 
                 if (whisperTarget == null) {
-                    carbonMessages.whisperTargetNotSet(sender, CarbonPlayer.renderName(sender));
+                    this.carbonMessages.whisperTargetNotSet(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
@@ -99,7 +99,7 @@ public class ContinueCommand extends CarbonCommand {
                 final @MonotonicNonNull CarbonPlayer recipient = result.player();
 
                 if (sender.equals(recipient)) {
-                    carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                    this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
                     return;
                 }
 
@@ -107,17 +107,17 @@ public class ContinueCommand extends CarbonCommand {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
                     final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, this.carbonMessages);
 
-                    carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
+                    this.carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;
                 }
 
                 if (sender.ignoring(recipient)) {
-                    carbonMessages.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
+                    this.carbonMessages.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
                     return;
                 }
 
                 if (recipient.ignoring(sender)) {
-                    carbonMessages.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
+                    this.carbonMessages.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
                     return;
                 }
 

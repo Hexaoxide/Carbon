@@ -33,7 +33,6 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.kyori.adventure.key.Key;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -93,17 +92,17 @@ public class IgnoreCommand extends CarbonCommand {
                     final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    carbonMessages.ignoreTargetInvalid(sender);
+                    this.carbonMessages.ignoreTargetInvalid(sender);
                     return;
                 }
 
                 if (target.hasPermission("carbon.ignore.exempt")) {
-                    carbonMessages.ignoreExempt(sender, CarbonPlayer.renderName(target));
+                    this.carbonMessages.ignoreExempt(sender, CarbonPlayer.renderName(target));
                     return;
                 }
 
                 sender.ignoring(target, true);
-                carbonMessages.nowIgnoring(sender, CarbonPlayer.renderName(target));
+                this.carbonMessages.nowIgnoring(sender, CarbonPlayer.renderName(target));
             })
             .build();
 
