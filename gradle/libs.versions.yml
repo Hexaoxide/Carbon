@@ -13,7 +13,7 @@ versions:
   indra: 2.1.0-SNAPSHOT
   licenser: 0.6.1
   shadow: 7.1.1
-  adventure: 4.9.3
+  adventure: 4.10.0-SNAPSHOT
   minimessage: 4.10.0-SNAPSHOT
   cloud: 1.7.0-SNAPSHOT
   configurate: 4.1.2
