@@ -126,7 +126,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                     return;
                 }
 
-                readLocale(localeDirectory, localeFile, locale);
+                this.readLocale(localeDirectory, localeFile, locale);
             }));
 
         try (final Stream<Path> paths = Files.list(localeDirectory)) {

@@ -36,8 +36,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -71,7 +71,7 @@ public class BukkitMessageRenderer<T extends Audience> implements IMessageRender
         final Method method,
         final Type owner
     ) {
-        final List<Placeholder<?>> placeholders = new ArrayList<>();
+        final List<TagResolver> placeholders = new ArrayList<>();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
             placeholders.add(Placeholder.component(entry.getKey(), entry.getValue()));
@@ -97,10 +97,10 @@ public class BukkitMessageRenderer<T extends Audience> implements IMessageRender
                     message = this.parser.parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, placeholders);
                 }
             } else {
-                message = this.miniMessage.deserialize(placeholderResolvedMessage, PlaceholderResolver.placeholders(placeholders));
+                message = this.miniMessage.deserialize(placeholderResolvedMessage, TagResolver.resolver(placeholders));
             }
         } else {
-            message = this.miniMessage.deserialize(placeholderResolvedMessage, PlaceholderResolver.placeholders(placeholders));
+            message = this.miniMessage.deserialize(placeholderResolvedMessage, TagResolver.resolver(placeholders));
         }
 
         final MessageType messageType;

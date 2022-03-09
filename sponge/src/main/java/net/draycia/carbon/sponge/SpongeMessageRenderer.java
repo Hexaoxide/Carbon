@@ -32,8 +32,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -57,7 +57,7 @@ public class SpongeMessageRenderer<T extends Audience> implements IMessageRender
         final Method method,
         final Type owner
     ) {
-        final List<Placeholder<?>> placeholders = new ArrayList<>();
+        final List<TagResolver> placeholders = new ArrayList<>();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
             placeholders.add(Placeholder.component(entry.getKey(), entry.getValue()));
@@ -72,7 +72,7 @@ public class SpongeMessageRenderer<T extends Audience> implements IMessageRender
                 entry.getValue());
         }
 
-        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, PlaceholderResolver.placeholders(placeholders));
+        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, TagResolver.resolver(placeholders));
         final MessageType messageType;
         final @Nullable ChatType chatType = method.getAnnotation(ChatType.class);
 

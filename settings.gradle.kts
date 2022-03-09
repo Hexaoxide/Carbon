@@ -1,17 +1,16 @@
-enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
   repositories {
     mavenCentral()
     maven("https://repo.parks.dev/repository/maven-public/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
-    // Paper API
+    maven("https://oss.sonatype.org/content/repositories/snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
+    // PaperMC
     maven("https://papermc.io/repo/repository/maven-public/")
     // Sponge API
     maven("https://repo.spongepowered.org/repository/maven-public/")
-    // Velocity API
-    maven("https://nexus.velocitypowered.com/repository/maven-public/")
     // Velocity Proxy for run config
     ivy("https://versions.velocitypowered.com/download/") {
       patternLayout { artifact("[revision].[ext]") }
@@ -24,7 +23,10 @@ dependencyResolutionManagement {
     //}
     // temporary cloud snapshots repo for sponge-8
     maven("https://repo.jpenilla.xyz/snapshots/") {
-      content { includeGroup("cloud.commandframework") }
+      mavenContent {
+        snapshotsOnly()
+        includeGroup("cloud.commandframework")
+      }
     }
     // PlaceholderAPI
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
@@ -34,8 +36,18 @@ dependencyResolutionManagement {
       content { includeGroupByRegex("com\\.github\\..*") }
     }
     // EssentialsDiscord
-    //maven("https://repo.essentialsx.net/releases/")
-    maven("https://repo.essentialsx.net/snapshots/")
+    maven("https://repo.essentialsx.net/releases/") {
+      mavenContent {
+        releasesOnly()
+        includeGroup("net.essentialsx")
+      }
+    }
+    maven("https://repo.essentialsx.net/snapshots/") {
+      mavenContent {
+        snapshotsOnly()
+        includeGroup("net.essentialsx")
+      }
+    }
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -52,7 +64,7 @@ pluginManagement {
 }
 
 plugins {
-  id("ca.stellardrift.polyglot-version-catalogs") version "5.0.0"
+  id("ca.stellardrift.polyglot-version-catalogs") version "5.0.1"
   id("quiet-fabric-loom") version "0.11-SNAPSHOT"
 }
 

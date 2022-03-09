@@ -32,7 +32,7 @@ tasks {
     relocateDependency("io.leangen.geantyref")
   }
   runServer {
-    minecraftVersion("1.18.1")
+    minecraftVersion("1.18.2")
   }
 }
 
@@ -41,7 +41,7 @@ bukkit {
   name = rootProject.name
   version = project.version as String
   main = "net.draycia.carbon.bukkit.CarbonChatBukkit"
-  apiVersion = "1.16"
+  apiVersion = "1.18"
   author = "Draycia"
   depend = listOf("LuckPerms")
   softDepend = listOf("PlaceholderAPI", "EssentialsDiscord")

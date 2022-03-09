@@ -16,7 +16,6 @@ fun ShadowJar.relocateDependency(pkg: String) {
  */
 fun ShadowJar.standardRelocations() {
   relocateDependency("org.bstats")
-  relocateDependency("net.kyori.adventure.text.minimessage")
   relocateDependency("net.kyori.adventure.serializer.configurate4")
   relocateDependency("net.kyori.event")
   relocateDependency("net.kyori.moonshine")
