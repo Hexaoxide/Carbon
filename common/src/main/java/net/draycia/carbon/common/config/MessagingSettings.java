@@ -30,6 +30,8 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class MessagingSettings {
 
+    private boolean enabled = false;
+
     @Comment("Options: RABBITMQ, NATS, REDIS")
     private MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
 
@@ -50,6 +52,10 @@ public class MessagingSettings {
 
     @Comment("RabbitMQ and Redis password")
     private String password = "password"; // RabbitMQ and Redis only
+
+    public boolean enabled() {
+        return this.enabled;
+    }
 
     public MessagingManager.@NonNull BrokerType brokerType() {
         return this.brokerType;
