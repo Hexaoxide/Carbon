@@ -177,7 +177,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Override
     public @NonNull Key key() {
-        return this.key;
+        return Objects.requireNonNull(this.key);
     }
 
     private @Nullable ConfigChannelMessageService createMessageService() {
