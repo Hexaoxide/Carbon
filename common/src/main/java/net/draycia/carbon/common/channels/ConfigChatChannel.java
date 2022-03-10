@@ -172,9 +172,9 @@ public final class ConfigChatChannel implements ChatChannel {
             return message;
         }
 
-        TagResolver.Builder resolver = TagResolver.builder();
+        final TagResolver.Builder resolver = TagResolver.builder();
 
-        for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
+        for (final Map.Entry<String, TagResolver> entry : this.DEFAULT_TAGS.entrySet()) {
             if (sender.hasPermission("carbon.messagetags." + entry.getKey())) {
                 resolver.resolver(entry.getValue());
             }
