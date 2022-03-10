@@ -4,6 +4,13 @@ dependencyResolutionManagement {
   repositories {
     mavenCentral()
     maven("https://repo.parks.dev/repository/maven-public/")
+    // temporary cloud snapshots repo for sponge-8
+    maven("https://repo.jpenilla.xyz/snapshots/") {
+      mavenContent {
+        snapshotsOnly()
+        includeGroup("cloud.commandframework")
+      }
+    }
     maven("https://oss.sonatype.org/content/repositories/snapshots/") {
       mavenContent { snapshotsOnly() }
     }
@@ -16,17 +23,6 @@ dependencyResolutionManagement {
       patternLayout { artifact("[revision].[ext]") }
       metadataSources { artifact() }
       content { includeModule("com.velocitypowered", "velocity-proxy") }
-    }
-    // cloud snapshots repo
-    //maven("https://repo.incendo.org/content/repositories/snapshots") {
-    //  content { includeGroup("cloud.commandframework") }
-    //}
-    // temporary cloud snapshots repo for sponge-8
-    maven("https://repo.jpenilla.xyz/snapshots/") {
-      mavenContent {
-        snapshotsOnly()
-        includeGroup("cloud.commandframework")
-      }
     }
     // PlaceholderAPI
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
