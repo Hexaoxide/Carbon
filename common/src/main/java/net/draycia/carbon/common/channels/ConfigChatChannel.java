@@ -48,6 +48,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
@@ -151,7 +152,7 @@ public final class ConfigChatChannel implements ChatChannel {
         );
     }
 
-    private Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
+    private transient Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
         Map.entry("hover", StandardTags.hoverEvent()),
         Map.entry("click", StandardTags.clickEvent()),
         Map.entry("color", StandardTags.color()),
@@ -190,7 +191,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
         final MiniMessage miniMessage = MiniMessage.builder().tags(resolver.build()).build();
 
-        return miniMessage.deserialize(MiniMessage.miniMessage().serialize(message));
+        return miniMessage.deserialize(PlainTextComponentSerializer.plainText().serialize(message));
     }
 
     @Override
