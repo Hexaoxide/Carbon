@@ -22,6 +22,7 @@ package net.draycia.carbon.common.users;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -47,7 +48,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected @Nullable Key selectedChannel = null;
 
     // All players have these
-    protected @MonotonicNonNull String username;
+    protected transient @MonotonicNonNull String username = null;
     protected @MonotonicNonNull UUID uuid;
 
     // Display information
@@ -231,7 +232,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public String username() {
+        if (this.username == null) {
+            this.username = Objects.requireNonNull(CarbonChatProvider.carbonChat().server()
+                .resolveName(this.uuid).join());
+        }
+
         return this.username;
+    }
+
+    public void username(final String username) {
+        this.username = username;
     }
 
     @Override

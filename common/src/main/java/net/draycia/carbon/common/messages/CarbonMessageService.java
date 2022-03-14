@@ -341,4 +341,22 @@ public interface CarbonMessageService {
     @Message("command.whisper.description")
     RenderedMessage commandWhisperDescription();
 
+    @Message("command.updateusername.description")
+    RenderedMessage commandUpdateUsernameDescription();
+
+    @Message("command.updateusername.argument.player")
+    RenderedMessage commandUpdateUsernameArgumentPlayer();
+
+    @Message("command.updateusername.argument.uuid")
+    RenderedMessage commandUpdateUsernameArgumentUUID();
+
+    @Message("command.updateusername.notupdated")
+    void usernameNotUpdated(final Audience recipient);
+
+    @Message("command.updateusername.fetching")
+    void usernameFetching(final Audience audience);
+
+    @Message("command.updateusername.updated")
+    void usernameUpdated(final Audience audience, @Placeholder("newname") final String newName);
+
 }
