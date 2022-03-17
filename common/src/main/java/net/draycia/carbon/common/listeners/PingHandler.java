@@ -29,6 +29,7 @@ import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -58,7 +59,7 @@ public class PingHandler {
                         recipient.playSound(configFactory.primaryConfig().pings().sound());
                     }
 
-                    return matchedText.color(configFactory.primaryConfig().pings().highlightTextColor());
+                    return Component.text(recipientPlayer.username()).color(configFactory.primaryConfig().pings().highlightTextColor());
                 })
                 .build()), MessageType.CHAT);
         });
