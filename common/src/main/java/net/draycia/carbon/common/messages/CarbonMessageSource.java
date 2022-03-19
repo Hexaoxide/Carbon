@@ -199,7 +199,8 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         final String value = this.locales.get(this.defaultLocale).getProperty(key);
 
         if (value == null) {
-            throw new IllegalStateException("No message mapping for key " + key);
+            this.logger.warn("No message mapping for key " + key + " in default locale " + this.defaultLocale.getDisplayName());
+            return key;
         }
 
         return value;

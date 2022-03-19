@@ -44,6 +44,7 @@ import ninja.egg82.messenger.handler.AbstractServerMessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandlerImpl;
 import ninja.egg82.messenger.packets.MultiPacket;
+import ninja.egg82.messenger.packets.Packet;
 import ninja.egg82.messenger.packets.server.HeartbeatPacket;
 import ninja.egg82.messenger.packets.server.InitializationPacket;
 import ninja.egg82.messenger.packets.server.KeepAlivePacket;
@@ -148,6 +149,11 @@ public class MessagingManager {
         final String name = "engine1";
         final String channelName = "carbon-data";
 
+        if (!messagingSettings.enabled()) {
+            this.messagingService = EMPTY_MESSAGING_SERVICE;
+            return;
+        }
+
         switch (messagingSettings.brokerType()) {
             case RABBITMQ -> {
                 final RabbitMQMessagingService.Builder builder = RabbitMQMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
@@ -200,6 +206,32 @@ public class MessagingManager {
             final @NotNull MessagingHandler messagingHandler
         ) {
             super(serverId, packetService, messagingHandler);
+        }
+
+    }
+
+    private static final MessagingService EMPTY_MESSAGING_SERVICE = new EmptyMessagingService();
+
+    private static final class EmptyMessagingService implements MessagingService {
+
+        @Override
+        public String getName() {
+            return "";
+        }
+
+        @Override
+        public void close() {
+
+        }
+
+        @Override
+        public boolean isClosed() {
+            return true;
+        }
+
+        @Override
+        public void sendPacket(@NotNull UUID messageId, @NotNull Packet packet) {
+
         }
 
     }
