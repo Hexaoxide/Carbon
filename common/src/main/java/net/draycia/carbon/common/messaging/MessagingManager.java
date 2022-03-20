@@ -230,7 +230,7 @@ public class MessagingManager {
         }
 
         @Override
-        public void sendPacket(@NotNull UUID messageId, @NotNull Packet packet) {
+        public void sendPacket(final @NotNull UUID messageId, final @NotNull Packet packet) {
 
         }
 
