@@ -27,6 +27,10 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("it.unimi.dsi.fastutil")
   relocateDependency("org.jdbi")
   relocateDependency("com.github.benmanes")
+  relocateDependency("org.mariadb.jdbc")
+  relocateDependency("org.flywaydb.core")
+  relocateDependency("com.zaxxer.hikari")
+  relocateDependency("org.postgresql")
 }
 
 fun ShadowJar.relocateCloud() {
