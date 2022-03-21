@@ -53,6 +53,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.events.CarbonReloadEvent;
+import net.draycia.carbon.common.events.ChannelRegisterEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.audience.MessageType;
@@ -60,7 +61,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
-import net.kyori.registry.DefaultedRegistry;
+import net.kyori.registry.DefaultedRegistryGetter;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -80,7 +81,7 @@ import static net.kyori.adventure.text.Component.empty;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry<Key, ChatChannel> {
+public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistryGetter<Key, ChatChannel> {
 
     private static @MonotonicNonNull ObjectMapper<ConfigChatChannel> MAPPER;
 
@@ -97,7 +98,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     private final Logger logger;
     private final ConfigFactory configFactory;
     private @MonotonicNonNull Key defaultKey;
-    private @MonotonicNonNull ChatChannel basicChannel;
+    //private @MonotonicNonNull ChatChannel basicChannel;
     private final CarbonMessages carbonMessages;
     private final CarbonChat carbonChat;
 
@@ -110,7 +111,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final Logger logger,
         final ConfigFactory configFactory,
         final CarbonMessages carbonMessages,
-        final BasicChatChannel basicChannel,
+        //final BasicChatChannel basicChannel,
         final CarbonChat carbonChat
     ) {
         this.configChannelDir = dataDirectory.resolve("channels");
@@ -118,7 +119,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         this.logger = logger;
         this.configFactory = configFactory;
         this.carbonMessages = carbonMessages;
-        this.basicChannel = basicChannel;
+        //this.basicChannel = basicChannel;
         this.carbonChat = carbonChat;
 
         carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
@@ -212,9 +213,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
         // otherwise, register all channels found
         try (final Stream<Path> paths = Files.walk(this.configChannelDir)) {
-            final CommandManager<Commander> commandManager =
-                this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
-
             paths.forEach(path -> {
                 final String fileName = path.getFileName().toString();
 
@@ -230,7 +228,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 }
 
                 if (chatChannel.shouldRegisterCommands()) {
-                    this.registerChannelCommands(carbonMessages, chatChannel, commandManager);
+                    this.registerChannelCommands(chatChannel);
                 }
             });
 
@@ -250,6 +248,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         } catch (final IOException exception) {
             exception.printStackTrace();
         }
+
+        this.carbonChat.eventHandler().emit(new ChannelRegisterEvent(this.channelMap.values(), this));
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
@@ -264,27 +264,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
 
         return null;
-    }
-
-    @Override
-    public ChatChannel defaultValue() {
-        return Objects.requireNonNull(this.get(this.defaultKey));
-    }
-
-    @Override
-    public Key defaultKey() {
-        return this.defaultKey;
-    }
-
-    @Override
-    public ChatChannel getOrDefault(final Key key) {
-        final @Nullable ChatChannel channel = this.get(key);
-
-        if (channel != null) {
-            return channel;
-        }
-
-        return this.defaultValue();
     }
 
     private void registerDefaultChannel() {
@@ -323,60 +302,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         this.register(channelKey, channel);
 
         return channel;
-    }
-
-    private void registerChannelCommands(
-        final CarbonMessages carbonMessages,
-        final ChatChannel channel,
-        final CommandManager<Commander> commandManager
-    ) {
-        var builder = commandManager.commandBuilder(channel.commandName(),
-                channel.commandAliases(), commandManager.createDefaultCommandMeta())
-            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
-
-        if (channel.permission() != null) {
-            builder = builder.permission(channel.permission());
-
-            // Add to LuckPerms permission suggestions... lol
-            this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
-                checker.test(channel.permission());
-                checker.test(channel.permission() + ".see");
-                checker.test(channel.permission() + ".speak");
-            });
-        }
-
-        final Key channelKey = channel.key();
-
-        final var command = builder.senderType(PlayerCommander.class)
-            .handler(handler -> {
-                final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-                final @Nullable ChatChannel chatChannel = this.get(channelKey);
-
-                if (sender.muted()) {
-                    this.carbonMessages.muteCannotSpeak(sender);
-                    return;
-                }
-
-                if (handler.contains("message")) {
-                    final String message = handler.get("message");
-
-                    // TODO: trigger platform events related to chat
-                    this.sendMessageInChannelAsPlayer(sender, chatChannel, message);
-                } else {
-                    sender.selectedChannel(chatChannel);
-                    this.carbonMessages.changedChannels(sender, channelKey.value());
-                }
-            })
-            .build();
-
-        commandManager.command(command);
-
-        final var channelCommand = commandManager.commandBuilder("channel", "ch")
-            .literal(channelKey.value())
-            .proxies(command)
-            .build();
-
-        commandManager.command(channelCommand);
     }
 
     private void sendMessageInChannelAsPlayer(
@@ -448,6 +373,60 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     @Override
+    public void registerChannelCommands(final ChatChannel channel) {
+        final CommandManager<Commander> commandManager =
+            this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
+
+        var builder = commandManager.commandBuilder(channel.commandName(),
+                channel.commandAliases(), commandManager.createDefaultCommandMeta())
+            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
+
+        if (channel.permission() != null) {
+            builder = builder.permission(channel.permission());
+
+            // Add to LuckPerms permission suggestions... lol
+            this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
+                checker.test(channel.permission());
+                checker.test(channel.permission() + ".see");
+                checker.test(channel.permission() + ".speak");
+            });
+        }
+
+        final Key channelKey = channel.key();
+
+        final var command = builder.senderType(PlayerCommander.class)
+            .handler(handler -> {
+                final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final @Nullable ChatChannel chatChannel = this.get(channelKey);
+
+                if (sender.muted()) {
+                    this.carbonMessages.muteCannotSpeak(sender);
+                    return;
+                }
+
+                if (handler.contains("message")) {
+                    final String message = handler.get("message");
+
+                    // TODO: trigger platform events related to chat
+                    this.sendMessageInChannelAsPlayer(sender, chatChannel, message);
+                } else {
+                    sender.selectedChannel(chatChannel);
+                    this.carbonMessages.changedChannels(sender, channelKey.value());
+                }
+            })
+            .build();
+
+        commandManager.command(command);
+
+        final var channelCommand = commandManager.commandBuilder("channel", "ch")
+            .literal(channelKey.value())
+            .proxies(command)
+            .build();
+
+        commandManager.command(channelCommand);
+    }
+
+    @Override
     public @NonNull ChatChannel register(final @NonNull Key key, final @NonNull ChatChannel value) {
         this.channelMap.put(key, value);
         return value;
@@ -471,6 +450,27 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     @Override
     public @NonNull Iterator<ChatChannel> iterator() {
         return Iterators.unmodifiableIterator(this.channelMap.values().iterator());
+    }
+
+    @Override
+    public ChatChannel defaultValue() {
+        return Objects.requireNonNull(this.get(this.defaultKey));
+    }
+
+    @Override
+    public Key defaultKey() {
+        return this.defaultKey;
+    }
+
+    @Override
+    public ChatChannel getOrDefault(final Key key) {
+        final @Nullable ChatChannel channel = this.get(key);
+
+        if (channel != null) {
+            return channel;
+        }
+
+        return this.defaultValue();
     }
 
 }
