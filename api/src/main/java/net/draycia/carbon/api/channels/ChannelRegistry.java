@@ -21,11 +21,21 @@ package net.draycia.carbon.api.channels;
 
 import net.draycia.carbon.api.util.DefaultedKeyValueRegistry;
 import net.kyori.adventure.key.Key;
+import net.kyori.registry.Registry;
 
 /**
  * Registry for chat channels.
  *
  * @since 2.0.0
  */
-public interface ChannelRegistry extends DefaultedKeyValueRegistry<Key, ChatChannel> {
+public interface ChannelRegistry extends Registry<Key, ChatChannel>, DefaultedKeyValueRegistry<Key, ChatChannel> {
+
+    /**
+     * Registers ingame commands for the channel.
+     *
+     * @param channel the channel to register commands for
+     * @since 2.1.0
+     */
+    void registerChannelCommands(final ChatChannel channel);
+
 }
