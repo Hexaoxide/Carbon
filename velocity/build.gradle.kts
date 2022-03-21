@@ -28,7 +28,10 @@ tasks {
   shadowJar {
     dependencies {
       relocateDependency("io.leangen.geantyref")
-
+      relocateDependency("org.mariadb.jdbc")
+      relocateDependency("org.flywaydb.core")
+      relocateDependency("com.zaxxer.hikari")
+      relocateDependency("org.postgresql")
       // included in velocity
       exclude(dependency("com.google.inject:guice"))
       exclude(dependency("aopalliance:aopalliance"))
