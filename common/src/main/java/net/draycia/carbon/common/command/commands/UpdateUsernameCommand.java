@@ -25,7 +25,6 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
-import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -34,7 +33,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.key.Key;
@@ -46,14 +45,14 @@ public class UpdateUsernameCommand extends CarbonCommand {
 
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
-    final CarbonMessageService messageService;
+    final CarbonMessages messageService;
     final PlayerSuggestions playerSuggestions;
 
     @Inject
     public UpdateUsernameCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService,
+        final CarbonMessages messageService,
         final PlayerSuggestions playerSuggestions
     ) {
         this.carbonChat = carbonChat;
@@ -75,7 +74,7 @@ public class UpdateUsernameCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
                 RichDescription.of(this.messageService.commandUpdateUsernameArgumentPlayer().component()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
@@ -92,7 +91,7 @@ public class UpdateUsernameCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = this.carbonChat.server().player(handler.<UUID>get("uuid")).join();
+                    final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
                     target = sender;
