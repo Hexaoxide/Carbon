@@ -32,5 +32,4 @@ quality. They provide nodes in various countries, such as the U.S. (New York & L
 
 They have kindly provided me with a server to host CarbonChat on, which I'm still working on preparing.
 
-If you're interested in a node, you can check them out at https://dedimc.promo/CarbonChat and use promo code **
-CarbonChat**
+If you're interested in a node, you can check them out at https://dedimc.promo/CarbonChat and use promo code **CarbonChat**
