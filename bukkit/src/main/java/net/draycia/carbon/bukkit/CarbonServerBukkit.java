@@ -99,15 +99,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
         // TODO: user cache?
-        return CompletableFuture.supplyAsync(() -> {
-            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-
-            if (!offlinePlayer.hasPlayedBefore()) {
-                return null;
-            }
-
-            return offlinePlayer.getName();
-        });
+        return CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(uuid).getName());
     }
 
 }
