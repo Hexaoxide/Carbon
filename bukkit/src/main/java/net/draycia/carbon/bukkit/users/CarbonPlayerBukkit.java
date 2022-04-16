@@ -158,4 +158,8 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
             .anyMatch(MetadataValue::asBoolean);
     }
 
+    public @Nullable Player bukkitPlayer() {
+        return Bukkit.getPlayer(this.uuid());
+    }
+
 }
