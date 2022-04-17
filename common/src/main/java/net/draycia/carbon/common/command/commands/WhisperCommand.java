@@ -78,7 +78,7 @@ public class WhisperCommand extends CarbonCommand {
                 RichDescription.of(this.messageService.commandWhisperArgumentPlayer().component()))
             .argument(StringArgument.greedy("message"),
                 RichDescription.of(this.messageService.commandWhisperArgumentMessage().component()))
-            .permission("carbon.whisper.message")
+            .permission("carbon.whisper")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandWhisperDescription().component())
             .handler(handler -> {
@@ -125,7 +125,7 @@ public class WhisperCommand extends CarbonCommand {
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());
                 recipient.whisperReplyTarget(sender.uuid());
-            }) // TODO: let command name and aliases be configurable, because why not
+            })
             .build();
 
         this.commandManager.command(command);
