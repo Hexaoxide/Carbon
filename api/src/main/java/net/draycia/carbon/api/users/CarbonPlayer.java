@@ -40,6 +40,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface CarbonPlayer extends Audience, Identified {
 
+    CarbonPlayer EMPTY = new EmptyCarbonPlayer();
+
     /**
      * Returns the appropriate {@link Component} to represent the player's name.
      *

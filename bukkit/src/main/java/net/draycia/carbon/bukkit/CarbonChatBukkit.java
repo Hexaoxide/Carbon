@@ -37,6 +37,7 @@ import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.listeners.DiscordMessageListener;
+import net.draycia.carbon.bukkit.listeners.DiscordSRVListener;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
@@ -134,6 +135,10 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
             final DiscordMessageListener discordMessageListener = this.injector.getInstance(DiscordMessageListener.class);
             Bukkit.getPluginManager().registerEvents(discordMessageListener, this);
             discordMessageListener.init();
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
+            this.injector.getInstance(DiscordSRVListener.class);
         }
     }
 

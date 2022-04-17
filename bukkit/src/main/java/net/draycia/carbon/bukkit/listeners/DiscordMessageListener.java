@@ -29,6 +29,7 @@ import net.essentialsx.api.v2.events.discord.DiscordRelayEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
 import net.essentialsx.api.v2.services.discord.MessageType;
 import net.kyori.adventure.key.Key;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,11 +38,15 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class DiscordMessageListener implements Listener {
 
     private final CarbonChat carbonChat;
-    private Map<Key, MessageType> channelMessageTypes = new HashMap<>();
+    private final Map<Key, MessageType> channelMessageTypes = new HashMap<>();
 
     @Inject
-    public DiscordMessageListener(final CarbonChat carbonChat) {
+    public DiscordMessageListener(
+        final CarbonChat carbonChat,
+        final Logger logger
+    ) {
         this.carbonChat = carbonChat;
+        logger.info("EssentialsXDiscord found! Enabling hook.");
     }
 
     // Minecraft -> Discord

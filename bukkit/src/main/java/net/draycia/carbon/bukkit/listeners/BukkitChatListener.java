@@ -123,6 +123,7 @@ public final class BukkitChatListener implements Listener {
 
         try {
             event.viewers().clear();
+            event.setCancelled(true);
         } catch (final UnsupportedOperationException exception) {
             exception.printStackTrace();
         }

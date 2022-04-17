@@ -20,6 +20,7 @@ dependencies {
   // Plugins
   compileOnly("me.clip:placeholderapi:2.10.9") // TODO: move this to libs.versions.yml
   compileOnly(libs.essentialsXDiscord)
+  compileOnly(libs.discordsrv)
 }
 
 carbonShadowPlatform {
@@ -44,7 +45,7 @@ bukkit {
   apiVersion = "1.18"
   author = "Draycia"
   depend = listOf("LuckPerms")
-  softDepend = listOf("PlaceholderAPI", "EssentialsDiscord")
+  softDepend = listOf("PlaceholderAPI", "EssentialsDiscord", "DiscordSRV")
   website = GITHUB_REPO_URL
   permissions {
     register("carbon.clearchat") {

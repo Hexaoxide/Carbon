@@ -36,6 +36,7 @@ versions:
   adventurePlatformFabric: 5.2.0
   luckPermsApi: 5.3
   essentialsx: 2.19.3
+  discordsrv: 1.25.0
 
 dependencies:
   adventureBom:
@@ -216,5 +217,9 @@ dependencies:
     group: net.essentialsx
     name: EssentialsXDiscord
     version: { ref: essentialsx }
+  discordsrv:
+    group: com.discordsrv
+    name: discordsrv
+    version: { ref: discordsrv }
 
 bundles:
