@@ -55,7 +55,7 @@ public class CarbonChatHook implements ChatHook {
 
     @Override
     public void broadcastMessageToChannel(final String channel, final github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component message) {
-        final String mmFormattedMessage = MiniMessage.get().serialize(message);
+        final String mmFormattedMessage = MiniMessage.miniMessage().serialize(message);
         ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, ChannelUtils.locateChannel(channel));
     }
 

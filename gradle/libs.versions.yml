@@ -36,7 +36,7 @@ versions:
   adventurePlatformFabric: 5.2.0
   luckPermsApi: 5.3
   essentialsx: 2.19.3
-  discordsrv: 1.25.0
+  discordsrv: 1.26.0-SNAPSHOT
 
 dependencies:
   adventureBom:

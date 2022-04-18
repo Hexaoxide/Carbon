@@ -23,6 +23,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import github.scarsz.discordsrv.DiscordSRV;
 import io.papermc.lib.PaperLib;
 import java.nio.file.Path;
 import java.util.Set;
@@ -37,8 +38,8 @@ import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
 import net.draycia.carbon.bukkit.listeners.DiscordMessageListener;
-import net.draycia.carbon.bukkit.listeners.DiscordSRVListener;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
+import net.draycia.carbon.bukkit.util.CarbonChatHook;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -138,7 +139,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
-            this.injector.getInstance(DiscordSRVListener.class);
+            this.logger.info("DiscordSRV found! Enabling hook.");
+            DiscordSRV.getPlugin().getPluginHooks().add(new CarbonChatHook());
         }
     }
 
