@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.channels.messages;
 
 import java.util.Locale;
@@ -25,12 +44,13 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Basic chat formats.
         The "default_format" format is the main one you want to edit.
         The "console" format is what's shown to console.
+        If PlaceholderAPI is installed, PAPI placeholders (with %) are supported.
         The keys are group names, the values are chat formats (MiniMessage).
         For example:
             basic {
                 default_format="<<username>> <message>"
                 vip="[VIP] <<username>> <message>"
-                admin="<white>[</white>%luckperms_prefix%<white>]</white> <display_name><white>: <message></white>"
+                admin="<white>[</white>Prefix<white>]</white> <display_name><white>: <message></white>"
             }
         """)
     private final Map<String, String> defaults = Map.of(

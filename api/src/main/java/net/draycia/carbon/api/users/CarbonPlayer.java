@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.api.users;
 
 import java.util.List;
@@ -5,7 +24,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
@@ -22,10 +40,17 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface CarbonPlayer extends Audience, Identified {
 
+    CarbonPlayer EMPTY = new EmptyCarbonPlayer();
+
+    /**
+     * Returns the appropriate {@link Component} to represent the player's name.
+     *
+     * @param player the player
+     * @return the player's name
+     * @since 2.0.0
+     */
     static Component renderName(final CarbonPlayer player) {
-        if (player.hasActiveTemporaryDisplayName()) {
-            return Objects.requireNonNull(player.temporaryDisplayName());
-        } else if (player.hasCustomDisplayName()) {
+        if (player.hasCustomDisplayName()) {
             return Objects.requireNonNull(player.displayName());
         } else {
             return Component.text(player.username());
@@ -41,9 +66,10 @@ public interface CarbonPlayer extends Audience, Identified {
     String username();
 
     /**
-     * Checks if the player has a display name set through {@link CarbonPlayer#displayName(Component)}
+     * Checks if the player has a display name set through {@link CarbonPlayer#displayName(Component)}.
      *
      * @return if the player has a display name set through {@link CarbonPlayer#displayName(Component)}
+     * @since 2.0.0
      */
     boolean hasCustomDisplayName();
 
@@ -63,35 +89,6 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     void displayName(final @Nullable Component displayName);
-
-    /**
-     * Temporarily sets the player's display name.<br>
-     * Setting null is equivalent to setting the display name to the username.
-     * If the player logs off or is otherwise disconnected from the server,
-     *  their temporary display name will be reset.
-     *
-     * @param temporaryDisplayName the new display name
-     * @param expirationEpoch when the display name expires, in milliseconds from Unix epoch, or -1 for no expiration
-     * @since 2.0.0
-     */
-    void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch);
-
-    /**
-     * The player's temporary display name.
-     *
-     * @return the player's temporary display name.
-     */
-    // TODO: improve javadocs here
-    @Nullable Component temporaryDisplayName();
-
-    /**
-     * The expiration date in milliseconds for the temporary display name.
-     *
-     * @return the temporary display name's expiration in MS since Unix Epoch
-     */
-    long temporaryDisplayNameExpiration();
-
-    boolean hasActiveTemporaryDisplayName();
 
     /**
      * The player's UUID, often used for identification purposes.
@@ -160,39 +157,38 @@ public interface CarbonPlayer extends Audience, Identified {
     List<String> groups();
 
     /**
-     * A copy of the mute entries the player has.
+     * Returns if the player is muted.
      *
-     * @return a copy of the player's mute entries
+     * @return if the player is muted
      * @since 2.0.0
      */
-    List<MuteEntry> muteEntries();
+    boolean muted();
 
     /**
-     * Returns if the player is muted for the channel and unable to speak in it.
+     * Mutes and unmutes the player.
      *
-     * @param chatChannel the chat channel
-     * @return if the player is muted in the channel
+     * @param muted if the player is now muted
      * @since 2.0.0
      */
-    boolean muted(final ChatChannel chatChannel);
+    void muted(boolean muted);
 
     /**
-     * Mutes and unmutes the player for the specified channel.
+     * Checks if the sender is being ignored by this player.
      *
-     * @param chatChannel the channel to mute/unmute for
-     * @param muted if the player should be muted for the channel
-     * @param cause the UUID of the cause of the mute, typically a player UUID
-     * @param duration the duration of the mute, or -1 if it does not expire
-     * @param reason the reason the player was muted
+     * @param sender the potential source of a message
+     * @return if this player is ignoring the sender
      * @since 2.0.0
      */
-    @Nullable MuteEntry addMuteEntry(
-        final @Nullable ChatChannel chatChannel,
-        final boolean muted,
-        final @Nullable UUID cause,
-        final long duration,
-        final @Nullable String reason
-    );
+    boolean ignoring(final CarbonPlayer sender);
+
+    /**
+     * Adds the player to and removes the player from the ignore list.
+     *
+     * @param player the player to be added/removed
+     * @param nowIgnoring if the player should be ignored
+     * @since 2.0.0
+     */
+    void ignoring(final CarbonPlayer player, boolean nowIgnoring);
 
     /**
      * Returns if the player is deafened and unable to read messages.
@@ -228,14 +224,21 @@ public interface CarbonPlayer extends Audience, Identified {
      * Sends the message as the player.
      *
      * @param message the message to be sent
-     * //@return the message result
      * @since 2.0.0
      */
-    // TODO: change return type, provide information useful like what message was actually sent?
     void sendMessageAsPlayer(final String message);
 
     /**
-     * Returns whether or not the player is online.
+     * Checks if the player is allowed to send the message or not.
+     *
+     * @param message the message
+     * @return if the message can be sent in chat
+     * @since 2.0.4
+     */
+    boolean speechPermitted(final String message);
+
+    /**
+     * Returns whether the player is online.
      *
      * @return if the player is online.
      * @since 2.0.0

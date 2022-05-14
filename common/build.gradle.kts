@@ -7,16 +7,19 @@ dependencies {
 
   // Configs
   api(libs.configurateHocon)
-  api(libs.configurateGuice)
   api(libs.adventureSerializerConfigurate4) {
-    isTransitive = false
-  }
-  api(libs.adventureTextSerializerGson) {
     isTransitive = false
   }
   api(libs.typesafeConfig)
 
+  // Cloud
+  api(platform(libs.cloudBom))
+  api(libs.cloudCore)
+  api(libs.cloudMinecraftExtras) {
+    isTransitive = false
+  }
+
   // Other
   api(libs.guice)
-  api(libs.cloudMinecraftExtras)
+  compileOnlyApi(libs.luckPermsApi)
 }

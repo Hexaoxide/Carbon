@@ -1,21 +1,33 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.bukkit;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
-import cloud.commandframework.exceptions.ArgumentParseException;
-import cloud.commandframework.exceptions.CommandExecutionException;
-import cloud.commandframework.exceptions.InvalidCommandSenderException;
-import cloud.commandframework.exceptions.InvalidSyntaxException;
-import cloud.commandframework.exceptions.NoPermissionException;
+import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Path;
-import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.bukkit.command.BukkitCommander;
@@ -23,10 +35,8 @@ import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
@@ -36,8 +46,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatBukkitModule extends AbstractModule {
-
-    private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonChatBukkit carbonChat;
@@ -72,7 +80,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
             throw new RuntimeException("Failed to initialize command manager.", ex);
         }
 
-        decorateCommandManager(commandManager, this.carbonChat.messageService());
+        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.messageService());
 
         commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
@@ -87,52 +95,6 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         return commandManager;
     }
 
-    // This should be in common and applied to every platforms command manager, not in bukkit module
-    private static void decorateCommandManager(
-        final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
-    ) {
-        registerExceptionHandlers(commandManager, messageService);
-    }
-
-    private static void registerExceptionHandlers(
-        final CommandManager<Commander> commandManager,
-        final CarbonMessageService messageService
-    ) {
-        commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, exception) -> {
-            final var throwableMessage = CloudUtils.message(exception.getCause());
-
-            messageService.errorCommandArgumentParsing(sender, throwableMessage);
-        });
-        commandManager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, exception) -> {
-            final var senderType = exception.getRequiredSender().getSimpleName();
-
-            messageService.errorCommandInvalidSender(sender, senderType);
-        });
-        commandManager.registerExceptionHandler(InvalidSyntaxException.class, (sender, exception) -> {
-            final var syntax =
-                Component.text(exception.getCorrectSyntax()).replaceText(
-                    config -> config.match(SPECIAL_CHARACTERS_PATTERN)
-                        .replacement(match -> match.color(NamedTextColor.WHITE)));
-
-            messageService.errorCommandInvalidSyntax(sender, syntax);
-        });
-        commandManager.registerExceptionHandler(NoPermissionException.class, (sender, exception) -> {
-            messageService.errorCommandNoPermission(sender);
-        });
-        commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
-            final Throwable cause = exception.getCause();
-            cause.printStackTrace();
-
-            final StringWriter writer = new StringWriter();
-            cause.printStackTrace(new PrintWriter(writer));
-            final String stackTrace = writer.toString().replaceAll("\t", "    ");
-            final @Nullable Component throwableMessage = CloudUtils.message(cause);
-
-            messageService.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
-        });
-    }
-
     @Override
     public void configure() {
         this.install(new CarbonCommonModule());
@@ -142,6 +104,7 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
+        this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
     }
 
 }

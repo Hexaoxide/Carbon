@@ -1,38 +1,52 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.bukkit;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import github.scarsz.discordsrv.DiscordSRV;
 import io.papermc.lib.PaperLib;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
 import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
+import net.draycia.carbon.bukkit.listeners.DiscordMessageListener;
 import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
+import net.draycia.carbon.bukkit.util.CarbonChatHook;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.command.commands.ClearChatCommand;
-import net.draycia.carbon.common.command.commands.ContinueCommand;
-import net.draycia.carbon.common.command.commands.DebugCommand;
-import net.draycia.carbon.common.command.commands.HelpCommand;
-import net.draycia.carbon.common.command.commands.MuteCommand;
-import net.draycia.carbon.common.command.commands.NicknameCommand;
-import net.draycia.carbon.common.command.commands.ReplyCommand;
-import net.draycia.carbon.common.command.commands.UnmuteCommand;
-import net.draycia.carbon.common.command.commands.WhisperCommand;
-import net.draycia.carbon.common.listeners.DeafenHandler;
-import net.draycia.carbon.common.listeners.ItemLinkHandler;
-import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.common.util.ListenerUtils;
+import net.draycia.carbon.common.util.PlayerUtils;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
@@ -77,9 +91,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         CarbonChatProvider.register(this);
 
-        this.injector = Guice.createInjector(new CarbonChatBukkitModule(
-            this, this.getDataFolder().toPath()));
-
+        this.injector = Guice.createInjector(new CarbonChatBukkitModule(this, this.dataDirectory()));
         this.logger = LogManager.getLogger("CarbonChat");
         this.messageService = this.injector.getInstance(CarbonMessageService.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
@@ -99,54 +111,42 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         }
 
         // Listeners
-        this.injector.getInstance(DeafenHandler.class);
-        this.injector.getInstance(ItemLinkHandler.class);
-        this.injector.getInstance(MuteHandler.class);
+        ListenerUtils.registerCommonListeners(this.injector);
 
         // Commands
-        this.injector.getInstance(ClearChatCommand.class);
-        this.injector.getInstance(ContinueCommand.class);
-        this.injector.getInstance(DebugCommand.class);
-        this.injector.getInstance(MuteCommand.class);
-        this.injector.getInstance(HelpCommand.class);
-        this.injector.getInstance(NicknameCommand.class);
-        this.injector.getInstance(ReplyCommand.class);
-        this.injector.getInstance(UnmuteCommand.class);
-        this.injector.getInstance(WhisperCommand.class);
+        // This is a bit awkward looking
+        CloudUtils.loadCommands(this.injector);
+        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
+        CloudUtils.registerCommands(commandSettings);
 
+        // Player data saving
         final long saveDelay = 5 * 60 * 20;
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this,
-            this::savePlayers, saveDelay, saveDelay);
+            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
 
-        ((CarbonChannelRegistry) this.channelRegistry()).loadChannels();
+        // Load channels
+        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels();
+
+        this.discoverDiscordHooks();
+    }
+
+    private void discoverDiscordHooks() {
+        if (Bukkit.getPluginManager().isPluginEnabled("EssentialsDiscord")) {
+            final DiscordMessageListener discordMessageListener = this.injector.getInstance(DiscordMessageListener.class);
+            Bukkit.getPluginManager().registerEvents(discordMessageListener, this);
+            discordMessageListener.init();
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
+            this.logger.info("DiscordSRV found! Enabling hook.");
+            DiscordSRV.getPlugin().getPluginHooks().add(new CarbonChatHook());
+        }
     }
 
     @Override
     public void onDisable() {
-        this.savePlayers();
-    }
-
-    private void savePlayers() {
-        // TODO: move to common or CarbonServer?
-        for (final var player : this.server().players()) {
-            final var saveResult = this.userManager().savePlayer(((WrappedCarbonPlayer) player).carbonPlayerCommon());
-
-            saveResult.thenAccept(result -> {
-                if (result.player() == null) {
-                    this.server().console().sendMessage(result.reason());
-                }
-            });
-
-            saveResult.exceptionally(exception -> {
-                exception.getCause().printStackTrace();
-                return null;
-            });
-        }
-    }
-
-    public UserManager<CarbonPlayerCommon> userManager() {
-        return this.userManager;
+        PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager).forEach(CompletableFuture::join);
     }
 
     @Override
@@ -179,8 +179,12 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     @Override
-    public IMessageRenderer<SourcedAudience, String, Component, Component> messageRenderer() {
+    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
         return this.injector.getInstance(BukkitMessageRenderer.class);
+    }
+
+    public boolean papiLoaded() {
+        return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
     }
 
 }

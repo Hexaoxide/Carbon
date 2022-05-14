@@ -1,14 +1,34 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.channels;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -37,7 +57,7 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull Component render(
+    public @NotNull RenderedMessage render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,
@@ -54,7 +74,26 @@ public final class BasicChatChannel implements ChatChannel {
 
     @Override
     public @Nullable String quickPrefix() {
-        // todo
+        return null;
+    }
+
+    @Override
+    public boolean shouldRegisterCommands() {
+        return false;
+    }
+
+    @Override
+    public String commandName() {
+        return "basic";
+    }
+
+    @Override
+    public List<String> commandAliases() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public @Nullable String permission() {
         return null;
     }
 
@@ -64,7 +103,7 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public ChannelPermissionResult hearingPermitted(final Audience audience) {
+    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
         return ChannelPermissionResult.allowed();
     }
 
@@ -85,7 +124,7 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients) {
+    public Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients) {
         recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
 
         return recipients;

@@ -1,22 +1,38 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.bukkit.users;
 
-import java.util.Arrays;
-import java.util.List;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import java.util.Collection;
 import java.util.Locale;
-import java.util.Objects;
-import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.CarbonPlayer;
+import java.util.Optional;
+import java.util.Set;
 import net.draycia.carbon.api.util.InventorySlot;
-import net.draycia.carbon.api.util.InventorySlots;
-import net.draycia.carbon.bukkit.util.BukkitCapabilities;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -35,8 +51,8 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
         this.carbonPlayerCommon = carbonPlayerCommon;
     }
 
-    private @Nullable Player player() {
-        return Bukkit.getPlayer(this.carbonPlayerCommon.uuid());
+    private Optional<Player> player() {
+        return Optional.ofNullable(Bukkit.getPlayer(this.carbonPlayerCommon.uuid()));
     }
 
     @Override
@@ -46,80 +62,49 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
 
     @Override
     public @NotNull Audience audience() {
-        final @Nullable Player player = this.player();
-
-        if (player == null) {
-            return Audience.empty();
-        }
-
-        return player;
+        return this.player().map(player -> (Audience) player).orElse(Audience.empty());
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon.displayName(displayName);
 
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            // TODO: don't run this block when the player has a temporary display name already set
+        this.player().ifPresent(player -> {
             // Update player's name in chat
             player.displayName(displayName);
 
             // Update player's name in the tab player list
             player.playerListName(displayName);
-        }
-    }
-
-    @Override
-    public void temporaryDisplayName(final @Nullable Component displayName, final long expirationEpoch) {
-        this.carbonPlayerCommon.temporaryDisplayName(displayName, expirationEpoch);
-
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            // Update player's name in chat
-            player.displayName(displayName);
-
-            // Update player's name in the tab player list
-            player.playerListName(displayName);
-
-            // TODO: schedule task to unset temporary display name when it expires
-        }
-    }
-
-    @Override
-    public boolean hasActiveTemporaryDisplayName() {
-        return this.carbonPlayerCommon.hasActiveTemporaryDisplayName();
+        });
     }
 
     @Override
     public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
-        final @Nullable Player player = this.player(); // This is temporary (it's not)
+        final Optional<Player> player = this.player(); // This is temporary (it's not)
 
-        if (player == null) {
+        if (player.isEmpty()) {
             return null;
         }
 
         final EquipmentSlot equipmentSlot;
 
-        if (slot.equals(InventorySlots.MAIN_HAND)) {
+        if (slot.equals(InventorySlot.MAIN_HAND)) {
             equipmentSlot = EquipmentSlot.HAND;
-        } else if (slot.equals(InventorySlots.OFF_HAND)) {
+        } else if (slot.equals(InventorySlot.OFF_HAND)) {
             equipmentSlot = EquipmentSlot.OFF_HAND;
-        } else if (slot.equals(InventorySlots.HELMET)) {
+        } else if (slot.equals(InventorySlot.HELMET)) {
             equipmentSlot = EquipmentSlot.HEAD;
-        } else if (slot.equals(InventorySlots.CHEST)) {
+        } else if (slot.equals(InventorySlot.CHEST)) {
             equipmentSlot = EquipmentSlot.CHEST;
-        } else if (slot.equals(InventorySlots.LEGS)) {
+        } else if (slot.equals(InventorySlot.LEGS)) {
             equipmentSlot = EquipmentSlot.LEGS;
-        } else if (slot.equals(InventorySlots.BOOTS)) {
+        } else if (slot.equals(InventorySlot.BOOTS)) {
             equipmentSlot = EquipmentSlot.FEET;
         } else {
             return null;
         }
 
-        final @Nullable EntityEquipment equipment = player.getEquipment();
+        final @Nullable EntityEquipment equipment = player.get().getEquipment();
 
         if (equipment == null) {
             return null;
@@ -135,65 +120,28 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public boolean hasPermission(final String permission) {
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            return player.hasPermission(permission);
-        }
-
-        return false;
-    }
-
-    @Override
-    public String primaryGroup() {
-        if (!BukkitCapabilities.vaultEnabled()) {
-            return "default";
-        }
-
-        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
-        final String group = permission.getPrimaryGroup(this.player());
-
-        return Objects.requireNonNullElse(group, "default");
-    }
-
-    @Override
-    public List<String> groups() {
-        if (!BukkitCapabilities.vaultEnabled()) {
-            return List.of("default");
-        }
-
-        final Permission permission = Objects.requireNonNull(BukkitCapabilities.permission());
-        final String[] groups = permission.getPlayerGroups(this.player());
-
-        if (groups != null && groups.length != 0) {
-            return Arrays.asList(groups);
-        }
-
-        return List.of("default"); // TODO: implement
-    }
-
-    @Override
     public @Nullable Locale locale() {
-        final @Nullable Player player = this.player();
-
-        if (player != null) {
-            return player.locale();
-        } else {
-            return null;
-        }
+        return this.player().map(Player::locale).orElse(null);
     }
 
     @Override
     public void sendMessageAsPlayer(final String message) {
         // TODO: ensure method is not executed from main thread
         // bukkit doesn't like that
-        Objects.requireNonNull(this.player()).chat(message);
+        this.player().ifPresent(player -> player.chat(message));
+    }
+
+    @Override
+    public boolean speechPermitted(final String message) {
+        // ...........
+        return new AsyncPlayerChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), message, Set.of()).callEvent()
+            && new AsyncChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), Set.of(),
+            (player, name, msg, receiver) -> msg, Component.text(message), Component.text(message)).callEvent();
     }
 
     @Override
     public boolean online() {
-        return this.player() != null;
+        return this.player().isPresent();
     }
 
     @Override
@@ -203,32 +151,15 @@ public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements For
 
     // Supported by PremiumVanish, SuperVanish, VanishNoPacket
     private boolean hasVanishMeta() {
-        for (final MetadataValue meta : this.player().getMetadata("vanished")) {
-            if (meta.asBoolean()) {
-                return true;
-            }
-        }
-
-        return false;
+        return this.player().stream()
+            .map(player -> player.getMetadata("vanished"))
+            .flatMap(Collection::stream)
+            .filter(value -> value.value() instanceof Boolean)
+            .anyMatch(MetadataValue::asBoolean);
     }
 
-    @Override
-    public boolean awareOf(final CarbonPlayer other) {
-        if (other.vanished()) {
-            return this.hasPermission("carbon.seevanished");
-        }
-
-        return true;
-    }
-
-    @Override
-    public @Nullable ChatChannel selectedChannel() {
-        return this.carbonPlayerCommon.selectedChannel();
-    }
-
-    @Override
-    public void selectedChannel(final @Nullable ChatChannel chatChannel) {
-        this.carbonPlayerCommon.selectedChannel(chatChannel);
+    public @Nullable Player bukkitPlayer() {
+        return Bukkit.getPlayer(this.uuid());
     }
 
 }

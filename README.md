@@ -2,7 +2,7 @@
 
 ### Dev Builds
 
-Carbon is currently in early development and as such, developer / preview builds are not offered.
+Dev builds can be found at https://jenkins.ocelotpotpie.com:8443/job/Carbon/
 
 ### Support
 
@@ -32,5 +32,4 @@ quality. They provide nodes in various countries, such as the U.S. (New York & L
 
 They have kindly provided me with a server to host CarbonChat on, which I'm still working on preparing.
 
-If you're interested in a node, you can check them out at https://dedimc.promo/CarbonChat and use promo code **
-CarbonChat**
+If you're interested in a node, you can check them out at https://dedimc.promo/CarbonChat and use promo code **CarbonChat**

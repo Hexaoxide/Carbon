@@ -1,8 +1,28 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.sponge;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
+import cloud.commandframework.sponge.argument.SinglePlayerSelectorArgument;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -12,6 +32,8 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.sponge.command.SpongeCommander;
 import net.draycia.carbon.sponge.command.SpongePlayerCommander;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -22,16 +44,16 @@ import org.spongepowered.plugin.PluginContainer;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatSpongeModule extends AbstractModule {
 
-    private final CarbonChatSponge carbonChatSponge;
+    private final CarbonChatSponge carbonChat;
     private final Path configDir;
     private final PluginContainer pluginContainer;
 
     public CarbonChatSpongeModule(
-        final CarbonChatSponge carbonChatSponge,
+        final CarbonChatSponge carbonChat,
         final Path configDir,
         final PluginContainer pluginContainer
     ) {
-        this.carbonChatSponge = carbonChatSponge;
+        this.carbonChat = carbonChat;
         this.configDir = configDir;
         this.pluginContainer = pluginContainer;
     }
@@ -45,12 +67,14 @@ public final class CarbonChatSpongeModule extends AbstractModule {
             commander -> ((SpongeCommander) commander).commandCause(),
             commandCause -> {
                 if (commandCause.subject() instanceof ServerPlayer player) {
-                    return new SpongePlayerCommander(this.carbonChatSponge, player, commandCause);
+                    return new SpongePlayerCommander(this.carbonChat, player, commandCause);
                 }
 
                 return SpongeCommander.from(commandCause);
             }
         );
+
+        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.messageService());
 
         commandManager.parserMapper().cloudNumberSuggestions(true);
 
@@ -62,8 +86,9 @@ public final class CarbonChatSpongeModule extends AbstractModule {
         this.install(new CarbonCommonModule());
 
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.configDir);
-        this.bind(CarbonChat.class).toInstance(this.carbonChatSponge);
+        this.bind(CarbonChat.class).toInstance(this.carbonChat);
         this.bind(CarbonServer.class).to(CarbonServerSponge.class);
+        this.bind(PlayerSuggestions.class).toInstance(new SinglePlayerSelectorArgument.Parser<Commander>()::suggestions);
     }
 
 }

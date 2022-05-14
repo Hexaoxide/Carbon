@@ -1,8 +1,28 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.velocity;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.velocity.VelocityCommandManager;
+import cloud.commandframework.velocity.arguments.PlayerArgument;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -15,6 +35,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +67,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
 
     @Provides
     @Singleton
-    protected CommandManager<Commander> createCommandManager() {
+    public CommandManager<Commander> createCommandManager() {
         final VelocityCommandManager<Commander> commandManager = new VelocityCommandManager<>(
             this.pluginContainer,
             this.proxyServer,
@@ -55,12 +76,15 @@ public final class CarbonChatVelocityModule extends AbstractModule {
                 if (commandSender instanceof Player player) {
                     return new VelocityPlayerCommander(this.carbonChatVelocity, player);
                 }
+
                 return VelocityCommander.from(commandSender);
             },
             commander -> ((VelocityCommander) commander).commandSource()
         );
+
         final var brigadierManager = commandManager.brigadierManager();
         brigadierManager.setNativeNumberSuggestions(false);
+
         return commandManager;
     }
 
@@ -69,10 +93,10 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).toInstance(this.carbonChatVelocity);
-        this.bind(CarbonChatVelocity.class).toInstance(this.carbonChatVelocity);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);
+        this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
     }
 
 }

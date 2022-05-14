@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "${description}",
+  "authors": [
+      "Draycia"
+  ],
+  "contact": {
+    "homepage": "${github_url}",
+    "sources": "${github_url}",
+    "issues": "${github_url}/issues"
+  },
+  "license": "GPLv3",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.draycia.carbon.fabric.CarbonChatFabric"
+    ]
+  },
+  "mixins": [
+    "carbonchat.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.12.5",
+    "fabric": ">=0.31.0",
+    "minecraft": "1.18.2",
+    "luckperms": ">=5.0.0"
+  }
+}

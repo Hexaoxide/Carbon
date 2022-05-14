@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandHelpHandler;
@@ -6,13 +25,18 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.List;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -23,38 +47,54 @@ import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.TextColor.color;
 
 @DefaultQualifier(NonNull.class)
-public final class HelpCommand {
+public final class HelpCommand extends CarbonCommand {
 
-    private final CommandManager<Commander> manager;
-    private final MinecraftHelp<Commander> help;
+    final CommandManager<Commander> commandManager;
+    final CarbonMessageService messageService;
+    final MinecraftHelp<Commander> minecraftHelp;
 
     @Inject
     public HelpCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessageSource messageSource
+        final CarbonMessageSource messageSource,
+        final CarbonMessageService messageService
     ) {
-        this.manager = commandManager;
-        this.help = createHelp(commandManager, messageSource);
+        this.commandManager = commandManager;
+        this.messageService = messageService;
+        this.minecraftHelp = createHelp(commandManager, messageSource);
+    }
 
-        final var command = commandManager.commandBuilder("carbon")
-            .literal("help")
+    @Override
+    protected CommandSettings _commandSettings() {
+        return new CommandSettings("carbon");
+    }
+
+    @Override
+    public Key key() {
+        return Key.key("carbon", "help");
+    }
+
+    @Override
+    public void init() {
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .literal("help",
+                RichDescription.of(this.messageService.commandHelpDescription().component()))
             .argument(StringArgument.<Commander>newBuilder("query")
-                .greedy()
-                .withSuggestionsProvider(this::suggestQueries)
-                .asOptional())
+                    .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
+                RichDescription.of(this.messageService.commandHelpArgumentQuery().component()))
             .permission("carbon.help")
             .handler(this::execute)
             .build();
 
-        commandManager.command(command);
+        this.commandManager.command(command);
     }
 
     private void execute(final CommandContext<Commander> ctx) {
-        this.help.queryCommands(ctx.getOrDefault("query", ""), ctx.getSender());
+        this.minecraftHelp.queryCommands(ctx.getOrDefault("query", ""), ctx.getSender());
     }
 
     private List<String> suggestQueries(final CommandContext<Commander> ctx, final String input) {
-        final var topic = (CommandHelpHandler.IndexHelpTopic<Commander>) this.manager.getCommandHelpHandler().queryHelp(ctx.getSender(), "");
+        final var topic = (CommandHelpHandler.IndexHelpTopic<Commander>) this.commandManager.getCommandHelpHandler().queryHelp(ctx.getSender(), "");
         return topic.getEntries().stream().map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString).toList();
     }
 
@@ -79,17 +119,17 @@ public final class HelpCommand {
         );
 
         help.messageProvider((sender, key, args) -> {
-            final String messageKey = "command.help." + key;
-            final TemplateResolver resolver;
+            final String messageKey = "command.help.misc." + key;
+            final TagResolver resolver;
 
             // Total hack but works for now
             if (args.length == 2) {
-                resolver = TemplateResolver.templates(
-                    Template.template("page", text(args[0])),
-                    Template.template("max_pages", text(args[1]))
+                resolver = TagResolver.resolver(
+                    Placeholder.component("page", text(args[0])),
+                    Placeholder.component("max_pages", text(args[1]))
                 );
             } else {
-                resolver = TemplateResolver.empty();
+                resolver = TagResolver.empty();
             }
 
             return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), resolver);
@@ -97,4 +137,5 @@ public final class HelpCommand {
 
         return help;
     }
+
 }

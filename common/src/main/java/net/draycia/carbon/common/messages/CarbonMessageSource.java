@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.messages;
 
 import com.google.inject.Inject;
@@ -19,13 +38,16 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.translation.Translator;
 import net.kyori.moonshine.message.IMessageSource;
@@ -42,54 +64,26 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     private final Map<Locale, Properties> locales = new HashMap<>();
     private final Path pluginJar;
     private final Logger logger;
+    private final Path dataDirectory;
 
     @Inject
     private CarbonMessageSource(
+        final CarbonChat carbonChat,
         final @ForCarbon Path dataDirectory,
-        final PrimaryConfig primaryConfig,
+        final ConfigFactory configFactory,
         final Logger logger
     ) throws IOException {
+        this.dataDirectory = dataDirectory;
         this.pluginJar = pluginJar();
         this.logger = logger;
 
-        this.defaultLocale = primaryConfig.defaultLocale();
+        this.defaultLocale = Objects.requireNonNull(configFactory.primaryConfig()).defaultLocale();
 
-        final Path localeDirectory = dataDirectory.resolve("locale");
+        this.reloadTranslations();
 
-        // Create locale directory
-        if (!Files.exists(localeDirectory)) {
-            Files.createDirectories(localeDirectory);
-        }
-
-        this.walkPluginJar(stream -> stream.filter(Files::isRegularFile)
-            .filter(it -> {
-                final String pathString = it.toString();
-                return pathString.startsWith("/locale/messages-")
-                    && pathString.endsWith(".properties");
-            })
-            .forEach(localeFile -> {
-                final String localeString = localeFile.getFileName().toString().substring("messages-".length()).replace(".properties", "");
-                // MC uses no_NO when the player selects nb_NO...
-                final @Nullable Locale locale = Translator.parseLocale(localeString.replace("nb_NO", "no_NO"));
-
-                if (locale == null) {
-                    this.logger.warn("Unknown locale '{}'?", localeString);
-                    return;
-                }
-
-                this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile); // todo - debug
-
-                final Properties properties = new Properties();
-
-                try {
-                    this.loadProperties(properties, localeDirectory, localeFile);
-                    this.locales.put(locale, properties);
-
-                    this.logger.info("Successfully loaded locale {} ({})", locale.getDisplayName(), locale);
-                } catch (final IOException ex) {
-                    this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, localeFile, ex);
-                }
-            }));
+        carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
+            this.reloadTranslations();
+        });
     }
 
     private static @NonNull Path pluginJar() {
@@ -106,6 +100,66 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
             return Paths.get(sourceUrl.toURI());
         } catch (final URISyntaxException | MalformedURLException ex) {
             throw new RuntimeException("Could not locate plugin jar", ex);
+        }
+    }
+
+    private void reloadTranslations() throws IOException {
+        final Path localeDirectory = this.dataDirectory.resolve("locale");
+
+        // Create locale directory
+        if (!Files.exists(localeDirectory)) {
+            Files.createDirectories(localeDirectory);
+        }
+
+        this.walkPluginJar(stream -> stream.filter(Files::isRegularFile)
+            .filter(it -> {
+                final String pathString = it.toString();
+                return pathString.startsWith("/locale/messages-")
+                    && pathString.endsWith(".properties");
+            })
+            .forEach(localeFile -> {
+                final String localeString = localeString(localeFile);
+                final @Nullable Locale locale = parseLocale(localeString);
+
+                if (locale == null) {
+                    this.logger.warn("Unknown locale '{}'?", localeString);
+                    return;
+                }
+
+                this.readLocale(localeDirectory, localeFile, locale);
+            }));
+
+        try (final Stream<Path> paths = Files.list(localeDirectory)) {
+            paths.filter(Files::isRegularFile).forEach(localeFile -> {
+                final String localeString = localeString(localeFile);
+                final @Nullable Locale locale = parseLocale(localeString);
+
+                if (locale == null) {
+                    this.logger.warn("Unknown locale '{}'?", localeString);
+                    return;
+                }
+
+                if (this.locales.containsKey(locale)) {
+                    return;
+                }
+
+                this.readLocale(localeDirectory, localeFile, locale);
+            });
+        }
+    }
+
+    private void readLocale(final Path localeDirectory, final Path localeFile, final Locale locale) {
+        this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile);
+
+        final Properties properties = new Properties();
+
+        try {
+            this.loadProperties(properties, localeDirectory, localeFile);
+            this.locales.put(locale, properties);
+
+            this.logger.info("Successfully loaded locale {} ({})", locale.getDisplayName(), locale);
+        } catch (final IOException ex) {
+            this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, localeFile, ex);
         }
     }
 
@@ -174,6 +228,10 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         final Path localeFile
     ) throws IOException {
         final Path savedFile = localeDirectory.resolve(localeFile.getFileName().toString());
+        if (localeFile.normalize().toAbsolutePath().equals(savedFile.normalize().toAbsolutePath())) {
+            // Origin file and destination file are the same (ie locale was not in the jar, user added)
+            return;
+        }
 
         // If the file in the localeDirectory exists, read it to the properties
         if (Files.isRegularFile(savedFile)) {
@@ -186,9 +244,9 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         boolean write = !Files.isRegularFile(savedFile);
 
         // Read the file in the jar and add missing entries
-        try (final InputStream stream = Files.newInputStream(localeFile)) {
+        try (final Reader reader = new InputStreamReader(Files.newInputStream(localeFile), StandardCharsets.UTF_8)) {
             final Properties packaged = new Properties();
-            packaged.load(stream);
+            packaged.load(reader);
 
             for (final Map.Entry<Object, Object> entry : packaged.entrySet()) {
                 write |= properties.putIfAbsent(entry.getKey(), entry.getValue()) == null;
@@ -201,6 +259,17 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                 properties.store(outputStream, null);
             }
         }
+    }
+
+    private static String localeString(final Path localeFile) {
+        return localeFile.getFileName().toString().substring("messages-".length()).replace(".properties", "");
+    }
+
+    private static @Nullable Locale parseLocale(String localeString) {
+        // MC uses no_NO when the player selects nb_NO...
+        localeString = localeString.replace("nb_NO", "no_NO");
+
+        return Translator.parseLocale(localeString);
     }
 
 }

@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.users;
 
 import com.google.gson.Gson;
@@ -8,11 +27,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
@@ -37,7 +58,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
     private final Path userDirectory;
     private final CarbonChat carbonChat;
 
-    private final Map<UUID, CarbonPlayerCommon> userCache = new ConcurrentHashMap<>();
+    private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
 
     @Inject
     public JSONUserManager(
@@ -45,7 +66,7 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
         final Injector injector,
         final Logger logger,
         final CarbonChat carbonChat
-        ) throws IOException {
+    ) throws IOException {
         this.logger = logger;
         this.userDirectory = dataDirectory.resolve("users");
         this.carbonChat = carbonChat;
@@ -77,15 +98,14 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
                         this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
 
                     if (player == null) {
-                        return new ComponentPlayerResult<>(null, text("Player file found but was empty."));
+                        return new ComponentPlayerResult<CarbonPlayerCommon>(null, text("Player file found but was empty."));
                     }
 
                     this.userCache.put(uuid, player);
 
-                    // TODO: supply reason if fromJson returns null
                     return new ComponentPlayerResult<>(player, empty());
                 } catch (final IOException exception) {
-                    return new ComponentPlayerResult<>(null, text(exception.getMessage()));
+                    return new ComponentPlayerResult<CarbonPlayerCommon>(null, text(exception.getMessage()));
                 }
             }
 
@@ -97,13 +117,12 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
             this.userCache.put(uuid, player);
 
             return new ComponentPlayerResult<>(player, empty());
-        });
+        }).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
     }
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
         return CompletableFuture.supplyAsync(() -> {
-            this.logger.info("Saving player data for [{}], [{}]", player.username(), player.uuid());
             final Path userFile = this.userDirectory.resolve(player.uuid() + ".json");
 
             try {
@@ -124,9 +143,19 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
                 return new ComponentPlayerResult<>(player, text(String.format("Saving player data for [%s], [%s]",
                     player.username(), player.uuid())));
             } catch (final IOException exception) {
+                this.logger.error("Exception caught while saving data for player [{}]", player.username());
                 exception.printStackTrace();
                 return new ComponentPlayerResult<>(null, text(exception.getMessage()));
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(final CarbonPlayerCommon player) {
+        return this.savePlayer(player).thenApply(result -> {
+            this.userCache.remove(player.uuid());
+
+            return result;
         });
     }
 

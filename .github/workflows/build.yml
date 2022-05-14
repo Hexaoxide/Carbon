@@ -1,17 +1,61 @@
-name: Build CarbonChat
-on: [ push, pull_request ]
+name: Build
+on:
+  push:
+    branches: [ "*" ]
+    tags-ignore: [ "*" ]
+  pull_request:
+  release:
+    types: [ released ]
+
 jobs:
   build:
     # Only run on PRs if the source branch is on someone else's repo
     if: ${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 17 ]
+      fail-fast: true
     steps:
       - uses: actions/checkout@v2
       - uses: gradle/wrapper-validation-action@v1
-      - name: Set up JDK
+      - name: JDK ${{ matrix.java }}
         uses: actions/setup-java@v2
         with:
+          java-version: ${{ matrix.java }}
           distribution: 'temurin'
-          java-version: '16'
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build --stacktrace
+      - name: Determine Release Status
+        run: |
+          if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
+            echo "STATUS=snapshot" >> $GITHUB_ENV
+          else
+            echo "STATUS=release" >> $GITHUB_ENV
+          fi
+      - name: Publish Snapshot
+        if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/rewrite' }}"
+        run: ./gradlew publish --stacktrace
+        env:
+          ORG_GRADLE_PROJECT_parksUsername: "${{ secrets.CI_USER }}"
+          ORG_GRADLE_PROJECT_parksPassword: "${{ secrets.CI_PASS }}"
+      - name: Publish Release
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: ./gradlew publish --stacktrace
+        env:
+          ORG_GRADLE_PROJECT_parksUsername: "${{ secrets.CI_USER }}"
+          ORG_GRADLE_PROJECT_parksPassword: "${{ secrets.CI_PASS }}"
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Jars
+          path: build/libs/*.jar

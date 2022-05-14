@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
@@ -5,6 +24,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.messages.CarbonMessageService;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -20,8 +40,12 @@ public class MuteHandler {
     private CarbonMessageService messageService;
 
     private final KeyedRenderer renderer =
-        keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) ->
-            this.messageService.muteSpyPrefix(recipient).append(message));
+        keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
+            // This is an annoying side effect of the RenderedComponent change
+            final var prefix = this.messageService.muteSpyPrefix(recipient);
+
+            return new RenderedMessage(prefix.component().append(message), prefix.messageType());
+        });
 
     @Inject
     public MuteHandler(
@@ -31,13 +55,12 @@ public class MuteHandler {
         this.messageService = messageService;
 
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 100, false, event -> {
-            if (!event.sender().muted(event.chatChannel())) {
+            if (!event.sender().muted()) {
                 return;
             }
 
             event.renderers().add(this.renderer);
 
-            // TODO: ShadowMuteHandler? Include that logic in here?
             event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
                 !carbonPlayer.spying());
         });

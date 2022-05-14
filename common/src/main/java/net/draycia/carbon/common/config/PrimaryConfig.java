@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.config;
 
 import java.util.Locale;
@@ -19,13 +38,10 @@ public class PrimaryConfig {
     The default channel that new players will be in when they join.
     If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.
     """)
-    private Key defaultChannel = Key.key("carbon", "basic");
+    private Key defaultChannel = Key.key("carbon", "global");
 
     @Comment("The service that will be used to store and load player information.")
     private StorageType storageType = StorageType.JSON;
-
-    @Comment("Should we hide join/quit and death messages of muted players?")
-    private boolean hideMutedJoinLeaveQuit = false;
 
     @Comment("Various ClearChat command settings.")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
@@ -39,6 +55,9 @@ public class PrimaryConfig {
     """)
     private Map<String, String> customPlaceholders = Map.of();
 
+    @Comment("Various settings related to pinging players in channels.")
+    private PingSettings pingSettings = new PingSettings();
+
     public Locale defaultLocale() {
         return this.defaultLocale;
     }
@@ -51,16 +70,16 @@ public class PrimaryConfig {
         return this.storageType;
     }
 
-    public boolean hideMutedJoinLeaveQuit() {
-        return this.hideMutedJoinLeaveQuit;
-    }
-
     public ClearChatSettings clearChatSettings() {
         return this.clearChatSettings;
     }
 
     public Map<String, String> customPlaceholders() {
         return this.customPlaceholders;
+    }
+
+    public PingSettings pings() {
+        return this.pingSettings;
     }
 
     public enum StorageType {

@@ -1,7 +1,27 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.channels;
 
 import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -9,23 +29,25 @@ import java.util.UUID;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageService;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
-import net.draycia.carbon.api.util.SourcedAudience;
-import net.draycia.carbon.common.channels.messages.SourcedMessageSender;
-import net.draycia.carbon.common.messages.ComponentPlaceholderResolver;
-import net.draycia.carbon.common.messages.KeyPlaceholderResolver;
+import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
-import net.draycia.carbon.common.messages.StringPlaceholderResolver;
-import net.draycia.carbon.common.messages.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
-import net.kyori.moonshine.message.IMessageRenderer;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -35,6 +57,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import static java.util.Objects.requireNonNull;
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 @ConfigSerializable
@@ -46,22 +69,29 @@ public final class ConfigChatChannel implements ChatChannel {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private Key key = Key.key("carbon", "basic");
+    private @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
-        The permission required to use the channel.
-        To read messages you must have the permission carbon.channel.basic.see
-        To send messages you must have the permission carbon.channel.basic.speak
-        If you want to give both, grant carbon.channel.basic or carbon.channel.basic.*
+        The permission required to use the /channel <channelname> and /<channelname> commands.
+        
+        Assuming permission = "carbon.channel.global"
+        To read messages you must have the permission carbon.channel.global.see
+        To send messages you must have the permission carbon.channel.global.speak
         """)
-    private String permission = "carbon.channel.basic";
+    private @Nullable String permission = "carbon.channel.global";
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    private @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
     @Comment("Messages will be sent in this channel if they start with this prefix.")
     private @Nullable String quickPrefix = "";
+
+    private @Nullable Boolean shouldRegisterCommands = true;
+
+    private @Nullable String commandName = null;
+
+    private @Nullable List<String> commandAliases = Collections.emptyList();
 
     private transient @Nullable ConfigChannelMessageService messageService = null;
 
@@ -75,7 +105,23 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull Component render(
+    public boolean shouldRegisterCommands() {
+        return Objects.requireNonNullElse(this.shouldRegisterCommands, true);
+
+    }
+
+    @Override
+    public String commandName() {
+        return Objects.requireNonNullElse(this.commandName, this.key.value());
+    }
+
+    @Override
+    public List<String> commandAliases() {
+        return Objects.requireNonNullElse(this.commandAliases, Collections.emptyList());
+    }
+
+    @Override
+    public @NotNull RenderedMessage render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,
@@ -94,17 +140,12 @@ public final class ConfigChatChannel implements ChatChannel {
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer carbonPlayer) {
         return ChannelPermissionResult.allowedIf(text("Insufficient permissions!"), () ->
-            carbonPlayer.hasPermission(this.permission + ".speak")); // carbon.channels.local.speak
+            carbonPlayer.hasPermission(this.permission() + ".speak")); // carbon.channels.local.speak
     }
 
     @Override
-    public ChannelPermissionResult hearingPermitted(final Audience audience) {
-        if (audience instanceof CarbonPlayer carbonPlayer) {
-            return ChannelPermissionResult.allowedIf(text("Insufficient permissions!"), () ->
-                carbonPlayer.hasPermission(this.permission + ".see")); // carbon.channels.local.see
-        } else {
-            return ChannelPermissionResult.allowed();
-        }
+    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
+        return ChannelPermissionResult.allowedIf(empty(), () -> player.hasPermission(this.permission() + ".see"));
     }
 
     @Override
@@ -124,15 +165,19 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients) {
-        recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
+    public Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients) {
+        try {
+            recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
+        } catch (final UnsupportedOperationException ignored) {
+
+        }
 
         return recipients;
     }
 
     @Override
     public @NonNull Key key() {
-        return this.key;
+        return Objects.requireNonNull(this.key);
     }
 
     private @Nullable ConfigChannelMessageService createMessageService() {
@@ -141,21 +186,21 @@ public final class ConfigChatChannel implements ChatChannel {
         final UUIDPlaceholderResolver<SourcedAudience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
         final StringPlaceholderResolver<SourcedAudience> stringPlaceholderResolver = new StringPlaceholderResolver<>();
         final KeyPlaceholderResolver<SourcedAudience> keyPlaceholderResolver = new KeyPlaceholderResolver<>();
-        final IMessageRenderer<SourcedAudience, String, Component, Component> configMessageRenderer = CarbonChatProvider.carbonChat().messageRenderer();
+        final BooleanPlaceholderResolver<SourcedAudience> booleanPlaceholderResolver = new BooleanPlaceholderResolver<>();
         final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
         try {
-            return Moonshine.<ConfigChannelMessageService, SourcedAudience>builder(new TypeToken<>() {
-            })
+            return Moonshine.<ConfigChannelMessageService, SourcedAudience>builder(new TypeToken<ConfigChannelMessageService>() {})
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
-                .rendered(configMessageRenderer)
+                .rendered(CarbonChatProvider.carbonChat().messageRenderer())
                 .sent(carbonMessageSender)
                 .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
+                .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
                 .create(this.getClass().getClassLoader());
         } catch (final UnscannableMethodException e) {
             e.printStackTrace();
@@ -170,6 +215,11 @@ public final class ConfigChatChannel implements ChatChannel {
         }
 
         return requireNonNull(this.messageService, "Channel message service must not be null!");
+    }
+
+    @Override
+    public @MonotonicNonNull String permission() {
+        return this.permission;
     }
 
 }

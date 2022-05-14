@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.api.channels;
 
 import java.util.List;
@@ -8,6 +27,7 @@ import net.draycia.carbon.api.util.ChatComponentRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -35,11 +55,11 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     /**
      * Checks if the player may receive messages from this channel.
      *
-     * @param audience the audience that's receiving messages
+     * @param player the player that's receiving messages
      * @return if the player may receive messages
      * @since 2.0.0
      */
-    ChannelPermissionResult hearingPermitted(final Audience audience);
+    ChannelPermissionResult hearingPermitted(final CarbonPlayer player);
 
     /**
      * Returns a list of all recipients that will receive messages from the sender.
@@ -58,7 +78,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @return the recipients that may receive messages
      * @since 2.0.0
      */
-    Set<Audience> filterRecipients(final CarbonPlayer sender, final Set<Audience> recipients);
+    Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients);
 
     /**
      * Messages will be sent in this channel if they start with this prefix.
@@ -67,6 +87,39 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     @Nullable String quickPrefix();
+
+    /**
+     * If commands should be registered for this channel.
+     *
+     * @return if commands should be registered for this channel.
+     * @since 2.0.0
+     */
+    boolean shouldRegisterCommands();
+
+    /**
+     * The text that can be used to refer to this channel in commands.
+     *
+     * @return this channel's name when used in commands
+     * @since 2.0.0
+     */
+    String commandName();
+
+    /**
+     * Alternative command names for this channel.
+     *
+     * @return alternative command names
+     * @since 2.0.0
+     */
+    List<String> commandAliases();
+
+    /**
+     * The base permission players must have in order to use the channel.<br>
+     * Null return means players do not need any permission.
+     *
+     * @return the permission required to use the channel, or null
+     * @since 2.0.7
+     */
+    @MonotonicNonNull String permission();
 
     /**
      * Represents the result of a channel permission check.
@@ -89,8 +142,9 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
         }
 
         /**
-         * Returns a result denoting that the player is denied for the action.
+         * Returns a result denoting that the action is denied for the player.
          *
+         * @param reason the reason the action was denied
          * @return that the action is denied
          * @since 2.0.0
          */
@@ -98,7 +152,14 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
             return new ChannelPermissionResult(false, reason);
         }
 
-        // TODO: redo this / reconsider this
+        /**
+         * If True is supplied, returns a result denoting that the action was allowed. Otherwise, a result denoting that the action was denied.
+         *
+         * @param reason the reason, if any, that the action was allowed
+         * @param supplier the supplier to check
+         * @return an allowed result if true, otherwise a denied result
+         * @since 2.0.0
+         */
         public static ChannelPermissionResult allowedIf(
             final Component reason,
             final Supplier<Boolean> supplier

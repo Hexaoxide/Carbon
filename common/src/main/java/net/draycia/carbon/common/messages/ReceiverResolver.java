@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 //
 // ban - A punishment suite for Velocity.
 // Copyright (C) 2021 Mariell Hoversholm
@@ -43,12 +62,16 @@ public final class ReceiverResolver implements IReceiverLocatorResolver<Audience
     private static final class Resolver implements IReceiverLocator<Audience> {
         @Override
         public Audience locate(final Method method, final Object proxy, final @Nullable Object[] parameters) {
-            for (final Object parameter : parameters) {
-                if (parameter instanceof Audience audience) {
-                    return audience;
-                } else if (parameter instanceof SourcedAudience sourcedAudience) {
-                    return sourcedAudience.recipient();
-                }
+            if (parameters.length == 0) {
+                return Audience.empty();
+            }
+
+            final @Nullable Object parameter = parameters[0];
+
+            if (parameter instanceof SourcedAudience sourcedAudience) {
+                return sourcedAudience.recipient();
+            } else if (parameter instanceof Audience audience) {
+                return audience;
             }
 
             return Audience.empty();

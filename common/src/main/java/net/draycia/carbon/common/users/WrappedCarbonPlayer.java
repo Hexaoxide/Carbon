@@ -1,24 +1,108 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.users;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.util.Tristate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
 @DefaultQualifier(NonNull.class)
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     public abstract CarbonPlayerCommon carbonPlayerCommon();
+
+    public @Nullable User user() {
+        return LuckPermsProvider.get().getUserManager().getUser(this.uuid());
+    }
+
+    @Override
+    public boolean awareOf(final CarbonPlayer other) {
+        if (other.vanished()) {
+            return this.hasPermission("carbon.whisper.vanished");
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean ignoring(final CarbonPlayer sender) {
+        return this.carbonPlayerCommon().ignoring(sender);
+    }
+
+    @Override
+    public void ignoring(final CarbonPlayer player, final boolean nowIgnoring) {
+        this.carbonPlayerCommon().ignoring(player, nowIgnoring);
+    }
+
+    @Override
+    public boolean hasPermission(final String permission) {
+        final @Nullable User user = this.user();
+
+        if (user == null) {
+            return false;
+        }
+
+        final var data = user.getCachedData().getPermissionData(user.getQueryOptions());
+        return data.checkPermission(permission) == Tristate.TRUE;
+    }
+
+    @Override
+    public String primaryGroup() {
+        final @Nullable User user = this.user();
+
+        if (user == null) {
+            return "default";
+        }
+
+        return user.getPrimaryGroup();
+    }
+
+    @Override
+    public List<String> groups() {
+        final @Nullable User user = this.user();
+
+        if (user == null) {
+            return List.of("default");
+        }
+
+        final var groups = new ArrayList<String>();
+
+        for (final var group : user.getInheritedGroups(user.getQueryOptions())) {
+            groups.add(group.getName());
+        }
+
+        return groups;
+    }
 
     @Override
     public String username() {
@@ -36,23 +120,8 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void displayName(@Nullable Component displayName) {
+    public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon().displayName(displayName);
-    }
-
-    @Override
-    public void temporaryDisplayName(@Nullable Component temporaryDisplayName, long expirationEpoch) {
-        this.carbonPlayerCommon().temporaryDisplayName(temporaryDisplayName, expirationEpoch);
-    }
-
-    @Override
-    public @Nullable Component temporaryDisplayName() {
-        return this.carbonPlayerCommon().temporaryDisplayName();
-    }
-
-    @Override
-    public long temporaryDisplayNameExpiration() {
-        return this.carbonPlayerCommon().temporaryDisplayNameExpiration();
     }
 
     @Override
@@ -76,45 +145,18 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void selectedChannel(ChatChannel chatChannel) {
+    public void selectedChannel(final @Nullable ChatChannel chatChannel) {
         this.carbonPlayerCommon().selectedChannel(chatChannel);
     }
 
-    // TODO: move to Permissible class or one similarly named?
     @Override
-    public boolean hasPermission(String permission) {
-        return this.carbonPlayerCommon().hasPermission(permission);
+    public boolean muted() {
+        return this.carbonPlayerCommon().muted();
     }
 
     @Override
-    public String primaryGroup() {
-        return this.carbonPlayerCommon().primaryGroup();
-    }
-
-    @Override
-    public List<String> groups() {
-        return this.carbonPlayerCommon().groups();
-    }
-
-    @Override
-    public List<MuteEntry> muteEntries() {
-        return this.carbonPlayerCommon().muteEntries();
-    }
-
-    @Override
-    public boolean muted(final ChatChannel chatChannel) {
-        return this.carbonPlayerCommon().muted(chatChannel);
-    }
-
-    @Override
-    public @Nullable MuteEntry addMuteEntry(
-        final @Nullable ChatChannel chatChannel,
-        final boolean muted,
-        final @Nullable UUID cause,
-        final long duration,
-        final @Nullable String reason
-    ) {
-        return this.carbonPlayerCommon().addMuteEntry(chatChannel, muted, cause, duration, reason);
+    public void muted(final boolean muted) {
+        this.carbonPlayerCommon().muted(muted);
     }
 
     @Override
@@ -123,7 +165,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void deafened(boolean deafened) {
+    public void deafened(final boolean deafened) {
         this.carbonPlayerCommon().deafened(deafened);
     }
 
@@ -133,12 +175,12 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void spying(boolean spying) {
+    public void spying(final boolean spying) {
         this.carbonPlayerCommon().spying(spying);
     }
 
     @Override
-    public void sendMessageAsPlayer(String message) {
+    public void sendMessageAsPlayer(final String message) {
         this.carbonPlayerCommon().sendMessageAsPlayer(message);
     }
 
@@ -153,7 +195,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void whisperReplyTarget(@Nullable UUID uuid) {
+    public void whisperReplyTarget(final @Nullable UUID uuid) {
         this.carbonPlayerCommon().whisperReplyTarget(uuid);
     }
 
@@ -163,13 +205,18 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public void lastWhisperTarget(@Nullable UUID uuid) {
+    public void lastWhisperTarget(final @Nullable UUID uuid) {
         this.carbonPlayerCommon().lastWhisperTarget(uuid);
     }
 
     @Override
     public @NotNull Identity identity() {
         return this.carbonPlayerCommon().identity();
+    }
+
+    @Override
+    public boolean speechPermitted(final String message) {
+        return this.carbonPlayerCommon().speechPermitted(message);
     }
 
 }

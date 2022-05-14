@@ -1,3 +1,22 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.bukkit.util;
 
 import java.util.ArrayList;
@@ -9,8 +28,8 @@ import java.util.regex.Pattern;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -44,12 +63,12 @@ public final class PlaceholderAPIMiniMessageParser {
         return false;
     }
 
-    public Component parse(final OfflinePlayer player, final String input, final Collection<Template> templates) {
+    public Component parse(final OfflinePlayer player, final String input, final Collection<TagResolver> placeholders) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(player, match),
             input,
-            templates
+            placeholders
         );
     }
 
@@ -57,12 +76,12 @@ public final class PlaceholderAPIMiniMessageParser {
         return this.parse(player, input, emptyList());
     }
 
-    public Component parseRelational(final Player one, final Player two, final String input, final Collection<Template> templates) {
+    public Component parseRelational(final Player one, final Player two, final String input, final Collection<TagResolver> placeholders) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(one, PlaceholderAPI.setRelationalPlaceholders(one, two, match)),
             input,
-            templates
+            placeholders
         );
     }
 
@@ -74,10 +93,10 @@ public final class PlaceholderAPIMiniMessageParser {
         final Pattern pattern,
         final UnaryOperator<String> placeholderResolver,
         final String input,
-        final Collection<Template> originalTemplates
+        final Collection<TagResolver> originalPlaceholders
     ) {
         final Matcher matcher = pattern.matcher(input);
-        final List<Template> templates = new ArrayList<>(originalTemplates);
+        final List<TagResolver> placeholders = new ArrayList<>(originalPlaceholders);
         final StringBuilder builder = new StringBuilder();
         int id = 0;
 
@@ -86,18 +105,18 @@ public final class PlaceholderAPIMiniMessageParser {
             final String replaced = placeholderResolver.apply(match);
 
             if (match.equals(replaced) || !containsLegacyColorCodes(replaced)) {
-                matcher.appendReplacement(builder, replaced);
+                matcher.appendReplacement(builder, Matcher.quoteReplacement(replaced));
             } else {
                 final String key = "papi_generated_template_" + id;
                 id++;
-                templates.add(Template.template(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
-                matcher.appendReplacement(builder, "<" + key + ">");
+                placeholders.add(Placeholder.component(key, LegacyComponentSerializer.legacySection().deserialize(replaced)));
+                matcher.appendReplacement(builder, Matcher.quoteReplacement("<" + key + ">"));
             }
         }
 
         matcher.appendTail(builder);
 
-        return this.miniMessage.deserialize(builder.toString(), TemplateResolver.templates(templates));
+        return this.miniMessage.deserialize(builder.toString(), TagResolver.resolver(placeholders));
     }
 
 }

@@ -27,7 +27,7 @@ tasks {
 
 sponge {
   injectRepositories(false) // We specify repositories in settings.gradle.kts
-  apiVersion("8.0.0-SNAPSHOT")
+  apiVersion("8.1.0-SNAPSHOT")
   plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
     loader {
       name(PluginLoaders.JAVA_PLAIN)
@@ -50,6 +50,10 @@ sponge {
     }
     dependency("spongeapi") {
       loadOrder(PluginDependency.LoadOrder.AFTER)
+      optional(false)
+    }
+    dependency("luckperms") {
+      version(">=5.0.0")
       optional(false)
     }
   }

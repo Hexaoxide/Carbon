@@ -1,14 +1,37 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.users;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.UUID;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.punishments.MuteEntry;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,17 +42,17 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
+    protected boolean muted = false;
     protected boolean deafened = false;
-    protected @Nullable ChatChannel selectedChannel = null;
+
+    protected @Nullable Key selectedChannel = null;
 
     // All players have these
-    protected @MonotonicNonNull String username;
+    protected transient @MonotonicNonNull String username = null;
     protected @MonotonicNonNull UUID uuid;
 
     // Display information
     protected @Nullable Component displayName = null;
-    protected @Nullable Component temporaryDisplayName = null;
-    protected long temporaryDisplayNameExpiration = -1;
 
     // Whispers
     protected transient @Nullable UUID lastWhisperTarget = null;
@@ -39,7 +62,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected boolean spying = false;
 
     // Punishments
-    protected List<MuteEntry> muteEntries = new ArrayList<>();
+    protected List<UUID> ignoredPlayers = new ArrayList<>();
 
     public CarbonPlayerCommon(
         final String username,
@@ -82,79 +105,43 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void temporaryDisplayName(final @Nullable Component temporaryDisplayName, final long expirationEpoch) {
-        // TODO: see why these aren't persisting
-        this.temporaryDisplayName = temporaryDisplayName;
-        this.temporaryDisplayNameExpiration = expirationEpoch;
-    }
-
-    @Override
-    public @Nullable Component temporaryDisplayName() {
-        return this.temporaryDisplayName;
-    }
-
-    @Override
-    public long temporaryDisplayNameExpiration() {
-        return this.temporaryDisplayNameExpiration;
-    }
-
-    @Override
-    public boolean hasActiveTemporaryDisplayName() {
-        return this.temporaryDisplayName != null
-            && (this.temporaryDisplayNameExpiration == -1
-            || this.temporaryDisplayNameExpiration > System.currentTimeMillis());
-    }
-
-    @Override
     public boolean hasPermission(final String permission) {
         return false;
     }
 
     @Override
     public String primaryGroup() {
-        return "default"; // TODO: implement
+        return "default";
     }
 
     @Override
     public List<String> groups() {
-        return List.of("default"); // TODO: implement
+        return List.of("default");
     }
 
     @Override
-    public List<MuteEntry> muteEntries() {
-        return Collections.unmodifiableList(this.muteEntries);
+    public boolean muted() {
+        return this.muted;
     }
 
     @Override
-    public boolean muted(final ChatChannel chatChannel) {
-        for (final var muteEntry : this.muteEntries) {
-            if (!muteEntry.valid()) {
-                continue;
+    public void muted(final boolean muted) {
+        this.muted = muted;
+    }
+
+    @Override
+    public boolean ignoring(final CarbonPlayer sender) {
+        return this.ignoredPlayers.contains(sender.uuid());
+    }
+
+    @Override
+    public void ignoring(final CarbonPlayer player, final boolean nowIgnoring) {
+        if (nowIgnoring) {
+            if (!this.ignoredPlayers.contains(player.uuid())) {
+                this.ignoredPlayers.add(player.uuid());
             }
-
-            if (muteEntry.channel() == null || chatChannel.key().equals(muteEntry.channel())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public @Nullable MuteEntry addMuteEntry(
-        final @Nullable ChatChannel chatChannel,
-        final boolean muted,
-        final @Nullable UUID cause,
-        final long duration,
-        final @Nullable String reason
-    ) {
-        if (muted) {
-            final var muteEntry = new MuteEntry(System.currentTimeMillis(), cause, duration,
-                reason, chatChannel != null ? chatChannel.key() : null, UUID.randomUUID());
-            this.muteEntries.add(muteEntry);
-            return muteEntry;
         } else {
-            return null;
+            this.ignoredPlayers.remove(player.uuid());
         }
     }
 
@@ -179,7 +166,14 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void sendMessageAsPlayer(String message) { }
+    public void sendMessageAsPlayer(final String message) {
+
+    }
+
+    @Override
+    public boolean speechPermitted(final String message) {
+        return true;
+    }
 
     @Override
     public boolean online() {
@@ -192,7 +186,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void whisperReplyTarget(@Nullable UUID uuid) {
+    public void whisperReplyTarget(final @Nullable UUID uuid) {
         this.whisperReplyTarget = uuid;
     }
 
@@ -202,7 +196,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void lastWhisperTarget(@Nullable UUID uuid) {
+    public void lastWhisperTarget(final @Nullable UUID uuid) {
         this.lastWhisperTarget = uuid;
     }
 
@@ -212,7 +206,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public boolean awareOf(CarbonPlayer other) {
+    public boolean awareOf(final CarbonPlayer other) {
         return true;
     }
 
@@ -228,17 +222,26 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable ChatChannel selectedChannel() {
-        return this.selectedChannel;
+        return CarbonChatProvider.carbonChat().channelRegistry().get(this.selectedChannel);
     }
 
     @Override
     public void selectedChannel(final @Nullable ChatChannel chatChannel) {
-        this.selectedChannel = chatChannel;
+        this.selectedChannel = chatChannel.key();
     }
 
     @Override
     public String username() {
+        if (this.username == null) {
+            this.username = Objects.requireNonNull(CarbonChatProvider.carbonChat().server()
+                .resolveName(this.uuid).join());
+        }
+
         return this.username;
+    }
+
+    public void username(final String username) {
+        this.username = username;
     }
 
     @Override

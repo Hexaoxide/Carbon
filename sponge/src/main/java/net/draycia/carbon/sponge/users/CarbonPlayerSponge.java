@@ -1,14 +1,31 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.sponge.users;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.UUID;
-import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.InventorySlot;
+import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -19,6 +36,7 @@ import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Cause;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.equipment.EquipmentType;
 import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
 import org.spongepowered.api.util.locale.LocaleSource;
 
@@ -26,16 +44,12 @@ import static net.kyori.adventure.text.Component.translatable;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudience.Single {
+public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
-    private final CarbonPlayer carbonPlayer;
+    private final CarbonPlayerCommon carbonPlayerCommon;
 
-    public CarbonPlayerSponge(final CarbonPlayer carbonPlayer) {
-        this.carbonPlayer = carbonPlayer;
-    }
-
-    public CarbonPlayer carbonPlayer() {
-        return this.carbonPlayer;
+    public CarbonPlayerSponge(final CarbonPlayerCommon carbonPlayerCommon) {
+        this.carbonPlayerCommon = carbonPlayerCommon;
     }
 
     @Override
@@ -46,56 +60,68 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     }
 
     @Override
-    public String username() {
-        return this.carbonPlayer.username();
+    public CarbonPlayerCommon carbonPlayerCommon() {
+        return this.carbonPlayerCommon;
+    }
+
+    private Optional<ServerPlayer> player() {
+        return Sponge.server().player(this.carbonPlayerCommon.uuid());
     }
 
     @Override
-    public boolean hasCustomDisplayName() {
-        return this.carbonPlayer.hasCustomDisplayName();
+    public void sendMessageAsPlayer(final String message) {
+        this.player().ifPresent(player -> player.simulateChat(Component.text(message), Cause.builder().build()));
     }
 
     @Override
-    public @Nullable Component displayName() {
-        return this.carbonPlayer.displayName();
+    public boolean online() {
+        return this.player().map(ServerPlayer::isOnline).orElse(false);
+    }
+
+    @Override
+    public @Nullable Locale locale() {
+        return this.player().map(LocaleSource::locale).orElse(null);
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
-        this.carbonPlayer.displayName(displayName);
-
-        this.player().ifPresent(player -> {
-            if (displayName != null) {
-                player.offer(Keys.CUSTOM_NAME, displayName);
-            } else {
-                player.remove(Keys.CUSTOM_NAME);
-            }
-        });
+        this.carbonPlayerCommon.displayName(displayName);
     }
 
     @Override
-    public UUID uuid() {
-        return this.carbonPlayer.uuid();
-    }
+    public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
+        final Optional<ServerPlayer> optionalPlayer = this.player(); // This is temporary (it's not)
 
-    private Optional<ServerPlayer> player() {
-        return Sponge.server().player(this.carbonPlayer.uuid());
-    }
-
-    @Override
-    public Component createItemHoverComponent() {
-        final @Nullable ServerPlayer player = this.player().orElse(null);
-        if (player == null) {
-            return Component.empty();
+        if (optionalPlayer.isEmpty()) {
+            return null;
         }
 
-        final @Nullable ItemStack itemStack = player.equipped(EquipmentTypes.MAIN_HAND)
-            .filter(it -> !it.isEmpty())
-            .orElseGet(() -> player.equipped(EquipmentTypes.OFF_HAND).orElse(null));
+        final ServerPlayer player = optionalPlayer.get();
+        final EquipmentType equipmentSlot;
 
-        if (itemStack == null || itemStack.isEmpty()) {
-            return Component.empty();
+        if (slot.equals(InventorySlot.MAIN_HAND)) {
+            equipmentSlot = EquipmentTypes.MAIN_HAND.get();
+        } else if (slot.equals(InventorySlot.OFF_HAND)) {
+            equipmentSlot = EquipmentTypes.OFF_HAND.get();
+        } else if (slot.equals(InventorySlot.HELMET)) {
+            equipmentSlot = EquipmentTypes.HEAD.get();
+        } else if (slot.equals(InventorySlot.CHEST)) {
+            equipmentSlot = EquipmentTypes.CHEST.get();
+        } else if (slot.equals(InventorySlot.LEGS)) {
+            equipmentSlot = EquipmentTypes.LEGS.get();
+        } else if (slot.equals(InventorySlot.BOOTS)) {
+            equipmentSlot = EquipmentTypes.FEET.get();
+        } else {
+            return null;
         }
+
+        final Optional<ItemStack> equipment = player.equipment().peek(equipmentSlot);
+
+        if (equipment.isEmpty()) {
+            return null;
+        }
+
+        final @Nullable ItemStack itemStack = equipment.get();
 
         return this.fromStack(itemStack);
     }
@@ -116,105 +142,8 @@ public final class CarbonPlayerSponge implements CarbonPlayer, ForwardingAudienc
     }
 
     @Override
-    public boolean hasPermission(final String permission) {
-        final var player = this.player();
-
-        // Ignore inspection. Don't make code harder to read, IntelliJ.
-        return player.map(serverPlayer -> serverPlayer.hasPermission(permission))
-            .orElse(false);
-    }
-
-    @Override
-    public String primaryGroup() {
-        return "default"; // TODO: implement
-    }
-
-    @Override
-    public List<String> groups() {
-        return List.of("default"); // TODO: implement
-    }
-
-    @Override
-    public boolean globallyMuted() {
-        return this.carbonPlayer.globallyMuted();
-    }
-
-    @Override
-    public void globallyMuted(final boolean muted) {
-        this.carbonPlayer.globallyMuted(muted);
-    }
-
-    @Override
-    public boolean deafened() {
-        return this.carbonPlayer.deafened();
-    }
-
-    @Override
-    public void deafened(final boolean deafened) {
-        this.carbonPlayer.deafened(deafened);
-    }
-
-    @Override
-    public boolean spying() {
-        return this.carbonPlayer.spying();
-    }
-
-    @Override
-    public void spying(final boolean spying) {
-        this.carbonPlayer.spying(spying);
-    }
-
-    @Override
-    public void sendMessageAsPlayer(final String message) {
-        this.player().ifPresent(player -> player.simulateChat(Component.text(message), Cause.builder().build()));
-    }
-
-    @Override
-    public boolean online() {
-        final var player = this.player();
-        return player.isPresent() && player.get().isOnline();
-    }
-
-    @Override
-    public @Nullable UUID whisperReplyTarget() {
-        return this.carbonPlayer.whisperReplyTarget();
-    }
-
-    @Override
-    public void whisperReplyTarget(final @Nullable UUID uuid) {
-        this.carbonPlayer.whisperReplyTarget(uuid);
-    }
-
-    @Override
-    public @Nullable UUID lastWhisperTarget() {
-        return this.carbonPlayer.lastWhisperTarget();
-    }
-
-    @Override
-    public void lastWhisperTarget(final @Nullable UUID uuid) {
-        this.carbonPlayer.lastWhisperTarget(uuid);
-    }
-
-    @Override
-    public @Nullable Locale locale() {
-        return this.player()
-            .map(LocaleSource::locale)
-            .orElse(null);
-    }
-
-    @Override
-    public @Nullable ChatChannel selectedChannel() {
-        return this.carbonPlayer.selectedChannel();
-    }
-
-    @Override
-    public void selectedChannel(final ChatChannel chatChannel) {
-        this.carbonPlayer.selectedChannel(chatChannel);
-    }
-
-    @Override
-    public @NotNull Identity identity() {
-        return this.carbonPlayer.identity();
+    public boolean vanished() {
+        return false;
     }
 
 }

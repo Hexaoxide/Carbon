@@ -16,17 +16,25 @@ fun ShadowJar.relocateDependency(pkg: String) {
  */
 fun ShadowJar.standardRelocations() {
   relocateDependency("org.bstats")
-  relocateDependency("net.kyori.adventure.text.minimessage")
   relocateDependency("net.kyori.adventure.serializer.configurate4")
   relocateDependency("net.kyori.event")
   relocateDependency("net.kyori.moonshine")
   relocateDependency("net.kyori.registry")
-  relocateDependency("cloud.commandframework")
   relocateDependency("org.spongepowered.configurate")
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.common")
   relocateDependency("com.google.thirdparty.publicsuffix")
   relocateDependency("it.unimi.dsi.fastutil")
+}
+
+fun ShadowJar.relocateCloud() {
+  relocateDependency("cloud.commandframework")
+}
+
+fun ShadowJar.relocateGuice() {
+  relocateDependency("com.google.inject")
+  relocateDependency("org.aopalliance")
+  relocateDependency("javax.inject")
 }
 
 fun ShadowJar.configureShadowJar() {

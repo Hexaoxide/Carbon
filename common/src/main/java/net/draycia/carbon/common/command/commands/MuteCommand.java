@@ -1,136 +1,131 @@
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2021 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.UUIDArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.punishments.MuteEntry;
+import net.draycia.carbon.common.command.CarbonCommand;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessageService;
+import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class MuteCommand {
+public class MuteCommand extends CarbonCommand {
 
-    private final CommandManager<Commander> commandManager;
+    final CarbonChat carbonChat;
+    final CommandManager<Commander> commandManager;
+    final CarbonMessageService messageService;
+    final PlayerSuggestions playerSuggestions;
 
     @Inject
     public MuteCommand(
+        final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final CarbonMessageService messageService,
-        final CarbonChat carbonChat,
-        final CarbonPlayerArgument carbonPlayerArgument
+        final PlayerSuggestions playerSuggestions
     ) {
+        this.carbonChat = carbonChat;
         this.commandManager = commandManager;
+        this.messageService = messageService;
+        this.playerSuggestions = playerSuggestions;
+    }
 
-        var command = commandManager.commandBuilder("mute")
-            .argument(carbonPlayerArgument.newInstance(false, "player", CarbonPlayerArgument.NO_SENDER))
-            .flag(commandManager.flagBuilder("uuid")
+    @Override
+    protected CommandSettings _commandSettings() {
+        return new CommandSettings("mute");
+    }
+
+    @Override
+    public Key key() {
+        return Key.key("carbon", "mute");
+    }
+
+    @Override
+    public void init() {
+        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .argument(CarbonPlayerArgument.newBuilder("player").withMessageService(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+                RichDescription.of(this.messageService.commandMuteArgumentPlayer().component()))
+            .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
+                .withDescription(RichDescription.of(this.messageService.commandMuteArgumentUUID().component()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
-            .permission("carbon.mute.mute")
+            .permission("carbon.mute")
             .senderType(PlayerCommander.class)
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandMuteDescription().component())
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander)handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = carbonChat.server().player(handler.<UUID>get("uuid")).join();
+                    final var result = this.carbonChat.server().player(handler.<UUID>get("uuid")).join();
                     target = Objects.requireNonNull(result.player(), "No player found for UUID.");
                 } else {
-                    throw new IllegalStateException("No target found to unmute.");
-                }
-
-                if (target.hasPermission("carbon.mute.exempt")) {
-                    messageService.muteExempt(sender);
+                    this.messageService.muteNoTarget(sender);
+                    // TODO: send command syntax
                     return;
                 }
 
-                final @Nullable ChatChannel channel = handler.flags().get("channel");
-                final long duration = handler.flags().getValue("duration", -1L);
-                final @Nullable String reason = handler.flags().get("reason");
+                if (target.hasPermission("carbon.mute.exempt")) {
+                    this.messageService.muteExempt(sender);
+                    return;
+                }
 
-                // Intentionally directly pass in the flags, they're null if not present
-                final @Nullable MuteEntry muteEntry = target.addMuteEntry(channel, true,
-                    target.uuid(), duration, reason);
+                this.messageService.muteAlertRecipient(target);
 
-                for (final var player : carbonChat.server().players()) {
-                    if (!player.equals(sender) && !player.hasPermission("carbon.mute.notify")) {
+                if (!sender.equals(target)) {
+                    this.messageService.muteAlertPlayers(sender, CarbonPlayer.renderName(target));
+                }
+
+                for (final var player : this.carbonChat.server().players()) {
+                    if (player.equals(target) || player.equals(sender)) {
                         continue;
                     }
 
-                    sendMuteMessage(messageService, muteEntry, (PlayerCommander)handler.getSender(),
-                        sender, target, player);
+                    if (!player.hasPermission("carbon.mute.notify")) {
+                        continue;
+                    }
+
+                    this.messageService.muteAlertPlayers(player, CarbonPlayer.renderName(target));
                 }
+
+                target.muted(true);
             })
             .build();
 
-        commandManager.command(command);
-    }
-
-    private void sendMuteMessage(
-        final CarbonMessageService messageService,
-        final MuteEntry muteEntry,
-        final PlayerCommander playerCommander,
-        final CarbonPlayer sender,
-        final CarbonPlayer target,
-        final CarbonPlayer recipient
-    ) {
-        if (target.equals(recipient)) {
-            messageService.playerAlertMuted(target);
-            this.commandManager.executeCommand(playerCommander, "/baninfo -u " + muteEntry.muteId());
-            // TODO: Carbon command names will be user configurable, account for this!
-        }
-
-        // Oh no
-        if (muteEntry.reason() != null && target.hasPermission("carbon.mute.notify.reason")) {
-            if (muteEntry.channel() != null) {
-                if (muteEntry.expirationEpoch() == -1) {
-                    messageService.broadcastPlayerChannelMutedPermanentlyReason(recipient, target.username(),
-                        sender.username(), muteEntry.reason(), muteEntry.channel());
-                } else {
-                    messageService.broadcastPlayerChannelMutedDurationReason(recipient,target.username(),
-                        sender.username(), muteEntry.reason(), muteEntry.channel(), muteEntry.expirationEpoch());
-                }
-            } else {
-                if (muteEntry.expirationEpoch() == -1) {
-                    messageService.broadcastPlayerMutedPermanentlyReason(recipient, target.username(),
-                        sender.username(), muteEntry.reason());
-                } else {
-                    messageService.broadcastPlayerMutedDurationReason(recipient, sender.username(),
-                        muteEntry.reason(), target.username(), muteEntry.expirationEpoch());
-                }
-            }
-        } else {
-            if (muteEntry.channel() != null) {
-                if (muteEntry.expirationEpoch() == -1) {
-                    messageService.broadcastPlayerChannelMutedPermanently(recipient, target.username(),
-                        sender.username(), muteEntry.channel());
-                } else {
-                    messageService.broadcastPlayerChannelMutedDuration(recipient, target.username(),
-                        sender.username(), muteEntry.channel(), muteEntry.expirationEpoch());
-                }
-            } else {
-                if (muteEntry.expirationEpoch() == -1) {
-                    messageService.broadcastPlayerMutedPermanently(recipient, sender.username(),
-                        target.username());
-                } else {
-                    messageService.broadcastPlayerMutedDuration(recipient, sender.username(),
-                        target.username(), muteEntry.expirationEpoch());
-                }
-            }
-        }
+        this.commandManager.command(command);
     }
 
 }
