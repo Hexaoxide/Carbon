@@ -72,7 +72,7 @@ rootProject.name = "CarbonChat"
 sequenceOf(
   "api",
   "common",
-  "bukkit",
+  "paper",
   "sponge",
   "fabric",
   "velocity"

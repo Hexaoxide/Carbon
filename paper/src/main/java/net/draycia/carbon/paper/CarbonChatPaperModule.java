@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit;
+package net.draycia.carbon.paper;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
@@ -33,14 +33,14 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
-import net.draycia.carbon.bukkit.command.BukkitCommander;
-import net.draycia.carbon.bukkit.command.BukkitPlayerCommander;
-import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.paper.command.PaperCommander;
+import net.draycia.carbon.paper.command.PaperPlayerCommander;
+import net.draycia.carbon.paper.util.PaperMessageRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -52,14 +52,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatBukkitModule extends AbstractModule {
+public final class CarbonChatPaperModule extends AbstractModule {
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
-    private final CarbonChatBukkit carbonChat;
+    private final CarbonChatPaper carbonChat;
     private final Path dataDirectory;
 
-    CarbonChatBukkitModule(
-        final CarbonChatBukkit carbonChat,
+    CarbonChatPaperModule(
+        final CarbonChatPaper carbonChat,
         final Path dataDirectory
     ) {
         this.carbonChat = carbonChat;
@@ -77,11 +77,11 @@ public final class CarbonChatBukkitModule extends AbstractModule {
                 AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
                 commandSender -> {
                     if (commandSender instanceof Player player) {
-                        return new BukkitPlayerCommander(this.carbonChat, player);
+                        return new PaperPlayerCommander(this.carbonChat, player);
                     }
-                    return BukkitCommander.from(commandSender);
+                    return PaperCommander.from(commandSender);
                 },
-                commander -> ((BukkitCommander) commander).commandSender()
+                commander -> ((PaperCommander) commander).commandSender()
             );
         } catch (final Exception ex) {
             throw new RuntimeException("Failed to initialize command manager.", ex);
@@ -105,13 +105,13 @@ public final class CarbonChatBukkitModule extends AbstractModule {
     @Provides
     @Singleton
     public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer(final Injector injector) {
-        return injector.getInstance(BukkitMessageRenderer.class);
+        return injector.getInstance(PaperMessageRenderer.class);
     }
 
     @Provides
     @Singleton
     public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> sourcedRenderer(final Injector injector) {
-        return injector.getInstance(BukkitMessageRenderer.class);
+        return injector.getInstance(PaperMessageRenderer.class);
     }
 
     @Override
@@ -119,10 +119,10 @@ public final class CarbonChatBukkitModule extends AbstractModule {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).toInstance(this.carbonChat);
-        this.bind(CarbonChatBukkit.class).toInstance(this.carbonChat);
+        this.bind(CarbonChatPaper.class).toInstance(this.carbonChat);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
-        this.bind(CarbonServer.class).to(CarbonServerBukkit.class);
+        this.bind(CarbonServer.class).to(CarbonServerPaper.class);
         this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
     }
 

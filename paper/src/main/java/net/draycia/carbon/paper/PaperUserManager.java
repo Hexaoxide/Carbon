@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit;
+package net.draycia.carbon.paper;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
+import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,44 +33,44 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class BukkitUserManager implements UserManager<CarbonPlayerBukkit>, SaveOnChange {
+public class PaperUserManager implements UserManager<CarbonPlayerPaper>, SaveOnChange {
 
     protected final UserManager<CarbonPlayerCommon> proxiedUserManager;
 
-    public BukkitUserManager(final UserManager<CarbonPlayerCommon> proxiedUserManager) {
+    public PaperUserManager(final UserManager<CarbonPlayerCommon> proxiedUserManager) {
         this.proxiedUserManager = proxiedUserManager;
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerBukkit>> carbonPlayer(final UUID uuid) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerPaper>> carbonPlayer(final UUID uuid) {
         return this.proxiedUserManager.carbonPlayer(uuid).thenApply(result -> {
             if (result.player() == null) {
                 return new ComponentPlayerResult<>(null, result.reason());
             }
 
-            return new ComponentPlayerResult<>(new CarbonPlayerBukkit(result.player()), result.reason());
+            return new ComponentPlayerResult<>(new CarbonPlayerPaper(result.player()), result.reason());
         });
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerBukkit>> savePlayer(final CarbonPlayerBukkit player) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerPaper>> savePlayer(final CarbonPlayerPaper player) {
         return this.proxiedUserManager.savePlayer(player.carbonPlayerCommon()).thenApply(result -> {
             if (result.player() == null) {
                 return new ComponentPlayerResult<>(null, result.reason());
             }
 
-            return new ComponentPlayerResult<>(new CarbonPlayerBukkit(result.player()), result.reason());
+            return new ComponentPlayerResult<>(new CarbonPlayerPaper(result.player()), result.reason());
         });
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerBukkit>> saveAndInvalidatePlayer(final CarbonPlayerBukkit player) {
+    public CompletableFuture<ComponentPlayerResult<CarbonPlayerPaper>> saveAndInvalidatePlayer(final CarbonPlayerPaper player) {
         return this.proxiedUserManager.saveAndInvalidatePlayer(player.carbonPlayerCommon()).thenApply(result -> {
             if (result.player() == null) {
                 return new ComponentPlayerResult<>(null, result.reason());
             }
 
-            return new ComponentPlayerResult<>(new CarbonPlayerBukkit(result.player()), result.reason());
+            return new ComponentPlayerResult<>(new CarbonPlayerPaper(result.player()), result.reason());
         });
     }
 

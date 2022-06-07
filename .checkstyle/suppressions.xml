@@ -27,12 +27,12 @@
     "http://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
     <!-- add any necessary suppressions here -->
-    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity|fabric)[\\/].*"
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](paper|sponge|common|velocity|fabric)[\\/].*"
               checks="FilteringWriteTag"/>
-    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity|fabric)[\\/].*"
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](paper|sponge|common|velocity|fabric)[\\/].*"
               checks="MissingJavadocMethod"/>
-    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity|fabric)[\\/].*"
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](paper|sponge|common|velocity|fabric)[\\/].*"
               checks="MissingJavadocPackage"/>
-    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](bukkit|sponge|common|velocity|fabric)[\\/].*"
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](paper|sponge|common|velocity|fabric)[\\/].*"
               checks="MissingJavadocType"/>
 </suppressions>

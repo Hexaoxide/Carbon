@@ -30,28 +30,28 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class MessagingSettings {
 
-    private boolean enabled = false;
+    private final boolean enabled = false;
 
     @Comment("Options: RABBITMQ, NATS, REDIS")
-    private MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
+    private final MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
 
     @Comment("")
-    private String url = "127.0.0.1";
+    private final String url = "127.0.0.1";
 
     @Comment("")
-    private int port = 5672; // RabbitMQ 5672, NATS 4222, Redis 6379
+    private final int port = 5672; // RabbitMQ 5672, NATS 4222, Redis 6379
 
     @Comment("RabbitMQ VHost")
-    private String vhost = "/"; // RabbitMQ only
+    private final String vhost = "/"; // RabbitMQ only
 
     @Comment("NATS credentials file")
-    private String credentialsFile = ""; // NATS only
+    private final String credentialsFile = ""; // NATS only
 
     @Comment("RabbitMQ username")
-    private String username = "username"; // RabbitMQ only
+    private final String username = "username"; // RabbitMQ only
 
     @Comment("RabbitMQ and Redis password")
-    private String password = "password"; // RabbitMQ and Redis only
+    private final String password = "password"; // RabbitMQ and Redis only
 
     public boolean enabled() {
         return this.enabled;

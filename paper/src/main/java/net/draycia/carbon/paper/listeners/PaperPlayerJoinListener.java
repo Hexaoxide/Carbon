@@ -17,14 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit.listeners;
+package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
+import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,13 +33,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class BukkitPlayerJoinListener implements Listener {
+public class PaperPlayerJoinListener implements Listener {
 
     private final CarbonChat carbonChat;
     private final UserManager<CarbonPlayerCommon> userManager;
 
     @Inject
-    public BukkitPlayerJoinListener(
+    public PaperPlayerJoinListener(
         final CarbonChat carbonChat,
         final UserManager<CarbonPlayerCommon> userManager
     ) {
@@ -54,7 +54,7 @@ public class BukkitPlayerJoinListener implements Listener {
                 return;
             }
 
-            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerBukkit) result.player());
+            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerPaper) result.player());
         });
     }
 

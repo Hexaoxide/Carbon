@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit;
+package net.draycia.carbon.paper;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -29,8 +29,8 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Bukkit;
@@ -41,33 +41,33 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public final class CarbonServerBukkit implements CarbonServer, ForwardingAudience.Single {
+public final class CarbonServerPaper implements CarbonServer, ForwardingAudience.Single {
 
-    private final CarbonChatBukkit chatBukkitEntry;
-    private final UserManager<CarbonPlayerBukkit> userManager;
+    private final CarbonChatPaper carbonChatPaper;
+    private final UserManager<CarbonPlayerPaper> userManager;
 
     @Inject
-    private CarbonServerBukkit(final CarbonChatBukkit chatBukkitEntry, final UserManager<CarbonPlayerCommon> userManager) {
-        this.chatBukkitEntry = chatBukkitEntry;
-        this.userManager = new BukkitUserManager(userManager);
+    private CarbonServerPaper(final CarbonChatPaper carbonChatPaper, final UserManager<CarbonPlayerCommon> userManager) {
+        this.carbonChatPaper = carbonChatPaper;
+        this.userManager = new PaperUserManager(userManager);
     }
 
     @Override
     public Audience audience() {
-        return this.chatBukkitEntry.getServer();
+        return this.carbonChatPaper.getServer();
     }
 
     @Override
     public Audience console() {
-        return this.chatBukkitEntry.getServer().getConsoleSender();
+        return this.carbonChatPaper.getServer().getConsoleSender();
     }
 
     @Override
     public List<? extends CarbonPlayer> players() {
         final var players = new ArrayList<CarbonPlayer>();
 
-        for (final var player : this.chatBukkitEntry.getServer().getOnlinePlayers()) {
-            final ComponentPlayerResult<CarbonPlayerBukkit> result = this.userManager.carbonPlayer(player.getUniqueId()).join();
+        for (final var player : this.carbonChatPaper.getServer().getOnlinePlayers()) {
+            final ComponentPlayerResult<CarbonPlayerPaper> result = this.userManager.carbonPlayer(player.getUniqueId()).join();
 
             if (result.player() != null) {
                 players.add(result.player());
@@ -78,7 +78,7 @@ public final class CarbonServerBukkit implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public UserManager<CarbonPlayerBukkit> userManager() {
+    public UserManager<CarbonPlayerPaper> userManager() {
         return this.userManager;
     }
 

@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit.listeners;
+package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.bukkit.CarbonChatBukkit;
+import net.draycia.carbon.paper.CarbonChatPaper;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.events.discord.DiscordRelayEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
@@ -81,7 +81,7 @@ public class DiscordMessageListener implements Listener {
         if (discord != null) {
             this.carbonChat.channelRegistry().forEach(channel -> {
                 final MessageType channelMessageType = new MessageType(channel.key().value());
-                discord.registerMessageType((CarbonChatBukkit) this.carbonChat, channelMessageType);
+                discord.registerMessageType((CarbonChatPaper) this.carbonChat, channelMessageType);
                 this.channelMessageTypes.put(channel.key(), channelMessageType);
             });
         }

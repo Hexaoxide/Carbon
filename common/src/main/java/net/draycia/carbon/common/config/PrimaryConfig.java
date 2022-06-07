@@ -32,22 +32,22 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class PrimaryConfig {
 
     @Comment("The default locale for plugin messages.")
-    private Locale defaultLocale = Locale.US;
+    private final Locale defaultLocale = Locale.US;
 
     @Comment("""
     The default channel that new players will be in when they join.
     If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.
     """)
-    private Key defaultChannel = Key.key("carbon", "global");
+    private final Key defaultChannel = Key.key("carbon", "global");
 
     @Comment("The service that will be used to store and load player information.")
-    private StorageType storageType = StorageType.JSON;
+    private final StorageType storageType = StorageType.JSON;
 
     @Comment("")
-    private DatabaseSettings databaseSettings = new DatabaseSettings();
+    private final DatabaseSettings databaseSettings = new DatabaseSettings();
 
     @Comment("Various ClearChat command settings.")
-    private ClearChatSettings clearChatSettings = new ClearChatSettings();
+    private final ClearChatSettings clearChatSettings = new ClearChatSettings();
 
     @Comment("""
     Plugin-wide custom placeholders.
@@ -56,12 +56,12 @@ public class PrimaryConfig {
     Make sure to close your tags so they do not bleed into other formats.
     Only a single pass is done so custom placeholders will not work within each other.
     """)
-    private Map<String, String> customPlaceholders = Map.of();
+    private final Map<String, String> customPlaceholders = Map.of();
 
     @Comment("Various settings related to pinging players in channels.")
-    private PingSettings pingSettings = new PingSettings();
+    private final PingSettings pingSettings = new PingSettings();
 
-    private MessagingSettings messagingSettings = new MessagingSettings();
+    private final MessagingSettings messagingSettings = new MessagingSettings();
 
     public Locale defaultLocale() {
         return this.defaultLocale;

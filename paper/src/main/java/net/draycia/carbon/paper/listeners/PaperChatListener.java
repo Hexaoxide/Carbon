@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit.listeners;
+package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -30,8 +30,8 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.bukkit.CarbonChatBukkit;
-import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
+import net.draycia.carbon.paper.CarbonChatPaper;
+import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -51,16 +51,16 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
-public final class BukkitChatListener implements Listener {
+public final class PaperChatListener implements Listener {
 
-    private final CarbonChatBukkit carbonChat;
+    private final CarbonChatPaper carbonChat;
     private final ChannelRegistry registry;
 
     private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     @Inject
-    public BukkitChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
-        this.carbonChat = (CarbonChatBukkit) carbonChat;
+    public PaperChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
+        this.carbonChat = (CarbonChatPaper) carbonChat;
         this.registry = registry;
     }
 
@@ -136,7 +136,7 @@ public final class BukkitChatListener implements Listener {
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (recipient instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayerBukkit> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
+                            final ComponentPlayerResult<CarbonPlayerPaper> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
 
                             renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
                         } else {
@@ -162,7 +162,7 @@ public final class BukkitChatListener implements Listener {
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (viewer instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayerBukkit> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
+                            final ComponentPlayerResult<CarbonPlayerPaper> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
                             renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), message);
                         } else {
                             renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), message);

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit.users;
+package net.draycia.carbon.paper.users;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.Collection;
@@ -44,11 +44,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonPlayerBukkit extends WrappedCarbonPlayer implements ForwardingAudience.Single {
+public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
     private final CarbonPlayerCommon carbonPlayerCommon;
 
-    public CarbonPlayerBukkit(final CarbonPlayerCommon carbonPlayerCommon) {
+    public CarbonPlayerPaper(final CarbonPlayerCommon carbonPlayerCommon) {
         this.carbonPlayerCommon = carbonPlayerCommon;
     }
 

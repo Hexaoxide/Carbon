@@ -188,7 +188,7 @@ public class MessagingManager {
                 this.messagingService = builder.build();
             }
             case NONE -> throw new IllegalStateException("MessagingManager initialized with no messaging broker selected!");
-        };
+        }
     }
 
     public enum BrokerType {

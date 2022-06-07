@@ -17,31 +17,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit.command;
+package net.draycia.carbon.paper.command;
 
-import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.command.PlayerCommander;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 
-@DefaultQualifier(NonNull.class)
-public interface BukkitCommander extends Commander, ForwardingAudience.Single {
+import static java.util.Objects.requireNonNull;
 
-    static BukkitCommander from(final CommandSender sender) {
-        return new BukkitCommanderImpl(sender);
+public record PaperPlayerCommander(
+    @NonNull CarbonChat carbon,
+    @NonNull Player player
+) implements PlayerCommander, PaperCommander {
+
+    @Override
+    public @NonNull CommandSender commandSender() {
+        return this.player;
     }
 
-    CommandSender commandSender();
+    @Override
+    public @NonNull Audience audience() {
+        return this.player;
+    }
 
-    record BukkitCommanderImpl(CommandSender commandSender) implements BukkitCommander {
-
-        @Override
-        public Audience audience() {
-            return this.commandSender;
-        }
-
+    @Override
+    public @NonNull CarbonPlayer carbonPlayer() {
+        return requireNonNull(this.carbon.server().userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
     }
 
 }

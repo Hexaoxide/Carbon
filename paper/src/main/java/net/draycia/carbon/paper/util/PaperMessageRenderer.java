@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit.util;
+package net.draycia.carbon.paper.util;
 
 import com.google.inject.Inject;
 import java.lang.reflect.Method;
@@ -27,9 +27,9 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
-import net.draycia.carbon.bukkit.CarbonChatBukkit;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.util.ChatType;
+import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
@@ -44,7 +44,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class BukkitMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, RenderedMessage, Component> {
+public class PaperMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, RenderedMessage, Component> {
 
     private @MonotonicNonNull PlaceholderAPIMiniMessageParser parser = null;
 
@@ -52,11 +52,11 @@ public class BukkitMessageRenderer<T extends Audience> implements IMessageRender
     private final ConfigFactory configFactory;
 
     @Inject
-    public BukkitMessageRenderer(final ConfigFactory configFactory) {
+    public PaperMessageRenderer(final ConfigFactory configFactory) {
         this.miniMessage = MiniMessage.miniMessage();
         this.configFactory = configFactory;
 
-        if (((CarbonChatBukkit) CarbonChatProvider.carbonChat()).papiLoaded()) {
+        if (((CarbonChatPaper) CarbonChatProvider.carbonChat()).papiLoaded()) {
             this.parser = PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
         }
     }

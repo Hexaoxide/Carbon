@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.bukkit;
+package net.draycia.carbon.paper;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -36,11 +36,6 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.RenderedMessage;
-import net.draycia.carbon.bukkit.listeners.BukkitChatListener;
-import net.draycia.carbon.bukkit.listeners.BukkitPlayerJoinListener;
-import net.draycia.carbon.bukkit.listeners.DiscordMessageListener;
-import net.draycia.carbon.bukkit.util.BukkitMessageRenderer;
-import net.draycia.carbon.bukkit.util.CarbonChatHook;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -49,6 +44,10 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
+import net.draycia.carbon.paper.listeners.DiscordMessageListener;
+import net.draycia.carbon.paper.listeners.PaperChatListener;
+import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
+import net.draycia.carbon.paper.util.PaperMessageRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -66,18 +65,18 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
+public final class CarbonChatPaper extends JavaPlugin implements CarbonChat {
 
     private static final Set<Class<? extends Listener>> LISTENER_CLASSES = Set.of(
-        BukkitChatListener.class,
-        BukkitPlayerJoinListener.class
+        PaperChatListener.class,
+        PaperPlayerJoinListener.class
     );
     private static final int BSTATS_PLUGIN_ID = 8720;
     private final CarbonEventHandler eventHandler = new CarbonEventHandler();
     private @MonotonicNonNull Injector injector;
     private @MonotonicNonNull UserManager<CarbonPlayerCommon> userManager;
     private @MonotonicNonNull Logger logger;
-    private @MonotonicNonNull CarbonServerBukkit carbonServerBukkit;
+    private @MonotonicNonNull CarbonServerPaper carbonServerPaper;
     private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
     private final UUID serverId = UUID.randomUUID();
@@ -99,11 +98,11 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
         CarbonChatProvider.register(this);
 
-        this.injector = Guice.createInjector(new CarbonChatBukkitModule(this, this.dataDirectory()));
+        this.injector = Guice.createInjector(new CarbonChatPaperModule(this, this.dataDirectory()));
         this.logger = LogManager.getLogger("CarbonChat");
         this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
-        this.carbonServerBukkit = this.injector.getInstance(CarbonServerBukkit.class);
+        this.carbonServerPaper = this.injector.getInstance(CarbonServerPaper.class);
         this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
 
         this.packetService();
@@ -134,7 +133,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
         final long saveDelay = 5 * 60 * 20;
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this,
-            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager), saveDelay, saveDelay);
+            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerPaper, this.userManager), saveDelay, saveDelay);
 
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
@@ -157,7 +156,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     @Override
     public void onDisable() {
-        PlayerUtils.saveLoggedInPlayers(this.carbonServerBukkit, this.userManager).forEach(CompletableFuture::join);
+        PlayerUtils.saveLoggedInPlayers(this.carbonServerPaper, this.userManager).forEach(CompletableFuture::join);
     }
 
     @Override
@@ -185,8 +184,8 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
     }
 
     @Override
-    public CarbonServerBukkit server() {
-        return this.carbonServerBukkit;
+    public CarbonServerPaper server() {
+        return this.carbonServerPaper;
     }
 
     @Override
@@ -205,7 +204,7 @@ public final class CarbonChatBukkit extends JavaPlugin implements CarbonChat {
 
     @Override
     public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer() {
-        return this.injector.getInstance(BukkitMessageRenderer.class);
+        return this.injector.getInstance(PaperMessageRenderer.class);
     }
 
     public boolean papiLoaded() {
