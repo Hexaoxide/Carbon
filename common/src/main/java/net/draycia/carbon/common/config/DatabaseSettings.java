@@ -29,13 +29,13 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class DatabaseSettings {
 
     @Comment("JDBC URL")
-    private final String url = "jdbc:mysql://localhost:3306/carbon";
+    private String url = "jdbc:mysql://localhost:3306/carbon";
 
     @Comment("")
-    private final String username = "username";
+    private String username = "username";
 
     @Comment("")
-    private final String password = "password";
+    private String password = "password";
 
     public String url() {
         return this.url;

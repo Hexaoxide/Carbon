@@ -75,8 +75,7 @@ public final class ConfigChatChannel implements ChatChannel {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private @Nullable
-    final Key key = Key.key("carbon", "global");
+    private @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
         The permission required to use the /channel <channelname> and /<channelname> commands.
@@ -85,26 +84,23 @@ public final class ConfigChatChannel implements ChatChannel {
         To read messages you must have the permission carbon.channel.global.see
         To send messages you must have the permission carbon.channel.global.speak
         """)
-    private @Nullable
-    final String permission = "carbon.channel.global";
+    private @Nullable String permission = "carbon.channel.global";
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private @Nullable
-    final ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    private @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
     @Comment("Messages will be sent in this channel if they start with this prefix.")
-    private @Nullable
-    final String quickPrefix = "";
+    private @Nullable String quickPrefix = "";
 
     private @Nullable
-    final Boolean shouldRegisterCommands = true;
+    Boolean shouldRegisterCommands = true;
 
     private @Nullable
-    final String commandName = null;
+    String commandName = null;
 
     private @Nullable
-    final List<String> commandAliases = Collections.emptyList();
+    List<String> commandAliases = Collections.emptyList();
 
     private transient @Nullable ConfigChannelMessages carbonMessages = null;
 
@@ -113,9 +109,9 @@ public final class ConfigChatChannel implements ChatChannel {
         A value of '0' requires that both players are in the same world.
         On velocity, '0' requires that both players are in the same server.
         """)
-    private final int radius = -1;
+    private int radius = -1;
 
-    private final transient @Nullable ConfigChannelMessages messageService = null;
+    private transient @Nullable ConfigChannelMessages messageService = null;
 
     @Override
     public @Nullable String quickPrefix() {
