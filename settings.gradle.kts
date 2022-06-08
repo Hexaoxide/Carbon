@@ -74,7 +74,7 @@ sequenceOf(
   "api",
   "common",
   "paper",
-  //"sponge",
+  "sponge",
   "fabric",
   "velocity"
 ).forEach {
