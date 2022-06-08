@@ -47,6 +47,7 @@ import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.paper.listeners.DiscordMessageListener;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
+import net.draycia.carbon.paper.util.CarbonChatHook;
 import net.draycia.carbon.paper.util.PaperMessageRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;

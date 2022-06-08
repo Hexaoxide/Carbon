@@ -35,6 +35,16 @@ import org.jetbrains.annotations.NotNull;
 class EmptyCarbonPlayer implements CarbonPlayer {
 
     @Override
+    public double distanceSquaredFrom(final CarbonPlayer other) {
+        return 0;
+    }
+
+    @Override
+    public boolean sameWorldAs(final CarbonPlayer other) {
+        return false;
+    }
+
+    @Override
     public String username() {
         return "";
     }
@@ -105,8 +115,18 @@ class EmptyCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
+    public boolean ignoring(final UUID player) {
+        return false;
+    }
+
+    @Override
     public boolean ignoring(final CarbonPlayer sender) {
         return false;
+    }
+
+    @Override
+    public void ignoring(final UUID player, final boolean nowIgnoring) {
+
     }
 
     @Override

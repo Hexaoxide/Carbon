@@ -28,8 +28,8 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.bukkit.users.CarbonPlayerBukkit;
 import net.draycia.carbon.common.util.ChannelUtils;
+import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -44,7 +44,7 @@ public class CarbonChatHook implements ChatHook {
 
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");
 
-            final @Nullable Player player = ((CarbonPlayerBukkit) carbonPlayer).bukkitPlayer();
+            final @Nullable Player player = ((CarbonPlayerPaper) carbonPlayer).bukkitPlayer();
             final String message = PlainTextComponentSerializer.plainText().serialize(event.message());
 
             if (player != null) {
