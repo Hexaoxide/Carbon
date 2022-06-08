@@ -29,7 +29,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
@@ -73,7 +72,7 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
         try {
             //Class.forName("org.postgresql.Driver");
             Class.forName("org.mariadb.jdbc.Driver");
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver"); // Manually loading this might not be necessary
         } catch (final Exception exception) {
             exception.printStackTrace();
         }
@@ -86,14 +85,16 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
 
         final DataSource dataSource = new HikariDataSource(hikariConfig);
 
-        Flyway.configure(CarbonChat.class.getClassLoader())
+        final Flyway flyway = Flyway.configure(Thread.currentThread().getContextClassLoader())
             .baselineVersion("0")
             .baselineOnMigrate(true)
             .locations("queries/migrations/mysql")
             .dataSource(dataSource)
             .validateOnMigrate(true)
-            .load()
-            .migrate();
+            .load();
+
+        flyway.repair();
+        flyway.migrate();
 
         final Jdbi jdbi = Jdbi.create(dataSource)
             .registerArrayType(UUID.class, "uuid")

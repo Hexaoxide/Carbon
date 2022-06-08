@@ -24,13 +24,22 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.common")
   relocateDependency("com.google.thirdparty.publicsuffix")
+  relocateDependency("com.google.protobuf")
   relocateDependency("it.unimi.dsi.fastutil")
   relocateDependency("org.jdbi")
   relocateDependency("com.github.benmanes")
   relocateDependency("org.mariadb.jdbc")
-  relocateDependency("org.flywaydb.core")
+  relocateDependency("com.mysql")
+  //relocateDependency("org.flywaydb")
   relocateDependency("com.zaxxer.hikari")
   relocateDependency("org.postgresql")
+  relocateDependency("redis.clients.jedis")
+  //relocateDependency("org.slf4j")
+  //relocateDependency("org.apache")
+  relocateDependency("ninja.egg82.messenger")
+  relocateDependency("org.antlr")
+  relocateDependency("com.github.luben")
+  relocateDependency("io.netty")
 }
 
 fun ShadowJar.relocateCloud() {

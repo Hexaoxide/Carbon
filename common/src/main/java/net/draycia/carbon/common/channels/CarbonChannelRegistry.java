@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
@@ -163,7 +164,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             if (startVersion != endVersion) { // we might not have made any changes
                 // TODO: use logger
-                System.out.println("Updated config schema from " + startVersion + " to " + endVersion);
+                CarbonChatProvider.carbonChat().logger().info("Updated config schema from " + startVersion + " to " + endVersion);
             }
         }
 

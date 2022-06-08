@@ -28,13 +28,18 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class DatabaseSettings {
 
-    @Comment("JDBC URL")
+    @Comment("""
+        JDBC URL. Suggested defaults for each DB:
+        MySQL: jdbc:mysql://host:3306/DB
+        MariaDB: jdbc:mariadb://host:3306/DB
+        PostgreSQL: jdbc:postgresql://host:5432/database
+        """)
     private String url = "jdbc:mysql://localhost:3306/carbon";
 
-    @Comment("")
+    @Comment("The connection username.")
     private String username = "username";
 
-    @Comment("")
+    @Comment("The connection password.")
     private String password = "password";
 
     public String url() {
