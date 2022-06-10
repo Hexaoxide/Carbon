@@ -30,7 +30,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -90,8 +89,6 @@ public enum ChatCallback {
     }
 
     private void fire(final MinecraftServer server, final ServerPlayer sender, final String chat) {
-        final FabricServerAudiences fabricServerAudiences = FabricServerAudiences.of(server);
-
         // adventure-platform-fabric's PlayerListMixin makes this safe off main
         final ChatImpl c = new ChatImpl(sender, chat, server.getPlayerList().getPlayers());
         for (final Consumer<Chat> listener : this.listeners) {
@@ -103,16 +100,15 @@ public enum ChatCallback {
 
         final MessageFormatter formatter = c.formatter == null ? defaultFormatter() : c.formatter;
 
-        final Audience console = fabricServerAudiences.console();
-        final @Nullable Component msgForConsole = formatter.format(sender, chat, console);
+        final @Nullable Component msgForConsole = formatter.format(sender, chat, server);
         if (msgForConsole != null) {
-            console.sendMessage(msgForConsole);
+            server.sendMessage(msgForConsole);
         }
 
         for (final ServerPlayer player : c.recipients()) {
-            final @Nullable Component rendered = formatter.format(sender, chat, fabricServerAudiences.audience(player));
+            final @Nullable Component rendered = formatter.format(sender, chat, player);
             if (rendered != null) {
-                fabricServerAudiences.audience(player).sendMessage(c.identity(), rendered, MessageType.CHAT);
+                player.sendMessage(c.identity(), rendered, MessageType.CHAT);
             }
         }
     }
@@ -133,7 +129,7 @@ public enum ChatCallback {
                 }
                 this.rendered = translatable(
                     "chat.type.text",
-                    FabricServerAudiences.of(sender.server).toAdventure(sender.getDisplayName()),
+                    sender.getDisplayName(),
                     text(message)
                 );
                 return this.rendered;

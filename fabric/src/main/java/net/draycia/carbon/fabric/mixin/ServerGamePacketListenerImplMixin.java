@@ -80,14 +80,13 @@ abstract class ServerGamePacketListenerImplMixin {
         )
     )
     public void redirectQuitMessage(final PlayerList instance, final Component component, final ChatType chatType, final UUID uuid) {
-        final FabricServerAudiences audiences = FabricServerAudiences.of(this.server);
         final PlayerStatusMessageEvents.MessageEvent event = PlayerStatusMessageEvents.MessageEvent.of(
-            this.player, audiences.toAdventure(component)
+            this.player, component.asComponent()
         );
         PlayerStatusMessageEvents.QUIT_MESSAGE.invoker().onMessage(event);
         final net.kyori.adventure.text.@Nullable Component message = event.message();
         if (message != null) {
-            instance.broadcastMessage(audiences.toNative(message), chatType, uuid);
+            instance.broadcastMessage(FabricServerAudiences.of(this.server).toNative(message), chatType, uuid);
         }
     }
 

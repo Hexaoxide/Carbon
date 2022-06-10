@@ -60,7 +60,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
 
     @Override
     public Audience console() {
-        return FabricServerAudiences.of(this.carbonChatFabric.minecraftServer()).console();
+        return this.carbonChatFabric.minecraftServer();
     }
 
     @Override

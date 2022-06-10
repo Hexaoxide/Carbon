@@ -69,14 +69,13 @@ abstract class PlayerListMixin {
     public void injectJoin(final Connection connection, final ServerPlayer serverPlayer, final CallbackInfo ci) {
         final @Nullable Triplet<Component, ChatType, UUID> remove = this.carbon$joinMsg.remove(Thread.currentThread());
         if (remove != null) {
-            final FabricServerAudiences audiences = FabricServerAudiences.of(this.server);
             final PlayerStatusMessageEvents.MessageEvent event = PlayerStatusMessageEvents.MessageEvent.of(
-                serverPlayer, audiences.toAdventure(remove.getFirst())
+                serverPlayer, remove.getFirst().asComponent()
             );
             PlayerStatusMessageEvents.JOIN_MESSAGE.invoker().onMessage(event);
             final net.kyori.adventure.text.@Nullable Component message = event.message();
             if (message != null) {
-                this.broadcastMessage(audiences.toNative(message), remove.getSecond(), remove.getThird());
+                this.broadcastMessage(FabricServerAudiences.of(this.server).toNative(message), remove.getSecond(), remove.getThird());
             }
         }
     }

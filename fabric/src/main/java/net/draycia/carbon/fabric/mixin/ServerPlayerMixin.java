@@ -83,16 +83,15 @@ abstract class ServerPlayerMixin {
     }
 
     private @Nullable Component carbon$fireDeathMessageEvent(final Component message) {
-        final FabricServerAudiences audiences = FabricServerAudiences.of(this.server);
         final PlayerStatusMessageEvents.MessageEvent event = PlayerStatusMessageEvents.MessageEvent.of(
-            (ServerPlayer) (Object) this, audiences.toAdventure(message)
+            (ServerPlayer) (Object) this, message.asComponent()
         );
         PlayerStatusMessageEvents.DEATH_MESSAGE.invoker().onMessage(event);
         final net.kyori.adventure.text.@Nullable Component msg = event.message();
         if (msg == null) {
             return null;
         }
-        return audiences.toNative(msg);
+        return FabricServerAudiences.of(this.server).toNative(msg);
     }
 
 }

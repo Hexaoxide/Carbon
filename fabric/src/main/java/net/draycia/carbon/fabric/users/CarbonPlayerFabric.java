@@ -30,8 +30,7 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.platform.fabric.PlayerLocales;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -53,9 +52,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public @NonNull Audience audience() {
-        return this.player()
-            .map(p -> FabricServerAudiences.of(p.server).audience(p))
-            .orElseThrow();
+        return this.player().orElseThrow();
     }
 
     private Optional<ServerPlayer> player() {
@@ -72,7 +69,11 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public @Nullable Locale locale() {
-        return this.player().map(PlayerLocales::locale).orElse(null);
+        if (this.player().isEmpty()) {
+            return Locale.getDefault();
+        }
+
+        return this.player().get().get(Identity.LOCALE).orElse(Locale.getDefault());
     }
 
     @Override
@@ -155,7 +156,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return null;
         }
 
-        return FabricServerAudiences.of(player.server).toAdventure(item.getDisplayName());
+        return item.getDisplayName().asComponent();
     }
 
     @Override
