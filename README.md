@@ -3,28 +3,28 @@
 <b>Carbon</b> is a modern chat Java Edition plugin built on channels, with just about every single setting and format configurable.
 </p>
 
-### Dev Builds
+## Dev Builds
 
-Dev builds can be found at https://jenkins.ocelotpotpie.com:8443/job/Carbon/
+Dev builds can be found [here](https://jenkins.ocelotpotpie.com:8443/job/Carbon/).
 
-### Support
+## Support
 
 Support is given through [GitHub Issues](https://github.com/Hexaoxide/Carbon/issues)
 and [Discord](https://discord.gg/S8s75Yf).  
 Please use the discord for help setting up the plugin, and use issues for bug reports.
 
-### Checkstyle
+## Checkstyle
 
 Carbon uses (a fork of) checkstyle to ensure code style is consistent across the entire project.  
 For checkstyle support in IDEA:
 
-1. Install the checkstyle plugin (https://github.com/jshiell/checkstyle-idea)
+1. Install the [checkstyle plugin](https://github.com/jshiell/checkstyle-idea).
 2. Compile https://gitlab.com/stellardrift/stylecheck
 3. `Settings` -> `Tools` -> `Checkstyle` `Third-Party Checks`, add the compiled stylecheck jar
 4. While still in the `Checkstyle` tab, go to `Configuration File`, add `.checkstyle/checkstyle.xml` and tick the check
    box.
 
-### Partner
+## Partner
 
 ![DedicatedMC](https://i.imgur.com/cbWjWFx.png)
 
