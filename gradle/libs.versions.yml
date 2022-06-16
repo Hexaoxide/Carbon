@@ -13,8 +13,8 @@ versions:
   indra: 2.1.1
   licenser: 0.6.1
   shadow: 7.1.2
-  adventure: 4.10.1
-  cloud: 1.7.0+1.18.2-SNAPSHOT
+  adventure: 4.11.0
+  cloud: 1.7.0-SNAPSHOT
   configurate: 4.1.2
   typesafeConfig: 1.4.1
   checkerQual: 3.22.0
@@ -22,7 +22,7 @@ versions:
   gson: 2.8.0
   guava: 30.1-jre
   bstats: 3.0.0
-  paperApi: 1.18.2-R0.1-SNAPSHOT
+  paperApi: 1.19-R0.1-SNAPSHOT
   paperLib: 1.0.8-SNAPSHOT
   kyoriEventApi: 5.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT

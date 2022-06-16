@@ -137,7 +137,7 @@ public final class PostgreSQLUserManager implements UserManager<CarbonPlayerComm
                     this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
                         .execute();
 
-                    return new ComponentPlayerResult<CarbonPlayerCommon>(null, text(""));
+                    return new ComponentPlayerResult<>(player, text(""));
                 }
             });
         }).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
