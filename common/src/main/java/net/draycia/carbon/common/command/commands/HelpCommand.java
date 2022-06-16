@@ -94,7 +94,7 @@ public final class HelpCommand extends CarbonCommand {
     }
 
     private List<String> suggestQueries(final CommandContext<Commander> ctx, final String input) {
-        final var topic = (CommandHelpHandler.IndexHelpTopic<Commander>) this.commandManager.getCommandHelpHandler().queryHelp(ctx.getSender(), "");
+        final var topic = (CommandHelpHandler.IndexHelpTopic<Commander>) this.commandManager.createCommandHelpHandler().queryHelp(ctx.getSender(), "");
         return topic.getEntries().stream().map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString).toList();
     }
 
