@@ -196,14 +196,20 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     }
 
     private String forAudience(final String key, final Audience audience) {
-        final String value = this.locales.get(this.defaultLocale).getProperty(key);
+        final Properties defaultProperties = this.locales.get(this.defaultLocale);
 
-        if (value == null) {
-            this.logger.warn("No message mapping for key " + key + " in default locale " + this.defaultLocale.getDisplayName());
-            return key;
+        if (defaultProperties != null) {
+            final String value = defaultProperties.getProperty(key);
+
+            if (value == null) {
+                this.logger.warn("No message mapping for key " + key + " in default locale " + this.defaultLocale.getDisplayName());
+                return key;
+            }
+
+            return value;
         }
 
-        return value;
+        return key;
     }
 
     private void walkPluginJar(final Consumer<Stream<Path>> user) throws IOException {
