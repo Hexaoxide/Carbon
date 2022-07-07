@@ -11,7 +11,7 @@ Dev builds can be found [here](https://jenkins.ocelotpotpie.com:8443/job/Carbon/
 
 Support is given through [GitHub Issues](https://github.com/Hexaoxide/Carbon/issues)
 and [Discord](https://discord.gg/S8s75Yf).  
-Please use the discord for help setting up the plugin, and use issues for bug reports.
+Please use the Discord server for help setting up the plugin, and use issues for bug reports.
 
 ## Checkstyle
 
