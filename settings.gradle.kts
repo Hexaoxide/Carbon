@@ -11,6 +11,9 @@ dependencyResolutionManagement {
         includeGroup("cloud.commandframework")
       }
     }
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
     maven("https://oss.sonatype.org/content/repositories/snapshots/") {
       mavenContent { snapshotsOnly() }
     }
@@ -65,7 +68,7 @@ pluginManagement {
 
 plugins {
   id("ca.stellardrift.polyglot-version-catalogs") version "5.0.1"
-  id("quiet-fabric-loom") version "0.11-SNAPSHOT"
+  id("quiet-fabric-loom") version "0.12-SNAPSHOT"
 }
 
 rootProject.name = "CarbonChat"

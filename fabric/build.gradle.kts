@@ -15,6 +15,8 @@ dependencies {
   minecraft(libs.fabricMinecraft)
   mappings(loom.officialMojangMappings())
   modImplementation(libs.fabricLoader)
+  modImplementation("net.fabricmc.fabric-api:fabric-api:0.57.0+1.19")
+  modImplementation("net.fabricmc.fabric-api:fabric-api-deprecated:0.57.0+1.19") // LuckPerms needs to work at dev time
 
   carbon(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
@@ -28,9 +30,7 @@ dependencies {
 
   modImplementation(libs.cloudFabric)
   include(libs.cloudFabric)
-  modImplementation(libs.adventurePlatformFabric) {
-    exclude("ca.stellardrift", "colonel") // causes classloading issues when running in dev
-  }
+  modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
 }
 

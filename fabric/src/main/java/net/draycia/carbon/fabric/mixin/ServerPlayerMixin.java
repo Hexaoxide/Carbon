@@ -19,11 +19,11 @@
  */
 package net.draycia.carbon.fabric.mixin;
 
-import java.util.UUID;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -44,13 +44,13 @@ abstract class ServerPlayerMixin {
         method = "die(Lnet/minecraft/world/damagesource/DamageSource;)V",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"
+            target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/resources/ResourceKey;)V"
         )
     )
-    public void redirectBroadcastDeath(final PlayerList instance, final Component component, final ChatType chatType, final UUID uuid) {
+    public void redirectBroadcastDeath(final PlayerList instance, final Component component, final ResourceKey<ChatType> resourceKey) {
         final @Nullable Component msg = this.carbon$fireDeathMessageEvent(component);
         if (msg != null) {
-            instance.broadcastMessage(msg, chatType, uuid);
+            instance.broadcastSystemMessage(msg, resourceKey);
         }
     }
 
@@ -58,13 +58,13 @@ abstract class ServerPlayerMixin {
         method = "die(Lnet/minecraft/world/damagesource/DamageSource;)V",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/server/players/PlayerList;broadcastToTeam(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/network/chat/Component;)V"
+            target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemToTeam(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/network/chat/Component;)V"
         )
     )
     public void redirectBroadcastDeathToTeam(final PlayerList instance, final Player player, final Component component) {
         final @Nullable Component msg = this.carbon$fireDeathMessageEvent(component);
         if (msg != null) {
-            instance.broadcastToTeam(player, msg);
+            instance.broadcastSystemToTeam(player, msg);
         }
     }
 
@@ -72,13 +72,13 @@ abstract class ServerPlayerMixin {
         method = "die(Lnet/minecraft/world/damagesource/DamageSource;)V",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/server/players/PlayerList;broadcastToAllExceptTeam(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/network/chat/Component;)V"
+            target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemToAllExceptTeam(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/network/chat/Component;)V"
         )
     )
     public void redirectBroadcastDeathToAllExceptTeam(final PlayerList instance, final Player player, final Component component) {
         final @Nullable Component msg = this.carbon$fireDeathMessageEvent(component);
         if (msg != null) {
-            instance.broadcastToAllExceptTeam(player, msg);
+            instance.broadcastSystemToAllExceptTeam(player, msg);
         }
     }
 

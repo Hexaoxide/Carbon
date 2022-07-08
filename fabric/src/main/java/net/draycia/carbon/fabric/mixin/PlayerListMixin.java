@@ -19,15 +19,15 @@
  */
 package net.draycia.carbon.fabric.mixin;
 
-import cloud.commandframework.types.tuples.Triplet;
+import cloud.commandframework.types.tuples.Pair;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -46,20 +46,20 @@ abstract class PlayerListMixin {
     @Shadow @Final private MinecraftServer server;
 
     @Shadow
-    public abstract void broadcastMessage(Component component, ChatType chatType, UUID uUID);
+    public abstract void broadcastSystemMessage(Component component, ResourceKey<ChatType> resourceKey);
 
-    public Map<Thread, Triplet<Component, ChatType, UUID>> carbon$joinMsg = new ConcurrentHashMap<>();
+    public Map<Thread, Pair<Component, ResourceKey<ChatType>>> carbon$joinMsg = new ConcurrentHashMap<>();
 
     @Redirect(
         method = "placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"
+            target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/resources/ResourceKey;)V"
         )
     )
-    public void redirectJoinMessage(final PlayerList instance, final Component component, final ChatType chatType, final UUID uuid) {
+    public void redirectJoinMessage(final PlayerList instance, final Component component, final ResourceKey<ChatType> resourceKey) {
         // move to after player is added to playerlist and world
-        this.carbon$joinMsg.put(Thread.currentThread(), Triplet.of(component, chatType, uuid));
+        this.carbon$joinMsg.put(Thread.currentThread(), Pair.of(component, resourceKey));
     }
 
     @Inject(
@@ -67,7 +67,7 @@ abstract class PlayerListMixin {
         at = @At("RETURN")
     )
     public void injectJoin(final Connection connection, final ServerPlayer serverPlayer, final CallbackInfo ci) {
-        final @Nullable Triplet<Component, ChatType, UUID> remove = this.carbon$joinMsg.remove(Thread.currentThread());
+        final @Nullable Pair<Component, ResourceKey<ChatType>> remove = this.carbon$joinMsg.remove(Thread.currentThread());
         if (remove != null) {
             final PlayerStatusMessageEvents.MessageEvent event = PlayerStatusMessageEvents.MessageEvent.of(
                 serverPlayer, remove.getFirst().asComponent()
@@ -75,7 +75,7 @@ abstract class PlayerListMixin {
             PlayerStatusMessageEvents.JOIN_MESSAGE.invoker().onMessage(event);
             final net.kyori.adventure.text.@Nullable Component message = event.message();
             if (message != null) {
-                this.broadcastMessage(FabricServerAudiences.of(this.server).toNative(message), remove.getSecond(), remove.getThird());
+                this.broadcastSystemMessage(FabricServerAudiences.of(this.server).toNative(message), remove.getSecond());
             }
         }
     }
