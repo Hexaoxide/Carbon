@@ -27,7 +27,7 @@ tasks {
 
 sponge {
   injectRepositories(false) // We specify repositories in settings.gradle.kts
-  apiVersion("8.1.0-SNAPSHOT")
+  apiVersion("9.0.0-SNAPSHOT")
   plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
     loader {
       name(PluginLoaders.JAVA_PLAIN)

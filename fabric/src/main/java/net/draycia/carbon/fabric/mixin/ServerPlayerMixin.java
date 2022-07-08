@@ -44,13 +44,13 @@ abstract class ServerPlayerMixin {
         method = "die(Lnet/minecraft/world/damagesource/DamageSource;)V",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/resources/ResourceKey;)V"
+            target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"
         )
     )
-    public void redirectBroadcastDeath(final PlayerList instance, final Component component, final ResourceKey<ChatType> resourceKey) {
+    public void redirectBroadcastDeath(final PlayerList instance, final Component component, final boolean bool) {
         final @Nullable Component msg = this.carbon$fireDeathMessageEvent(component);
         if (msg != null) {
-            instance.broadcastSystemMessage(msg, resourceKey);
+            instance.broadcastSystemMessage(msg, bool);
         }
     }
 
