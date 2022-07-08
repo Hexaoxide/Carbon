@@ -40,12 +40,12 @@ import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.ChatCallback;
-import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
 import net.draycia.carbon.fabric.listeners.FabricPlayerLeaveListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.audience.Audience;
@@ -125,7 +125,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     private void registerPlayerStatusListeners() {
-        PlayerStatusMessageEvents.QUIT_MESSAGE.register(this.injector.getInstance(FabricPlayerLeaveListener.class));
+        ServerPlayConnectionEvents.DISCONNECT.register(this.injector.getInstance(FabricPlayerLeaveListener.class));
     }
 
     private void registerTickListeners() {

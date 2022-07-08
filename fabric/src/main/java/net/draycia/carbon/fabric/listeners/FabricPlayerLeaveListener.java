@@ -24,13 +24,15 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
-import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class FabricPlayerLeaveListener implements PlayerStatusMessageEvents.MessageEventListener {
+public class FabricPlayerLeaveListener implements ServerPlayConnectionEvents.Disconnect {
 
     private final CarbonChat carbonChat;
     private final UserManager<CarbonPlayerCommon> userManager;
@@ -45,8 +47,8 @@ public class FabricPlayerLeaveListener implements PlayerStatusMessageEvents.Mess
     }
 
     @Override
-    public void onMessage(final PlayerStatusMessageEvents.MessageEvent event) {
-        this.carbonChat.server().userManager().carbonPlayer(event.player().getUUID()).thenAccept(result -> {
+    public void onPlayDisconnect(final ServerGamePacketListenerImpl handler, final MinecraftServer server) {
+        this.carbonChat.server().userManager().carbonPlayer(handler.getPlayer().getUUID()).thenAccept(result -> {
             if (result.player() == null) {
                 return;
             }
