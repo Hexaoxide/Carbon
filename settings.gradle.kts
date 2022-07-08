@@ -78,7 +78,7 @@ sequenceOf(
   "common",
   "paper",
   //"sponge",
-  //"fabric",
+  "fabric",
   "velocity"
 ).forEach {
   include("carbonchat-$it")
