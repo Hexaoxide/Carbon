@@ -69,12 +69,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
     public CommandManager<Commander> commandManager() {
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
             AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
-            commandSourceStack -> {
-                if (commandSourceStack.getEntity() instanceof ServerPlayer) {
-                    return new FabricPlayerCommander(this.carbonChat, commandSourceStack);
-                }
-                return FabricCommander.from(commandSourceStack);
-            },
+            FabricCommander::from,
             commander -> ((FabricCommander) commander).commandSourceStack()
         );
 

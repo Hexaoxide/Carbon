@@ -19,10 +19,12 @@
  */
 package net.draycia.carbon.common.config;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
@@ -58,6 +60,9 @@ public class PrimaryConfig {
     """)
     private Map<String, String> customPlaceholders = Map.of();
 
+    @Comment("The suggestions shown when using the TAB key in chat.")
+    private List<String> customChatSuggestions = List.of();
+
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
 
@@ -85,6 +90,10 @@ public class PrimaryConfig {
 
     public Map<String, String> customPlaceholders() {
         return this.customPlaceholders;
+    }
+
+    public @Nullable List<String> customChatSuggestions() {
+        return this.customChatSuggestions;
     }
 
     public PingSettings pings() {

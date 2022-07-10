@@ -386,11 +386,11 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             builder = builder.permission(channel.permission());
 
             // Add to LuckPerms permission suggestions... lol
-            this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
-                checker.test(channel.permission());
-                checker.test(channel.permission() + ".see");
-                checker.test(channel.permission() + ".speak");
-            });
+            //this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
+            //    checker.test(channel.permission());
+            //    checker.test(channel.permission() + ".see");
+            //    checker.test(channel.permission() + ".speak");
+            //});
         }
 
         final Key channelKey = channel.key();
