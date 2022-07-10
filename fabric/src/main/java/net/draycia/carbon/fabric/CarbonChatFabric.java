@@ -41,11 +41,13 @@ import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
+import net.draycia.carbon.fabric.listeners.FabricChatPreviewListener;
 import net.draycia.carbon.fabric.listeners.FabricPlayerJoinListener;
 import net.draycia.carbon.fabric.listeners.FabricPlayerLeaveListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -117,6 +119,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private void registerChatListener() {
         ChatCallback.setup();
         ChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry));
+        ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, this.injector.getInstance(FabricChatPreviewListener.class));
     }
 
     private void registerServerLifecycleListeners() {
