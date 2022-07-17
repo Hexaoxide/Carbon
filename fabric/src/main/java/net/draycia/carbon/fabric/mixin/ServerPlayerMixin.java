@@ -21,9 +21,7 @@ package net.draycia.carbon.fabric.mixin;
 
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;

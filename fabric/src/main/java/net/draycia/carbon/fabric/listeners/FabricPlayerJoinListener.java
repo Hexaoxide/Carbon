@@ -22,7 +22,6 @@ package net.draycia.carbon.fabric.listeners;
 import com.google.inject.Inject;
 import java.util.List;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.config.PrimaryConfig;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket;
@@ -43,7 +42,7 @@ public class FabricPlayerJoinListener implements ServerPlayConnectionEvents.Join
     }
 
     @Override
-    public void onPlayReady(final ServerGamePacketListenerImpl handler, PacketSender sender, final MinecraftServer server) {
+    public void onPlayReady(final ServerGamePacketListenerImpl handler, final PacketSender sender, final MinecraftServer server) {
         final @Nullable List<String> suggestions = this.configFactory.primaryConfig().customChatSuggestions();
 
         if (suggestions == null || suggestions.isEmpty()) {

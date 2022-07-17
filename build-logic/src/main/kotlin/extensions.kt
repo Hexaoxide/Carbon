@@ -39,7 +39,7 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("ninja.egg82.messenger")
   relocateDependency("org.antlr")
   relocateDependency("com.github.luben")
-  relocateDependency("io.netty")
+  //relocateDependency("io.netty")
 }
 
 fun ShadowJar.relocateCloud() {
@@ -61,6 +61,7 @@ fun ShadowJar.configureShadowJar() {
     exclude(dependency("org.checkerframework:checker-qual"))
     exclude(dependency("com.google.errorprone:error_prone_annotations"))
     exclude(dependency("com.google.j2objc:j2objc-annotations"))
+    exclude(dependency("io.netty:netty-all"))
   }
 }
 

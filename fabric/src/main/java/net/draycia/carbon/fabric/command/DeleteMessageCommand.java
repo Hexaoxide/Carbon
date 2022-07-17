@@ -25,7 +25,6 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
