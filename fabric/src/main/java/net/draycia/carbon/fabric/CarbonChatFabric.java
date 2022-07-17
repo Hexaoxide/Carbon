@@ -19,10 +19,19 @@
  */
 package net.draycia.carbon.fabric;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.MapMaker;
+import com.google.common.collect.Ordering;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonChat;
@@ -40,6 +49,7 @@ import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.ChatCallback;
+import net.draycia.carbon.fabric.command.DeleteMessageCommand;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
 import net.draycia.carbon.fabric.listeners.FabricChatPreviewListener;
 import net.draycia.carbon.fabric.listeners.FabricPlayerJoinListener;
@@ -56,6 +66,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
 import net.kyori.moonshine.message.IMessageRenderer;
 import net.luckperms.api.LuckPermsProvider;
+import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.server.MinecraftServer;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.LogManager;
@@ -81,6 +92,10 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private @MonotonicNonNull ChannelRegistry channelRegistry;
     private TriState luckPermsLoaded = TriState.NOT_SET;
     private final UUID serverId = UUID.randomUUID();
+
+    private static final Cache<UUID, MessageSignature> messageSignatures = CacheBuilder.newBuilder()
+        .maximumSize(10)
+        .build();
 
     private @MonotonicNonNull MessagingManager messagingManager = null;
 
@@ -111,9 +126,32 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         CloudUtils.loadCommands(this.injector);
         final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
         CloudUtils.registerCommands(commandSettings);
+        this.injector.getInstance(DeleteMessageCommand.class).init();
 
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
+    }
+
+    public static void addMessageSignature(final UUID uuid, final MessageSignature messageSignature) {
+        messageSignatures.put(uuid, messageSignature);
+    }
+
+    public static @Nullable MessageSignature messageSignature(final UUID uuid) {
+        return messageSignatures.getIfPresent(uuid);
+    }
+
+    public static Set<UUID> messageIds() {
+        return messageSignatures.asMap().keySet();
+    }
+
+    public static List<String> messageIdSuggestions() {
+        final List<String> suggestions = new ArrayList<>();
+
+        for (final UUID messageId : messageSignatures.asMap().keySet()) {
+            suggestions.add(messageId.toString());
+        }
+
+        return suggestions;
     }
 
     private void registerChatListener() {
