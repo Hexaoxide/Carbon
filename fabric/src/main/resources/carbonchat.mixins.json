@@ -7,7 +7,7 @@
         "ServerGamePacketListenerImplMixin",
         "ServerPlayerMixin",
         "PlayerListMixin",
-        "ChatListenerMixin"
+        "PacketListenerMixin"
     ],
     "client": [
     ],

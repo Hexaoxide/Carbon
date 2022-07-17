@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ServerGamePacketListenerImpl.class)
-abstract class ChatListenerMixin {
+abstract class PacketListenerMixin {
 
     @ModifyVariable(at = @At("HEAD"), index = 1, method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", argsOnly = true)
     private Packet<?> sendPacket(final Packet<?> packet) {
