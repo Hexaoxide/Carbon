@@ -62,6 +62,8 @@ fun ShadowJar.configureShadowJar() {
     exclude(dependency("com.google.errorprone:error_prone_annotations"))
     exclude(dependency("com.google.j2objc:j2objc-annotations"))
     exclude(dependency("io.netty:netty-all"))
+    exclude(dependency("io.netty:netty-buffer"))
+    exclude(dependency("it.unimi.dsi:fastutil"))
   }
 }
 
