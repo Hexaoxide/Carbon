@@ -77,7 +77,7 @@ public class MessagingManager {
         PacketManager.register(PacketVersionPacket.class, PacketVersionPacket::new);
         PacketManager.register(PacketVersionRequestPacket.class, PacketVersionRequestPacket::new);
         PacketManager.register(ShutdownPacket.class, ShutdownPacket::new);
-        PacketManager.register(HeartbeatPacket.class, HeartbeatPacket::new);
+        //PacketManager.register(HeartbeatPacket.class, HeartbeatPacket::new);
         PacketManager.register(ChatMessagePacket.class, ChatMessagePacket::new);
 
         this.packetService = new PacketService(4, false, protocolVersion);
@@ -103,12 +103,6 @@ public class MessagingManager {
         // Broadcast keepalive packets
         this.executorService.scheduleAtFixedRate(() -> {
             this.packetService.queuePacket(new KeepAlivePacket(carbonChat.serverId()));
-            this.packetService.flushQueue();
-        }, 5, 10, TimeUnit.SECONDS);
-
-        // Broadcast heartbeat packets
-        this.executorService.scheduleAtFixedRate(() -> {
-            this.packetService.queuePacket(new HeartbeatPacket(carbonChat.serverId(), protocolVersion));
             this.packetService.flushQueue();
         }, 5, 5, TimeUnit.SECONDS);
 
