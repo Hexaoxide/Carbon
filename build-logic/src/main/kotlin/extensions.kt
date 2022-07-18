@@ -25,7 +25,7 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("com.google.common")
   relocateDependency("com.google.thirdparty.publicsuffix")
   relocateDependency("com.google.protobuf")
-  relocateDependency("it.unimi.dsi.fastutil")
+  //relocateDependency("it.unimi.dsi.fastutil")
   relocateDependency("org.jdbi")
   relocateDependency("com.github.benmanes")
   relocateDependency("org.mariadb.jdbc")
