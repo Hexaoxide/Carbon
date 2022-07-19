@@ -25,11 +25,14 @@ import java.util.UUID;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.FilteredText;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -38,7 +41,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -76,6 +78,11 @@ abstract class ServerGamePacketListenerImplMixin {
             final UUID uuid = UUID.nameUUIDFromBytes(chatPacket.message().headerSignature().bytes());
             CarbonChatFabric.addMessageSignature(uuid, chatPacket.message().headerSignature());
         }
+    }
+
+    @Redirect(method = "broadcastChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastChatMessage(Lnet/minecraft/server/network/FilteredText;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V"))
+    private void broadcastChatMessage(PlayerList instance, FilteredText<PlayerChatMessage> filteredText, ServerPlayer serverPlayer, ChatType.Bound bound) {
+        this.server.getPlayerList().broadcastChatMessage(filteredText, this.player, ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), filteredText.filtered().signedContent()));
     }
 
 }
