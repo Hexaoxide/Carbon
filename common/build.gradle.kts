@@ -42,5 +42,7 @@ dependencies {
   api(libs.netty)
   api(libs.zstdjni)
   api(libs.jedis)
+  api(libs.rabbitmq)
+  api(libs.nats)
   // TODO: libraries for NATS and RabbitMQ
 }

@@ -48,6 +48,8 @@ versions:
   zstdjni: 1.5.1-1
   jedis: 3.7.0
   postgresql: 42.3.1
+  rabbitmq: 5.13.1
+  nats: 2.12.0
 
 dependencies:
   adventureBom:
@@ -251,6 +253,14 @@ dependencies:
     group: redis.clients
     name: jedis
     version: { ref: jedis }
+  rabbitmq:
+    group: com.rabbitmq
+    name: amqp-client
+    version: { ref: rabbitmq }
+  nats:
+    group: io.nats
+    name: jnats
+    version: { ref: nats }
 
   paperApi:
     group: io.papermc.paper
