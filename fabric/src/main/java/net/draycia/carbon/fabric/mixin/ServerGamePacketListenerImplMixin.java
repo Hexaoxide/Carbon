@@ -73,7 +73,7 @@ abstract class ServerGamePacketListenerImplMixin {
         method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
         at = @At("HEAD")
     )
-    private void sendPacket(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> genericFutureListener, CallbackInfo ci) {
+    private void sendPacket(final Packet<?> packet, final GenericFutureListener<? extends Future<? super Void>> genericFutureListener, final CallbackInfo ci) {
         if (packet instanceof ClientboundPlayerChatPacket chatPacket) {
             final UUID uuid = UUID.nameUUIDFromBytes(chatPacket.message().headerSignature().bytes());
             CarbonChatFabric.addMessageSignature(uuid, chatPacket.message().headerSignature());
@@ -81,7 +81,7 @@ abstract class ServerGamePacketListenerImplMixin {
     }
 
     @Redirect(method = "broadcastChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastChatMessage(Lnet/minecraft/server/network/FilteredText;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V"))
-    private void broadcastChatMessage(PlayerList instance, FilteredText<PlayerChatMessage> filteredText, ServerPlayer serverPlayer, ChatType.Bound bound) {
+    private void broadcastChatMessage(final PlayerList instance, final FilteredText<PlayerChatMessage> filteredText, final ServerPlayer serverPlayer, final ChatType.Bound bound) {
         this.server.getPlayerList().broadcastChatMessage(filteredText, this.player, ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), filteredText.filtered().signedContent()));
     }
 

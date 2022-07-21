@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ChatTypeMixin {
 
     @Inject(method = "bootstrap", at = @At("TAIL"))
-    private static void bootstrap(Registry<ChatType> registry, CallbackInfoReturnable<RegistryAccess.RegistryEntry<ChatType>> cir) {
+    private static void bootstrap(final Registry<ChatType> registry, final CallbackInfoReturnable<RegistryAccess.RegistryEntry<ChatType>> cir) {
         BuiltinRegistries.register(registry, CarbonChatFabric.CHAT_TYPE,
             new ChatType(ChatTypeDecoration.withSender("%s"), ChatTypeDecoration.withSender("%s")));
     }

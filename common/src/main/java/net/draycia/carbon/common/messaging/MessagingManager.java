@@ -45,7 +45,6 @@ import ninja.egg82.messenger.handler.MessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandlerImpl;
 import ninja.egg82.messenger.packets.MultiPacket;
 import ninja.egg82.messenger.packets.Packet;
-import ninja.egg82.messenger.packets.server.HeartbeatPacket;
 import ninja.egg82.messenger.packets.server.InitializationPacket;
 import ninja.egg82.messenger.packets.server.KeepAlivePacket;
 import ninja.egg82.messenger.packets.server.PacketVersionPacket;
