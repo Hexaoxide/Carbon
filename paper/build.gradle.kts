@@ -109,6 +109,30 @@ bukkit {
     register("carbon.nickname.set") {
       description = "Sets your/other player's nicknames."
     }
+    register("carbon.nickname.style.color") {
+      description = "Allows the use of colors in nicknames."
+    }
+    register("carbon.nickname.style.gradient") {
+      description = "Allows the use of gradients in nicknames."
+    }
+    register("carbon.nickname.style.decorations") {
+      description = "Allows the use of decorations in nicknames."
+    }
+    register("carbon.nickname.style.hoverEvent") {
+      description = "Allows the use of hover events in nicknames."
+    }
+    register("carbon.nickname.style.clickEvent") {
+      description = "Allows the use of click events in nicknames."
+    }
+    register("carbon.nickname.style.insertion") {
+      description = "Allows the use of insertions in nicknames."
+    }
+    register("carbon.nickname.style.rainbow") {
+      description = "Allows the use of the rainbow tag in nicknames."
+    }
+    register("carbon.nickname.style.reset") {
+      description = "Allows the use of the reset tag in nicknames."
+    }
     register("carbon.reload") {
       description = "Reloads Carbon's config, channel settings, and translations."
     }

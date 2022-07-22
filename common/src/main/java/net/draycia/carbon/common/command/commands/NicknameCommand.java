@@ -25,6 +25,8 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -35,10 +37,14 @@ import net.draycia.carbon.common.command.argument.OptionValueParser;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.Nullable;
 
 @DefaultQualifier(NonNull.class)
 public class NicknameCommand extends CarbonCommand {
@@ -115,15 +121,29 @@ public class NicknameCommand extends CarbonCommand {
 
                 // Setting nickname
                 if (handler.flags().contains("nickname")) {
-                    final var nickname = MiniMessage.miniMessage().deserialize(handler.flags().get("nickname"));
+                    // Lazy since the player might not have permission to set the nickname
+                    final var ref = new Object() {
+                        @Nullable Component cached = null;
+                    };
+                    final Supplier<Component> lazyNickname = () -> {
+                        if (ref.cached != null) return ref.cached;
+
+                        final var resolver = this.resolver(sender);
+
+                        final var builder = MiniMessage.builder()
+                            .tags(resolver.build())
+                            .build();
+                        builder.deserialize(builder.stripTags(handler.flags().get("nickname")));
+
+                        return ref.cached;
+                    };
 
                     final @MonotonicNonNull CarbonPlayer target = handler.flags().get("player");
 
                     // Setting other player's nickname
                     if (target != null && !target.equals(sender)) {
-                        target.displayName(nickname);
-                        this.carbonMessages.nicknameSet(target, nickname);
-                        this.carbonMessages.nicknameSetOthers(sender, target.username(), nickname);
+                        this.carbonMessages.nicknameSet(target, lazyNickname.get());
+                        this.carbonMessages.nicknameSetOthers(sender, target.username(), lazyNickname.get());
                     } else {
                         // Setting own nickname
                         if (!sender.hasPermission("carbon.nickname.self")) {
@@ -131,8 +151,8 @@ public class NicknameCommand extends CarbonCommand {
                             return;
                         }
 
-                        sender.displayName(nickname);
-                        this.carbonMessages.nicknameSet(sender, nickname);
+                        sender.displayName(lazyNickname.get());
+                        this.carbonMessages.nicknameSet(sender, lazyNickname.get());
                     }
                 } else if (handler.flags().contains("player")) {
                     // Checking other player's nickname
@@ -160,6 +180,24 @@ public class NicknameCommand extends CarbonCommand {
             .build();
 
         this.commandManager.command(command);
+    }
+
+    private final String[] styleStrings = {"color", "gradient", "decorations", "hoverEvent", "clickEvent", "insertion", "rainbow", "reset"};
+
+    private TagResolver.Builder resolver(final CarbonPlayer carbonPlayer) {
+        final var resolver = TagResolver.builder();
+
+        for (final String style : this.styleStrings) {
+            if (carbonPlayer.hasPermission("carbon.nickname.style.%s".formatted(style))) {
+                try {
+                    final var method = StandardTags.class.getDeclaredMethod(style);
+                    final var tag = (TagResolver) method.invoke(null);
+                    resolver.resolvers(tag);
+                } catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) { }
+            }
+        }
+
+        return resolver;
     }
 
 }
