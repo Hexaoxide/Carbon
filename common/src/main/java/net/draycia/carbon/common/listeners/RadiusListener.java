@@ -34,6 +34,10 @@ public class RadiusListener {
         final CarbonChat carbonChat
     ) {
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 0, false, event -> {
+            if (event.chatChannel() == null) {
+                return;
+            }
+
             final double radius = event.chatChannel().radius();
 
             if (radius < 0) {
@@ -59,9 +63,11 @@ public class RadiusListener {
                     }
 
                     if (audience instanceof CarbonPlayer carbonPlayer) {
-                        final double distance = carbonPlayer.distanceSquaredFrom(event.sender());
+                        if (event.sender().sameWorldAs(carbonPlayer)) {
+                            final double distance = carbonPlayer.distanceSquaredFrom(event.sender());
 
-                        return distance > (radius * radius);
+                            return distance > (radius * radius);
+                        }
                     }
 
                     return false;

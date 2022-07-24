@@ -22,6 +22,7 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -37,6 +38,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.event.EventSubscriber;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -113,6 +115,10 @@ public final class PaperChatListener implements Listener {
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
+            for (final Map.Entry<EventSubscriber<?>, Throwable> entry : result.exceptions().entrySet()) {
+                this.carbonChat.logger().error(entry.getValue());
+            }
+
             final var message = chatEvent.result().reason();
 
             if (!message.equals(empty())) {
@@ -126,7 +132,7 @@ public final class PaperChatListener implements Listener {
             event.viewers().clear();
             event.setCancelled(true);
         } catch (final UnsupportedOperationException exception) {
-            exception.printStackTrace();
+            this.carbonChat.logger().error(exception);
         }
 
         if (sender.hasPermission("carbon.hideidentity")) {
@@ -153,7 +159,7 @@ public final class PaperChatListener implements Listener {
             try {
                 event.viewers().addAll(chatEvent.recipients());
             } catch (final UnsupportedOperationException exception) {
-                exception.printStackTrace();
+                this.carbonChat.logger().error(exception);
             }
 
             event.renderer((source, sourceDisplayName, message, viewer) -> {
@@ -167,8 +173,8 @@ public final class PaperChatListener implements Listener {
                         } else {
                             renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), message);
                         }
-                    } catch (final Exception e) {
-                        e.printStackTrace();
+                    } catch (final Exception exception) {
+                        this.carbonChat.logger().error(exception);
                     }
                 }
 

@@ -31,7 +31,7 @@ public class ItemLinkHandler {
     public ItemLinkHandler(
         final CarbonChat carbonChat
     ) {
-        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 1, true, event -> {
+        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 1, false, event -> {
             if (!event.sender().hasPermission("carbon.itemlink")) {
                 return;
             }
