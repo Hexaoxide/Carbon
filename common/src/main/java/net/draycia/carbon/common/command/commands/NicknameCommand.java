@@ -131,7 +131,7 @@ public class NicknameCommand extends CarbonCommand {
                         final var builder = MiniMessage.builder()
                             .tags(this.resolver(sender))
                             .build();
-                        builder.deserialize(builder.stripTags(handler.flags().get("nickname")));
+                        ref.cached = builder.deserialize(handler.flags().get("nickname"));
 
                         return ref.cached;
                     };
