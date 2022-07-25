@@ -27,6 +27,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -52,6 +53,8 @@ public interface CarbonPlayer extends Audience, Identified {
     static Component renderName(final CarbonPlayer player) {
         if (player.hasCustomDisplayName()) {
             return Objects.requireNonNull(player.displayName());
+        } else if (player.get(Identity.DISPLAY_NAME).isPresent()) {
+            return player.get(Identity.DISPLAY_NAME).get();
         } else {
             return Component.text(player.username());
         }
