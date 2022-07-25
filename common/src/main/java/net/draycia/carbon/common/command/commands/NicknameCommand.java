@@ -128,10 +128,8 @@ public class NicknameCommand extends CarbonCommand {
                     final Supplier<Component> lazyNickname = () -> {
                         if (ref.cached != null) return ref.cached;
 
-                        final var resolver = this.resolver(sender);
-
                         final var builder = MiniMessage.builder()
-                            .tags(resolver.build())
+                            .tags(this.resolver(sender))
                             .build();
                         builder.deserialize(builder.stripTags(handler.flags().get("nickname")));
 
@@ -184,9 +182,12 @@ public class NicknameCommand extends CarbonCommand {
 
     private final String[] styleStrings = {"color", "gradient", "decorations", "hoverEvent", "clickEvent", "insertion", "rainbow", "reset"};
 
-    private TagResolver.Builder resolver(final CarbonPlayer carbonPlayer) {
-        final var resolver = TagResolver.builder();
+    private TagResolver resolver(final CarbonPlayer carbonPlayer) {
+        if (carbonPlayer.hasPermission("carbon.nickname.style.*")) {
+            return TagResolver.standard();
+        }
 
+        final var resolver = TagResolver.builder();
         for (final String style : this.styleStrings) {
             if (carbonPlayer.hasPermission("carbon.nickname.style.%s".formatted(style))) {
                 try {
@@ -197,7 +198,7 @@ public class NicknameCommand extends CarbonCommand {
             }
         }
 
-        return resolver;
+        return resolver.build();
     }
 
 }
