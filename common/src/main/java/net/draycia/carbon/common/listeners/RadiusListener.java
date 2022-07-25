@@ -63,11 +63,12 @@ public class RadiusListener {
                     }
 
                     if (audience instanceof CarbonPlayer carbonPlayer) {
-                        if (event.sender().sameWorldAs(carbonPlayer)) {
-                            final double distance = carbonPlayer.distanceSquaredFrom(event.sender());
-
-                            return distance > (radius * radius);
+                        if (!event.sender().sameWorldAs(carbonPlayer)) {
+                            return true;
                         }
+
+                        final double distance = carbonPlayer.distanceSquaredFrom(event.sender());
+                        return distance > (radius * radius);
                     }
 
                     return false;
