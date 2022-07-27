@@ -28,6 +28,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -47,7 +48,7 @@ public final class PlaceholderAPIMiniMessageParser {
     }
 
     private static boolean containsLegacyColorCodes(final String string) {
-        final char[] charArray = string.toCharArray();
+        final char[] charArray = ChatColor.translateAlternateColorCodes('&', string).toCharArray();
 
         for (final char c : charArray) {
             if (c == LegacyComponentSerializer.SECTION_CHAR) {
