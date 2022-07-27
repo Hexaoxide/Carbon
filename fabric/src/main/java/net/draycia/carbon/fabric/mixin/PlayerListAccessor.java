@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(PlayerList.class)
 public interface PlayerListAccessor {
 
-    @Invoker("broadcastChatMessage")
-    void broadcastChatMessage(PlayerChatMessage playerChatMessage, Predicate<ServerPlayer> predicate, ServerPlayer serverPlayer, ChatSender chatSender, ChatType.Bound bound);
+    @Invoker
+    void callBroadcastChatMessage(PlayerChatMessage playerChatMessage, Predicate<ServerPlayer> predicate, ServerPlayer serverPlayer, ChatSender chatSender, ChatType.Bound bound);
 
 }
