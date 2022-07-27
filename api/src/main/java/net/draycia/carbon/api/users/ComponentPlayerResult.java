@@ -20,7 +20,7 @@
 package net.draycia.carbon.api.users;
 
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 /**
  * The result of a player data operation.
@@ -29,6 +29,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @param reason the reason of the result, typically empty unless {@link #player} is null
  * @since 2.0.0
  */
-public record ComponentPlayerResult<C extends CarbonPlayer>(@Nullable C player, Component reason) {
+public record ComponentPlayerResult<C extends CarbonPlayer>(@MonotonicNonNull C player, Component reason) {
 
 }

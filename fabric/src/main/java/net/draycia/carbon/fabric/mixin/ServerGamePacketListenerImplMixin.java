@@ -19,12 +19,15 @@
  */
 package net.draycia.carbon.fabric.mixin;
 
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import java.util.UUID;
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
+import net.draycia.carbon.fabric.chat.MessageRecipientFilter;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
@@ -32,7 +35,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.FilteredText;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -70,19 +72,23 @@ abstract class ServerGamePacketListenerImplMixin {
     }
 
     @Inject(
-        method = "send(Lnet/minecraft/network/protocol/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
+        method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
         at = @At("HEAD")
     )
-    private void sendPacket(final Packet<?> packet, final GenericFutureListener<? extends Future<? super Void>> genericFutureListener, final CallbackInfo ci) {
+    private void sendPacket(final Packet<?> packet, final PacketSendListener packetSendListener, final CallbackInfo ci) {
         if (packet instanceof ClientboundPlayerChatPacket chatPacket) {
             final UUID uuid = UUID.nameUUIDFromBytes(chatPacket.message().headerSignature().bytes());
             CarbonChatFabric.addMessageSignature(uuid, chatPacket.message().headerSignature());
         }
     }
 
-    @Redirect(method = "broadcastChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastChatMessage(Lnet/minecraft/server/network/FilteredText;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V"))
-    private void broadcastChatMessage(final PlayerList instance, final FilteredText<PlayerChatMessage> filteredText, final ServerPlayer serverPlayer, final ChatType.Bound bound) {
-        this.server.getPlayerList().broadcastChatMessage(filteredText, this.player, ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), filteredText.filtered().signedContent()));
+    @Redirect(method = "broadcastChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V"))
+    private void broadcastChatMessage(final PlayerList instance, final PlayerChatMessage playerChatMessage, final ServerPlayer serverPlayer, final ChatType.Bound bound) {
+        // TODO: Get the channel the message was sent in, when the player uses /channel <message>
+        final ComponentPlayerResult<? extends CarbonPlayer> result = CarbonChatProvider.carbonChat().server().userManager().carbonPlayer(serverPlayer.getUUID()).join();
+        final MessageRecipientFilter filter = new MessageRecipientFilter(serverPlayer, result.player().selectedChannel());
+
+        ((PlayerListAccessor) this.server.getPlayerList()).broadcastChatMessage(playerChatMessage, filter::shouldFilterMessageTo, serverPlayer, serverPlayer.asChatSender(), bound);
     }
 
 }
