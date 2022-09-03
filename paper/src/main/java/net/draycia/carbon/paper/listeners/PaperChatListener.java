@@ -20,7 +20,7 @@
 package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
-import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.event.player.AsyncChatDecorateEvent;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -43,6 +43,8 @@ import net.kyori.event.EventSubscriber;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatPreviewEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -68,12 +70,18 @@ public final class PaperChatListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerChat(final @NonNull AsyncChatEvent event) {
-        if (event.viewers().isEmpty()) {
-            return;
-        }
+    public void onSpigotChat(final @NonNull AsyncPlayerChatEvent event) {
+        event.setFormat("%2$s");
+    }
 
-        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
+    @EventHandler
+    public void onSpigotPreview(final @NonNull AsyncPlayerChatPreviewEvent event) {
+        event.setFormat("%2$s");
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChatPreview(final @NonNull AsyncChatDecorateEvent event) {
+        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.player().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
         if (sender == null) {
@@ -129,13 +137,6 @@ public final class PaperChatListener implements Listener {
             return;
         }
 
-        try {
-            event.viewers().clear();
-            event.setCancelled(true);
-        } catch (final UnsupportedOperationException exception) {
-            this.carbonChat.logger().error(exception);
-        }
-
         if (sender.hasPermission("carbon.hideidentity")) {
             for (final var recipient : chatEvent.recipients()) {
                 var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
@@ -157,30 +158,13 @@ public final class PaperChatListener implements Listener {
                 recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
             }
         } else {
-            try {
-                event.viewers().addAll(chatEvent.recipients());
-            } catch (final UnsupportedOperationException exception) {
-                this.carbonChat.logger().error(exception);
+            var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+
+            for (final var renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, sender, renderedMessage.component(), renderedMessage.component());
             }
 
-            event.renderer((source, sourceDisplayName, message, viewer) -> {
-                var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
-
-                for (final var renderer : chatEvent.renderers()) {
-                    try {
-                        if (viewer instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayerPaper> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
-                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), message);
-                        } else {
-                            renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), message);
-                        }
-                    } catch (final Exception exception) {
-                        this.carbonChat.logger().error(exception);
-                    }
-                }
-
-                return renderedMessage.component();
-            });
+            event.result(renderedMessage.component());
         }
     }
 

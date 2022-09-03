@@ -22,7 +22,7 @@ versions:
   gson: 2.8.0
   guava: 30.1-jre
   bstats: 3.0.0
-  paperApi: 1.19-R0.1-SNAPSHOT
+  paperApi: 1.19.2-R0.1-SNAPSHOT
   paperLib: 1.0.8-SNAPSHOT
   kyoriEventApi: 5.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT
