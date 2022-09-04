@@ -31,6 +31,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.MessageType;
@@ -81,7 +82,7 @@ public final class PaperChatListener implements Listener {
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
         final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
-        var eventMessage = event.message();
+        var eventMessage = ConfigChatChannel.parseMessageTags(sender, messageContents);
 
         if (sender.hasPermission("carbon.chatlinks")) {
             eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()

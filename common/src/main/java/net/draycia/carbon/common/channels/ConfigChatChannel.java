@@ -151,11 +151,11 @@ public final class ConfigChatChannel implements ChatChannel {
             this.key(),
             Objects.requireNonNull(CarbonPlayer.renderName(sender)),
             sender.username(),
-            this.parseMessageTags(sender, message)
+            message
         );
     }
 
-    private final transient Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
+    public static final Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
         Map.entry("hover", StandardTags.hoverEvent()),
         Map.entry("click", StandardTags.clickEvent()),
         Map.entry("color", StandardTags.color()),
@@ -171,14 +171,14 @@ public final class ConfigChatChannel implements ChatChannel {
         Map.entry("newline", StandardTags.newline())
     );
 
-    private Component parseMessageTags(final CarbonPlayer sender, final Component message) {
+    public static Component parseMessageTags(final CarbonPlayer sender, final String message) {
         if (!sender.hasPermission("carbon.messagetags")) {
-            return message;
+            return Component.text(message);
         }
 
         final TagResolver.Builder resolver = TagResolver.builder();
 
-        for (final Map.Entry<String, TagResolver> entry : this.DEFAULT_TAGS.entrySet()) {
+        for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
             if (sender.hasPermission("carbon.messagetags." + entry.getKey())) {
                 resolver.resolver(entry.getValue());
             }
@@ -194,7 +194,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
         final MiniMessage miniMessage = MiniMessage.builder().tags(resolver.build()).build();
 
-        return miniMessage.deserialize(PlainTextComponentSerializer.plainText().serialize(message));
+        return miniMessage.deserialize(message);
     }
 
     @Override
