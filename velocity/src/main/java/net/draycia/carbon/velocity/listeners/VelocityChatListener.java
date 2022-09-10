@@ -78,8 +78,8 @@ public final class VelocityChatListener {
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
 
-        final var originalMessage = event.getMessage();
-        Component eventMessage = text(event.getMessage());
+        final var originalMessage = event.getResult().getMessage().orElse(event.getMessage());
+        Component eventMessage = text(originalMessage);
 
         if (sender.hasPermission("carbon.chatlinks")) {
             eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
