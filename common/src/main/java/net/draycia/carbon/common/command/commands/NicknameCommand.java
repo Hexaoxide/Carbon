@@ -25,9 +25,9 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -38,9 +38,6 @@ import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -128,11 +125,7 @@ public class NicknameCommand extends CarbonCommand {
                     final Supplier<Component> lazyNickname = () -> {
                         if (ref.cached != null) return ref.cached;
 
-                        final var builder = MiniMessage.builder()
-                            .tags(this.resolver(sender))
-                            .build();
-                        ref.cached = builder.deserialize(handler.flags().get("nickname"));
-
+                        ref.cached = ConfigChatChannel.parseMessageTags(sender, handler.flags().get("nickname"));
                         return ref.cached;
                     };
 
@@ -179,26 +172,4 @@ public class NicknameCommand extends CarbonCommand {
 
         this.commandManager.command(command);
     }
-
-    private final String[] styleStrings = {"color", "gradient", "decorations", "hoverEvent", "clickEvent", "insertion", "rainbow", "reset"};
-
-    private TagResolver resolver(final CarbonPlayer carbonPlayer) {
-        if (carbonPlayer.hasPermission("carbon.nickname.style.*")) {
-            return TagResolver.standard();
-        }
-
-        final var resolver = TagResolver.builder();
-        for (final String style : this.styleStrings) {
-            if (carbonPlayer.hasPermission("carbon.nickname.style.%s".formatted(style))) {
-                try {
-                    final var method = StandardTags.class.getDeclaredMethod(style);
-                    final var tag = (TagResolver) method.invoke(null);
-                    resolver.resolvers(tag);
-                } catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) { }
-            }
-        }
-
-        return resolver.build();
-    }
-
 }
