@@ -25,7 +25,9 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import cloud.commandframework.permission.Permission;
 import com.google.inject.Inject;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -35,10 +37,11 @@ import net.draycia.carbon.common.command.argument.OptionValueParser;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.Nullable;
 
 @DefaultQualifier(NonNull.class)
 public class NicknameCommand extends CarbonCommand {
@@ -115,15 +118,23 @@ public class NicknameCommand extends CarbonCommand {
 
                 // Setting nickname
                 if (handler.flags().contains("nickname")) {
-                    final var nickname = MiniMessage.miniMessage().deserialize(handler.flags().get("nickname"));
+                    // Lazy since the player might not have permission to set the nickname
+                    final var ref = new Object() {
+                        @Nullable Component cached = null;
+                    };
+                    final Supplier<Component> lazyNickname = () -> {
+                        if (ref.cached != null) return ref.cached;
+
+                        ref.cached = ConfigChatChannel.parseMessageTags(sender, handler.flags().get("nickname"));
+                        return ref.cached;
+                    };
 
                     final @MonotonicNonNull CarbonPlayer target = handler.flags().get("player");
 
                     // Setting other player's nickname
                     if (target != null && !target.equals(sender)) {
-                        target.displayName(nickname);
-                        this.carbonMessages.nicknameSet(target, nickname);
-                        this.carbonMessages.nicknameSetOthers(sender, target.username(), nickname);
+                        this.carbonMessages.nicknameSet(target, lazyNickname.get());
+                        this.carbonMessages.nicknameSetOthers(sender, target.username(), lazyNickname.get());
                     } else {
                         // Setting own nickname
                         if (!sender.hasPermission("carbon.nickname.self")) {
@@ -131,8 +142,8 @@ public class NicknameCommand extends CarbonCommand {
                             return;
                         }
 
-                        sender.displayName(nickname);
-                        this.carbonMessages.nicknameSet(sender, nickname);
+                        sender.displayName(lazyNickname.get());
+                        this.carbonMessages.nicknameSet(sender, lazyNickname.get());
                     }
                 } else if (handler.flags().contains("player")) {
                     // Checking other player's nickname
@@ -161,5 +172,4 @@ public class NicknameCommand extends CarbonCommand {
 
         this.commandManager.command(command);
     }
-
 }
