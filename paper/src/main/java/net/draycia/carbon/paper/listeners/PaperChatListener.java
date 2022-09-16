@@ -40,6 +40,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.event.EventSubscriber;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerChatPreviewEvent;
@@ -66,17 +67,17 @@ public final class PaperChatListener implements Listener {
         this.registry = registry;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onSpigotChat(final @NonNull AsyncPlayerChatEvent event) {
         event.setFormat("%2$s");
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onSpigotPreview(final @NonNull AsyncPlayerChatPreviewEvent event) {
         event.setFormat("%2$s");
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPaperChat(final @NonNull AsyncChatEvent event) {
         final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
@@ -86,7 +87,7 @@ public final class PaperChatListener implements Listener {
         }
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.message());
         Component eventMessage = ConfigChatChannel.parseMessageTags(sender, messageContents);
 
         if (sender.hasPermission("carbon.chatlinks")) {
@@ -134,7 +135,7 @@ public final class PaperChatListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onChatPreview(final @NonNull AsyncChatDecorateEvent event) {
         final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.player().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
@@ -144,7 +145,7 @@ public final class PaperChatListener implements Listener {
         }
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.result());
         var eventMessage = ConfigChatChannel.parseMessageTags(sender, messageContents);
 
         if (sender.hasPermission("carbon.chatlinks")) {
