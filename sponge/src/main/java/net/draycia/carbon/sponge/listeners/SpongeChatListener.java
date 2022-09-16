@@ -131,7 +131,7 @@ public final class SpongeChatListener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, false);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {

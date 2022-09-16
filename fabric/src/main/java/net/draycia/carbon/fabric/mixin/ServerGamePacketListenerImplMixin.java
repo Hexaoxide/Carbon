@@ -30,6 +30,7 @@ import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.OutgoingPlayerChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
@@ -91,7 +92,14 @@ abstract class ServerGamePacketListenerImplMixin {
         final ComponentPlayerResult<? extends CarbonPlayer> result = CarbonChatProvider.carbonChat().server().userManager().carbonPlayer(serverPlayer.getUUID()).join();
         final MessageRecipientFilter filter = new MessageRecipientFilter(serverPlayer, result.player().selectedChannel());
 
-        ((PlayerListAccessor) this.server.getPlayerList()).callBroadcastChatMessage(playerChatMessage, filter::shouldFilterMessageTo, serverPlayer, serverPlayer.asChatSender(), ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), playerChatMessage.serverContent()));
+        for (final ServerPlayer player : this.server.getPlayerList().getPlayers()) {
+            if (filter.shouldFilterMessageTo(player)) {
+                player.sendChatHeader(playerChatMessage.signedHeader(), playerChatMessage.headerSignature(), playerChatMessage.signedBody().hash().asBytes());
+            } else {
+                final OutgoingPlayerChatMessage outgoingPlayerChatMessage = OutgoingPlayerChatMessage.create(playerChatMessage);
+                player.sendChatMessage(outgoingPlayerChatMessage, true, ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), playerChatMessage.serverContent()));
+            }
+        }
     }
 
 }

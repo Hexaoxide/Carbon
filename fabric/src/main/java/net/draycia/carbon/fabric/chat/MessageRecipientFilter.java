@@ -48,6 +48,10 @@ public class MessageRecipientFilter {
             return true; // TODO: should we filter messages when this happens?
         }
 
+        if (author.muted()) {
+            return true;
+        }
+
         if (author.ignoring(recipient) || recipient.ignoring(author)) {
             return true;
         }

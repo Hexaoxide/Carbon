@@ -172,4 +172,5 @@ public class NicknameCommand extends CarbonCommand {
 
         this.commandManager.command(command);
     }
+
 }

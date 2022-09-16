@@ -15,6 +15,7 @@ versions:
   shadow: 7.1.2
   adventure: 4.11.0
   cloud: 1.7.0-SNAPSHOT
+  cloudPaper: 1.7.1
   configurate: 4.1.2
   typesafeConfig: 1.4.1
   checkerQual: 3.22.2
@@ -22,7 +23,7 @@ versions:
   gson: 2.8.0
   guava: 30.1-jre
   bstats: 3.0.0
-  paperApi: 1.19-R0.1-SNAPSHOT
+  paperApi: 1.19.2-R0.1-SNAPSHOT
   paperLib: 1.0.8-SNAPSHOT
   kyoriEventApi: 5.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT
@@ -128,6 +129,7 @@ dependencies:
   cloudPaper:
     group: cloud.commandframework
     name: cloud-paper
+    version: { ref: cloudPaper }
   cloudSponge:
     group: cloud.commandframework
     name: cloud-sponge
