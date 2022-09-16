@@ -20,14 +20,17 @@
 package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
+import java.util.Optional;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -45,6 +48,21 @@ public class PaperPlayerJoinListener implements Listener {
     ) {
         this.carbonChat = carbonChat;
         this.userManager = userManager;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(final PlayerJoinEvent event) {
+        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
+            if (result.player() == null) {
+                return;
+            }
+
+            Optional.ofNullable(result.player().displayName()).ifPresent(displayName -> {
+                final Player player = event.getPlayer();
+                player.displayName(displayName);
+                player.playerListName(displayName);
+            });
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
