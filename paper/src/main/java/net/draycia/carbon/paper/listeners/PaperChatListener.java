@@ -21,6 +21,7 @@ package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatDecorateEvent;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -28,20 +29,16 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.paper.CarbonChatPaper;
-import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.event.EventSubscriber;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -53,7 +50,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
-import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
@@ -78,6 +74,64 @@ public final class PaperChatListener implements Listener {
     @EventHandler
     public void onSpigotPreview(final @NonNull AsyncPlayerChatPreviewEvent event) {
         event.setFormat("%2$s");
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPaperChat(final @NonNull AsyncChatEvent event) {
+        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
+        final @Nullable CarbonPlayer sender = playerResult.player();
+
+        if (sender == null) {
+            return;
+        }
+
+        var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
+        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
+        Component eventMessage = ConfigChatChannel.parseMessageTags(sender, messageContents);
+
+        if (sender.hasPermission("carbon.chatlinks")) {
+            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                .match(DEFAULT_URL_PATTERN)
+                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
+                .build());
+        }
+
+        for (final var chatChannel : this.registry) {
+            if (chatChannel.quickPrefix() == null) {
+                continue;
+            }
+
+            if (messageContents.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
+                channel = chatChannel;
+                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
+                    .once()
+                    .matchLiteral(channel.quickPrefix())
+                    .replacement(text())
+                    .build());
+                break;
+            }
+        }
+
+        final var renderers = new ArrayList<KeyedRenderer>();
+        renderers.add(keyedRenderer(key("carbon", "default"), channel));
+
+        final var recipients = channel.recipients(sender);
+
+        try {
+            event.viewers().clear();
+            event.viewers().addAll(recipients);
+        } catch (final UnsupportedOperationException ignored) {
+
+        }
+
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, false);
+        final var result = this.carbonChat.eventHandler().emit(chatEvent);
+
+        if (!result.wasSuccessful()) {
+            for (final Map.Entry<EventSubscriber<?>, Throwable> entry : result.exceptions().entrySet()) {
+                this.carbonChat.logger().error(entry.getValue());
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -121,52 +175,23 @@ public final class PaperChatListener implements Listener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, true);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
             for (final Map.Entry<EventSubscriber<?>, Throwable> entry : result.exceptions().entrySet()) {
                 this.carbonChat.logger().error(entry.getValue());
             }
-
-            final var message = chatEvent.result().reason();
-
-            if (!message.equals(empty())) {
-                sender.sendMessage(message);
-            }
-
             return;
         }
 
-        if (sender.hasPermission("carbon.hideidentity")) {
-            for (final var recipient : chatEvent.recipients()) {
-                var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+        var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
-                for (final var renderer : chatEvent.renderers()) {
-                    try {
-                        if (recipient instanceof Player player) {
-                            final ComponentPlayerResult<CarbonPlayerPaper> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.getUniqueId()).join();
-
-                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
-                        } else {
-                            renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
-                        }
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
-            }
-        } else {
-            var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
-
-            for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, sender, renderedMessage.component(), renderedMessage.component());
-            }
-
-            event.result(renderedMessage.component());
+        for (final var renderer : chatEvent.renderers()) {
+            renderedMessage = renderer.render(sender, sender, renderedMessage.component(), renderedMessage.component());
         }
+
+        event.result(renderedMessage.component());
     }
 
 }

@@ -35,10 +35,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class CarbonChatHook implements ChatHook {
+public class DSRVChatHook implements ChatHook {
 
-    public CarbonChatHook() {
+    public DSRVChatHook() {
         CarbonChatProvider.carbonChat().eventHandler().subscribe(CarbonChatEvent.class, event -> {
+            if (event.previewing()) {
+                return;
+            }
+
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
 

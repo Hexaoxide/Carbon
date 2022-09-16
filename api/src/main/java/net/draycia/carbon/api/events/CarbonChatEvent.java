@@ -47,6 +47,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     private final @Nullable ChatChannel chatChannel;
     private Component message;
     private Result result = Result.ALLOWED;
+    private final boolean previewing;
 
     /**
      * {@link ResultedCarbonEvent} that's called when players send messages in chat.
@@ -56,6 +57,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      * @param recipients      the recipients of the message
      * @param renderers       the renderers of the message
      * @param chatChannel     the channel the message was sent in
+     * @param previewing      if the message is being previewed by the player
      * @since 2.0.0
      */
     public CarbonChatEvent(
@@ -63,7 +65,8 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         final Component originalMessage,
         final List<? extends Audience> recipients,
         final List<KeyedRenderer> renderers,
-        final @Nullable ChatChannel chatChannel
+        final @Nullable ChatChannel chatChannel,
+        final boolean previewing
     ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
@@ -71,6 +74,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         this.recipients = recipients;
         this.renderers = renderers;
         this.chatChannel = chatChannel;
+        this.previewing = previewing;
     }
 
     /**
@@ -81,6 +85,16 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      */
     public List<KeyedRenderer> renderers() {
         return this.renderers;
+    }
+
+    /**
+     * If the message is being previewed by the player.
+     *
+     * @return if the message is being previewed
+     * @since 2.1.0
+     */
+    public boolean previewing() {
+        return this.previewing;
     }
 
     /**

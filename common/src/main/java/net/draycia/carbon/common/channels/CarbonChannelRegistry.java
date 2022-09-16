@@ -57,6 +57,7 @@ import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.draycia.carbon.common.events.ChannelRegisterEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
@@ -319,7 +320,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel);
+        // TODO: add previewing when cloud/adventure support it
+        final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel, false);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
@@ -332,20 +334,16 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             return;
         }
 
-        for (final var recipient : chatEvent.recipients()) {
-            var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+        var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
-            for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
-            }
+        for (final var renderer : chatEvent.renderers()) {
+            renderedMessage = renderer.render(sender, sender, renderedMessage.component(), chatEvent.message());
+        }
 
-            final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
+        final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
 
-            if (!(recipient instanceof CarbonPlayer)) {
-                recipient.sendMessage(identity, renderedMessage.component());
-            } else {
-                recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
-            }
+        for (final Audience recipient : chatEvent.recipients()) {
+            recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
         }
 
         final @Nullable PacketService packetService = this.carbonChat.packetService();

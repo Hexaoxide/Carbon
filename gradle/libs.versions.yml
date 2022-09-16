@@ -15,6 +15,7 @@ versions:
   shadow: 7.1.2
   adventure: 4.11.0
   cloud: 1.7.0-SNAPSHOT
+  cloudPaper: 1.7.1
   configurate: 4.1.2
   typesafeConfig: 1.4.1
   checkerQual: 3.22.2
@@ -128,6 +129,7 @@ dependencies:
   cloudPaper:
     group: cloud.commandframework
     name: cloud-paper
+    version: { ref: cloudPaper }
   cloudSponge:
     group: cloud.commandframework
     name: cloud-sponge

@@ -96,7 +96,7 @@ abstract class ServerGamePacketListenerImplMixin {
             if (filter.shouldFilterMessageTo(player)) {
                 player.sendChatHeader(playerChatMessage.signedHeader(), playerChatMessage.headerSignature(), playerChatMessage.signedBody().hash().asBytes());
             } else {
-                OutgoingPlayerChatMessage outgoingPlayerChatMessage = OutgoingPlayerChatMessage.create(playerChatMessage);
+                final OutgoingPlayerChatMessage outgoingPlayerChatMessage = OutgoingPlayerChatMessage.create(playerChatMessage);
                 player.sendChatMessage(outgoingPlayerChatMessage, true, ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), playerChatMessage.serverContent()));
             }
         }
