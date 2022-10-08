@@ -37,7 +37,7 @@ versions:
   adventurePlatformFabric: 5.4.0-SNAPSHOT
   luckPermsApi: 5.3
   essentialsx: 2.19.3
-  discordsrv: 1.26.0-SNAPSHOT
+  discordsrv: 1.26.0
   jdbi: 3.25.0
   hikari: 5.0.0
   mysql: 8.0.12
