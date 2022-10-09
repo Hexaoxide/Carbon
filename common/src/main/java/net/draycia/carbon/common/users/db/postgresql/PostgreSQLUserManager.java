@@ -47,7 +47,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.internal.database.postgresql.PostgreSQLDatabaseType;
-import org.flywaydb.core.internal.plugin.PluginRegister;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
@@ -73,7 +72,7 @@ public final class PostgreSQLUserManager implements UserManager<CarbonPlayerComm
     public static PostgreSQLUserManager manager(final DatabaseSettings databaseSettings) {
         try {
             Class.forName("org.postgresql.Driver");
-            PluginRegister.REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
+            Flyway.configure().getPluginRegister().REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
         } catch (final Exception exception) {
             exception.printStackTrace();
         }

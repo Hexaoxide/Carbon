@@ -38,12 +38,12 @@ versions:
   luckPermsApi: 5.3
   essentialsx: 2.19.3
   discordsrv: 1.26.0
-  jdbi: 3.25.0
-  hikari: 5.0.0
-  mysql: 8.0.12
-  flyway: 8.5.12
+  jdbi: 3.34.0
+  hikari: 5.0.1
+  mysql: 8.0.30
+  flyway: 9.4.0
   caffeine: 3.0.5
-  mariadb: 3.0.5
+  mariadb: 3.0.8
   messenger: 1.0.0-parks-SNAPSHOT
   netty: 4.1.68.Final
   zstdjni: 1.5.1-1
