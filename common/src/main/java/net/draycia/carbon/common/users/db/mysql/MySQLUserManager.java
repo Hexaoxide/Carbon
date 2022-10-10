@@ -107,51 +107,31 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
+            final var playerResult = this.userCache.computeIfAbsent(uuid, key -> this.jdbi.withHandle(handle -> {
+                final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
+                    .bind("id", uuid)
+                    .mapTo(CarbonPlayerCommon.class)
+                    .first();
 
-            if (cachedPlayer != null) {
-                return new ComponentPlayerResult<>(cachedPlayer, empty());
-            }
-
-            return this.jdbi.withHandle(handle -> {
-                try {
-                    final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
-                        .bind("id", uuid)
-                        .mapTo(CarbonPlayerCommon.class)
-                        .first();
-
-                    if (carbonPlayerCommon == null) {
-                        // Player doesn't exist in the DB, create them!
-                        final String name = Objects.requireNonNull(
-                            CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
-
-                        final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
-
-                        this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
-                            .execute();
-
-                        return new ComponentPlayerResult<>(player, text(""));
-                    }
-
-                    handle.createQuery(this.locator.query("select-ignores"))
-                        .bind("id", uuid)
-                        .mapTo(UUID.class)
-                        .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
-
-                    return new ComponentPlayerResult<>(carbonPlayerCommon, empty());
-                } catch (final IllegalStateException exception) {
+                if (carbonPlayerCommon == null) {
                     // Player doesn't exist in the DB, create them!
-                    final String name = Objects.requireNonNull(
-                        CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
-
+                    final String name = Objects.requireNonNull(CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
                     final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-                    this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
-                        .execute();
+                    this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();
 
-                    return new ComponentPlayerResult<>(player, text(""));
+                    return player;
                 }
-            });
+
+                handle.createQuery(this.locator.query("select-ignores"))
+                    .bind("id", uuid)
+                    .mapTo(UUID.class)
+                    .forEach(ignoredPlayer -> carbonPlayerCommon.ignoredPlayers().add(ignoredPlayer));
+
+                return carbonPlayerCommon;
+            }));
+
+            return new ComponentPlayerResult<>(playerResult, empty());
         }).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
     }
 
