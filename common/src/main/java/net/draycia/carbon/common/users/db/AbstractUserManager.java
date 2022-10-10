@@ -34,6 +34,7 @@ import static net.kyori.adventure.text.Component.empty;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractUserManager implements UserManager<CarbonPlayerCommon> {
+
     protected final Jdbi jdbi;
 
     protected final QueriesLocator locator;
