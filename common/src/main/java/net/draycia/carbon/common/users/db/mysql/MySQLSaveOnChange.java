@@ -52,7 +52,7 @@ public interface MySQLSaveOnChange extends SaveOnChange {
     @SqlUpdate("UPDATE carbon_users SET whisperreplytarget = UNHEX(REPLACE(:whisperReplyTarget, '-', '')) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget);
 
-    @SqlUpdate("INSERT INTO carbon_ignores (id, ignoredplayer) VALUES (UNHEX(REPLACE(:id, '-', '')), UNHEX(REPLACE(:ignoredPlayer, '-', '')))")
+    @SqlUpdate("INSERT IGNORE INTO carbon_ignores (id, ignoredplayer) VALUES (UNHEX(REPLACE(:id, '-', '')), UNHEX(REPLACE(:ignoredPlayer, '-', '')))")
     int addIgnore(final UUID id, final UUID ignoredPlayer);
 
     @SqlUpdate("DELETE FROM carbon_ignores WHERE id = UNHEX(REPLACE(:id, '-', '')) AND ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', ''))")
