@@ -101,6 +101,11 @@ public class IgnoreCommand extends CarbonCommand {
                     return;
                 }
 
+                if (target.ignoring(target)) {
+                    this.carbonMessages.alreadyIgnored(sender, CarbonPlayer.renderName(target));
+                    return;
+                }
+
                 sender.ignoring(target, true);
                 this.carbonMessages.nowIgnoring(sender, CarbonPlayer.renderName(target));
             })
