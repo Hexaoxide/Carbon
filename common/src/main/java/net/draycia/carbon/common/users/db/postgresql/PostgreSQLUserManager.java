@@ -32,10 +32,10 @@ import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
+import net.draycia.carbon.common.users.db.AbstractUserManager;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.KeyArgumentFactory;
@@ -48,7 +48,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.internal.database.postgresql.PostgreSQLDatabaseType;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
@@ -58,15 +57,12 @@ import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class PostgreSQLUserManager implements UserManager<CarbonPlayerCommon>, SaveOnChange {
-
-    private final Jdbi jdbi;
+public final class PostgreSQLUserManager extends AbstractUserManager implements SaveOnChange {
 
     private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
-    private final QueriesLocator locator = new QueriesLocator(DBType.POSTGRESQL);
 
     private PostgreSQLUserManager(final Jdbi jdbi) {
-        this.jdbi = jdbi;
+        super(jdbi, new QueriesLocator(DBType.POSTGRESQL));
     }
 
     public static PostgreSQLUserManager manager(final DatabaseSettings databaseSettings) {
@@ -143,29 +139,7 @@ public final class PostgreSQLUserManager implements UserManager<CarbonPlayerComm
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
-        return CompletableFuture.supplyAsync(() -> {
-            return this.jdbi.withHandle(handle -> {
-                this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
-                    .execute();
-
-                if (!player.ignoredPlayers().isEmpty()) {
-                    final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-ignores"));
-
-                    for (final UUID ignoredPlayer : player.ignoredPlayers()) {
-                        batch.bind("id", player.uuid()).bind("ignoredplayer", ignoredPlayer).add();
-                    }
-
-                    batch.execute();
-                }
-
-                // TODO: save ignoredplayers
-                return new ComponentPlayerResult<>(player, empty());
-            });
-        });
-    }
-
-    private Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
+    protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
         return update
             .bind("id", player.uuid())
             .bind("muted", player.muted())
