@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -108,12 +109,12 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             final var playerResult = this.userCache.computeIfAbsent(uuid, key -> this.jdbi.withHandle(handle -> {
-                final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
+                final Optional<CarbonPlayerCommon> carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
                     .bind("id", uuid)
                     .mapTo(CarbonPlayerCommon.class)
-                    .first();
+                    .findOne();
 
-                if (carbonPlayerCommon == null) {
+                if (carbonPlayerCommon.isEmpty()) {
                     // Player doesn't exist in the DB, create them!
                     final String name = Objects.requireNonNull(CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
                     final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
@@ -126,9 +127,9 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
                 handle.createQuery(this.locator.query("select-ignores"))
                     .bind("id", uuid)
                     .mapTo(UUID.class)
-                    .forEach(ignoredPlayer -> carbonPlayerCommon.ignoredPlayers().add(ignoredPlayer));
+                    .forEach(ignoredPlayer -> carbonPlayerCommon.get().ignoredPlayers().add(ignoredPlayer));
 
-                return carbonPlayerCommon;
+                return carbonPlayerCommon.get();
             }));
 
             return new ComponentPlayerResult<>(playerResult, empty());
