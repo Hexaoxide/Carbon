@@ -44,6 +44,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Basic chat formats.
         The "default_format" format is the main one you want to edit.
         The "console" format is what's shown to console.
+        The "discord" format is what's shown to supported discord integrations.
         If PlaceholderAPI is installed, PAPI placeholders (with %) are supported.
         The keys are group names, the values are chat formats (MiniMessage).
         For example:
@@ -51,6 +52,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
                 default_format="<<username>> <message>"
                 vip="[VIP] <<username>> <message>"
                 admin="<white>[</white>Prefix<white>]</white> <display_name><white>: <message></white>"
+                discord="<<username>> <message>"
             }
         """)
     private Map<String, String> defaults = Map.of(

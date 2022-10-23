@@ -24,6 +24,7 @@ import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -140,4 +141,19 @@ public final class BasicChatChannel implements ChatChannel {
         return this.key;
     }
 
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof BasicChatChannel otherChannel)) return false;
+        if (!(otherChannel.commandName().equals(this.commandName()))) return false;
+        if (!(Objects.equals(otherChannel.quickPrefix(), this.quickPrefix()))) return false;
+        if (!(Objects.equals(otherChannel.permission(), this.permission()))) return false;
+        if (otherChannel.radius() != this.radius()) return false;
+
+        return otherChannel.key().equals(this.key());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.commandName(), this.quickPrefix(), this.permission(), this.radius(), this.key());
+    }
 }
