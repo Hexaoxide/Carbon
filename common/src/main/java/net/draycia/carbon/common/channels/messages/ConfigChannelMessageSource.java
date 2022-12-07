@@ -57,7 +57,8 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         """)
     private Map<String, String> defaults = Map.of(
         "default_format", "<display_name>: <message>",
-        "console", "[<channel>] <username> - <uuid>: <message>"
+        "console", "[<channel>] <username> - <uuid>: <message>",
+        "discord", "<message>"
     );
 
     // TODO: Move the default to the advanced config?
