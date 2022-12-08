@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.util.DiscordRecipient;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.message.IMessageSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -44,6 +45,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Basic chat formats.
         The "default_format" format is the main one you want to edit.
         The "console" format is what's shown to console.
+        The "discord" format is what's shown to supported discord integrations.
         If PlaceholderAPI is installed, PAPI placeholders (with %) are supported.
         The keys are group names, the values are chat formats (MiniMessage).
         For example:
@@ -51,11 +53,13 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
                 default_format="<<username>> <message>"
                 vip="[VIP] <<username>> <message>"
                 admin="<white>[</white>Prefix<white>]</white> <display_name><white>: <message></white>"
+                discord="<message>"
             }
         """)
     private Map<String, String> defaults = Map.of(
         "default_format", "<display_name>: <message>",
-        "console", "[<channel>] <username> - <uuid>: <message>"
+        "console", "[<channel>] <username> - <uuid>: <message>",
+        "discord", "<message>"
     );
 
     // TODO: Move the default to the advanced config?
@@ -70,12 +74,15 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
 
     private static final String FALLBACK_FORMAT = "<red><</red><username><red>></red> <message>";
 
+    // TODO: Remove DiscordRecipient and use key instead (Couldn't figure out how to do it)
     @Override
     public String messageOf(final SourcedAudience sourcedAudience, final String ignored) {
         if (sourcedAudience.recipient() instanceof CarbonPlayer) {
             return this.forPlayer(sourcedAudience);
+        } else if (sourcedAudience.recipient() instanceof DiscordRecipient) {
+            return this.defaults.getOrDefault("discord", FALLBACK_FORMAT);
         } else {
-            return this.forAudience(sourcedAudience.recipient());
+            return this.defaults.getOrDefault("console", FALLBACK_FORMAT);
         }
     }
 

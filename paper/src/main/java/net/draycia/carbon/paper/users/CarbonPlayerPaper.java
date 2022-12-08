@@ -195,4 +195,16 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
         return Bukkit.getPlayer(this.uuid());
     }
 
+    @Override
+    public boolean equals(final @Nullable Object other) {
+        if (other == null || this.getClass() != other.getClass()) return false;
+        final CarbonPlayerPaper that = (CarbonPlayerPaper) other;
+
+        return this.carbonPlayerCommon.equals(that.carbonPlayerCommon);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.carbonPlayerCommon.hashCode();
+    }
 }
