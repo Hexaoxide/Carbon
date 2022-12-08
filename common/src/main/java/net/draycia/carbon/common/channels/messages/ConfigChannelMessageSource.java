@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.util.DiscordRecipient;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.message.IMessageSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,7 +53,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
                 default_format="<<username>> <message>"
                 vip="[VIP] <<username>> <message>"
                 admin="<white>[</white>Prefix<white>]</white> <display_name><white>: <message></white>"
-                discord="<<username>> <message>"
+                discord="<message>"
             }
         """)
     private Map<String, String> defaults = Map.of(
@@ -73,12 +74,15 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
 
     private static final String FALLBACK_FORMAT = "<red><</red><username><red>></red> <message>";
 
+    // TODO: Remove DiscordRecipient and use key instead (Couldn't figure out how to do it)
     @Override
     public String messageOf(final SourcedAudience sourcedAudience, final String ignored) {
         if (sourcedAudience.recipient() instanceof CarbonPlayer) {
             return this.forPlayer(sourcedAudience);
+        } else if (sourcedAudience.recipient() instanceof DiscordRecipient) {
+            return this.defaults.getOrDefault("discord", FALLBACK_FORMAT);
         } else {
-            return this.forAudience(sourcedAudience.recipient());
+            return this.defaults.getOrDefault("console", FALLBACK_FORMAT);
         }
     }
 

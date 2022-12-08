@@ -35,6 +35,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.util.DiscordRecipient;
 import net.draycia.carbon.common.util.ChannelUtils;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.MessageType;
@@ -76,7 +77,8 @@ public class DSRVChatHook implements ChatHook {
             }
 
             var renderedMessage = new RenderedMessage(messageComponent, MessageType.CHAT);
-            renderedMessage = keyedRenderer(key("carbon", "discord"), chatChannel).render(carbonPlayer, carbonPlayer, renderedMessage.component(), renderedMessage.component());
+            renderedMessage = keyedRenderer(key("carbon", "discord"), chatChannel).render(carbonPlayer, DiscordRecipient.INSTANCE, renderedMessage.component(), renderedMessage.component());
+            // TODO: Should we bother with any of these renders?
             for (final var renderer : event.renderers()) {
                 if (renderer.key().asString().equals("carbon:default")) continue;
                 renderedMessage = renderer.render(carbonPlayer, carbonPlayer, renderedMessage.component(), renderedMessage.component());
