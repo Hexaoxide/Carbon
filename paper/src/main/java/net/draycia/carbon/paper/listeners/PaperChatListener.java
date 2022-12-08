@@ -117,14 +117,6 @@ public final class PaperChatListener implements Listener {
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
         final var recipients = channel.recipients(sender);
-
-        try {
-            event.viewers().clear();
-            event.viewers().addAll(recipients);
-        } catch (final UnsupportedOperationException ignored) {
-
-        }
-
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, false);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
@@ -132,6 +124,13 @@ public final class PaperChatListener implements Listener {
             for (final Map.Entry<EventSubscriber<?>, Throwable> entry : result.exceptions().entrySet()) {
                 this.carbonChat.logger().error(entry.getValue());
             }
+        }
+
+        try {
+            event.viewers().clear();
+            event.viewers().addAll(recipients);
+        } catch (final UnsupportedOperationException ignored) {
+
         }
     }
 

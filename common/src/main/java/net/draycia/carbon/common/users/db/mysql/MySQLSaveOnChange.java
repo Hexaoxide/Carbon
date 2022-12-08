@@ -46,16 +46,16 @@ public interface MySQLSaveOnChange extends SaveOnChange {
     @SqlUpdate("UPDATE carbon_users SET selectedchannel = :selectedChannel WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel);
 
-    @SqlUpdate("UPDATE carbon_users SET lastwhispertarget = :lastWhisperTarget WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    @SqlUpdate("UPDATE carbon_users SET lastwhispertarget = UNHEX(REPLACE(:lastWhisperTarget, '-', '')) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget);
 
-    @SqlUpdate("UPDATE carbon_users SET whisperreplytarget = :whisperReplyTarget WHERE id = UNHEX(REPLACE(:id, '-', ''))")
+    @SqlUpdate("UPDATE carbon_users SET whisperreplytarget = UNHEX(REPLACE(:whisperReplyTarget, '-', '')) WHERE id = UNHEX(REPLACE(:id, '-', ''))")
     int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget);
 
-    @SqlUpdate("INSERT INTO carbon_ignores VALUES id = UNHEX(REPLACE(:id, '-', '')), ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', ''))")
+    @SqlUpdate("INSERT IGNORE INTO carbon_ignores (id, ignoredplayer) VALUES (UNHEX(REPLACE(:id, '-', '')), UNHEX(REPLACE(:ignoredPlayer, '-', '')))")
     int addIgnore(final UUID id, final UUID ignoredPlayer);
 
-    @SqlUpdate("DELETE FROM carbon_ignores WHERE id = UNHEX(REPLACE(:id, '-', '')), ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', ''))")
+    @SqlUpdate("DELETE FROM carbon_ignores WHERE id = UNHEX(REPLACE(:id, '-', '')) AND ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', ''))")
     int removeIgnore(final UUID id, final UUID ignoredPlayer);
 
 }

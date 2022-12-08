@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,10 +33,10 @@ import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
+import net.draycia.carbon.common.users.db.AbstractUserManager;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.KeyArgumentFactory;
@@ -47,7 +48,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
@@ -56,15 +56,12 @@ import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, SaveOnChange {
-
-    private final Jdbi jdbi;
+public final class MySQLUserManager extends AbstractUserManager implements SaveOnChange {
 
     private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
-    private final QueriesLocator locator = new QueriesLocator(DBType.MYSQL);
 
     private MySQLUserManager(final Jdbi jdbi) {
-        this.jdbi = jdbi;
+        super(jdbi, new QueriesLocator(DBType.MYSQL));
     }
 
     public static MySQLUserManager manager(
@@ -111,78 +108,36 @@ public final class MySQLUserManager implements UserManager<CarbonPlayerCommon>, 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
+            final var playerResult = this.userCache.computeIfAbsent(uuid, key -> this.jdbi.withHandle(handle -> {
+                final Optional<CarbonPlayerCommon> carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
+                    .bind("id", uuid)
+                    .mapTo(CarbonPlayerCommon.class)
+                    .findOne();
 
-            if (cachedPlayer != null) {
-                return new ComponentPlayerResult<>(cachedPlayer, empty());
-            }
-
-            return this.jdbi.withHandle(handle -> {
-                try {
-                    final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
-                        .bind("id", uuid)
-                        .mapTo(CarbonPlayerCommon.class)
-                        .first();
-
-                    if (carbonPlayerCommon == null) {
-                        // Player doesn't exist in the DB, create them!
-                        final String name = Objects.requireNonNull(
-                            CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
-
-                        final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
-
-                        this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
-                            .execute();
-
-                        return new ComponentPlayerResult<>(player, text(""));
-                    }
-
-                    handle.createQuery(this.locator.query("select-ignores"))
-                        .bind("id", uuid)
-                        .mapTo(UUID.class)
-                        .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
-
-                    return new ComponentPlayerResult<>(carbonPlayerCommon, empty());
-                } catch (final IllegalStateException exception) {
+                if (carbonPlayerCommon.isEmpty()) {
                     // Player doesn't exist in the DB, create them!
-                    final String name = Objects.requireNonNull(
-                        CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
-
+                    final String name = Objects.requireNonNull(CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
                     final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-                    this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
-                        .execute();
+                    this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();
 
-                    return new ComponentPlayerResult<>(player, text(""));
+                    return player;
                 }
-            });
+
+                handle.createQuery(this.locator.query("select-ignores"))
+                    .bind("id", uuid)
+                    .mapTo(UUID.class)
+                    .forEach(ignoredPlayer -> carbonPlayerCommon.get().ignoredPlayers().add(ignoredPlayer));
+
+                return carbonPlayerCommon.get();
+            }));
+
+            return new ComponentPlayerResult<>(playerResult, empty());
         }).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
-        return CompletableFuture.supplyAsync(() -> {
-            return this.jdbi.withHandle(handle -> {
-                this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
-                    .execute();
-
-                if (!player.ignoredPlayers().isEmpty()) {
-                    final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-ignores"));
-
-                    for (final UUID ignoredPlayer : player.ignoredPlayers()) {
-                        batch.bind("id", player.uuid()).bind("ignoredplayer", ignoredPlayer).add();
-                    }
-
-                    batch.execute();
-                }
-
-                // TODO: save ignoredplayers
-                return new ComponentPlayerResult<>(player, empty());
-            });
-        });
-    }
-
-    private Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
+    protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
         return update
             .bind("id", player.uuid())
             .bind("muted", player.muted())
