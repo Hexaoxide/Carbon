@@ -3,7 +3,12 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 dependencyResolutionManagement {
   repositories {
     mavenCentral()
-    maven("https://repo.parks.dev/repository/maven-public/")
+    maven("https://repo.racci.dev/snapshots/") {
+      mavenContent {
+        snapshotsOnly()
+        includeGroup("ninja.egg82")
+      }
+    }
     // temporary cloud snapshots repo for sponge-8
     maven("https://repo.jpenilla.xyz/snapshots/") {
       mavenContent {

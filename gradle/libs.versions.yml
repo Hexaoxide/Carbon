@@ -44,7 +44,7 @@ versions:
   flyway: 9.4.0
   caffeine: 3.0.5
   mariadb: 3.0.8
-  messenger: 1.0.0-parks-SNAPSHOT
+  messenger: 1.0.0-SNAPSHOT
   netty: 4.1.68.Final
   zstdjni: 1.5.1-1
   jedis: 3.7.0
