@@ -3,10 +3,6 @@
 <b>Carbon</b> is a modern chat Java Edition plugin built on channels, with just about every single setting and format configurable.
 </p>
 
-## Dev Builds
-
-Dev builds can be found [here](https://jenkins.ocelotpotpie.com:8443/job/Carbon/).
-
 ## Support
 
 Support is given through [GitHub Issues](https://github.com/Hexaoxide/Carbon/issues)
@@ -23,16 +19,3 @@ For checkstyle support in IDEA:
 3. `Settings` -> `Tools` -> `Checkstyle` `Third-Party Checks`, add the compiled stylecheck jar
 4. While still in the `Checkstyle` tab, go to `Configuration File`, add `.checkstyle/checkstyle.xml` and tick the check
    box.
-
-## Partner
-
-![DedicatedMC](https://i.imgur.com/cbWjWFx.png)
-
-Carbon is proudly partnered with DedicatedMC.
-
-DedicatedMC are a hosting company that values transparency and providing an affordable service without sacrificing
-quality. They provide nodes in various countries, such as the U.S. (New York & Los Angeles), Finland, and Germany.
-
-They have kindly provided me with a server to host CarbonChat on, which I'm still working on preparing.
-
-If you're interested in a node, you can check them out at https://dedimc.promo/CarbonChat and use promo code **CarbonChat**
