@@ -104,13 +104,13 @@ public class DSRVChatHook implements ChatHook {
             }
         });
 
-        DiscordSRV.api.subscribe(new Object() {
-            @Subscribe
-            public void handle(final GameChatMessagePreProcessEvent event) {
-                if (event.getTriggeringBukkitEvent() == null) return;
-                event.setCancelled(true);
-            }
-        });
+//         DiscordSRV.api.subscribe(new Object() {
+//             @Subscribe
+//             public void handle(final GameChatMessagePreProcessEvent event) {
+//                 if (event.getTriggeringBukkitEvent() == null) return;
+//                 event.setCancelled(true);
+//             }
+//         });
     }
 
     @Override
