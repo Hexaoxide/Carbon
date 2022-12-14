@@ -167,9 +167,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     @Override
     public boolean speechPermitted(final String message) {
         // ...........
-        return new AsyncPlayerChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), message, Set.of()).callEvent()
-            && new AsyncChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), Set.of(),
-            (player, name, msg, receiver) -> msg, Component.text(message), Component.text(message)).callEvent();
+        return new AsyncPlayerChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), message, Set.of()).callEvent() && new AsyncChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), Set.of(), (player, name, msg, receiver) -> msg, Component.text(message), Component.text(message)).callEvent();
     }
 
     @Override
