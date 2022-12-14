@@ -61,6 +61,7 @@ public class DSRVChatHook implements ChatHook {
 
         CarbonChatProvider.carbonChat().eventHandler().subscribe(CarbonChatEvent.class, event -> {
             if (event.previewing()) {
+                System.out.println("previewing");
                 final var pair = new ImmutablePair<>(event.sender(), event.chatChannel());
                 awaitingEvent.put(pair, event.message());
                 return;
@@ -73,6 +74,7 @@ public class DSRVChatHook implements ChatHook {
             awaitingEvent.invalidate(pair);
 
             if (messageComponent == null) {
+                System.out.println("message component is null");
                 return;
             }
 
@@ -98,9 +100,11 @@ public class DSRVChatHook implements ChatHook {
 
             final @Nullable Player player = ((CarbonPlayerPaper) carbonPlayer).bukkitPlayer();
             final String message = PlainTextComponentSerializer.plainText().serialize(eventMessage);
-
+            System.out.println("sending null check");
+            
             if (player != null) {
                 DiscordSRV.getPlugin().processChatMessage(player, message, chatChannel.commandName(), event.result().cancelled());
+                System.out.println("sending");
             }
         });
 
