@@ -74,8 +74,7 @@ public class DSRVChatHook implements ChatHook {
             awaitingEvent.invalidate(pair);
 
             if (messageComponent == null) {
-                System.out.println("message component is null");
-                return;
+                messageComponent = event.message();
             }
 
             var renderedMessage = new RenderedMessage(messageComponent, MessageType.CHAT);
