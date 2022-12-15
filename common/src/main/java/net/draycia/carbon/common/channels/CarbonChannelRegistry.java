@@ -323,6 +323,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         // TODO: add previewing when cloud/adventure support it
         final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel, false);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
+
         if (!result.wasSuccessful()) {
             final var message = chatEvent.result().reason();
 
@@ -332,15 +333,19 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             return;
         }
+
         var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+
         for (final var renderer : chatEvent.renderers()) {
             renderedMessage = renderer.render(sender, sender, renderedMessage.component(), chatEvent.message());
         }
+
         final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
 
         for (final Audience recipient : chatEvent.recipients()) {
             recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
         }
+
         final @Nullable PacketService packetService = this.carbonChat.packetService();
 
         if (packetService != null) {
