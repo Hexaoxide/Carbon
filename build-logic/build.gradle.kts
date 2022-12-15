@@ -10,6 +10,7 @@ repositories {
 dependencies {
   implementation(libs.shadow)
   implementation(libs.indraCommon)
+  implementation(libs.indraLicenseHeader)
   implementation(libs.licenser)
 
   // https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
