@@ -38,6 +38,7 @@ import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -132,6 +133,10 @@ public class ReplyCommand extends CarbonCommand {
                 this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
                 this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, message);
 
+                final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
+                if (messageSound != null) {
+                    recipient.playSound(messageSound);
+                }
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());
                 recipient.whisperReplyTarget(sender.uuid());

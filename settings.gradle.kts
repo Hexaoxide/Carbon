@@ -82,7 +82,7 @@ sequenceOf(
   "api",
   "common",
   "paper",
-  "sponge",
+  // "sponge", // TODO API 10
   // "fabric", // TODO 1.19.3
   "velocity"
 ).forEach {

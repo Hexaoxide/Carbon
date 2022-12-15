@@ -82,10 +82,9 @@ public final class PaperChatListener implements Listener {
         final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
         final @Nullable CarbonPlayer sender = playerResult.player();
 
-        if (sender == null) {
+        if (sender == null || event.viewers().isEmpty()) {
             return;
         }
-
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
         final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.message());
         Component eventMessage = ConfigChatChannel.parseMessageTags(sender, messageContents);

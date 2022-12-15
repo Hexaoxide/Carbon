@@ -69,11 +69,11 @@ public class DSRVChatHook implements ChatHook {
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
             final ImmutablePair<CarbonPlayer, ChatChannel> pair = new ImmutablePair<>(carbonPlayer, chatChannel);
-            final Component messageComponent = awaitingEvent.getIfPresent(pair);
+            Component messageComponent = awaitingEvent.getIfPresent(pair);
             awaitingEvent.invalidate(pair);
 
             if (messageComponent == null) {
-                return;
+                messageComponent = event.message();
             }
 
             var renderedMessage = new RenderedMessage(messageComponent, MessageType.CHAT);
