@@ -71,7 +71,7 @@ public class PrimaryConfig {
     private PingSettings pingSettings = new PingSettings();
 
     @Comment("Various sound settings for messages.")
-    private Sound messageSound = Sound.sound(
+    private @Nullable Sound messageSound = Sound.sound(
         Key.key("entity.experience_orb.pickup"),
         Sound.Source.MASTER,
         1.0F,
@@ -120,8 +120,7 @@ public class PrimaryConfig {
         return this.messagingSettings;
     }
 
-    @Nullable
-    public Sound messageSound() {
+    public @Nullable Sound messageSound() {
         return this.messageSound;
     }
 
