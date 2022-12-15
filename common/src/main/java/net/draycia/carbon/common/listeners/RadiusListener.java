@@ -36,7 +36,7 @@ public class RadiusListener {
         final CarbonMessages carbonMessages
     ) {
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 0, false, event -> {
-            if (event.chatChannel() == null) {
+            if (event.chatChannel() == null || event.previewing()) {
                 return;
             }
 
@@ -76,9 +76,9 @@ public class RadiusListener {
                     return false;
                 });
             }
-            if (event.recipients().size() > 1) return;
-
-            carbonMessages.emptyRecipients(event.sender());
+            if (event.recipients().size() <= 2 && event.chatChannel().emptyRadiusRecipientsMessage()) { // the player and cosole
+                carbonMessages.emptyRecipients(event.sender());
+            }
         });
     }
 

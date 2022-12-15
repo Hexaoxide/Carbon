@@ -104,6 +104,11 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
+    public boolean emptyRadiusRecipientsMessage() {
+        return true;
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer carbonPlayer) {
         return ChannelPermissionResult.allowed();
     }
