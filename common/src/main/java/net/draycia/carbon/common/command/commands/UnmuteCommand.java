@@ -72,7 +72,7 @@ public class UnmuteCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+            .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
                 RichDescription.of(this.carbonMessages.commandUnmuteArgumentPlayer().component()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")

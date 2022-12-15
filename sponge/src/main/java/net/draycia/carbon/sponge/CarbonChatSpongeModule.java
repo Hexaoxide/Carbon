@@ -69,7 +69,7 @@ public final class CarbonChatSpongeModule extends AbstractModule {
     public CommandManager<Commander> commandManager() {
         final SpongeCommandManager<Commander> commandManager = new SpongeCommandManager<>(
             this.pluginContainer,
-            AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+            AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
             commander -> ((SpongeCommander) commander).commandCause(),
             commandCause -> {
                 if (commandCause.subject() instanceof ServerPlayer player) {

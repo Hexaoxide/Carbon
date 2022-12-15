@@ -73,7 +73,7 @@ public class DeleteMessageCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(UUIDArgument.<Commander>newBuilder("messageid").withSuggestionsProvider((sender, input) -> {
+            .argument(UUIDArgument.<Commander>builder("messageid").withSuggestionsProvider((sender, input) -> {
                 final List<String> messageIds = CarbonChatFabric.messageIdSuggestions();
 
                 if (input.isEmpty()) {

@@ -73,7 +73,7 @@ public class UnignoreCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             // TODO: Filter, and only show muted players, but allow inputting any player name.
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+            .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
                 RichDescription.of(this.carbonMessages.commandUnignoreArgumentPlayer().component()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
