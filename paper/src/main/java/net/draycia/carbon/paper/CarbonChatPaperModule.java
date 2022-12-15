@@ -74,7 +74,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
         try {
             commandManager = new PaperCommandManager<>(
                 this.carbonChat,
-                AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+                AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
                 commandSender -> {
                     if (commandSender instanceof Player player) {
                         return new PaperPlayerCommander(this.carbonChat, player);

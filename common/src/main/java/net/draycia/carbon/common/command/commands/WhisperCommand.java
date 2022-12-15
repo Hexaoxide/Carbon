@@ -74,7 +74,7 @@ public class WhisperCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asRequired(),
+            .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asRequired(),
                 RichDescription.of(this.carbonMessages.commandWhisperArgumentPlayer().component()))
             .argument(StringArgument.greedy("message"),
                 RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage().component()))

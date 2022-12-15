@@ -23,11 +23,11 @@
         "carbonchat.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.14.8",
+        "fabricloader": ">=0.14.11",
         "fabric": "*",
         "cloud": "*",
         "adventure-platform-fabric": "*",
-        "minecraft": "~1.19.1",
+        "minecraft": "~1.19.3",
         "luckperms": ">=5.0.0"
     }
 }

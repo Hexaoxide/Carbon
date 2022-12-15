@@ -79,7 +79,7 @@ public final class HelpCommand extends CarbonCommand {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .literal("help",
                 RichDescription.of(this.carbonMessages.commandHelpDescription().component()))
-            .argument(StringArgument.<Commander>newBuilder("query")
+            .argument(StringArgument.<Commander>builder("query")
                     .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
                 RichDescription.of(this.carbonMessages.commandHelpArgumentQuery().component()))
             .permission("carbon.help")
@@ -94,7 +94,7 @@ public final class HelpCommand extends CarbonCommand {
     }
 
     private List<String> suggestQueries(final CommandContext<Commander> ctx, final String input) {
-        final var topic = (CommandHelpHandler.IndexHelpTopic<Commander>) this.commandManager.createCommandHelpHandler().queryHelp(ctx.getSender(), "");
+        final var topic = this.commandManager.createCommandHelpHandler().queryRootIndex(ctx.getSender());
         return topic.getEntries().stream().map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString).toList();
     }
 

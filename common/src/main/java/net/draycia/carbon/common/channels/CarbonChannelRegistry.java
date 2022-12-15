@@ -372,7 +372,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
         var builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
-            .argument(StringArgument.<Commander>newBuilder("message").greedy().asOptional().build());
+            .argument(StringArgument.<Commander>builder("message").greedy().asOptional().build());
 
         if (channel.permission() != null) {
             builder = builder.permission(channel.permission());
