@@ -66,7 +66,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
     @Singleton
     public CommandManager<Commander> commandManager() {
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
-            AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+            AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
             FabricCommander::from,
             commander -> ((FabricCommander) commander).commandSourceStack()
         );
