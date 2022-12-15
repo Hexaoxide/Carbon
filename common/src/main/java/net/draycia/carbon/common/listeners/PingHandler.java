@@ -27,7 +27,9 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -45,24 +47,23 @@ public class PingHandler {
 
     @Inject
     public PingHandler(final CarbonChat carbonChat, final ConfigFactory configFactory) {
-        //TODO: there is an issue with this, it only works if the player is sending the message pings themself
-        this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
-            if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
+        this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage, channel) -> {
+            if (!(recipient instanceof CarbonPlayer)) {
                 return new RenderedMessage(message, MessageType.CHAT);
             }
-
             final String prefix = configFactory.primaryConfig().pings().prefix();
-
-            return new RenderedMessage(message.replaceText(TextReplacementConfig.builder()
-                .match(Pattern.compile(Pattern.quote(prefix + recipientPlayer.username()), Pattern.CASE_INSENSITIVE))
-                .replacement(matchedText -> {
-                    if (configFactory.primaryConfig().pings().playSound()) {
-                        recipient.playSound(configFactory.primaryConfig().pings().sound());
-                    }
-
-                    return Component.text(recipientPlayer.username()).color(configFactory.primaryConfig().pings().highlightTextColor());
-                })
-                .build()), MessageType.CHAT);
+            Component component = message;
+            for (final Audience carbonPlayer : channel.recipients(sender)) { // could not use recipient here as carbon parses receipt as sender.
+                component = component.replaceText(TextReplacementConfig.builder()
+                    .match(Pattern.compile(Pattern.quote(prefix + carbonPlayer.get(Identity.NAME).orElse(null)), Pattern.CASE_INSENSITIVE))
+                    .replacement(matchedText -> {
+                        if (configFactory.primaryConfig().pings().playSound()) {
+                            carbonPlayer.playSound(configFactory.primaryConfig().pings().sound());
+                        }
+                        return matchedText.color(configFactory.primaryConfig().pings().highlightTextColor());
+                    }).build());
+            }
+            return new RenderedMessage(component, MessageType.CHAT);
         });
 
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 1, false, event -> {

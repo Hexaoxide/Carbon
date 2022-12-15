@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
@@ -118,6 +119,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
             chat.identity(Identity.nil());
         }
 
+        final ChatChannel finalChannel = channel;
         chat.formatter((sender1, message, viewer) -> {
             var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
@@ -127,9 +129,9 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
                     if (uuid.isPresent()) {
                         final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChatFabric.server().userManager().carbonPlayer(uuid.get()).join();
 
-                        renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
+                        renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message(), finalChannel);
                     } else {
-                        renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), chatEvent.message());
+                        renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), chatEvent.message(), finalChannel);
                     }
                 } catch (final Exception e) {
                     e.printStackTrace();

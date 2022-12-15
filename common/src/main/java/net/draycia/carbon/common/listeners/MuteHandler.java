@@ -40,7 +40,7 @@ public class MuteHandler {
     private CarbonMessages carbonMessages;
 
     private final KeyedRenderer renderer =
-        keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
+        keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage, channel) -> {
             // This is an annoying side effect of the RenderedComponent change
             final var prefix = this.carbonMessages.muteSpyPrefix(recipient);
 

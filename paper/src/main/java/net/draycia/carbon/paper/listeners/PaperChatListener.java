@@ -188,7 +188,7 @@ public final class PaperChatListener implements Listener {
         var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
         for (final var renderer : chatEvent.renderers()) {
-            renderedMessage = renderer.render(sender, sender, renderedMessage.component(), renderedMessage.component());
+            renderedMessage = renderer.render(sender, sender, renderedMessage.component(), renderedMessage.component(), channel);
         }
 
         event.result(renderedMessage.component());

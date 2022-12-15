@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.api.util;
 
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -60,9 +61,10 @@ public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
             final CarbonPlayer sender,
             final Audience recipient,
             final Component message,
-            final Component originalMessage
+            final Component originalMessage,
+            final ChatChannel channel
         ) {
-            return this.renderer.render(sender, recipient, message, originalMessage);
+            return this.renderer.render(sender, recipient, message, originalMessage, channel);
         }
 
     }

@@ -78,7 +78,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Comment("""
         The permission required to use the /channel <channelname> and /<channelname> commands.
-        
+                
         Assuming permission = "carbon.channel.global"
         To read messages you must have the permission carbon.channel.global.see
         To send messages you must have the permission carbon.channel.global.speak
@@ -142,7 +142,8 @@ public final class ConfigChatChannel implements ChatChannel {
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,
-        final Component originalMessage
+        final Component originalMessage,
+        final ChatChannel channel
     ) {
         return this.carbonMessages().chatFormat(
             new SourcedAudience(sender, recipient),
@@ -212,9 +213,11 @@ public final class ConfigChatChannel implements ChatChannel {
         final List<Audience> recipients = new ArrayList<>();
 
         for (final CarbonPlayer player : CarbonChatProvider.carbonChat().server().players()) {
-            if (this.hearingPermitted(player).permitted()) {
-                recipients.add(player);
-            }
+            if (!this.hearingPermitted(player).permitted()) continue;
+            if (this.radius >= 0 && !player.sameWorldAs(sender)) continue;
+            if (this.radius > 0 && player.distanceSquaredFrom(sender) > this.radius * this.radius) continue;
+
+            recipients.add(player);
         }
 
         // console too!
@@ -253,7 +256,8 @@ public final class ConfigChatChannel implements ChatChannel {
         final SourcedMessageSender carbonMessageSender = new SourcedMessageSender();
 
         try {
-            return Moonshine.<ConfigChannelMessages, SourcedAudience>builder(new TypeToken<ConfigChannelMessages>() {})
+            return Moonshine.<ConfigChannelMessages, SourcedAudience>builder(new TypeToken<ConfigChannelMessages>() {
+                })
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
                 .rendered(CarbonChatProvider.carbonChat().messageRenderer())

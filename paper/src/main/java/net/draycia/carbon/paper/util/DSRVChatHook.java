@@ -77,11 +77,11 @@ public class DSRVChatHook implements ChatHook {
             }
 
             var renderedMessage = new RenderedMessage(messageComponent, MessageType.CHAT);
-            renderedMessage = keyedRenderer(key("carbon", "discord"), chatChannel).render(carbonPlayer, DiscordRecipient.INSTANCE, renderedMessage.component(), renderedMessage.component());
+            renderedMessage = keyedRenderer(key("carbon", "discord"), chatChannel).render(carbonPlayer, DiscordRecipient.INSTANCE, renderedMessage.component(), renderedMessage.component(), chatChannel);
             // TODO: Should we bother with any of these renders?
             for (final var renderer : event.renderers()) {
                 if (renderer.key().asString().equals("carbon:default")) continue;
-                renderedMessage = renderer.render(carbonPlayer, carbonPlayer, renderedMessage.component(), renderedMessage.component());
+                renderedMessage = renderer.render(carbonPlayer, carbonPlayer, renderedMessage.component(), renderedMessage.component(), chatChannel);
             }
 
             final var messageContents = PlainTextComponentSerializer.plainText().serialize(renderedMessage.component());

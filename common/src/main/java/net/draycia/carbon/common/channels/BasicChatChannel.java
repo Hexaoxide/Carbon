@@ -62,7 +62,8 @@ public final class BasicChatChannel implements ChatChannel {
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,
-        final Component originalMessage
+        final Component originalMessage,
+        final ChatChannel channel
     ) {
         return this.service.basicChatFormat(
             recipient,

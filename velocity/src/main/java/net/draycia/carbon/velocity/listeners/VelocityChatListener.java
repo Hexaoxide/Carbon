@@ -126,7 +126,7 @@ public final class VelocityChatListener {
             var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
 
             for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
+                renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message(), channel);
             }
 
             final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();

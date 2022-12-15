@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.api.util;
 
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -51,6 +52,7 @@ public interface ChatComponentRenderer {
     RenderedMessage render(final CarbonPlayer sender,
                      final Audience recipient,
                      final Component message,
-                     final Component originalMessage);
+                     final Component originalMessage,
+                     final ChatChannel channel);
 
 }

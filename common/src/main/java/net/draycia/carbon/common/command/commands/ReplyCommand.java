@@ -132,7 +132,6 @@ public class ReplyCommand extends CarbonCommand {
                 this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
                 this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, message);
 
-                recipient.playSound(this.configFactory.primaryConfig().messageSounds());
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());
                 recipient.whisperReplyTarget(sender.uuid());

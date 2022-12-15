@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -70,14 +69,6 @@ public class PrimaryConfig {
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
 
-    @Comment("Various sound settings for messages.")
-    private Sound messageSounds = Sound.sound(
-        Key.key("entity.experience_orb.pickup"),
-        Sound.Source.MASTER,
-        1.0F,
-        1.0F
-    );
-
     private MessagingSettings messagingSettings = new MessagingSettings();
 
     public Locale defaultLocale() {
@@ -118,10 +109,6 @@ public class PrimaryConfig {
 
     public MessagingSettings messagingSettings() {
         return this.messagingSettings;
-    }
-
-    public Sound messageSounds() {
-        return this.messageSounds;
     }
 
     public enum StorageType {

@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
@@ -160,9 +161,9 @@ public final class SpongeChatListener {
                         if (recipient instanceof Player player) {
                             final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.uniqueId()).join();
 
-                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
+                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message(), channel);
                         } else {
-                            renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
+                            renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message(), channel);
                         }
                     } catch (final Exception e) {
                         e.printStackTrace();
@@ -172,15 +173,16 @@ public final class SpongeChatListener {
                 recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
             }
         } else {
+            final ChatChannel finalChannel = channel;
             event.setChatFormatter((player, target, msg, originalMessage) -> {
                 Component component = msg;
 
                 for (final var renderer : chatEvent.renderers()) {
                     if (target instanceof ServerPlayer serverPlayer) {
                         final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(serverPlayer.uniqueId()).join();
-                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, msg).component();
+                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, msg, finalChannel).component();
                     } else {
-                        component = renderer.render(playerResult.player(), target, component, msg).component();
+                        component = renderer.render(playerResult.player(), target, component, msg, finalChannel).component();
                     }
                 }
 
