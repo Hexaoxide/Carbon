@@ -5,8 +5,9 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ChatTypeMixin",
-    "PlayerListMixin",
     "PlayerListAccessor",
+    "PlayerListMixin",
+    "RegistryDataLoaderMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin"
   ],

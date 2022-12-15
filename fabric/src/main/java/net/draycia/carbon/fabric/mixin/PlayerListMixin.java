@@ -23,17 +23,10 @@ import cloud.commandframework.types.tuples.Pair;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
-import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
-import net.draycia.carbon.fabric.chat.MessageRecipientFilter;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -86,25 +79,6 @@ abstract class PlayerListMixin {
                 this.broadcastSystemMessage(FabricServerAudiences.of(this.server).toNative(message), remove.getSecond());
             }
         }
-    }
-
-    @Redirect(
-        method = "broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Ljava/util/function/Predicate;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V",
-        at = @At(
-            value = "FIELD",
-            target = "Lnet/minecraft/server/players/PlayerList;players:Ljava/util/List;"
-        )
-    )
-    public List<ServerPlayer> redirectPlayers(
-        final PlayerList instance,
-        final PlayerChatMessage playerChatMessage,
-        final Predicate<ServerPlayer> predicate,
-        final @Nullable ServerPlayer serverPlayer,
-        final ChatType.Bound bound
-    ) {
-        final ComponentPlayerResult<? extends CarbonPlayer> result = CarbonChatProvider.carbonChat().server().userManager().carbonPlayer(serverPlayer.getUUID()).join();
-        final MessageRecipientFilter filter = new MessageRecipientFilter(serverPlayer, result.player().selectedChannel());
-        return this.players.stream().filter(player -> !filter.shouldFilterMessageTo(player)).toList();
     }
 
 }

@@ -19,10 +19,18 @@
  */
 package net.draycia.carbon.fabric.mixin;
 
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.ComponentPlayerResult;
+import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
+import net.draycia.carbon.fabric.chat.MessageRecipientFilter;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.network.PacketSendListener;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.OutgoingChatMessage;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
@@ -77,7 +85,6 @@ abstract class ServerGamePacketListenerImplMixin implements ServerGamePacketList
         }
     }
 
-    /*
     @Redirect(method = "broadcastChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V"))
     private void broadcastChatMessage(final PlayerList instance, final PlayerChatMessage playerChatMessage, final ServerPlayer serverPlayer, final ChatType.Bound bound) {
         // TODO: Get the channel the message was sent in, when the player uses /channel <message>
@@ -86,13 +93,12 @@ abstract class ServerGamePacketListenerImplMixin implements ServerGamePacketList
 
         for (final ServerPlayer player : this.server.getPlayerList().getPlayers()) {
             if (filter.shouldFilterMessageTo(player)) {
-                player.sendChatHeader(playerChatMessage.signedHeader(), playerChatMessage.headerSignature(), playerChatMessage.signedBody().hash().asBytes());
-            } else {
-                final OutgoingPlayerChatMessage outgoingPlayerChatMessage = OutgoingPlayerChatMessage.create(playerChatMessage);
-                player.sendChatMessage(outgoingPlayerChatMessage, true, ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), playerChatMessage.serverContent()));
+                // Chat headers not needed in 1.19.3+
+                continue;
             }
+            final OutgoingChatMessage outgoingPlayerChatMessage = new OutgoingChatMessage.Player(playerChatMessage);
+            player.sendChatMessage(outgoingPlayerChatMessage, false, ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), playerChatMessage.decoratedContent()));
         }
     }
-     */
 
 }
