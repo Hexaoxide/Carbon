@@ -19,31 +19,35 @@
  */
 package net.draycia.carbon.common.config;
 
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
-import org.spongepowered.configurate.objectmapping.meta.Comment;
 
 @ConfigSerializable
-public class PingSettings extends SoundSettings {
+public class SoundSettings {
 
-    @Comment("The color your name will be when another player mentions you.")
-    private TextColor highlightTextColor = NamedTextColor.YELLOW;
+    private Key name = Key.key("entity.arrow.hit_player");
+    private Sound.Source source = Sound.Source.MASTER;
+    private float volume = 1.0f; // 0.0 -> infinity
+    private float pitch = 1.0f; // 0.0 -> 2.0
 
-    private String prefix = "@";
-
-    private boolean playSound = false;
-
-    public TextColor highlightTextColor() {
-        return this.highlightTextColor;
+    public Key name() {
+        return this.name;
     }
 
-    public boolean playSound() {
-        return this.playSound;
+    public Sound.Source source() {
+        return this.source;
     }
 
-    public String prefix() {
-        return this.prefix;
+    public float volume() {
+        return this.volume;
     }
 
+    public float pitch() {
+        return this.pitch;
+    }
+
+    public Sound sound() {
+        return Sound.sound(this.name, this.source, this.volume, this.pitch);
+    }
 }

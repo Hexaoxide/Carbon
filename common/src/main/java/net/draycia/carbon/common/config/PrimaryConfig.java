@@ -69,6 +69,9 @@ public class PrimaryConfig {
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
 
+    @Comment("Various sound settings for messages.")
+    private SoundSettings messageSounds = new SoundSettings();
+
     private MessagingSettings messagingSettings = new MessagingSettings();
 
     public Locale defaultLocale() {
@@ -109,6 +112,10 @@ public class PrimaryConfig {
 
     public MessagingSettings messagingSettings() {
         return this.messagingSettings;
+    }
+
+    public SoundSettings messageSounds() {
+        return this.messageSounds;
     }
 
     public enum StorageType {

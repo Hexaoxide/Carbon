@@ -233,5 +233,4 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     public boolean vanished() {
         return this.carbonPlayerCommon().vanished();
     }
-
 }

@@ -45,6 +45,7 @@ public class PingHandler {
 
     @Inject
     public PingHandler(final CarbonChat carbonChat, final ConfigFactory configFactory) {
+        //TODO: there is an issue with this, it only works if the player is sending the message pings themself
         this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
                 return new RenderedMessage(message, MessageType.CHAT);

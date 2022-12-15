@@ -33,6 +33,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.key.Key;
@@ -47,18 +48,21 @@ public class WhisperCommand extends CarbonCommand {
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
     final PlayerSuggestions playerSuggestions;
+    final ConfigFactory configFactory;
 
     @Inject
     public WhisperCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final PlayerSuggestions playerSuggestions
+        final PlayerSuggestions playerSuggestions,
+        final ConfigFactory configFactory
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
         this.playerSuggestions = playerSuggestions;
+        this.configFactory = configFactory;
     }
 
     @Override
@@ -122,6 +126,7 @@ public class WhisperCommand extends CarbonCommand {
                 this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
                 this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, message);
 
+                recipient.playSound(this.configFactory.primaryConfig().messageSounds().sound());
                 sender.lastWhisperTarget(recipient.uuid());
                 sender.whisperReplyTarget(recipient.uuid());
                 recipient.whisperReplyTarget(sender.uuid());
