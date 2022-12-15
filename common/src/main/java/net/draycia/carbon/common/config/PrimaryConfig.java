@@ -71,7 +71,7 @@ public class PrimaryConfig {
     private PingSettings pingSettings = new PingSettings();
 
     @Comment("Various sound settings for messages.")
-    private Sound messageSounds = Sound.sound(
+    private Sound messageSound = Sound.sound(
         Key.key("entity.experience_orb.pickup"),
         Sound.Source.MASTER,
         1.0F,
@@ -120,8 +120,9 @@ public class PrimaryConfig {
         return this.messagingSettings;
     }
 
-    public Sound messageSounds() {
-        return this.messageSounds;
+    @Nullable
+    public Sound messageSound() {
+        return this.messageSound;
     }
 
     public enum StorageType {
