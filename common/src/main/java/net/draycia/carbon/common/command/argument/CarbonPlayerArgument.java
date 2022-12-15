@@ -66,7 +66,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
      * @param name name of the component
      * @return created builder
      */
-    public static @NonNull Builder newBuilder(final @NonNull String name) {
+    public static @NonNull Builder builder(final @NonNull String name) {
         return new Builder(name);
     }
 
@@ -77,7 +77,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
      * @return created component
      */
     public static @NonNull CommandArgument<Commander, CarbonPlayer> of(final @NonNull String name) {
-        return CarbonPlayerArgument.newBuilder(name).asRequired().build();
+        return CarbonPlayerArgument.builder(name).asRequired().build();
     }
 
     /**
@@ -87,7 +87,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
      * @return created component
      */
     public static @NonNull CommandArgument<Commander, CarbonPlayer> optional(final @NonNull String name) {
-        return CarbonPlayerArgument.newBuilder(name).asOptional().build();
+        return CarbonPlayerArgument.builder(name).asOptional().build();
     }
 
     /**
@@ -101,10 +101,10 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
         final @NonNull String name,
         final @NonNull String defaultCarbonPlayer
     ) {
-        return CarbonPlayerArgument.newBuilder(name).asOptionalWithDefault(defaultCarbonPlayer).build();
+        return CarbonPlayerArgument.builder(name).asOptionalWithDefault(defaultCarbonPlayer).build();
     }
 
-    public static final class Builder extends CommandArgument.Builder<Commander, CarbonPlayer> {
+    public static final class Builder extends CommandArgument.TypedBuilder<Commander, CarbonPlayer, Builder> {
 
         private CarbonMessages carbonMessages;
 

@@ -78,7 +78,7 @@ public class NicknameCommand extends CarbonCommand {
             .flag(this.commandManager.flagBuilder("player")
                 .withAliases("p")
                 .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer().component()))
-                .withArgument(CarbonPlayerArgument.newBuilder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional())
+                .withArgument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional())
                 .withPermission(Permission.of("carbon.nickname.others"))
             )
             .flag(this.commandManager.flagBuilder("nickname")

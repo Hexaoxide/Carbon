@@ -77,7 +77,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         final VelocityCommandManager<Commander> commandManager = new VelocityCommandManager<>(
             this.pluginContainer,
             this.proxyServer,
-            AsynchronousCommandExecutionCoordinator.<Commander>newBuilder().build(),
+            AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
             commandSender -> {
                 if (commandSender instanceof Player player) {
                     return new VelocityPlayerCommander(this.carbonChatVelocity, player);
