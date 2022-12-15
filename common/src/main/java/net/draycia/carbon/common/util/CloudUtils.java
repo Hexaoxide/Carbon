@@ -25,6 +25,7 @@ import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.exceptions.InvalidCommandSenderException;
 import cloud.commandframework.exceptions.InvalidSyntaxException;
 import cloud.commandframework.exceptions.NoPermissionException;
+import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
 import com.google.inject.Injector;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -139,6 +140,12 @@ public final class CloudUtils {
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages
     ) {
+        commandManager.commandSuggestionProcessor(
+            new FilteringCommandSuggestionProcessor<>(
+                FilteringCommandSuggestionProcessor.Filter.<Commander>contains(true).andTrimBeforeLastSpace()
+            )
+        );
+
         registerExceptionHandlers(commandManager, carbonMessages);
     }
 
