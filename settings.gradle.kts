@@ -83,7 +83,7 @@ sequenceOf(
   "common",
   "paper",
   // "sponge", // TODO API 10
-  // "fabric", // TODO 1.19.3
+  "fabric",
   "velocity"
 ).forEach {
   include("carbonchat-$it")

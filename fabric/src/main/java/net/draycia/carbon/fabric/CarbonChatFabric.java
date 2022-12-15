@@ -62,7 +62,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
 import net.kyori.moonshine.message.IMessageRenderer;
 import net.luckperms.api.LuckPermsProvider;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.resources.ResourceKey;
@@ -93,7 +93,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private TriState luckPermsLoaded = TriState.NOT_SET;
     private final UUID serverId = UUID.randomUUID();
 
-    public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registry.CHAT_TYPE_REGISTRY, new ResourceLocation("carbon", "chat"));
+    public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
 
     private static final Cache<UUID, MessageSignature> messageSignatures = CacheBuilder.newBuilder()
         .maximumSize(10)

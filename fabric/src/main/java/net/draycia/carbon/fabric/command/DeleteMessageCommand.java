@@ -32,11 +32,7 @@ import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.kyori.adventure.key.Key;
-import net.minecraft.network.chat.MessageSignature;
-import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
-import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -94,13 +90,14 @@ public class DeleteMessageCommand extends CarbonCommand {
             .senderType(Commander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandUpdateUsernameDescription().component())
             .handler(handler -> {
+                /* TODO 1.19.3
                 final @Nullable MessageSignature messageSignature = CarbonChatFabric.messageSignature(handler.get("messageid"));
-
                 if (messageSignature != null) {
                     for (final ServerPlayer player : this.carbonChat.minecraftServer().getPlayerList().getPlayers()) {
                         player.connection.send(new ClientboundDeleteChatPacket(messageSignature));
                     }
                 }
+                 */
             })
             .build();
 

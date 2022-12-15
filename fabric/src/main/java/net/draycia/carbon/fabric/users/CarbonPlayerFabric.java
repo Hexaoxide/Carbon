@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -165,7 +166,9 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return true;
         }
 
-        return this.carbonPlayerCommon().hasPermission(permission);
+        return this.player()
+            .map(player -> Permissions.check(player, permission, player.server.getOperatorUserPermissionLevel()))
+            .orElse(false);
     }
 
     @Override
