@@ -78,7 +78,6 @@ public class RadiusListener {
                     return false;
                 });
             }
-            carbonChat.logger().info(event.recipients().stream().map(x -> x.get(Identity.NAME).orElse(null)).collect(Collectors.joining()));
             if (event.recipients().size() > 1) return;
 
             carbonMessages.emptyRecipients(event.sender());
