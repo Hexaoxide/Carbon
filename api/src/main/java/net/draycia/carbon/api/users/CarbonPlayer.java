@@ -334,4 +334,5 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     boolean awareOf(final CarbonPlayer other);
+
 }
