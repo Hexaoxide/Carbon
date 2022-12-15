@@ -20,12 +20,10 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
-import java.util.stream.Collectors;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.kyori.adventure.identity.Identity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
