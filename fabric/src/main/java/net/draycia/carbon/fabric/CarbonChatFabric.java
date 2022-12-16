@@ -19,15 +19,10 @@
  */
 package net.draycia.carbon.fabric;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonChat;
@@ -62,7 +57,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -91,10 +85,6 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private final UUID serverId = UUID.randomUUID();
 
     public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
-
-    private static final Cache<UUID, MessageSignature> messageSignatures = CacheBuilder.newBuilder()
-        .maximumSize(10)
-        .build();
 
     private @MonotonicNonNull MessagingManager messagingManager = null;
 
@@ -129,28 +119,6 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
-    }
-
-    public static void addMessageSignature(final UUID uuid, final MessageSignature messageSignature) {
-        messageSignatures.put(uuid, messageSignature);
-    }
-
-    public static @Nullable MessageSignature messageSignature(final UUID uuid) {
-        return messageSignatures.getIfPresent(uuid);
-    }
-
-    public static Set<UUID> messageIds() {
-        return messageSignatures.asMap().keySet();
-    }
-
-    public static List<String> messageIdSuggestions() {
-        final List<String> suggestions = new ArrayList<>();
-
-        for (final UUID messageId : messageSignatures.asMap().keySet()) {
-            suggestions.add(messageId.toString());
-        }
-
-        return suggestions;
     }
 
     private void registerChatListener() {

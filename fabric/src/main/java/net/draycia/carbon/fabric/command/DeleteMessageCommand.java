@@ -20,18 +20,29 @@
 package net.draycia.carbon.fabric.command;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.UUIDArgument;
+import cloud.commandframework.arguments.parser.ArgumentParseResult;
+import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.fabric.argument.server.SinglePlayerSelectorArgument;
+import cloud.commandframework.fabric.data.SinglePlayerSelector;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.types.tuples.Pair;
 import com.google.inject.Inject;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
+import net.draycia.carbon.fabric.mixin.MessageSignatureCacheAccessor;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.fabric.impl.accessor.minecraft.network.ServerGamePacketListenerImplAccess;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.MessageSignatureCache;
+import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -69,39 +80,54 @@ public class DeleteMessageCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(UUIDArgument.<Commander>builder("messageid").withSuggestionsProvider((sender, input) -> {
-                final List<String> messageIds = CarbonChatFabric.messageIdSuggestions();
+            .argument(SinglePlayerSelectorArgument.of("player"))
+            .argument(this.commandManager.argumentBuilder(MessageSignature.class, "message")
+                .withParser((context, inputQueue) -> {
+                    final ServerPlayer target = target(context);
+                    final MessageSignatureCache messageSignatureCache = messageSignatureCache(target);
 
-                if (input.isEmpty()) {
-                    return messageIds;
-                }
+                    return Arrays.stream(((MessageSignatureCacheAccessor) messageSignatureCache).access$entries())
+                        .filter(Objects::nonNull)
+                        .map(e -> Pair.of(e, UUID.nameUUIDFromBytes(e.bytes())))
+                        .filter(s -> s.getSecond().toString().equals(inputQueue.peek()))
+                        .findFirst()
+                        .map(pair -> {
+                            inputQueue.poll();
+                            return ArgumentParseResult.success(pair.getFirst());
+                        })
+                        .orElseGet(() -> ArgumentParseResult.failure(new IllegalArgumentException("Could not find message in cache for input '" + inputQueue.peek() + "'.")));
+                })
+                .withSuggestionsProvider((context, input) -> {
+                    final ServerPlayer target = target(context);
+                    final MessageSignatureCache messageSignatureCache = messageSignatureCache(target);
 
-                final List<String> suggestions = new LinkedList<>();
-
-                for (final String messageId : messageIds) {
-                    if (messageId.startsWith(input)) {
-                        suggestions.add(messageId);
-                    }
-                }
-
-                return suggestions;
-            }).build())
+                    return Arrays.stream(((MessageSignatureCacheAccessor) messageSignatureCache).access$entries())
+                        .filter(Objects::nonNull)
+                        .map(e -> UUID.nameUUIDFromBytes(e.bytes()))
+                        .map(UUID::toString)
+                        .toList();
+                }))
             .permission("carbon.updateusername")
             .senderType(Commander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandUpdateUsernameDescription().component())
-            .handler(handler -> {
-                /* TODO 1.19.3
-                final @Nullable MessageSignature messageSignature = CarbonChatFabric.messageSignature(handler.get("messageid"));
-                if (messageSignature != null) {
-                    for (final ServerPlayer player : this.carbonChat.minecraftServer().getPlayerList().getPlayers()) {
-                        player.connection.send(new ClientboundDeleteChatPacket(messageSignature));
-                    }
-                }
-                 */
+            .handler(context -> {
+                final ServerPlayer target = target(context);
+                final MessageSignatureCache messageSignatureCache = messageSignatureCache(target);
+                final MessageSignature messageSignature = context.get("message");
+                target.connection.send(new ClientboundDeleteChatPacket(messageSignature.pack(messageSignatureCache)));
             })
             .build();
 
         this.commandManager.command(command);
+    }
+
+    private static MessageSignatureCache messageSignatureCache(final ServerPlayer target) {
+        return ((ServerGamePacketListenerImplAccess) target.connection).accessor$messageSignatureCache();
+    }
+
+    private static ServerPlayer target(final CommandContext<Commander> context) {
+        final SinglePlayerSelector selector = context.get("player");
+        return selector.getSingle();
     }
 
 }

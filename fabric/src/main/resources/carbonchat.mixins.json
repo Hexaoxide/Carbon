@@ -4,6 +4,7 @@
   "package": "net.draycia.carbon.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "MessageSignatureCacheAccessor",
     "PlayerListAccessor",
     "PlayerListMixin",
     "RegistryDataLoaderMixin",

@@ -70,11 +70,9 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public @Nullable Locale locale() {
-        if (this.player().isEmpty()) {
-            return Locale.getDefault();
-        }
-
-        return this.player().get().get(Identity.LOCALE).orElse(Locale.getDefault());
+        return this.player()
+            .flatMap(player -> player.get(Identity.LOCALE))
+            .orElseGet(Locale::getDefault);
     }
 
     @Override
