@@ -83,7 +83,7 @@ sequenceOf(
   "paper",
   // "sponge", // TODO API 10
   "fabric",
-  "velocity"
+  // "velocity"
 ).forEach {
   include("carbonchat-$it")
   project(":carbonchat-$it").projectDir = file(it)

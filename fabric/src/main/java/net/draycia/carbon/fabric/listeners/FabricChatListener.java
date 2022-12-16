@@ -29,10 +29,8 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.callback.ChatCallback;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -119,7 +117,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
         }
 
         chat.formatter((sender1, message, viewer) -> {
-            var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+            var renderedMessage = chatEvent.message();
 
             for (final var renderer : chatEvent.renderers()) {
                 try {
@@ -127,16 +125,16 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
                     if (uuid.isPresent()) {
                         final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChatFabric.server().userManager().carbonPlayer(uuid.get()).join();
 
-                        renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
+                        renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage, chatEvent.message());
                     } else {
-                        renderedMessage = renderer.render(sender, viewer, renderedMessage.component(), chatEvent.message());
+                        renderedMessage = renderer.render(sender, viewer, renderedMessage, chatEvent.message());
                     }
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
             }
 
-            return renderedMessage.component();
+            return renderedMessage;
         });
     }
 

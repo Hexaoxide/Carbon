@@ -30,7 +30,6 @@ import java.util.UUID;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
@@ -144,7 +143,7 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull RenderedMessage render(
+    public @NotNull Component render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,

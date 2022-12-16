@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -106,6 +105,6 @@ public interface CarbonChat {
      * @return the message renderer
      * @since 2.0.0
      */
-    <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer();
+    <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer();
 
 }

@@ -25,9 +25,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -47,12 +45,12 @@ public class PingHandler {
     public PingHandler(final CarbonChat carbonChat, final ConfigFactory configFactory) {
         this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
-                return new RenderedMessage(message, MessageType.CHAT);
+                return message;
             }
 
             final String prefix = configFactory.primaryConfig().pings().prefix();
 
-            return new RenderedMessage(message.replaceText(TextReplacementConfig.builder()
+            return message.replaceText(TextReplacementConfig.builder()
                 .match(Pattern.compile(Pattern.quote(prefix + recipientPlayer.username()), Pattern.CASE_INSENSITIVE))
                 .replacement(matchedText -> {
                     if (configFactory.primaryConfig().pings().playSound()) {
@@ -61,7 +59,7 @@ public class PingHandler {
 
                     return Component.text(recipientPlayer.username()).color(configFactory.primaryConfig().pings().highlightTextColor());
                 })
-                .build()), MessageType.CHAT);
+                .build());
         });
 
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 1, false, event -> {

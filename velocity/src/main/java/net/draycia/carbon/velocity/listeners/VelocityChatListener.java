@@ -30,7 +30,6 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
@@ -123,18 +122,18 @@ public final class VelocityChatListener {
         }
 
         for (final var recipient : chatEvent.recipients()) {
-            var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+            var renderedMessage = chatEvent.message();
 
             for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
+                renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
             }
 
             final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
 
             if (!(recipient instanceof CarbonPlayer)) {
-                recipient.sendMessage(identity, renderedMessage.component());
+                recipient.sendMessage(identity, renderedMessage);
             } else {
-                recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
+                recipient.sendMessage(identity, renderedMessage);
             }
         }
 

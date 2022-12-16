@@ -71,10 +71,10 @@ public class DebugCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
-                RichDescription.of(this.carbonMessages.commandDebugArgumentPlayer().component()))
+                RichDescription.of(this.carbonMessages.commandDebugArgumentPlayer()))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandDebugDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandDebugDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

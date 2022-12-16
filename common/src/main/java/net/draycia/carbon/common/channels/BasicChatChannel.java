@@ -29,7 +29,6 @@ import java.util.Set;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -58,7 +57,7 @@ public final class BasicChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull RenderedMessage render(
+    public @NotNull Component render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,

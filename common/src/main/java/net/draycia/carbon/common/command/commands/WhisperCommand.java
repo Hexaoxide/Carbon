@@ -81,12 +81,12 @@ public class WhisperCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asRequired(),
-                RichDescription.of(this.carbonMessages.commandWhisperArgumentPlayer().component()))
+                RichDescription.of(this.carbonMessages.commandWhisperArgumentPlayer()))
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage().component()))
+                RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage()))
             .permission("carbon.whisper.message")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandWhisperDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandWhisperDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 

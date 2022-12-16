@@ -30,7 +30,6 @@ import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
@@ -87,13 +86,13 @@ public final class CarbonChatFabricModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer(final Injector injector) {
+    public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
         return injector.getInstance(FabricMessageRenderer.class);
     }
 
     @Provides
     @Singleton
-    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> sourcedRenderer(final Injector injector) {
+    public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
         return injector.getInstance(FabricMessageRenderer.class);
     }
 

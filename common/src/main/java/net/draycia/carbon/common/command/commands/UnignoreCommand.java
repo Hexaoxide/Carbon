@@ -74,15 +74,15 @@ public class UnignoreCommand extends CarbonCommand {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             // TODO: Filter, and only show muted players, but allow inputting any player name.
             .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
-                RichDescription.of(this.carbonMessages.commandUnignoreArgumentPlayer().component()))
+                RichDescription.of(this.carbonMessages.commandUnignoreArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.carbonMessages.commandUnignoreArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandUnignoreArgumentUUID()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.ignore.unignore")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandUnignoreDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandUnignoreDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

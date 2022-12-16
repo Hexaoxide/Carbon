@@ -80,10 +80,10 @@ public class ReplyCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(this.carbonMessages.commandReplyArgumentMessage().component()))
+                RichDescription.of(this.carbonMessages.commandReplyArgumentMessage()))
             .permission("carbon.whisper.reply")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReplyDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReplyDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 

@@ -195,7 +195,10 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     @Override
     public boolean equals(final @Nullable Object other) {
-        if (other == null || this.getClass() != other.getClass()) return false;
+        if (other == null || this.getClass() != other.getClass()) {
+            return false;
+        }
+
         final CarbonPlayerPaper that = (CarbonPlayerPaper) other;
 
         return this.carbonPlayerCommon.equals(that.carbonPlayerCommon);
@@ -205,4 +208,5 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     public int hashCode() {
         return this.carbonPlayerCommon.hashCode();
     }
+
 }

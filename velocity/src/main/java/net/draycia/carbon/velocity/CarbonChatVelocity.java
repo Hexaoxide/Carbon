@@ -35,7 +35,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.Component;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -162,7 +162,7 @@ public class CarbonChatVelocity implements CarbonChat {
     }
 
     @Override
-    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
+    public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
         return this.injector.getInstance(VelocityMessageRenderer.class);
     }
 

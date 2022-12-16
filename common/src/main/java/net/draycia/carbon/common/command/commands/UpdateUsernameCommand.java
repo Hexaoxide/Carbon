@@ -75,15 +75,15 @@ public class UpdateUsernameCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(CarbonPlayerArgument.builder("player").withMessages(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
-                RichDescription.of(this.messageService.commandUpdateUsernameArgumentPlayer().component()))
+                RichDescription.of(this.messageService.commandUpdateUsernameArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.messageService.commandUpdateUsernameArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.messageService.commandUpdateUsernameArgumentUUID()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.updateusername")
             .senderType(Commander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandUpdateUsernameDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandUpdateUsernameDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 CarbonPlayer target;

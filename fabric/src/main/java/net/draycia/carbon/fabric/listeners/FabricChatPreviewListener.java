@@ -28,10 +28,8 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.fabric.CarbonChatFabric;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -129,13 +127,13 @@ public class FabricChatPreviewListener implements ChatDecorator {
         }
 
         // start here
-        var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+        var renderedMessage = chatEvent.message();
 
         for (final var renderer : chatEvent.renderers()) {
-            renderedMessage = renderer.render(sender, sender, renderedMessage.component(), chatEvent.message());
+            renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
         }
 
-        final Component mojangComponent = FabricAudiences.nonWrappingSerializer().serialize(renderedMessage.component());
+        final Component mojangComponent = FabricAudiences.nonWrappingSerializer().serialize(renderedMessage);
 
         return CompletableFuture.completedFuture(mojangComponent);
         // TODO: recipients?

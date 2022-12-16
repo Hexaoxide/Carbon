@@ -31,7 +31,6 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -188,7 +187,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     @Override
-    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
+    public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
         return this.injector.getInstance(FabricMessageRenderer.class);
     }
 

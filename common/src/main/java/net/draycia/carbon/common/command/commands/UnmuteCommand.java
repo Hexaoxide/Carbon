@@ -73,15 +73,15 @@ public class UnmuteCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
-                RichDescription.of(this.carbonMessages.commandUnmuteArgumentPlayer().component()))
+                RichDescription.of(this.carbonMessages.commandUnmuteArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.carbonMessages.commandUnmuteArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandUnmuteArgumentUUID()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.unmute")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandUnmuteDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandUnmuteDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
