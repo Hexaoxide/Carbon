@@ -22,8 +22,8 @@ package net.draycia.carbon.fabric.command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.fabric.argument.server.SinglePlayerSelectorArgument;
-import cloud.commandframework.fabric.data.SinglePlayerSelector;
+import cloud.commandframework.fabric.argument.server.MultiplePlayerSelectorArgument;
+import cloud.commandframework.fabric.data.MultiplePlayerSelector;
 import cloud.commandframework.types.tuples.Pair;
 import com.google.inject.Inject;
 import java.util.Arrays;
@@ -83,37 +83,38 @@ public class DeleteMessageCommand extends CarbonCommand {
     @Override
     public void init() {
         final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .permission("carbon.deletemessage");
+            .permission("carbon.deletemessage")
+            .argument(MultiplePlayerSelectorArgument.of("recipients"));
 
-        // todo: might be better to have one command with a MultiplePlayerSelector argument?
-        final var forPlayer = root
-            .argument(SinglePlayerSelectorArgument.of("recipient"))
+        final var specificMessage = root
             .argument(this.commandManager.argumentBuilder(MessageSignature.class, "message")
-                .withParser((context, inputQueue) -> result(inputQueue, pairs(target(context))))
-                .withSuggestionsProvider((context, input) -> messageIdStrings(target(context)).toList()))
+                .withParser((context, inputQueue) -> result(inputQueue, allPairs(playerList(context))))
+                .withSuggestionsProvider((context, input) -> allMessageIdStrings(playerList(context))))
             .handler(context -> {
-                final ServerPlayer target = target(context);
-                final MessageSignatureCache messageSignatureCache = messageSignatureCache(target);
                 final MessageSignature messageSignature = context.get("message");
-                target.connection.send(new ClientboundDeleteChatPacket(messageSignature.pack(messageSignatureCache)));
-            })
-            .build();
-        this.commandManager.command(forPlayer);
-
-        final var global = root.literal("all")
-            .argument(this.commandManager.argumentBuilder(MessageSignature.class, "message")
-                .withParser((context, inputQueue) -> result(inputQueue, allPairs(((FabricCommander) context.getSender()).commandSourceStack().getServer().getPlayerList())))
-                .withSuggestionsProvider((context, input) -> allMessageIdStrings(((FabricCommander) context.getSender()).commandSourceStack().getServer().getPlayerList())))
-            .handler(context -> {
-                final PlayerList playerList = ((FabricCommander) context.getSender()).commandSourceStack().getServer().getPlayerList();
-                final MessageSignature messageSignature = context.get("message");
-                for (final ServerPlayer player : playerList.getPlayers()) {
+                for (final ServerPlayer player : context.<MultiplePlayerSelector>get("recipients").get()) {
                     final MessageSignatureCache messageSignatureCache = messageSignatureCache(player);
                     player.connection.send(new ClientboundDeleteChatPacket(messageSignature.pack(messageSignatureCache)));
                 }
             })
             .build();
-        this.commandManager.command(global);
+        this.commandManager.command(specificMessage);
+
+        final var allMessages = root
+            .literal("all")
+            .handler(context -> {
+                final List<MessageSignature> all = allPairs(playerList(context)).map(Pair::getFirst).toList();
+                for (final ServerPlayer player : context.<MultiplePlayerSelector>get("recipients").get()) {
+                    final MessageSignatureCache messageSignatureCache = messageSignatureCache(player);
+                    all.forEach(messageSignature -> player.connection.send(new ClientboundDeleteChatPacket(messageSignature.pack(messageSignatureCache))));
+                }
+            })
+            .build();
+        this.commandManager.command(allMessages);
+    }
+
+    private static PlayerList playerList(final CommandContext<Commander> ctx) {
+        return ((FabricCommander) ctx.getSender()).commandSourceStack().getServer().getPlayerList();
     }
 
     private static ArgumentParseResult<MessageSignature> result(final Queue<String> inputQueue, final Stream<Pair<MessageSignature, UUID>> stream) {
@@ -131,9 +132,7 @@ public class DeleteMessageCommand extends CarbonCommand {
     }
 
     private static Stream<Pair<MessageSignature, UUID>> pairs(final ServerPlayer player) {
-        return Arrays.stream(((MessageSignatureCacheAccessor) messageSignatureCache(player)).access$entries())
-            .filter(Objects::nonNull)
-            .map(e -> Pair.of(e, UUID.nameUUIDFromBytes(e.bytes())));
+        return entryStream(messageSignatureCache(player)).map(messageSignature -> Pair.of(messageSignature, uuid(messageSignature)));
     }
 
     private static List<String> allMessageIdStrings(final PlayerList playerList) {
@@ -144,19 +143,21 @@ public class DeleteMessageCommand extends CarbonCommand {
     }
 
     private static Stream<String> messageIdStrings(final ServerPlayer player) {
-        return Arrays.stream(((MessageSignatureCacheAccessor) messageSignatureCache(player)).access$entries())
-            .filter(Objects::nonNull)
-            .map(e -> UUID.nameUUIDFromBytes(e.bytes()))
+        return entryStream(messageSignatureCache(player))
+            .map(DeleteMessageCommand::uuid)
             .map(UUID::toString);
+    }
+
+    private static UUID uuid(final MessageSignature messageSignature) {
+        return UUID.nameUUIDFromBytes(messageSignature.bytes());
+    }
+
+    private static Stream<MessageSignature> entryStream(final MessageSignatureCache cache) {
+        return Arrays.stream(((MessageSignatureCacheAccessor) cache).access$entries()).filter(Objects::nonNull);
     }
 
     private static MessageSignatureCache messageSignatureCache(final ServerPlayer target) {
         return ((ServerGamePacketListenerImplAccess) target.connection).accessor$messageSignatureCache();
-    }
-
-    private static ServerPlayer target(final CommandContext<Commander> context) {
-        final SinglePlayerSelector selector = context.get("recipient");
-        return selector.getSingle();
     }
 
 }

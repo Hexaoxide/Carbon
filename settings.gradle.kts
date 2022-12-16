@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     maven("https://repo.jpenilla.xyz/snapshots/") {
       mavenContent {
         snapshotsOnly()
-        includeGroup("cloud.commandframework")
+        includeModule("cloud.commandframework", "cloud-sponge")
       }
     }
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {

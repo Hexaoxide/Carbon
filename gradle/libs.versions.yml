@@ -14,7 +14,8 @@ versions:
   licenser: 0.6.1
   shadow: 7.1.2
   adventure: 4.12.0
-  cloud: 1.8.0-SNAPSHOT
+  cloud: 1.8.0
+  cloudSponge: 1.8.0-SNAPSHOT
   configurate: 4.1.2
   typesafeConfig: 1.4.1
   checkerQual: 3.28.0
@@ -131,6 +132,7 @@ dependencies:
   cloudSponge:
     group: cloud.commandframework
     name: cloud-sponge
+    version: { ref: cloudSponge }
   cloudVelocity:
     group: cloud.commandframework
     name: cloud-velocity
