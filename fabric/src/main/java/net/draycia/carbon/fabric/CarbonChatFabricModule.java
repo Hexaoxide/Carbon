@@ -38,9 +38,11 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
+import net.draycia.carbon.fabric.command.FabricPlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -67,7 +69,12 @@ public final class CarbonChatFabricModule extends AbstractModule {
     public CommandManager<Commander> commandManager() {
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
             AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
-            FabricCommander::from,
+            commandSourceStack -> {
+                if (commandSourceStack.getEntity() instanceof ServerPlayer) {
+                    return new FabricPlayerCommander(this.carbonChat, commandSourceStack);
+                }
+                return FabricCommander.from(commandSourceStack);
+            },
             commander -> ((FabricCommander) commander).commandSourceStack()
         );
 
