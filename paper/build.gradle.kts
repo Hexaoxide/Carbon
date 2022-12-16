@@ -6,6 +6,8 @@ plugins {
 
 dependencies {
   implementation(projects.carbonchatCommon)
+  implementation(projects.carbonchatPaper.internalsAccessorApi)
+  runtimeOnly(project(":carbonchat-paper:internals-accessor-impl", "reobf"))
 
   // Server
   compileOnly(libs.paperApi)
