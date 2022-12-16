@@ -85,6 +85,7 @@ public class DeleteMessageCommand extends CarbonCommand {
         final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.deletemessage");
 
+        // todo: might be better to have one command with a MultiplePlayerSelector argument?
         final var forPlayer = root
             .argument(SinglePlayerSelectorArgument.of("recipient"))
             .argument(this.commandManager.argumentBuilder(MessageSignature.class, "message")
