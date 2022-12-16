@@ -59,9 +59,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.util.TriState;
 import net.kyori.moonshine.message.IMessageRenderer;
-import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.MessageSignature;
@@ -90,7 +88,6 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private @MonotonicNonNull CarbonServerFabric carbonServerFabric;
     private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
-    private TriState luckPermsLoaded = TriState.NOT_SET;
     private final UUID serverId = UUID.randomUUID();
 
     public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
@@ -236,16 +233,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     public boolean luckPermsLoaded() {
-        if (this.luckPermsLoaded == TriState.NOT_SET) {
-            try {
-                LuckPermsProvider.get();
-                this.luckPermsLoaded = TriState.TRUE;
-            } catch (final NoClassDefFoundError exception) {
-                this.luckPermsLoaded = TriState.FALSE;
-            }
-        }
-
-        return this.luckPermsLoaded == TriState.TRUE;
+        return FabricLoader.getInstance().isModLoaded("luckperms");
     }
 
 }

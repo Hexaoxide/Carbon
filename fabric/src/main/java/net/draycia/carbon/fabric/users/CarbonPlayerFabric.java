@@ -162,10 +162,6 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public boolean hasPermission(final String permission) {
-        if (!this.carbonChatFabric.luckPermsLoaded()) {
-            return true;
-        }
-
         return this.player()
             .map(player -> Permissions.check(player, permission, player.server.getOperatorUserPermissionLevel()))
             .orElse(false);
