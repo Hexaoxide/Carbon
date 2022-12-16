@@ -123,7 +123,9 @@ public class NicknameCommand extends CarbonCommand {
                         @Nullable Component cached = null;
                     };
                     final Supplier<Component> lazyNickname = () -> {
-                        if (ref.cached != null) return ref.cached;
+                        if (ref.cached != null) {
+                            return ref.cached;
+                        }
 
                         ref.cached = ConfigChatChannel.parseMessageTags(sender, handler.flags().get("nickname"));
                         return ref.cached;

@@ -143,11 +143,25 @@ public final class BasicChatChannel implements ChatChannel {
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof BasicChatChannel otherChannel)) return false;
-        if (!(otherChannel.commandName().equals(this.commandName()))) return false;
-        if (!(Objects.equals(otherChannel.quickPrefix(), this.quickPrefix()))) return false;
-        if (!(Objects.equals(otherChannel.permission(), this.permission()))) return false;
-        if (otherChannel.radius() != this.radius()) return false;
+        if (!(other instanceof BasicChatChannel otherChannel)) {
+            return false;
+        }
+
+        if (!(otherChannel.commandName().equals(this.commandName()))) {
+            return false;
+        }
+
+        if (!(Objects.equals(otherChannel.quickPrefix(), this.quickPrefix()))) {
+            return false;
+        }
+
+        if (!(Objects.equals(otherChannel.permission(), this.permission()))) {
+            return false;
+        }
+
+        if (otherChannel.radius() != this.radius()) {
+            return false;
+        }
 
         return otherChannel.key().equals(this.key());
     }
@@ -156,4 +170,5 @@ public final class BasicChatChannel implements ChatChannel {
     public int hashCode() {
         return Objects.hash(this.commandName(), this.quickPrefix(), this.permission(), this.radius(), this.key());
     }
+
 }
