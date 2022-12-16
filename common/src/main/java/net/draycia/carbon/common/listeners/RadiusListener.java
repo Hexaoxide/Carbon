@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -31,10 +32,11 @@ public class RadiusListener {
 
     @Inject
     public RadiusListener(
-        final CarbonChat carbonChat
+        final CarbonChat carbonChat,
+        final CarbonMessages carbonMessages
     ) {
         carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 0, false, event -> {
-            if (event.chatChannel() == null) {
+            if (event.chatChannel() == null || event.previewing()) {
                 return;
             }
 
@@ -73,6 +75,9 @@ public class RadiusListener {
 
                     return false;
                 });
+            }
+            if (event.recipients().size() <= 2 && event.chatChannel().emptyRadiusRecipientsMessage()) { // the player and cosole
+                carbonMessages.emptyRecipients(event.sender());
             }
         });
     }

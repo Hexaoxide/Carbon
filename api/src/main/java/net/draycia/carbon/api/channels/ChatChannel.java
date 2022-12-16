@@ -132,6 +132,14 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     double radius();
 
     /**
+     * If the empty receipt message should be sent to the sender.
+     *
+     * @return Returns true if the channel should display a message when a player is out of range.
+     * @since 2.1.0
+     */
+    boolean emptyRadiusRecipientsMessage();
+
+    /**
      * Represents the result of a channel permission check.
      *
      * @since 2.0.0

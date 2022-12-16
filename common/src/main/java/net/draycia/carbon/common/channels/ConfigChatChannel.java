@@ -110,6 +110,12 @@ public final class ConfigChatChannel implements ChatChannel {
         """)
     private int radius = -1;
 
+    @Comment("""
+        If true, players will be able to see if they're not sending messages to anyone
+        because they're out of range from the radius.
+        """)
+    private boolean emptyRadiusRecipientsMessage = true;
+
     private transient @Nullable ConfigChannelMessages messageService = null;
 
     @Override
@@ -288,6 +294,11 @@ public final class ConfigChatChannel implements ChatChannel {
     @Override
     public double radius() {
         return this.radius;
+    }
+
+    @Override
+    public boolean emptyRadiusRecipientsMessage() {
+        return this.emptyRadiusRecipientsMessage;
     }
 
     @Override

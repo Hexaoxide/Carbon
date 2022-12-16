@@ -50,6 +50,9 @@ public interface CarbonMessages {
     @Message("channel.change")
     void changedChannels(final Audience audience, final String channel);
 
+    @Message("channel.radius.empty_recipients")
+    void emptyRecipients(final Audience audience);
+
     /*
      * =============================================================
      * =========================== Mutes ===========================
