@@ -39,6 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(RegistryDataLoader.class)
 abstract class RegistryDataLoaderMixin {
+
     @Inject(
         method = "load",
         at = @At(
@@ -69,4 +70,5 @@ abstract class RegistryDataLoaderMixin {
     private static ChatType carbonChatType() {
         return new ChatType(ChatTypeDecoration.withSender("%s"), ChatTypeDecoration.withSender("%s"));
     }
+
 }
