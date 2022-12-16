@@ -21,13 +21,11 @@ package net.draycia.carbon.fabric.command;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
-import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.fabric.argument.server.MultiplePlayerSelectorArgument;
 import cloud.commandframework.fabric.data.MultiplePlayerSelector;
 import cloud.commandframework.types.tuples.Pair;
 import com.google.inject.Inject;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.UUID;
@@ -45,7 +43,6 @@ import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.chat.MessageSignatureCache;
 import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.PlayerList;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -88,13 +85,12 @@ public class DeleteMessageCommand extends CarbonCommand {
 
         final var specificMessage = root
             .argument(this.commandManager.argumentBuilder(MessageSignature.class, "message")
-                .withParser((context, inputQueue) -> result(inputQueue, allPairs(playerList(context))))
-                .withSuggestionsProvider((context, input) -> allMessageIdStrings(playerList(context))))
+                .withParser((context, inputQueue) -> result(inputQueue, context.<MultiplePlayerSelector>get("recipients").get().stream().flatMap(DeleteMessageCommand::pairs).distinct()))
+                .withSuggestionsProvider((context, input) -> context.<MultiplePlayerSelector>get("recipients").get().stream().flatMap(DeleteMessageCommand::messageIdStrings).distinct().toList()))
             .handler(context -> {
                 final MessageSignature messageSignature = context.get("message");
                 for (final ServerPlayer player : context.<MultiplePlayerSelector>get("recipients").get()) {
-                    final MessageSignatureCache messageSignatureCache = messageSignatureCache(player);
-                    player.connection.send(new ClientboundDeleteChatPacket(messageSignature.pack(messageSignatureCache)));
+                    deleteMessage(player, messageSignature);
                 }
             })
             .build();
@@ -103,18 +99,18 @@ public class DeleteMessageCommand extends CarbonCommand {
         final var allMessages = root
             .literal("all")
             .handler(context -> {
-                final List<MessageSignature> all = allPairs(playerList(context)).map(Pair::getFirst).toList();
                 for (final ServerPlayer player : context.<MultiplePlayerSelector>get("recipients").get()) {
-                    final MessageSignatureCache messageSignatureCache = messageSignatureCache(player);
-                    all.forEach(messageSignature -> player.connection.send(new ClientboundDeleteChatPacket(messageSignature.pack(messageSignatureCache))));
+                    entryStream(messageSignatureCache(player))
+                        .forEach(messageSignature -> deleteMessage(player, messageSignature));
                 }
             })
             .build();
         this.commandManager.command(allMessages);
     }
 
-    private static PlayerList playerList(final CommandContext<Commander> ctx) {
-        return ((FabricCommander) ctx.getSender()).commandSourceStack().getServer().getPlayerList();
+    private static void deleteMessage(final ServerPlayer player, final MessageSignature messageSignature) {
+        final MessageSignatureCache messageSignatureCache = messageSignatureCache(player);
+        player.connection.send(new ClientboundDeleteChatPacket(messageSignature.pack(messageSignatureCache)));
     }
 
     private static ArgumentParseResult<MessageSignature> result(final Queue<String> inputQueue, final Stream<Pair<MessageSignature, UUID>> stream) {
@@ -127,19 +123,8 @@ public class DeleteMessageCommand extends CarbonCommand {
             .orElseGet(() -> ArgumentParseResult.failure(new IllegalArgumentException("Could not find message in cache for input '" + inputQueue.peek() + "'.")));
     }
 
-    private static Stream<Pair<MessageSignature, UUID>> allPairs(final PlayerList playerList) {
-        return playerList.getPlayers().stream().flatMap(DeleteMessageCommand::pairs).distinct();
-    }
-
     private static Stream<Pair<MessageSignature, UUID>> pairs(final ServerPlayer player) {
         return entryStream(messageSignatureCache(player)).map(messageSignature -> Pair.of(messageSignature, uuid(messageSignature)));
-    }
-
-    private static List<String> allMessageIdStrings(final PlayerList playerList) {
-        return playerList.getPlayers().stream()
-            .flatMap(DeleteMessageCommand::messageIdStrings)
-            .distinct()
-            .toList();
     }
 
     private static Stream<String> messageIdStrings(final ServerPlayer player) {
