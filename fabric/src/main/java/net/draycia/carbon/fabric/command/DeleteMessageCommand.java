@@ -114,8 +114,8 @@ public class DeleteMessageCommand extends CarbonCommand {
     }
 
     private static ArgumentParseResult<MessageSignature> result(final Queue<String> inputQueue, final Stream<Pair<MessageSignature, UUID>> stream) {
-        return stream.findFirst()
-            .filter(s -> s.getSecond().toString().equals(inputQueue.peek()))
+        return stream.filter(s -> s.getSecond().toString().equals(inputQueue.peek()))
+            .findFirst()
             .map(pair -> {
                 inputQueue.poll();
                 return ArgumentParseResult.success(pair.getFirst());
