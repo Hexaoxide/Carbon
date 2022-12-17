@@ -57,7 +57,7 @@ public class PingHandler {
                         recipient.playSound(configFactory.primaryConfig().pings().sound());
                     }
 
-                    return Component.text(recipientPlayer.username()).color(configFactory.primaryConfig().pings().highlightTextColor());
+                    return Component.text(prefix + matchedText.content()).color(configFactory.primaryConfig().pings().highlightTextColor());
                 })
                 .build());
         });
