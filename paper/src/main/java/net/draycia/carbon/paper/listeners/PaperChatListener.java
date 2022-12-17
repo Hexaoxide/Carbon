@@ -31,6 +31,8 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.paper.CarbonChatPaper;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -39,6 +41,7 @@ import net.kyori.event.EventSubscriber;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -60,6 +63,11 @@ public final class PaperChatListener implements Listener {
     public PaperChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
         this.carbonChat = (CarbonChatPaper) carbonChat;
         this.registry = registry;
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onSpigotChat(final @NonNull AsyncPlayerChatEvent event) {
+        event.setFormat("%2$s");
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -111,22 +119,33 @@ public final class PaperChatListener implements Listener {
             }
         }
 
+        try {
+            event.viewers().clear();
+            event.viewers().addAll(recipients);
+        } catch (final UnsupportedOperationException exception) {
+            exception.printStackTrace();
+        }
+
         event.renderer((source, sourceDisplayName, message, viewer) -> {
             var renderedMessage = chatEvent.message();
+            var recipientUUID = viewer.get(Identity.UUID);
+            final Audience recipientViewer;
+
+            if (recipientUUID.isPresent()) {
+                final var recipientResult = this.carbonChat.server().userManager().carbonPlayer(viewer.get(Identity.UUID).orElseThrow()).join();
+                final @Nullable CarbonPlayer recipient = recipientResult.player();
+
+                recipientViewer = requireNonNullElse(recipient, viewer);
+            } else {
+                recipientViewer = viewer;
+            }
 
             for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, viewer, renderedMessage, renderedMessage);
+                renderedMessage = renderer.render(sender, recipientViewer, renderedMessage, event.originalMessage());
             }
 
             return renderedMessage;
         });
-
-        try {
-            event.viewers().clear();
-            event.viewers().addAll(recipients);
-        } catch (final UnsupportedOperationException ignored) {
-
-        }
     }
 
 }
