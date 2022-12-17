@@ -128,7 +128,7 @@ public final class PaperChatListener implements Listener {
 
         event.renderer((source, sourceDisplayName, message, viewer) -> {
             var renderedMessage = chatEvent.message();
-            var recipientUUID = viewer.get(Identity.UUID);
+            final var recipientUUID = viewer.get(Identity.UUID);
             final Audience recipientViewer;
 
             if (recipientUUID.isPresent()) {
