@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,7 +35,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
@@ -101,7 +104,9 @@ public class JSONUserManager implements UserManager<CarbonPlayerCommon> {
                     if (player == null) {
                         return new ComponentPlayerResult<CarbonPlayerCommon>(null, text("Player file found but was empty."));
                     }
-
+                    player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
+                        .channelRegistry()
+                        .get(channel) == null);
                     this.userCache.put(uuid, player);
 
                     return new ComponentPlayerResult<>(player, empty());
