@@ -77,26 +77,24 @@ public class LeaveCommand extends CarbonCommand {
                 RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage()))
             .permission("carbon.join")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandIgnoreDescription())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandLeaveDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final @Nullable ChatChannel channel = ChannelUtils.locateChannel(handler.get("channel"));
                 if (channel == null) {
-                    // send a message
+                    this.carbonMessages.channelNotFound(sender);
                     return;
                 }
                 if (!channel.speechPermitted(sender).permitted()) {
-                    // send a message
+                    this.carbonMessages.channelNoPermission(sender);
                     return;
                 }
-
                 if (sender.leftChannels().contains(channel.key())) {
-                    // send a message
+                    this.carbonMessages.channelAlreadyLeft(sender);
                     return;
                 }
-                sender.joinChannel(channel);
-                // send a message
-
+                sender.leaveChannel(channel);
+                this.carbonMessages.channelLeft(sender);
             })
             .build();
 

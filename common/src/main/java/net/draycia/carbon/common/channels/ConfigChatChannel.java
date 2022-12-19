@@ -209,7 +209,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return ChannelPermissionResult.allowedIf(empty(), () -> player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this));
+        return ChannelPermissionResult.allowedIf(empty(), () -> player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this.key));
     }
 
     @Override
