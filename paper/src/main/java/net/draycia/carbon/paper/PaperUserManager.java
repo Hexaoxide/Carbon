@@ -155,4 +155,22 @@ public class PaperUserManager implements UserManager<CarbonPlayerPaper>, SaveOnC
         return -1;
     }
 
+    @Override
+    public int addLeftChannel(final UUID id, final Key channel) {
+        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
+            return saveOnChange.addLeftChannel(id, channel);
+        }
+
+        return -1;
+    }
+
+    @Override
+    public int removeLeftChannel(final UUID id, final Key channel) {
+        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
+            return saveOnChange.removeLeftChannel(id, channel);
+        }
+
+        return -1;
+    }
+
 }

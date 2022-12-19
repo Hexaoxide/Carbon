@@ -206,4 +206,14 @@ public final class PostgreSQLUserManager extends AbstractUserManager implements 
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
     }
 
+    @Override
+    public int addLeftChannel(final UUID id, final Key channel) {
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.addLeftChannel(id, channel));
+    }
+
+    @Override
+    public int removeLeftChannel(final UUID id, final Key channel) {
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeLeftChannel(id, channel));
+    }
+
 }

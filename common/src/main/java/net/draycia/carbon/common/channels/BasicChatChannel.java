@@ -114,7 +114,7 @@ public final class BasicChatChannel implements ChatChannel {
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return ChannelPermissionResult.allowed();
+        return ChannelPermissionResult.allowedIf(Component.empty(), () -> !player.leftChannels().contains(this));
     }
 
     @Override

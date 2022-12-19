@@ -128,7 +128,10 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
                     .bind("id", uuid)
                     .mapTo(UUID.class)
                     .forEach(ignoredPlayer -> carbonPlayerCommon.get().ignoredPlayers().add(ignoredPlayer));
-
+                handle.createQuery(this.locator.query("select-leftchannels"))
+                    .bind("id", uuid)
+                    .mapTo(Key.class)
+                    .forEach(channel -> carbonPlayerCommon.get().leftChannels().add(channel));
                 return carbonPlayerCommon.get();
             }));
 
@@ -202,6 +205,16 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
     @Override
     public int removeIgnore(final UUID id, final UUID ignoredPlayer) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
+    }
+
+    @Override
+    public int addLeftChannel(final UUID id, final Key channel) {
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.addLeftChannel(id, channel));
+    }
+
+    @Override
+    public int removeLeftChannel(final UUID id, final Key channel) {
+        return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.removeLeftChannel(id, channel));
     }
 
 }

@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.Jdbi;
@@ -59,7 +60,15 @@ public abstract class AbstractUserManager implements UserManager<CarbonPlayerCom
 
                 batch.execute();
             }
+            if (!player.leftChannels().isEmpty()) {
+                final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-leftchannels"));
 
+                for (final Key leftChannel : player.leftChannels()) {
+                    batch.bind("id", player.uuid()).bind("channel", leftChannel).add();
+                }
+
+                batch.execute();
+            }
             // TODO: save ignoredplayers
             return new ComponentPlayerResult<>(player, empty());
         }));

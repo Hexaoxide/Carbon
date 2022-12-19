@@ -28,6 +28,7 @@ import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -335,4 +336,28 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     boolean awareOf(final CarbonPlayer other);
 
+    /**
+     * A list of all the channels the player has left
+     * using the leave command.
+     *
+     * @return a list of the channels.
+     * @since 2.1.0
+     */
+    List<Key> leftChannels();
+
+    /**
+     * Join a channel for this player if they have left it.
+     *
+     * @param channel the channel to join.
+     * @since 2.1.0
+     */
+    void joinChannel(final ChatChannel channel);
+
+    /**
+     * Leave a channel for this player.
+     *
+     * @param channel the channel to leave.
+     * @since 2.1.0
+     */
+    void leaveChannel(final ChatChannel channel);
 }

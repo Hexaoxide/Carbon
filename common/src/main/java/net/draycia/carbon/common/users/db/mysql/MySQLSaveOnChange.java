@@ -58,4 +58,9 @@ public interface MySQLSaveOnChange extends SaveOnChange {
     @SqlUpdate("DELETE FROM carbon_ignores WHERE id = UNHEX(REPLACE(:id, '-', '')) AND ignoredplayer = UNHEX(REPLACE(:ignoredPlayer, '-', ''))")
     int removeIgnore(final UUID id, final UUID ignoredPlayer);
 
+    @SqlUpdate("INSERT IGNORE INTO carbon_leftchannels (id, channel) VALUES (UNHEX(REPLACE(:id, '-', '')), :channel)")
+    int addLeftChannel(final UUID id, final Key channel);
+
+    @SqlUpdate("DELETE FROM carbon_leftchannels WHERE id = UNHEX(REPLACE(:id, '-', '')) AND channel = :channel")
+    int removeLeftChannel(final UUID id, final Key channel);
 }

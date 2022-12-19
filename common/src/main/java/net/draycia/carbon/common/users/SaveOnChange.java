@@ -47,4 +47,8 @@ public interface SaveOnChange {
 
     int removeIgnore(final UUID id, final UUID ignoredPlayer);
 
+    int addLeftChannel(final UUID id, final Key channel);
+
+    int removeLeftChannel(final UUID id, final Key channel);
+
 }
