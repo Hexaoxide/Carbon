@@ -30,7 +30,6 @@ import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
@@ -38,9 +37,11 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
+import net.draycia.carbon.fabric.command.FabricPlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -67,7 +68,12 @@ public final class CarbonChatFabricModule extends AbstractModule {
     public CommandManager<Commander> commandManager() {
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
             AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
-            FabricCommander::from,
+            commandSourceStack -> {
+                if (commandSourceStack.getEntity() instanceof ServerPlayer) {
+                    return new FabricPlayerCommander(this.carbonChat, commandSourceStack);
+                }
+                return FabricCommander.from(commandSourceStack);
+            },
             commander -> ((FabricCommander) commander).commandSourceStack()
         );
 
@@ -80,13 +86,13 @@ public final class CarbonChatFabricModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer(final Injector injector) {
+    public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
         return injector.getInstance(FabricMessageRenderer.class);
     }
 
     @Provides
     @Singleton
-    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> sourcedRenderer(final Injector injector) {
+    public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
         return injector.getInstance(FabricMessageRenderer.class);
     }
 

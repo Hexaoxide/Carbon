@@ -66,7 +66,7 @@ public class ReloadCommand extends CarbonCommand {
             .literal("reload")
             .permission("carbon.reload")
             .senderType(Commander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReloadDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReloadDescription())
             .handler(handler -> {
                 // TODO: Check if all listeners succeeded
                 this.carbonChat.eventHandler().emit(new CarbonReloadEvent());

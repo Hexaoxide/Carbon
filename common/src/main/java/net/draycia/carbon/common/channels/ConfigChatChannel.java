@@ -30,7 +30,6 @@ import java.util.UUID;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
@@ -110,6 +109,12 @@ public final class ConfigChatChannel implements ChatChannel {
         """)
     private int radius = -1;
 
+    @Comment("""
+        If true, players will be able to see if they're not sending messages to anyone
+        because they're out of range from the radius.
+        """)
+    private boolean emptyRadiusRecipientsMessage = true;
+
     private transient @Nullable ConfigChannelMessages messageService = null;
 
     @Override
@@ -138,7 +143,7 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull RenderedMessage render(
+    public @NotNull Component render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,
@@ -291,12 +296,31 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
+    public boolean emptyRadiusRecipientsMessage() {
+        return this.emptyRadiusRecipientsMessage;
+    }
+
+    @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof BasicChatChannel otherChannel)) return false;
-        if (!(otherChannel.commandName().equals(this.commandName()))) return false;
-        if (!(Objects.equals(otherChannel.quickPrefix(), this.quickPrefix()))) return false;
-        if (!(Objects.equals(otherChannel.permission(), this.permission()))) return false;
-        if (otherChannel.radius() != this.radius()) return false;
+        if (!(other instanceof BasicChatChannel otherChannel)) {
+            return false;
+        }
+
+        if (!(otherChannel.commandName().equals(this.commandName()))) {
+            return false;
+        }
+
+        if (!(Objects.equals(otherChannel.quickPrefix(), this.quickPrefix()))) {
+            return false;
+        }
+
+        if (!(Objects.equals(otherChannel.permission(), this.permission()))) {
+            return false;
+        }
+
+        if (otherChannel.radius() != this.radius()) {
+            return false;
+        }
 
         return otherChannel.key().equals(this.key());
     }
@@ -305,4 +329,5 @@ public final class ConfigChatChannel implements ChatChannel {
     public int hashCode() {
         return Objects.hash(this.commandName(), this.quickPrefix(), this.permission(), this.radius(), this.key());
     }
+
 }

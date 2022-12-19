@@ -20,7 +20,6 @@
 package net.draycia.carbon.fabric.mixin;
 
 import java.util.function.Predicate;
-import net.minecraft.network.chat.ChatSender;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,6 +31,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface PlayerListAccessor {
 
     @Invoker
-    void callBroadcastChatMessage(PlayerChatMessage playerChatMessage, Predicate<ServerPlayer> predicate, ServerPlayer serverPlayer, ChatSender chatSender, ChatType.Bound bound);
+    void callBroadcastChatMessage(PlayerChatMessage playerChatMessage, Predicate<ServerPlayer> predicate, ServerPlayer serverPlayer, ChatType.Bound bound);
 
 }

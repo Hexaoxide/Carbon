@@ -31,7 +31,6 @@ import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
@@ -40,7 +39,7 @@ import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
-import net.draycia.carbon.paper.util.PaperMessageRenderer;
+import net.draycia.carbon.paper.messages.PaperMessageRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -104,13 +103,13 @@ public final class CarbonChatPaperModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer(final Injector injector) {
+    public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
         return injector.getInstance(PaperMessageRenderer.class);
     }
 
     @Provides
     @Singleton
-    public IMessageRenderer<SourcedAudience, String, RenderedMessage, Component> sourcedRenderer(final Injector injector) {
+    public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
         return injector.getInstance(PaperMessageRenderer.class);
     }
 

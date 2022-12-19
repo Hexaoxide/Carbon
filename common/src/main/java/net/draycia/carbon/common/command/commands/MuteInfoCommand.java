@@ -73,15 +73,15 @@ public class MuteInfoCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
-                RichDescription.of(this.carbonMessages.commandMuteInfoArgumentPlayer().component()))
+                RichDescription.of(this.carbonMessages.commandMuteInfoArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.carbonMessages.commandMuteInfoArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandMuteInfoArgumentUUID()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.mute.info")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandMuteInfoDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandMuteInfoDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

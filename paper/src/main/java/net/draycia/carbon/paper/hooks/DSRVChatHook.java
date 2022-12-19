@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.paper.util;
+package net.draycia.carbon.paper.hooks;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -33,12 +33,10 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.util.ChannelUtils;
 import net.draycia.carbon.common.util.DiscordRecipient;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -76,15 +74,18 @@ public class DSRVChatHook implements ChatHook {
                 messageComponent = event.message();
             }
 
-            var renderedMessage = new RenderedMessage(messageComponent, MessageType.CHAT);
-            renderedMessage = keyedRenderer(key("carbon", "discord"), chatChannel).render(carbonPlayer, DiscordRecipient.INSTANCE, renderedMessage.component(), renderedMessage.component());
+            var renderedMessage = keyedRenderer(key("carbon", "discord"), chatChannel).render(carbonPlayer, DiscordRecipient.INSTANCE, messageComponent, messageComponent);
+
             // TODO: Should we bother with any of these renders?
             for (final var renderer : event.renderers()) {
-                if (renderer.key().asString().equals("carbon:default")) continue;
-                renderedMessage = renderer.render(carbonPlayer, carbonPlayer, renderedMessage.component(), renderedMessage.component());
+                if (renderer.key().asString().equals("carbon:default")) {
+                    continue;
+                }
+
+                renderedMessage = renderer.render(carbonPlayer, carbonPlayer, renderedMessage, renderedMessage);
             }
 
-            final var messageContents = PlainTextComponentSerializer.plainText().serialize(renderedMessage.component());
+            final var messageContents = PlainTextComponentSerializer.plainText().serialize(renderedMessage);
             Component eventMessage = ConfigChatChannel.parseMessageTags(carbonPlayer, messageContents);
 
             if (carbonPlayer.hasPermission("carbon.chatlinks")) {
@@ -107,7 +108,10 @@ public class DSRVChatHook implements ChatHook {
         DiscordSRV.api.subscribe(new Object() {
             @Subscribe
             public void handle(final GameChatMessagePreProcessEvent event) {
-                if (event.getTriggeringBukkitEvent() == null) return;
+                if (event.getTriggeringBukkitEvent() == null) {
+                    return;
+                }
+
                 event.setCancelled(true);
             }
         });

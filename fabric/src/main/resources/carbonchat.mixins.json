@@ -4,9 +4,10 @@
   "package": "net.draycia.carbon.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ChatTypeMixin",
-    "PlayerListMixin",
+    "MessageSignatureCacheAccessor",
     "PlayerListAccessor",
+    "PlayerListMixin",
+    "RegistryDataLoaderMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin"
   ],

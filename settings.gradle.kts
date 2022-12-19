@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     maven("https://repo.jpenilla.xyz/snapshots/") {
       mavenContent {
         snapshotsOnly()
-        includeGroup("cloud.commandframework")
+        includeModule("cloud.commandframework", "cloud-sponge")
       }
     }
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
@@ -23,7 +23,7 @@ dependencyResolutionManagement {
       mavenContent { snapshotsOnly() }
     }
     // PaperMC
-    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     // Sponge API
     maven("https://repo.spongepowered.org/repository/maven-public/")
     // Velocity Proxy for run config
@@ -55,7 +55,6 @@ dependencyResolutionManagement {
     // DiscordSRV
     maven("https://m2.dv8tion.net/releases")
     maven("https://nexus.scarsz.me/content/groups/public/")
-    mavenLocal()
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -83,8 +82,8 @@ sequenceOf(
   "common",
   "paper",
   // "sponge", // TODO API 10
-  // "fabric", // TODO 1.19.3
-  "velocity"
+  "fabric",
+  // "velocity"
 ).forEach {
   include("carbonchat-$it")
   project(":carbonchat-$it").projectDir = file(it)

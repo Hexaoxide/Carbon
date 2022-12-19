@@ -20,6 +20,7 @@
 package net.draycia.carbon.fabric.mixin;
 
 import cloud.commandframework.types.tuples.Pair;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
@@ -45,6 +46,8 @@ abstract class PlayerListMixin {
 
     @Shadow
     public abstract void broadcastSystemMessage(Component component, boolean bool);
+
+    @Shadow @Final private List<ServerPlayer> players;
 
     public Map<Thread, Pair<Component, Boolean>> carbon$joinMsg = new ConcurrentHashMap<>();
 

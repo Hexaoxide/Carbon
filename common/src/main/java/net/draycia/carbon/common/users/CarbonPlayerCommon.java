@@ -353,7 +353,9 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean equals(final @Nullable Object other) {
-        if (other == null || this.getClass() != other.getClass()) return false;
+        if (other == null || this.getClass() != other.getClass()) {
+            return false;
+        }
 
         return this.uuid.equals(((CarbonPlayerCommon) other).uuid);
     }

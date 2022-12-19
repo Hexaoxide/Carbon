@@ -48,7 +48,6 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
@@ -58,7 +57,6 @@ import net.draycia.carbon.common.events.ChannelRegisterEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -334,16 +332,16 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             return;
         }
 
-        var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+        var renderedMessage = chatEvent.message();
 
         for (final var renderer : chatEvent.renderers()) {
-            renderedMessage = renderer.render(sender, sender, renderedMessage.component(), chatEvent.message());
+            renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
         }
 
         final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
 
         for (final Audience recipient : chatEvent.recipients()) {
-            recipient.sendMessage(identity, renderedMessage.component(), renderedMessage.messageType());
+            recipient.sendMessage(identity, renderedMessage);
         }
 
         final @Nullable PacketService packetService = this.carbonChat.packetService();

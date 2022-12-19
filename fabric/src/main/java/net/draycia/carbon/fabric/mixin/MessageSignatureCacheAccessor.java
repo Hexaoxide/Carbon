@@ -17,16 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.util;
+package net.draycia.carbon.fabric.mixin;
 
-import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.text.Component;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.MessageSignatureCache;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * A message that's been rendered.
- *
- * @since 2.0.0
- */
-public record RenderedMessage(Component component, MessageType messageType) {
+@Mixin(MessageSignatureCache.class)
+public interface MessageSignatureCacheAccessor {
+
+    @Accessor("entries")
+    @Final
+    MessageSignature[] access$entries();
 
 }

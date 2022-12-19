@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -69,11 +70,9 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public @Nullable Locale locale() {
-        if (this.player().isEmpty()) {
-            return Locale.getDefault();
-        }
-
-        return this.player().get().get(Identity.LOCALE).orElse(Locale.getDefault());
+        return this.player()
+            .flatMap(player -> player.get(Identity.LOCALE))
+            .orElseGet(Locale::getDefault);
     }
 
     @Override
@@ -161,11 +160,9 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public boolean hasPermission(final String permission) {
-        if (!this.carbonChatFabric.luckPermsLoaded()) {
-            return true;
-        }
-
-        return this.carbonPlayerCommon().hasPermission(permission);
+        return this.player()
+            .map(player -> Permissions.check(player, permission, player.server.getOperatorUserPermissionLevel()))
+            .orElse(false);
     }
 
     @Override

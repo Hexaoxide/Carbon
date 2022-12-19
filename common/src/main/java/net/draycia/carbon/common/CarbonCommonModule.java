@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
@@ -81,7 +80,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final BooleanPlaceholderResolver<Audience> booleanPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageSender carbonMessageSender,
-        final IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer
+        final IMessageRenderer<Audience, String, Component, Component> messageRenderer
     ) throws UnscannableMethodException {
         return Moonshine.<CarbonMessages, Audience>builder(new TypeToken<>() {})
             .receiverLocatorResolver(receiverResolver, 0)

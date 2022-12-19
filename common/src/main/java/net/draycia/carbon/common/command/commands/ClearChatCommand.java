@@ -71,7 +71,7 @@ public class ClearChatCommand extends CarbonCommand {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.clearchat.clear")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandClearChatDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandClearChatDescription())
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?

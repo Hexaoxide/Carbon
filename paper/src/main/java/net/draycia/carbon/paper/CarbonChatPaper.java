@@ -35,7 +35,6 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -44,11 +43,11 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
+import net.draycia.carbon.paper.hooks.DSRVChatHook;
 import net.draycia.carbon.paper.listeners.DiscordMessageListener;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
-import net.draycia.carbon.paper.util.DSRVChatHook;
-import net.draycia.carbon.paper.util.PaperMessageRenderer;
+import net.draycia.carbon.paper.messages.PaperMessageRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -204,7 +203,7 @@ public final class CarbonChatPaper extends JavaPlugin implements CarbonChat {
     }
 
     @Override
-    public IMessageRenderer<Audience, String, RenderedMessage, Component> messageRenderer() {
+    public IMessageRenderer<Audience, String, Component, Component> messageRenderer() {
         return this.injector.getInstance(PaperMessageRenderer.class);
     }
 

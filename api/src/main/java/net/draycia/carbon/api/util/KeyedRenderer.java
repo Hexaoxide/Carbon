@@ -56,7 +56,7 @@ public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
     record Impl(Key key, ChatComponentRenderer renderer) implements KeyedRenderer {
 
         @Override
-        public @NotNull RenderedMessage render(
+        public @NotNull Component render(
             final CarbonPlayer sender,
             final Audience recipient,
             final Component message,

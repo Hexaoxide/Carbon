@@ -19,15 +19,10 @@
  */
 package net.draycia.carbon.fabric;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonChat;
@@ -36,7 +31,6 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.RenderedMessage;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -59,12 +53,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.util.TriState;
 import net.kyori.moonshine.message.IMessageRenderer;
-import net.luckperms.api.LuckPermsProvider;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -90,14 +81,9 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private @MonotonicNonNull CarbonServerFabric carbonServerFabric;
     private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
-    private TriState luckPermsLoaded = TriState.NOT_SET;
     private final UUID serverId = UUID.randomUUID();
 
-    public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registry.CHAT_TYPE_REGISTRY, new ResourceLocation("carbon", "chat"));
-
-    private static final Cache<UUID, MessageSignature> messageSignatures = CacheBuilder.newBuilder()
-        .maximumSize(10)
-        .build();
+    public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
 
     private @MonotonicNonNull MessagingManager messagingManager = null;
 
@@ -132,28 +118,6 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
-    }
-
-    public static void addMessageSignature(final UUID uuid, final MessageSignature messageSignature) {
-        messageSignatures.put(uuid, messageSignature);
-    }
-
-    public static @Nullable MessageSignature messageSignature(final UUID uuid) {
-        return messageSignatures.getIfPresent(uuid);
-    }
-
-    public static Set<UUID> messageIds() {
-        return messageSignatures.asMap().keySet();
-    }
-
-    public static List<String> messageIdSuggestions() {
-        final List<String> suggestions = new ArrayList<>();
-
-        for (final UUID messageId : messageSignatures.asMap().keySet()) {
-            suggestions.add(messageId.toString());
-        }
-
-        return suggestions;
     }
 
     private void registerChatListener() {
@@ -223,7 +187,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     @Override
-    public <T extends Audience> IMessageRenderer<T, String, RenderedMessage, Component> messageRenderer() {
+    public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
         return this.injector.getInstance(FabricMessageRenderer.class);
     }
 
@@ -236,16 +200,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     public boolean luckPermsLoaded() {
-        if (this.luckPermsLoaded == TriState.NOT_SET) {
-            try {
-                LuckPermsProvider.get();
-                this.luckPermsLoaded = TriState.TRUE;
-            } catch (final NoClassDefFoundError exception) {
-                this.luckPermsLoaded = TriState.FALSE;
-            }
-        }
-
-        return this.luckPermsLoaded == TriState.TRUE;
+        return FabricLoader.getInstance().isModLoaded("luckperms");
     }
 
 }

@@ -30,7 +30,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.Component;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -153,23 +153,23 @@ public final class SpongeChatListener {
 
         if (sender.hasPermission("carbon.hideidentity")) {
             for (final var recipient : chatEvent.recipients()) {
-                var renderedMessage = new RenderedMessage(chatEvent.message(), MessageType.CHAT);
+                var renderedMessage = new Component(chatEvent.message(), MessageType.CHAT);
 
                 for (final var renderer : chatEvent.renderers()) {
                     try {
                         if (recipient instanceof Player player) {
                             final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(player.uniqueId()).join();
 
-                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage.component(), chatEvent.message());
+                            renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage, chatEvent.message());
                         } else {
-                            renderedMessage = renderer.render(sender, recipient, renderedMessage.component(), chatEvent.message());
+                            renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
                         }
                     } catch (final Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                recipient.sendMessage(Identity.nil(), renderedMessage.component(), renderedMessage.messageType());
+                recipient.sendMessage(Identity.nil(), renderedMessage);
             }
         } else {
             event.setChatFormatter((player, target, msg, originalMessage) -> {
@@ -178,9 +178,9 @@ public final class SpongeChatListener {
                 for (final var renderer : chatEvent.renderers()) {
                     if (target instanceof ServerPlayer serverPlayer) {
                         final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChat.server().userManager().carbonPlayer(serverPlayer.uniqueId()).join();
-                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, msg).component();
+                        component = renderer.render(playerResult.player(), targetPlayer.player(), component, msg);
                     } else {
-                        component = renderer.render(playerResult.player(), target, component, msg).component();
+                        component = renderer.render(playerResult.player(), target, component, msg);
                     }
                 }
 

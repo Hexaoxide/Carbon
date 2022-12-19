@@ -80,10 +80,10 @@ public class ContinueCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(this.carbonMessages.commandContinueArgumentMessage().component()))
+                RichDescription.of(this.carbonMessages.commandContinueArgumentMessage()))
             .permission("carbon.whisper.continue")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandContinueDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandContinueDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 

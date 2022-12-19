@@ -26,5 +26,7 @@ public final class DiscordRecipient implements Audience {
     public static final DiscordRecipient INSTANCE = new DiscordRecipient();
 
     private DiscordRecipient() {
+
     }
+
 }

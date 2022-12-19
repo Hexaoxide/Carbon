@@ -73,15 +73,15 @@ public class IgnoreCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
-                RichDescription.of(this.carbonMessages.commandIgnoreArgumentPlayer().component()))
+                RichDescription.of(this.carbonMessages.commandIgnoreArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.carbonMessages.commandIgnoreArgumentUUID().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandIgnoreArgumentUUID()))
                 .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.ignore")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandIgnoreDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandIgnoreDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;

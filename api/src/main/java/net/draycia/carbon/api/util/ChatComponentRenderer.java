@@ -48,7 +48,7 @@ public interface ChatComponentRenderer {
      * @since 2.0.0
      */
     @NotNull
-    RenderedMessage render(final CarbonPlayer sender,
+    Component render(final CarbonPlayer sender,
                      final Audience recipient,
                      final Component message,
                      final Component originalMessage);

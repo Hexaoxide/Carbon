@@ -23,9 +23,8 @@ import com.google.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.draycia.carbon.api.util.RenderedMessage;
+import net.draycia.carbon.api.util.Component;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
@@ -38,7 +37,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class VelocityMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, RenderedMessage, Component> {
+public class VelocityMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
 
     private final ConfigFactory configFactory;
 
@@ -48,7 +47,7 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
     }
 
     @Override
-    public RenderedMessage render(
+    public Component render(
         final T receiver,
         final String intermediateMessage,
         final Map<String, ? extends Component> resolvedPlaceholders,
@@ -80,7 +79,7 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
             messageType = MessageType.SYSTEM;
         }
 
-        return new RenderedMessage(message, messageType);
+        return new Component(message, messageType);
     }
 
 }

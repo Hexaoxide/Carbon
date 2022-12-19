@@ -77,13 +77,13 @@ public class NicknameCommand extends CarbonCommand {
             // TODO: Allow UUID input for target player
             .flag(this.commandManager.flagBuilder("player")
                 .withAliases("p")
-                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer()))
                 .withArgument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional())
                 .withPermission(Permission.of("carbon.nickname.others"))
             )
             .flag(this.commandManager.flagBuilder("nickname")
                 .withAliases("n")
-                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname()))
                 .withArgument(FlagArgument.<Commander, String>ofType(String.class, "value")
                     .withParser(new OptionValueParser<>())
                     .asOptional()
@@ -92,12 +92,12 @@ public class NicknameCommand extends CarbonCommand {
             )
             .flag(this.commandManager.flagBuilder("reset")
                 .withAliases("r")
-                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentReset().component()))
+                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentReset()))
                 .withPermission(Permission.of("carbon.nickname.set"))
             )
             .permission("carbon.nickname")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameDescription().component())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
 
@@ -123,7 +123,9 @@ public class NicknameCommand extends CarbonCommand {
                         @Nullable Component cached = null;
                     };
                     final Supplier<Component> lazyNickname = () -> {
-                        if (ref.cached != null) return ref.cached;
+                        if (ref.cached != null) {
+                            return ref.cached;
+                        }
 
                         ref.cached = ConfigChatChannel.parseMessageTags(sender, handler.flags().get("nickname"));
                         return ref.cached;
