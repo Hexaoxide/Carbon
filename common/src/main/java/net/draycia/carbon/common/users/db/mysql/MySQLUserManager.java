@@ -21,7 +21,6 @@ package net.draycia.carbon.common.users.db.mysql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
-
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -135,7 +133,7 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
                     .bind("id", uuid)
                     .mapTo(Key.class)
                     .forEach(channel -> {
-                        @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
+                        final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
                             .channelRegistry()
                             .get(channel);
                         if (chatChannel == null) {

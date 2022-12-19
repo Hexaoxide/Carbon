@@ -73,8 +73,13 @@ public class LeaveCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(StringArgument.greedy("channel"),
-                RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage()))
+            .argument(StringArgument.<Commander>builder("channel").greedy().withSuggestionsProvider((context, s) -> {
+                final CarbonPlayer sender = ((PlayerCommander) context.getSender()).carbonPlayer();
+                return this.carbonChat.channelRegistry().stream()
+                    .filter(x -> !sender.leftChannels().contains(x.key()) && x.speechPermitted(sender).permitted())
+                    .map(x -> x.key().value())
+                    .toList();
+            }), RichDescription.of(this.carbonMessages.commandLeaveDescription()))
             .permission("carbon.join")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandLeaveDescription())

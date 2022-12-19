@@ -73,8 +73,10 @@ public class JoinCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(StringArgument.greedy("channel"),
-                RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage()))
+            .argument(StringArgument.<Commander>builder("channel").greedy().withSuggestionsProvider((context, s) -> {
+                final CarbonPlayer sender = ((PlayerCommander) context.getSender()).carbonPlayer();
+                return sender.leftChannels().stream().map(Key::value).toList();
+            }), RichDescription.of(this.carbonMessages.commandJoinDescription()))
             .permission("carbon.join")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandJoinDescription())

@@ -399,7 +399,10 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                     this.carbonMessages.muteCannotSpeak(sender);
                     return;
                 }
-
+                if (sender.leftChannels().contains(channelKey) && chatChannel != null) {
+                    sender.joinChannel(chatChannel);
+                    this.carbonMessages.channelJoined(sender);
+                }
                 if (handler.contains("message")) {
                     final String message = handler.get("message");
 

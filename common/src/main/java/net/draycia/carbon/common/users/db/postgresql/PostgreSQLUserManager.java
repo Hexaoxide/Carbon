@@ -126,7 +126,7 @@ public final class PostgreSQLUserManager extends AbstractUserManager implements 
                         .bind("id", uuid)
                         .mapTo(Key.class)
                         .forEach(channel -> {
-                            @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
+                            final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
                                 .channelRegistry()
                                 .get(channel);
                             if (chatChannel == null) {
