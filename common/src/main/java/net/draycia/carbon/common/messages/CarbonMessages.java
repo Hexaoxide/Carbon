@@ -49,6 +49,24 @@ public interface CarbonMessages {
     @Message("channel.radius.empty_recipients")
     void emptyRecipients(final Audience audience);
 
+    @Message("channel.not_found")
+    void channelNotFound(final Audience audience);
+
+    @Message("channel.not_left")
+    void channelNotLeft(final Audience audience);
+
+    @Message("channel.already_left")
+    void channelAlreadyLeft(final Audience audience);
+
+    @Message("channel.no_permission")
+    void channelNoPermission(final Audience audience);
+
+    @Message("channel.left")
+    void channelLeft(final Audience audience);
+
+    @Message("channel.joined")
+    void channelJoined(final Audience audience);
+
     /*
      * =============================================================
      * =========================== Mutes ===========================
@@ -274,6 +292,12 @@ public interface CarbonMessages {
 
     @Message("command.ignore.description")
     Component commandIgnoreDescription();
+
+    @Message("command.join.description")
+    Component commandJoinDescription();
+
+    @Message("command.leave.description")
+    Component commandLeaveDescription();
 
     @Message("command.mute.argument.player")
     Component commandMuteArgumentPlayer();

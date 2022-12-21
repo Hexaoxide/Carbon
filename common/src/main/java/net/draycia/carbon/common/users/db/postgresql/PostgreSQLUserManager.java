@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -121,6 +122,18 @@ public final class PostgreSQLUserManager extends AbstractUserManager implements 
                         .mapTo(UUID.class)
                         .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
 
+                    handle.createQuery(this.locator.query("select-leftchannels"))
+                        .bind("id", uuid)
+                        .mapTo(Key.class)
+                        .forEach(channel -> {
+                            final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
+                                .channelRegistry()
+                                .get(channel);
+                            if (chatChannel == null) {
+                                return;
+                            }
+                            carbonPlayerCommon.leftChannels().add(channel);
+                        });
                     return new ComponentPlayerResult<>(carbonPlayerCommon, empty());
                 } catch (final IllegalStateException exception) {
                     // Player doesn't exist in the DB, create them!
@@ -204,6 +217,16 @@ public final class PostgreSQLUserManager extends AbstractUserManager implements 
     @Override
     public int removeIgnore(final UUID id, final UUID ignoredPlayer) {
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
+    }
+
+    @Override
+    public int addLeftChannel(final UUID id, final Key channel) {
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.addLeftChannel(id, channel));
+    }
+
+    @Override
+    public int removeLeftChannel(final UUID id, final Key channel) {
+        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeLeftChannel(id, channel));
     }
 
 }

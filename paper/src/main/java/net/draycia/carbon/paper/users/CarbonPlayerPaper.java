@@ -21,15 +21,18 @@ package net.draycia.carbon.paper.users;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -178,6 +181,21 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     @Override
     public boolean vanished() {
         return this.hasVanishMeta();
+    }
+
+    @Override
+    public List<Key> leftChannels() {
+        return this.carbonPlayerCommon.leftChannels();
+    }
+
+    @Override
+    public void joinChannel(final ChatChannel channel) {
+        this.carbonPlayerCommon.joinChannel(channel);
+    }
+
+    @Override
+    public void leaveChannel(final ChatChannel channel) {
+        this.carbonPlayerCommon.leaveChannel(channel);
     }
 
     // Supported by PremiumVanish, SuperVanish, VanishNoPacket

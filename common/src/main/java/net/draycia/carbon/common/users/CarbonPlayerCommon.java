@@ -67,6 +67,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     // Punishments
     protected List<UUID> ignoredPlayers = new ArrayList<>();
 
+    protected List<Key> leftChannels = new ArrayList<>();
+
     public CarbonPlayerCommon(
         final boolean muted,
         final boolean deafened,
@@ -279,6 +281,27 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public boolean awareOf(final CarbonPlayer other) {
         return true;
+    }
+
+    @Override
+    public List<Key> leftChannels() {
+        return this.leftChannels;
+    }
+
+    @Override
+    public void joinChannel(final ChatChannel channel) {
+        this.leftChannels.remove(channel.key());
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.removeLeftChannel(this.uuid(), channel.key());
+        }
+    }
+
+    @Override
+    public void leaveChannel(final ChatChannel channel) {
+        this.leftChannels.add(channel.key());
+        if (this.carbonChat.server().userManager() instanceof SaveOnChange userManager) {
+            userManager.addLeftChannel(this.uuid(), channel.key());
+        }
     }
 
     @Override

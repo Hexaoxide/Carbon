@@ -58,4 +58,9 @@ public interface PostgreSQLSaveOnChange extends SaveOnChange {
     @SqlUpdate("DELETE FROM carbon_ignores WHERE id = :id, ignoredplayer = :ignoredPlayer")
     int removeIgnore(final UUID id, final UUID ignoredPlayer);
 
+    @SqlUpdate("INSERT INTO carbon_leftchannels VALUES id = :id, channel = :channel")
+    int addLeftChannel(final UUID id, final Key channel);
+
+    @SqlUpdate("DELETE FROM carbon_leftchannels WHERE id = :id, channel = :channel")
+    int removeLeftChannel(final UUID id, final Key channel);
 }

@@ -25,6 +25,7 @@ import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -197,6 +198,21 @@ class EmptyCarbonPlayer implements CarbonPlayer {
     @Override
     public boolean awareOf(final CarbonPlayer other) {
         return true;
+    }
+
+    @Override
+    public List<Key> leftChannels() {
+        return List.of();
+    }
+
+    @Override
+    public void joinChannel(final ChatChannel channel) {
+
+    }
+
+    @Override
+    public void leaveChannel(final ChatChannel channel) {
+
     }
 
     @Override
