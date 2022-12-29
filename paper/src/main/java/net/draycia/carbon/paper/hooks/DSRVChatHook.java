@@ -58,12 +58,6 @@ public class DSRVChatHook implements ChatHook {
             .build();
 
         CarbonChatProvider.carbonChat().eventHandler().subscribe(CarbonChatEvent.class, event -> {
-            if (event.previewing()) {
-                final var pair = new ImmutablePair<>(event.sender(), event.chatChannel());
-                awaitingEvent.put(pair, event.message());
-                return;
-            }
-
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
             final ImmutablePair<CarbonPlayer, ChatChannel> pair = new ImmutablePair<>(carbonPlayer, chatChannel);

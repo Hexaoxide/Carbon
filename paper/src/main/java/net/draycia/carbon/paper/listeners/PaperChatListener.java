@@ -103,7 +103,7 @@ public final class PaperChatListener implements Listener {
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
         final var recipients = channel.recipients(sender);
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, false);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, event.signedMessage());
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {

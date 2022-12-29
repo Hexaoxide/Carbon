@@ -307,17 +307,12 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final ChatChannel channel,
         final String plainMessage
     ) {
-        // Should we silent exit here? Chances are whatever caused the
-        if (!sender.speechPermitted(plainMessage)) {
-            return;
-        }
-
         final var recipients = channel.recipients(sender);
 
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel, false);
+        final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel, null);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {

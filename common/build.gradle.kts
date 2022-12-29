@@ -10,7 +10,7 @@ dependencies {
   api(libs.adventureSerializerConfigurate4) {
     isTransitive = false
   }
-  api(libs.typesafeConfig)
+  //api(libs.typesafeConfig)
 
   // Cloud
   api(platform(libs.cloudBom))
@@ -45,5 +45,4 @@ dependencies {
   api(libs.jedis)
   api(libs.rabbitmq)
   api(libs.nats)
-  // TODO: libraries for NATS and RabbitMQ
 }

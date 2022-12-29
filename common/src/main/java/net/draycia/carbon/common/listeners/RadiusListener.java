@@ -36,7 +36,7 @@ public class RadiusListener {
         final CarbonMessages carbonMessages
     ) {
         events.subscribe(CarbonChatEvent.class, 0, false, event -> {
-            if (event.chatChannel() == null || event.previewing()) {
+            if (event.chatChannel() == null) {
                 return;
             }
 

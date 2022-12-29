@@ -269,15 +269,6 @@ public interface CarbonPlayer extends Audience, Identified {
     void sendMessageAsPlayer(final String message);
 
     /**
-     * Checks if the player is allowed to send the message or not.
-     *
-     * @param message the message
-     * @return if the message can be sent in chat
-     * @since 2.0.4
-     */
-    boolean speechPermitted(final String message);
-
-    /**
      * Returns whether the player is online.
      *
      * @return if the player is online.

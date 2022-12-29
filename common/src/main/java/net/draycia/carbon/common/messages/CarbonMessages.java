@@ -392,4 +392,7 @@ public interface CarbonMessages {
     @Message("command.updateusername.updated")
     void usernameUpdated(final Audience audience, @Placeholder("newname") final String newName);
 
+    @Message("deletemessage.prefix")
+    Component deleteMessagePrefix();
+
 }

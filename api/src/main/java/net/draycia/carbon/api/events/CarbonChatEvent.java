@@ -24,6 +24,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -44,10 +45,10 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     private final CarbonPlayer sender;
     private final Component originalMessage;
     private final List<? extends Audience> recipients;
-    private final @Nullable ChatChannel chatChannel;
+    private final @MonotonicNonNull ChatChannel chatChannel;
+    private final @MonotonicNonNull SignedMessage signedMessage;
     private Component message;
     private Result result = Result.ALLOWED;
-    private final boolean previewing;
 
     /**
      * {@link ResultedCarbonEvent} that's called when players send messages in chat.
@@ -57,7 +58,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      * @param recipients      the recipients of the message
      * @param renderers       the renderers of the message
      * @param chatChannel     the channel the message was sent in
-     * @param previewing      if the message is being previewed by the player
+     * @param signedMessage   the signature information for the message, if present
      * @since 2.0.0
      */
     public CarbonChatEvent(
@@ -66,7 +67,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         final List<? extends Audience> recipients,
         final List<KeyedRenderer> renderers,
         final @Nullable ChatChannel chatChannel,
-        final boolean previewing
+        final @Nullable SignedMessage signedMessage
     ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
@@ -74,7 +75,7 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
         this.recipients = recipients;
         this.renderers = renderers;
         this.chatChannel = chatChannel;
-        this.previewing = previewing;
+        this.signedMessage = signedMessage;
     }
 
     /**
@@ -93,8 +94,8 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
      * @return if the message is being previewed
      * @since 2.1.0
      */
-    public boolean previewing() {
-        return this.previewing;
+    public @MonotonicNonNull SignedMessage signedMessage() {
+        return this.signedMessage;
     }
 
     /**
