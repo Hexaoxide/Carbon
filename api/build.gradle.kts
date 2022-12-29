@@ -19,13 +19,15 @@ dependencies {
   compileOnlyApi(libs.checkerQual)
 
   api(libs.kyoriEventApi)
-  api(libs.kyoriRegistry)
+  api(libs.kyoriRegistry) {
+    exclude("com.google.guava")
+  }
   api(libs.kyoriMoonshine)
   api(libs.kyoriMoonshineCore)
   api(libs.kyoriMoonshineStandard)
 
   // we shade and relocate a newer version than minecraft provides
-  api(libs.guava)
+  compileOnlyApi(libs.guava)
 
   // Provided by Minecraft
   compileOnlyApi(libs.gson)

@@ -11,13 +11,6 @@ fun ShadowJar.relocateDependency(pkg: String) {
   relocate(pkg, "net.draycia.carbon.libs.$pkg")
 }
 
-fun ShadowJar.relocateNatives() {
-  relocate("darwin", "natives/darwin")
-  relocate("freebsd", "natives/freebsd")
-  relocate("linux", "natives/linux")
-  relocate("win", "natives/win")
-}
-
 /**
  * Relocates dependencies which we bundle and relocate on all platforms.
  */
@@ -29,21 +22,13 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("net.kyori.registry")
   relocateDependency("org.spongepowered.configurate")
   relocateDependency("com.typesafe.config")
-  relocateDependency("com.google.common")
   relocateDependency("com.google.thirdparty.publicsuffix")
-  relocateDependency("com.google.protobuf")
-  relocateDependency("google.protobuf")
-  //relocateDependency("it.unimi.dsi.fastutil")
   relocateDependency("org.jdbi")
   relocateDependency("com.github.benmanes")
   relocateDependency("org.mariadb.jdbc")
-  relocateDependency("com.mysql")
-  //relocateDependency("org.flywaydb")
   relocateDependency("com.zaxxer.hikari")
   relocateDependency("org.postgresql")
   relocateDependency("redis.clients.jedis")
-  //relocateDependency("org.slf4j")
-  //relocateDependency("org.apache")
   relocateDependency("ninja.egg82.messenger")
   relocateDependency("org.antlr")
   //relocateDependency("com.github.luben")
@@ -51,8 +36,7 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("io.nats")
   relocateDependency("com.rabbitmq")
   relocateDependency("com.electronwill")
-
-  relocateNatives();
+  relocateDependency("net.byteflux")
 }
 
 fun ShadowJar.relocateCloud() {

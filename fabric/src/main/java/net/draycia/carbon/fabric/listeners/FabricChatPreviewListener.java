@@ -108,7 +108,7 @@ public class FabricChatPreviewListener implements ChatDecorator {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, message, this.carbonChat.server().players(), renderers, channel, true);
+        final var chatEvent = new CarbonChatEvent(sender, message, this.carbonChat.server().players(), renderers, channel, null);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {

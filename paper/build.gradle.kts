@@ -20,6 +20,7 @@ dependencies {
 
   // Misc
   implementation(libs.bstatsBukkit)
+  implementation(libs.libbyBukkit)
 
   // Plugins
   compileOnly("me.clip:placeholderapi:2.10.9") // TODO: move this to libs.versions.yml

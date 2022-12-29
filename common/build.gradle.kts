@@ -20,7 +20,9 @@ dependencies {
   }
 
   // Other
-  api(libs.guice)
+  api(libs.guice){
+    exclude("com.google.guava")
+  }
   api(libs.assistedInject)
   compileOnlyApi(libs.luckPermsApi)
 
@@ -31,7 +33,9 @@ dependencies {
   api(libs.hikariCP)
   api(libs.flyway)
   api(libs.flywayMysql)
-  api(libs.mysql)
+  compileOnlyApi(libs.mysql) {
+    exclude ("com.google.protobuf")
+  }
   api(libs.postgresql)
   api(libs.caffeine)
   api(libs.mariadb)
@@ -41,7 +45,7 @@ dependencies {
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)
   api(libs.netty)
-  api(libs.zstdjni)
+  compileOnlyApi(libs.zstdjni)
   api(libs.jedis)
   api(libs.rabbitmq)
   api(libs.nats)

@@ -93,7 +93,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, false);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
         final var result = this.carbonChatFabric.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
