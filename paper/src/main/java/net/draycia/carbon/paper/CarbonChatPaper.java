@@ -130,7 +130,6 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
             .groupId("com.github.luben")
             .artifactId("zstd-jni")
             .version("1.5.1-1")
-            .relocate("com.github.luben", "net.draycia.carbon.libs.com.github.luben")
             .build();
 
         libraryManager.loadLibrary(messenger);
@@ -154,10 +153,10 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         libraryManager.loadLibrary(protobuf);
 
         final Library mysqlConnector = Library.builder()
-            .groupId("mysql")
+            .groupId("com.mysql")
             .artifactId("mysql-connector-j")
             .version("8.0.31")
-            .relocate("mysql-connector-j", "net.draycia.carbon.libs.mysql")
+            //.relocate("mysql-connector-j", "net.draycia.carbon.libs.mysql")
             .build();
 
         libraryManager.loadLibrary(mysqlConnector);

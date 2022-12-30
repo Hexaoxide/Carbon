@@ -165,6 +165,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
                 .baselineOnMigrate(true)
                 .locations("queries/migrations/mysql")
                 .dataSource(dataSource)
+                .validateMigrationNaming(true)
                 .validateOnMigrate(true)
                 .load();
 

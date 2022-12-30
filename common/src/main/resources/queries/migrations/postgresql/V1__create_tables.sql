@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS carbon_users (
     spying BOOLEAN
 );
 
-CREATE TABLE carbon_ignores (
+CREATE TABLE IF NOT EXISTS carbon_ignores (
     id uuid NOT NULL,
     ignoredplayer uuid NOT NULL,
     PRIMARY KEY (id, ignoredplayer)
