@@ -217,7 +217,7 @@ dependencies:
     version: { ref: flyway }
   mysql:
     group: mysql
-    name: mysql-connector-java
+    name: mysql-connector-j
     version: { ref: mysql }
   postgresql:
     group: org.postgresql

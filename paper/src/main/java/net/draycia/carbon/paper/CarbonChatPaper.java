@@ -147,7 +147,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         final Library protobuf = Library.builder()
             .groupId("com.google.protobuf")
             .artifactId("protobuf-java")
-            .version("3.19.4")
+            .version("3.21.12")
             .relocate("com.google.protobuf", "net.draycia.carbon.libs.com.google.protobuf")
             .build();
 
@@ -155,9 +155,9 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
         final Library mysqlConnector = Library.builder()
             .groupId("mysql")
-            .artifactId("mysql-connector-java")
+            .artifactId("mysql-connector-j")
             .version("8.0.31")
-            .relocate("mysql-connector-java", "net.draycia.carbon.libs.mysql")
+            .relocate("mysql-connector-j", "net.draycia.carbon.libs.mysql")
             .build();
 
         libraryManager.loadLibrary(mysqlConnector);
