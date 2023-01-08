@@ -35,6 +35,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -43,30 +44,30 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerPaper implements CarbonServer, ForwardingAudience.Single {
 
-    private final CarbonChatPaper carbonChatPaper;
+    private final Server server;
     private final UserManager<CarbonPlayerPaper> userManager;
 
     @Inject
-    private CarbonServerPaper(final CarbonChatPaper carbonChatPaper, final UserManager<CarbonPlayerCommon> userManager) {
-        this.carbonChatPaper = carbonChatPaper;
+    private CarbonServerPaper(final Server server, final UserManager<CarbonPlayerCommon> userManager) {
+        this.server = server;
         this.userManager = new PaperUserManager(userManager);
     }
 
     @Override
     public Audience audience() {
-        return this.carbonChatPaper.getServer();
+        return this.server;
     }
 
     @Override
     public Audience console() {
-        return this.carbonChatPaper.getServer().getConsoleSender();
+        return this.server.getConsoleSender();
     }
 
     @Override
     public List<? extends CarbonPlayer> players() {
         final var players = new ArrayList<CarbonPlayer>();
 
-        for (final var player : this.carbonChatPaper.getServer().getOnlinePlayers()) {
+        for (final var player : this.server.getOnlinePlayers()) {
             final ComponentPlayerResult<CarbonPlayerPaper> result = this.userManager.carbonPlayer(player.getUniqueId()).join();
 
             if (result.player() != null) {

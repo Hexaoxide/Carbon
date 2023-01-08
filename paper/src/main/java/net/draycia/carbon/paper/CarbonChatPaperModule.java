@@ -45,7 +45,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -54,29 +56,29 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonChatPaperModule extends AbstractModule {
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
-    private final CarbonChatPaper carbonChat;
+    private final CarbonPaperBootstrap bootstrap;
     private final Path dataDirectory;
 
     CarbonChatPaperModule(
-        final CarbonChatPaper carbonChat,
+        final CarbonPaperBootstrap bootstrap,
         final Path dataDirectory
     ) {
-        this.carbonChat = carbonChat;
+        this.bootstrap = bootstrap;
         this.dataDirectory = dataDirectory;
     }
 
     @Provides
     @Singleton
-    public CommandManager<Commander> commandManager() {
+    public CommandManager<Commander> commandManager(final CarbonChatPaper carbonChat) {
         final PaperCommandManager<Commander> commandManager;
 
         try {
             commandManager = new PaperCommandManager<>(
-                this.carbonChat,
+                this.bootstrap,
                 AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
                 commandSender -> {
                     if (commandSender instanceof Player player) {
-                        return new PaperPlayerCommander(this.carbonChat, player);
+                        return new PaperPlayerCommander(carbonChat, player);
                     }
                     return PaperCommander.from(commandSender);
                 },
@@ -86,7 +88,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
             throw new RuntimeException("Failed to initialize command manager.", ex);
         }
 
-        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.carbonMessages());
+        CloudUtils.decorateCommandManager(commandManager, carbonChat.carbonMessages());
 
         commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
@@ -117,8 +119,9 @@ public final class CarbonChatPaperModule extends AbstractModule {
     public void configure() {
         this.install(new CarbonCommonModule());
 
-        this.bind(CarbonChat.class).toInstance(this.carbonChat);
-        this.bind(CarbonChatPaper.class).toInstance(this.carbonChat);
+        this.bind(CarbonChat.class).to(CarbonChatPaper.class);
+        this.bind(JavaPlugin.class).toInstance(this.bootstrap);
+        this.bind(Server.class).toInstance(this.bootstrap.getServer());
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerPaper.class);

@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.paper.CarbonChatPaper;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.events.discord.DiscordRelayEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
@@ -33,18 +32,22 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class DiscordMessageListener implements Listener {
 
     private final CarbonChat carbonChat;
+    private final JavaPlugin plugin;
     private final Map<Key, MessageType> channelMessageTypes = new HashMap<>();
 
     @Inject
     public DiscordMessageListener(
+        final JavaPlugin plugin,
         final CarbonChat carbonChat,
         final Logger logger
     ) {
+        this.plugin = plugin;
         this.carbonChat = carbonChat;
         logger.info("EssentialsXDiscord found! Enabling hook.");
     }
@@ -81,7 +84,7 @@ public class DiscordMessageListener implements Listener {
         if (discord != null) {
             this.carbonChat.channelRegistry().forEach(channel -> {
                 final MessageType channelMessageType = new MessageType(channel.key().value());
-                discord.registerMessageType((CarbonChatPaper) this.carbonChat, channelMessageType);
+                discord.registerMessageType(this.plugin, channelMessageType);
                 this.channelMessageTypes.put(channel.key(), channelMessageType);
             });
         }

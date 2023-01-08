@@ -41,7 +41,7 @@ tasks {
 bukkit {
   name = rootProject.name
   version = project.version as String
-  main = "net.draycia.carbon.paper.CarbonChatPaper"
+  main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
   apiVersion = "1.19"
   author = "Draycia"
   depend = listOf("LuckPerms")
