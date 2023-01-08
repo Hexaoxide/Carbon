@@ -32,6 +32,7 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -170,7 +171,8 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     @Override
     public boolean speechPermitted(final String message) {
         // ...........
-        return new AsyncPlayerChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), message, Set.of()).callEvent() && new AsyncChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), Set.of(), (player, name, msg, receiver) -> msg, Component.text(message), Component.text(message)).callEvent();
+        return new AsyncPlayerChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), message, Set.of()).callEvent()
+            && new AsyncChatEvent(!Bukkit.isPrimaryThread(), this.player().get(), Set.of(), (player, name, msg, receiver) -> msg, Component.text(message), Component.text(message), SignedMessage.system(message, null)).callEvent();
     }
 
     @Override
