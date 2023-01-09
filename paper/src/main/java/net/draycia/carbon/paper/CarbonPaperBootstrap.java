@@ -41,7 +41,7 @@ public final class CarbonPaperBootstrap extends JavaPlugin {
     public void onLoad() {
         this.unsupportedPlatform = this.checkPlatform();
         if (this.unsupportedPlatform != null) {
-            this.unsupportedPlatform.print();
+            this.getLogger().log(Level.SEVERE, this.unsupportedPlatform.getMessage(), this.unsupportedPlatform);
             return;
         }
 
@@ -86,7 +86,9 @@ public final class CarbonPaperBootstrap extends JavaPlugin {
     @Override
     public void onEnable() {
         if (this.unsupportedPlatform != null) {
-            throw this.unsupportedPlatform;
+            this.getLogger().log(Level.SEVERE, this.unsupportedPlatform.getMessage(), this.unsupportedPlatform);
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
         }
         if (this.carbonChat != null) {
             this.carbonChat.onEnable();
@@ -100,17 +102,9 @@ public final class CarbonPaperBootstrap extends JavaPlugin {
         }
     }
 
-    private final class UnsupportedPlatformException extends RuntimeException {
+    private static final class UnsupportedPlatformException extends RuntimeException {
         UnsupportedPlatformException(final String reason) {
             super("Your server does not support this build of Carbon: " + reason);
-        }
-
-        // We print the warning in onLoad, and throw in onEnable. The plugin manager doesn't handle
-        // exceptions in onLoad as well as in onEnable.
-        void print() {
-            CarbonPaperBootstrap.this.severe("*");
-            CarbonPaperBootstrap.this.severe("* " + this.getMessage());
-            CarbonPaperBootstrap.this.severe("*");
         }
     }
 
