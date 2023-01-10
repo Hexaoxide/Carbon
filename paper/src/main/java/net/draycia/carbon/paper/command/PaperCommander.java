@@ -42,6 +42,11 @@ public interface PaperCommander extends Commander, ForwardingAudience.Single {
             return this.commandSender;
         }
 
+        @Override
+        public boolean hasPermission(final String permission) {
+            return this.commandSender.hasPermission(permission);
+        }
+
     }
 
 }

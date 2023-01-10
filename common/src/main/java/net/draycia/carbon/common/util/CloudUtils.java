@@ -39,6 +39,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.commands.ClearChatCommand;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
 import net.draycia.carbon.common.command.commands.DebugCommand;
@@ -55,12 +56,14 @@ import net.draycia.carbon.common.command.commands.UnignoreCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
 import net.draycia.carbon.common.command.commands.UpdateUsernameCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
+import net.draycia.carbon.common.command.exception.CommandCompleted;
 import net.draycia.carbon.common.config.CommandConfig;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.util.ComponentMessageThrowable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -178,6 +181,15 @@ public final class CloudUtils {
         });
         commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
             final Throwable cause = exception.getCause();
+
+            if (cause instanceof CommandCompleted completed) {
+                final @Nullable Component msg = completed.componentMessage();
+                if (msg != null) {
+                    sender.sendMessage(msg);
+                }
+                return;
+            }
+
             cause.printStackTrace();
 
             final StringWriter writer = new StringWriter();
@@ -187,6 +199,14 @@ public final class CloudUtils {
 
             carbonMessages.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
         });
+    }
+
+    public static CarbonPlayer nonPlayerMustProvidePlayer(final Commander commander) {
+        if (commander instanceof PlayerCommander playerCommander) {
+            return playerCommander.carbonPlayer();
+        }
+        // TODO localize
+        throw CommandCompleted.withMessage(MiniMessage.miniMessage().deserialize("<red>Non-players must provide the player argument to execute this command."));
     }
 
 }

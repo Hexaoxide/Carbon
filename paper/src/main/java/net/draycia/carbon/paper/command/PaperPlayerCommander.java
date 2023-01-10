@@ -51,4 +51,9 @@ public record PaperPlayerCommander(
         return requireNonNull(this.server.userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
     }
 
+    @Override
+    public boolean hasPermission(final String permission) {
+        return this.player.hasPermission(permission);
+    }
+
 }
