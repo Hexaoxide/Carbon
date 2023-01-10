@@ -89,10 +89,10 @@ public class NicknameCommand extends CarbonCommand {
         // Set nickname
         this.commandManager.command(selfRoot.permission("carbon.nickname.set")
             .argument(StringArgument.greedy("nickname"))
-            .handler(ctx -> this.setNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(ctx.getSender()), ctx.get("nickname"))));
+            .handler(ctx -> this.applyNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(ctx.getSender()), ctx.get("nickname"))));
         this.commandManager.command(othersRoot.permission("carbon.nickname.others.set")
             .argument(StringArgument.greedy("nickname"))
-            .handler(ctx -> this.setNickname(ctx.getSender(), ctx.get("player"), ctx.get("nickname"))));
+            .handler(ctx -> this.applyNickname(ctx.getSender(), ctx.get("player"), ctx.get("nickname"))));
 
         // Reset/remove nickname
         this.commandManager.command(selfRoot.permission("carbon.nickname.set")
@@ -114,7 +114,7 @@ public class NicknameCommand extends CarbonCommand {
         }
     }
 
-    private void setNickname(final Commander sender, final CarbonPlayer target, final String nick) {
+    private void applyNickname(final Commander sender, final CarbonPlayer target, final String nick) {
         // Lazy since the sender might not have permission to set the nickname
         final Supplier<Component> parsedNick = Suppliers.memoize(() -> ConfigChatChannel.parseMessageTags(sender, nick));
 
