@@ -71,6 +71,7 @@ public class NicknameCommand extends CarbonCommand {
 
     @Override
     public void init() {
+        // TODO: Allow UUID input for target player
         final var selfRoot = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             // TODO separate descriptions
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameDescription());
