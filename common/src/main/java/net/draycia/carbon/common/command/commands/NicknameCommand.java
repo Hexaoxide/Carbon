@@ -129,12 +129,6 @@ public class NicknameCommand extends CarbonCommand {
         if (sender instanceof PlayerCommander playerCommander
             && playerCommander.carbonPlayer().uuid().equals(target.uuid())) {
             // Setting own nickname
-            // TODO now redundant
-            if (!sender.hasPermission("carbon.nickname.self")) {
-                this.carbonMessages.nicknameCannotSetOwn(sender);
-                return;
-            }
-
             target.displayName(parsedNick.get());
             this.carbonMessages.nicknameSet(sender, parsedNick.get());
         } else {
@@ -145,12 +139,6 @@ public class NicknameCommand extends CarbonCommand {
     }
 
     private void checkOwnNickname(final CarbonPlayer sender) {
-        // TODO now redundant
-        if (!sender.hasPermission("carbon.nickname.self")) {
-            this.carbonMessages.nicknameCannotSeeOwn(sender);
-            return;
-        }
-
         if (sender.displayName() != null) {
             this.carbonMessages.nicknameShow(sender, sender.username(), sender.displayName());
         } else {

@@ -190,12 +190,6 @@ public interface CarbonMessages {
     @Message("nickname.reset.others")
     void nicknameResetOthers(final Audience audience, final String target);
 
-    @Message("nickname.set.self.error")
-    void nicknameCannotSetOwn(final Audience audience);
-
-    @Message("nickname.see.self.error")
-    void nicknameCannotSeeOwn(final Audience audience);
-
     /*
      * =============================================================
      * ========================== Ignore ===========================
