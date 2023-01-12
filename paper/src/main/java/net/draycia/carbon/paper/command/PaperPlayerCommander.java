@@ -19,34 +19,36 @@
  */
 package net.draycia.carbon.paper.command;
 
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Objects.requireNonNull;
 
+@DefaultQualifier(NonNull.class)
 public record PaperPlayerCommander(
-    @NonNull CarbonChat carbon,
-    @NonNull Player player
+    CarbonServer server,
+    Player player
 ) implements PlayerCommander, PaperCommander {
 
     @Override
-    public @NonNull CommandSender commandSender() {
+    public CommandSender commandSender() {
         return this.player;
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public Audience audience() {
         return this.player;
     }
 
     @Override
-    public @NonNull CarbonPlayer carbonPlayer() {
-        return requireNonNull(this.carbon.server().userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
+    public CarbonPlayer carbonPlayer() {
+        return requireNonNull(this.server.userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
     }
 
 }

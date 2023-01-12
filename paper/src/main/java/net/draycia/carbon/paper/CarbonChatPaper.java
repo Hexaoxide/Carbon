@@ -61,7 +61,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-@Singleton
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPaper implements CarbonChat {
 
@@ -204,7 +203,7 @@ public final class CarbonChatPaper implements CarbonChat {
         return this.injector.getInstance(PaperMessageRenderer.class);
     }
 
-    public boolean papiLoaded() {
+    public static boolean papiLoaded() {
         return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
     }
 

@@ -45,11 +45,8 @@ public final class CarbonPaperBootstrap extends JavaPlugin {
             return;
         }
 
-        final Injector injector = Guice.createInjector(new CarbonChatPaperModule(this, this.getDataFolder().toPath()));
-
-        // Horrible hack to work around the numerous circular dependencies in the code base
-        // Would be better to fix those properly but this works for now
         this.carbonChat = new CarbonChatPaper();
+        final Injector injector = Guice.createInjector(new CarbonChatPaperModule(this, this.carbonChat));
         CarbonChatProvider.register(this.carbonChat);
         injector.injectMembers(this.carbonChat);
     }

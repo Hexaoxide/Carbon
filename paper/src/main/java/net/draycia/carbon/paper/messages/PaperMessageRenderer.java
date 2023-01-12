@@ -52,7 +52,7 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
         this.miniMessage = MiniMessage.miniMessage();
         this.configFactory = configFactory;
 
-        if (((CarbonChatPaper) CarbonChatProvider.carbonChat()).papiLoaded()) {
+        if (CarbonChatPaper.papiLoaded()) {
             this.parser = PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
         }
     }
