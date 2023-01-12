@@ -21,7 +21,6 @@ package net.draycia.carbon.paper;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Singleton;
 import github.scarsz.discordsrv.DiscordSRV;
 import java.nio.file.Path;
 import java.util.Set;
