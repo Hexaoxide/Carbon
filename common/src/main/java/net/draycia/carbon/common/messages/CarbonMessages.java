@@ -323,11 +323,23 @@ public interface CarbonMessages {
     @Message("command.nickname.argument.nickname")
     Component commandNicknameArgumentNickname();
 
-    @Message("command.nickname.argument.reset")
-    Component commandNicknameArgumentReset();
+    @Message("command.nickname.reset.description")
+    Component commandNicknameResetDescription();
+
+    @Message("command.nickname.set.description")
+    Component commandNicknameSetDescription();
 
     @Message("command.nickname.description")
     Component commandNicknameDescription();
+
+    @Message("command.nickname.others.reset.description")
+    Component commandNicknameOthersResetDescription();
+
+    @Message("command.nickname.others.set.description")
+    Component commandNicknameOthersSetDescription();
+
+    @Message("command.nickname.others.description")
+    Component commandNicknameOthersDescription();
 
     @Message("command.reload.description")
     Component commandReloadDescription();
