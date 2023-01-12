@@ -257,6 +257,9 @@ public interface CarbonMessages {
     @Message("error.command.invalid_syntax")
     void errorCommandInvalidSyntax(final Audience audience, final Component syntax);
 
+    @Message("error.command.command_needs_player")
+    Component commandNeedsPlayer();
+
     /*
      * =============================================================
      * =================== Command Documentation ===================

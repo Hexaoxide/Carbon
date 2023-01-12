@@ -85,7 +85,7 @@ public class NicknameCommand extends CarbonCommand {
         // Check nickname
         this.commandManager.command(selfRoot.permission("carbon.nickname")
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameDescription())
-            .handler(ctx -> this.checkOwnNickname(CloudUtils.nonPlayerMustProvidePlayer(ctx.getSender()))));
+            .handler(ctx -> this.checkOwnNickname(CloudUtils.nonPlayerMustProvidePlayer(this.carbonMessages, ctx.getSender()))));
         this.commandManager.command(othersRoot.permission("carbon.nickname.others")
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameOthersDescription())
             .handler(ctx -> this.checkOthersNickname(ctx.getSender(), ctx.get("player"))));
@@ -94,7 +94,7 @@ public class NicknameCommand extends CarbonCommand {
         this.commandManager.command(selfRoot.permission("carbon.nickname.set")
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameSetDescription())
             .argument(StringArgument.greedy("nickname"), RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname()))
-            .handler(ctx -> this.applyNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(ctx.getSender()), ctx.get("nickname"))));
+            .handler(ctx -> this.applyNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(this.carbonMessages, ctx.getSender()), ctx.get("nickname"))));
         this.commandManager.command(othersRoot.permission("carbon.nickname.others.set")
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameOthersSetDescription())
             .argument(StringArgument.greedy("nickname"), RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname()))
@@ -104,7 +104,7 @@ public class NicknameCommand extends CarbonCommand {
         this.commandManager.command(selfRoot.permission("carbon.nickname.set")
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameResetDescription())
             .literal("reset")
-            .handler(ctx -> this.resetNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(ctx.getSender()))));
+            .handler(ctx -> this.resetNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(this.carbonMessages, ctx.getSender()))));
         this.commandManager.command(othersRoot.permission("carbon.nickname.others.set")
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameOthersResetDescription())
             .literal("reset")

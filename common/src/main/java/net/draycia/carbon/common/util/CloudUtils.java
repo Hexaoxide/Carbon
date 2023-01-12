@@ -63,7 +63,6 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.util.ComponentMessageThrowable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -201,12 +200,11 @@ public final class CloudUtils {
         });
     }
 
-    public static CarbonPlayer nonPlayerMustProvidePlayer(final Commander commander) {
+    public static CarbonPlayer nonPlayerMustProvidePlayer(final CarbonMessages messages, final Commander commander) {
         if (commander instanceof PlayerCommander playerCommander) {
             return playerCommander.carbonPlayer();
         }
-        // TODO localize
-        throw CommandCompleted.withMessage(MiniMessage.miniMessage().deserialize("<red>Non-players must provide the player argument to execute this command."));
+        throw CommandCompleted.withMessage(messages.commandNeedsPlayer());
     }
 
 }
