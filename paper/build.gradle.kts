@@ -95,19 +95,16 @@ bukkit {
       description = "Unmutes the player, allowing them to use chat and send whispers."
     }
     register("carbon.nickname") {
-      description = "The nickname command, by default shows your nickname."
-    }
-    register("carbon.nickname.others") {
-      description = "Checks/sets other player's nicknames."
-    }
-    register("carbon.nickname.see") {
-      description = "Checks your/other player's nicknames."
-    }
-    register("carbon.nickname.self") {
-      description = "Checks/sets your nickname."
+      description = "Checks your nickname."
     }
     register("carbon.nickname.set") {
-      description = "Sets your/other player's nicknames."
+      description = "Set or remove your nickname."
+    }
+    register("carbon.nickname.others") {
+      description = "Checks other player's nicknames."
+    }
+    register("carbon.nickname.others.set") {
+      description = "Set or remove other player's nicknames."
     }
     register("carbon.nickname.style.color") {
       description = "Allows the use of colors in nicknames."
