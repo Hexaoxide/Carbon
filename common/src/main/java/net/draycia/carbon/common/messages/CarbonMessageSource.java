@@ -35,12 +35,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -151,7 +148,15 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     private void readLocale(final Path localeDirectory, final Path localeFile, final Locale locale) {
         this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile);
 
-        final Properties properties = new Properties();
+        final Properties properties = new Properties() {
+            @Override public synchronized Set<Map.Entry<Object, Object>> entrySet() {
+                return Collections.synchronizedSet(
+                    super.entrySet()
+                        .stream()
+                        .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)));
+            }
+        };
 
         try {
             this.loadProperties(properties, localeDirectory, localeFile);
@@ -252,7 +257,15 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
         // Read the file in the jar and add missing entries
         try (final Reader reader = new InputStreamReader(Files.newInputStream(localeFile), StandardCharsets.UTF_8)) {
-            final Properties packaged = new Properties();
+            final Properties packaged = new Properties() {
+                @Override public synchronized Set<Map.Entry<Object, Object>> entrySet() {
+                    return Collections.synchronizedSet(
+                        super.entrySet()
+                            .stream()
+                            .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
+                            .collect(Collectors.toCollection(LinkedHashSet::new)));
+                }
+            };
             packaged.load(reader);
 
             for (final Map.Entry<Object, Object> entry : packaged.entrySet()) {
