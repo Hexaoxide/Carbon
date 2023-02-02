@@ -149,7 +149,8 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile);
 
         final Properties properties = new Properties() {
-            @Override public synchronized Set<Map.Entry<Object, Object>> entrySet() {
+            @Override
+            public synchronized Set<Map.Entry<Object, Object>> entrySet() {
                 return Collections.synchronizedSet(
                     super.entrySet()
                         .stream()
@@ -257,15 +258,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
         // Read the file in the jar and add missing entries
         try (final Reader reader = new InputStreamReader(Files.newInputStream(localeFile), StandardCharsets.UTF_8)) {
-            final Properties packaged = new Properties() {
-                @Override public synchronized Set<Map.Entry<Object, Object>> entrySet() {
-                    return Collections.synchronizedSet(
-                        super.entrySet()
-                            .stream()
-                            .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
-                            .collect(Collectors.toCollection(LinkedHashSet::new)));
-                }
-            };
+            final Properties packaged = new Properties();
             packaged.load(reader);
 
             for (final Map.Entry<Object, Object> entry : packaged.entrySet()) {
