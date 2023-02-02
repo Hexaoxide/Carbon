@@ -2,7 +2,7 @@ plugins {
   id("carbon.base-conventions")
 }
 
-val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform", project)
+val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")
 
 tasks {
   val copyJar = register<FileCopyTask>("copyJar") {

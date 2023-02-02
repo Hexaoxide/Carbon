@@ -3,7 +3,7 @@ plugins {
   id("com.github.johnrengelman.shadow")
 }
 
-val shadowPlatform = extensions.create<CarbonShadowPlatformExtension>("carbonShadowPlatform", project)
+val shadowPlatform = extensions.create<CarbonShadowPlatformExtension>("carbonShadowPlatform")
 
 tasks {
   jar {
