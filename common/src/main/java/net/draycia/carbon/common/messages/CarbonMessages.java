@@ -190,12 +190,6 @@ public interface CarbonMessages {
     @Message("nickname.reset.others")
     void nicknameResetOthers(final Audience audience, final String target);
 
-    @Message("nickname.set.self.error")
-    void nicknameCannotSetOwn(final Audience audience);
-
-    @Message("nickname.see.self.error")
-    void nicknameCannotSeeOwn(final Audience audience);
-
     /*
      * =============================================================
      * ========================== Ignore ===========================
@@ -256,6 +250,9 @@ public interface CarbonMessages {
 
     @Message("error.command.invalid_syntax")
     void errorCommandInvalidSyntax(final Audience audience, final Component syntax);
+
+    @Message("error.command.command_needs_player")
+    Component commandNeedsPlayer();
 
     /*
      * =============================================================
@@ -323,11 +320,23 @@ public interface CarbonMessages {
     @Message("command.nickname.argument.nickname")
     Component commandNicknameArgumentNickname();
 
-    @Message("command.nickname.argument.reset")
-    Component commandNicknameArgumentReset();
+    @Message("command.nickname.reset.description")
+    Component commandNicknameResetDescription();
+
+    @Message("command.nickname.set.description")
+    Component commandNicknameSetDescription();
 
     @Message("command.nickname.description")
     Component commandNicknameDescription();
+
+    @Message("command.nickname.others.reset.description")
+    Component commandNicknameOthersResetDescription();
+
+    @Message("command.nickname.others.set.description")
+    Component commandNicknameOthersSetDescription();
+
+    @Message("command.nickname.others.description")
+    Component commandNicknameOthersDescription();
 
     @Message("command.reload.description")
     Component commandReloadDescription();

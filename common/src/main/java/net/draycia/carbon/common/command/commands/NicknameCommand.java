@@ -20,10 +20,10 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.compound.FlagArgument;
+import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
-import cloud.commandframework.permission.Permission;
+import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -33,15 +33,14 @@ import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
-import net.draycia.carbon.common.command.argument.OptionValueParser;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.util.CloudUtils;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.Nullable;
 
 @DefaultQualifier(NonNull.class)
 public class NicknameCommand extends CarbonCommand {
@@ -73,106 +72,102 @@ public class NicknameCommand extends CarbonCommand {
 
     @Override
     public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            // TODO: Allow UUID input for target player
-            .flag(this.commandManager.flagBuilder("player")
-                .withAliases("p")
-                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer()))
-                .withArgument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional())
-                .withPermission(Permission.of("carbon.nickname.others"))
-            )
-            .flag(this.commandManager.flagBuilder("nickname")
-                .withAliases("n")
-                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname()))
-                .withArgument(FlagArgument.<Commander, String>ofType(String.class, "value")
-                    .withParser(new OptionValueParser<>())
-                    .asOptional()
-                    .build())
-                .withPermission(Permission.of("carbon.nickname.set"))
-            )
-            .flag(this.commandManager.flagBuilder("reset")
-                .withAliases("r")
-                .withDescription(RichDescription.of(this.carbonMessages.commandNicknameArgumentReset()))
-                .withPermission(Permission.of("carbon.nickname.set"))
-            )
-            .permission("carbon.nickname")
-            .senderType(PlayerCommander.class)
+        // TODO: Allow UUID input for target player
+        final var selfRoot = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases());
+        final var othersRoot = selfRoot.literal("player")
+            .argument(
+                CarbonPlayerArgument.builder("player")
+                    .withMessages(this.carbonMessages)
+                    .withSuggestionsProvider(this.playerSuggestions),
+                RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer())
+            );
+
+        // Check nickname
+        this.commandManager.command(selfRoot.permission("carbon.nickname")
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameDescription())
-            .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+            .handler(ctx -> this.checkOwnNickname(CloudUtils.nonPlayerMustProvidePlayer(this.carbonMessages, ctx.getSender()))));
+        this.commandManager.command(othersRoot.permission("carbon.nickname.others")
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameOthersDescription())
+            .handler(ctx -> this.checkOthersNickname(ctx.getSender(), ctx.get("player"))));
 
-                if (handler.flags().contains("reset")) {
-                    final CarbonPlayer target = handler.flags().contains("player") ?
-                        handler.flags().get("player") : sender;
+        // Set nickname
+        this.commandManager.command(selfRoot.permission("carbon.nickname.set")
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameSetDescription())
+            .argument(StringArgument.greedy("nickname"), RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname()))
+            .handler(ctx -> this.applyNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(this.carbonMessages, ctx.getSender()), ctx.get("nickname"))));
+        this.commandManager.command(othersRoot.permission("carbon.nickname.others.set")
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameOthersSetDescription())
+            .argument(StringArgument.greedy("nickname"), RichDescription.of(this.carbonMessages.commandNicknameArgumentNickname()))
+            .handler(ctx -> this.applyNickname(ctx.getSender(), ctx.get("player"), ctx.get("nickname"))));
 
-                    target.displayName(null);
+        // Reset/remove nickname
+        this.commandManager.command(selfRoot.permission("carbon.nickname.set")
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameResetDescription())
+            .literal("reset")
+            .handler(ctx -> this.resetNickname(ctx.getSender(), CloudUtils.nonPlayerMustProvidePlayer(this.carbonMessages, ctx.getSender()))));
+        this.commandManager.command(othersRoot.permission("carbon.nickname.others.set")
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandNicknameOthersResetDescription())
+            .literal("reset")
+            .handler(ctx -> this.resetNickname(ctx.getSender(), ctx.get("player"))));
+    }
 
-                    this.carbonMessages.nicknameReset(target);
+    private void resetNickname(final Commander sender, final CarbonPlayer target) {
+        target.displayName(null);
 
-                    if (sender != target) {
-                        this.carbonMessages.nicknameResetOthers(sender, target.username());
-                    }
+        if (sender instanceof PlayerCommander playerCommander
+            && playerCommander.carbonPlayer().uuid().equals(target.uuid())) {
+            this.carbonMessages.nicknameReset(target);
+        } else {
+            this.carbonMessages.nicknameResetOthers(sender, target.username());
+        }
+    }
 
-                    return;
-                }
+    private void applyNickname(final Commander sender, final CarbonPlayer target, final String nick) {
+        // Lazy since the sender might not have permission to set the nickname
+        final Supplier<Component> parsedNick = Suppliers.memoize(() -> parseNickname(sender, nick));
 
-                // Setting nickname
-                if (handler.flags().contains("nickname")) {
-                    // Lazy since the player might not have permission to set the nickname
-                    final var ref = new Object() {
-                        @Nullable Component cached = null;
-                    };
-                    final Supplier<Component> lazyNickname = () -> {
-                        if (ref.cached != null) {
-                            return ref.cached;
-                        }
+        if (sender instanceof PlayerCommander playerCommander
+            && playerCommander.carbonPlayer().uuid().equals(target.uuid())) {
+            // Setting own nickname
+            target.displayName(parsedNick.get());
+            this.carbonMessages.nicknameSet(sender, parsedNick.get());
+        } else {
+            // Setting other player's nickname
+            this.carbonMessages.nicknameSet(target, parsedNick.get());
+            this.carbonMessages.nicknameSetOthers(sender, target.username(), parsedNick.get());
+        }
+    }
 
-                        ref.cached = ConfigChatChannel.parseMessageTags(sender, handler.flags().get("nickname"));
-                        return ref.cached;
-                    };
+    private void checkOwnNickname(final CarbonPlayer sender) {
+        if (sender.displayName() != null) {
+            this.carbonMessages.nicknameShow(sender, sender.username(), sender.displayName());
+        } else {
+            this.carbonMessages.nicknameShowUnset(sender, sender.username());
+        }
+    }
 
-                    final @MonotonicNonNull CarbonPlayer target = handler.flags().get("player");
+    private void checkOthersNickname(final Audience sender, final CarbonPlayer target) {
+        if (target.displayName() != null) {
+            this.carbonMessages.nicknameShowOthers(sender, target.username(), target.displayName());
+        } else {
+            this.carbonMessages.nicknameShowOthersUnset(sender, target.username());
+        }
+    }
 
-                    // Setting other player's nickname
-                    if (target != null && !target.equals(sender)) {
-                        this.carbonMessages.nicknameSet(target, lazyNickname.get());
-                        this.carbonMessages.nicknameSetOthers(sender, target.username(), lazyNickname.get());
-                    } else {
-                        // Setting own nickname
-                        if (!sender.hasPermission("carbon.nickname.self")) {
-                            this.carbonMessages.nicknameCannotSetOwn(sender);
-                            return;
-                        }
+    private static Component parseNickname(final Commander sender, final String nick) {
+        // trim one level of quotes, to allow for nicknames which collide with command literals
+        return ConfigChatChannel.parseMessageTags(sender, trimQuotes(nick));
+    }
 
-                        sender.displayName(lazyNickname.get());
-                        this.carbonMessages.nicknameSet(sender, lazyNickname.get());
-                    }
-                } else if (handler.flags().contains("player")) {
-                    // Checking other player's nickname
-                    final CarbonPlayer target = handler.flags().get("player");
-
-                    if (target.displayName() != null) {
-                        this.carbonMessages.nicknameShowOthers(sender, target.username(), target.displayName());
-                    } else {
-                        this.carbonMessages.nicknameShowOthersUnset(sender, target.username());
-                    }
-                } else {
-                    // Checking own nickname
-                    if (!sender.hasPermission("carbon.nickname.self")) {
-                        this.carbonMessages.nicknameCannotSeeOwn(sender);
-                        return;
-                    }
-
-                    if (sender.displayName() != null) {
-                        this.carbonMessages.nicknameShow(sender, sender.username(), sender.displayName());
-                    } else {
-                        this.carbonMessages.nicknameShowUnset(sender, sender.username());
-                    }
-                }
-            })
-            .build();
-
-        this.commandManager.command(command);
+    private static String trimQuotes(final String string) {
+        if (string.length() < 3) {
+            return string;
+        }
+        final char first = string.charAt(0);
+        if ((first == '\'' || first == '"') && string.endsWith(String.valueOf(first))) {
+            return string.substring(1, string.length() - 1);
+        }
+        return string;
     }
 
 }
