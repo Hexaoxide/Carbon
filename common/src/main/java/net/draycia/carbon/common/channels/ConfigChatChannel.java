@@ -177,17 +177,15 @@ public final class ConfigChatChannel implements ChatChannel {
         Map.entry("newline", StandardTags.newline())
     );
 
-    public static Component parseMessageTags(final Audience sender, final String message) {
-        // TODO
-        final Predicate<String> permission;
-        if (sender instanceof Commander c) {
-            permission = c::hasPermission;
-        } else if (sender instanceof CarbonPlayer p) {
-            permission = p::hasPermission;
-        } else {
-            throw new IllegalArgumentException("Expected sender to be a Commander or CarbonPlayer");
-        }
+    public static Component parseMessageTags(final Commander sender, final String message) {
+        return parseMessageTags(message, sender::hasPermission);
+    }
 
+    public static Component parseMessageTags(final CarbonPlayer sender, final String message) {
+        return parseMessageTags(message, sender::hasPermission);
+    }
+
+    public static Component parseMessageTags(final String message, final Predicate<String> permission) {
         if (!permission.test("carbon.messagetags")) {
             return Component.text(message);
         }
