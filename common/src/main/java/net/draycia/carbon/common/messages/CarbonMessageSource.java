@@ -35,7 +35,15 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -151,8 +159,8 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         final Properties properties = new Properties() {
             @Override
             public synchronized Set<Map.Entry<Object, Object>> entrySet() {
-                return Collections.synchronizedSet(
-                    super.entrySet()
+                return Collections.unmodifiableSet(
+                    (Set<? extends Map.Entry<Object, Object>>) super.entrySet()
                         .stream()
                         .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
                         .collect(Collectors.toCollection(LinkedHashSet::new)));
