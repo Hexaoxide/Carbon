@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,12 +27,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
+import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
@@ -175,21 +177,29 @@ public final class ConfigChatChannel implements ChatChannel {
         Map.entry("newline", StandardTags.newline())
     );
 
+    public static Component parseMessageTags(final Commander sender, final String message) {
+        return parseMessageTags(message, sender::hasPermission);
+    }
+
     public static Component parseMessageTags(final CarbonPlayer sender, final String message) {
-        if (!sender.hasPermission("carbon.messagetags")) {
+        return parseMessageTags(message, sender::hasPermission);
+    }
+
+    public static Component parseMessageTags(final String message, final Predicate<String> permission) {
+        if (!permission.test("carbon.messagetags")) {
             return Component.text(message);
         }
 
         final TagResolver.Builder resolver = TagResolver.builder();
 
         for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
-            if (sender.hasPermission("carbon.messagetags." + entry.getKey())) {
+            if (permission.test("carbon.messagetags." + entry.getKey())) {
                 resolver.resolver(entry.getValue());
             }
         }
 
         for (final TextDecoration decoration : TextDecoration.values()) {
-            if (!sender.hasPermission("carbon.messagetags." + decoration.name())) {
+            if (!permission.test("carbon.messagetags." + decoration.name())) {
                 continue;
             }
 

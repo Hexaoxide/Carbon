@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 package net.draycia.carbon.fabric.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.PlayerCommander;
@@ -50,6 +51,11 @@ public record FabricPlayerCommander(
             this.carbon.server().userManager().carbonPlayer(this.player().getUUID()).join().player(),
             "No CarbonPlayer for logged in Player!"
         );
+    }
+
+    @Override
+    public boolean hasPermission(final String permission) {
+        return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().getOperatorUserPermissionLevel());
     }
 
 }

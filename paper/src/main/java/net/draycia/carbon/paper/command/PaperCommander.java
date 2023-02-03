@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,6 +40,11 @@ public interface PaperCommander extends Commander, ForwardingAudience.Single {
         @Override
         public Audience audience() {
             return this.commandSender;
+        }
+
+        @Override
+        public boolean hasPermission(final String permission) {
+            return this.commandSender.hasPermission(permission);
         }
 
     }

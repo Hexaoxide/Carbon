@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.fabric.command;
 
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -41,6 +42,12 @@ public interface FabricCommander extends Commander, ForwardingAudience.Single {
     }
 
     record FabricCommanderImpl(CommandSourceStack commandSourceStack) implements FabricCommander {
+
+        @Override
+        public boolean hasPermission(final String permission) {
+            return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().getOperatorUserPermissionLevel());
+        }
+
     }
 
 }

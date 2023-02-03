@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -49,6 +49,11 @@ public record PaperPlayerCommander(
     @Override
     public CarbonPlayer carbonPlayer() {
         return requireNonNull(this.server.userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
+    }
+
+    @Override
+    public boolean hasPermission(final String permission) {
+        return this.player.hasPermission(permission);
     }
 
 }

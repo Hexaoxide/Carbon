@@ -30,11 +30,7 @@ dependencies {
 
   modImplementation(libs.cloudFabric)
   include(libs.cloudFabric)
-
-  // loom doesn't properly copy non-mod transitive deps of mod
-  // dependencies (cloud in this case), so we need to manually
-  // add this dependency to avoid hundreds of compile warnings.
-  compileOnly("org.apiguardian:apiguardian-api:1.1.2")
+  modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
 
   modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)

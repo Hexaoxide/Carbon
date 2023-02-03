@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,6 +39,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.commands.ClearChatCommand;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
 import net.draycia.carbon.common.command.commands.DebugCommand;
@@ -55,6 +56,7 @@ import net.draycia.carbon.common.command.commands.UnignoreCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
 import net.draycia.carbon.common.command.commands.UpdateUsernameCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
+import net.draycia.carbon.common.command.exception.CommandCompleted;
 import net.draycia.carbon.common.config.CommandConfig;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -178,6 +180,15 @@ public final class CloudUtils {
         });
         commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
             final Throwable cause = exception.getCause();
+
+            if (cause instanceof CommandCompleted completed) {
+                final @Nullable Component msg = completed.componentMessage();
+                if (msg != null) {
+                    sender.sendMessage(msg);
+                }
+                return;
+            }
+
             cause.printStackTrace();
 
             final StringWriter writer = new StringWriter();
@@ -187,6 +198,13 @@ public final class CloudUtils {
 
             carbonMessages.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
         });
+    }
+
+    public static CarbonPlayer nonPlayerMustProvidePlayer(final CarbonMessages messages, final Commander commander) {
+        if (commander instanceof PlayerCommander playerCommander) {
+            return playerCommander.carbonPlayer();
+        }
+        throw CommandCompleted.withMessage(messages.commandNeedsPlayer());
     }
 
 }

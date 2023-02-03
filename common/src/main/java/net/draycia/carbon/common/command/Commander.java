@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,5 +22,7 @@ package net.draycia.carbon.common.command;
 import net.kyori.adventure.audience.Audience;
 
 public interface Commander extends Audience {
+
+    boolean hasPermission(String permission);
 
 }
