@@ -41,7 +41,6 @@ import net.kyori.event.EventSubscriber;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -63,11 +62,6 @@ public final class PaperChatListener implements Listener {
     public PaperChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
         this.carbonChat = (CarbonChatPaper) carbonChat;
         this.registry = registry;
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onSpigotChat(final @NonNull AsyncPlayerChatEvent event) {
-        event.setFormat("%2$s");
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
