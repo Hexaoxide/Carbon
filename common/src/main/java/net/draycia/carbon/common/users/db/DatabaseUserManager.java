@@ -19,12 +19,21 @@
  */
 package net.draycia.carbon.common.users.db;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.key.Key;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.Jdbi;
@@ -34,15 +43,20 @@ import org.jdbi.v3.core.statement.Update;
 import static net.kyori.adventure.text.Component.empty;
 
 @DefaultQualifier(NonNull.class)
-public abstract class AbstractUserManager implements UserManager<CarbonPlayerCommon> {
+public abstract class DatabaseUserManager implements UserManagerInternal<CarbonPlayerCommon> {
 
     protected final Jdbi jdbi;
 
+    protected final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
     protected final QueriesLocator locator;
+    protected final ExecutorService executor;
+    private final Logger logger;
 
-    protected AbstractUserManager(final Jdbi jdbi, final QueriesLocator locator) {
+    protected DatabaseUserManager(final Jdbi jdbi, final QueriesLocator locator, final Logger logger) {
         this.jdbi = jdbi;
         this.locator = locator;
+        this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager"));
+        this.logger = logger;
     }
 
     @Override
@@ -71,8 +85,20 @@ public abstract class AbstractUserManager implements UserManager<CarbonPlayerCom
             }
             // TODO: save ignoredplayers
             return new ComponentPlayerResult<>(player, empty());
-        }));
+        }), this.executor);
     }
 
     abstract protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player);
+
+    @Override
+    public void shutdown() {
+        for (final UUID id : List.copyOf(this.userCache.keySet())) {
+            try {
+                this.loggedOut(id).join();
+            } catch (final Exception ex) {
+                this.logger.warn("Exception saving data for player with uuid " + id);
+            }
+        }
+        ConcurrentUtil.shutdownExecutor(this.executor, TimeUnit.MILLISECONDS, 500);
+    }
 }

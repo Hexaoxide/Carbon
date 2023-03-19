@@ -25,6 +25,7 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -33,7 +34,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class PaperUserManager implements UserManager<CarbonPlayerPaper>, SaveOnChange {
+public class PaperUserManager implements UserManagerInternal<CarbonPlayerPaper>, SaveOnChange {
 
     protected final UserManager<CarbonPlayerCommon> proxiedUserManager;
 
@@ -43,35 +44,30 @@ public class PaperUserManager implements UserManager<CarbonPlayerPaper>, SaveOnC
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerPaper>> carbonPlayer(final UUID uuid) {
-        return this.proxiedUserManager.carbonPlayer(uuid).thenApply(result -> {
-            if (result.player() == null) {
-                return new ComponentPlayerResult<>(null, result.reason());
-            }
+        return this.proxiedUserManager.carbonPlayer(uuid).thenApply(PaperUserManager::wrapResult);
+    }
 
-            return new ComponentPlayerResult<>(new CarbonPlayerPaper(result.player()), result.reason());
-        });
+    @Override
+    public CompletableFuture<CarbonPlayerPaper> user(UUID uuid) {
+        return this.proxiedUserManager.user(uuid).thenApply(CarbonPlayerPaper::new);
     }
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerPaper>> savePlayer(final CarbonPlayerPaper player) {
-        return this.proxiedUserManager.savePlayer(player.carbonPlayerCommon()).thenApply(result -> {
-            if (result.player() == null) {
-                return new ComponentPlayerResult<>(null, result.reason());
-            }
-
-            return new ComponentPlayerResult<>(new CarbonPlayerPaper(result.player()), result.reason());
-        });
+        return this.proxiedUserManager.savePlayer(player.carbonPlayerCommon()).thenApply(PaperUserManager::wrapResult);
     }
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerPaper>> saveAndInvalidatePlayer(final CarbonPlayerPaper player) {
-        return this.proxiedUserManager.saveAndInvalidatePlayer(player.carbonPlayerCommon()).thenApply(result -> {
-            if (result.player() == null) {
-                return new ComponentPlayerResult<>(null, result.reason());
-            }
+        return this.proxiedUserManager.saveAndInvalidatePlayer(player.carbonPlayerCommon()).thenApply(PaperUserManager::wrapResult);
+    }
 
-            return new ComponentPlayerResult<>(new CarbonPlayerPaper(result.player()), result.reason());
-        });
+    private static ComponentPlayerResult<CarbonPlayerPaper> wrapResult(final ComponentPlayerResult<CarbonPlayerCommon> result) {
+        if (result.player() == null) {
+            return new ComponentPlayerResult<>(null, result.reason());
+        }
+
+        return new ComponentPlayerResult<>(new CarbonPlayerPaper(result.player()), result.reason());
     }
 
     @Override
@@ -173,4 +169,18 @@ public class PaperUserManager implements UserManager<CarbonPlayerPaper>, SaveOnC
         return -1;
     }
 
+    @Override
+    public void shutdown() {
+        ((UserManagerInternal<?>) this.proxiedUserManager).shutdown();
+    }
+
+    @Override
+    public CompletableFuture<Void> save(CarbonPlayerPaper player) {
+        return ((UserManagerInternal<CarbonPlayerCommon>) this.proxiedUserManager).save(player.carbonPlayerCommon());
+    }
+
+    @Override
+    public CompletableFuture<Void> loggedOut(final UUID uuid) {
+        return ((UserManagerInternal<?>) this.proxiedUserManager).loggedOut(uuid);
+    }
 }

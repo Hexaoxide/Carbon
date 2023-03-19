@@ -22,10 +22,11 @@ package net.draycia.carbon.common.util;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -35,56 +36,27 @@ public final class PlayerUtils {
     private PlayerUtils() {
     }
 
-    public static List<CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>>> saveLoggedInPlayers(
+    public static List<CompletableFuture<Void>> saveLoggedInPlayers(
         final CarbonServer carbonServer,
-        final UserManager<CarbonPlayerCommon> userManager
+        final UserManager<CarbonPlayerCommon> userManager,
+        final Logger logger
     ) {
         return carbonServer.players().stream()
-            .map(player -> savePlayer(carbonServer, userManager, (WrappedCarbonPlayer) player))
+            .map(player -> savePlayer(userManager, (WrappedCarbonPlayer) player, logger))
             .toList();
     }
 
-    public static CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(
-        final CarbonServer carbonServer,
+    public static CompletableFuture<Void> savePlayer(
         final UserManager<CarbonPlayerCommon> userManager,
-        final WrappedCarbonPlayer player
+        final WrappedCarbonPlayer player,
+        final Logger logger
     ) {
         final var saveResult =
-            userManager.savePlayer(player.carbonPlayerCommon());
-
-        saveResult.thenAccept(result -> {
-            if (result.player() == null) {
-                carbonServer.console().sendMessage(result.reason());
-            }
-        });
-
-        saveResult.exceptionally(exception -> {
-            exception.getCause().printStackTrace();
+            ((UserManagerInternal<CarbonPlayerCommon>) userManager).save(player.carbonPlayerCommon());
+        saveResult.exceptionally(thr -> {
+            logger.warn("Exception saving data for player {} with UUID {}", player.username(), player.uuid(), thr);
             return null;
         });
-
-        return saveResult;
-    }
-
-    public static CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(
-        final CarbonServer carbonServer,
-        final UserManager<CarbonPlayerCommon> userManager,
-        final WrappedCarbonPlayer player
-    ) {
-        final var saveResult =
-            userManager.saveAndInvalidatePlayer(player.carbonPlayerCommon());
-
-        saveResult.thenAccept(result -> {
-            if (result.player() == null) {
-                carbonServer.console().sendMessage(result.reason());
-            }
-        });
-
-        saveResult.exceptionally(exception -> {
-            exception.getCause().printStackTrace();
-            return null;
-        });
-
         return saveResult;
     }
 

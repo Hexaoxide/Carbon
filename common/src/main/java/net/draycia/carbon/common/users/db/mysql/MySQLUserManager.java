@@ -21,9 +21,6 @@ package net.draycia.carbon.common.users.db.mysql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,13 +34,14 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
-import net.draycia.carbon.common.users.db.AbstractUserManager;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
+import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.users.db.KeyArgumentFactory;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -57,16 +55,15 @@ import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class MySQLUserManager extends AbstractUserManager implements SaveOnChange {
+public final class MySQLUserManager extends DatabaseUserManager implements SaveOnChange {
 
-    private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
-
-    private MySQLUserManager(final Jdbi jdbi) {
-        super(jdbi, new QueriesLocator(DBType.MYSQL));
+    private MySQLUserManager(final Jdbi jdbi, final Logger logger) {
+        super(jdbi, new QueriesLocator(DBType.MYSQL), logger);
     }
 
     public static MySQLUserManager manager(
-        final DatabaseSettings databaseSettings
+        final DatabaseSettings databaseSettings,
+        final Logger logger
     ) {
         try {
             //Class.forName("org.postgresql.Driver");
@@ -103,7 +100,7 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
             .registerRowMapper(new MySQLPlayerRowMapper())
             .installPlugin(new SqlObjectPlugin());
 
-        return new MySQLUserManager(jdbi);
+        return new MySQLUserManager(jdbi, logger);
     }
 
     @Override
@@ -145,7 +142,12 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
             }));
 
             return new ComponentPlayerResult<>(playerResult, empty());
-        }).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
+        }, this.executor).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public CompletableFuture<CarbonPlayerCommon> user(UUID uuid) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -226,4 +228,13 @@ public final class MySQLUserManager extends AbstractUserManager implements SaveO
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.removeLeftChannel(id, channel));
     }
 
+    @Override
+    public CompletableFuture<Void> save(CarbonPlayerCommon player) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CompletableFuture<Void> loggedOut(UUID uuid) {
+        throw new UnsupportedOperationException();
+    }
 }

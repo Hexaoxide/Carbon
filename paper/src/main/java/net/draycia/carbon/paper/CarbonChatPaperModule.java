@@ -37,10 +37,12 @@ import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
+import net.draycia.carbon.paper.users.PaperProfileResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -131,6 +133,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.bootstrap.getDataFolder().toPath());
         this.bind(CarbonServer.class).to(CarbonServerPaper.class);
         this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
+        this.bind(ProfileResolver.class).to(PaperProfileResolver.class);
     }
 
 }

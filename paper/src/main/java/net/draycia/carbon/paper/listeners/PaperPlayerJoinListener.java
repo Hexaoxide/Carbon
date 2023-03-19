@@ -22,10 +22,9 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import java.util.Optional;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.util.PlayerUtils;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,15 +38,15 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class PaperPlayerJoinListener implements Listener {
 
     private final CarbonChat carbonChat;
-    private final UserManager<CarbonPlayerCommon> userManager;
+    private final Logger logger;
 
     @Inject
     public PaperPlayerJoinListener(
         final CarbonChat carbonChat,
-        final UserManager<CarbonPlayerCommon> userManager
+        final Logger logger
     ) {
         this.carbonChat = carbonChat;
-        this.userManager = userManager;
+        this.logger = logger;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -62,18 +61,21 @@ public class PaperPlayerJoinListener implements Listener {
                 player.displayName(displayName);
                 player.playerListName(displayName);
             });
+        }).exceptionally(thr -> {
+            this.carbonChat.logger().warn("Exception handling player join", thr);
+            return null;
         });
     }
 
+    @SuppressWarnings("unchecked")
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(final PlayerQuitEvent event) {
-        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
-            if (result.player() == null) {
-                return;
-            }
-
-            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerPaper) result.player());
-        });
+        ((UserManagerInternal<CarbonPlayerPaper>) this.carbonChat.server().userManager())
+            .loggedOut(event.getPlayer().getUniqueId())
+            .exceptionally(thr -> {
+                this.logger.warn("Exception saving data for player " + event.getPlayer().getName() + " with uuid " + event.getPlayer().getUniqueId());
+                return null;
+            });
     }
 
 }

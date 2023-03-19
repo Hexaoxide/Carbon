@@ -25,7 +25,6 @@ import github.scarsz.discordsrv.DiscordSRV;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -37,6 +36,8 @@ import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
@@ -73,7 +74,7 @@ public final class CarbonChatPaper implements CarbonChat {
     private @MonotonicNonNull Logger logger;
     private @MonotonicNonNull Path dataDirectory;
     private @MonotonicNonNull Injector injector;
-    private @MonotonicNonNull UserManager<CarbonPlayerCommon> userManager;
+    private @MonotonicNonNull UserManagerInternal<CarbonPlayerCommon> userManager;
     private @MonotonicNonNull CarbonServer carbonServer;
     private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
@@ -100,7 +101,7 @@ public final class CarbonChatPaper implements CarbonChat {
         this.carbonMessages = carbonMessages;
         this.channelRegistry = channelRegistry;
         this.carbonServer = carbonServer;
-        this.userManager = userManager;
+        this.userManager = (UserManagerInternal<CarbonPlayerCommon>) userManager;
         this.dataDirectory = dataDirectory;
         this.packetService();
     }
@@ -129,7 +130,7 @@ public final class CarbonChatPaper implements CarbonChat {
         final long saveDelay = 5 * 60 * 20;
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
-            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager), saveDelay, saveDelay);
+            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager, this.logger), saveDelay, saveDelay);
 
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
@@ -151,7 +152,8 @@ public final class CarbonChatPaper implements CarbonChat {
     }
 
     void onDisable() {
-        PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager).forEach(CompletableFuture::join);
+        this.injector.getInstance(ProfileResolver.class).shutdown();
+        this.userManager.shutdown();
     }
 
     @Override

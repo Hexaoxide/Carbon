@@ -21,9 +21,6 @@ package net.draycia.carbon.common.users.db.postgresql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -36,13 +33,14 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
-import net.draycia.carbon.common.users.db.AbstractUserManager;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
+import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.users.db.KeyArgumentFactory;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -58,15 +56,13 @@ import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class PostgreSQLUserManager extends AbstractUserManager implements SaveOnChange {
+public final class PostgreSQLUserManager extends DatabaseUserManager implements SaveOnChange {
 
-    private final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
-
-    private PostgreSQLUserManager(final Jdbi jdbi) {
-        super(jdbi, new QueriesLocator(DBType.POSTGRESQL));
+    private PostgreSQLUserManager(final Jdbi jdbi, final Logger logger) {
+        super(jdbi, new QueriesLocator(DBType.POSTGRESQL), logger);
     }
 
-    public static PostgreSQLUserManager manager(final DatabaseSettings databaseSettings) {
+    public static PostgreSQLUserManager manager(final DatabaseSettings databaseSettings, final Logger logger) {
         try {
             Class.forName("org.postgresql.Driver");
             Flyway.configure().getPluginRegister().REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
@@ -98,7 +94,7 @@ public final class PostgreSQLUserManager extends AbstractUserManager implements 
             .installPlugin(new SqlObjectPlugin())
             .installPlugin(new PostgresPlugin());
 
-        return new PostgreSQLUserManager(jdbi);
+        return new PostgreSQLUserManager(jdbi, logger);
     }
 
     @Override
@@ -148,7 +144,12 @@ public final class PostgreSQLUserManager extends AbstractUserManager implements 
                     return new ComponentPlayerResult<>(player, text(""));
                 }
             });
-        }).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
+        }, this.executor).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public CompletableFuture<CarbonPlayerCommon> user(UUID uuid) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -229,4 +230,13 @@ public final class PostgreSQLUserManager extends AbstractUserManager implements 
         return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeLeftChannel(id, channel));
     }
 
+    @Override
+    public CompletableFuture<Void> save(CarbonPlayerCommon player) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CompletableFuture<Void> loggedOut(UUID uuid) {
+        throw new UnsupportedOperationException();
+    }
 }

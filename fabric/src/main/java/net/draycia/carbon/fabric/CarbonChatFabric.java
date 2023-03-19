@@ -128,7 +128,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
     private void registerServerLifecycleListeners() {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
-        ServerLifecycleEvents.SERVER_STOPPING.register($ -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager).forEach(CompletableFuture::join));
+        ServerLifecycleEvents.SERVER_STOPPING.register($ -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger).forEach(CompletableFuture::join));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.minecraftServer = null);
     }
 
@@ -142,7 +142,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getTickCount() != 0 && server.getTickCount() % saveDelay == 0) {
-                PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager);
+                PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger);
             }
         });
     }

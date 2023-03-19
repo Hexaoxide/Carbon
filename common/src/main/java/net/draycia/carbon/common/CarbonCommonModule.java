@@ -50,6 +50,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.message.IMessageRenderer;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -60,11 +61,12 @@ public final class CarbonCommonModule extends AbstractModule {
     @Singleton
     public UserManager<CarbonPlayerCommon> userManager(
         final ConfigFactory configFactory,
-        final Injector injector
+        final Injector injector,
+        final Logger logger
     ) {
         return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
-            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger);
+            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger);
             default -> injector.getInstance(JSONUserManager.class);
         };
     }

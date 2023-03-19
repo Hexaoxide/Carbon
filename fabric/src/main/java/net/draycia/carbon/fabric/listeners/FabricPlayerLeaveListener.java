@@ -48,6 +48,8 @@ public class FabricPlayerLeaveListener implements ServerPlayConnectionEvents.Dis
 
     @Override
     public void onPlayDisconnect(final ServerGamePacketListenerImpl handler, final MinecraftServer server) {
+        // todo
+        /*
         this.carbonChat.server().userManager().carbonPlayer(handler.getPlayer().getUUID()).thenAccept(result -> {
             if (result.player() == null) {
                 return;
@@ -55,6 +57,7 @@ public class FabricPlayerLeaveListener implements ServerPlayConnectionEvents.Dis
 
             PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerFabric) result.player());
         });
+         */
     }
 
 }

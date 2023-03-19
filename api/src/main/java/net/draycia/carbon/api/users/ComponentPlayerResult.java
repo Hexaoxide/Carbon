@@ -21,6 +21,7 @@ package net.draycia.carbon.api.users;
 
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The result of a player data operation.
@@ -29,6 +30,8 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
  * @param reason the reason of the result, typically empty unless {@link #player} is null
  * @since 2.0.0
  */
+@Deprecated(forRemoval = true)
+@ApiStatus.Internal
 public record ComponentPlayerResult<C extends CarbonPlayer>(@MonotonicNonNull C player, Component reason) {
 
 }

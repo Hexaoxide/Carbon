@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Manager used to load/obtain and save {@link CarbonPlayer CarbonPlayers}.
@@ -39,7 +40,10 @@ public interface UserManager<C extends CarbonPlayer> {
      * @return the result
      * @since 2.0.0
      */
+    @Deprecated(forRemoval = true)
     CompletableFuture<ComponentPlayerResult<C>> carbonPlayer(final UUID uuid);
+
+    CompletableFuture<C> user(final UUID uuid);
 
     /**
      * Saves the {@link CarbonPlayer} and returns the result.
@@ -48,6 +52,8 @@ public interface UserManager<C extends CarbonPlayer> {
      * @return the result
      * @since 2.0.0
      */
+    @ApiStatus.Internal
+    @Deprecated(forRemoval = true)
     CompletableFuture<ComponentPlayerResult<C>> savePlayer(final C player);
 
     /**
@@ -57,6 +63,8 @@ public interface UserManager<C extends CarbonPlayer> {
      * @return the result
      * @since 2.0.0
      */
+    @ApiStatus.Internal
+    @Deprecated(forRemoval = true)
     CompletableFuture<ComponentPlayerResult<C>> saveAndInvalidatePlayer(final C player);
 
 }

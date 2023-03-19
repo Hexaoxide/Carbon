@@ -25,6 +25,7 @@ import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -33,7 +34,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class FabricUserManager implements UserManager<CarbonPlayerFabric>, SaveOnChange {
+public class FabricUserManager implements UserManagerInternal<CarbonPlayerFabric>, SaveOnChange {
 
     protected final UserManager<CarbonPlayerCommon> proxiedUserManager;
     private final CarbonChatFabric carbonChatFabric;
@@ -45,35 +46,30 @@ public class FabricUserManager implements UserManager<CarbonPlayerFabric>, SaveO
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerFabric>> carbonPlayer(final UUID uuid) {
-        return this.proxiedUserManager.carbonPlayer(uuid).thenApply(result -> {
-            if (result.player() == null) {
-                return new ComponentPlayerResult<>(null, result.reason());
-            }
+        return this.proxiedUserManager.carbonPlayer(uuid).thenApply(this::wrapResult);
+    }
 
-            return new ComponentPlayerResult<>(new CarbonPlayerFabric(result.player(), this.carbonChatFabric), result.reason());
-        });
+    @Override
+    public CompletableFuture<CarbonPlayerFabric> user(UUID uuid) {
+        return this.proxiedUserManager.user(uuid).thenApply(result -> new CarbonPlayerFabric(result, this.carbonChatFabric));
     }
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerFabric>> savePlayer(final CarbonPlayerFabric player) {
-        return this.proxiedUserManager.savePlayer(player.carbonPlayerCommon()).thenApply(result -> {
-            if (result.player() == null) {
-                return new ComponentPlayerResult<>(null, result.reason());
-            }
-
-            return new ComponentPlayerResult<>(new CarbonPlayerFabric(result.player(), this.carbonChatFabric), result.reason());
-        });
+        return this.proxiedUserManager.savePlayer(player.carbonPlayerCommon()).thenApply(this::wrapResult);
     }
 
     @Override
     public CompletableFuture<ComponentPlayerResult<CarbonPlayerFabric>> saveAndInvalidatePlayer(final CarbonPlayerFabric player) {
-        return this.proxiedUserManager.saveAndInvalidatePlayer(player.carbonPlayerCommon()).thenApply(result -> {
-            if (result.player() == null) {
-                return new ComponentPlayerResult<>(null, result.reason());
-            }
+        return this.proxiedUserManager.saveAndInvalidatePlayer(player.carbonPlayerCommon()).thenApply(this::wrapResult);
+    }
 
-            return new ComponentPlayerResult<>(new CarbonPlayerFabric(result.player(), this.carbonChatFabric), result.reason());
-        });
+    private ComponentPlayerResult<CarbonPlayerFabric> wrapResult(final ComponentPlayerResult<CarbonPlayerCommon> result) {
+        if (result.player() == null) {
+            return new ComponentPlayerResult<>(null, result.reason());
+        }
+
+        return new ComponentPlayerResult<>(new CarbonPlayerFabric(result.player(), this.carbonChatFabric), result.reason());
     }
 
     @Override
@@ -174,4 +170,18 @@ public class FabricUserManager implements UserManager<CarbonPlayerFabric>, SaveO
         return -1;
     }
 
+    @Override
+    public void shutdown() {
+        ((UserManagerInternal<?>) this.proxiedUserManager).shutdown();
+    }
+
+    @Override
+    public CompletableFuture<Void> save(CarbonPlayerFabric player) {
+        return ((UserManagerInternal<CarbonPlayerCommon>) this.proxiedUserManager).save(player.carbonPlayerCommon());
+    }
+
+    @Override
+    public CompletableFuture<Void> loggedOut(final UUID uuid) {
+        return ((UserManagerInternal<?>) this.proxiedUserManager).loggedOut(uuid);
+    }
 }
