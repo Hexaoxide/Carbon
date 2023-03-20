@@ -40,7 +40,7 @@ public class MojangProfileResolver implements ProfileResolver {
     }
 
     @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
+    public synchronized CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
         return this.pendingUuidLookups.computeIfAbsent(username, $ -> {
             final CompletableFuture<@Nullable UUID> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
@@ -74,7 +74,7 @@ public class MojangProfileResolver implements ProfileResolver {
     }
 
     @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
+    public synchronized CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
         return this.pendingUsernameLookups.computeIfAbsent(uuid, $ -> {
             final CompletableFuture<@Nullable String> mojangLookup =  CompletableFuture.supplyAsync(() -> {
                 try {
