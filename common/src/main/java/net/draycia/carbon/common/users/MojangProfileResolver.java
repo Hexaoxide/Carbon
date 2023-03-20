@@ -51,7 +51,7 @@ public class MojangProfileResolver implements ProfileResolver {
 
                     final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                    if (response == null || response.statusCode() == 204 ) {
+                    if (response == null || response.statusCode() != 200) {
                         return null;
                     }
 
@@ -79,13 +79,13 @@ public class MojangProfileResolver implements ProfileResolver {
             final CompletableFuture<@Nullable String> mojangLookup =  CompletableFuture.supplyAsync(() -> {
                 try {
                     final HttpRequest request = HttpRequest.newBuilder()
-                        .uri(new URI("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", "")))
+                        .uri(new URI("https://api.mojang.com/user/profile/" + uuid.toString().replace("-", "")))
                         .GET()
                         .build();
 
                     final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                    if (response == null || response.statusCode() == 204 ) {
+                    if (response == null || response.statusCode() != 200) {
                         return null;
                     }
 
