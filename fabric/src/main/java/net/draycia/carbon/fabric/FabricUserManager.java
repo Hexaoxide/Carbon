@@ -19,169 +19,27 @@
  */
 package net.draycia.carbon.fabric;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.SaveOnChange;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class FabricUserManager implements UserManagerInternal<CarbonPlayerFabric>, SaveOnChange {
+public class FabricUserManager extends PlatformUserManager<CarbonPlayerFabric> {
 
-    protected final UserManager<CarbonPlayerCommon> proxiedUserManager;
     private final CarbonChatFabric carbonChatFabric;
 
     public FabricUserManager(final UserManager<CarbonPlayerCommon> proxiedUserManager, final CarbonChatFabric carbonChatFabric) {
-        this.proxiedUserManager = proxiedUserManager;
+        super((UserManagerInternal<CarbonPlayerCommon>) proxiedUserManager);
         this.carbonChatFabric = carbonChatFabric;
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerFabric>> carbonPlayer(final UUID uuid) {
-        return this.proxiedUserManager.carbonPlayer(uuid).thenApply(this::wrapResult);
+    protected CarbonPlayerFabric wrap(final CarbonPlayerCommon common) {
+        return new CarbonPlayerFabric(common, this.carbonChatFabric);
     }
 
-    @Override
-    public CompletableFuture<CarbonPlayerFabric> user(UUID uuid) {
-        return this.proxiedUserManager.user(uuid).thenApply(result -> new CarbonPlayerFabric(result, this.carbonChatFabric));
-    }
-
-    @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerFabric>> savePlayer(final CarbonPlayerFabric player) {
-        return this.proxiedUserManager.savePlayer(player.carbonPlayerCommon()).thenApply(this::wrapResult);
-    }
-
-    @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerFabric>> saveAndInvalidatePlayer(final CarbonPlayerFabric player) {
-        return this.proxiedUserManager.saveAndInvalidatePlayer(player.carbonPlayerCommon()).thenApply(this::wrapResult);
-    }
-
-    private ComponentPlayerResult<CarbonPlayerFabric> wrapResult(final ComponentPlayerResult<CarbonPlayerCommon> result) {
-        if (result.player() == null) {
-            return new ComponentPlayerResult<>(null, result.reason());
-        }
-
-        return new ComponentPlayerResult<>(new CarbonPlayerFabric(result.player(), this.carbonChatFabric), result.reason());
-    }
-
-    @Override
-    public int saveDisplayName(final UUID id, final @Nullable Component component) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.saveDisplayName(id, component);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int saveMuted(final UUID id, final boolean muted) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.saveMuted(id, muted);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int saveDeafened(final UUID id, final boolean deafened) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.saveDeafened(id, deafened);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int saveSpying(final UUID id, final boolean spying) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.saveSpying(id, spying);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.saveSelectedChannel(id, selectedChannel);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.saveLastWhisperTarget(id, lastWhisperTarget);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.saveWhisperReplyTarget(id, whisperReplyTarget);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int addIgnore(final UUID id, final UUID ignoredPlayer) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.addIgnore(id, ignoredPlayer);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int removeIgnore(final UUID id, final UUID ignoredPlayer) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.removeIgnore(id, ignoredPlayer);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int addLeftChannel(final UUID id, final Key channel) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.addLeftChannel(id, channel);
-        }
-
-        return -1;
-    }
-
-    @Override
-    public int removeLeftChannel(final UUID id, final Key channel) {
-        if (this.proxiedUserManager instanceof SaveOnChange saveOnChange) {
-            return saveOnChange.removeLeftChannel(id, channel);
-        }
-        return -1;
-    }
-
-    @Override
-    public void shutdown() {
-        ((UserManagerInternal<?>) this.proxiedUserManager).shutdown();
-    }
-
-    @Override
-    public CompletableFuture<Void> save(CarbonPlayerFabric player) {
-        return ((UserManagerInternal<CarbonPlayerCommon>) this.proxiedUserManager).save(player.carbonPlayerCommon());
-    }
-
-    @Override
-    public CompletableFuture<Void> loggedOut(final UUID uuid) {
-        return ((UserManagerInternal<?>) this.proxiedUserManager).loggedOut(uuid);
-    }
 }

@@ -21,9 +21,10 @@ package net.draycia.carbon.api.users;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.ComponentMessageThrowable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Manager used to load/obtain and save {@link CarbonPlayer CarbonPlayers}.
@@ -41,30 +42,12 @@ public interface UserManager<C extends CarbonPlayer> {
      * @since 2.0.0
      */
     @Deprecated(forRemoval = true)
-    CompletableFuture<ComponentPlayerResult<C>> carbonPlayer(final UUID uuid);
+    default CompletableFuture<ComponentPlayerResult<C>> carbonPlayer(final UUID uuid) {
+        return this.user(uuid)
+            .thenApply(user -> new ComponentPlayerResult<>(user, Component.empty()))
+            .exceptionally(thr -> new ComponentPlayerResult<>(null, ComponentMessageThrowable.getOrConvertMessage(thr)));
+    }
 
     CompletableFuture<C> user(final UUID uuid);
-
-    /**
-     * Saves the {@link CarbonPlayer} and returns the result.
-     *
-     * @param player the player to save
-     * @return the result
-     * @since 2.0.0
-     */
-    @ApiStatus.Internal
-    @Deprecated(forRemoval = true)
-    CompletableFuture<ComponentPlayerResult<C>> savePlayer(final C player);
-
-    /**
-     * Saves the {@link CarbonPlayer}, returns the result, and invalidates the player entry.
-     *
-     * @param player the player to save
-     * @return the result
-     * @since 2.0.0
-     */
-    @ApiStatus.Internal
-    @Deprecated(forRemoval = true)
-    CompletableFuture<ComponentPlayerResult<C>> saveAndInvalidatePlayer(final C player);
 
 }

@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
@@ -39,8 +38,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
-
-import static net.kyori.adventure.text.Component.empty;
 
 @DefaultQualifier(NonNull.class)
 public abstract class DatabaseUserManager implements UserManagerInternal<CarbonPlayerCommon> {
@@ -60,8 +57,8 @@ public abstract class DatabaseUserManager implements UserManagerInternal<CarbonP
     }
 
     @Override
-    final public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
-        return CompletableFuture.supplyAsync(() -> this.jdbi.withHandle(handle -> {
+    final public CompletableFuture<Void> save(final CarbonPlayerCommon player) {
+        return CompletableFuture.runAsync(() -> this.jdbi.withHandle(handle -> {
             this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
                 .execute();
 
@@ -84,7 +81,7 @@ public abstract class DatabaseUserManager implements UserManagerInternal<CarbonP
                 batch.execute();
             }
             // TODO: save ignoredplayers
-            return new ComponentPlayerResult<>(player, empty());
+            return null;
         }), this.executor);
     }
 

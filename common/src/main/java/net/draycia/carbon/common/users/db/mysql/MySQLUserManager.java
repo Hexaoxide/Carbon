@@ -25,12 +25,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.SaveOnChange;
@@ -49,9 +47,6 @@ import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
-
-import static net.kyori.adventure.text.Component.empty;
-import static net.kyori.adventure.text.Component.text;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
@@ -104,9 +99,9 @@ public final class MySQLUserManager extends DatabaseUserManager implements SaveO
     }
 
     @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
+    public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
-            final var playerResult = this.userCache.computeIfAbsent(uuid, key -> this.jdbi.withHandle(handle -> {
+            return this.userCache.computeIfAbsent(uuid, key -> this.jdbi.withHandle(handle -> {
                 final Optional<CarbonPlayerCommon> carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
                     .bind("id", uuid)
                     .mapTo(CarbonPlayerCommon.class)
@@ -140,14 +135,7 @@ public final class MySQLUserManager extends DatabaseUserManager implements SaveO
                     });
                 return carbonPlayerCommon.get();
             }));
-
-            return new ComponentPlayerResult<>(playerResult, empty());
-        }, this.executor).completeOnTimeout(new ComponentPlayerResult<>(null, text("Timed out loading data of UUID [" + uuid + " ]")), 30, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public CompletableFuture<CarbonPlayerCommon> user(UUID uuid) {
-        throw new UnsupportedOperationException();
+        }, this.executor);
     }
 
     @Override
@@ -162,15 +150,6 @@ public final class MySQLUserManager extends DatabaseUserManager implements SaveO
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying());
-    }
-
-    @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(final CarbonPlayerCommon player) {
-        return this.savePlayer(player).thenApply(result -> {
-            this.userCache.remove(player.uuid());
-
-            return result;
-        });
     }
 
     @Override
@@ -226,11 +205,6 @@ public final class MySQLUserManager extends DatabaseUserManager implements SaveO
     @Override
     public int removeLeftChannel(final UUID id, final Key channel) {
         return this.jdbi.withExtension(MySQLSaveOnChange.class, changeSaver -> changeSaver.removeLeftChannel(id, channel));
-    }
-
-    @Override
-    public CompletableFuture<Void> save(CarbonPlayerCommon player) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

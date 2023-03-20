@@ -37,7 +37,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
@@ -45,13 +44,10 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.util.ComponentMessageThrowable;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import static net.kyori.adventure.text.Component.empty;
 
 @DefaultQualifier(NonNull.class)
 public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> {
@@ -85,13 +81,6 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
         this.emptyUserJson = this.serializer.toJson(new CarbonPlayerCommon("username", UUID.fromString(EMPTY_USER_UUID)));
 
         this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager"));
-    }
-
-    @Override
-    public synchronized CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> carbonPlayer(final UUID uuid) {
-        return this.user(uuid)
-            .thenApply(user -> new ComponentPlayerResult<>(user, empty()))
-            .exceptionally(thr -> new ComponentPlayerResult<>(null, ComponentMessageThrowable.getOrConvertMessage(thr)));
     }
 
     @Override
@@ -166,11 +155,6 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
                 throw new RuntimeException("Exception while saving data for player [%s]".formatted(player.username()), exception);
             }
         }, this.executor);
-    }
-
-    @Override
-    public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> saveAndInvalidatePlayer(final CarbonPlayerCommon player) {
-        return this.loggedOut(player.uuid()).thenApply($ -> new ComponentPlayerResult<>(player, null));
     }
 
     @Override
