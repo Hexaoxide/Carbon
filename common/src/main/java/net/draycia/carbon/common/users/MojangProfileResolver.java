@@ -8,8 +8,15 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import net.draycia.carbon.common.util.ConcurrentUtil;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -20,62 +27,89 @@ public class MojangProfileResolver implements ProfileResolver {
     private final HttpClient client;
     private final Gson gson;
 
-    public MojangProfileResolver() {
+    private final ExecutorService executorService;
+
+    private final Map<String, CompletableFuture<@Nullable UUID>> pendingUuidLookups = new HashMap<>();
+    private final Map<UUID, CompletableFuture<@Nullable String>> pendingUsernameLookups = new HashMap<>();
+
+    public MojangProfileResolver(final Logger logger) {
         this.client = HttpClient.newHttpClient();
         this.gson = new Gson();
+
+        this.executorService = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "MojangProfileResolver"));
     }
 
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                final HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://api.mojang.com/users/profiles/minecraft/" + username))
-                    .GET()
-                    .build();
+        return this.pendingUuidLookups.computeIfAbsent(username, $ -> {
+            final CompletableFuture<@Nullable UUID> mojangLookup = CompletableFuture.supplyAsync(() -> {
+                try {
+                    final HttpRequest request = HttpRequest.newBuilder()
+                        .uri(new URI("https://api.mojang.com/users/profiles/minecraft/" + username))
+                        .GET()
+                        .build();
 
-                final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                if (response == null || response.statusCode() == 204 ) {
-                    return null;
+                    if (response == null || response.statusCode() == 204 ) {
+                        return null;
+                    }
+
+                    final BasicLookupResponse basicLookupResponse = gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>(){}.getType());
+
+                    return basicLookupResponse.id();
+                } catch (final URISyntaxException | IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+            }, this.executorService);
 
-                final BasicLookupResponse basicLookupResponse = gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>(){}.getType());
+            mojangLookup.whenComplete((result, $$$) -> {
+                synchronized (this) {
+                    this.pendingUuidLookups.remove(username);
+                }
+            });
 
-                return basicLookupResponse.id();
-            } catch (final URISyntaxException | IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            return mojangLookup;
         });
     }
 
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                final HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", "")))
-                    .GET()
-                    .build();
+        return this.pendingUsernameLookups.computeIfAbsent(uuid, $ -> {
+            final CompletableFuture<@Nullable String> mojangLookup =  CompletableFuture.supplyAsync(() -> {
+                try {
+                    final HttpRequest request = HttpRequest.newBuilder()
+                        .uri(new URI("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", "")))
+                        .GET()
+                        .build();
 
-                final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                if (response == null || response.statusCode() == 204 ) {
-                    return null;
+                    if (response == null || response.statusCode() == 204 ) {
+                        return null;
+                    }
+
+                    final BasicLookupResponse basicLookupResponse = gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>(){}.getType());
+
+                    return basicLookupResponse.name();
+                } catch (final URISyntaxException | IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+            }, this.executorService);
 
-                final BasicLookupResponse basicLookupResponse = gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>(){}.getType());
+            mojangLookup.whenComplete((result, $$$) -> {
+                synchronized (this) {
+                    this.pendingUsernameLookups.remove(uuid);
+                }
+            });
 
-                return basicLookupResponse.name();
-            } catch (final URISyntaxException | IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            return mojangLookup;
         });
     }
 
     @Override
     public void shutdown() {
-
+        ConcurrentUtil.shutdownExecutor(this.executorService, TimeUnit.MILLISECONDS, 500);
     }
 
     private record BasicLookupResponse(UUID id, String name) {
