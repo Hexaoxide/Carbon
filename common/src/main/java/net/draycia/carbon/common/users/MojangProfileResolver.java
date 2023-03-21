@@ -54,20 +54,25 @@ public final class MojangProfileResolver implements ProfileResolver {
     private final ExecutorService executorService;
     private final Map<String, CompletableFuture<@Nullable BasicLookupResponse>> pendingUuidLookups = new HashMap<>();
     private final Map<UUID, CompletableFuture<@Nullable BasicLookupResponse>> pendingUsernameLookups = new HashMap<>();
+    private final ProfileCache cache;
 
     @Inject
-    private MojangProfileResolver(final Logger logger) {
+    private MojangProfileResolver(final Logger logger, final ProfileCache cache) {
         this.client = HttpClient.newHttpClient();
         this.gson = new GsonBuilder()
             .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
             .create();
         this.executorService = Executors.newFixedThreadPool(2, ConcurrentUtil.carbonThreadFactory(logger, "MojangProfileResolver"));
+        this.cache = cache;
     }
 
     @Override
     public synchronized CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
         if (username.length() > 25 || username.length() < 1) { // Invalid names
             return CompletableFuture.completedFuture(null);
+        }
+        if (this.cache.hasCachedEntry(username)) {
+            return CompletableFuture.completedFuture(this.cache.cachedId(username));
         }
         return this.pendingUuidLookups.computeIfAbsent(username, $ -> {
             final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
@@ -83,6 +88,7 @@ public final class MojangProfileResolver implements ProfileResolver {
 
             mojangLookup.whenComplete((result, $$$) -> {
                 synchronized (this) {
+                    this.cache.cache(result == null ? null : result.id(), username);
                     this.pendingUuidLookups.remove(username);
                 }
             });
@@ -98,6 +104,9 @@ public final class MojangProfileResolver implements ProfileResolver {
 
     @Override
     public synchronized CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
+        if (this.cache.hasCachedEntry(uuid)) {
+            return CompletableFuture.completedFuture(this.cache.cachedName(uuid));
+        }
         return this.pendingUsernameLookups.computeIfAbsent(uuid, $ -> {
             final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
@@ -112,6 +121,7 @@ public final class MojangProfileResolver implements ProfileResolver {
 
             mojangLookup.whenComplete((result, $$$) -> {
                 synchronized (this) {
+                    this.cache.cache(uuid, result == null ? null : result.name());
                     this.pendingUsernameLookups.remove(uuid);
                 }
             });

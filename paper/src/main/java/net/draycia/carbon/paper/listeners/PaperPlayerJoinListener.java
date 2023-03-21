@@ -22,6 +22,7 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import java.util.Optional;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import org.apache.logging.log4j.Logger;
@@ -39,18 +40,22 @@ public class PaperPlayerJoinListener implements Listener {
 
     private final CarbonChat carbonChat;
     private final Logger logger;
+    private final ProfileCache profileCache;
 
     @Inject
     public PaperPlayerJoinListener(
         final CarbonChat carbonChat,
-        final Logger logger
+        final Logger logger,
+        final ProfileCache profileCache
     ) {
         this.carbonChat = carbonChat;
         this.logger = logger;
+        this.profileCache = profileCache;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
+        this.profileCache.cache(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         this.carbonChat.server().userManager().user(event.getPlayer().getUniqueId()).thenAccept(result -> {
             Optional.ofNullable(result.displayName()).ifPresent(displayName -> {
                 final Player player = event.getPlayer();

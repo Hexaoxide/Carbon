@@ -37,6 +37,7 @@ import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
@@ -133,6 +134,9 @@ public final class CarbonChatPaper implements CarbonChat {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager, this.logger), saveDelay, saveDelay);
 
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
+            () -> this.injector.getInstance(ProfileCache.class).save(), 20 * 60 * 15, 20 * 60 * 15);
+
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
 
@@ -153,6 +157,7 @@ public final class CarbonChatPaper implements CarbonChat {
     }
 
     void onDisable() {
+        this.injector.getInstance(ProfileCache.class).save();
         this.injector.getInstance(ProfileResolver.class).shutdown();
         this.userManager.shutdown();
         this.injector.getInstance(ExecutionCoordinatorHolder.class).shutdown();
