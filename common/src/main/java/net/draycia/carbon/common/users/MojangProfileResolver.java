@@ -39,7 +39,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -53,8 +52,8 @@ public final class MojangProfileResolver implements ProfileResolver {
     private final HttpClient client;
     private final Gson gson;
     private final ExecutorService executorService;
-    private final Map<String, CompletableFuture<@Nullable UUID>> pendingUuidLookups = new HashMap<>();
-    private final Map<UUID, CompletableFuture<@Nullable String>> pendingUsernameLookups = new HashMap<>();
+    private final Map<String, CompletableFuture<@Nullable BasicLookupResponse>> pendingUuidLookups = new HashMap<>();
+    private final Map<UUID, CompletableFuture<@Nullable BasicLookupResponse>> pendingUsernameLookups = new HashMap<>();
 
     @Inject
     private MojangProfileResolver(final Logger logger) {
@@ -68,12 +67,12 @@ public final class MojangProfileResolver implements ProfileResolver {
     @Override
     public synchronized CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
         return this.pendingUuidLookups.computeIfAbsent(username, $ -> {
-            final CompletableFuture<@Nullable UUID> mojangLookup = CompletableFuture.supplyAsync(() -> {
+            final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
                     final HttpRequest request = createRequest(
                         "https://api.mojang.com/users/profiles/minecraft/" + username);
 
-                    return this.sendRequest(request, BasicLookupResponse::id);
+                    return this.sendRequest(request);
                 } catch (final Exception e) {
                     throw new RuntimeException("Exception resolving UUID for name " + username, e);
                 }
@@ -86,18 +85,23 @@ public final class MojangProfileResolver implements ProfileResolver {
             });
 
             return mojangLookup;
+        }).thenApply(response -> {
+            if (response == null) {
+                return null;
+            }
+            return response.id();
         });
     }
 
     @Override
     public synchronized CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
         return this.pendingUsernameLookups.computeIfAbsent(uuid, $ -> {
-            final CompletableFuture<@Nullable String> mojangLookup = CompletableFuture.supplyAsync(() -> {
+            final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
                     final HttpRequest request = createRequest(
                         "https://api.mojang.com/user/profile/" + uuid.toString().replace("-", ""));
 
-                    return this.sendRequest(request, BasicLookupResponse::name);
+                    return this.sendRequest(request);
                 } catch (final Exception e) {
                     throw new RuntimeException("Exception resolving name for UUID " + uuid, e);
                 }
@@ -110,6 +114,11 @@ public final class MojangProfileResolver implements ProfileResolver {
             });
 
             return mojangLookup;
+        }).thenApply(response -> {
+            if (response == null) {
+                return null;
+            }
+            return response.name();
         });
     }
 
@@ -120,7 +129,7 @@ public final class MojangProfileResolver implements ProfileResolver {
             .build();
     }
 
-    private <T> @Nullable T sendRequest(final HttpRequest request, final Function<BasicLookupResponse, @Nullable T> mapper) throws IOException, InterruptedException {
+    private @Nullable BasicLookupResponse sendRequest(final HttpRequest request) throws IOException, InterruptedException {
         final HttpResponse<String> response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response == null) {
@@ -135,7 +144,7 @@ public final class MojangProfileResolver implements ProfileResolver {
         if (basicLookupResponse == null) {
             throw new RuntimeException("Malformed response body for request " + request + ": '" + response.body() + "'");
         }
-        return mapper.apply(basicLookupResponse);
+        return basicLookupResponse;
     }
 
     @Override
