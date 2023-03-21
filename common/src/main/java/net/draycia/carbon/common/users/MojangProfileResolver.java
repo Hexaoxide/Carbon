@@ -223,7 +223,7 @@ public final class MojangProfileResolver implements ProfileResolver {
         private final Timer timer;
 
         private RateLimiter() {
-            this.timer = new Timer("CarbonChat MojangProfileResolver.RateLimiter");
+            this.timer = new Timer("CarbonChat " + this);
             this.timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
