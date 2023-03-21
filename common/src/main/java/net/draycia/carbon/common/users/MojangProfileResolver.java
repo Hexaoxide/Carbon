@@ -66,6 +66,9 @@ public final class MojangProfileResolver implements ProfileResolver {
 
     @Override
     public synchronized CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
+        if (username.length() > 25 || username.length() < 1) { // Invalid names
+            return CompletableFuture.completedFuture(null);
+        }
         return this.pendingUuidLookups.computeIfAbsent(username, $ -> {
             final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
@@ -134,7 +137,14 @@ public final class MojangProfileResolver implements ProfileResolver {
 
         if (response == null) {
             throw new RuntimeException("Null response for request " + request);
+        } else if (response.statusCode() == 429) {
+            // todo
+            throw new IllegalStateException("Rate limited");
         } else if (response.statusCode() == 404) {
+            // No such profile
+            return null;
+        } else if (response.statusCode() == 400) {
+            // Invalid name/UUID
             return null;
         } else if (response.statusCode() != 200) {
             throw new RuntimeException("Received non-200 response code (" + response.statusCode() + ") for request " + request + ": " + response.body());
