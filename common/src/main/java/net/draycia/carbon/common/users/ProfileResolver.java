@@ -28,9 +28,17 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface ProfileResolver {
 
-    CompletableFuture<@Nullable UUID> resolveUUID(String username);
+    CompletableFuture<@Nullable UUID> resolveUUID(String username, boolean cacheOnly);
 
-    CompletableFuture<@Nullable String> resolveName(UUID uuid);
+    default CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
+        return this.resolveUUID(username, false);
+    }
+
+    CompletableFuture<@Nullable String> resolveName(UUID uuid, boolean cacheOnly);
+
+    default CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
+        return this.resolveName(uuid, false);
+    }
 
     void shutdown();
 

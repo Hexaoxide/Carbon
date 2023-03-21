@@ -76,7 +76,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
+    public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
         final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username);
         if (serverPlayer == null) {
             return CompletableFuture.completedFuture(null);
@@ -85,7 +85,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
+    public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
         final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid);
         if (serverPlayer == null) {
             return CompletableFuture.completedFuture(null);

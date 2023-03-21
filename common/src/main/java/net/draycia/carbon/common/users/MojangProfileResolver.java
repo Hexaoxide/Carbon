@@ -32,12 +32,16 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +49,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-// todo rate limit handling
 @DefaultQualifier(NonNull.class)
 public final class MojangProfileResolver implements ProfileResolver {
 
@@ -55,6 +58,7 @@ public final class MojangProfileResolver implements ProfileResolver {
     private final Map<String, CompletableFuture<@Nullable BasicLookupResponse>> pendingUuidLookups = new HashMap<>();
     private final Map<UUID, CompletableFuture<@Nullable BasicLookupResponse>> pendingUsernameLookups = new HashMap<>();
     private final ProfileCache cache;
+    private final RateLimiter rateLimiter;
 
     @Inject
     private MojangProfileResolver(final Logger logger, final ProfileCache cache) {
@@ -64,17 +68,21 @@ public final class MojangProfileResolver implements ProfileResolver {
             .create();
         this.executorService = Executors.newFixedThreadPool(2, ConcurrentUtil.carbonThreadFactory(logger, "MojangProfileResolver"));
         this.cache = cache;
+        this.rateLimiter = new RateLimiter();
     }
 
     @Override
-    public synchronized CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
+    public synchronized CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
         if (username.length() > 25 || username.length() < 1) { // Invalid names
             return CompletableFuture.completedFuture(null);
         }
-        if (this.cache.hasCachedEntry(username)) {
+        if (cacheOnly || this.cache.hasCachedEntry(username)) {
             return CompletableFuture.completedFuture(this.cache.cachedId(username));
         }
         return this.pendingUuidLookups.computeIfAbsent(username, $ -> {
+            if (!this.rateLimiter.canSubmit()) {
+                return CompletableFuture.completedFuture(null);
+            }
             final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
                     final HttpRequest request = createRequest(
@@ -103,11 +111,14 @@ public final class MojangProfileResolver implements ProfileResolver {
     }
 
     @Override
-    public synchronized CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
-        if (this.cache.hasCachedEntry(uuid)) {
+    public synchronized CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
+        if (cacheOnly || this.cache.hasCachedEntry(uuid)) {
             return CompletableFuture.completedFuture(this.cache.cachedName(uuid));
         }
         return this.pendingUsernameLookups.computeIfAbsent(uuid, $ -> {
+            if (!this.rateLimiter.canSubmit()) {
+                return CompletableFuture.completedFuture(null);
+            }
             final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
                     final HttpRequest request = createRequest(
@@ -148,8 +159,7 @@ public final class MojangProfileResolver implements ProfileResolver {
         if (response == null) {
             throw new RuntimeException("Null response for request " + request);
         } else if (response.statusCode() == 429) {
-            // todo
-            throw new IllegalStateException("Rate limited");
+            throw new RuntimeException("Got rate-limited by Mojang, could not fulfill request: " + request);
         } else if (response.statusCode() == 404) {
             // No such profile
             return null;
@@ -170,6 +180,7 @@ public final class MojangProfileResolver implements ProfileResolver {
     @Override
     public void shutdown() {
         ConcurrentUtil.shutdownExecutor(this.executorService, TimeUnit.MILLISECONDS, 500);
+        this.rateLimiter.shutdown();
     }
 
     private record BasicLookupResponse(UUID id, String name) {
@@ -199,6 +210,39 @@ public final class MojangProfileResolver implements ProfileResolver {
 
         private static UUID fromString(final String input) {
             return UUID.fromString(input.replaceFirst(REGEX, "$1-$2-$3-$4-$5"));
+        }
+
+    }
+
+    private static final class RateLimiter {
+
+        // Mojang rate limit is 600 requests per ten minutes
+        private static final int RATE_LIMIT = 600;
+
+        private final Semaphore semaphore = new Semaphore(RATE_LIMIT);
+        private final Timer timer;
+
+        private RateLimiter() {
+            this.timer = new Timer("MojangProfileResolver.RateLimiter");
+            this.timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    synchronized (RateLimiter.this) {
+                        final int release = RATE_LIMIT - RateLimiter.this.semaphore.availablePermits();
+                        if (release > 0) {
+                            RateLimiter.this.semaphore.release(release);
+                        }
+                    }
+                }
+            }, 0L, Duration.ofMinutes(10).toMillis());
+        }
+
+        synchronized boolean canSubmit() {
+            return this.semaphore.tryAcquire();
+        }
+
+        void shutdown() {
+            this.timer.cancel();
         }
 
     }

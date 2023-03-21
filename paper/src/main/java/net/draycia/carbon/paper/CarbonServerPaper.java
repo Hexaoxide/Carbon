@@ -77,13 +77,13 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
     }
 
     @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        return this.profileResolver.resolveUUID(username);
+    public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
+        return this.profileResolver.resolveUUID(username, cacheOnly);
     }
 
     @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
-        return this.profileResolver.resolveName(uuid);
+    public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
+        return this.profileResolver.resolveName(uuid, cacheOnly);
     }
 
 }

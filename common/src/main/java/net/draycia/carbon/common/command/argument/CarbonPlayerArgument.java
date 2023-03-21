@@ -165,7 +165,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
                 ));
             }
 
-            final @Nullable CarbonPlayer join = CarbonChatProvider.carbonChat().server().resolveUUID(input).thenCompose(uuid -> {
+            final @Nullable CarbonPlayer join = CarbonChatProvider.carbonChat().server().resolveUUID(input, commandContext.isSuggestions()).thenCompose(uuid -> {
                 if (uuid == null) {
                     return CompletableFuture.completedFuture(null);
                 }

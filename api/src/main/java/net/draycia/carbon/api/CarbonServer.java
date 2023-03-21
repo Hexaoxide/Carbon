@@ -28,6 +28,7 @@ import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The server that carbon is running on.
@@ -68,7 +69,8 @@ public interface CarbonServer extends Audience {
      * @return the user's UUID
      * @since 2.0.0
      */
-    CompletableFuture<@Nullable UUID> resolveUUID(final String username);
+    @ApiStatus.Internal
+    CompletableFuture<@Nullable UUID> resolveUUID(String username, boolean cacheOnly);
 
     /**
      * Obtains the desired player's name.
@@ -77,6 +79,12 @@ public interface CarbonServer extends Audience {
      * @return the user's name
      * @since 2.0.0
      */
-    CompletableFuture<@Nullable String> resolveName(final UUID uuid);
+    @ApiStatus.Internal
+    CompletableFuture<@Nullable String> resolveName(UUID uuid, boolean cacheOnly);
+
+    @ApiStatus.Internal
+    default CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
+        return this.resolveName(uuid, false);
+    }
 
 }

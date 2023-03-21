@@ -45,23 +45,23 @@ public final class PaperProfileResolver implements ProfileResolver {
     }
 
     @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
+    public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
         final @Nullable Player online = this.server.getPlayer(username);
         if (online != null) {
             return CompletableFuture.completedFuture(online.getUniqueId());
         }
 
-        return this.mojang.resolveUUID(username);
+        return this.mojang.resolveUUID(username, cacheOnly);
     }
 
     @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
+    public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
         final @Nullable Player online = this.server.getPlayer(uuid);
         if (online != null) {
             return CompletableFuture.completedFuture(online.getName());
         }
 
-        return this.mojang.resolveName(uuid);
+        return this.mojang.resolveName(uuid, cacheOnly);
     }
 
     @Override
