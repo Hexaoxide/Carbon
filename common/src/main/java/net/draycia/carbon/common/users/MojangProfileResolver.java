@@ -44,7 +44,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 // todo rate limit handling
 @DefaultQualifier(NonNull.class)
-public class MojangProfileResolver implements ProfileResolver {
+public final class MojangProfileResolver implements ProfileResolver {
 
     private final HttpClient client;
     private final Gson gson;
