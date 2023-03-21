@@ -20,7 +20,11 @@
 package net.draycia.carbon.common.users;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
@@ -55,7 +59,9 @@ public final class MojangProfileResolver implements ProfileResolver {
     @Inject
     private MojangProfileResolver(final Logger logger) {
         this.client = HttpClient.newHttpClient();
-        this.gson = new Gson();
+        this.gson = new GsonBuilder()
+            .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
+            .create();
         this.executorService = Executors.newFixedThreadPool(2, ConcurrentUtil.carbonThreadFactory(logger, "MojangProfileResolver"));
     }
 
@@ -119,8 +125,10 @@ public final class MojangProfileResolver implements ProfileResolver {
 
         if (response == null) {
             throw new RuntimeException("Null response for request " + request);
+        } else if (response.statusCode() == 404) {
+            return null;
         } else if (response.statusCode() != 200) {
-            throw new RuntimeException("Received non-200 response code for request " + request);
+            throw new RuntimeException("Received non-200 response code (" + response.statusCode() + ") for request " + request + ": " + response.body());
         }
 
         final BasicLookupResponse basicLookupResponse = this.gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>() {}.getType());
@@ -136,6 +144,33 @@ public final class MojangProfileResolver implements ProfileResolver {
     }
 
     private record BasicLookupResponse(UUID id, String name) {
+
+    }
+
+    private static final class UUIDTypeAdapter extends TypeAdapter<UUID> {
+
+        private static final String REGEX = "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})";
+
+        private UUIDTypeAdapter() {
+        }
+
+        @Override
+        public void write(final JsonWriter out, final UUID value) throws IOException {
+            out.value(fromUUID(value));
+        }
+
+        @Override
+        public UUID read(final JsonReader in) throws IOException {
+            return fromString(in.nextString());
+        }
+
+        private static String fromUUID(final UUID value) {
+            return value.toString().replace("-", "");
+        }
+
+        private static UUID fromString(final String input) {
+            return UUID.fromString(input.replaceFirst(REGEX, "$1-$2-$3-$4-$5"));
+        }
 
     }
 
