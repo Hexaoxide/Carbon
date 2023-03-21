@@ -41,6 +41,7 @@ import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -56,6 +57,7 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
     private final Logger logger;
     private final Gson serializer;
     private final Path userDirectory;
+    private final ProfileResolver profileResolver;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache = new HashMap<>();
     private final ExecutorService executor;
     private final String emptyUserJson;
@@ -64,10 +66,12 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
     public JSONUserManager(
         final @ForCarbon Path dataDirectory,
         final Injector injector,
-        final Logger logger
+        final Logger logger,
+        final ProfileResolver profileResolver
     ) throws IOException {
         this.logger = logger;
         this.userDirectory = dataDirectory.resolve("users");
+        this.profileResolver = profileResolver;
 
         Files.createDirectories(this.userDirectory);
 
@@ -97,6 +101,7 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
                         if (player == null) {
                             throw new IllegalStateException("Player file found but was empty.");
                         }
+                        player.profileResolver = this.profileResolver;
                         player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
                             .channelRegistry()
                             .get(channel) == null);
@@ -107,7 +112,9 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
                     }
                 }
 
-                return new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
+                final CarbonPlayerCommon player = new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
+                player.profileResolver = this.profileResolver;
+                return player;
             }, this.executor);
 
             // Don't keep failed requests so they can be retried on the next request

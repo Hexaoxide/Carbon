@@ -23,19 +23,15 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Server;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
@@ -44,13 +40,11 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
 
     private final Server server;
     private final UserManager<CarbonPlayerPaper> userManager;
-    private final ProfileResolver profileResolver;
 
     @Inject
-    private CarbonServerPaper(final Server server, final UserManager<CarbonPlayerCommon> userManager, final ProfileResolver profileResolver) {
+    private CarbonServerPaper(final Server server, final UserManager<CarbonPlayerCommon> userManager) {
         this.server = server;
         this.userManager = new PaperUserManager(userManager);
-        this.profileResolver = profileResolver;
     }
 
     @Override
@@ -74,16 +68,6 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
     @Override
     public UserManager<CarbonPlayerPaper> userManager() {
         return this.userManager;
-    }
-
-    @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
-        return this.profileResolver.resolveUUID(username, cacheOnly);
-    }
-
-    @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
-        return this.profileResolver.resolveName(uuid, cacheOnly);
     }
 
 }

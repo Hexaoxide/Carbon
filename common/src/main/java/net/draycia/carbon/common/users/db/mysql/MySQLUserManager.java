@@ -31,6 +31,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.SaveOnChange;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
@@ -52,13 +53,17 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class MySQLUserManager extends DatabaseUserManager implements SaveOnChange {
 
-    private MySQLUserManager(final Jdbi jdbi, final Logger logger) {
+    private final ProfileResolver profileResolver;
+
+    private MySQLUserManager(final Jdbi jdbi, final Logger logger, final ProfileResolver profileResolver) {
         super(jdbi, new QueriesLocator(DBType.MYSQL), logger);
+        this.profileResolver = profileResolver;
     }
 
     public static MySQLUserManager manager(
         final DatabaseSettings databaseSettings,
-        final Logger logger
+        final Logger logger,
+        final ProfileResolver profileResolver
     ) {
         try {
             //Class.forName("org.postgresql.Driver");
@@ -95,7 +100,7 @@ public final class MySQLUserManager extends DatabaseUserManager implements SaveO
             .registerRowMapper(new MySQLPlayerRowMapper())
             .installPlugin(new SqlObjectPlugin());
 
-        return new MySQLUserManager(jdbi, logger);
+        return new MySQLUserManager(jdbi, logger, profileResolver);
     }
 
     @Override
@@ -109,7 +114,7 @@ public final class MySQLUserManager extends DatabaseUserManager implements SaveO
 
                 if (carbonPlayerCommon.isEmpty()) {
                     // Player doesn't exist in the DB, create them!
-                    final String name = Objects.requireNonNull(CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
+                    final String name = Objects.requireNonNull(this.profileResolver.resolveName(uuid).join());
                     final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
                     this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();

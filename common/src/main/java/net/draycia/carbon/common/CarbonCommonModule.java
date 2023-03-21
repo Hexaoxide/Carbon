@@ -23,12 +23,14 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
@@ -42,6 +44,7 @@ import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
 import net.draycia.carbon.common.users.json.JSONUserManager;
@@ -63,11 +66,12 @@ public final class CarbonCommonModule extends AbstractModule {
     public UserManager<CarbonPlayerCommon> userManager(
         final ConfigFactory configFactory,
         final Injector injector,
-        final Logger logger
+        final Logger logger,
+        final ProfileResolver profileResolver
     ) {
         return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger);
-            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger);
+            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver);
+            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver);
             default -> injector.getInstance(JSONUserManager.class);
         };
     }
@@ -107,6 +111,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
     }
 

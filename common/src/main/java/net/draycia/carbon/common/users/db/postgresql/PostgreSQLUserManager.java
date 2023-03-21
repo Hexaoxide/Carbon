@@ -30,6 +30,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.SaveOnChange;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
@@ -53,11 +54,18 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class PostgreSQLUserManager extends DatabaseUserManager implements SaveOnChange {
 
-    private PostgreSQLUserManager(final Jdbi jdbi, final Logger logger) {
+    private final ProfileResolver profileResolver;
+
+    private PostgreSQLUserManager(final Jdbi jdbi, final Logger logger, final ProfileResolver profileResolver) {
         super(jdbi, new QueriesLocator(DBType.POSTGRESQL), logger);
+        this.profileResolver = profileResolver;
     }
 
-    public static PostgreSQLUserManager manager(final DatabaseSettings databaseSettings, final Logger logger) {
+    public static PostgreSQLUserManager manager(
+        final DatabaseSettings databaseSettings,
+        final Logger logger,
+        final ProfileResolver profileResolver
+    ) {
         try {
             Class.forName("org.postgresql.Driver");
             Flyway.configure().getPluginRegister().REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
@@ -89,7 +97,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager implements 
             .installPlugin(new SqlObjectPlugin())
             .installPlugin(new PostgresPlugin());
 
-        return new PostgreSQLUserManager(jdbi, logger);
+        return new PostgreSQLUserManager(jdbi, logger, profileResolver);
     }
 
     @Override
@@ -129,7 +137,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager implements 
                 } catch (final IllegalStateException exception) {
                     // Player doesn't exist in the DB, create them!
                     final String name = Objects.requireNonNull(
-                        CarbonChatProvider.carbonChat().server().resolveName(uuid).join());
+                        this.profileResolver.resolveName(uuid).join());
 
                     final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 

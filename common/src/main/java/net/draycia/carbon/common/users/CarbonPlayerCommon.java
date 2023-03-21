@@ -50,6 +50,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     protected @Nullable Key selectedChannel = null;
 
+    public transient @MonotonicNonNull ProfileResolver profileResolver;
     // All players have these
     protected transient @MonotonicNonNull String username = null;
     protected @MonotonicNonNull UUID uuid;
@@ -353,8 +354,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public String username() {
         if (this.username == null) {
-            this.username = Objects.requireNonNull(CarbonChatProvider.carbonChat().server()
-                .resolveName(this.uuid).join());
+            this.username = Objects.requireNonNull(
+                Objects.requireNonNull(this.profileResolver, "profileResolver")
+                    .resolveName(this.uuid).join(),
+                "name"
+            );
         }
 
         return this.username;

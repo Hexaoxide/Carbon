@@ -109,7 +109,7 @@ public class ContinueCommand extends CarbonCommand {
 
                 if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, this.carbonMessages);
+                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler);
 
                     this.carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;

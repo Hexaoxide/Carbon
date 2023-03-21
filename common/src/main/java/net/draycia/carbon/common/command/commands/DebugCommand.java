@@ -25,12 +25,11 @@ import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -44,17 +43,17 @@ public class DebugCommand extends CarbonCommand {
 
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
-    final PlayerSuggestions playerSuggestions;
+    private final ArgumentFactory argumentFactory;
 
     @Inject
     public DebugCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final PlayerSuggestions playerSuggestions
+        final ArgumentFactory argumentFactory
     ) {
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.playerSuggestions = playerSuggestions;
+        this.argumentFactory = argumentFactory;
     }
 
     @Override
@@ -70,7 +69,7 @@ public class DebugCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
                 RichDescription.of(this.carbonMessages.commandDebugArgumentPlayer()))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)

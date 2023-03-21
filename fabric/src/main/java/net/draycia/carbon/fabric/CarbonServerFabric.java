@@ -23,8 +23,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
@@ -33,9 +31,7 @@ import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,24 +69,6 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
     @Override
     public UserManager<CarbonPlayerFabric> userManager() {
         return this.userManager;
-    }
-
-    @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
-        final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username);
-        if (serverPlayer == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(serverPlayer.getUUID());
-    }
-
-    @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
-        final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid);
-        if (serverPlayer == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(serverPlayer.getGameProfile().getName());
     }
 
 }

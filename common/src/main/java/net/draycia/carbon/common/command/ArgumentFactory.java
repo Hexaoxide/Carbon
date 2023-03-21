@@ -17,45 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api;
+package net.draycia.carbon.common.command;
 
-import java.util.List;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
-import net.kyori.adventure.audience.Audience;
+import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-/**
- * The server that carbon is running on.
- *
- * @since 2.0.0
- */
 @DefaultQualifier(NonNull.class)
-public interface CarbonServer extends Audience {
+public interface ArgumentFactory {
 
-    /**
-     * The server's console.
-     *
-     * @return the server's console
-     * @since 2.0.0
-     */
-    Audience console();
-
-    /**
-     * The players that are online on the server.
-     *
-     * @return the online players
-     * @since 2.0.0
-     */
-    List<? extends CarbonPlayer> players();
-
-    /**
-     * Manager used to load/obtain and save {@link CarbonPlayer CarbonPlayers}.
-     *
-     * @return the user manager
-     * @since 2.1.0
-     */
-    UserManager<? extends CarbonPlayer> userManager();
+    CarbonPlayerArgument.Builder carbonPlayer(String name);
 
 }
