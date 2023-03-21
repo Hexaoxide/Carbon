@@ -22,7 +22,6 @@ package net.draycia.carbon.paper;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.bukkit.parsers.PlayerArgument;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
@@ -36,6 +35,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
@@ -72,13 +72,13 @@ public final class CarbonChatPaperModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public CommandManager<Commander> commandManager(final CarbonServer server, final CarbonMessages messages) {
+    public CommandManager<Commander> commandManager(final CarbonServer server, final CarbonMessages messages, final ExecutionCoordinatorHolder executionCoordinatorHolder) {
         final PaperCommandManager<Commander> commandManager;
 
         try {
             commandManager = new PaperCommandManager<>(
                 this.bootstrap,
-                AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
+                executionCoordinatorHolder.executionCoordinator(),
                 commandSender -> {
                     if (commandSender instanceof Player player) {
                         return new PaperPlayerCommander(server, player);

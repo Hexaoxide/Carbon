@@ -32,6 +32,7 @@ import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -154,6 +155,7 @@ public final class CarbonChatPaper implements CarbonChat {
     void onDisable() {
         this.injector.getInstance(ProfileResolver.class).shutdown();
         this.userManager.shutdown();
+        this.injector.getInstance(ExecutionCoordinatorHolder.class).shutdown();
     }
 
     @Override

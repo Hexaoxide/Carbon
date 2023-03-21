@@ -29,6 +29,7 @@ import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
@@ -96,6 +97,12 @@ public final class CarbonCommonModule extends AbstractModule {
             .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
             .create(this.getClass().getClassLoader());
+    }
+
+    @Provides
+    @Singleton
+    public ExecutionCoordinatorHolder executionCoordinatorHolder(final Logger logger) {
+        return ExecutionCoordinatorHolder.create(logger);
     }
 
     @Override
