@@ -41,8 +41,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -219,7 +219,7 @@ public final class MojangProfileResolver implements ProfileResolver {
         // Mojang rate limit is 600 requests per ten minutes
         private static final int RATE_LIMIT = 600;
 
-        private final Semaphore semaphore = new Semaphore(RATE_LIMIT);
+        private final AtomicInteger available = new AtomicInteger(RATE_LIMIT);
         private final Timer timer;
 
         private RateLimiter() {
@@ -227,18 +227,13 @@ public final class MojangProfileResolver implements ProfileResolver {
             this.timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    synchronized (RateLimiter.this) {
-                        final int release = RATE_LIMIT - RateLimiter.this.semaphore.availablePermits();
-                        if (release > 0) {
-                            RateLimiter.this.semaphore.release(release);
-                        }
-                    }
+                    RateLimiter.this.available.set(RATE_LIMIT);
                 }
             }, 0L, Duration.ofMinutes(10).toMillis());
         }
 
-        synchronized boolean canSubmit() {
-            return this.semaphore.tryAcquire();
+        boolean canSubmit() {
+            return this.available.getAndDecrement() >= 0;
         }
 
         void shutdown() {
