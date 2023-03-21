@@ -21,6 +21,7 @@ package net.draycia.carbon.common.users;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,28 +35,28 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+// todo rate limit handling
 @DefaultQualifier(NonNull.class)
 public class MojangProfileResolver implements ProfileResolver {
 
     private final HttpClient client;
     private final Gson gson;
-
     private final ExecutorService executorService;
-
     private final Map<String, CompletableFuture<@Nullable UUID>> pendingUuidLookups = new HashMap<>();
     private final Map<UUID, CompletableFuture<@Nullable String>> pendingUsernameLookups = new HashMap<>();
 
-    public MojangProfileResolver(final Logger logger) {
+    @Inject
+    private MojangProfileResolver(final Logger logger) {
         this.client = HttpClient.newHttpClient();
         this.gson = new Gson();
-
-        this.executorService = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "MojangProfileResolver"));
+        this.executorService = Executors.newFixedThreadPool(2, ConcurrentUtil.carbonThreadFactory(logger, "MojangProfileResolver"));
     }
 
     @Override
@@ -63,22 +64,12 @@ public class MojangProfileResolver implements ProfileResolver {
         return this.pendingUuidLookups.computeIfAbsent(username, $ -> {
             final CompletableFuture<@Nullable UUID> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
-                    final HttpRequest request = HttpRequest.newBuilder()
-                        .uri(new URI("https://api.mojang.com/users/profiles/minecraft/" + username))
-                        .GET()
-                        .build();
+                    final HttpRequest request = createRequest(
+                        "https://api.mojang.com/users/profiles/minecraft/" + username);
 
-                    final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                    if (response == null || response.statusCode() != 200) {
-                        return null;
-                    }
-
-                    final BasicLookupResponse basicLookupResponse = gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>(){}.getType());
-
-                    return basicLookupResponse.id();
-                } catch (final URISyntaxException | IOException | InterruptedException e) {
-                    throw new RuntimeException(e);
+                    return this.sendRequest(request, BasicLookupResponse::id);
+                } catch (final Exception e) {
+                    throw new RuntimeException("Exception resolving UUID for name " + username, e);
                 }
             }, this.executorService);
 
@@ -95,24 +86,14 @@ public class MojangProfileResolver implements ProfileResolver {
     @Override
     public synchronized CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
         return this.pendingUsernameLookups.computeIfAbsent(uuid, $ -> {
-            final CompletableFuture<@Nullable String> mojangLookup =  CompletableFuture.supplyAsync(() -> {
+            final CompletableFuture<@Nullable String> mojangLookup = CompletableFuture.supplyAsync(() -> {
                 try {
-                    final HttpRequest request = HttpRequest.newBuilder()
-                        .uri(new URI("https://api.mojang.com/user/profile/" + uuid.toString().replace("-", "")))
-                        .GET()
-                        .build();
+                    final HttpRequest request = createRequest(
+                        "https://api.mojang.com/user/profile/" + uuid.toString().replace("-", ""));
 
-                    final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                    if (response == null || response.statusCode() != 200) {
-                        return null;
-                    }
-
-                    final BasicLookupResponse basicLookupResponse = gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>(){}.getType());
-
-                    return basicLookupResponse.name();
-                } catch (final URISyntaxException | IOException | InterruptedException e) {
-                    throw new RuntimeException(e);
+                    return this.sendRequest(request, BasicLookupResponse::name);
+                } catch (final Exception e) {
+                    throw new RuntimeException("Exception resolving name for UUID " + uuid, e);
                 }
             }, this.executorService);
 
@@ -124,6 +105,29 @@ public class MojangProfileResolver implements ProfileResolver {
 
             return mojangLookup;
         });
+    }
+
+    private static HttpRequest createRequest(final String uri) throws URISyntaxException {
+        return HttpRequest.newBuilder()
+            .uri(new URI(uri))
+            .GET()
+            .build();
+    }
+
+    private <T> @Nullable T sendRequest(final HttpRequest request, final Function<BasicLookupResponse, @Nullable T> mapper) throws IOException, InterruptedException {
+        final HttpResponse<String> response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response == null) {
+            throw new RuntimeException("Null response for request " + request);
+        } else if (response.statusCode() != 200) {
+            throw new RuntimeException("Received non-200 response code for request " + request);
+        }
+
+        final BasicLookupResponse basicLookupResponse = this.gson.fromJson(response.body(), new TypeToken<BasicLookupResponse>() {}.getType());
+        if (basicLookupResponse == null) {
+            throw new RuntimeException("Malformed response body for request " + request + ": '" + response.body() + "'");
+        }
+        return mapper.apply(basicLookupResponse);
     }
 
     @Override

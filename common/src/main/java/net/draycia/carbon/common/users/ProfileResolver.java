@@ -25,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+// todo caching, should be able to cache both username & uuid after either one is requested
 @DefaultQualifier(NonNull.class)
 public interface ProfileResolver {
 
