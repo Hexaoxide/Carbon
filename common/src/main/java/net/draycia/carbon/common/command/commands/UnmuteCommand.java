@@ -24,7 +24,6 @@ import cloud.commandframework.arguments.standard.UUIDArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
-import java.util.Objects;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -89,8 +88,7 @@ public class UnmuteCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
-                    target = Objects.requireNonNull(result.player(), "No player found for UUID.");
+                    target = this.carbonChat.server().userManager().user(handler.get("uuid")).join();
                 } else {
                     this.carbonMessages.unmuteNoTarget(sender);
                     // TODO: send command syntax

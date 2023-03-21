@@ -21,13 +21,12 @@ package net.draycia.carbon.fabric;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
@@ -65,17 +64,10 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
 
     @Override
     public List<? extends CarbonPlayer> players() {
-        final var players = new ArrayList<CarbonPlayer>();
-
-        for (final var player : this.carbonChatFabric.minecraftServer().getPlayerList().getPlayers()) {
-            final ComponentPlayerResult<CarbonPlayerFabric> result = this.userManager.carbonPlayer(player.getUUID()).join();
-
-            if (result.player() != null) {
-                players.add(result.player());
-            }
-        }
-
-        return players;
+        return this.carbonChatFabric.minecraftServer().getPlayerList().getPlayers().stream()
+            .map(serverPlayer -> this.userManager.user(serverPlayer.getUUID()).getNow(null))
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     @Override

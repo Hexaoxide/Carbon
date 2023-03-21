@@ -91,8 +91,7 @@ public class UpdateUsernameCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
-                    target = Objects.requireNonNull(result.player(), "No player found for UUID.");
+                    target = this.carbonChat.server().userManager().user(handler.get("uuid")).join();
                 } else {
                     target = sender;
                 }

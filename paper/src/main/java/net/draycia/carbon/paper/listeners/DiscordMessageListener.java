@@ -59,19 +59,17 @@ public class DiscordMessageListener implements Listener {
             return;
         }
 
-        final var result = this.carbonChat.server().userManager().carbonPlayer(event.getUUID()).join();
+        final var result = this.carbonChat.server().userManager().user(event.getUUID()).join();
 
-        if (result.player() != null) {
-            var channel = result.player().selectedChannel();
+        var channel = result.selectedChannel();
 
-            if (channel == null) {
-                channel = this.carbonChat.channelRegistry().defaultValue();
-            }
-
-            final var messageType = this.channelMessageTypes.get(channel.key());
-
-            event.setType(messageType);
+        if (channel == null) {
+            channel = this.carbonChat.channelRegistry().defaultValue();
         }
+
+        final var messageType = this.channelMessageTypes.get(channel.key());
+
+        event.setType(messageType);
     }
 
     @EventHandler

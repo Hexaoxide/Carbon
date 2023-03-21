@@ -34,6 +34,7 @@ import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -93,7 +94,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
     /**
      * Create a new required command component with a default value.
      *
-     * @param name component name
+     * @param name                component name
      * @param defaultCarbonPlayer default player
      * @return created component
      */
@@ -151,7 +152,6 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
         }
 
         @Override
-        @SuppressWarnings("deprecation")
         public @NonNull ArgumentParseResult<CarbonPlayer> parse(
             final @NonNull CommandContext<Commander> commandContext,
             final @NonNull Queue<@NonNull String> inputQueue
@@ -165,21 +165,19 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
                 ));
             }
 
-            return CarbonChatProvider.carbonChat().server().resolveUUID(input).thenApply(uuid -> {
+            final @Nullable CarbonPlayer join = CarbonChatProvider.carbonChat().server().resolveUUID(input).thenCompose(uuid -> {
                 if (uuid == null) {
-                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.carbonMessages));
+                    return CompletableFuture.completedFuture(null);
                 }
-
-                final var playerResult = CarbonChatProvider.carbonChat().server().userManager().carbonPlayer(uuid).join();
-
-                if (playerResult.player() == null) {
-                    return ArgumentParseResult.<CarbonPlayer>failure(new CarbonPlayerParseException(input, commandContext, this.carbonMessages));
-                }
-
-                inputQueue.remove();
-
-                return ArgumentParseResult.<CarbonPlayer>success(playerResult.player());
+                return CarbonChatProvider.carbonChat().server().userManager().user(uuid);
             }).join();
+
+            if (join == null) {
+                return ArgumentParseResult.failure(new CarbonPlayerParseException(input, commandContext, this.carbonMessages));
+            }
+
+            inputQueue.remove();
+            return ArgumentParseResult.success(join);
         }
 
         @Override
@@ -203,7 +201,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
         /**
          * Construct a new CarbonPlayer parse exception.
          *
-         * @param input string input
+         * @param input   string input
          * @param context command context
          */
         public CarbonPlayerParseException(

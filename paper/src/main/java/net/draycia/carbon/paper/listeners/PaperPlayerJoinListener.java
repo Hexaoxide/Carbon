@@ -51,12 +51,8 @@ public class PaperPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
-        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
-            if (result.player() == null) {
-                return;
-            }
-
-            Optional.ofNullable(result.player().displayName()).ifPresent(displayName -> {
+        this.carbonChat.server().userManager().user(event.getPlayer().getUniqueId()).thenAccept(result -> {
+            Optional.ofNullable(result.displayName()).ifPresent(displayName -> {
                 final Player player = event.getPlayer();
                 player.displayName(displayName);
                 player.playerListName(displayName);

@@ -70,12 +70,7 @@ public class FabricChatPreviewListener implements ChatDecorator {
             return CompletableFuture.completedFuture(component);
         }
 
-        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(serverPlayer.getUUID()).join();
-        final @Nullable CarbonPlayer sender = playerResult.player();
-
-        if (sender == null) {
-            return CompletableFuture.completedFuture(component);
-        }
+        final @Nullable CarbonPlayer sender = this.carbonChat.server().userManager().user(serverPlayer.getUUID()).join();
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
 

@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.callback.ChatCallback;
@@ -60,12 +59,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
     @Override
     public void accept(final ChatCallback.Chat chat) {
-        final var playerResult = this.carbonChatFabric.server().userManager().carbonPlayer(chat.sender().getUUID()).join();
-        final @Nullable CarbonPlayer sender = playerResult.player();
-
-        if (sender == null) {
-            return;
-        }
+        final @Nullable CarbonPlayer sender = this.carbonChatFabric.server().userManager().user(chat.sender().getUUID()).join();
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
         final var originalMessage = chat.message();
@@ -123,9 +117,9 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
                 try {
                     final Optional<UUID> uuid = viewer.get(Identity.UUID);
                     if (uuid.isPresent()) {
-                        final ComponentPlayerResult<? extends CarbonPlayer> targetPlayer = this.carbonChatFabric.server().userManager().carbonPlayer(uuid.get()).join();
+                        final CarbonPlayer targetPlayer = this.carbonChatFabric.server().userManager().user(uuid.get()).join();
 
-                        renderedMessage = renderer.render(sender, targetPlayer.player(), renderedMessage, chatEvent.message());
+                        renderedMessage = renderer.render(sender, targetPlayer, renderedMessage, chatEvent.message());
                     } else {
                         renderedMessage = renderer.render(sender, viewer, renderedMessage, chatEvent.message());
                     }

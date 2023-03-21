@@ -26,6 +26,7 @@ import net.draycia.carbon.api.users.UserManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+// todo: need to unload transient users loaded via request for non-logged in players after some time
 @DefaultQualifier(NonNull.class)
 public interface UserManagerInternal<C extends CarbonPlayer> extends UserManager<C> {
 

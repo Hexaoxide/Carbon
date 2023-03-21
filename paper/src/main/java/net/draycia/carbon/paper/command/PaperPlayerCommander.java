@@ -48,7 +48,7 @@ public record PaperPlayerCommander(
 
     @Override
     public CarbonPlayer carbonPlayer() {
-        return requireNonNull(this.server.userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
+        return requireNonNull(this.server.userManager().user(this.player.getUniqueId()).join(), "No CarbonPlayer for logged in Player!");
     }
 
     @Override
