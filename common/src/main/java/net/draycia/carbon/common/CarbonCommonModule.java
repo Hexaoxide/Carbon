@@ -28,7 +28,6 @@ import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
@@ -43,8 +42,10 @@ import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResol
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
 import net.draycia.carbon.common.users.json.JSONUserManager;
@@ -62,8 +63,9 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
+    @Backing
     @Singleton
-    public UserManager<CarbonPlayerCommon> userManager(
+    public UserManagerInternal<CarbonPlayerCommon> userManager(
         final ConfigFactory configFactory,
         final Injector injector,
         final Logger logger,

@@ -99,7 +99,7 @@ public class ReplyCommand extends CarbonCommand {
                     return;
                 }
 
-                final @MonotonicNonNull CarbonPlayer recipient = this.carbonChat.server().userManager().user(replyTarget).join();
+                final @MonotonicNonNull CarbonPlayer recipient = this.carbonChat.userManager().user(replyTarget).join();
 
                 if (sender.equals(recipient)) {
                     this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));

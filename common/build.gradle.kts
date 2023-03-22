@@ -21,7 +21,7 @@ dependencies {
 
   // Other
   api(libs.guice)
-  api("com.google.inject.extensions:guice-assistedinject:${libs.versions.guice.get()}")
+  api(libs.assistedInject)
   compileOnlyApi(libs.luckPermsApi)
 
   // Storage

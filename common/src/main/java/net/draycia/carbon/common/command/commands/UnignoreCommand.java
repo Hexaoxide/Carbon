@@ -88,7 +88,7 @@ public class UnignoreCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    target = this.carbonChat.server().userManager().user(handler.get("uuid")).join();
+                    target = this.carbonChat.userManager().user(handler.get("uuid")).join();
                 } else {
                     this.carbonMessages.ignoreTargetInvalid(sender);
                     return;

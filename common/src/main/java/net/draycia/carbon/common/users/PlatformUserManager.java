@@ -106,7 +106,7 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
     }
 
     @Override
-    public CompletableFuture<Void> save(C player) {
+    public CompletableFuture<Void> save(final C player) {
         return this.wrapped.save(player.carbonPlayerCommon());
     }
 

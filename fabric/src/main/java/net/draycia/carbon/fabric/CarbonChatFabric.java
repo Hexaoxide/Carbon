@@ -21,7 +21,6 @@ package net.draycia.carbon.fabric;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -32,9 +31,11 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileCache;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
@@ -76,7 +77,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private @Nullable MinecraftServer minecraftServer;
     private @MonotonicNonNull ModContainer modContainer;
     private @MonotonicNonNull Injector injector;
-    private @MonotonicNonNull UserManager<CarbonPlayerCommon> userManager;
+    private @MonotonicNonNull FabricUserManager userManager;
     private @MonotonicNonNull Logger logger;
     private @MonotonicNonNull CarbonServerFabric carbonServerFabric;
     private @MonotonicNonNull CarbonMessages carbonMessages;
@@ -99,7 +100,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerFabric = this.injector.getInstance(CarbonServerFabric.class);
-        this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
+        this.userManager = this.injector.getInstance(FabricUserManager.class);
 
         // Platform Listeners
         this.registerChatListener();
@@ -129,7 +130,13 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private void registerServerLifecycleListeners() {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
         ServerLifecycleEvents.SERVER_STOPPING.register($ -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger).forEach(CompletableFuture::join));
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.minecraftServer = null);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            this.injector.getInstance(ProfileCache.class).save();
+            this.injector.getInstance(ProfileResolver.class).shutdown();
+            this.userManager.shutdown();
+            this.injector.getInstance(ExecutionCoordinatorHolder.class).shutdown();
+            this.minecraftServer = null;
+        });
     }
 
     private void registerPlayerStatusListeners() {
@@ -139,10 +146,14 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
 
     private void registerTickListeners() {
         final long saveDelay = 5 * 60 * 20; // 5 minutes
+        final long saveProfilesDelay = 15 * 60 * 20; // 15 minutes
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getTickCount() != 0 && server.getTickCount() % saveDelay == 0) {
                 PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger);
+            }
+            if (server.getTickCount() != 0 && server.getTickCount() % saveProfilesDelay == 0) {
+                this.injector.getInstance(ProfileCache.class).save();
             }
         });
     }
@@ -179,6 +190,11 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     @Override
     public CarbonServer server() {
         return this.carbonServerFabric;
+    }
+
+    @Override
+    public UserManager<?> userManager() {
+        return this.userManager;
     }
 
     @Override

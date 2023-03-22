@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -90,6 +91,8 @@ public interface CarbonChat {
      * @since 2.0.0
      */
     CarbonServer server();
+
+    UserManager<?> userManager();
 
     /**
      * The registry that channels are registered to.

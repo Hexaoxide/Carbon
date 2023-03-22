@@ -38,7 +38,7 @@ public class MessageRecipientFilter {
     }
 
     public boolean shouldFilterMessageTo(final ServerPlayer serverPlayer) {
-        final UserManager<? extends CarbonPlayer> userManager = CarbonChatProvider.carbonChat().server().userManager();
+        final UserManager<? extends CarbonPlayer> userManager = CarbonChatProvider.carbonChat().userManager();
         final CarbonPlayer author = userManager.user(this.sender.getUUID()).join();
         final CarbonPlayer recipient = userManager.user(serverPlayer.getUUID()).join();
 

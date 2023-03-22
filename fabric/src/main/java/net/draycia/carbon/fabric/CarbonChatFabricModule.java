@@ -20,24 +20,28 @@
 package net.draycia.carbon.fabric;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.fabric.FabricServerCommandManager;
-import cloud.commandframework.fabric.argument.FabricArgumentParsers;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
+import net.draycia.carbon.fabric.users.FabricProfileResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -65,9 +69,9 @@ public final class CarbonChatFabricModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public CommandManager<Commander> commandManager() {
+    public CommandManager<Commander> commandManager(final ExecutionCoordinatorHolder executionCoordinatorHolder) {
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
-            AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
+            executionCoordinatorHolder.executionCoordinator(),
             commandSourceStack -> {
                 if (commandSourceStack.getEntity() instanceof ServerPlayer) {
                     return new FabricPlayerCommander(this.carbonChat, commandSourceStack);
@@ -105,7 +109,12 @@ public final class CarbonChatFabricModule extends AbstractModule {
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerFabric.class);
-        this.bind(PlayerSuggestions.class).toInstance(FabricArgumentParsers.<Commander>singlePlayerSelector()::suggestions);
+        this.bind(PlayerSuggestions.class).toInstance((ctx, input) -> this.carbonChat.minecraftServer().getPlayerList().getPlayers().stream()
+            .map(player -> player.getGameProfile().getName())
+            .toList());
+        this.bind(ProfileResolver.class).to(FabricProfileResolver.class);
+        this.bind(new TypeLiteral<UserManager<?>>() {}).to(FabricUserManager.class);
+        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(FabricUserManager.class);
     }
 
 }

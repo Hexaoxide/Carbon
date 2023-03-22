@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
-import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.users.ProfileResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -97,17 +97,17 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
     public static final class CarbonPlayerParser implements ArgumentParser<Commander, CarbonPlayer> {
 
         private final PlayerSuggestions suggestions;
-        private final CarbonServer server;
+        private final UserManager<?> userManager;
         private final ProfileResolver profileResolver;
 
         @Inject
         private CarbonPlayerParser(
             final PlayerSuggestions suggestions,
-            final CarbonServer server,
+            final UserManager<?> userManager,
             final ProfileResolver profileResolver
         ) {
             this.suggestions = suggestions;
-            this.server = server;
+            this.userManager = userManager;
             this.profileResolver = profileResolver;
         }
 
@@ -129,7 +129,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
                 if (uuid == null) {
                     return CompletableFuture.completedFuture(null);
                 }
-                return this.server.userManager().user(uuid);
+                return this.userManager.user(uuid);
             }).join();
 
             if (join == null) {

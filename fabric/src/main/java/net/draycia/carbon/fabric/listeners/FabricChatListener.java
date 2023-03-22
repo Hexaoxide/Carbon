@@ -59,7 +59,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
     @Override
     public void accept(final ChatCallback.Chat chat) {
-        final @Nullable CarbonPlayer sender = this.carbonChatFabric.server().userManager().user(chat.sender().getUUID()).join();
+        final @Nullable CarbonPlayer sender = this.carbonChatFabric.userManager().user(chat.sender().getUUID()).join();
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
         final var originalMessage = chat.message();
@@ -117,7 +117,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
                 try {
                     final Optional<UUID> uuid = viewer.get(Identity.UUID);
                     if (uuid.isPresent()) {
-                        final CarbonPlayer targetPlayer = this.carbonChatFabric.server().userManager().user(uuid.get()).join();
+                        final CarbonPlayer targetPlayer = this.carbonChatFabric.userManager().user(uuid.get()).join();
 
                         renderedMessage = renderer.render(sender, targetPlayer, renderedMessage, chatEvent.message());
                     } else {

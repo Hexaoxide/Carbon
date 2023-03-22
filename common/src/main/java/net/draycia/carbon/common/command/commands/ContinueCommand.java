@@ -99,7 +99,7 @@ public class ContinueCommand extends CarbonCommand {
                     return;
                 }
 
-                final @MonotonicNonNull CarbonPlayer recipient = this.carbonChat.server()
+                final @MonotonicNonNull CarbonPlayer recipient = this.carbonChat
                     .userManager().user(whisperTarget).join();
 
                 if (sender.equals(recipient)) {

@@ -59,7 +59,7 @@ public class DiscordMessageListener implements Listener {
             return;
         }
 
-        final var result = this.carbonChat.server().userManager().user(event.getUUID()).join();
+        final var result = this.carbonChat.userManager().user(event.getUUID()).join();
 
         var channel = result.selectedChannel();
 

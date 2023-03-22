@@ -60,10 +60,10 @@ public final class CarbonPaperBootstrap extends JavaPlugin {
         this.severe("* CarbonChat makes extensive use of APIs added by Paper.");
         this.severe("* For this reason, CarbonChat requires Paper and is not");
         this.severe("* compatible with Spigot or CraftBukkit servers.");
-        this.severe("* Upgrade your server to Paper in order to use CarbonChat.");
+        this.severe("* Upgrade your userManager to Paper in order to use CarbonChat.");
         this.severe("*");
         PaperLib.suggestPaper(this, Level.SEVERE);
-        return new UnsupportedPlatformException("Not Paper or a Paper-based server runtime");
+        return new UnsupportedPlatformException("Not Paper or a Paper-based userManager runtime");
     }
 
     private @Nullable UnsupportedPlatformException checkPaperVersion() {
@@ -101,7 +101,7 @@ public final class CarbonPaperBootstrap extends JavaPlugin {
 
     private static final class UnsupportedPlatformException extends RuntimeException {
         UnsupportedPlatformException(final String reason) {
-            super("Your server does not support this build of Carbon: " + reason);
+            super("Your userManager does not support this build of Carbon: " + reason);
         }
     }
 

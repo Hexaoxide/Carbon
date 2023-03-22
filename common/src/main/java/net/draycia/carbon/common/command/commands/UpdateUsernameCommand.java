@@ -25,8 +25,8 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
-import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -43,7 +43,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class UpdateUsernameCommand extends CarbonCommand {
 
-    private final CarbonServer server;
+    private final UserManager<?> userManager;
     final CommandManager<Commander> commandManager;
     final CarbonMessages messageService;
     private final ArgumentFactory argumentFactory;
@@ -51,13 +51,13 @@ public class UpdateUsernameCommand extends CarbonCommand {
 
     @Inject
     public UpdateUsernameCommand(
-        final CarbonServer server,
+        final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages messageService,
         final ArgumentFactory argumentFactory,
         final ProfileResolver profileResolver
     ) {
-        this.server = server;
+        this.userManager = userManager;
         this.commandManager = commandManager;
         this.messageService = messageService;
         this.argumentFactory = argumentFactory;
@@ -94,7 +94,7 @@ public class UpdateUsernameCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    target = this.server.userManager().user(handler.get("uuid")).join();
+                    target = this.userManager.user(handler.get("uuid")).join();
                 } else {
                     target = sender;
                 }

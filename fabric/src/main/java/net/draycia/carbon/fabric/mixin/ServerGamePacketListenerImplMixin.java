@@ -69,7 +69,7 @@ abstract class ServerGamePacketListenerImplMixin implements ServerGamePacketList
     @Redirect(method = "broadcastChatMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V"))
     private void broadcastChatMessage(final PlayerList instance, final PlayerChatMessage playerChatMessage, final ServerPlayer serverPlayer, final ChatType.Bound bound) {
         // TODO: Get the channel the message was sent in, when the player uses /channel <message>
-        final CarbonPlayer result = CarbonChatProvider.carbonChat().server().userManager().user(serverPlayer.getUUID()).join();
+        final CarbonPlayer result = CarbonChatProvider.carbonChat().userManager().user(serverPlayer.getUUID()).join();
         final MessageRecipientFilter filter = new MessageRecipientFilter(serverPlayer, result.selectedChannel());
 
         for (final ServerPlayer player : this.server.getPlayerList().getPlayers()) {

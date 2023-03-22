@@ -26,7 +26,6 @@ import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -39,12 +38,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonServerPaper implements CarbonServer, ForwardingAudience.Single {
 
     private final Server server;
-    private final UserManager<CarbonPlayerPaper> userManager;
+    private final PaperUserManager userManager;
 
     @Inject
-    private CarbonServerPaper(final Server server, final UserManager<CarbonPlayerCommon> userManager) {
+    private CarbonServerPaper(final Server server, final PaperUserManager userManager) {
         this.server = server;
-        this.userManager = new PaperUserManager(userManager);
+        this.userManager = userManager;
     }
 
     @Override

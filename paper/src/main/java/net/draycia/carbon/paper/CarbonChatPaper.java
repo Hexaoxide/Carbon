@@ -36,10 +36,8 @@ import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
@@ -76,7 +74,7 @@ public final class CarbonChatPaper implements CarbonChat {
     private @MonotonicNonNull Logger logger;
     private @MonotonicNonNull Path dataDirectory;
     private @MonotonicNonNull Injector injector;
-    private @MonotonicNonNull UserManagerInternal<CarbonPlayerCommon> userManager;
+    private @MonotonicNonNull PaperUserManager userManager;
     private @MonotonicNonNull CarbonServer carbonServer;
     private @MonotonicNonNull CarbonMessages carbonMessages;
     private @MonotonicNonNull ChannelRegistry channelRegistry;
@@ -94,7 +92,7 @@ public final class CarbonChatPaper implements CarbonChat {
         final CarbonMessages carbonMessages,
         final ChannelRegistry channelRegistry,
         final CarbonServer carbonServer,
-        final UserManager<CarbonPlayerCommon> userManager,
+        final PaperUserManager userManager,
         @ForCarbon final Path dataDirectory
     ) {
         this.logger = LogManager.getLogger("CarbonChat");
@@ -103,7 +101,7 @@ public final class CarbonChatPaper implements CarbonChat {
         this.carbonMessages = carbonMessages;
         this.channelRegistry = channelRegistry;
         this.carbonServer = carbonServer;
-        this.userManager = (UserManagerInternal<CarbonPlayerCommon>) userManager;
+        this.userManager = userManager;
         this.dataDirectory = dataDirectory;
         this.packetService();
     }
@@ -193,12 +191,13 @@ public final class CarbonChatPaper implements CarbonChat {
     }
 
     @Override
-    public ChannelRegistry channelRegistry() {
-        return this.channelRegistry;
+    public UserManager<?> userManager() {
+        return this.userManager;
     }
 
-    public CarbonMessages carbonMessages() {
-        return this.carbonMessages;
+    @Override
+    public ChannelRegistry channelRegistry() {
+        return this.channelRegistry;
     }
 
     @Override

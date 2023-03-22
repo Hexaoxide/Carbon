@@ -55,7 +55,9 @@ public interface CarbonServer extends Audience {
      *
      * @return the user manager
      * @since 2.1.0
+     * @deprecated Use {@link CarbonChat#userManager} (internal code: inject the UserManager)
      */
+    @Deprecated(forRemoval = true)
     UserManager<? extends CarbonPlayer> userManager();
 
 }

@@ -19,7 +19,9 @@
  */
 package net.draycia.carbon.fabric;
 
-import net.draycia.carbon.api.users.UserManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
@@ -28,12 +30,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public class FabricUserManager extends PlatformUserManager<CarbonPlayerFabric> {
 
     private final CarbonChatFabric carbonChatFabric;
 
-    public FabricUserManager(final UserManager<CarbonPlayerCommon> proxiedUserManager, final CarbonChatFabric carbonChatFabric) {
-        super((UserManagerInternal<CarbonPlayerCommon>) proxiedUserManager);
+    @Inject
+    private FabricUserManager(final @Backing UserManagerInternal<CarbonPlayerCommon> proxiedUserManager, final CarbonChatFabric carbonChatFabric) {
+        super(proxiedUserManager);
         this.carbonChatFabric = carbonChatFabric;
     }
 
