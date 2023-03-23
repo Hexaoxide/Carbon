@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +44,10 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
 
+    private static final long KEEP_TRANSIENT_LOADS_FOR = Duration.ofMinutes(2).toMillis();
+
     private final transient CarbonChat carbonChat = CarbonChatProvider.carbonChat();
+    private transient long transientLoadedSince = -1;
 
     protected boolean muted = false;
     protected boolean deafened = false;
@@ -324,6 +328,18 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     public void username(final String username) {
         this.username = username;
+    }
+
+    public void markTransientLoaded(final boolean value) {
+        if (value) {
+            this.transientLoadedSince = System.currentTimeMillis();
+        } else {
+            this.transientLoadedSince = -1;
+        }
+    }
+
+    public boolean transientLoadedNeedsUnload() {
+        return this.transientLoadedSince != -1 && System.currentTimeMillis() - this.transientLoadedSince > KEEP_TRANSIENT_LOADS_FOR;
     }
 
     @Override

@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,12 +36,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public abstract class CachingUserManager<C extends CarbonPlayer> implements UserManagerInternal<C> {
+public abstract class CachingUserManager implements UserManagerInternal<CarbonPlayerCommon> {
 
     protected final Logger logger;
     protected final ExecutorService executor;
     protected final ReentrantLock cacheLock;
-    protected final Map<UUID, CompletableFuture<C>> cache;
+    protected final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
 
     protected CachingUserManager(final Logger logger, final ExecutorService executorService) {
         this.logger = logger;
@@ -74,14 +73,31 @@ public abstract class CachingUserManager<C extends CarbonPlayer> implements User
     public CompletableFuture<Void> loggedOut(final UUID uuid) {
         this.cacheLock.lock();
         try {
-            final @Nullable CompletableFuture<C> remove = this.cache.remove(uuid);
+            final @Nullable CompletableFuture<CarbonPlayerCommon> remove = this.cache.remove(uuid);
             if (remove != null && remove.isDone()) { // don't need to save if it never finished loading
-                final @Nullable C join = remove.join();
+                final @Nullable CarbonPlayerCommon join = remove.join();
                 if (join != null) {
                     return this.save(join);
                 }
             }
             return CompletableFuture.completedFuture(null);
+        } finally {
+            this.cacheLock.unlock();
+        }
+    }
+
+    @Override
+    public void cleanup() {
+        this.cacheLock.lock();
+        try {
+            for (final Map.Entry<UUID, CompletableFuture<CarbonPlayerCommon>> entry : Map.copyOf(this.cache).entrySet()) {
+                final @Nullable CarbonPlayerCommon getNow = entry.getValue().getNow(null);
+                if (getNow == null || !getNow.transientLoadedNeedsUnload()) {
+                    continue;
+                }
+                this.cache.remove(entry.getKey());
+                this.save(getNow);
+            }
         } finally {
             this.cacheLock.unlock();
         }

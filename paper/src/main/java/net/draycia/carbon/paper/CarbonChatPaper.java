@@ -135,6 +135,9 @@ public final class CarbonChatPaper implements CarbonChat {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
             () -> this.injector.getInstance(ProfileCache.class).save(), 20 * 60 * 15, 20 * 60 * 15);
 
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
+            () -> this.userManager.cleanup(), 30 * 20, 30 * 20);
+
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
 

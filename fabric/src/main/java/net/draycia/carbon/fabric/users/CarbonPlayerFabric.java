@@ -58,7 +58,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
         return this.player().orElseThrow();
     }
 
-    private Optional<ServerPlayer> player() {
+    public Optional<ServerPlayer> player() {
         return Optional.ofNullable(
             this.carbonChatFabric.minecraftServer().getPlayerList()
                 .getPlayer(this.carbonPlayerCommon.uuid())

@@ -43,4 +43,9 @@ public final class PaperUserManager extends PlatformUserManager<CarbonPlayerPape
         return new CarbonPlayerPaper(common);
     }
 
+    @Override
+    protected void updateTransientLoadedStatus(final CarbonPlayerPaper wrapped) {
+        wrapped.carbonPlayerCommon().markTransientLoaded(wrapped.bukkitPlayer() == null);
+    }
+
 }

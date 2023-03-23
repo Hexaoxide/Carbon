@@ -46,4 +46,9 @@ public final class FabricUserManager extends PlatformUserManager<CarbonPlayerFab
         return new CarbonPlayerFabric(common, this.carbonChatFabric);
     }
 
+    @Override
+    protected void updateTransientLoadedStatus(final CarbonPlayerFabric wrapped) {
+        wrapped.carbonPlayerCommon().markTransientLoaded(wrapped.player().isEmpty());
+    }
+
 }

@@ -35,7 +35,7 @@ import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
 
 @DefaultQualifier(NonNull.class)
-public abstract class DatabaseUserManager extends CachingUserManager<CarbonPlayerCommon> {
+public abstract class DatabaseUserManager extends CachingUserManager {
 
     protected final Jdbi jdbi;
     protected final QueriesLocator locator;

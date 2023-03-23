@@ -145,10 +145,14 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     }
 
     private void registerTickListeners() {
+        final long cleanupDelay = 30 * 20; // 30 seconds
         final long saveDelay = 5 * 60 * 20; // 5 minutes
         final long saveProfilesDelay = 15 * 60 * 20; // 15 minutes
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getTickCount() != 0 && server.getTickCount() % cleanupDelay == 0) {
+                this.userManager.cleanup();
+            }
             if (server.getTickCount() != 0 && server.getTickCount() % saveDelay == 0) {
                 PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger);
             }

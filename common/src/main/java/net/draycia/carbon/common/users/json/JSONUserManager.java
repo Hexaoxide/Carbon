@@ -46,7 +46,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class JSONUserManager extends CachingUserManager<CarbonPlayerCommon> {
+public class JSONUserManager extends CachingUserManager {
 
     private static final String EMPTY_USER_UUID = "f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
     private final Gson serializer;
