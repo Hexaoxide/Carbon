@@ -118,7 +118,10 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                     continue;
                 }
                 this.cache.remove(entry.getKey());
-                this.save(getNow);
+                this.save(getNow).exceptionally(thr -> {
+                    this.logger.warn("Exception saving data for player {} with UUID {}", getNow.username(), getNow.uuid(), thr);
+                    return null;
+                });
             }
         } finally {
             this.cacheLock.unlock();
