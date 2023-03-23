@@ -40,14 +40,30 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     protected final Logger logger;
     protected final ExecutorService executor;
-    protected final ReentrantLock cacheLock;
-    protected final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
+    private final ReentrantLock cacheLock;
+    private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
 
     protected CachingUserManager(final Logger logger, final ExecutorService executorService) {
         this.logger = logger;
         this.executor = executorService;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
+    }
+
+    protected abstract CarbonPlayerCommon loadOrCreate(UUID uuid);
+
+    @Override
+    public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
+        this.cacheLock.lock();
+        try {
+            return this.cache.computeIfAbsent(uuid, $ -> {
+                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> this.loadOrCreate(uuid), this.executor);
+                this.attachPostLoad(uuid, future);
+                return future;
+            });
+        } finally {
+            this.cacheLock.unlock();
+        }
     }
 
     @Override
@@ -105,7 +121,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     // Don't keep failed requests, so they can be retried on the next request
     // The caller is expected to handle the error
-    protected void attachPostLoad(final UUID uuid, final CompletableFuture<CarbonPlayerCommon> future) {
+    private void attachPostLoad(final UUID uuid, final CompletableFuture<CarbonPlayerCommon> future) {
         future.whenComplete((result, thr) -> {
             if (result == null || thr != null) {
                 this.cacheLock.lock();

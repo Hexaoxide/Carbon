@@ -23,7 +23,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -98,58 +97,45 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
     }
 
     @Override
-    public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
-        this.cacheLock.lock();
-        try {
-            return this.cache.computeIfAbsent(uuid, $ -> {
-                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
-                    return this.jdbi.withHandle(handle -> {
-                        try {
-                            final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
-                                .bind("id", uuid)
-                                .mapTo(CarbonPlayerCommon.class)
-                                .first();
+    protected CarbonPlayerCommon loadOrCreate(final UUID uuid) {
+        return this.jdbi.withHandle(handle -> {
+            try {
+                final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
+                    .bind("id", uuid)
+                    .mapTo(CarbonPlayerCommon.class)
+                    .first();
 
-                            handle.createQuery(this.locator.query("select-ignores"))
-                                .bind("id", uuid)
-                                .mapTo(UUID.class)
-                                .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
+                handle.createQuery(this.locator.query("select-ignores"))
+                    .bind("id", uuid)
+                    .mapTo(UUID.class)
+                    .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
 
-                            handle.createQuery(this.locator.query("select-leftchannels"))
-                                .bind("id", uuid)
-                                .mapTo(Key.class)
-                                .forEach(channel -> {
-                                    final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
-                                        .channelRegistry()
-                                        .get(channel);
-                                    if (chatChannel == null) {
-                                        return;
-                                    }
-                                    carbonPlayerCommon.leftChannels().add(channel);
-                                });
-                            return carbonPlayerCommon;
-                        } catch (final IllegalStateException exception) {
-                            // Player doesn't exist in the DB, create them!
-                            final String name = Objects.requireNonNull(
-                                this.profileResolver.resolveName(uuid).join());
-
-                            final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
-
-                            this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
-                                .execute();
-
-                            return player;
+                handle.createQuery(this.locator.query("select-leftchannels"))
+                    .bind("id", uuid)
+                    .mapTo(Key.class)
+                    .forEach(channel -> {
+                        final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
+                            .channelRegistry()
+                            .get(channel);
+                        if (chatChannel == null) {
+                            return;
                         }
+                        carbonPlayerCommon.leftChannels().add(channel);
                     });
-                }, this.executor);
+                return carbonPlayerCommon;
+            } catch (final IllegalStateException exception) {
+                // Player doesn't exist in the DB, create them!
+                final String name = Objects.requireNonNull(
+                    this.profileResolver.resolveName(uuid).join());
 
-                this.attachPostLoad(uuid, future);
+                final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-                return future;
-            });
-        } finally {
-            this.cacheLock.unlock();
-        }
+                this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
+                    .execute();
+
+                return player;
+            }
+        });
     }
 
     @Override

@@ -78,44 +78,31 @@ public class JSONUserManager extends CachingUserManager {
     }
 
     @Override
-    public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
-        this.cacheLock.lock();
-        try {
-            return this.cache.computeIfAbsent(uuid, $ -> {
-                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
-                    final Path userFile = this.userFile(uuid);
+    protected CarbonPlayerCommon loadOrCreate(final UUID uuid) {
+        final Path userFile = this.userFile(uuid);
 
-                    if (Files.exists(userFile)) {
-                        try {
-                            final @Nullable CarbonPlayerCommon player =
-                                this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
+        if (Files.exists(userFile)) {
+            try {
+                final @Nullable CarbonPlayerCommon player =
+                    this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
 
-                            if (player == null) {
-                                throw new IllegalStateException("Player file found but was empty.");
-                            }
-                            player.profileResolver = this.profileResolver;
-                            player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
-                                .channelRegistry()
-                                .get(channel) == null);
+                if (player == null) {
+                    throw new IllegalStateException("Player file found but was empty.");
+                }
+                player.profileResolver = this.profileResolver;
+                player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
+                    .channelRegistry()
+                    .get(channel) == null);
 
-                            return player;
-                        } catch (final IOException exception) {
-                            throw new RuntimeException(exception);
-                        }
-                    }
-
-                    final CarbonPlayerCommon player = new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
-                    player.profileResolver = this.profileResolver;
-                    return player;
-                }, this.executor);
-
-                this.attachPostLoad(uuid, future);
-
-                return future;
-            });
-        } finally {
-            this.cacheLock.unlock();
+                return player;
+            } catch (final IOException exception) {
+                throw new RuntimeException(exception);
+            }
         }
+
+        final CarbonPlayerCommon player = new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
+        player.profileResolver = this.profileResolver;
+        return player;
     }
 
     private Path userFile(final UUID id) {
