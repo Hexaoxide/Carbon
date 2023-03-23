@@ -21,8 +21,6 @@ package net.draycia.carbon.common.users.db.postgresql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -55,12 +53,8 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class PostgreSQLUserManager extends DatabaseUserManager {
 
-    private final ProfileResolver profileResolver;
-    private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache = new HashMap<>();
-
     private PostgreSQLUserManager(final Jdbi jdbi, final Logger logger, final ProfileResolver profileResolver) {
-        super(jdbi, new QueriesLocator(DBType.POSTGRESQL), logger);
-        this.profileResolver = profileResolver;
+        super(jdbi, new QueriesLocator(DBType.POSTGRESQL), logger, profileResolver);
     }
 
     public static PostgreSQLUserManager manager(
@@ -104,67 +98,58 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
     }
 
     @Override
-    public synchronized CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
-        return this.cache.computeIfAbsent(uuid, $ -> {
-            final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
-                final @Nullable CarbonPlayerCommon cachedPlayer = this.userCache.get(uuid);
+    public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
+        this.cacheLock.lock();
+        try {
+            return this.cache.computeIfAbsent(uuid, $ -> {
+                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
+                    return this.jdbi.withHandle(handle -> {
+                        try {
+                            final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
+                                .bind("id", uuid)
+                                .mapTo(CarbonPlayerCommon.class)
+                                .first();
 
-                if (cachedPlayer != null) {
-                    return cachedPlayer;
-                }
+                            handle.createQuery(this.locator.query("select-ignores"))
+                                .bind("id", uuid)
+                                .mapTo(UUID.class)
+                                .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
 
-                return this.jdbi.withHandle(handle -> {
-                    try {
-                        final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
-                            .bind("id", uuid)
-                            .mapTo(CarbonPlayerCommon.class)
-                            .first();
+                            handle.createQuery(this.locator.query("select-leftchannels"))
+                                .bind("id", uuid)
+                                .mapTo(Key.class)
+                                .forEach(channel -> {
+                                    final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
+                                        .channelRegistry()
+                                        .get(channel);
+                                    if (chatChannel == null) {
+                                        return;
+                                    }
+                                    carbonPlayerCommon.leftChannels().add(channel);
+                                });
+                            return carbonPlayerCommon;
+                        } catch (final IllegalStateException exception) {
+                            // Player doesn't exist in the DB, create them!
+                            final String name = Objects.requireNonNull(
+                                this.profileResolver.resolveName(uuid).join());
 
-                        handle.createQuery(this.locator.query("select-ignores"))
-                            .bind("id", uuid)
-                            .mapTo(UUID.class)
-                            .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
+                            final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
 
-                        handle.createQuery(this.locator.query("select-leftchannels"))
-                            .bind("id", uuid)
-                            .mapTo(Key.class)
-                            .forEach(channel -> {
-                                final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
-                                    .channelRegistry()
-                                    .get(channel);
-                                if (chatChannel == null) {
-                                    return;
-                                }
-                                carbonPlayerCommon.leftChannels().add(channel);
-                            });
-                        return carbonPlayerCommon;
-                    } catch (final IllegalStateException exception) {
-                        // Player doesn't exist in the DB, create them!
-                        final String name = Objects.requireNonNull(
-                            this.profileResolver.resolveName(uuid).join());
+                            this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
+                                .execute();
 
-                        final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
+                            return player;
+                        }
+                    });
+                }, this.executor);
 
-                        this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
-                            .execute();
+                this.attachPostLoad(uuid, future);
 
-                        return player;
-                    }
-                });
-            }, this.executor);
-
-            // Don't keep failed requests so they can be retried on the next request
-            // The caller is expected to handle the error
-            future.whenComplete((result, $$$) -> {
-                if (result == null) {
-                    synchronized (this) {
-                        this.cache.remove(uuid);
-                    }
-                }
+                return future;
             });
-
-            return future;
-        });
+        } finally {
+            this.cacheLock.unlock();
+        }
     }
 
     @Override
@@ -179,16 +164,6 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying());
-    }
-
-    @Override
-    public CompletableFuture<Void> loggedOut(final UUID uuid) {
-        final CompletableFuture<@Nullable CarbonPlayerCommon> remove = this.cache.remove(uuid);
-        final @Nullable CarbonPlayerCommon join = remove.join();
-        if (remove.isDone() && join != null) { // don't need to save if it never finished loading
-            return this.save(join);
-        }
-        return CompletableFuture.completedFuture(null);
     }
 
 }

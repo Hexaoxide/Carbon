@@ -27,22 +27,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
+import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
@@ -51,15 +46,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> {
+public class JSONUserManager extends CachingUserManager<CarbonPlayerCommon> {
 
     private static final String EMPTY_USER_UUID = "f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-    private final Logger logger;
     private final Gson serializer;
     private final Path userDirectory;
     private final ProfileResolver profileResolver;
-    private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache = new HashMap<>();
-    private final ExecutorService executor;
     private final String emptyUserJson;
 
     @Inject
@@ -69,7 +61,7 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
         final Logger logger,
         final ProfileResolver profileResolver
     ) throws IOException {
-        this.logger = logger;
+        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")));
         this.userDirectory = dataDirectory.resolve("users");
         this.profileResolver = profileResolver;
 
@@ -83,52 +75,47 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
             .create();
 
         this.emptyUserJson = this.serializer.toJson(new CarbonPlayerCommon("username", UUID.fromString(EMPTY_USER_UUID)));
-
-        this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager"));
     }
 
     @Override
-    public synchronized CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
-        return this.cache.computeIfAbsent(uuid, $ -> {
-            final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
-                final Path userFile = this.userFile(uuid);
+    public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
+        this.cacheLock.lock();
+        try {
+            return this.cache.computeIfAbsent(uuid, $ -> {
+                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
+                    final Path userFile = this.userFile(uuid);
 
-                if (Files.exists(userFile)) {
-                    try {
-                        final @Nullable CarbonPlayerCommon player =
-                            this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
+                    if (Files.exists(userFile)) {
+                        try {
+                            final @Nullable CarbonPlayerCommon player =
+                                this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
 
-                        if (player == null) {
-                            throw new IllegalStateException("Player file found but was empty.");
+                            if (player == null) {
+                                throw new IllegalStateException("Player file found but was empty.");
+                            }
+                            player.profileResolver = this.profileResolver;
+                            player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
+                                .channelRegistry()
+                                .get(channel) == null);
+
+                            return player;
+                        } catch (final IOException exception) {
+                            throw new RuntimeException(exception);
                         }
-                        player.profileResolver = this.profileResolver;
-                        player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
-                            .channelRegistry()
-                            .get(channel) == null);
-
-                        return player;
-                    } catch (final IOException exception) {
-                        throw new RuntimeException(exception);
                     }
-                }
 
-                final CarbonPlayerCommon player = new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
-                player.profileResolver = this.profileResolver;
-                return player;
-            }, this.executor);
+                    final CarbonPlayerCommon player = new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
+                    player.profileResolver = this.profileResolver;
+                    return player;
+                }, this.executor);
 
-            // Don't keep failed requests so they can be retried on the next request
-            // The caller is expected to handle the error
-            future.whenComplete((result, $$$) -> {
-                if (result == null) {
-                    synchronized (this) {
-                        this.cache.remove(uuid);
-                    }
-                }
+                this.attachPostLoad(uuid, future);
+
+                return future;
             });
-
-            return future;
-        });
+        } finally {
+            this.cacheLock.unlock();
+        }
     }
 
     private Path userFile(final UUID id) {
@@ -162,28 +149,6 @@ public class JSONUserManager implements UserManagerInternal<CarbonPlayerCommon> 
                 throw new RuntimeException("Exception while saving data for player [%s]".formatted(player.username()), exception);
             }
         }, this.executor);
-    }
-
-    @Override
-    public void shutdown() {
-        for (final UUID id : List.copyOf(this.cache.keySet())) {
-            try {
-                this.loggedOut(id).join();
-            } catch (final Exception ex) {
-                this.logger.warn("Exception saving data for player with uuid " + id);
-            }
-        }
-        ConcurrentUtil.shutdownExecutor(this.executor, TimeUnit.MILLISECONDS, 500);
-    }
-
-    @Override
-    public synchronized CompletableFuture<Void> loggedOut(final UUID uuid) {
-        final CompletableFuture<@Nullable CarbonPlayerCommon> remove = this.cache.remove(uuid);
-        final @Nullable CarbonPlayerCommon join = remove.join();
-        if (remove.isDone() && join != null) { // don't need to save if it never finished loading
-            return this.save(join);
-        }
-        return CompletableFuture.completedFuture(null);
     }
 
 }

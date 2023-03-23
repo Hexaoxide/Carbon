@@ -19,17 +19,12 @@
  */
 package net.draycia.carbon.common.users.db;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.Logger;
@@ -40,24 +35,21 @@ import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
 
 @DefaultQualifier(NonNull.class)
-public abstract class DatabaseUserManager implements UserManagerInternal<CarbonPlayerCommon> {
+public abstract class DatabaseUserManager extends CachingUserManager<CarbonPlayerCommon> {
 
     protected final Jdbi jdbi;
-
-    protected final Map<UUID, CarbonPlayerCommon> userCache = Collections.synchronizedMap(new HashMap<>());
     protected final QueriesLocator locator;
-    protected final ExecutorService executor;
-    private final Logger logger;
+    protected final ProfileResolver profileResolver;
 
-    protected DatabaseUserManager(final Jdbi jdbi, final QueriesLocator locator, final Logger logger) {
+    protected DatabaseUserManager(final Jdbi jdbi, final QueriesLocator locator, final Logger logger, final ProfileResolver profileResolver) {
+        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")));
         this.jdbi = jdbi;
         this.locator = locator;
-        this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager"));
-        this.logger = logger;
+        this.profileResolver = profileResolver;
     }
 
     @Override
-    final public CompletableFuture<Void> save(final CarbonPlayerCommon player) {
+    public final CompletableFuture<Void> save(final CarbonPlayerCommon player) {
         return CompletableFuture.runAsync(() -> this.jdbi.withHandle(handle -> {
             if (!this.modifiedPlayerObject(player)) {
                 return CompletableFuture.completedFuture(null);
@@ -97,17 +89,5 @@ public abstract class DatabaseUserManager implements UserManagerInternal<CarbonP
     }
 
     abstract protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player);
-
-    @Override
-    public void shutdown() {
-        for (final UUID id : List.copyOf(this.userCache.keySet())) {
-            try {
-                this.loggedOut(id).join();
-            } catch (final Exception ex) {
-                this.logger.warn("Exception saving data for player with uuid " + id);
-            }
-        }
-        ConcurrentUtil.shutdownExecutor(this.executor, TimeUnit.MILLISECONDS, 500);
-    }
 
 }

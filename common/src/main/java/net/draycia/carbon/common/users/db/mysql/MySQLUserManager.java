@@ -21,8 +21,6 @@ package net.draycia.carbon.common.users.db.mysql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,12 +52,8 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class MySQLUserManager extends DatabaseUserManager {
 
-    private final ProfileResolver profileResolver;
-    private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache = new HashMap<>();
-
     private MySQLUserManager(final Jdbi jdbi, final Logger logger, final ProfileResolver profileResolver) {
-        super(jdbi, new QueriesLocator(DBType.MYSQL), logger);
-        this.profileResolver = profileResolver;
+        super(jdbi, new QueriesLocator(DBType.MYSQL), logger, profileResolver);
     }
 
     public static MySQLUserManager manager(
@@ -107,10 +101,11 @@ public final class MySQLUserManager extends DatabaseUserManager {
     }
 
     @Override
-    public synchronized CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
-        return this.cache.computeIfAbsent(uuid, $ -> {
-            final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
-                return this.userCache.computeIfAbsent(uuid, key -> {
+    public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
+        this.cacheLock.lock();
+        try {
+            return this.cache.computeIfAbsent(uuid, $ -> {
+                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
                     return this.jdbi.withHandle(handle -> {
                         final Optional<CarbonPlayerCommon> carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
                             .bind("id", uuid)
@@ -145,21 +140,15 @@ public final class MySQLUserManager extends DatabaseUserManager {
                             });
                         return carbonPlayerCommon.get();
                     });
-                });
-            }, this.executor);
+                }, this.executor);
 
-            // Don't keep failed requests so they can be retried on the next request
-            // The caller is expected to handle the error
-            future.whenComplete((result, $$$) -> {
-                if (result == null) {
-                    synchronized (this) {
-                        this.cache.remove(uuid);
-                    }
-                }
+                this.attachPostLoad(uuid, future);
+
+                return future;
             });
-
-            return future;
-        });
+        } finally {
+            this.cacheLock.unlock();
+        }
     }
 
     @Override
@@ -174,16 +163,6 @@ public final class MySQLUserManager extends DatabaseUserManager {
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying());
-    }
-
-    @Override
-    public CompletableFuture<Void> loggedOut(final UUID uuid) {
-        final CompletableFuture<@Nullable CarbonPlayerCommon> remove = this.cache.remove(uuid);
-        final @Nullable CarbonPlayerCommon join = remove.join();
-        if (remove.isDone() && join != null) { // don't need to save if it never finished loading
-            return this.save(join);
-        }
-        return CompletableFuture.completedFuture(null);
     }
 
 }
