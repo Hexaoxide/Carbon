@@ -21,84 +21,24 @@ package net.draycia.carbon.common.users;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> implements UserManagerInternal<C>, SaveOnChange {
+public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> implements UserManagerInternal<C> {
 
     private final UserManagerInternal<CarbonPlayerCommon> wrapped;
-    private final SaveOnChange saveOnChange;
 
     public PlatformUserManager(final UserManagerInternal<CarbonPlayerCommon> wrapped) {
         this.wrapped = wrapped;
-        this.saveOnChange = ImposterSaveOnChange.impersonateIfNeeded(wrapped);
     }
 
     @Override
-    public CompletableFuture<C> user(UUID uuid) {
+    public CompletableFuture<C> user(final UUID uuid) {
         return this.wrapped.user(uuid).thenApply(this::wrap);
     }
 
-    protected abstract C wrap(CarbonPlayerCommon common);
-
-    @Override
-    public int saveDisplayName(final UUID id, final @Nullable Component component) {
-        return this.saveOnChange.saveDisplayName(id, component);
-    }
-
-    @Override
-    public int saveMuted(final UUID id, final boolean muted) {
-        return this.saveOnChange.saveMuted(id, muted);
-    }
-
-    @Override
-    public int saveDeafened(final UUID id, final boolean deafened) {
-        return this.saveOnChange.saveDeafened(id, deafened);
-    }
-
-    @Override
-    public int saveSpying(final UUID id, final boolean spying) {
-        return this.saveOnChange.saveSpying(id, spying);
-    }
-
-    @Override
-    public int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel) {
-        return this.saveOnChange.saveSelectedChannel(id, selectedChannel);
-    }
-
-    @Override
-    public int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget) {
-        return this.saveOnChange.saveLastWhisperTarget(id, lastWhisperTarget);
-    }
-
-    @Override
-    public int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget) {
-        return this.saveOnChange.saveWhisperReplyTarget(id, whisperReplyTarget);
-    }
-
-    @Override
-    public int addIgnore(final UUID id, final UUID ignoredPlayer) {
-        return this.saveOnChange.addIgnore(id, ignoredPlayer);
-    }
-
-    @Override
-    public int removeIgnore(final UUID id, final UUID ignoredPlayer) {
-        return this.saveOnChange.removeIgnore(id, ignoredPlayer);
-    }
-
-    @Override
-    public int addLeftChannel(final UUID id, final Key channel) {
-        return this.saveOnChange.addLeftChannel(id, channel);
-    }
-
-    @Override
-    public int removeLeftChannel(final UUID id, final Key channel) {
-        return this.saveOnChange.removeLeftChannel(id, channel);
-    }
+    protected abstract C wrap(final CarbonPlayerCommon common);
 
     @Override
     public void shutdown() {

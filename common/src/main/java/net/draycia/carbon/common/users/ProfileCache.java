@@ -129,7 +129,7 @@ public final class ProfileCache {
     private synchronized void cleanup() {
         final long cutoff = cutoff();
         final long nullIdCutoff = nullIdCutoff();
-        for (final Iterator<CacheEntry> iterator = this.entries.iterator(); iterator.hasNext(); ) {
+        for (final Iterator<CacheEntry> iterator = this.entries.iterator(); iterator.hasNext();) {
             final CacheEntry entry = iterator.next();
             if (entry.updated() < cutoff || entry.uuid() == null && entry.updated() < nullIdCutoff) {
                 iterator.remove();

@@ -33,7 +33,6 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.SaveOnChange;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
@@ -41,7 +40,6 @@ import net.draycia.carbon.common.users.db.KeyArgumentFactory;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -55,7 +53,7 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 // TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
-public final class PostgreSQLUserManager extends DatabaseUserManager implements SaveOnChange {
+public final class PostgreSQLUserManager extends DatabaseUserManager {
 
     private final ProfileResolver profileResolver;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache = new HashMap<>();
@@ -184,62 +182,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager implements 
     }
 
     @Override
-    public int saveDisplayName(final UUID id, final @Nullable Component displayName) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveDisplayName(id, displayName));
-    }
-
-    @Override
-    public int saveMuted(final UUID id, final boolean muted) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveMuted(id, muted));
-    }
-
-    @Override
-    public int saveDeafened(final UUID id, final boolean deafened) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveDeafened(id, deafened));
-    }
-
-    @Override
-    public int saveSpying(final UUID id, final boolean spying) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveSpying(id, spying));
-    }
-
-    @Override
-    public int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveSelectedChannel(id, selectedChannel));
-    }
-
-    @Override
-    public int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveLastWhisperTarget(id, lastWhisperTarget));
-    }
-
-    @Override
-    public int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.saveWhisperReplyTarget(id, whisperReplyTarget));
-    }
-
-    @Override
-    public int addIgnore(final UUID id, final UUID ignoredPlayer) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.addIgnore(id, ignoredPlayer));
-    }
-
-    @Override
-    public int removeIgnore(final UUID id, final UUID ignoredPlayer) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeIgnore(id, ignoredPlayer));
-    }
-
-    @Override
-    public int addLeftChannel(final UUID id, final Key channel) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.addLeftChannel(id, channel));
-    }
-
-    @Override
-    public int removeLeftChannel(final UUID id, final Key channel) {
-        return this.jdbi.withExtension(PostgreSQLSaveOnChange.class, changeSaver -> changeSaver.removeLeftChannel(id, channel));
-    }
-
-    @Override
-    public CompletableFuture<Void> loggedOut(UUID uuid) {
+    public CompletableFuture<Void> loggedOut(final UUID uuid) {
         final CompletableFuture<@Nullable CarbonPlayerCommon> remove = this.cache.remove(uuid);
         final @Nullable CarbonPlayerCommon join = remove.join();
         if (remove.isDone() && join != null) { // don't need to save if it never finished loading
@@ -247,4 +190,5 @@ public final class PostgreSQLUserManager extends DatabaseUserManager implements 
         }
         return CompletableFuture.completedFuture(null);
     }
+
 }

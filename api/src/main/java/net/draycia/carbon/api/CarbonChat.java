@@ -92,6 +92,12 @@ public interface CarbonChat {
      */
     CarbonServer server();
 
+    /**
+     * The user manager.
+     *
+     * @return the user manager
+     * @since 2.1.0
+     */
     UserManager<?> userManager();
 
     /**

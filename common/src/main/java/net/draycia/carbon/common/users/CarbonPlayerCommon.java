@@ -130,10 +130,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void displayName(final @Nullable Component displayName) {
         this.displayName = displayName;
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.saveDisplayName(this.uuid(), displayName);
-        }
     }
 
     @Override
@@ -159,10 +155,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void muted(final boolean muted) {
         this.muted = muted;
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.saveMuted(this.uuid(), muted);
-        }
     }
 
     public List<UUID> ignoredPlayers() {
@@ -188,14 +180,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         } else {
             this.ignoredPlayers.remove(player);
         }
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            if (nowIgnoring) {
-                userManager.addIgnore(this.uuid, player);
-            } else {
-                userManager.removeIgnore(this.uuid, player);
-            }
-        }
     }
 
     @Override
@@ -211,10 +195,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void deafened(final boolean deafened) {
         this.deafened = deafened;
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.saveDeafened(this.uuid(), deafened);
-        }
     }
 
     @Override
@@ -225,10 +205,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void spying(final boolean spying) {
         this.spying = spying;
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.saveSpying(this.uuid(), spying);
-        }
     }
 
     @Override
@@ -254,10 +230,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void whisperReplyTarget(final @Nullable UUID whisperReplyTarget) {
         this.whisperReplyTarget = whisperReplyTarget;
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.saveWhisperReplyTarget(this.uuid(), whisperReplyTarget);
-        }
     }
 
     @Override
@@ -268,10 +240,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void lastWhisperTarget(final @Nullable UUID lastWhisperTarget) {
         this.lastWhisperTarget = lastWhisperTarget;
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.saveLastWhisperTarget(this.uuid(), lastWhisperTarget);
-        }
     }
 
     @Override
@@ -292,17 +260,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void joinChannel(final ChatChannel channel) {
         this.leftChannels.remove(channel.key());
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.removeLeftChannel(this.uuid(), channel.key());
-        }
     }
 
     @Override
     public void leaveChannel(final ChatChannel channel) {
         this.leftChannels.add(channel.key());
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.addLeftChannel(this.uuid(), channel.key());
-        }
     }
 
     @Override
@@ -334,10 +296,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             this.selectedChannel = null;
         } else {
             this.selectedChannel = chatChannel.key();
-        }
-
-        if (this.carbonChat.userManager() instanceof SaveOnChange userManager) {
-            userManager.saveSelectedChannel(this.uuid(), this.selectedChannel);
         }
     }
 

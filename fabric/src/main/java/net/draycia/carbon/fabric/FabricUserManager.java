@@ -31,7 +31,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class FabricUserManager extends PlatformUserManager<CarbonPlayerFabric> {
+public final class FabricUserManager extends PlatformUserManager<CarbonPlayerFabric> {
 
     private final CarbonChatFabric carbonChatFabric;
 

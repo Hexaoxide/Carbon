@@ -31,7 +31,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class PaperUserManager extends PlatformUserManager<CarbonPlayerPaper> {
+public final class PaperUserManager extends PlatformUserManager<CarbonPlayerPaper> {
 
     @Inject
     private PaperUserManager(final @Backing UserManagerInternal<CarbonPlayerCommon> proxiedUserManager) {

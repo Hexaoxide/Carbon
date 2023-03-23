@@ -48,6 +48,13 @@ public interface UserManager<C extends CarbonPlayer> {
             .exceptionally(thr -> new ComponentPlayerResult<>(null, ComponentMessageThrowable.getOrConvertMessage(thr)));
     }
 
+    /**
+     * Loads and returns the CarbonPlayer with the corresponding uuid.
+     *
+     * @param uuid the player's id
+     * @return the player
+     * @since 2.1.0
+     */
     CompletableFuture<C> user(final UUID uuid);
 
 }

@@ -109,4 +109,5 @@ public abstract class DatabaseUserManager implements UserManagerInternal<CarbonP
         }
         ConcurrentUtil.shutdownExecutor(this.executor, TimeUnit.MILLISECONDS, 500);
     }
+
 }
