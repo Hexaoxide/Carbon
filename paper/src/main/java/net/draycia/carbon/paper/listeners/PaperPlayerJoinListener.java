@@ -51,9 +51,13 @@ public class PaperPlayerJoinListener implements Listener {
         this.userManager = userManager;
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void cacheProfile(final PlayerJoinEvent event) {
+        this.profileCache.cache(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+    }
+
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
-        this.profileCache.cache(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         this.userManager.user(event.getPlayer().getUniqueId()).thenAccept(result -> {
             Optional.ofNullable(result.displayName()).ifPresent(displayName -> {
                 final Player player = event.getPlayer();
