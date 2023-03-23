@@ -40,12 +40,14 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     protected final Logger logger;
     protected final ExecutorService executor;
+    protected final ProfileResolver profileResolver;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
 
-    protected CachingUserManager(final Logger logger, final ExecutorService executorService) {
+    protected CachingUserManager(final Logger logger, final ExecutorService executorService, final ProfileResolver profileResolver) {
         this.logger = logger;
         this.executor = executorService;
+        this.profileResolver = profileResolver;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
     }
@@ -57,7 +59,11 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         this.cacheLock.lock();
         try {
             return this.cache.computeIfAbsent(uuid, $ -> {
-                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> this.loadOrCreate(uuid), this.executor);
+                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
+                    final CarbonPlayerCommon player = this.loadOrCreate(uuid);
+                    player.profileResolver = this.profileResolver;
+                    return player;
+                }, this.executor);
                 this.attachPostLoad(uuid, future);
                 return future;
             });

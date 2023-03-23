@@ -51,7 +51,6 @@ public class JSONUserManager extends CachingUserManager {
     private static final String EMPTY_USER_UUID = "f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
     private final Gson serializer;
     private final Path userDirectory;
-    private final ProfileResolver profileResolver;
     private final String emptyUserJson;
 
     @Inject
@@ -61,9 +60,8 @@ public class JSONUserManager extends CachingUserManager {
         final Logger logger,
         final ProfileResolver profileResolver
     ) throws IOException {
-        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")));
+        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")), profileResolver);
         this.userDirectory = dataDirectory.resolve("users");
-        this.profileResolver = profileResolver;
 
         Files.createDirectories(this.userDirectory);
 
@@ -89,7 +87,6 @@ public class JSONUserManager extends CachingUserManager {
                 if (player == null) {
                     throw new IllegalStateException("Player file found but was empty.");
                 }
-                player.profileResolver = this.profileResolver;
                 player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
                     .channelRegistry()
                     .get(channel) == null);
@@ -100,9 +97,7 @@ public class JSONUserManager extends CachingUserManager {
             }
         }
 
-        final CarbonPlayerCommon player = new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
-        player.profileResolver = this.profileResolver;
-        return player;
+        return new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
     }
 
     private Path userFile(final UUID id) {

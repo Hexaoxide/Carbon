@@ -39,13 +39,11 @@ public abstract class DatabaseUserManager extends CachingUserManager {
 
     protected final Jdbi jdbi;
     protected final QueriesLocator locator;
-    protected final ProfileResolver profileResolver;
 
     protected DatabaseUserManager(final Jdbi jdbi, final QueriesLocator locator, final Logger logger, final ProfileResolver profileResolver) {
-        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")));
+        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")), profileResolver);
         this.jdbi = jdbi;
         this.locator = locator;
-        this.profileResolver = profileResolver;
     }
 
     @Override
