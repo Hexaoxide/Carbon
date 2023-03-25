@@ -34,7 +34,7 @@ import net.draycia.carbon.common.users.json.JSONUserManager;
  * with the generic type of {@link CarbonPlayerCommon}.
  *
  * <p>Injecting {@link UserManagerInternal} or {@link UserManager} with a generic type of {@literal ?}, without this annotation,
- * will inject the {@link PlatformUserManager}, which wraps the backing manager.</p>
+ * will inject the {@link PlatformUserManager}, which wraps the backing manager (this is generally what you want).</p>
  */
 @BindingAnnotation
 @Retention(RetentionPolicy.RUNTIME)
