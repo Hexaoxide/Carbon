@@ -32,7 +32,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
@@ -107,7 +107,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
         this.bind(CarbonChat.class).toInstance(this.carbonChat);
         this.bind(CarbonChatFabric.class).toInstance(this.carbonChat);
         this.bind(Logger.class).toInstance(this.logger);
-        this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
+        this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.dataDirectory);
         this.bind(CarbonServer.class).to(CarbonServerFabric.class);
         this.bind(PlayerSuggestions.class).toInstance((ctx, input) -> this.carbonChat.minecraftServer().getPlayerList().getPlayers().stream()
             .map(player -> player.getGameProfile().getName())

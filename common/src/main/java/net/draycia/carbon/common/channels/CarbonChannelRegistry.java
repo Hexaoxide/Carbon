@@ -49,7 +49,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -106,7 +106,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Inject
     public CarbonChannelRegistry(
-        @ForCarbon final Path dataDirectory,
+        @DataDirectory final Path dataDirectory,
         final Injector injector,
         final Logger logger,
         final ConfigFactory configFactory,

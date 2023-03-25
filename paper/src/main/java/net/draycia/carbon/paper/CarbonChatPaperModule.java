@@ -34,7 +34,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
@@ -124,7 +124,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(JavaPlugin.class).toInstance(this.bootstrap);
         this.bind(Server.class).toInstance(this.bootstrap.getServer());
         this.bind(Logger.class).toInstance(this.logger);
-        this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.bootstrap.getDataFolder().toPath());
+        this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.bootstrap.getDataFolder().toPath());
         this.bind(CarbonServer.class).to(CarbonServerPaper.class);
         this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
         this.bind(ProfileResolver.class).to(PaperProfileResolver.class);

@@ -31,7 +31,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -81,7 +81,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         final Provider<MessagingManager> messagingManager,
         final CarbonServer carbonServer,
         final PaperUserManager userManager,
-        @ForCarbon final Path dataDirectory,
+        @DataDirectory final Path dataDirectory,
         @PeriodicTasks final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,

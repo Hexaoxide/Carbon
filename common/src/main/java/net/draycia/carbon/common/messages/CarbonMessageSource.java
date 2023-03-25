@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.events.CarbonReloadEvent;
@@ -74,7 +74,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     @Inject
     private CarbonMessageSource(
         final CarbonEventHandler events,
-        final @ForCarbon Path dataDirectory,
+        final @DataDirectory Path dataDirectory,
         final ConfigFactory configFactory,
         final Logger logger
     ) throws IOException {

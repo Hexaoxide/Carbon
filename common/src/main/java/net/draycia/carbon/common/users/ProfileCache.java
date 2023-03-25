@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -60,7 +60,7 @@ public final class ProfileCache {
     }
 
     @Inject
-    private ProfileCache(final @ForCarbon Path dataDirectory) {
+    private ProfileCache(final @DataDirectory Path dataDirectory) {
         this.gson = new GsonBuilder()
             .registerTypeAdapter(UUID.class, new UUIDSerializerGson())
             .create();

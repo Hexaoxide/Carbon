@@ -25,7 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.events.CarbonReloadEvent;
 import net.draycia.carbon.common.serialisation.gson.LocaleSerializerConfigurate;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
@@ -48,7 +48,7 @@ public class ConfigFactory {
     @Inject
     public ConfigFactory(
         final CarbonEventHandler events,
-        @ForCarbon final Path dataDirectory,
+        @DataDirectory final Path dataDirectory,
         final LocaleSerializerConfigurate locale
     ) {
         this.dataDirectory = dataDirectory;

@@ -32,7 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import net.draycia.carbon.common.users.CachingUserManager;
@@ -55,7 +55,7 @@ public class JSONUserManager extends CachingUserManager {
 
     @Inject
     public JSONUserManager(
-        final @ForCarbon Path dataDirectory,
+        final @DataDirectory Path dataDirectory,
         final Injector injector,
         final Logger logger,
         final ProfileResolver profileResolver
