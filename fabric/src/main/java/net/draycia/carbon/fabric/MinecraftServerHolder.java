@@ -17,35 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.paper;
+package net.draycia.carbon.fabric;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import net.draycia.carbon.common.users.Backing;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.PlatformUserManager;
-import net.draycia.carbon.common.users.UserManagerInternal;
-import net.draycia.carbon.paper.users.CarbonPlayerPaper;
+import java.util.Objects;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.server.MinecraftServer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-@Singleton
-public final class PaperUserManager extends PlatformUserManager<CarbonPlayerPaper> {
+public final class MinecraftServerHolder {
+
+    private @Nullable MinecraftServer server;
 
     @Inject
-    private PaperUserManager(final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager) {
-        super(backingManager);
+    private MinecraftServerHolder() {
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.server = server);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.server = null);
     }
 
-    @Override
-    protected CarbonPlayerPaper wrap(final CarbonPlayerCommon common) {
-        return new CarbonPlayerPaper(common);
-    }
-
-    @Override
-    protected void updateTransientLoadedStatus(final CarbonPlayerPaper wrapped) {
-        wrapped.carbonPlayerCommon().markTransientLoaded(wrapped.bukkitPlayer() == null);
+    public MinecraftServer requireServer() {
+        return Objects.requireNonNull(this.server, "server requested when not active");
     }
 
 }

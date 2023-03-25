@@ -36,13 +36,11 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.draycia.carbon.fabric.command.DeleteMessageCommand;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
 import net.draycia.carbon.fabric.listeners.FabricChatPreviewListener;
-import net.draycia.carbon.fabric.listeners.FabricPlayerJoinListener;
-import net.draycia.carbon.fabric.listeners.FabricPlayerLeaveListener;
+import net.draycia.carbon.fabric.listeners.FabricJoinQuitListener;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
@@ -55,19 +53,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabric> {
-
-    private @Nullable MinecraftServer minecraftServer;
 
     public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
 
@@ -79,7 +71,7 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
         final @PeriodicTasks ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final UserManagerInternal<CarbonPlayerFabric> userManager,
+        final FabricUserManager userManager,
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,
@@ -124,20 +116,13 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
     }
 
     private void registerServerLifecycleListeners() {
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            this.shutdown();
-            this.minecraftServer = null;
-        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.shutdown());
     }
 
     private void registerPlayerStatusListeners() {
-        ServerPlayConnectionEvents.DISCONNECT.register(this.injector().getInstance(FabricPlayerLeaveListener.class));
-        ServerPlayConnectionEvents.JOIN.register(this.injector().getInstance(FabricPlayerJoinListener.class));
-    }
-
-    public MinecraftServer minecraftServer() {
-        return requireNonNull(this.minecraftServer, "Attempted to get the MinecraftServer instance when one is not active.");
+        final FabricJoinQuitListener listener = this.injector().getInstance(FabricJoinQuitListener.class);
+        ServerPlayConnectionEvents.DISCONNECT.register(listener);
+        ServerPlayConnectionEvents.JOIN.register(listener);
     }
 
     public boolean luckPermsLoaded() {

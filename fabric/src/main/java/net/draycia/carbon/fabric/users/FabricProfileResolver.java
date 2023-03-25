@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.common.users.MojangProfileResolver;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.fabric.CarbonChatFabric;
+import net.draycia.carbon.fabric.MinecraftServerHolder;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -35,18 +35,18 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class FabricProfileResolver implements ProfileResolver {
 
-    private final CarbonChatFabric carbonChatFabric;
+    private final MinecraftServerHolder serverHolder;
     private final ProfileResolver mojang;
 
     @Inject
-    private FabricProfileResolver(final CarbonChatFabric carbonChatFabric, final MojangProfileResolver mojang) {
-        this.carbonChatFabric = carbonChatFabric;
+    private FabricProfileResolver(final MinecraftServerHolder serverHolder, final MojangProfileResolver mojang) {
+        this.serverHolder = serverHolder;
         this.mojang = mojang;
     }
 
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
-        final @Nullable ServerPlayer online = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username);
+        final @Nullable ServerPlayer online = this.serverHolder.requireServer().getPlayerList().getPlayerByName(username);
         if (online != null) {
             return CompletableFuture.completedFuture(online.getUUID());
         }
@@ -56,7 +56,7 @@ public final class FabricProfileResolver implements ProfileResolver {
 
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
-        final @Nullable ServerPlayer online = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid);
+        final @Nullable ServerPlayer online = this.serverHolder.requireServer().getPlayerList().getPlayer(uuid);
         if (online != null) {
             return CompletableFuture.completedFuture(online.getGameProfile().getName());
         }

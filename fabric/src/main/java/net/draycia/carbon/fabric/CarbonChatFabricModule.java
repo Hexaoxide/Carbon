@@ -106,8 +106,8 @@ public final class CarbonChatFabricModule extends AbstractModule {
     }
 
     @Provides
-    public PlayerSuggestions playerSuggestions(final Provider<CarbonChatFabric> carbon) {
-        return (ctx, input) -> carbon.get().minecraftServer().getPlayerList().getPlayers().stream()
+    public PlayerSuggestions playerSuggestions(final MinecraftServerHolder serverHolder) {
+        return (ctx, input) -> serverHolder.requireServer().getPlayerList().getPlayers().stream()
             .map(player -> player.getGameProfile().getName())
             .toList();
     }

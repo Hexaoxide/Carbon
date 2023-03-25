@@ -20,6 +20,7 @@
 package net.draycia.carbon.fabric;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -33,17 +34,23 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public final class FabricUserManager extends PlatformUserManager<CarbonPlayerFabric> {
 
-    private final CarbonChatFabric carbonChatFabric;
+    private final MinecraftServerHolder serverHolder;
+    private final Provider<CarbonChatFabric> carbonChat;
 
     @Inject
-    private FabricUserManager(final @Backing UserManagerInternal<CarbonPlayerCommon> proxiedUserManager, final CarbonChatFabric carbonChatFabric) {
-        super(proxiedUserManager);
-        this.carbonChatFabric = carbonChatFabric;
+    private FabricUserManager(
+        final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager,
+        final MinecraftServerHolder serverHolder,
+        final Provider<CarbonChatFabric> carbonChat
+    ) {
+        super(backingManager);
+        this.serverHolder = serverHolder;
+        this.carbonChat = carbonChat;
     }
 
     @Override
     protected CarbonPlayerFabric wrap(final CarbonPlayerCommon common) {
-        return new CarbonPlayerFabric(common, this.carbonChatFabric);
+        return new CarbonPlayerFabric(common, this.serverHolder, this.carbonChat);
     }
 
     @Override

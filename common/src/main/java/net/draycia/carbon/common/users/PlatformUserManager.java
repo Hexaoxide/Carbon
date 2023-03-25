@@ -27,15 +27,15 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> implements UserManagerInternal<C> {
 
-    private final UserManagerInternal<CarbonPlayerCommon> wrapped;
+    private final UserManagerInternal<CarbonPlayerCommon> backingManager;
 
-    public PlatformUserManager(final UserManagerInternal<CarbonPlayerCommon> wrapped) {
-        this.wrapped = wrapped;
+    public PlatformUserManager(final UserManagerInternal<CarbonPlayerCommon> backingManager) {
+        this.backingManager = backingManager;
     }
 
     @Override
     public CompletableFuture<C> user(final UUID uuid) {
-        return this.wrapped.user(uuid).thenApply(common -> {
+        return this.backingManager.user(uuid).thenApply(common -> {
             final C wrapped = this.wrap(common);
             this.updateTransientLoadedStatus(wrapped);
             return wrapped;
@@ -48,21 +48,22 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
 
     @Override
     public void shutdown() {
-        this.wrapped.shutdown();
+        this.backingManager.shutdown();
     }
 
     @Override
     public CompletableFuture<Void> save(final C player) {
-        return this.wrapped.save(player.carbonPlayerCommon());
+        return this.backingManager.save(player.carbonPlayerCommon());
     }
 
     @Override
     public CompletableFuture<Void> loggedOut(final UUID uuid) {
-        return this.wrapped.loggedOut(uuid);
+        return this.backingManager.loggedOut(uuid);
     }
 
     @Override
     public void cleanup() {
-        this.wrapped.cleanup();
+        this.backingManager.cleanup();
     }
+
 }

@@ -38,28 +38,28 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerFabric implements CarbonServer, ForwardingAudience.Single {
 
-    private final CarbonChatFabric carbonChatFabric;
+    private final MinecraftServerHolder serverHolder;
     private final FabricUserManager userManager;
 
     @Inject
-    private CarbonServerFabric(final CarbonChatFabric carbonChatFabric, final FabricUserManager userManager) {
-        this.carbonChatFabric = carbonChatFabric;
+    private CarbonServerFabric(final MinecraftServerHolder serverHolder, final FabricUserManager userManager) {
+        this.serverHolder = serverHolder;
         this.userManager = userManager;
     }
 
     @Override
     public @NotNull Audience audience() {
-        return FabricServerAudiences.of(this.carbonChatFabric.minecraftServer()).all();
+        return FabricServerAudiences.of(this.serverHolder.requireServer()).all();
     }
 
     @Override
     public Audience console() {
-        return this.carbonChatFabric.minecraftServer().createCommandSourceStack();
+        return this.serverHolder.requireServer().createCommandSourceStack();
     }
 
     @Override
     public List<? extends CarbonPlayer> players() {
-        return this.carbonChatFabric.minecraftServer().getPlayerList().getPlayers().stream()
+        return this.serverHolder.requireServer().getPlayerList().getPlayers().stream()
             .map(serverPlayer -> this.userManager.user(serverPlayer.getUUID()).getNow(null))
             .filter(Objects::nonNull)
             .toList();

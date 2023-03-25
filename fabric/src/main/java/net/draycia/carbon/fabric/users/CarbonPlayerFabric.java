@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.fabric.users;
 
+import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +31,7 @@ import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.fabric.CarbonChatFabric;
+import net.draycia.carbon.fabric.MinecraftServerHolder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -46,10 +48,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class CarbonPlayerFabric extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
     private final CarbonPlayerCommon carbonPlayerCommon;
-    private final CarbonChatFabric carbonChatFabric;
+    private final MinecraftServerHolder serverHolder;
+    private final Provider<CarbonChatFabric> carbonChatFabric;
 
-    public CarbonPlayerFabric(final CarbonPlayerCommon carbonPlayerCommon, final CarbonChatFabric carbonChatFabric) {
+    public CarbonPlayerFabric(final CarbonPlayerCommon carbonPlayerCommon, final MinecraftServerHolder serverHolder, final Provider<CarbonChatFabric> carbonChatFabric) {
         this.carbonPlayerCommon = carbonPlayerCommon;
+        this.serverHolder = serverHolder;
         this.carbonChatFabric = carbonChatFabric;
     }
 
@@ -60,7 +64,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     public Optional<ServerPlayer> player() {
         return Optional.ofNullable(
-            this.carbonChatFabric.minecraftServer().getPlayerList()
+            this.serverHolder.requireServer().getPlayerList()
                 .getPlayer(this.carbonPlayerCommon.uuid())
         );
     }
@@ -109,7 +113,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
         }
 
         final @Nullable ServerPlayer player = this.player().orElse(null);
-        final @Nullable ServerPlayer otherPlayer = this.carbonChatFabric.minecraftServer()
+        final @Nullable ServerPlayer otherPlayer = this.serverHolder.requireServer()
             .getPlayerList().getPlayer(other.uuid());
 
         if (player == null || otherPlayer == null) {
@@ -130,7 +134,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
         }
 
         final Optional<ServerPlayer> player = this.player();
-        final @Nullable ServerPlayer otherPlayer = this.carbonChatFabric.minecraftServer()
+        final @Nullable ServerPlayer otherPlayer = this.serverHolder.requireServer()
             .getPlayerList().getPlayer(other.uuid());
 
         if (player.isEmpty() || otherPlayer == null) {
@@ -184,7 +188,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public String primaryGroup() {
-        if (!this.carbonChatFabric.luckPermsLoaded()) {
+        if (!this.carbonChatFabric.get().luckPermsLoaded()) {
             return "default";
         }
 
@@ -193,7 +197,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public List<String> groups() {
-        if (!this.carbonChatFabric.luckPermsLoaded()) {
+        if (!this.carbonChatFabric.get().luckPermsLoaded()) {
             return List.of("default");
         }
 
