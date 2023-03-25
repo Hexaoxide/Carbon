@@ -27,7 +27,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
@@ -66,7 +65,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     private final CarbonServer carbonServer;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
-    private final ChannelRegistry channelRegistry;
+    private final CarbonChannelRegistry channelRegistry;
     private final IMessageRenderer<Audience, String, Component, Component> renderer;
     private final Provider<MessagingManager> messagingManager;
 
@@ -82,7 +81,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,
-        final ChannelRegistry channelRegistry,
+        final CarbonChannelRegistry channelRegistry,
         final IMessageRenderer<Audience, String, Component, Component> renderer,
         final Provider<MessagingManager> messagingManagerProvider
     ) {
@@ -134,7 +133,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         );
 
         // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
+        this.channelRegistry().loadConfigChannels(this.carbonMessages);
     }
 
     protected void shutdown() {
@@ -176,7 +175,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     }
 
     @Override
-    public ChannelRegistry channelRegistry() {
+    public CarbonChannelRegistry channelRegistry() {
         return this.channelRegistry;
     }
 
