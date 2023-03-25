@@ -60,11 +60,10 @@ public abstract class DatabaseUserManager extends CachingUserManager {
 
     @Override
     public final CompletableFuture<Void> save(final CarbonPlayerCommon player) {
+        if (!player.needsSave()) {
+            return CompletableFuture.completedFuture(null);
+        }
         return CompletableFuture.runAsync(() -> this.jdbi.withHandle(handle -> {
-            if (!player.needsSave()) {
-                return null;
-            }
-
             this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
                 .execute();
 

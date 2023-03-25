@@ -49,10 +49,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class JSONUserManager extends CachingUserManager {
 
-    private static final String EMPTY_USER_UUID = "f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
     private final Gson serializer;
     private final Path userDirectory;
-    private final String emptyUserJson;
 
     @Inject
     public JSONUserManager(
@@ -80,8 +78,6 @@ public class JSONUserManager extends CachingUserManager {
             .registerTypeAdapter(PersistentUserProperty.class, new PersistentUserProperty.Serializer())
             .setPrettyPrinting()
             .create();
-
-        this.emptyUserJson = this.serializer.toJson(new CarbonPlayerCommon("username", UUID.fromString(EMPTY_USER_UUID)));
     }
 
     @Override
@@ -119,6 +115,9 @@ public class JSONUserManager extends CachingUserManager {
 
     @Override
     public CompletableFuture<Void> save(final CarbonPlayerCommon player) {
+        if (!player.needsSave()) {
+            return CompletableFuture.completedFuture(null);
+        }
         return CompletableFuture.runAsync(() -> {
             final Path userFile = this.userFile(player.uuid());
 
@@ -127,12 +126,6 @@ public class JSONUserManager extends CachingUserManager {
 
                 if (json == null || json.isBlank()) {
                     throw new IllegalStateException("No data to save - toJson returned null or blank.");
-
-                    // quick and dirty check to not create files for/save default data
-                } else if (json.equals(this.emptyUserJson.replace(EMPTY_USER_UUID, player.uuid().toString()))) {
-                    return;
-                } else if (!player.needsSave()) {
-                    return;
                 }
 
                 if (!Files.exists(userFile)) {
