@@ -46,6 +46,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.ForCarbon;
@@ -111,7 +112,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final ConfigFactory configFactory,
         final CarbonMessages carbonMessages,
         //final BasicChatChannel basicChannel,
-        final CarbonChat carbonChat
+        final CarbonChat carbonChat,
+        final CarbonEventHandler events
     ) {
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
@@ -121,9 +123,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         //this.basicChannel = basicChannel;
         this.carbonChat = carbonChat;
 
-        carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
-            this.reloadRegisteredConfigChannels();
-        });
+        events.subscribe(CarbonReloadEvent.class, event -> this.reloadRegisteredConfigChannels());
     }
 
     public static ConfigurationTransformation.Versioned versioned() {

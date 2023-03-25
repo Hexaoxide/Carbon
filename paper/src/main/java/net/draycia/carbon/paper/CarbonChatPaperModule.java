@@ -63,14 +63,9 @@ public final class CarbonChatPaperModule extends AbstractModule {
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonPaperBootstrap bootstrap;
-    private final CarbonChat carbonChat;
 
-    CarbonChatPaperModule(
-        final CarbonPaperBootstrap bootstrap,
-        final CarbonChat carbonChat
-    ) {
+    CarbonChatPaperModule(final CarbonPaperBootstrap bootstrap) {
         this.bootstrap = bootstrap;
-        this.carbonChat = carbonChat;
     }
 
     @Provides
@@ -121,15 +116,11 @@ public final class CarbonChatPaperModule extends AbstractModule {
         return injector.getInstance(PaperMessageRenderer.class);
     }
 
-    @Provides
-    public CarbonChat carbonChat() {
-        return this.carbonChat;
-    }
-
     @Override
     public void configure() {
         this.install(new CarbonCommonModule());
 
+        this.bind(CarbonChat.class).to(CarbonChatPaper.class);
         this.bind(JavaPlugin.class).toInstance(this.bootstrap);
         this.bind(Server.class).toInstance(this.bootstrap.getServer());
         this.bind(Logger.class).toInstance(this.logger);

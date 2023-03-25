@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.ForCarbon;
 import net.draycia.carbon.common.command.PlayerCommander;
@@ -73,7 +73,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
     @Inject
     private CarbonMessageSource(
-        final CarbonChat carbonChat,
+        final CarbonEventHandler events,
         final @ForCarbon Path dataDirectory,
         final ConfigFactory configFactory,
         final Logger logger
@@ -86,7 +86,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
         this.reloadTranslations();
 
-        carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
+        events.subscribe(CarbonReloadEvent.class, event -> {
             this.reloadTranslations();
         });
     }

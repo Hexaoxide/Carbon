@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users;
 
+import com.google.inject.MembersInjector;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +42,20 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected final Logger logger;
     protected final ExecutorService executor;
     protected final ProfileResolver profileResolver;
+    private final MembersInjector<CarbonPlayerCommon> playerInjector;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
 
-    protected CachingUserManager(final Logger logger, final ExecutorService executorService, final ProfileResolver profileResolver) {
+    protected CachingUserManager(
+        final Logger logger,
+        final ExecutorService executorService,
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
+    ) {
         this.logger = logger;
         this.executor = executorService;
         this.profileResolver = profileResolver;
+        this.playerInjector = playerInjector;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
     }
@@ -61,7 +69,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
             return this.cache.computeIfAbsent(uuid, $ -> {
                 final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
                     final CarbonPlayerCommon player = this.loadOrCreate(uuid);
-                    player.profileResolver = this.profileResolver;
+                    this.playerInjector.injectMembers(player);
                     return player;
                 }, this.executor);
                 this.attachPostLoad(uuid, future);

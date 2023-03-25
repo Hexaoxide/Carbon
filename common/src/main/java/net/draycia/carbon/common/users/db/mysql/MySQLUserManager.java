@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users.db.mysql;
 
+import com.google.inject.MembersInjector;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Objects;
@@ -51,14 +52,26 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class MySQLUserManager extends DatabaseUserManager {
 
-    private MySQLUserManager(final Jdbi jdbi, final Logger logger, final ProfileResolver profileResolver) {
-        super(jdbi, new QueriesLocator(DBType.MYSQL), logger, profileResolver);
+    private MySQLUserManager(
+        final Jdbi jdbi,
+        final Logger logger,
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
+    ) {
+        super(
+            jdbi,
+            new QueriesLocator(DBType.MYSQL),
+            logger,
+            profileResolver,
+            playerInjector
+        );
     }
 
     public static MySQLUserManager manager(
         final DatabaseSettings databaseSettings,
         final Logger logger,
-        final ProfileResolver profileResolver
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
     ) {
         try {
             //Class.forName("org.postgresql.Driver");
@@ -96,7 +109,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
             .registerRowMapper(new MySQLPlayerRowMapper())
             .installPlugin(new SqlObjectPlugin());
 
-        return new MySQLUserManager(jdbi, logger, profileResolver);
+        return new MySQLUserManager(jdbi, logger, profileResolver, playerInjector);
     }
 
     @Override

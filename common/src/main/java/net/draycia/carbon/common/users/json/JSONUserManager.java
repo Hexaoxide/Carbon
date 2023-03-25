@@ -60,7 +60,12 @@ public class JSONUserManager extends CachingUserManager {
         final Logger logger,
         final ProfileResolver profileResolver
     ) throws IOException {
-        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")), profileResolver);
+        super(
+            logger,
+            Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")),
+            profileResolver,
+            injector.getMembersInjector(CarbonPlayerCommon.class)
+        );
         this.userDirectory = dataDirectory.resolve("users");
 
         Files.createDirectories(this.userDirectory);

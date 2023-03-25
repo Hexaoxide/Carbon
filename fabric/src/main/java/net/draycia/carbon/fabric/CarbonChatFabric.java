@@ -21,6 +21,7 @@ package net.draycia.carbon.fabric;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +33,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -104,13 +106,12 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
         this.carbonServerFabric = this.injector.getInstance(CarbonServerFabric.class);
         this.userManager = this.injector.getInstance(FabricUserManager.class);
+        this.periodicTasks = this.injector.getInstance(Key.get(ScheduledExecutorService.class, PeriodicTasks.class));
 
         // Platform Listeners
         this.registerChatListener();
         this.registerServerLifecycleListeners();
         this.registerPlayerStatusListeners();
-
-        this.periodicTasks = ConcurrentUtil.createPeriodicTasksPool(this.logger);
 
         this.periodicTasks.scheduleAtFixedRate(
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger), 5, 5, TimeUnit.MINUTES);

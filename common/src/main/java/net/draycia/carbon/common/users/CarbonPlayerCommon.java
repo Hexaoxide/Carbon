@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users;
 
+import com.google.inject.Inject;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -46,7 +46,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     private static final long KEEP_TRANSIENT_LOADS_FOR = Duration.ofMinutes(2).toMillis();
 
-    private final transient CarbonChat carbonChat = CarbonChatProvider.carbonChat();
+    private transient @MonotonicNonNull @Inject CarbonChat carbonChat;
+    private transient @MonotonicNonNull @Inject ProfileResolver profileResolver;
     private transient long transientLoadedSince = -1;
 
     protected boolean muted = false;
@@ -54,7 +55,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     protected @Nullable Key selectedChannel = null;
 
-    public transient @MonotonicNonNull ProfileResolver profileResolver;
     // All players have these
     protected transient @MonotonicNonNull String username = null;
     protected @MonotonicNonNull UUID uuid;

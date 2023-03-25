@@ -21,8 +21,8 @@ package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
 import java.util.regex.Pattern;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -42,7 +42,7 @@ public class PingHandler {
     private final KeyedRenderer renderer;
 
     @Inject
-    public PingHandler(final CarbonChat carbonChat, final ConfigFactory configFactory) {
+    public PingHandler(final CarbonEventHandler events, final ConfigFactory configFactory) {
         this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
                 return message;
@@ -62,7 +62,7 @@ public class PingHandler {
                 .build());
         });
 
-        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 1, false, event -> {
+        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
             event.renderers().add(0, this.renderer);
         });
     }

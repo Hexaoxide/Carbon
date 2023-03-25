@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users.db.postgresql;
 
+import com.google.inject.MembersInjector;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Objects;
@@ -52,14 +53,26 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class PostgreSQLUserManager extends DatabaseUserManager {
 
-    private PostgreSQLUserManager(final Jdbi jdbi, final Logger logger, final ProfileResolver profileResolver) {
-        super(jdbi, new QueriesLocator(DBType.POSTGRESQL), logger, profileResolver);
+    private PostgreSQLUserManager(
+        final Jdbi jdbi,
+        final Logger logger,
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
+    ) {
+        super(
+            jdbi,
+            new QueriesLocator(DBType.POSTGRESQL),
+            logger,
+            profileResolver,
+            playerInjector
+        );
     }
 
     public static PostgreSQLUserManager manager(
         final DatabaseSettings databaseSettings,
         final Logger logger,
-        final ProfileResolver profileResolver
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
     ) {
         try {
             Class.forName("org.postgresql.Driver");
@@ -93,7 +106,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
             .installPlugin(new SqlObjectPlugin())
             .installPlugin(new PostgresPlugin());
 
-        return new PostgreSQLUserManager(jdbi, logger, profileResolver);
+        return new PostgreSQLUserManager(jdbi, logger, profileResolver, playerInjector);
     }
 
     @Override

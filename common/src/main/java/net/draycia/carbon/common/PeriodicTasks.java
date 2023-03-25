@@ -17,24 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.listeners;
+package net.draycia.carbon.common;
 
-import com.google.inject.Inject;
-import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import com.google.inject.BindingAnnotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@DefaultQualifier(NonNull.class)
-public class IgnoreHandler {
-
-    @Inject
-    public IgnoreHandler(final CarbonEventHandler events) {
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
-            event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
-                carbonPlayer.ignoring(event.sender()));
-        });
-    }
-
+@BindingAnnotation
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
+public @interface PeriodicTasks {
 }

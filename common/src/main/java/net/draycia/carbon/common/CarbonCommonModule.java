@@ -21,13 +21,16 @@ package net.draycia.carbon.common;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import com.google.inject.MembersInjector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
@@ -49,6 +52,7 @@ import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
 import net.draycia.carbon.common.users.json.JSONUserManager;
+import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -69,13 +73,27 @@ public final class CarbonCommonModule extends AbstractModule {
         final ConfigFactory configFactory,
         final Injector injector,
         final Logger logger,
-        final ProfileResolver profileResolver
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
     ) {
         return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver);
-            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver);
+            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver, playerInjector);
+            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver, playerInjector);
             default -> injector.getInstance(JSONUserManager.class);
         };
+    }
+
+    @Provides
+    @PeriodicTasks
+    @Singleton
+    public ScheduledExecutorService periodicTasksExecutor(final Logger logger) {
+        return ConcurrentUtil.createPeriodicTasksPool(logger);
+    }
+
+    @Provides
+    @Singleton
+    public CarbonEventHandler eventHandler() {
+        return new CarbonEventHandler();
     }
 
     @Provides

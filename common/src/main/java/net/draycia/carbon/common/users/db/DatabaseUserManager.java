@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users.db;
 
+import com.google.inject.MembersInjector;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -40,8 +41,19 @@ public abstract class DatabaseUserManager extends CachingUserManager {
     protected final Jdbi jdbi;
     protected final QueriesLocator locator;
 
-    protected DatabaseUserManager(final Jdbi jdbi, final QueriesLocator locator, final Logger logger, final ProfileResolver profileResolver) {
-        super(logger, Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")), profileResolver);
+    protected DatabaseUserManager(
+        final Jdbi jdbi,
+        final QueriesLocator locator,
+        final Logger logger,
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
+    ) {
+        super(
+            logger,
+            Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")),
+            profileResolver,
+            playerInjector
+        );
         this.jdbi = jdbi;
         this.locator = locator;
     }
