@@ -65,7 +65,6 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
     private static final int BSTATS_PLUGIN_ID = 8720;
 
     private final JavaPlugin plugin;
-    private final CarbonServer carbonServer;
 
     @Inject
     private CarbonChatPaper(
@@ -99,7 +98,6 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
             messagingManager
         );
         this.plugin = plugin;
-        this.carbonServer = carbonServer;
     }
 
     void onEnable() {
