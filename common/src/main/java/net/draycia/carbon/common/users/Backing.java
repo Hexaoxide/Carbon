@@ -30,7 +30,7 @@ import net.draycia.carbon.common.users.json.JSONUserManager;
 
 /**
  * Injection binding annotation for the backing {@link UserManagerInternal}
- * (i.e. {@link JSONUserManager} or {@link DatabaseUserManager},
+ * (i.e. {@link JSONUserManager} or {@link DatabaseUserManager}),
  * with the generic type of {@link CarbonPlayerCommon}.
  *
  * <p>Injecting {@link UserManagerInternal} or {@link UserManager} with a generic type of {@literal ?}, without this annotation,
