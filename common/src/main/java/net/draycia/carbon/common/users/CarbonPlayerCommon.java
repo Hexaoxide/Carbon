@@ -208,7 +208,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             newIgnored.remove(player);
         }
         if (internal) {
-            this.ignoredPlayers.setInternal(Collections.unmodifiableSet(newIgnored));
+            this.ignoredPlayers.internalSet(Collections.unmodifiableSet(newIgnored));
         } else {
             this.ignoredPlayers.set(Collections.unmodifiableSet(newIgnored));
         }
@@ -298,7 +298,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final Set<Key> newKeys = new HashSet<>(this.leftChannels.get());
         newKeys.remove(key);
         if (internal) {
-            this.leftChannels.setInternal(Collections.unmodifiableSet(newKeys));
+            this.leftChannels.internalSet(Collections.unmodifiableSet(newKeys));
         } else {
             this.leftChannels.set(Collections.unmodifiableSet(newKeys));
         }
@@ -313,7 +313,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final Set<Key> newKeys = new HashSet<>(this.leftChannels.get());
         newKeys.add(channel.key());
         if (internal) {
-            this.leftChannels.setInternal(Collections.unmodifiableSet(newKeys));
+            this.leftChannels.internalSet(Collections.unmodifiableSet(newKeys));
         } else {
             this.leftChannels.set(Collections.unmodifiableSet(newKeys));
         }

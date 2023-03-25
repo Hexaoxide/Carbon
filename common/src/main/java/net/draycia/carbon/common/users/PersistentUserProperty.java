@@ -49,7 +49,7 @@ public final class PersistentUserProperty<T> {
      * @param value value
      */
     @ApiStatus.Internal
-    public void setInternal(final @Nullable T value) {
+    public void internalSet(final @Nullable T value) {
         this.value = value;
     }
 
