@@ -21,6 +21,7 @@ package net.draycia.carbon.common.util;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +53,14 @@ public final class ConcurrentUtil {
             .setNameFormat("CarbonChat " + name + " Thread #%d")
             .setUncaughtExceptionHandler((thread, thr) -> logger.warn("Uncaught exception on thread {}", thread.getName(), thr))
             .build();
+    }
+
+    public static ScheduledExecutorService createPeriodicTasksPool(final Logger logger) {
+        return new ExceptionLoggingScheduledThreadPoolExecutor(
+            1,
+            carbonThreadFactory(logger, "Periodic Tasks"),
+            logger
+        );
     }
 
 }

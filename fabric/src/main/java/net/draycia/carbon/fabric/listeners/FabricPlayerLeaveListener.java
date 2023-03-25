@@ -20,42 +20,35 @@
 package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.fabric.FabricUserManager;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class FabricPlayerLeaveListener implements ServerPlayConnectionEvents.Disconnect {
 
-    private final CarbonChat carbonChat;
-    private final UserManager<CarbonPlayerCommon> userManager;
+    private final FabricUserManager userManager;
+    private final Logger logger;
 
     @Inject
     public FabricPlayerLeaveListener(
-        final CarbonChat carbonChat,
-        final UserManager<CarbonPlayerCommon> userManager
+        final Logger logger,
+        final FabricUserManager userManager
     ) {
-        this.carbonChat = carbonChat;
+        this.logger = logger;
         this.userManager = userManager;
     }
 
     @Override
     public void onPlayDisconnect(final ServerGamePacketListenerImpl handler, final MinecraftServer server) {
-        // todo
-        /*
-        this.carbonChat.server().userManager().carbonPlayer(handler.getPlayer().getUUID()).thenAccept(result -> {
-            if (result.player() == null) {
-                return;
-            }
-
-            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerFabric) result.player());
+        this.userManager.loggedOut(handler.getPlayer().getGameProfile().getId()).exceptionally(thr -> {
+            this.logger.warn("Exception saving data for player " + handler.getPlayer().getGameProfile().getName() + " with uuid " + handler.getPlayer().getGameProfile().getId());
+            return null;
         });
-         */
     }
 
 }

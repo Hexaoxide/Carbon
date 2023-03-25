@@ -25,9 +25,7 @@ import github.scarsz.discordsrv.DiscordSRV;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
@@ -87,7 +85,7 @@ public final class CarbonChatPaper implements CarbonChat {
 
     private @MonotonicNonNull MessagingManager messagingManager = null;
 
-    private @MonotonicNonNull ScheduledExecutorService executor = null;
+    private @MonotonicNonNull ScheduledExecutorService periodicTasks = null;
 
     CarbonChatPaper() {
     }
@@ -112,8 +110,7 @@ public final class CarbonChatPaper implements CarbonChat {
         this.dataDirectory = dataDirectory;
         this.packetService();
 
-        this.executor = Executors.newSingleThreadScheduledExecutor(ConcurrentUtil.carbonThreadFactory(this.logger,
-            "CarbonChatPaper"));
+        this.periodicTasks = ConcurrentUtil.createPeriodicTasksPool(this.logger);
     }
 
     void onEnable() {
@@ -136,15 +133,12 @@ public final class CarbonChatPaper implements CarbonChat {
         final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
         CloudUtils.registerCommands(commandSettings);
 
-        // Player data saving
-        this.executor.scheduleAtFixedRate(
+        this.periodicTasks.scheduleAtFixedRate(
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager, this.logger), 5, 5, TimeUnit.MINUTES);
-
-        this.executor.scheduleAtFixedRate(
+        this.periodicTasks.scheduleAtFixedRate(
             () -> this.injector.getInstance(ProfileCache.class).save(), 15, 15, TimeUnit.MINUTES);
-
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
-            () -> this.userManager.cleanup(), 30 * 20, 30 * 20);
+        this.periodicTasks.scheduleAtFixedRate(
+            () -> this.userManager.cleanup(), 30, 30, TimeUnit.SECONDS);
 
         // Load channels
         ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
@@ -166,8 +160,7 @@ public final class CarbonChatPaper implements CarbonChat {
     }
 
     void onDisable() {
-        ConcurrentUtil.shutdownExecutor(this.executor, TimeUnit.MILLISECONDS, 500);
-
+        ConcurrentUtil.shutdownExecutor(this.periodicTasks, TimeUnit.MILLISECONDS, 500);
         this.injector.getInstance(ProfileCache.class).save();
         this.injector.getInstance(ProfileResolver.class).shutdown();
         this.userManager.shutdown();

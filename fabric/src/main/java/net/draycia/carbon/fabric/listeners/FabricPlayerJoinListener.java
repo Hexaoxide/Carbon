@@ -22,6 +22,7 @@ package net.draycia.carbon.fabric.listeners;
 import com.google.inject.Inject;
 import java.util.List;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.users.ProfileCache;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket;
@@ -34,15 +35,19 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class FabricPlayerJoinListener implements ServerPlayConnectionEvents.Join {
 
-    private ConfigFactory configFactory;
+    private final ProfileCache profileCache;
+    private final ConfigFactory configFactory;
 
     @Inject
-    public FabricPlayerJoinListener(final ConfigFactory configFactory) {
+    public FabricPlayerJoinListener(final ConfigFactory configFactory, final ProfileCache profileCache) {
         this.configFactory = configFactory;
+        this.profileCache = profileCache;
     }
 
     @Override
     public void onPlayReady(final ServerGamePacketListenerImpl handler, final PacketSender sender, final MinecraftServer server) {
+        this.profileCache.cache(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName());
+
         final @Nullable List<String> suggestions = this.configFactory.primaryConfig().customChatSuggestions();
 
         if (suggestions == null || suggestions.isEmpty()) {

@@ -24,6 +24,8 @@ import com.google.inject.Injector;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.CarbonServer;
@@ -37,6 +39,7 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.fabric.callback.ChatCallback;
@@ -47,7 +50,6 @@ import net.draycia.carbon.fabric.listeners.FabricPlayerJoinListener;
 import net.draycia.carbon.fabric.listeners.FabricPlayerLeaveListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -87,6 +89,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
 
     private @MonotonicNonNull MessagingManager messagingManager = null;
+    private @MonotonicNonNull ScheduledExecutorService periodicTasks;
 
     @Override
     public void onInitialize() {
@@ -106,7 +109,15 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         this.registerChatListener();
         this.registerServerLifecycleListeners();
         this.registerPlayerStatusListeners();
-        this.registerTickListeners();
+
+        this.periodicTasks = ConcurrentUtil.createPeriodicTasksPool(this.logger);
+
+        this.periodicTasks.scheduleAtFixedRate(
+            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger), 5, 5, TimeUnit.MINUTES);
+        this.periodicTasks.scheduleAtFixedRate(
+            () -> this.injector.getInstance(ProfileCache.class).save(), 15, 15, TimeUnit.MINUTES);
+        this.periodicTasks.scheduleAtFixedRate(
+            () -> this.userManager.cleanup(), 30, 30, TimeUnit.SECONDS);
 
         // Listeners
         ListenerUtils.registerCommonListeners(this.injector);
@@ -131,6 +142,7 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
         ServerLifecycleEvents.SERVER_STOPPING.register($ -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger).forEach(CompletableFuture::join));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            ConcurrentUtil.shutdownExecutor(this.periodicTasks, TimeUnit.MILLISECONDS, 500);
             this.injector.getInstance(ProfileCache.class).save();
             this.injector.getInstance(ProfileResolver.class).shutdown();
             this.userManager.shutdown();
@@ -142,24 +154,6 @@ public final class CarbonChatFabric implements ModInitializer, CarbonChat {
     private void registerPlayerStatusListeners() {
         ServerPlayConnectionEvents.DISCONNECT.register(this.injector.getInstance(FabricPlayerLeaveListener.class));
         ServerPlayConnectionEvents.JOIN.register(this.injector.getInstance(FabricPlayerJoinListener.class));
-    }
-
-    private void registerTickListeners() {
-        final long cleanupDelay = 30 * 20; // 30 seconds
-        final long saveDelay = 5 * 60 * 20; // 5 minutes
-        final long saveProfilesDelay = 15 * 60 * 20; // 15 minutes
-
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (server.getTickCount() != 0 && server.getTickCount() % cleanupDelay == 0) {
-                this.userManager.cleanup();
-            }
-            if (server.getTickCount() != 0 && server.getTickCount() % saveDelay == 0) {
-                PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger);
-            }
-            if (server.getTickCount() != 0 && server.getTickCount() % saveProfilesDelay == 0) {
-                this.injector.getInstance(ProfileCache.class).save();
-            }
-        });
     }
 
     @Override
