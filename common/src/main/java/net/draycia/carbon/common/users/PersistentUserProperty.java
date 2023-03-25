@@ -31,6 +31,7 @@ import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.ApiStatus;
 
 @DefaultQualifier(NonNull.class)
 public final class PersistentUserProperty<T> {
@@ -42,6 +43,16 @@ public final class PersistentUserProperty<T> {
         this.value = value;
     }
 
+    /**
+     * Set the value without setting the changed flag. This is a hack.
+     *
+     * @param value value
+     */
+    @ApiStatus.Internal
+    public void setInternal(final @Nullable T value) {
+        this.value = value;
+    }
+
     public void set(final @Nullable T value) {
         if (Objects.equals(value, this.value)) {
             return;
@@ -50,11 +61,15 @@ public final class PersistentUserProperty<T> {
         this.changed = true;
     }
 
-    public T require() {
+    public T get() {
         return Objects.requireNonNull(this.value, "value required but not present");
     }
 
-    public @Nullable T get() {
+    public boolean hasValue() {
+        return this.value != null;
+    }
+
+    public @Nullable T orNull() {
         return this.value;
     }
 
@@ -81,7 +96,7 @@ public final class PersistentUserProperty<T> {
         @Override
         public JsonElement serialize(final PersistentUserProperty<?> src, final Type typeOfSrc, final JsonSerializationContext context) {
             final Type propType = ((ParameterizedType) typeOfSrc).getActualTypeArguments()[0];
-            return context.serialize(src.get(), propType);
+            return context.serialize(src.orNull(), propType);
         }
 
     }

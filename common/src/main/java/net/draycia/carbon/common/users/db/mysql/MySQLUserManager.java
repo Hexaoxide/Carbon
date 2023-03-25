@@ -90,7 +90,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
             handle.createQuery(this.locator.query("select-ignores"))
                 .bind("id", uuid)
                 .mapTo(UUID.class)
-                .forEach(ignoredPlayer -> carbonPlayerCommon.get().ignoredPlayers().add(ignoredPlayer));
+                .forEach(ignoredPlayer -> carbonPlayerCommon.get().ignoring(ignoredPlayer, true, true));
             handle.createQuery(this.locator.query("select-leftchannels"))
                 .bind("id", uuid)
                 .mapTo(Key.class)
@@ -101,7 +101,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
                     if (chatChannel == null) {
                         return;
                     }
-                    carbonPlayerCommon.get().leftChannels().add(channel);
+                    carbonPlayerCommon.get().leaveChannel(chatChannel, true);
                 });
             return carbonPlayerCommon.get();
         });

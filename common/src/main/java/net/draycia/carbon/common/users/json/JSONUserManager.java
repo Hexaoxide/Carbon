@@ -96,9 +96,13 @@ public class JSONUserManager extends CachingUserManager {
                 if (player == null) {
                     throw new IllegalStateException("Player file found but was empty.");
                 }
-                player.leftChannels().removeIf(channel -> CarbonChatProvider.carbonChat()
-                    .channelRegistry()
-                    .get(channel) == null);
+                player.leftChannels().forEach(channel -> {
+                    if (CarbonChatProvider.carbonChat()
+                        .channelRegistry()
+                        .get(channel) == null) {
+                        player.joinChannel(channel, true);
+                    }
+                });
 
                 return player;
             } catch (final IOException exception) {

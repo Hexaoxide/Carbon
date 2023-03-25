@@ -82,7 +82,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
                 handle.createQuery(this.locator.query("select-ignores"))
                     .bind("id", uuid)
                     .mapTo(UUID.class)
-                    .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true));
+                    .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true, true));
 
                 handle.createQuery(this.locator.query("select-leftchannels"))
                     .bind("id", uuid)
@@ -94,7 +94,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
                         if (chatChannel == null) {
                             return;
                         }
-                        carbonPlayerCommon.leftChannels().add(channel);
+                        carbonPlayerCommon.leaveChannel(chatChannel, true);
                     });
                 return carbonPlayerCommon;
             } catch (final IllegalStateException exception) {

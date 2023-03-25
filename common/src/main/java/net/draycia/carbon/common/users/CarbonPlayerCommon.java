@@ -21,10 +21,12 @@ package net.draycia.carbon.common.users;
 
 import com.google.inject.Inject;
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
@@ -52,28 +54,27 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
-    protected boolean deafened = false;
-
-    protected @Nullable Key selectedChannel = null;
+    protected final PersistentUserProperty<Boolean> deafened;
+    protected final PersistentUserProperty<Key> selectedChannel;
 
     // All players have these
     protected transient @MonotonicNonNull String username = null;
     protected @MonotonicNonNull UUID uuid;
 
     // Display information
-    protected @Nullable Component displayName = null;
+    protected final PersistentUserProperty<Component> displayName;
 
     // Whispers
     protected transient @Nullable UUID lastWhisperTarget = null;
     protected transient @Nullable UUID whisperReplyTarget = null;
 
     // Administrative
-    protected boolean spying = false;
+    protected final PersistentUserProperty<Boolean> spying;
 
     // Punishments
-    protected List<UUID> ignoredPlayers = new ArrayList<>();
+    protected final PersistentUserProperty<Set<UUID>> ignoredPlayers;
 
-    protected List<Key> leftChannels = new ArrayList<>();
+    protected final PersistentUserProperty<Set<Key>> leftChannels;
 
     public CarbonPlayerCommon(
         final boolean muted,
@@ -87,14 +88,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final boolean spying
     ) {
         this.muted = PersistentUserProperty.of(muted);
-        this.deafened = deafened;
-        this.selectedChannel = selectedChannel;
+        this.deafened = PersistentUserProperty.of(deafened);
+        this.selectedChannel = PersistentUserProperty.of(selectedChannel);
         this.username = username;
         this.uuid = uuid;
-        this.displayName = displayName;
+        this.displayName = PersistentUserProperty.of(displayName);
         this.lastWhisperTarget = lastWhisperTarget;
         this.whisperReplyTarget = whisperReplyTarget;
-        this.spying = spying;
+        this.spying = PersistentUserProperty.of(spying);
+        this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
+        this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
     }
 
     public CarbonPlayerCommon(
@@ -102,16 +105,36 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final UUID uuid
     ) {
         this.muted = PersistentUserProperty.of(false);
+        this.deafened = PersistentUserProperty.of(false);
+        this.selectedChannel = PersistentUserProperty.empty();
+        this.displayName = PersistentUserProperty.empty();
+        this.spying = PersistentUserProperty.of(false);
+        this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
+        this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.username = username;
         this.uuid = uuid;
     }
 
     public CarbonPlayerCommon() {
         this.muted = PersistentUserProperty.of(false);
+        this.deafened = PersistentUserProperty.of(false);
+        this.selectedChannel = PersistentUserProperty.empty();
+        this.displayName = PersistentUserProperty.empty();
+        this.spying = PersistentUserProperty.of(false);
+        this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
+        this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
     }
 
     public boolean needsSave() {
-        return Stream.of(this.muted).anyMatch(PersistentUserProperty::changed);
+        return Stream.of(
+            this.muted,
+            this.deafened,
+            this.selectedChannel,
+            this.displayName,
+            this.spying,
+            this.ignoredPlayers,
+            this.leftChannels
+        ).anyMatch(PersistentUserProperty::changed);
     }
 
     @Override
@@ -130,16 +153,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable Component displayName() {
-        if (this.displayName != null) {
-            return this.displayName;
-        }
-
-        return null;
+        return this.displayName.orNull();
     }
 
     @Override
     public void displayName(final @Nullable Component displayName) {
-        this.displayName = displayName;
+        this.displayName.set(displayName);
     }
 
     @Override
@@ -159,7 +178,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean muted() {
-        return this.muted.require();
+        return this.muted.get();
     }
 
     @Override
@@ -167,13 +186,13 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.muted.set(muted);
     }
 
-    public List<UUID> ignoredPlayers() {
-        return this.ignoredPlayers;
+    public Set<UUID> ignoredPlayers() {
+        return this.ignoredPlayers.get();
     }
 
     @Override
     public boolean ignoring(final UUID player) {
-        return this.ignoredPlayers.contains(player);
+        return this.ignoredPlayers.get().contains(player);
     }
 
     @Override
@@ -181,15 +200,23 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return this.ignoring(player.uuid());
     }
 
+    public void ignoring(final UUID player, final boolean nowIgnoring, final boolean internal) {
+        final Set<UUID> newIgnored = new HashSet<>(this.ignoredPlayers.get());
+        if (nowIgnoring) {
+            newIgnored.add(player);
+        } else {
+            newIgnored.remove(player);
+        }
+        if (internal) {
+            this.ignoredPlayers.setInternal(Collections.unmodifiableSet(newIgnored));
+        } else {
+            this.ignoredPlayers.set(Collections.unmodifiableSet(newIgnored));
+        }
+    }
+
     @Override
     public void ignoring(final UUID player, final boolean nowIgnoring) {
-        if (nowIgnoring) {
-            if (!this.ignoredPlayers.contains(player)) {
-                this.ignoredPlayers.add(player);
-            }
-        } else {
-            this.ignoredPlayers.remove(player);
-        }
+        this.ignoring(player, nowIgnoring, false);
     }
 
     @Override
@@ -199,22 +226,22 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean deafened() {
-        return this.deafened;
+        return this.deafened.get();
     }
 
     @Override
     public void deafened(final boolean deafened) {
-        this.deafened = deafened;
+        this.deafened.set(deafened);
     }
 
     @Override
     public boolean spying() {
-        return this.spying;
+        return this.spying.get();
     }
 
     @Override
     public void spying(final boolean spying) {
-        this.spying = spying;
+        this.spying.set(spying);
     }
 
     @Override
@@ -264,17 +291,37 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public List<Key> leftChannels() {
-        return this.leftChannels;
+        return List.copyOf(this.leftChannels.get());
+    }
+
+    public void joinChannel(final Key key, final boolean internal) {
+        final Set<Key> newKeys = new HashSet<>(this.leftChannels.get());
+        newKeys.remove(key);
+        if (internal) {
+            this.leftChannels.setInternal(Collections.unmodifiableSet(newKeys));
+        } else {
+            this.leftChannels.set(Collections.unmodifiableSet(newKeys));
+        }
     }
 
     @Override
     public void joinChannel(final ChatChannel channel) {
-        this.leftChannels.remove(channel.key());
+        this.joinChannel(channel.key(), false);
+    }
+
+    public void leaveChannel(final ChatChannel channel, final boolean internal) {
+        final Set<Key> newKeys = new HashSet<>(this.leftChannels.get());
+        newKeys.add(channel.key());
+        if (internal) {
+            this.leftChannels.setInternal(Collections.unmodifiableSet(newKeys));
+        } else {
+            this.leftChannels.set(Collections.unmodifiableSet(newKeys));
+        }
     }
 
     @Override
     public void leaveChannel(final ChatChannel channel) {
-        this.leftChannels.add(channel.key());
+        this.leaveChannel(channel, false);
     }
 
     @Override
@@ -289,23 +336,23 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable ChatChannel selectedChannel() {
-        if (this.selectedChannel == null) {
+        if (!this.selectedChannel.hasValue()) {
             return this.carbonChat.channelRegistry().defaultValue();
         }
 
-        return this.carbonChat.channelRegistry().get(this.selectedChannel);
+        return this.carbonChat.channelRegistry().get(this.selectedChannel.get());
     }
 
     public @Nullable Key selectedChannelKey() {
-        return this.selectedChannel;
+        return this.selectedChannel.orNull();
     }
 
     @Override
     public void selectedChannel(final @Nullable ChatChannel chatChannel) {
         if (chatChannel == null) {
-            this.selectedChannel = null;
+            this.selectedChannel.set(null);
         } else {
-            this.selectedChannel = chatChannel.key();
+            this.selectedChannel.set(chatChannel.key());
         }
     }
 
@@ -323,8 +370,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     public String username() {
         if (this.username == null) {
             this.username = Objects.requireNonNull(
-                Objects.requireNonNull(this.profileResolver, "profileResolver")
-                    .resolveName(this.uuid).join(),
+                this.profileResolver.resolveName(this.uuid).join(),
                 "name"
             );
         }
@@ -350,7 +396,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean hasCustomDisplayName() {
-        return this.displayName != null;
+        return this.displayName.hasValue();
     }
 
     @Override
