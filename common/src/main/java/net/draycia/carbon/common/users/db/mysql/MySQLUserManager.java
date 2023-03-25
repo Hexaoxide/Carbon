@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users.db.mysql;
 
+import com.google.inject.Inject;
 import com.google.inject.MembersInjector;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -29,6 +30,7 @@ import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
@@ -65,51 +67,6 @@ public final class MySQLUserManager extends DatabaseUserManager {
             profileResolver,
             playerInjector
         );
-    }
-
-    public static MySQLUserManager manager(
-        final DatabaseSettings databaseSettings,
-        final Logger logger,
-        final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector
-    ) {
-        try {
-            //Class.forName("org.postgresql.Driver");
-            Class.forName("org.mariadb.jdbc.Driver");
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Manually loading this might not be necessary
-        } catch (final Exception exception) {
-            exception.printStackTrace();
-        }
-
-        final HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setMaximumPoolSize(20);
-        hikariConfig.setJdbcUrl(databaseSettings.url());
-        hikariConfig.setUsername(databaseSettings.username());
-        hikariConfig.setPassword(databaseSettings.password());
-        hikariConfig.setThreadFactory(ConcurrentUtil.carbonThreadFactory(logger, "MySQLUserManagerHCP"));
-
-        final DataSource dataSource = new HikariDataSource(hikariConfig);
-
-        final Flyway flyway = Flyway.configure(CarbonChat.class.getClassLoader())
-            .baselineVersion("0")
-            .baselineOnMigrate(true)
-            .locations("queries/migrations/mysql")
-            .dataSource(dataSource)
-            .validateOnMigrate(true)
-            .load();
-
-        flyway.repair();
-        flyway.migrate();
-
-        final Jdbi jdbi = Jdbi.create(dataSource)
-            .registerArrayType(UUID.class, "uuid")
-            .registerArgument(new ComponentArgumentFactory())
-            .registerArgument(new KeyArgumentFactory())
-            .registerArgument(new MySQLUUIDArgumentFactory())
-            .registerRowMapper(new MySQLPlayerRowMapper())
-            .installPlugin(new SqlObjectPlugin());
-
-        return new MySQLUserManager(jdbi, logger, profileResolver, playerInjector);
     }
 
     @Override
@@ -162,6 +119,68 @@ public final class MySQLUserManager extends DatabaseUserManager {
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying());
+    }
+
+    public static final class Factory {
+
+        private final DatabaseSettings databaseSettings;
+        private final Logger logger;
+        private final ProfileResolver profileResolver;
+        private final MembersInjector<CarbonPlayerCommon> playerInjector;
+
+        @Inject
+        private Factory(
+            final ConfigFactory configFactory,
+            final Logger logger,
+            final ProfileResolver profileResolver,
+            final MembersInjector<CarbonPlayerCommon> playerInjector
+        ) {
+            this.databaseSettings = configFactory.primaryConfig().databaseSettings();
+            this.logger = logger;
+            this.profileResolver = profileResolver;
+            this.playerInjector = playerInjector;
+        }
+
+        public MySQLUserManager create() {
+            try {
+                //Class.forName("org.postgresql.Driver");
+                Class.forName("org.mariadb.jdbc.Driver");
+                Class.forName("com.mysql.cj.jdbc.Driver"); // Manually loading this might not be necessary
+            } catch (final Exception exception) {
+                exception.printStackTrace();
+            }
+
+            final HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setMaximumPoolSize(20);
+            hikariConfig.setJdbcUrl(this.databaseSettings.url());
+            hikariConfig.setUsername(this.databaseSettings.username());
+            hikariConfig.setPassword(this.databaseSettings.password());
+            hikariConfig.setThreadFactory(ConcurrentUtil.carbonThreadFactory(this.logger, "MySQLUserManagerHCP"));
+
+            final DataSource dataSource = new HikariDataSource(hikariConfig);
+
+            final Flyway flyway = Flyway.configure(CarbonChat.class.getClassLoader())
+                .baselineVersion("0")
+                .baselineOnMigrate(true)
+                .locations("queries/migrations/mysql")
+                .dataSource(dataSource)
+                .validateOnMigrate(true)
+                .load();
+
+            flyway.repair();
+            flyway.migrate();
+
+            final Jdbi jdbi = Jdbi.create(dataSource)
+                .registerArrayType(UUID.class, "uuid")
+                .registerArgument(new ComponentArgumentFactory())
+                .registerArgument(new KeyArgumentFactory())
+                .registerArgument(new MySQLUUIDArgumentFactory())
+                .registerRowMapper(new MySQLPlayerRowMapper())
+                .installPlugin(new SqlObjectPlugin());
+
+            return new MySQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector);
+        }
+
     }
 
 }

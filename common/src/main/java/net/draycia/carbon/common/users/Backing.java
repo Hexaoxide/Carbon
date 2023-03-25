@@ -24,7 +24,18 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.users.db.DatabaseUserManager;
+import net.draycia.carbon.common.users.json.JSONUserManager;
 
+/**
+ * Injection binding annotation for the backing {@link UserManagerInternal}
+ * (i.e. {@link JSONUserManager} or {@link DatabaseUserManager},
+ * with the generic type of {@link CarbonPlayerCommon}.
+ *
+ * <p>Injecting {@link UserManagerInternal} or {@link UserManager} with a generic type of {@literal ?}, without this annotation,
+ * will inject the {@link PlatformUserManager}, which wraps the backing manager.</p>
+ */
 @BindingAnnotation
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})

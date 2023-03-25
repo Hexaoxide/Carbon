@@ -22,7 +22,7 @@ package net.draycia.carbon.common.users.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
+import com.google.inject.MembersInjector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,15 +56,17 @@ public class JSONUserManager extends CachingUserManager {
     @Inject
     public JSONUserManager(
         final @DataDirectory Path dataDirectory,
-        final Injector injector,
         final Logger logger,
-        final ProfileResolver profileResolver
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final ChatChannelSerializerGson channelSerializer,
+        final UUIDSerializerGson uuidSerializer
     ) throws IOException {
         super(
             logger,
             Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")),
             profileResolver,
-            injector.getMembersInjector(CarbonPlayerCommon.class)
+            playerInjector
         );
         this.userDirectory = dataDirectory.resolve("users");
 
@@ -72,8 +74,8 @@ public class JSONUserManager extends CachingUserManager {
 
         this.serializer = GsonComponentSerializer.gson().populator()
             .apply(new GsonBuilder())
-            .registerTypeAdapter(ChatChannel.class, injector.getInstance(ChatChannelSerializerGson.class))
-            .registerTypeAdapter(UUID.class, injector.getInstance(UUIDSerializerGson.class))
+            .registerTypeAdapter(ChatChannel.class, channelSerializer)
+            .registerTypeAdapter(UUID.class, uuidSerializer)
             .setPrettyPrinting()
             .create();
 

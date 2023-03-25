@@ -21,7 +21,6 @@ package net.draycia.carbon.common;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.MembersInjector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -47,7 +46,6 @@ import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
@@ -69,16 +67,10 @@ public final class CarbonCommonModule extends AbstractModule {
     @Provides
     @Backing
     @Singleton
-    public UserManagerInternal<CarbonPlayerCommon> userManager(
-        final ConfigFactory configFactory,
-        final Injector injector,
-        final Logger logger,
-        final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector
-    ) {
+    public UserManagerInternal<CarbonPlayerCommon> userManager(final ConfigFactory configFactory, final Injector injector) {
         return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver, playerInjector);
-            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings(), logger, profileResolver, playerInjector);
+            case MYSQL -> injector.getInstance(MySQLUserManager.Factory.class).create();
+            case PSQL -> injector.getInstance(PostgreSQLUserManager.Factory.class).create();
             default -> injector.getInstance(JSONUserManager.class);
         };
     }
