@@ -61,8 +61,8 @@ public abstract class DatabaseUserManager extends CachingUserManager {
     @Override
     public final CompletableFuture<Void> save(final CarbonPlayerCommon player) {
         return CompletableFuture.runAsync(() -> this.jdbi.withHandle(handle -> {
-            if (!this.modifiedPlayerObject(player)) {
-                return CompletableFuture.completedFuture(null);
+            if (!player.needsSave()) {
+                return null;
             }
 
             this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
@@ -89,13 +89,6 @@ public abstract class DatabaseUserManager extends CachingUserManager {
             // TODO: save ignoredplayers
             return null;
         }), this.executor);
-    }
-
-    private boolean modifiedPlayerObject(final CarbonPlayerCommon player) {
-        // TODO: Find a better way to do this?
-        return player.muted() || player.deafened() || player.selectedChannel() != null ||
-            player.hasCustomDisplayName() || player.spying() || !player.ignoredPlayers().isEmpty() ||
-            !player.leftChannels().isEmpty();
     }
 
     abstract protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player);

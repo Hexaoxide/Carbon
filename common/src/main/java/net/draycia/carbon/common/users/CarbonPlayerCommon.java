@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -50,7 +51,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private transient @MonotonicNonNull @Inject ProfileResolver profileResolver;
     private transient long transientLoadedSince = -1;
 
-    protected boolean muted = false;
+    protected final PersistentUserProperty<Boolean> muted;
     protected boolean deafened = false;
 
     protected @Nullable Key selectedChannel = null;
@@ -85,7 +86,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final @Nullable UUID whisperReplyTarget,
         final boolean spying
     ) {
-        this.muted = muted;
+        this.muted = PersistentUserProperty.of(muted);
         this.deafened = deafened;
         this.selectedChannel = selectedChannel;
         this.username = username;
@@ -100,12 +101,17 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final String username,
         final UUID uuid
     ) {
+        this.muted = PersistentUserProperty.of(false);
         this.username = username;
         this.uuid = uuid;
     }
 
     public CarbonPlayerCommon() {
+        this.muted = PersistentUserProperty.of(false);
+    }
 
+    public boolean needsSave() {
+        return Stream.of(this.muted).anyMatch(PersistentUserProperty::changed);
     }
 
     @Override
@@ -153,12 +159,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean muted() {
-        return this.muted;
+        return this.muted.require();
     }
 
     @Override
     public void muted(final boolean muted) {
-        this.muted = muted;
+        this.muted.set(muted);
     }
 
     public List<UUID> ignoredPlayers() {

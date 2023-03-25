@@ -37,6 +37,7 @@ import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.PersistentUserProperty;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -76,6 +77,7 @@ public class JSONUserManager extends CachingUserManager {
             .apply(new GsonBuilder())
             .registerTypeAdapter(ChatChannel.class, channelSerializer)
             .registerTypeAdapter(UUID.class, uuidSerializer)
+            .registerTypeAdapter(PersistentUserProperty.class, new PersistentUserProperty.Serializer())
             .setPrettyPrinting()
             .create();
 
@@ -124,6 +126,8 @@ public class JSONUserManager extends CachingUserManager {
 
                     // quick and dirty check to not create files for/save default data
                 } else if (json.equals(this.emptyUserJson.replace(EMPTY_USER_UUID, player.uuid().toString()))) {
+                    return;
+                } else if (!player.needsSave()) {
                     return;
                 }
 
