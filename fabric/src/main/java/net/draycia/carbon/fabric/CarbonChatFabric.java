@@ -19,43 +19,35 @@
  */
 package net.draycia.carbon.fabric;
 
-import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Key;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
 import java.nio.file.Path;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.CarbonChatInternal;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PeriodicTasks;
-import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.util.CloudUtils;
-import net.draycia.carbon.common.util.ConcurrentUtil;
-import net.draycia.carbon.common.util.ListenerUtils;
-import net.draycia.carbon.common.util.PlayerUtils;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.draycia.carbon.fabric.command.DeleteMessageCommand;
 import net.draycia.carbon.fabric.listeners.FabricChatListener;
 import net.draycia.carbon.fabric.listeners.FabricChatPreviewListener;
 import net.draycia.carbon.fabric.listeners.FabricPlayerJoinListener;
 import net.draycia.carbon.fabric.listeners.FabricPlayerLeaveListener;
-import net.fabricmc.api.ModInitializer;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -64,10 +56,7 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import ninja.egg82.messenger.services.PacketService;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -75,143 +64,80 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatFabric implements ModInitializer, CarbonChat {
+@Singleton
+public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabric> {
 
-    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
     private @Nullable MinecraftServer minecraftServer;
-    private @MonotonicNonNull ModContainer modContainer;
-    private @MonotonicNonNull Injector injector;
-    private @MonotonicNonNull FabricUserManager userManager;
-    private @MonotonicNonNull Logger logger;
-    private @MonotonicNonNull CarbonServerFabric carbonServerFabric;
-    private @MonotonicNonNull CarbonMessages carbonMessages;
-    private @MonotonicNonNull ChannelRegistry channelRegistry;
-    private final UUID serverId = UUID.randomUUID();
 
     public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
 
-    private @MonotonicNonNull MessagingManager messagingManager = null;
-    private @MonotonicNonNull ScheduledExecutorService periodicTasks;
+    @Inject
+    private CarbonChatFabric(
+        final Injector injector,
+        final Logger logger,
+        final @DataDirectory Path dataDirectory,
+        final @PeriodicTasks ScheduledExecutorService periodicTasks,
+        final ProfileCache profileCache,
+        final ProfileResolver profileResolver,
+        final UserManagerInternal<CarbonPlayerFabric> userManager,
+        final ExecutionCoordinatorHolder commandExecutor,
+        final CarbonServer carbonServer,
+        final CarbonMessages carbonMessages,
+        final CarbonEventHandler eventHandler,
+        final ChannelRegistry channelRegistry,
+        final IMessageRenderer<Audience, String, Component, Component> renderer,
+        final Provider<MessagingManager> messagingManagerProvider
+    ) {
+        super(
+            injector,
+            logger,
+            dataDirectory,
+            periodicTasks,
+            profileCache,
+            profileResolver,
+            userManager,
+            commandExecutor,
+            carbonServer,
+            carbonMessages,
+            eventHandler,
+            channelRegistry,
+            renderer,
+            messagingManagerProvider
+        );
+    }
 
-    @Override
     public void onInitialize() {
-        this.modContainer = FabricLoader.getInstance().getModContainer("carbonchat").orElseThrow(() ->
-            new IllegalStateException("Could not find ModContainer for carbonchat."));
-
-        CarbonChatProvider.register(this);
-
-        this.logger = LogManager.getLogger(this.modContainer.getMetadata().getName());
-        this.injector = Guice.createInjector(new CarbonChatFabricModule(this, this.logger, this.dataDirectory()));
-        this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
-        this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
-        this.carbonServerFabric = this.injector.getInstance(CarbonServerFabric.class);
-        this.userManager = this.injector.getInstance(FabricUserManager.class);
-        this.periodicTasks = this.injector.getInstance(Key.get(ScheduledExecutorService.class, PeriodicTasks.class));
+        this.init();
 
         // Platform Listeners
         this.registerChatListener();
         this.registerServerLifecycleListeners();
         this.registerPlayerStatusListeners();
 
-        this.periodicTasks.scheduleAtFixedRate(
-            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger), 5, 5, TimeUnit.MINUTES);
-        this.periodicTasks.scheduleAtFixedRate(
-            () -> this.injector.getInstance(ProfileCache.class).save(), 15, 15, TimeUnit.MINUTES);
-        this.periodicTasks.scheduleAtFixedRate(
-            () -> this.userManager.cleanup(), 30, 30, TimeUnit.SECONDS);
-
-        // Listeners
-        ListenerUtils.registerCommonListeners(this.injector);
-
-        // Commands
-        CloudUtils.loadCommands(this.injector);
-        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
-        CloudUtils.registerCommands(commandSettings);
-        this.injector.getInstance(DeleteMessageCommand.class).init();
-
-        // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
+        this.injector().getInstance(DeleteMessageCommand.class).init();
     }
 
     private void registerChatListener() {
         ChatCallback.setup();
-        ChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry));
-        ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, this.injector.getInstance(FabricChatPreviewListener.class));
+        ChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry()));
+        ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, this.injector().getInstance(FabricChatPreviewListener.class));
     }
 
     private void registerServerLifecycleListeners() {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.minecraftServer = server);
-        ServerLifecycleEvents.SERVER_STOPPING.register($ -> PlayerUtils.saveLoggedInPlayers(this.carbonServerFabric, this.userManager, this.logger).forEach(CompletableFuture::join));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            ConcurrentUtil.shutdownExecutor(this.periodicTasks, TimeUnit.MILLISECONDS, 500);
-            this.injector.getInstance(ProfileCache.class).save();
-            this.injector.getInstance(ProfileResolver.class).shutdown();
-            this.userManager.shutdown();
-            this.injector.getInstance(ExecutionCoordinatorHolder.class).shutdown();
+            this.shutdown();
             this.minecraftServer = null;
         });
     }
 
     private void registerPlayerStatusListeners() {
-        ServerPlayConnectionEvents.DISCONNECT.register(this.injector.getInstance(FabricPlayerLeaveListener.class));
-        ServerPlayConnectionEvents.JOIN.register(this.injector.getInstance(FabricPlayerJoinListener.class));
-    }
-
-    @Override
-    public UUID serverId() {
-        return this.serverId;
-    }
-
-    @Override
-    public @Nullable PacketService packetService() {
-        if (this.messagingManager == null) {
-            this.messagingManager = this.injector.getInstance(MessagingManager.class);
-        }
-
-        return this.messagingManager.packetService();
-    }
-
-    @Override
-    public Logger logger() {
-        return this.logger;
-    }
-
-    @Override
-    public Path dataDirectory() {
-        return FabricLoader.getInstance().getConfigDir().resolve(this.modContainer.getMetadata().getId());
-    }
-
-    @Override
-    public CarbonEventHandler eventHandler() {
-        return this.eventHandler;
-    }
-
-    @Override
-    public CarbonServer server() {
-        return this.carbonServerFabric;
-    }
-
-    @Override
-    public UserManager<?> userManager() {
-        return this.userManager;
-    }
-
-    @Override
-    public ChannelRegistry channelRegistry() {
-        return this.channelRegistry;
-    }
-
-    @Override
-    public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
-        return this.injector.getInstance(FabricMessageRenderer.class);
+        ServerPlayConnectionEvents.DISCONNECT.register(this.injector().getInstance(FabricPlayerLeaveListener.class));
+        ServerPlayConnectionEvents.JOIN.register(this.injector().getInstance(FabricPlayerJoinListener.class));
     }
 
     public MinecraftServer minecraftServer() {
         return requireNonNull(this.minecraftServer, "Attempted to get the MinecraftServer instance when one is not active.");
-    }
-
-    public CarbonMessages carbonMessages() {
-        return this.carbonMessages;
     }
 
     public boolean luckPermsLoaded() {

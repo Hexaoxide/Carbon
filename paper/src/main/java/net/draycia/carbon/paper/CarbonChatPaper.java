@@ -46,14 +46,12 @@ import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
-import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -67,9 +65,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
     private static final int BSTATS_PLUGIN_ID = 8720;
 
     private final JavaPlugin plugin;
-    private final Injector injector;
     private final CarbonServer carbonServer;
-    private final Provider<MessagingManager> messagingManager;
 
     @Inject
     private CarbonChatPaper(
@@ -99,12 +95,11 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
             carbonMessages,
             eventHandler,
             channelRegistry,
-            renderer
+            renderer,
+            messagingManager
         );
-        this.injector = injector;
         this.plugin = plugin;
         this.carbonServer = carbonServer;
-        this.messagingManager = messagingManager;
     }
 
     void onEnable() {
@@ -115,7 +110,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
         for (final Class<? extends Listener> listenerClass : LISTENER_CLASSES) {
             this.plugin.getServer().getPluginManager().registerEvents(
-                this.injector.getInstance(listenerClass),
+                this.injector().getInstance(listenerClass),
                 this.plugin
             );
         }
@@ -125,7 +120,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
     private void discoverDiscordHooks() {
         if (Bukkit.getPluginManager().isPluginEnabled("EssentialsDiscord")) {
-            final DiscordMessageListener discordMessageListener = this.injector.getInstance(DiscordMessageListener.class);
+            final DiscordMessageListener discordMessageListener = this.injector().getInstance(DiscordMessageListener.class);
             Bukkit.getPluginManager().registerEvents(discordMessageListener, this.plugin);
             discordMessageListener.init();
         }
@@ -138,11 +133,6 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
     void onDisable() {
         this.shutdown();
-    }
-
-    @Override
-    public @Nullable PacketService packetService() {
-        return this.messagingManager.get().packetService();
     }
 
     @Override

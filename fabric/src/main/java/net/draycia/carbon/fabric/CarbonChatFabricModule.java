@@ -23,6 +23,7 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.fabric.FabricServerCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -36,16 +37,20 @@ import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
 import net.draycia.carbon.fabric.users.FabricProfileResolver;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -54,34 +59,34 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonChatFabricModule extends AbstractModule {
 
     private final Logger logger;
-    private final CarbonChatFabric carbonChat;
-    private final Path dataDirectory;
+    private final ModContainer modContainer;
 
-    CarbonChatFabricModule(
-        final CarbonChatFabric carbonChat,
-        final Logger logger,
-        final Path dataDirectory
-    ) {
-        this.logger = logger;
-        this.carbonChat = carbonChat;
-        this.dataDirectory = dataDirectory;
+    CarbonChatFabricModule() {
+        final ModContainer modContainer = FabricLoader.getInstance().getModContainer("carbonchat")
+            .orElseThrow(() -> new IllegalStateException("Could not find ModContainer for carbonchat."));
+        this.modContainer = modContainer;
+        this.logger = LogManager.getLogger(modContainer.getMetadata().getName());
     }
 
     @Provides
     @Singleton
-    public CommandManager<Commander> commandManager(final ExecutionCoordinatorHolder executionCoordinatorHolder) {
+    public CommandManager<Commander> commandManager(
+        final ExecutionCoordinatorHolder executionCoordinatorHolder,
+        final Provider<CarbonChatFabric> carbonChat,
+        final CarbonMessages carbonMessages
+    ) {
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
             executionCoordinatorHolder.executionCoordinator(),
             commandSourceStack -> {
                 if (commandSourceStack.getEntity() instanceof ServerPlayer) {
-                    return new FabricPlayerCommander(this.carbonChat, commandSourceStack);
+                    return new FabricPlayerCommander(carbonChat.get(), commandSourceStack);
                 }
                 return FabricCommander.from(commandSourceStack);
             },
             commander -> ((FabricCommander) commander).commandSourceStack()
         );
 
-        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.carbonMessages());
+        CloudUtils.decorateCommandManager(commandManager, carbonMessages);
 
         commandManager.brigadierManager().setNativeNumberSuggestions(false);
 
@@ -100,18 +105,22 @@ public final class CarbonChatFabricModule extends AbstractModule {
         return injector.getInstance(FabricMessageRenderer.class);
     }
 
+    @Provides
+    public PlayerSuggestions playerSuggestions(final Provider<CarbonChatFabric> carbon) {
+        return (ctx, input) -> carbon.get().minecraftServer().getPlayerList().getPlayers().stream()
+            .map(player -> player.getGameProfile().getName())
+            .toList();
+    }
+
     @Override
     public void configure() {
         this.install(new CarbonCommonModule());
 
-        this.bind(CarbonChat.class).toInstance(this.carbonChat);
-        this.bind(CarbonChatFabric.class).toInstance(this.carbonChat);
+        this.bind(ModContainer.class).toInstance(this.modContainer);
+        this.bind(CarbonChat.class).to(CarbonChatFabric.class);
         this.bind(Logger.class).toInstance(this.logger);
-        this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.dataDirectory);
+        this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(FabricLoader.getInstance().getConfigDir().resolve(this.modContainer.getMetadata().getId()));
         this.bind(CarbonServer.class).to(CarbonServerFabric.class);
-        this.bind(PlayerSuggestions.class).toInstance((ctx, input) -> this.carbonChat.minecraftServer().getPlayerList().getPlayers().stream()
-            .map(player -> player.getGameProfile().getName())
-            .toList());
         this.bind(ProfileResolver.class).to(FabricProfileResolver.class);
         this.bind(new TypeLiteral<UserManager<?>>() {}).to(FabricUserManager.class);
         this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(FabricUserManager.class);
