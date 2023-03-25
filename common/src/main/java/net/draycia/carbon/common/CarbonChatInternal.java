@@ -30,7 +30,6 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.listeners.RadiusListener;
@@ -167,7 +166,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     }
 
     @Override
-    public UserManager<?> userManager() {
+    public UserManagerInternal<C> userManager() {
         return this.userManager;
     }
 

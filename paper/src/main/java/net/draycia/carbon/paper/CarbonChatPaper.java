@@ -135,11 +135,6 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         this.shutdown();
     }
 
-    @Override
-    public CarbonServerPaper server() {
-        return (CarbonServerPaper) this.carbonServer;
-    }
-
     public static boolean papiLoaded() {
         return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
     }
