@@ -25,6 +25,10 @@ import github.scarsz.discordsrv.DiscordSRV;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -39,6 +43,7 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.paper.hooks.DSRVChatHook;
@@ -82,6 +87,8 @@ public final class CarbonChatPaper implements CarbonChat {
 
     private @MonotonicNonNull MessagingManager messagingManager = null;
 
+    private @MonotonicNonNull ScheduledExecutorService executor = null;
+
     CarbonChatPaper() {
     }
 
@@ -104,6 +111,9 @@ public final class CarbonChatPaper implements CarbonChat {
         this.userManager = userManager;
         this.dataDirectory = dataDirectory;
         this.packetService();
+
+        this.executor = Executors.newSingleThreadScheduledExecutor(ConcurrentUtil.carbonThreadFactory(this.logger,
+            "CarbonChatPaper"));
     }
 
     void onEnable() {
@@ -127,13 +137,11 @@ public final class CarbonChatPaper implements CarbonChat {
         CloudUtils.registerCommands(commandSettings);
 
         // Player data saving
-        final long saveDelay = 5 * 60 * 20;
+        this.executor.scheduleAtFixedRate(
+            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager, this.logger), 5, 5, TimeUnit.MINUTES);
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
-            () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager, this.logger), saveDelay, saveDelay);
-
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
-            () -> this.injector.getInstance(ProfileCache.class).save(), 20 * 60 * 15, 20 * 60 * 15);
+        this.executor.scheduleAtFixedRate(
+            () -> this.injector.getInstance(ProfileCache.class).save(), 15, 15, TimeUnit.MINUTES);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin,
             () -> this.userManager.cleanup(), 30 * 20, 30 * 20);
@@ -158,6 +166,8 @@ public final class CarbonChatPaper implements CarbonChat {
     }
 
     void onDisable() {
+        ConcurrentUtil.shutdownExecutor(this.executor, TimeUnit.MILLISECONDS, 500);
+
         this.injector.getInstance(ProfileCache.class).save();
         this.injector.getInstance(ProfileResolver.class).shutdown();
         this.userManager.shutdown();
