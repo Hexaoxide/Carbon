@@ -1,8 +1,7 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-
 plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
+  id("paper-plugin-yml")
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
 }
@@ -40,17 +39,20 @@ tasks {
   }
 }
 
-plugins.apply(PaperPlugin::class)
-
-val paper = extensions["paper"] as BukkitPluginDescription
-paper.apply {
+paper {
   name = rootProject.name
   version = project.version as String
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
   apiVersion = "1.19"
   author = "Draycia"
-  depend = listOf("LuckPerms")
-  softDepend = listOf("PlaceholderAPI", "EssentialsDiscord", "DiscordSRV")
+  loadAfter += PaperPluginDescription.LoadInfo("LuckPerms")
+  loadAfter += PaperPluginDescription.LoadInfo("EssentialsDiscord")
+  loadAfter += PaperPluginDescription.LoadInfo("DiscordSRV")
+  loadAfter += PaperPluginDescription.LoadInfo("PlaceholderAPI")
+  dependencies += PaperPluginDescription.Dependency("LuckPerms", true)
+  dependencies += PaperPluginDescription.Dependency("PlaceholderAPI", false)
+  dependencies += PaperPluginDescription.Dependency("EssentialsDiscord", false)
+  dependencies += PaperPluginDescription.Dependency("DiscordSRV", false)
   website = GITHUB_REPO_URL
 }
 
@@ -64,10 +66,12 @@ bukkit {
 }
 
 carbonPermission.permissions.get().forEach {
-  setOf(bukkit, paper).forEach { ext ->
-    ext.permissions.register(it.string) {
-      description = it.description
-      childrenMap = it.children
-    }
+  bukkit.permissions.register(it.string) {
+    description = it.description
+    childrenMap = it.children
+  }
+  paper.permissions.register(it.string) {
+    description = it.description
+    childrenMap = it.children
   }
 }
