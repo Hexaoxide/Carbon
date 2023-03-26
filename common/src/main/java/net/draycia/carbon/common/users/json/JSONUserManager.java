@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.google.inject.MembersInjector;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -85,8 +86,10 @@ public class JSONUserManager extends CachingUserManager {
 
         if (Files.exists(userFile)) {
             try {
-                final @Nullable CarbonPlayerCommon player =
-                    this.serializer.fromJson(Files.newBufferedReader(userFile), CarbonPlayerCommon.class);
+                final @Nullable CarbonPlayerCommon player;
+                try (final Reader reader = Files.newBufferedReader(userFile)) {
+                    player = this.serializer.fromJson(reader, CarbonPlayerCommon.class);
+                }
 
                 if (player == null) {
                     throw new IllegalStateException("Player file found but was empty.");
