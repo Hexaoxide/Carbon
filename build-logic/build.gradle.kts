@@ -13,6 +13,7 @@ dependencies {
   implementation(libs.indraCommon)
   implementation(libs.indraLicenseHeader)
   implementation(libs.licenser)
+  implementation(libs.pluginYml)
   implementation("org.spongepowered:configurate-yaml:4.0.0")
 
   // https://github.com/gradle/gradle/issues/15383#issuecomment-779893192

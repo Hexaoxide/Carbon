@@ -1,3 +1,5 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+
 plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
@@ -10,7 +12,7 @@ dependencies {
 
   // Server
   compileOnly(libs.paperApi)
-  implementation(libs.paperLib)
+  implementation(libs.paperTrail)
 
   // Commands
   implementation(libs.cloudPaper)
@@ -30,7 +32,7 @@ carbonShadowPlatform {
 
 tasks {
   shadowJar {
-    relocateDependency("io.papermc.lib")
+    relocateDependency("io.papermc.papertrail")
     relocateDependency("io.leangen.geantyref")
   }
   runServer {
@@ -38,8 +40,10 @@ tasks {
   }
 }
 
-// Generates plugin.yml automatically
-bukkit {
+plugins.apply(PaperPlugin::class)
+
+val paper = extensions["paper"] as BukkitPluginDescription
+paper.apply {
   name = rootProject.name
   version = project.version as String
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
@@ -50,9 +54,20 @@ bukkit {
   website = GITHUB_REPO_URL
 }
 
+bukkit {
+  name = rootProject.name
+  version = project.version as String
+  main = "net.draycia.carbon.libs.io.papermc.papertrail.RequiresPaperPlugins"
+  apiVersion = "1.19"
+  author = "Draycia"
+  website = GITHUB_REPO_URL
+}
+
 carbonPermission.permissions.get().forEach {
-  bukkit.permissions.register(it.string) {
-    description = it.description
-    childrenMap = it.children
+  setOf(bukkit, paper).forEach { ext ->
+    ext.permissions.register(it.string) {
+      description = it.description
+      childrenMap = it.children
+    }
   }
 }
