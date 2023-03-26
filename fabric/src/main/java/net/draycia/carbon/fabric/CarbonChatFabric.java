@@ -78,7 +78,9 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
         final CarbonEventHandler eventHandler,
         final CarbonChannelRegistry channelRegistry,
         final IMessageRenderer<Audience, String, Component, Component> renderer,
-        final Provider<MessagingManager> messagingManagerProvider
+        final Provider<MessagingManager> messagingManagerProvider,
+        @SuppressWarnings("unused") // Make sure it initializes now
+        final MinecraftServerHolder minecraftServerHolder
     ) {
         super(
             injector,
