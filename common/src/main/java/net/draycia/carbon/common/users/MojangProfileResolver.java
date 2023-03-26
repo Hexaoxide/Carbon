@@ -184,6 +184,7 @@ public final class MojangProfileResolver implements ProfileResolver {
     public void shutdown() {
         ConcurrentUtil.shutdownExecutor(this.executorService, TimeUnit.MILLISECONDS, 500);
         this.globalRateLimit.shutdown();
+        this.uuidToProfileRateLimit.shutdown();
     }
 
     private record BasicLookupResponse(UUID id, String name) {
