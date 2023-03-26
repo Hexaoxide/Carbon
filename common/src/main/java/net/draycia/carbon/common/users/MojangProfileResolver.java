@@ -44,6 +44,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.draycia.carbon.common.util.FastUuidSansHyphens;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -189,27 +190,18 @@ public final class MojangProfileResolver implements ProfileResolver {
 
     private static final class UUIDTypeAdapter extends TypeAdapter<UUID> {
 
-        private static final String REGEX = "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})";
-
         private UUIDTypeAdapter() {
         }
 
         @Override
         public void write(final JsonWriter out, final UUID value) throws IOException {
-            out.value(fromUUID(value));
+            out.value(FastUuidSansHyphens.toString(value));
         }
 
         @Override
         public UUID read(final JsonReader in) throws IOException {
-            return fromString(in.nextString());
-        }
-
-        private static String fromUUID(final UUID value) {
-            return value.toString().replace("-", "");
-        }
-
-        private static UUID fromString(final String input) {
-            return UUID.fromString(input.replaceFirst(REGEX, "$1-$2-$3-$4-$5"));
+            final String input = in.nextString();
+            return FastUuidSansHyphens.parseUuid(input);
         }
 
     }
