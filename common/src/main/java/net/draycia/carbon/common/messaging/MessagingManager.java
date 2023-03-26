@@ -35,6 +35,8 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.draycia.carbon.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
 import ninja.egg82.messenger.MessagingService;
 import ninja.egg82.messenger.NATSMessagingService;
 import ninja.egg82.messenger.PacketManager;
@@ -58,8 +60,7 @@ public class MessagingManager {
 
     private static final byte protocolVersion = 0;
 
-    private final ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(10);
-
+    private final ScheduledExecutorService executorService;
     private final PacketService packetService;
     private MessagingService messagingService;
     private final CarbonChat carbonChat;
@@ -80,6 +81,8 @@ public class MessagingManager {
         PacketManager.register(ChatMessagePacket.class, ChatMessagePacket::new);
 
         this.packetService = new PacketService(4, false, protocolVersion);
+        this.executorService = new ExceptionLoggingScheduledThreadPoolExecutor(10,
+            ConcurrentUtil.carbonThreadFactory(carbonChat.logger(), "MessagingManager"), carbonChat.logger());
         this.carbonChat = carbonChat;
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
