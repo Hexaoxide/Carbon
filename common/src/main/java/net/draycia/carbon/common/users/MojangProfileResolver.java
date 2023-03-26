@@ -119,7 +119,13 @@ public final class MojangProfileResolver implements ProfileResolver {
             return CompletableFuture.completedFuture(this.cache.cachedName(uuid));
         }
         return this.pendingUsernameLookups.computeIfAbsent(uuid, $ -> {
-            if (!this.globalRateLimit.canSubmit() || !this.uuidToProfileRateLimit.canSubmit()) {
+            final boolean globalLimited = !this.globalRateLimit.canSubmit();
+            final boolean nameLimited = !this.uuidToProfileRateLimit.canSubmit();
+            if (globalLimited || nameLimited) {
+                if (nameLimited && !globalLimited) {
+                    // Add back to the global limit if we didn't actually make a request due to uuidToProfileRateLimit
+                    this.globalRateLimit.available.getAndIncrement();
+                }
                 return CompletableFuture.completedFuture(null);
             }
             final CompletableFuture<@Nullable BasicLookupResponse> mojangLookup = CompletableFuture.supplyAsync(() -> {
