@@ -146,12 +146,15 @@ public class MessagingManager {
         final String channelName = "carbon-data";
 
         if (!messagingSettings.enabled()) {
+            this.carbonChat.logger().info("Messaging services disabled in config. Cross-server will not work without this!");
             this.messagingService = EMPTY_MESSAGING_SERVICE;
             return;
         }
 
         switch (messagingSettings.brokerType()) {
             case RABBITMQ -> {
+                this.carbonChat.logger().info("Initializing RabbitMQ Messaging services...");
+
                 final RabbitMQMessagingService.Builder builder = RabbitMQMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port(), messagingSettings.vhost())
                     .timeout(5000);
@@ -163,6 +166,8 @@ public class MessagingManager {
                 this.messagingService = builder.build();
             }
             case NATS -> {
+                this.carbonChat.logger().info("Initializing NATS Messaging services...");
+
                 final NATSMessagingService.Builder builder = NATSMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port())
                     .life(5000);
@@ -174,6 +179,8 @@ public class MessagingManager {
                 this.messagingService = builder.build();
             }
             case REDIS -> {
+                this.carbonChat.logger().info("Initializing Redis Messaging services...");
+
                 final RedisMessagingService.Builder builder = RedisMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port());
 

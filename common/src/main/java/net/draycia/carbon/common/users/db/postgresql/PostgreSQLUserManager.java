@@ -37,6 +37,7 @@ import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.users.db.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.KeyColumnMapper;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.key.Key;
@@ -175,6 +176,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
             final Jdbi jdbi = Jdbi.create(dataSource)
                 .registerArgument(new ComponentArgumentFactory())
                 .registerArgument(new KeyArgumentFactory())
+                .registerColumnMapper(new KeyColumnMapper())
                 .registerRowMapper(new PostgreSQLPlayerRowMapper())
                 .installPlugin(new SqlObjectPlugin())
                 .installPlugin(new PostgresPlugin());

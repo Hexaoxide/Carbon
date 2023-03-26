@@ -38,6 +38,7 @@ import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.users.db.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.KeyColumnMapper;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.key.Key;
@@ -171,10 +172,11 @@ public final class MySQLUserManager extends DatabaseUserManager {
             flyway.migrate();
 
             final Jdbi jdbi = Jdbi.create(dataSource)
-                .registerArrayType(UUID.class, "uuid")
                 .registerArgument(new ComponentArgumentFactory())
                 .registerArgument(new KeyArgumentFactory())
                 .registerArgument(new MySQLUUIDArgumentFactory())
+                .registerArrayType(UUID.class, "uuid")
+                .registerColumnMapper(new KeyColumnMapper())
                 .registerRowMapper(new MySQLPlayerRowMapper())
                 .installPlugin(new SqlObjectPlugin());
 

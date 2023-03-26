@@ -38,7 +38,7 @@ fun ShadowJar.standardRelocations() {
   //relocateDependency("org.apache")
   relocateDependency("ninja.egg82.messenger")
   relocateDependency("org.antlr")
-  relocateDependency("com.github.luben")
+  //relocateDependency("com.github.luben")
   //relocateDependency("io.netty")
   relocateDependency("io.nats")
   relocateDependency("com.rabbitmq")
