@@ -26,7 +26,6 @@ import com.google.inject.MembersInjector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -128,13 +127,7 @@ public class JSONUserManager extends CachingUserManager {
                     throw new IllegalStateException("No data to save - toJson returned null or blank.");
                 }
 
-                if (!Files.exists(userFile)) {
-                    Files.createFile(userFile);
-                }
-
-                Files.writeString(userFile, json,
-                    StandardOpenOption.WRITE,
-                    StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(userFile, json);
             } catch (final IOException exception) {
                 throw new RuntimeException("Exception while saving data for player [%s]".formatted(player.username()), exception);
             }
