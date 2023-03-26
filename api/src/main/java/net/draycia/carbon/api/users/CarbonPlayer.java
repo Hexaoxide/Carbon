@@ -340,6 +340,9 @@ public interface CarbonPlayer extends Audience, Identified {
      * A list of all the channels the player has left
      * using the leave command.
      *
+     * <p>The returned collection is immutable, use
+     * {@link #joinChannel(ChatChannel)} and {@link #leaveChannel(ChatChannel)} to mutate.</p>
+     *
      * @return a list of the channels.
      * @since 2.1.0
      */

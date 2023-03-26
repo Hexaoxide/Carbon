@@ -23,12 +23,16 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.ArgumentFactory;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
@@ -40,16 +44,20 @@ import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResol
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
 import net.draycia.carbon.common.users.json.JSONUserManager;
+import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.message.IMessageRenderer;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -57,16 +65,27 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
+    @Backing
     @Singleton
-    public UserManager<CarbonPlayerCommon> userManager(
-        final ConfigFactory configFactory,
-        final Injector injector
-    ) {
+    public UserManagerInternal<CarbonPlayerCommon> userManager(final ConfigFactory configFactory, final Injector injector) {
         return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
-            case MYSQL -> MySQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
-            case PSQL -> PostgreSQLUserManager.manager(configFactory.primaryConfig().databaseSettings());
+            case MYSQL -> injector.getInstance(MySQLUserManager.Factory.class).create();
+            case PSQL -> injector.getInstance(PostgreSQLUserManager.Factory.class).create();
             default -> injector.getInstance(JSONUserManager.class);
         };
+    }
+
+    @Provides
+    @PeriodicTasks
+    @Singleton
+    public ScheduledExecutorService periodicTasksExecutor(final Logger logger) {
+        return ConcurrentUtil.createPeriodicTasksPool(logger);
+    }
+
+    @Provides
+    @Singleton
+    public CarbonEventHandler eventHandler() {
+        return new CarbonEventHandler();
     }
 
     @Provides
@@ -96,8 +115,15 @@ public final class CarbonCommonModule extends AbstractModule {
             .create(this.getClass().getClassLoader());
     }
 
+    @Provides
+    @Singleton
+    public ExecutionCoordinatorHolder executionCoordinatorHolder(final Logger logger) {
+        return ExecutionCoordinatorHolder.create(logger);
+    }
+
     @Override
     protected void configure() {
+        this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
     }
 

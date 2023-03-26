@@ -22,35 +22,58 @@ package net.draycia.carbon.fabric.listeners;
 import com.google.inject.Inject;
 import java.util.List;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.users.ProfileCache;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class FabricPlayerJoinListener implements ServerPlayConnectionEvents.Join {
+public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, ServerPlayConnectionEvents.Disconnect {
 
-    private ConfigFactory configFactory;
+    private final ProfileCache profileCache;
+    private final Logger logger;
+    private final ConfigFactory configFactory;
+    private final UserManagerInternal<?> userManager;
 
     @Inject
-    public FabricPlayerJoinListener(final ConfigFactory configFactory) {
+    public FabricJoinQuitListener(
+        final Logger logger,
+        final ConfigFactory configFactory,
+        final ProfileCache profileCache,
+        final UserManagerInternal<?> userManager
+    ) {
+        this.logger = logger;
         this.configFactory = configFactory;
+        this.profileCache = profileCache;
+        this.userManager = userManager;
     }
 
     @Override
     public void onPlayReady(final ServerGamePacketListenerImpl handler, final PacketSender sender, final MinecraftServer server) {
+        this.profileCache.cache(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName());
+
         final @Nullable List<String> suggestions = this.configFactory.primaryConfig().customChatSuggestions();
 
         if (suggestions == null || suggestions.isEmpty()) {
             return;
         }
 
-        sender.sendPacket(new ClientboundCustomChatCompletionsPacket(ClientboundCustomChatCompletionsPacket.Action.SET,
-            suggestions));
+        sender.sendPacket(new ClientboundCustomChatCompletionsPacket(ClientboundCustomChatCompletionsPacket.Action.SET, suggestions));
+    }
+
+    @Override
+    public void onPlayDisconnect(final ServerGamePacketListenerImpl handler, final MinecraftServer server) {
+        this.userManager.loggedOut(handler.getPlayer().getGameProfile().getId()).exceptionally(thr -> {
+            this.logger.warn("Exception saving data for player " + handler.getPlayer().getGameProfile().getName() + " with uuid " + handler.getPlayer().getGameProfile().getId());
+            return null;
+        });
     }
 
 }

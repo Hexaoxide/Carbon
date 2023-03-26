@@ -21,22 +21,16 @@ package net.draycia.carbon.fabric;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,61 +38,36 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerFabric implements CarbonServer, ForwardingAudience.Single {
 
-    private final CarbonChatFabric carbonChatFabric;
-    private final UserManager<CarbonPlayerFabric> userManager;
+    private final MinecraftServerHolder serverHolder;
+    private final FabricUserManager userManager;
 
     @Inject
-    private CarbonServerFabric(final CarbonChatFabric carbonChatFabric, final UserManager<CarbonPlayerCommon> userManager) {
-        this.carbonChatFabric = carbonChatFabric;
-        this.userManager = new FabricUserManager(userManager, carbonChatFabric);
+    private CarbonServerFabric(final MinecraftServerHolder serverHolder, final FabricUserManager userManager) {
+        this.serverHolder = serverHolder;
+        this.userManager = userManager;
     }
 
     @Override
     public @NotNull Audience audience() {
-        return FabricServerAudiences.of(this.carbonChatFabric.minecraftServer()).all();
+        return FabricServerAudiences.of(this.serverHolder.requireServer()).all();
     }
 
     @Override
     public Audience console() {
-        return this.carbonChatFabric.minecraftServer();
+        return this.serverHolder.requireServer().createCommandSourceStack();
     }
 
     @Override
     public List<? extends CarbonPlayer> players() {
-        final var players = new ArrayList<CarbonPlayer>();
-
-        for (final var player : this.carbonChatFabric.minecraftServer().getPlayerList().getPlayers()) {
-            final ComponentPlayerResult<CarbonPlayerFabric> result = this.userManager.carbonPlayer(player.getUUID()).join();
-
-            if (result.player() != null) {
-                players.add(result.player());
-            }
-        }
-
-        return players;
+        return this.serverHolder.requireServer().getPlayerList().getPlayers().stream()
+            .map(serverPlayer -> this.userManager.user(serverPlayer.getUUID()).getNow(null))
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     @Override
     public UserManager<CarbonPlayerFabric> userManager() {
         return this.userManager;
-    }
-
-    @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayerByName(username);
-        if (serverPlayer == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(serverPlayer.getUUID());
-    }
-
-    @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
-        final @Nullable ServerPlayer serverPlayer = this.carbonChatFabric.minecraftServer().getPlayerList().getPlayer(uuid);
-        if (serverPlayer == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(serverPlayer.getGameProfile().getName());
     }
 
 }

@@ -46,9 +46,10 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -57,7 +58,6 @@ import net.draycia.carbon.common.events.ChannelRegisterEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistryGetter;
@@ -105,13 +105,14 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
     @Inject
     public CarbonChannelRegistry(
-        @ForCarbon final Path dataDirectory,
+        @DataDirectory final Path dataDirectory,
         final Injector injector,
         final Logger logger,
         final ConfigFactory configFactory,
         final CarbonMessages carbonMessages,
         //final BasicChatChannel basicChannel,
-        final CarbonChat carbonChat
+        final CarbonChat carbonChat,
+        final CarbonEventHandler events
     ) {
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
@@ -121,9 +122,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         //this.basicChannel = basicChannel;
         this.carbonChat = carbonChat;
 
-        carbonChat.eventHandler().subscribe(CarbonReloadEvent.class, event -> {
-            this.reloadRegisteredConfigChannels();
-        });
+        events.subscribe(CarbonReloadEvent.class, event -> this.reloadRegisteredConfigChannels());
     }
 
     public static ConfigurationTransformation.Versioned versioned() {
@@ -318,7 +317,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
-        // TODO: add previewing when cloud/adventure support it
         final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel, false);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
@@ -338,10 +336,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
         }
 
-        final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
-
         for (final Audience recipient : chatEvent.recipients()) {
-            recipient.sendMessage(identity, renderedMessage);
+            recipient.sendMessage(renderedMessage);
         }
 
         final @Nullable PacketService packetService = this.carbonChat.packetService();
@@ -353,7 +349,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
                     configChatChannel.permission(), channel.key(), sender.username(), format,
                     Map.of("username", sender.username(), "message", plainMessage)));
-                packetService.flushQueue();
             }
         }
     }

@@ -22,7 +22,6 @@ package net.draycia.carbon.common.messaging;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -49,8 +48,11 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
     @Override
     protected boolean handlePacket(final @NotNull Packet packet) {
         if (!(packet instanceof ChatMessagePacket messagePacket)) {
+            this.logger.info("Messaging packet received - Not a ChatMessagePacket.");
             return false;
         }
+
+        this.logger.info("Messaging packet received");
 
         final TagResolver.Builder tagResolver = TagResolver.builder();
 
@@ -64,7 +66,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         for (final var recipient : CarbonChatProvider.carbonChat().server().players()) {
             if (recipient.hasPermission(messagePacket.channelPermission() + ".see")) {
                 if (recipient.hasPermission("carbon.crossserver")) {
-                    recipient.sendMessage(Identity.identity(messagePacket.userId()), component);
+                    recipient.sendMessage(component);
                 }
             }
         }

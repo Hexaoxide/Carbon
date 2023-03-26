@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
@@ -33,7 +34,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.thread.NamedThreadFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -54,8 +54,8 @@ public enum ChatCallback {
     private @Nullable ExecutorService chatExecutor;
     private final List<Consumer<Chat>> listeners = new CopyOnWriteArrayList<>();
 
-    private void initExecutor() {
-        this.chatExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory("CarbonChat-Chat-Thread"));
+    private void initExecutor(final Logger logger) {
+        this.chatExecutor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "Chat Handling"));
     }
 
     private void shutdownExecutor() {
@@ -114,7 +114,7 @@ public enum ChatCallback {
     }
 
     public static void setup() {
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> INSTANCE.initExecutor());
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> INSTANCE.initExecutor(LOGGER));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> INSTANCE.shutdownExecutor());
     }
 

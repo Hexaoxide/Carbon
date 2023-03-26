@@ -19,35 +19,51 @@
  */
 package net.draycia.carbon.common.users.db;
 
+import com.google.inject.MembersInjector;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.api.users.UserManager;
+import java.util.concurrent.Executors;
+import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.key.Key;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
 
-import static net.kyori.adventure.text.Component.empty;
-
 @DefaultQualifier(NonNull.class)
-public abstract class AbstractUserManager implements UserManager<CarbonPlayerCommon> {
+public abstract class DatabaseUserManager extends CachingUserManager {
 
     protected final Jdbi jdbi;
-
     protected final QueriesLocator locator;
 
-    protected AbstractUserManager(final Jdbi jdbi, final QueriesLocator locator) {
+    protected DatabaseUserManager(
+        final Jdbi jdbi,
+        final QueriesLocator locator,
+        final Logger logger,
+        final ProfileResolver profileResolver,
+        final MembersInjector<CarbonPlayerCommon> playerInjector
+    ) {
+        super(
+            logger,
+            Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")),
+            profileResolver,
+            playerInjector
+        );
         this.jdbi = jdbi;
         this.locator = locator;
     }
 
     @Override
-    final public CompletableFuture<ComponentPlayerResult<CarbonPlayerCommon>> savePlayer(final CarbonPlayerCommon player) {
-        return CompletableFuture.supplyAsync(() -> this.jdbi.withHandle(handle -> {
+    public final CompletableFuture<Void> save(final CarbonPlayerCommon player) {
+        if (!player.needsSave()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return CompletableFuture.runAsync(() -> this.jdbi.withHandle(handle -> {
             this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
                 .execute();
 
@@ -70,9 +86,10 @@ public abstract class AbstractUserManager implements UserManager<CarbonPlayerCom
                 batch.execute();
             }
             // TODO: save ignoredplayers
-            return new ComponentPlayerResult<>(player, empty());
-        }));
+            return null;
+        }), this.executor);
     }
 
     abstract protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player);
+
 }

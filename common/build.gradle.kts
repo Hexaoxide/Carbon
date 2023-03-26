@@ -21,6 +21,7 @@ dependencies {
 
   // Other
   api(libs.guice)
+  api(libs.assistedInject)
   compileOnlyApi(libs.luckPermsApi)
 
   // Storage

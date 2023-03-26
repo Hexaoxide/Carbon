@@ -27,7 +27,6 @@ import com.google.inject.Inject;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -100,8 +99,7 @@ public class ReplyCommand extends CarbonCommand {
                     return;
                 }
 
-                final ComponentPlayerResult<? extends CarbonPlayer> result = this.carbonChat.server().userManager().carbonPlayer(replyTarget).join();
-                final @MonotonicNonNull CarbonPlayer recipient = result.player();
+                final @MonotonicNonNull CarbonPlayer recipient = this.carbonChat.userManager().user(replyTarget).join();
 
                 if (sender.equals(recipient)) {
                     this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
@@ -110,7 +108,7 @@ public class ReplyCommand extends CarbonCommand {
 
                 if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, this.carbonMessages);
+                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler);
 
                     this.carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;

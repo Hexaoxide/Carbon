@@ -24,15 +24,13 @@ import cloud.commandframework.arguments.standard.UUIDArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
-import java.util.Objects;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -44,19 +42,19 @@ public class UnignoreCommand extends CarbonCommand {
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
-    final PlayerSuggestions playerSuggestions;
+    private final ArgumentFactory argumentFactory;
 
     @Inject
     public UnignoreCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final PlayerSuggestions playerSuggestions
+        final ArgumentFactory argumentFactory
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.playerSuggestions = playerSuggestions;
+        this.argumentFactory = argumentFactory;
     }
 
     @Override
@@ -73,7 +71,7 @@ public class UnignoreCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             // TODO: Filter, and only show muted players, but allow inputting any player name.
-            .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
                 RichDescription.of(this.carbonMessages.commandUnignoreArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
@@ -90,8 +88,7 @@ public class UnignoreCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
-                    target = Objects.requireNonNull(result.player(), "No player found for UUID.");
+                    target = this.carbonChat.userManager().user(handler.get("uuid")).join();
                 } else {
                     this.carbonMessages.ignoreTargetInvalid(sender);
                     return;

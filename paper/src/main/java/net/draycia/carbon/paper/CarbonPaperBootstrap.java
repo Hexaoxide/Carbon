@@ -20,7 +20,6 @@
 package net.draycia.carbon.paper;
 
 import com.google.inject.Guice;
-import com.google.inject.Injector;
 import io.papermc.lib.PaperLib;
 import java.util.logging.Level;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -45,10 +44,9 @@ public final class CarbonPaperBootstrap extends JavaPlugin {
             return;
         }
 
-        this.carbonChat = new CarbonChatPaper();
-        final Injector injector = Guice.createInjector(new CarbonChatPaperModule(this, this.carbonChat));
+        this.carbonChat = Guice.createInjector(new CarbonChatPaperModule(this))
+            .getInstance(CarbonChatPaper.class);
         CarbonChatProvider.register(this.carbonChat);
-        injector.injectMembers(this.carbonChat);
     }
 
     // null = success

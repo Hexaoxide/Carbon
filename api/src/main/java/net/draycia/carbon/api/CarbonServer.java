@@ -20,13 +20,10 @@
 package net.draycia.carbon.api;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -56,27 +53,11 @@ public interface CarbonServer extends Audience {
     /**
      * Manager used to load/obtain and save {@link CarbonPlayer CarbonPlayers}.
      *
+     * @deprecated Use {@link CarbonChat#userManager} (internal code: inject the UserManager)
      * @return the user manager
      * @since 2.1.0
      */
+    @Deprecated(forRemoval = true)
     UserManager<? extends CarbonPlayer> userManager();
-
-    /**
-     * Obtains the desired user's UUID.
-     *
-     * @param username the user's username
-     * @return the user's UUID
-     * @since 2.0.0
-     */
-    CompletableFuture<@Nullable UUID> resolveUUID(final String username);
-
-    /**
-     * Obtains the desired player's name.
-     *
-     * @param uuid the user's UUID
-     * @return the user's name
-     * @since 2.0.0
-     */
-    CompletableFuture<@Nullable String> resolveName(final UUID uuid);
 
 }

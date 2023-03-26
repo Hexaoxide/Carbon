@@ -66,10 +66,9 @@ public final class PaperChatListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPaperChat(final @NonNull AsyncChatEvent event) {
-        final var playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
-        final @Nullable CarbonPlayer sender = playerResult.player();
+        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.getPlayer().getUniqueId()).join();
 
-        if (sender == null || event.viewers().isEmpty()) {
+        if (event.viewers().isEmpty()) {
             return;
         }
 
@@ -126,10 +125,7 @@ public final class PaperChatListener implements Listener {
             final Audience recipientViewer;
 
             if (recipientUUID.isPresent()) {
-                final var recipientResult = this.carbonChat.server().userManager().carbonPlayer(viewer.get(Identity.UUID).orElseThrow()).join();
-                final @Nullable CarbonPlayer recipient = recipientResult.player();
-
-                recipientViewer = requireNonNullElse(recipient, viewer);
+                recipientViewer = this.carbonChat.userManager().user(viewer.get(Identity.UUID).orElseThrow()).join();
             } else {
                 recipientViewer = viewer;
             }

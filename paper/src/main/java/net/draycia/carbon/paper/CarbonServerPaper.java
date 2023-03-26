@@ -21,23 +21,16 @@ package net.draycia.carbon.paper;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
@@ -45,12 +38,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonServerPaper implements CarbonServer, ForwardingAudience.Single {
 
     private final Server server;
-    private final UserManager<CarbonPlayerPaper> userManager;
+    private final PaperUserManager userManager;
 
     @Inject
-    private CarbonServerPaper(final Server server, final UserManager<CarbonPlayerCommon> userManager) {
+    private CarbonServerPaper(final Server server, final PaperUserManager userManager) {
         this.server = server;
-        this.userManager = new PaperUserManager(userManager);
+        this.userManager = userManager;
     }
 
     @Override
@@ -65,42 +58,15 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
 
     @Override
     public List<? extends CarbonPlayer> players() {
-        final var players = new ArrayList<CarbonPlayer>();
-
-        for (final var player : this.server.getOnlinePlayers()) {
-            final ComponentPlayerResult<CarbonPlayerPaper> result = this.userManager.carbonPlayer(player.getUniqueId()).join();
-
-            if (result.player() != null) {
-                players.add(result.player());
-            }
-        }
-
-        return players;
+        return this.server.getOnlinePlayers().stream()
+            .map(bukkit -> this.userManager.user(bukkit.getUniqueId()).getNow(null))
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     @Override
     public UserManager<CarbonPlayerPaper> userManager() {
         return this.userManager;
-    }
-
-    @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        // TODO: user cache?
-        return CompletableFuture.supplyAsync(() -> {
-            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
-
-            if (!offlinePlayer.hasPlayedBefore()) {
-                return null;
-            }
-
-            return offlinePlayer.getUniqueId();
-        });
-    }
-
-    @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
-        // TODO: user cache?
-        return CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(uuid).getName());
     }
 
 }

@@ -19,8 +19,8 @@
  */
 package net.draycia.carbon.paper.command;
 
-import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.command.CommandSender;
@@ -32,7 +32,7 @@ import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public record PaperPlayerCommander(
-    CarbonServer server,
+    UserManager<?> userManager,
     Player player
 ) implements PlayerCommander, PaperCommander {
 
@@ -48,7 +48,7 @@ public record PaperPlayerCommander(
 
     @Override
     public CarbonPlayer carbonPlayer() {
-        return requireNonNull(this.server.userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
+        return requireNonNull(this.userManager.user(this.player.getUniqueId()).join(), "No CarbonPlayer for logged in Player!");
     }
 
     @Override

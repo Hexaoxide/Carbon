@@ -22,25 +22,30 @@ package net.draycia.carbon.paper;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.bukkit.parsers.PlayerArgument;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
+import net.draycia.carbon.paper.users.PaperProfileResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -58,28 +63,23 @@ public final class CarbonChatPaperModule extends AbstractModule {
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonPaperBootstrap bootstrap;
-    private final CarbonChat carbonChat;
 
-    CarbonChatPaperModule(
-        final CarbonPaperBootstrap bootstrap,
-        final CarbonChat carbonChat
-    ) {
+    CarbonChatPaperModule(final CarbonPaperBootstrap bootstrap) {
         this.bootstrap = bootstrap;
-        this.carbonChat = carbonChat;
     }
 
     @Provides
     @Singleton
-    public CommandManager<Commander> commandManager(final CarbonServer server, final CarbonMessages messages) {
+    public CommandManager<Commander> commandManager(final UserManager<?> userManager, final CarbonMessages messages, final ExecutionCoordinatorHolder executionCoordinatorHolder) {
         final PaperCommandManager<Commander> commandManager;
 
         try {
             commandManager = new PaperCommandManager<>(
                 this.bootstrap,
-                AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
+                executionCoordinatorHolder.executionCoordinator(),
                 commandSender -> {
                     if (commandSender instanceof Player player) {
-                        return new PaperPlayerCommander(server, player);
+                        return new PaperPlayerCommander(userManager, player);
                     }
                     return PaperCommander.from(commandSender);
                 },
@@ -116,21 +116,20 @@ public final class CarbonChatPaperModule extends AbstractModule {
         return injector.getInstance(PaperMessageRenderer.class);
     }
 
-    @Provides
-    public CarbonChat carbonChat() {
-        return this.carbonChat;
-    }
-
     @Override
     public void configure() {
         this.install(new CarbonCommonModule());
 
+        this.bind(CarbonChat.class).to(CarbonChatPaper.class);
         this.bind(JavaPlugin.class).toInstance(this.bootstrap);
         this.bind(Server.class).toInstance(this.bootstrap.getServer());
         this.bind(Logger.class).toInstance(this.logger);
-        this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.bootstrap.getDataFolder().toPath());
+        this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.bootstrap.getDataFolder().toPath());
         this.bind(CarbonServer.class).to(CarbonServerPaper.class);
         this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
+        this.bind(ProfileResolver.class).to(PaperProfileResolver.class);
+        this.bind(new TypeLiteral<UserManager<?>>() {}).to(PaperUserManager.class);
+        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(PaperUserManager.class);
     }
 
 }

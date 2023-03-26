@@ -20,18 +20,16 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.text.TextReplacementConfig;
 
 public class ItemLinkHandler {
 
     @Inject
-    public ItemLinkHandler(
-        final CarbonChat carbonChat
-    ) {
-        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 1, false, event -> {
+    public ItemLinkHandler(final CarbonEventHandler events) {
+        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
             if (!event.sender().hasPermission("carbon.itemlink")) {
                 return;
             }

@@ -20,8 +20,8 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -30,10 +30,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class IgnoreHandler {
 
     @Inject
-    public IgnoreHandler(
-        final CarbonChat carbonChat
-    ) {
-        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 0, false, event -> {
+    public IgnoreHandler(final CarbonEventHandler events) {
+        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
             event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
                 carbonPlayer.ignoring(event.sender()));
         });

@@ -17,16 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common;
+package net.draycia.carbon.fabric;
 
-import com.google.inject.BindingAnnotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.google.inject.Guice;
+import net.draycia.carbon.api.CarbonChatProvider;
+import net.fabricmc.api.ModInitializer;
 
-@BindingAnnotation
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER, ElementType.FIELD})
-public @interface ForCarbon {
+public class CarbonFabricBootstrap implements ModInitializer {
+
+    @Override
+    public void onInitialize() {
+        final CarbonChatFabric carbonChat = Guice.createInjector(new CarbonChatFabricModule())
+            .getInstance(CarbonChatFabric.class);
+        CarbonChatProvider.register(carbonChat);
+        carbonChat.onInitialize();
+    }
+
 }

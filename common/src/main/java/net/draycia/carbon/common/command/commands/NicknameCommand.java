@@ -28,12 +28,11 @@ import com.google.inject.Inject;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.audience.Audience;
@@ -47,17 +46,17 @@ public class NicknameCommand extends CarbonCommand {
 
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
-    final PlayerSuggestions playerSuggestions;
+    private final ArgumentFactory argumentFactory;
 
     @Inject
     public NicknameCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final PlayerSuggestions playerSuggestions
+        final ArgumentFactory argumentFactory
     ) {
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.playerSuggestions = playerSuggestions;
+        this.argumentFactory = argumentFactory;
     }
 
     @Override
@@ -75,12 +74,7 @@ public class NicknameCommand extends CarbonCommand {
         // TODO: Allow UUID input for target player
         final var selfRoot = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases());
         final var othersRoot = selfRoot.literal("player")
-            .argument(
-                CarbonPlayerArgument.builder("player")
-                    .withMessages(this.carbonMessages)
-                    .withSuggestionsProvider(this.playerSuggestions),
-                RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer())
-            );
+            .argument(this.argumentFactory.carbonPlayer("player"), RichDescription.of(this.carbonMessages.commandNicknameArgumentPlayer()));
 
         // Check nickname
         this.commandManager.command(selfRoot.permission("carbon.nickname")

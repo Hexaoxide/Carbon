@@ -27,12 +27,12 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.CloudUtils;
@@ -49,7 +49,7 @@ public class WhisperCommand extends CarbonCommand {
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
-    final PlayerSuggestions playerSuggestions;
+    private final ArgumentFactory argumentFactory;
     final ConfigFactory configFactory;
 
     @Inject
@@ -57,13 +57,13 @@ public class WhisperCommand extends CarbonCommand {
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final PlayerSuggestions playerSuggestions,
+        final ArgumentFactory argumentFactory,
         final ConfigFactory configFactory
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.playerSuggestions = playerSuggestions;
+        this.argumentFactory = argumentFactory;
         this.configFactory = configFactory;
     }
 
@@ -80,7 +80,7 @@ public class WhisperCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(CarbonPlayerArgument.builder("player").withMessages(this.carbonMessages).withSuggestionsProvider(this.playerSuggestions).asRequired(),
+            .argument(this.argumentFactory.carbonPlayer("player").asRequired(),
                 RichDescription.of(this.carbonMessages.commandWhisperArgumentPlayer()))
             .argument(StringArgument.greedy("message"),
                 RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage()))
@@ -105,7 +105,7 @@ public class WhisperCommand extends CarbonCommand {
 
                 if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler, this.carbonMessages);
+                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler);
 
                     this.carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
                     return;

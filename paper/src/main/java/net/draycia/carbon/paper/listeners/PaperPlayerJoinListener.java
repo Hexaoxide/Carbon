@@ -21,11 +21,9 @@ package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
 import java.util.Optional;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.util.PlayerUtils;
-import net.draycia.carbon.paper.users.CarbonPlayerPaper;
+import net.draycia.carbon.common.users.ProfileCache;
+import net.draycia.carbon.paper.PaperUserManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,41 +36,45 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class PaperPlayerJoinListener implements Listener {
 
-    private final CarbonChat carbonChat;
-    private final UserManager<CarbonPlayerCommon> userManager;
+    private final Logger logger;
+    private final ProfileCache profileCache;
+    private final PaperUserManager userManager;
 
     @Inject
     public PaperPlayerJoinListener(
-        final CarbonChat carbonChat,
-        final UserManager<CarbonPlayerCommon> userManager
+        final Logger logger,
+        final ProfileCache profileCache,
+        final PaperUserManager userManager
     ) {
-        this.carbonChat = carbonChat;
+        this.logger = logger;
+        this.profileCache = profileCache;
         this.userManager = userManager;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void cacheProfile(final PlayerJoinEvent event) {
+        this.profileCache.cache(event.getPlayer().getUniqueId(), event.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
-        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
-            if (result.player() == null) {
-                return;
-            }
-
-            Optional.ofNullable(result.player().displayName()).ifPresent(displayName -> {
+        this.userManager.user(event.getPlayer().getUniqueId()).thenAccept(result -> {
+            Optional.ofNullable(result.displayName()).ifPresent(displayName -> {
                 final Player player = event.getPlayer();
                 player.displayName(displayName);
                 player.playerListName(displayName);
             });
+        }).exceptionally(thr -> {
+            this.logger.warn("Exception handling player join", thr);
+            return null;
         });
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(final PlayerQuitEvent event) {
-        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
-            if (result.player() == null) {
-                return;
-            }
-
-            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerPaper) result.player());
+        this.userManager.loggedOut(event.getPlayer().getUniqueId()).exceptionally(thr -> {
+            this.logger.warn("Exception saving data for player " + event.getPlayer().getName() + " with uuid " + event.getPlayer().getUniqueId());
+            return null;
         });
     }
 

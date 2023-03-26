@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.mixin.MessageSignatureCacheAccessor;
@@ -52,19 +51,16 @@ public class DeleteMessageCommand extends CarbonCommand {
     final CarbonChatFabric carbonChat;
     final CommandManager<Commander> commandManager;
     final CarbonMessages messageService;
-    final PlayerSuggestions playerSuggestions;
 
     @Inject
     public DeleteMessageCommand(
         final CarbonChatFabric carbonChat,
         final CommandManager<Commander> commandManager,
-        final CarbonMessages messageService,
-        final PlayerSuggestions playerSuggestions
+        final CarbonMessages messageService
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.messageService = messageService;
-        this.playerSuggestions = playerSuggestions;
     }
 
     @Override

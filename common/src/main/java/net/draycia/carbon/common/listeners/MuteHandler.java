@@ -20,8 +20,8 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -47,13 +47,10 @@ public class MuteHandler {
         });
 
     @Inject
-    public MuteHandler(
-        final CarbonChat carbonChat,
-        final CarbonMessages carbonMessages
-    ) {
+    public MuteHandler(final CarbonEventHandler events, final CarbonMessages carbonMessages) {
         this.carbonMessages = carbonMessages;
 
-        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, 100, false, event -> {
+        events.subscribe(CarbonChatEvent.class, 100, false, event -> {
             if (!event.sender().muted()) {
                 return;
             }

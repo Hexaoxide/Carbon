@@ -17,38 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users;
+package net.draycia.carbon.common.util;
 
-import java.util.UUID;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface SaveOnChange {
+public final class Strings {
 
-    int saveDisplayName(final UUID id, final @Nullable Component displayName);
+    private Strings() {
+    }
 
-    int saveMuted(final UUID id, final boolean muted);
-
-    int saveDeafened(final UUID id, final boolean deafened);
-
-    int saveSpying(final UUID id, final boolean spying);
-
-    int saveSelectedChannel(final UUID id, final @Nullable Key selectedChannel);
-
-    int saveLastWhisperTarget(final UUID id, final @Nullable UUID lastWhisperTarget);
-
-    int saveWhisperReplyTarget(final UUID id, final @Nullable UUID whisperReplyTarget);
-
-    int addIgnore(final UUID id, final UUID ignoredPlayer);
-
-    int removeIgnore(final UUID id, final UUID ignoredPlayer);
-
-    int addLeftChannel(final UUID id, final Key channel);
-
-    int removeLeftChannel(final UUID id, final Key channel);
+    public static @Nullable String trim(final @Nullable String s) {
+        return s == null ? null : s.trim();
+    }
 
 }

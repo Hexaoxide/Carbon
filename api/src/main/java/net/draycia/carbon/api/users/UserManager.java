@@ -21,6 +21,8 @@ package net.draycia.carbon.api.users;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.ComponentMessageThrowable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -35,28 +37,25 @@ public interface UserManager<C extends CarbonPlayer> {
     /**
      * Loads and returns a {@link CarbonPlayer} with the given {@link UUID}.
      *
+     * @deprecated use {@link #user(UUID)} instead
      * @param uuid the player's uuid
      * @return the result
      * @since 2.0.0
      */
-    CompletableFuture<ComponentPlayerResult<C>> carbonPlayer(final UUID uuid);
+    @Deprecated(forRemoval = true)
+    default CompletableFuture<ComponentPlayerResult<C>> carbonPlayer(final UUID uuid) {
+        return this.user(uuid)
+            .thenApply(user -> new ComponentPlayerResult<>(user, Component.empty()))
+            .exceptionally(thr -> new ComponentPlayerResult<>(null, ComponentMessageThrowable.getOrConvertMessage(thr)));
+    }
 
     /**
-     * Saves the {@link CarbonPlayer} and returns the result.
+     * Loads and returns the CarbonPlayer with the corresponding uuid.
      *
-     * @param player the player to save
-     * @return the result
-     * @since 2.0.0
+     * @param uuid the player's id
+     * @return the player
+     * @since 2.1.0
      */
-    CompletableFuture<ComponentPlayerResult<C>> savePlayer(final C player);
-
-    /**
-     * Saves the {@link CarbonPlayer}, returns the result, and invalidates the player entry.
-     *
-     * @param player the player to save
-     * @return the result
-     * @since 2.0.0
-     */
-    CompletableFuture<ComponentPlayerResult<C>> saveAndInvalidatePlayer(final C player);
+    CompletableFuture<C> user(UUID uuid);
 
 }

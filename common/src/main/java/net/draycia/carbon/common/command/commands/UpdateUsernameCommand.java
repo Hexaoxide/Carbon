@@ -25,16 +25,16 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -43,22 +43,25 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class UpdateUsernameCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
+    private final UserManager<?> userManager;
     final CommandManager<Commander> commandManager;
     final CarbonMessages messageService;
-    final PlayerSuggestions playerSuggestions;
+    private final ArgumentFactory argumentFactory;
+    private final ProfileResolver profileResolver;
 
     @Inject
     public UpdateUsernameCommand(
-        final CarbonChat carbonChat,
+        final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages messageService,
-        final PlayerSuggestions playerSuggestions
+        final ArgumentFactory argumentFactory,
+        final ProfileResolver profileResolver
     ) {
-        this.carbonChat = carbonChat;
+        this.userManager = userManager;
         this.commandManager = commandManager;
         this.messageService = messageService;
-        this.playerSuggestions = playerSuggestions;
+        this.argumentFactory = argumentFactory;
+        this.profileResolver = profileResolver;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class UpdateUsernameCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(CarbonPlayerArgument.builder("player").withMessages(this.messageService).withSuggestionsProvider(this.playerSuggestions).asOptional(),
+            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
                 RichDescription.of(this.messageService.commandUpdateUsernameArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
@@ -91,8 +94,7 @@ public class UpdateUsernameCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    final var result = this.carbonChat.server().userManager().carbonPlayer(handler.get("uuid")).join();
-                    target = Objects.requireNonNull(result.player(), "No player found for UUID.");
+                    target = this.userManager.user(handler.get("uuid")).join();
                 } else {
                     target = sender;
                 }
@@ -106,7 +108,7 @@ public class UpdateUsernameCommand extends CarbonCommand {
 
                 this.messageService.usernameFetching(sender);
                 final CarbonPlayer finalTarget = target;
-                this.carbonChat.server().resolveName(target.uuid()).thenAccept(name -> {
+                this.profileResolver.resolveName(target.uuid()).thenAccept(name -> {
                     Objects.requireNonNull(name, "Unable to fetch username for player.");
 
                     ((CarbonPlayerCommon) finalTarget).username(name);

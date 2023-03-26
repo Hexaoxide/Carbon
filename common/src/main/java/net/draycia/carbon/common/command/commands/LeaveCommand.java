@@ -31,7 +31,6 @@ import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.ChannelUtils;
 import net.kyori.adventure.key.Key;
@@ -45,19 +44,16 @@ public class LeaveCommand extends CarbonCommand {
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
-    final PlayerSuggestions playerSuggestions;
 
     @Inject
     public LeaveCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final CarbonMessages carbonMessages,
-        final PlayerSuggestions playerSuggestions
+        final CarbonMessages carbonMessages
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.playerSuggestions = playerSuggestions;
     }
 
     @Override
