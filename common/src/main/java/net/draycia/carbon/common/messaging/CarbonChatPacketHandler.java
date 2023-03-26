@@ -22,7 +22,6 @@ package net.draycia.carbon.common.messaging;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
