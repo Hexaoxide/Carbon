@@ -19,10 +19,12 @@
  */
 package net.draycia.carbon.paper.messages;
 
+import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -41,7 +43,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class PaperMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
 
-    private @MonotonicNonNull PlaceholderAPIMiniMessageParser parser = null;
+    private final Supplier<@MonotonicNonNull PlaceholderAPIMiniMessageParser> parser = Suppliers.memoize(() -> {
+        if (CarbonChatPaper.papiLoaded()) {
+            return PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
+        }
+        return null;
+    });
 
     private final MiniMessage miniMessage;
     private final ConfigFactory configFactory;
@@ -50,10 +57,6 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
     public PaperMessageRenderer(final ConfigFactory configFactory) {
         this.miniMessage = MiniMessage.miniMessage();
         this.configFactory = configFactory;
-
-        if (CarbonChatPaper.papiLoaded()) {
-            this.parser = PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
-        }
     }
 
     @Override
@@ -81,13 +84,13 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
 
         final Component message;
 
-        if (receiver instanceof SourcedAudience sourced && this.parser != null) {
+        if (receiver instanceof SourcedAudience sourced && this.parser.get() != null) {
             if (sourced.sender() instanceof CarbonPlayer sender && sender.online()) {
                 if (sourced.recipient() instanceof CarbonPlayer recipient && recipient.online()) {
-                    message = this.parser.parseRelational(Bukkit.getPlayer(sender.uuid()),
+                    message = this.parser.get().parseRelational(Bukkit.getPlayer(sender.uuid()),
                         Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, tagResolver.build());
                 } else {
-                    message = this.parser.parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, tagResolver.build());
+                    message = this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, tagResolver.build());
                 }
             } else {
                 message = this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
