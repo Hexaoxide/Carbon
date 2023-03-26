@@ -1,3 +1,5 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+
 plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
@@ -66,12 +68,12 @@ bukkit {
 }
 
 carbonPermission.permissions.get().forEach {
-  bukkit.permissions.register(it.string) {
-    description = it.description
-    childrenMap = it.children
-  }
-  paper.permissions.register(it.string) {
-    description = it.description
-    childrenMap = it.children
+  setOf(bukkit.permissions, paper.permissions).forEach { container ->
+    @Suppress("UNCHECKED_CAST")
+    container as NamedDomainObjectContainer<BukkitPluginDescription.Permission>
+    container.register(it.string) {
+      description = it.description
+      childrenMap = it.children
+    }
   }
 }

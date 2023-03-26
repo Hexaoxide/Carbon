@@ -22,14 +22,13 @@
  * THE SOFTWARE.
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.lang.Closure
 import net.minecrell.pluginyml.PluginDescription
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 
@@ -63,7 +62,7 @@ class PaperPluginDescription(project: Project) : PluginDescription {
   @Input
   @Optional
   @JsonProperty("default-permission")
-  var defaultPermission: Permission.Default? = null
+  var defaultPermission: BukkitPluginDescription.Permission.Default? = null
 
   @Nested
   val dependencies: MutableList<Dependency> = mutableListOf()
@@ -79,38 +78,9 @@ class PaperPluginDescription(project: Project) : PluginDescription {
   data class LoadInfo(@Input val name: String, @Input val bootstrap: Boolean = false)
 
   @Nested
-  val permissions: NamedDomainObjectContainer<Permission> = project.container(Permission::class.java)
+  val permissions: NamedDomainObjectContainer<BukkitPluginDescription.Permission> = project.container(BukkitPluginDescription.Permission::class.java)
 
   // For Groovy DSL
   fun permissions(closure: Closure<Unit>) = permissions.configure(closure)
-
-  data class Permission(@Input @JsonIgnore val name: String) {
-    @Input
-    @Optional
-    var description: String? = null
-    @Input
-    @Optional
-    var default: Default? = null
-    var children: List<String>?
-      @Internal @JsonIgnore get() = childrenMap?.filterValues { it }?.keys?.toList()
-      set(value) {
-        childrenMap = value?.associateWith { true }
-      }
-    @Input
-    @Optional
-    @JsonProperty("children")
-    var childrenMap: Map<String, Boolean>? = null
-
-    enum class Default {
-      @JsonProperty("true")
-      TRUE,
-      @JsonProperty("false")
-      FALSE,
-      @JsonProperty("op")
-      OP,
-      @JsonProperty("!op")
-      NOT_OP
-    }
-  }
 
 }
