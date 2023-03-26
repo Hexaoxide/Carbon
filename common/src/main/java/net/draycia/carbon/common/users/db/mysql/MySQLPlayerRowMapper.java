@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.util.Strings;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -34,17 +35,17 @@ public class MySQLPlayerRowMapper implements RowMapper<CarbonPlayerCommon> {
 
     @Override
     public CarbonPlayerCommon map(final ResultSet rs, final StatementContext ctx) throws SQLException {
-        final String id = rs.getString("id");
-        final @Nullable String lastWhisperTarget = rs.getString("lastwhispertarget");
-        final @Nullable String whisperReplyTarget = rs.getString("whisperreplytarget");
-        final @Nullable @Subst("carbon:global") String selectedChannel = rs.getString("selectedchannel");
-        final @Nullable String displayName = rs.getString("displayname");
+        final String id = Strings.trim(rs.getString("id"));
+        final @Nullable String lastWhisperTarget = Strings.trim(rs.getString("lastwhispertarget"));
+        final @Nullable String whisperReplyTarget = Strings.trim(rs.getString("whisperreplytarget"));
+        final @Nullable @Subst("carbon:global") String selectedChannel = Strings.trim(rs.getString("selectedchannel"));
+        final @Nullable String displayName = Strings.trim(rs.getString("displayname"));
 
         return new CarbonPlayerCommon(
             rs.getBoolean("muted"),
             rs.getBoolean("deafened"),
             selectedChannel == null ? null : Key.key(selectedChannel),
-            rs.getString("username"),
+            Strings.trim(rs.getString("username")),
             UUID.fromString(id),
             displayName == null ? null : GsonComponentSerializer.gson().deserialize(displayName),
             lastWhisperTarget == null ? null : UUID.fromString(lastWhisperTarget),

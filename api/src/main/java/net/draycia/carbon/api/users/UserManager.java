@@ -37,6 +37,7 @@ public interface UserManager<C extends CarbonPlayer> {
     /**
      * Loads and returns a {@link CarbonPlayer} with the given {@link UUID}.
      *
+     * @deprecated use {@link #user(UUID)} instead
      * @param uuid the player's uuid
      * @return the result
      * @since 2.0.0
@@ -55,6 +56,6 @@ public interface UserManager<C extends CarbonPlayer> {
      * @return the player
      * @since 2.1.0
      */
-    CompletableFuture<C> user(final UUID uuid);
+    CompletableFuture<C> user(UUID uuid);
 
 }
