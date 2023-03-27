@@ -1,5 +1,3 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-
 plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
@@ -20,7 +18,6 @@ dependencies {
 
   // Misc
   implementation(libs.bstatsBukkit)
-  implementation(libs.libbyBukkit)
 
   // Plugins
   compileOnly("me.clip:placeholderapi:2.10.9") // TODO: move this to libs.versions.yml
@@ -45,6 +42,7 @@ tasks {
 paper {
   name = rootProject.name
   version = project.version as String
+  loader = "net.draycia.carbon.paper.CarbonPaperLoader"
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
   apiVersion = "1.19"
   author = "Draycia"
@@ -70,8 +68,6 @@ bukkit {
 
 carbonPermission.permissions.get().forEach {
   setOf(bukkit.permissions, paper.permissions).forEach { container ->
-    @Suppress("UNCHECKED_CAST")
-    container as NamedDomainObjectContainer<BukkitPluginDescription.Permission>
     container.register(it.string) {
       description = it.description
       childrenMap = it.children

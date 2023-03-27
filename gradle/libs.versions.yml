@@ -51,7 +51,6 @@ versions:
   rabbitmq: 5.13.1
   nats: 2.12.0
   pluginYml: 0.5.3
-  libby: 1.1.5
 
 dependencies:
   adventureBom:
@@ -327,10 +326,5 @@ dependencies:
     group: com.discordsrv
     name: discordsrv
     version: { ref: discordsrv }
-
-  libbyBukkit:
-    group: net.byteflux
-    name: libby-bukkit
-    version: { ref: libby }
 
 bundles:

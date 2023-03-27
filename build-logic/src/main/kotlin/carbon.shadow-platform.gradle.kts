@@ -12,6 +12,7 @@ tasks {
   shadowJar {
     archiveClassifier.set(null as String?)
     configureShadowJar()
+    mergeServiceFiles()
   }
 }
 
