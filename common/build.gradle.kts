@@ -20,7 +20,7 @@ dependencies {
   }
 
   // Other
-  api(libs.guice){
+  api(libs.guice) {
     exclude("com.google.guava")
   }
   api(libs.assistedInject)
