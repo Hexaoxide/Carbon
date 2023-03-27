@@ -66,6 +66,10 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         for (final var recipient : CarbonChatProvider.carbonChat().server().players()) {
             if (recipient.hasPermission(messagePacket.channelPermission() + ".see")) {
                 if (recipient.hasPermission("carbon.crossserver")) {
+                    if (recipient.ignoring(messagePacket.userId())) {
+                        continue;
+                    }
+
                     recipient.sendMessage(component);
                 }
             }
