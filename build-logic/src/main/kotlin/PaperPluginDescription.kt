@@ -45,6 +45,8 @@ class PaperPluginDescription(project: Project) : PluginDescription {
   @Input
   var main: String? = null
   @Input
+  var loader: String? = null
+  @Input
   @Optional
   var description: String? = null
   @Input

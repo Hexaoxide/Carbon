@@ -31,12 +31,12 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("redis.clients.jedis")
   relocateDependency("ninja.egg82.messenger")
   relocateDependency("org.antlr")
-  //relocateDependency("com.github.luben")
-  //relocateDependency("io.netty")
   relocateDependency("io.nats")
   relocateDependency("com.rabbitmq")
   relocateDependency("com.electronwill")
-  relocateDependency("net.byteflux")
+  relocateDependency("net.i2p.crypto")
+  relocateDependency("org.apache.commons.pool2")
+  relocateDependency("org.flywaydb")
 }
 
 fun ShadowJar.relocateCloud() {
@@ -53,15 +53,16 @@ fun ShadowJar.configureShadowJar() {
   //minimize()
   standardRelocations()
   dependencies {
-    // not needed at runtime
+    // not needed or provided by platform at runtime
     exclude(dependency("com.google.code.findbugs:jsr305"))
     exclude(dependency("com.google.errorprone:error_prone_annotations"))
-    exclude(dependency("com.google.guava:guava"))
+    exclude { it.moduleGroup == "com.google.guava" }
     exclude(dependency("com.google.j2objc:j2objc-annotations"))
     exclude(dependency("io.netty:netty-all"))
     exclude(dependency("io.netty:netty-buffer"))
     exclude(dependency("it.unimi.dsi:fastutil"))
     exclude(dependency("org.checkerframework:checker-qual"))
+    exclude(dependency("org.slf4j:slf4j-api"))
   }
 }
 
