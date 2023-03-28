@@ -50,7 +50,7 @@ public final class PlayerUtils {
         final C player,
         final Logger logger
     ) {
-        final var saveResult = userManager.save(player);
+        final var saveResult = userManager.saveIfNeeded(player);
         saveResult.exceptionally(thr -> {
             logger.warn("Exception saving data for player {} with UUID {}", player.username(), player.uuid(), thr);
             return null;

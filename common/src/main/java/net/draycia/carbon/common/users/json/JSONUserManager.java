@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.google.inject.MembersInjector;
+import com.google.inject.Provider;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -33,6 +34,8 @@ import java.util.concurrent.Executors;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.DataDirectory;
+import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import net.draycia.carbon.common.users.CachingUserManager;
@@ -59,13 +62,17 @@ public class JSONUserManager extends CachingUserManager {
         final ProfileResolver profileResolver,
         final MembersInjector<CarbonPlayerCommon> playerInjector,
         final ChatChannelSerializerGson channelSerializer,
-        final UUIDSerializerGson uuidSerializer
+        final UUIDSerializerGson uuidSerializer,
+        final Provider<MessagingManager> messagingManager,
+        final PacketFactory packetFactory
     ) throws IOException {
         super(
             logger,
             Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")),
             profileResolver,
-            playerInjector
+            playerInjector,
+            messagingManager,
+            packetFactory
         );
         this.userDirectory = dataDirectory.resolve("users");
 
@@ -117,9 +124,6 @@ public class JSONUserManager extends CachingUserManager {
 
     @Override
     public CompletableFuture<Void> save(final CarbonPlayerCommon player) {
-        if (!player.needsSave()) {
-            return CompletableFuture.completedFuture(null);
-        }
         return CompletableFuture.runAsync(() -> {
             final Path userFile = this.userFile(player.uuid());
 

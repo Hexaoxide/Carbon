@@ -20,8 +20,9 @@
 package net.draycia.carbon.common.messaging;
 
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -35,18 +36,20 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
-    final CarbonChannelRegistry channelRegistry;
+    private final UserManagerInternal<?> userManager;
 
-    CarbonChatPacketHandler(
-        final MessagingManager messagingManager,
-        final CarbonChannelRegistry channelRegistry
-    ) {
-        super(messagingManager.packetService());
-        this.channelRegistry = channelRegistry;
+    CarbonChatPacketHandler(final MessagingManager messagingManager, final UserManagerInternal<?> userManager) {
+        super(messagingManager.requirePacketService());
+        this.userManager = userManager;
     }
 
     @Override
     protected boolean handlePacket(final @NotNull Packet packet) {
+        if (packet instanceof PlayerStatePacket statePacket) {
+            this.userManager.stateMessageReceived(statePacket.type(), statePacket.playerId());
+            return true;
+        }
+
         if (!(packet instanceof ChatMessagePacket messagePacket)) {
             this.logger.info("Messaging packet received - Not a ChatMessagePacket.");
             return false;

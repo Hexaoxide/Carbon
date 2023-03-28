@@ -23,17 +23,20 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.CarbonShutdownEvent;
-import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
 import ninja.egg82.messenger.MessagingService;
@@ -52,24 +55,40 @@ import ninja.egg82.messenger.packets.server.PacketVersionPacket;
 import ninja.egg82.messenger.packets.server.PacketVersionRequestPacket;
 import ninja.egg82.messenger.packets.server.ShutdownPacket;
 import ninja.egg82.messenger.services.PacketService;
+import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
 @Singleton
+@DefaultQualifier(NonNull.class)
 public class MessagingManager {
 
     private static final byte protocolVersion = 0;
 
-    private final ScheduledExecutorService executorService;
-    private final PacketService packetService;
-    private MessagingService messagingService;
     private final CarbonChat carbonChat;
+    private final @MonotonicNonNull ScheduledExecutorService executorService;
+    private final @MonotonicNonNull PacketService packetService;
+    private @MonotonicNonNull MessagingService messagingService;
 
     @Inject
     public MessagingManager(
-        final CarbonChannelRegistry channelRegistry,
         final ConfigFactory configFactory,
-        final CarbonChat carbonChat
+        final CarbonChat carbonChat,
+        final Logger logger,
+        final UserManagerInternal<?> userManager
     ) {
+        if (!configFactory.primaryConfig().messagingSettings().enabled()) {
+            logger.info("Messaging services disabled in config. Cross-server will not work without this!");
+            this.messagingService = EMPTY_MESSAGING_SERVICE;
+            this.packetService = null;
+            this.carbonChat = carbonChat;
+            this.executorService = null;
+            return;
+        }
+
         PacketManager.register(MultiPacket.class, MultiPacket::new);
         PacketManager.register(KeepAlivePacket.class, KeepAlivePacket::new);
         PacketManager.register(InitializationPacket.class, InitializationPacket::new);
@@ -78,6 +97,7 @@ public class MessagingManager {
         PacketManager.register(ShutdownPacket.class, ShutdownPacket::new);
         //PacketManager.register(HeartbeatPacket.class, HeartbeatPacket::new);
         PacketManager.register(ChatMessagePacket.class, ChatMessagePacket::new);
+        PacketManager.register(PlayerStatePacket.class, PlayerStatePacket::new);
 
         this.packetService = new PacketService(4, false, protocolVersion);
         this.executorService = new ExceptionLoggingScheduledThreadPoolExecutor(10,
@@ -86,7 +106,7 @@ public class MessagingManager {
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
         handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), this.packetService, handlerImpl));
-        handlerImpl.addHandler(new CarbonChatPacketHandler(this, channelRegistry));
+        handlerImpl.addHandler(new CarbonChatPacketHandler(this, userManager));
 
         try {
             this.initMessagingService(this.packetService, handlerImpl, new File("/"),
@@ -120,18 +140,28 @@ public class MessagingManager {
         });
     }
 
-    public PacketService packetService() {
+    public @Nullable PacketService packetService() {
         return this.packetService;
     }
 
-    private void onShutdown() {
-        try {
-            this.executorService.awaitTermination(15, TimeUnit.SECONDS);
-        } catch (final InterruptedException ignored) {
+    public PacketService requirePacketService() {
+        return Objects.requireNonNull(this.packetService, "packetService");
+    }
 
+    public void withPacketService(final Consumer<PacketService> consumer) {
+        if (this.packetService != null) {
+            consumer.accept(this.packetService);
         }
-        this.packetService.flushQueue();
-        this.packetService.shutdown();
+    }
+
+    private void onShutdown() {
+        if (this.executorService != null) {
+            ConcurrentUtil.shutdownExecutor(this.executorService, TimeUnit.SECONDS, 10);
+        }
+        if (this.packetService != null) {
+            this.packetService.flushQueue();
+            this.packetService.shutdown();
+        }
         this.messagingService.close();
     }
 
@@ -143,12 +173,6 @@ public class MessagingManager {
     ) throws IOException, TimeoutException, InterruptedException {
         final String name = "engine1";
         final String channelName = "carbon-data";
-
-        if (!messagingSettings.enabled()) {
-            this.carbonChat.logger().info("Messaging services disabled in config. Cross-server will not work without this!");
-            this.messagingService = EMPTY_MESSAGING_SERVICE;
-            return;
-        }
 
         switch (messagingSettings.brokerType()) {
             case RABBITMQ -> {
@@ -189,7 +213,8 @@ public class MessagingManager {
 
                 this.messagingService = builder.build();
             }
-            case NONE -> throw new IllegalStateException("MessagingManager initialized with no messaging broker selected!");
+            case NONE ->
+                throw new IllegalStateException("MessagingManager initialized with no messaging broker selected!");
         }
     }
 

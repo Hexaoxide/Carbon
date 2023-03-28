@@ -17,29 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users;
+package net.draycia.carbon.common.messaging.packets;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface UserManagerInternal<C extends CarbonPlayer> extends UserManager<C> {
+public interface PacketFactory {
 
-    void shutdown();
-
-    CompletableFuture<Void> saveIfNeeded(C player);
-
-    CompletableFuture<Void> save(C player);
-
-    CompletableFuture<Void> loggedOut(UUID uuid);
-
-    void stateMessageReceived(PlayerStatePacket.Type type, UUID playerId);
-
-    void cleanup();
+    PlayerStatePacket playerStatePacket(UUID playerId, PlayerStatePacket.Type type);
 
 }
