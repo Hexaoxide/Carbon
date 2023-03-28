@@ -20,11 +20,9 @@
 package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
-import java.util.Optional;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.paper.PaperUserManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -58,13 +56,7 @@ public class PaperPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
-        this.userManager.user(event.getPlayer().getUniqueId()).thenAccept(result -> {
-            Optional.ofNullable(result.displayName()).ifPresent(displayName -> {
-                final Player player = event.getPlayer();
-                player.displayName(displayName);
-                player.playerListName(displayName);
-            });
-        }).exceptionally(thr -> {
+        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(thr -> {
             this.logger.warn("Exception handling player join", thr);
             return null;
         });
