@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
@@ -80,16 +81,16 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         try {
             switch (type) {
                 case LOGOUT_INITIATED -> {
-                    final CompletableFuture<?> future = new CompletableFuture<>().orTimeout(5, TimeUnit.SECONDS);
+                    final CompletableFuture<?> future = new CompletableFuture<>().orTimeout(10, TimeUnit.SECONDS);
                     this.messageFutures.put(playerId, future);
                     this.cache.remove(playerId);
                 }
                 case SAVE_COMPLETED -> {
                     final CompletableFuture<?> removed = this.messageFutures.remove(playerId);
+                    this.cache.remove(playerId);
                     if (removed != null) {
                         removed.complete(null);
                     }
-                    this.cache.remove(playerId);
                 }
                 case NO_SAVE_NEEDED -> {
                     final CompletableFuture<?> removed = this.messageFutures.remove(playerId);
@@ -98,6 +99,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                     }
                 }
             }
+            this.logger.info("State message handled: {} {}", type, playerId);
         } finally {
             this.cacheLock.unlock();
         }
@@ -124,20 +126,30 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
         this.cacheLock.lock();
         try {
+            final Supplier<CompletableFuture<CarbonPlayerCommon>> computeSupplier = () -> {
+                this.cacheLock.lock();
+                try {
+                    return this.cache.computeIfAbsent(uuid, $ -> {
+                        final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
+                            final CarbonPlayerCommon player = this.loadOrCreate(uuid);
+                            this.playerInjector.injectMembers(player);
+                            player.registerPropertyUpdateListener(() -> this.save(player));
+                            return player;
+                        }, this.executor);
+                        this.attachPostLoad(uuid, future);
+                        return future;
+                    });
+                } finally {
+                    this.cacheLock.unlock();
+                }
+            };
+
             final @Nullable CompletableFuture<?> messageFuture = this.messageFutures.get(uuid);
             if (messageFuture != null) {
-                return messageFuture.thenCompose($ -> this.user(uuid));
+                return messageFuture.thenCompose($ -> computeSupplier.get());
             }
 
-            return this.cache.computeIfAbsent(uuid, $ -> {
-                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
-                    final CarbonPlayerCommon player = this.loadOrCreate(uuid);
-                    this.playerInjector.injectMembers(player);
-                    return player;
-                }, this.executor);
-                this.attachPostLoad(uuid, future);
-                return future;
-            });
+            return computeSupplier.get();
         } finally {
             this.cacheLock.unlock();
         }

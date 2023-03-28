@@ -46,6 +46,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
     @Override
     protected boolean handlePacket(final @NotNull Packet packet) {
         if (packet instanceof PlayerStatePacket statePacket) {
+            this.logger.info("Player state packet received: {} {}", statePacket.type(), statePacket.playerId());
             this.userManager.stateMessageReceived(statePacket.type(), statePacket.playerId());
             return true;
         }
