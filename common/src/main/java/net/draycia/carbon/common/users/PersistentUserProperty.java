@@ -39,7 +39,7 @@ import org.jetbrains.annotations.ApiStatus;
 public final class PersistentUserProperty<T> {
 
     private @Nullable T value;
-    private boolean changed = false;
+    private volatile boolean changed = false;
     private final List<Runnable> updateListeners = new CopyOnWriteArrayList<>();
 
     public PersistentUserProperty(final @Nullable T value) {
@@ -65,6 +65,10 @@ public final class PersistentUserProperty<T> {
         for (final Runnable updateListener : this.updateListeners) {
             updateListener.run();
         }
+    }
+
+    public void saved() {
+        this.changed = false;
     }
 
     public void registerUpdateListener(final Runnable runnable) {

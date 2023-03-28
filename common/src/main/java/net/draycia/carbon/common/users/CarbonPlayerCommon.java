@@ -421,4 +421,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return this.uuid.hashCode();
     }
 
+    public void saved() {
+        this.properties().forEach(PersistentUserProperty::saved);
+    }
 }

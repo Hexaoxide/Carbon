@@ -21,7 +21,6 @@ package net.draycia.carbon.common.users;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -53,8 +52,8 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
     }
 
     @Override
-    public void stateMessageReceived(final PlayerStatePacket.Type type, final UUID playerId) {
-        this.backingManager.stateMessageReceived(type, playerId);
+    public void saveCompleteMessageReceived(final UUID playerId) {
+        this.backingManager.saveCompleteMessageReceived(playerId);
     }
 
     @Override

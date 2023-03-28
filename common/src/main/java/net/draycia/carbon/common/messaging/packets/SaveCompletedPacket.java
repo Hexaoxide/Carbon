@@ -29,19 +29,17 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class PlayerStatePacket extends CarbonPacket {
+public final class SaveCompletedPacket extends CarbonPacket {
 
     private @MonotonicNonNull UUID player;
-    private @MonotonicNonNull Type type;
 
     @AssistedInject
-    public PlayerStatePacket(final CarbonChat carbonChat, final @Assisted UUID player, final @Assisted Type type) {
+    public SaveCompletedPacket(final CarbonChat carbonChat, final @Assisted UUID player) {
         super(carbonChat.serverId());
         this.player = player;
-        this.type = type;
     }
 
-    public PlayerStatePacket(final UUID sender, final ByteBuf data) {
+    public SaveCompletedPacket(final UUID sender, final ByteBuf data) {
         super(sender);
         this.read(data);
     }
@@ -50,26 +48,14 @@ public final class PlayerStatePacket extends CarbonPacket {
         return this.player;
     }
 
-    public Type type() {
-        return this.type;
-    }
-
     @Override
     public void read(final ByteBuf buffer) {
-        this.type = Type.valueOf(this.readString(buffer));
         this.player = this.readUUID(buffer);
     }
 
     @Override
     public void write(final ByteBuf buffer) {
-        this.writeString(this.type.name(), buffer);
         this.writeUUID(this.player, buffer);
-    }
-
-    public enum Type {
-        LOGOUT_INITIATED,
-        SAVE_COMPLETED,
-        NO_SAVE_NEEDED
     }
 
 }

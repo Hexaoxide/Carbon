@@ -30,11 +30,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
-import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
@@ -53,7 +51,6 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     private final PacketFactory packetFactory;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
-    private final Map<UUID, CompletableFuture<?>> messageFutures;
 
     protected CachingUserManager(
         final Logger logger,
@@ -71,36 +68,15 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         this.packetFactory = packetFactory;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
-        this.messageFutures = new HashMap<>();
     }
 
     protected abstract CarbonPlayerCommon loadOrCreate(UUID uuid);
 
     @Override
-    public void stateMessageReceived(final PlayerStatePacket.Type type, final UUID playerId) {
+    public void saveCompleteMessageReceived(final UUID playerId) {
         this.cacheLock.lock();
         try {
-            switch (type) {
-                case LOGOUT_INITIATED -> {
-                    final CompletableFuture<?> future = new CompletableFuture<>().orTimeout(10, TimeUnit.SECONDS);
-                    this.messageFutures.put(playerId, future);
-                    this.cache.remove(playerId);
-                }
-                case SAVE_COMPLETED -> {
-                    final CompletableFuture<?> removed = this.messageFutures.remove(playerId);
-                    this.cache.remove(playerId);
-                    if (removed != null) {
-                        removed.complete(null);
-                    }
-                }
-                case NO_SAVE_NEEDED -> {
-                    final CompletableFuture<?> removed = this.messageFutures.remove(playerId);
-                    if (removed != null) {
-                        removed.complete(null);
-                    }
-                }
-            }
-            this.logger.info("State message handled: {} {}", type, playerId);
+            this.cache.remove(playerId);
         } finally {
             this.cacheLock.unlock();
         }
@@ -109,15 +85,12 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     @Override
     public CompletableFuture<Void> saveIfNeeded(final CarbonPlayerCommon player) {
         if (!player.needsSave()) {
-            this.messagingManager.get().withPacketService(packetService -> {
-                packetService.queuePacket(this.packetFactory.playerStatePacket(player.uuid(), PlayerStatePacket.Type.NO_SAVE_NEEDED));
-                packetService.flushQueue();
-            });
             return CompletableFuture.completedFuture(null);
         }
         return this.save(player).whenComplete(($, $$) -> {
+            player.saved();
             this.messagingManager.get().withPacketService(packetService -> {
-                packetService.queuePacket(this.packetFactory.playerStatePacket(player.uuid(), PlayerStatePacket.Type.SAVE_COMPLETED));
+                packetService.queuePacket(this.packetFactory.saveCompletedPacket(player.uuid()));
                 packetService.flushQueue();
             });
         });
@@ -127,32 +100,18 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
         this.cacheLock.lock();
         try {
-            final Supplier<CompletableFuture<CarbonPlayerCommon>> computeSupplier = () -> {
-                this.cacheLock.lock();
-                try {
-                    return this.cache.computeIfAbsent(uuid, $ -> {
-                        final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
-                            final CarbonPlayerCommon player = this.loadOrCreate(uuid);
-                            this.playerInjector.injectMembers(player);
-                            if (this instanceof DatabaseUserManager) {
-                                player.registerPropertyUpdateListener(() -> this.save(player));
-                            }
-                            return player;
-                        }, this.executor);
-                        this.attachPostLoad(uuid, future);
-                        return future;
-                    });
-                } finally {
-                    this.cacheLock.unlock();
-                }
-            };
-
-            final @Nullable CompletableFuture<?> messageFuture = this.messageFutures.get(uuid);
-            if (messageFuture != null) {
-                return messageFuture.thenCompose($ -> computeSupplier.get());
-            }
-
-            return computeSupplier.get();
+            return this.cache.computeIfAbsent(uuid, $ -> {
+                final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
+                    final CarbonPlayerCommon player = this.loadOrCreate(uuid);
+                    this.playerInjector.injectMembers(player);
+                    if (this instanceof DatabaseUserManager) {
+                        player.registerPropertyUpdateListener(() -> this.save(player));
+                    }
+                    return player;
+                }, this.executor);
+                this.attachPostLoad(uuid, future);
+                return future;
+            });
         } finally {
             this.cacheLock.unlock();
         }
@@ -179,10 +138,6 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     @Override
     public CompletableFuture<Void> loggedOut(final UUID uuid) {
-        this.messagingManager.get().withPacketService(packetService -> {
-            packetService.queuePacket(this.packetFactory.playerStatePacket(uuid, PlayerStatePacket.Type.LOGOUT_INITIATED));
-            packetService.flushQueue();
-        });
         this.cacheLock.lock();
         try {
             final @Nullable CompletableFuture<CarbonPlayerCommon> remove = this.cache.remove(uuid);

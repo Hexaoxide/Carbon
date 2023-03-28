@@ -21,7 +21,7 @@ package net.draycia.carbon.common.messaging;
 
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
-import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
+import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -45,9 +45,8 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
     @Override
     protected boolean handlePacket(final @NotNull Packet packet) {
-        if (packet instanceof PlayerStatePacket statePacket) {
-            this.logger.info("Player state packet received: {} {}", statePacket.type(), statePacket.playerId());
-            this.userManager.stateMessageReceived(statePacket.type(), statePacket.playerId());
+        if (packet instanceof SaveCompletedPacket statePacket) {
+            this.userManager.saveCompleteMessageReceived(statePacket.playerId());
             return true;
         }
 

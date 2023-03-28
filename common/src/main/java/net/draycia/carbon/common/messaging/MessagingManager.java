@@ -35,7 +35,7 @@ import net.draycia.carbon.api.events.CarbonShutdownEvent;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
-import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
+import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
@@ -97,7 +97,7 @@ public class MessagingManager {
         PacketManager.register(ShutdownPacket.class, ShutdownPacket::new);
         //PacketManager.register(HeartbeatPacket.class, HeartbeatPacket::new);
         PacketManager.register(ChatMessagePacket.class, ChatMessagePacket::new);
-        PacketManager.register(PlayerStatePacket.class, PlayerStatePacket::new);
+        PacketManager.register(SaveCompletedPacket.class, SaveCompletedPacket::new);
 
         this.packetService = new PacketService(4, false, protocolVersion);
         this.executorService = new ExceptionLoggingScheduledThreadPoolExecutor(10,

@@ -26,6 +26,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface PacketFactory {
 
-    PlayerStatePacket playerStatePacket(UUID playerId, PlayerStatePacket.Type type);
+    SaveCompletedPacket saveCompletedPacket(UUID playerId);
 
 }
