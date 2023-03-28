@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PlayerStatePacket;
+import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -133,7 +134,9 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                         final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
                             final CarbonPlayerCommon player = this.loadOrCreate(uuid);
                             this.playerInjector.injectMembers(player);
-                            player.registerPropertyUpdateListener(() -> this.save(player));
+                            if (this instanceof DatabaseUserManager) {
+                                player.registerPropertyUpdateListener(() -> this.save(player));
+                            }
                             return player;
                         }, this.executor);
                         this.attachPostLoad(uuid, future);
