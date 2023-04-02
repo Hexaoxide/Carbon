@@ -50,7 +50,11 @@ public interface UserManager<C extends CarbonPlayer> {
     }
 
     /**
-     * Loads and returns the CarbonPlayer with the corresponding uuid.
+     * Gets the {@link CarbonPlayer} for the provided player {@link UUID}, whether they are online or not.
+     *
+     * <p>Note that the returned user object/future is <i>not</i> guaranteed to be the same for subsequent calls.</p>
+     *
+     * <p>Because of this, the return value should <i>not</i> be cached, it should be queried each time it is needed. The implementation handles caching as is appropriate.</p>
      *
      * @param uuid the player's id
      * @return the player

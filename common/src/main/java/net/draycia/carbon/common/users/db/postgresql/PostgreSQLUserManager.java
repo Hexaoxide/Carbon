@@ -21,6 +21,7 @@ package net.draycia.carbon.common.users.db.postgresql;
 
 import com.google.inject.Inject;
 import com.google.inject.MembersInjector;
+import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Objects;
@@ -31,6 +32,8 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.DatabaseSettings;
+import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
@@ -61,14 +64,18 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
         final Jdbi jdbi,
         final Logger logger,
         final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector
+        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final Provider<MessagingManager> messagingManager,
+        final PacketFactory packetFactory
     ) {
         super(
             jdbi,
             new QueriesLocator(DBType.POSTGRESQL),
             logger,
             profileResolver,
-            playerInjector
+            playerInjector,
+            messagingManager,
+            packetFactory
         );
     }
 
@@ -134,18 +141,24 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
         private final Logger logger;
         private final ProfileResolver profileResolver;
         private final MembersInjector<CarbonPlayerCommon> playerInjector;
+        private final Provider<MessagingManager> messagingManager;
+        private final PacketFactory packetFactory;
 
         @Inject
         private Factory(
             final ConfigFactory configFactory,
             final Logger logger,
             final ProfileResolver profileResolver,
-            final MembersInjector<CarbonPlayerCommon> playerInjector
+            final MembersInjector<CarbonPlayerCommon> playerInjector,
+            final Provider<MessagingManager> messagingManager,
+            final PacketFactory packetFactory
         ) {
             this.databaseSettings = configFactory.primaryConfig().databaseSettings();
             this.logger = logger;
             this.profileResolver = profileResolver;
             this.playerInjector = playerInjector;
+            this.messagingManager = messagingManager;
+            this.packetFactory = packetFactory;
         }
 
         public PostgreSQLUserManager create() {
@@ -183,7 +196,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
                 .installPlugin(new SqlObjectPlugin())
                 .installPlugin(new PostgresPlugin());
 
-            return new PostgreSQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector);
+            return new PostgreSQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory);
         }
 
     }

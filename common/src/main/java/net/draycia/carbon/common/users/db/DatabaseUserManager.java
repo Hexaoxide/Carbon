@@ -20,9 +20,12 @@
 package net.draycia.carbon.common.users.db;
 
 import com.google.inject.MembersInjector;
+import com.google.inject.Provider;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
@@ -46,13 +49,17 @@ public abstract class DatabaseUserManager extends CachingUserManager {
         final QueriesLocator locator,
         final Logger logger,
         final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector
+        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final Provider<MessagingManager> messagingManager,
+        final PacketFactory packetFactory
     ) {
         super(
             logger,
             Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")),
             profileResolver,
-            playerInjector
+            playerInjector,
+            messagingManager,
+            packetFactory
         );
         this.jdbi = jdbi;
         this.locator = locator;
@@ -60,9 +67,6 @@ public abstract class DatabaseUserManager extends CachingUserManager {
 
     @Override
     public final CompletableFuture<Void> save(final CarbonPlayerCommon player) {
-        if (!player.needsSave()) {
-            return CompletableFuture.completedFuture(null);
-        }
         return CompletableFuture.runAsync(() -> this.jdbi.withHandle(handle -> {
             this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
                 .execute();

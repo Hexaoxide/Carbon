@@ -27,7 +27,9 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -37,7 +39,8 @@ import org.jetbrains.annotations.ApiStatus;
 public final class PersistentUserProperty<T> {
 
     private @Nullable T value;
-    private boolean changed = false;
+    private volatile boolean changed = false;
+    private final List<Runnable> updateListeners = new CopyOnWriteArrayList<>();
 
     public PersistentUserProperty(final @Nullable T value) {
         this.value = value;
@@ -59,6 +62,17 @@ public final class PersistentUserProperty<T> {
         }
         this.value = value;
         this.changed = true;
+        for (final Runnable updateListener : this.updateListeners) {
+            updateListener.run();
+        }
+    }
+
+    public void saved() {
+        this.changed = false;
+    }
+
+    public void registerUpdateListener(final Runnable runnable) {
+        this.updateListeners.add(runnable);
     }
 
     public T get() {

@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.users;
 
 import com.google.inject.MembersInjector;
+import com.google.inject.Provider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
+import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -43,6 +47,8 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected final ExecutorService executor;
     protected final ProfileResolver profileResolver;
     private final MembersInjector<CarbonPlayerCommon> playerInjector;
+    private final Provider<MessagingManager> messagingManager;
+    private final PacketFactory packetFactory;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
 
@@ -50,17 +56,45 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         final Logger logger,
         final ExecutorService executorService,
         final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector
+        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final Provider<MessagingManager> messagingManager,
+        final PacketFactory packetFactory
     ) {
         this.logger = logger;
         this.executor = executorService;
         this.profileResolver = profileResolver;
         this.playerInjector = playerInjector;
+        this.messagingManager = messagingManager;
+        this.packetFactory = packetFactory;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
     }
 
     protected abstract CarbonPlayerCommon loadOrCreate(UUID uuid);
+
+    @Override
+    public void saveCompleteMessageReceived(final UUID playerId) {
+        this.cacheLock.lock();
+        try {
+            this.cache.remove(playerId);
+        } finally {
+            this.cacheLock.unlock();
+        }
+    }
+
+    @Override
+    public CompletableFuture<Void> saveIfNeeded(final CarbonPlayerCommon player) {
+        if (!player.needsSave()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return this.save(player).whenComplete(($, $$) -> {
+            player.saved();
+            this.messagingManager.get().withPacketService(packetService -> {
+                packetService.queuePacket(this.packetFactory.saveCompletedPacket(player.uuid()));
+                packetService.flushQueue();
+            });
+        });
+    }
 
     @Override
     public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
@@ -70,6 +104,9 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
                     final CarbonPlayerCommon player = this.loadOrCreate(uuid);
                     this.playerInjector.injectMembers(player);
+                    if (this instanceof DatabaseUserManager) {
+                        player.registerPropertyUpdateListener(() -> this.save(player));
+                    }
                     return player;
                 }, this.executor);
                 this.attachPostLoad(uuid, future);
@@ -107,7 +144,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
             if (remove != null && remove.isDone()) { // don't need to save if it never finished loading
                 final @Nullable CarbonPlayerCommon join = remove.join();
                 if (join != null) {
-                    return this.save(join);
+                    return this.saveIfNeeded(join);
                 }
             }
             return CompletableFuture.completedFuture(null);
@@ -126,7 +163,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                     continue;
                 }
                 this.cache.remove(entry.getKey());
-                this.save(getNow).exceptionally(thr -> {
+                this.saveIfNeeded(getNow).exceptionally(thr -> {
                     this.logger.warn("Exception saving data for player {} with UUID {}", getNow.username(), getNow.uuid(), thr);
                     return null;
                 });

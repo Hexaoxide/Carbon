@@ -52,6 +52,16 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
     }
 
     @Override
+    public void saveCompleteMessageReceived(final UUID playerId) {
+        this.backingManager.saveCompleteMessageReceived(playerId);
+    }
+
+    @Override
+    public CompletableFuture<Void> saveIfNeeded(final C player) {
+        return this.backingManager.saveIfNeeded(player.carbonPlayerCommon());
+    }
+
+    @Override
     public CompletableFuture<Void> save(final C player) {
         return this.backingManager.save(player.carbonPlayerCommon());
     }

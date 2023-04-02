@@ -126,6 +126,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     public boolean needsSave() {
+        return this.properties().anyMatch(PersistentUserProperty::changed);
+    }
+
+    private Stream<PersistentUserProperty<?>> properties() {
         return Stream.of(
             this.muted,
             this.deafened,
@@ -134,7 +138,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             this.spying,
             this.ignoredPlayers,
             this.leftChannels
-        ).anyMatch(PersistentUserProperty::changed);
+        );
+    }
+
+    public void registerPropertyUpdateListener(final Runnable task) {
+        this.properties().forEach(prop -> prop.registerUpdateListener(task));
     }
 
     @Override
@@ -413,4 +421,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return this.uuid.hashCode();
     }
 
+    public void saved() {
+        this.properties().forEach(PersistentUserProperty::saved);
+    }
 }
