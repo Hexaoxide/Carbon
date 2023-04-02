@@ -62,11 +62,6 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
     }
 
     @Override
-    public CompletableFuture<Void> save(final C player) {
-        return this.backingManager.save(player.carbonPlayerCommon());
-    }
-
-    @Override
     public CompletableFuture<Void> loggedOut(final UUID uuid) {
         return this.backingManager.loggedOut(uuid);
     }

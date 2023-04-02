@@ -96,6 +96,8 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         });
     }
 
+    protected abstract CompletableFuture<Void> save(CarbonPlayerCommon player);
+
     @Override
     public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {
         this.cacheLock.lock();

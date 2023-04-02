@@ -33,8 +33,6 @@ public interface UserManagerInternal<C extends CarbonPlayer> extends UserManager
 
     CompletableFuture<Void> saveIfNeeded(C player);
 
-    CompletableFuture<Void> save(C player);
-
     CompletableFuture<Void> loggedOut(UUID uuid);
 
     void saveCompleteMessageReceived(UUID playerId);
