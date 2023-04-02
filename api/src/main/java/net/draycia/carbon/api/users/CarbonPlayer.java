@@ -101,6 +101,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the player's display name
      * @since 2.0.0
      */
+
     @Nullable Component displayName();
 
     /**

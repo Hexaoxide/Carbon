@@ -20,17 +20,22 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
@@ -49,9 +54,21 @@ public class PingHandler {
             }
 
             final String prefix = configFactory.primaryConfig().pings().prefix();
+            final @Nullable Component displayComponent = recipientPlayer.displayName();
+            final String displayName;
+
+            if (displayComponent != null) {
+                displayName = PlainTextComponentSerializer.plainText().serialize(displayComponent);
+            } else {
+                final @NotNull Optional<Component> audienceNickname = recipient.get(Identity.DISPLAY_NAME);
+
+                displayName = audienceNickname
+                    .map(component -> PlainTextComponentSerializer.plainText().serialize(component))
+                    .orElse(recipientPlayer.username()); // Hacky workaround
+            }
 
             return message.replaceText(TextReplacementConfig.builder()
-                .match(Pattern.compile(Pattern.quote(prefix + recipientPlayer.username()), Pattern.CASE_INSENSITIVE))
+                .match(Pattern.compile(String.format("%s\\B(@%s|@%s)\\b", prefix, recipientPlayer.username(), displayName), Pattern.CASE_INSENSITIVE))
                 .replacement(matchedText -> {
                     if (configFactory.primaryConfig().pings().playSound()) {
                         recipient.playSound(configFactory.primaryConfig().pings().sound());
