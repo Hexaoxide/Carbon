@@ -24,7 +24,6 @@ import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.Objects;
 import java.util.UUID;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
@@ -56,7 +55,6 @@ import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
-// TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
 public final class PostgreSQLUserManager extends DatabaseUserManager {
 
@@ -82,42 +80,33 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
     @Override
     protected CarbonPlayerCommon loadOrCreate(final UUID uuid) {
         return this.jdbi.withHandle(handle -> {
-            try {
-                final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
-                    .bind("id", uuid)
-                    .mapTo(CarbonPlayerCommon.class)
-                    .first();
-
-                handle.createQuery(this.locator.query("select-ignores"))
-                    .bind("id", uuid)
-                    .mapTo(UUID.class)
-                    .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true, true));
-
-                handle.createQuery(this.locator.query("select-leftchannels"))
-                    .bind("id", uuid)
-                    .mapTo(Key.class)
-                    .forEach(channel -> {
-                        final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
-                            .channelRegistry()
-                            .get(channel);
-                        if (chatChannel == null) {
-                            return;
-                        }
-                        carbonPlayerCommon.leaveChannel(chatChannel, true);
-                    });
-                return carbonPlayerCommon;
-            } catch (final IllegalStateException exception) {
-                // Player doesn't exist in the DB, create them!
-                final String name = Objects.requireNonNull(
-                    this.profileResolver.resolveName(uuid).join());
-
-                final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
-
-                this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
-                    .execute();
-
-                return player;
+            final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
+                .bind("id", uuid)
+                .mapTo(CarbonPlayerCommon.class)
+                .findOne()
+                .orElse(null);
+            if (carbonPlayerCommon == null) {
+                return new CarbonPlayerCommon(null, uuid);
             }
+
+            handle.createQuery(this.locator.query("select-ignores"))
+                .bind("id", uuid)
+                .mapTo(UUID.class)
+                .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true, true));
+
+            handle.createQuery(this.locator.query("select-leftchannels"))
+                .bind("id", uuid)
+                .mapTo(Key.class)
+                .forEach(channel -> {
+                    final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
+                        .channelRegistry()
+                        .get(channel);
+                    if (chatChannel == null) {
+                        return;
+                    }
+                    carbonPlayerCommon.leaveChannel(chatChannel, true);
+                });
+            return carbonPlayerCommon;
         });
     }
 
@@ -165,8 +154,8 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
             try {
                 Class.forName("org.postgresql.Driver");
                 PluginRegister.REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
-            } catch (final Exception exception) {
-                exception.printStackTrace();
+            } catch (final ClassNotFoundException exception) {
+                throw new RuntimeException("Could not find required class", exception);
             }
 
             final HikariConfig hikariConfig = new HikariConfig();

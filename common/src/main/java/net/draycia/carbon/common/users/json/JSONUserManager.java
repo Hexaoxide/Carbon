@@ -115,7 +115,7 @@ public class JSONUserManager extends CachingUserManager {
             }
         }
 
-        return new CarbonPlayerCommon(null /* Username will be resolved when requested */, uuid);
+        return new CarbonPlayerCommon(null, uuid);
     }
 
     private Path userFile(final UUID id) {

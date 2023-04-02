@@ -24,7 +24,6 @@ import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
@@ -54,7 +53,6 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
-// TODO: Dispatch updates using messaging system when users are modified
 @DefaultQualifier(NonNull.class)
 public final class MySQLUserManager extends DatabaseUserManager {
 
@@ -86,13 +84,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
                 .findOne();
 
             if (carbonPlayerCommon.isEmpty()) {
-                // Player doesn't exist in the DB, create them!
-                final String name = Objects.requireNonNull(this.profileResolver.resolveName(uuid).join());
-                final CarbonPlayerCommon player = new CarbonPlayerCommon(name, uuid);
-
-                this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();
-
-                return player;
+                return new CarbonPlayerCommon(null, uuid);
             }
 
             handle.createQuery(this.locator.query("select-ignores"))
@@ -157,11 +149,10 @@ public final class MySQLUserManager extends DatabaseUserManager {
 
         public MySQLUserManager create() {
             try {
-                //Class.forName("org.postgresql.Driver");
                 Class.forName("org.mariadb.jdbc.Driver");
                 Class.forName("com.mysql.cj.jdbc.Driver"); // Manually loading this might not be necessary
-            } catch (final Exception exception) {
-                exception.printStackTrace();
+            } catch (final ClassNotFoundException exception) {
+                throw new RuntimeException("Could not find required class", exception);
             }
 
             final HikariConfig hikariConfig = new HikariConfig();

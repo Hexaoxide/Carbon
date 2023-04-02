@@ -101,7 +101,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     public CarbonPlayerCommon(
-        final String username,
+        final @Nullable String username, // will be resolved when requested
         final UUID uuid
     ) {
         this.muted = PersistentUserProperty.of(false);
