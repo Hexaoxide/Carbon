@@ -45,43 +45,49 @@ public class PingHandler {
 
     private final Key muteKey = key("carbon", "pings");
     private final KeyedRenderer renderer;
+    private final ConfigFactory configFactory;
 
     @Inject
     public PingHandler(final CarbonEventHandler events, final ConfigFactory configFactory) {
+        this.configFactory = configFactory;
         this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
                 return message;
             }
 
-            final String prefix = configFactory.primaryConfig().pings().prefix();
-            final @Nullable Component displayComponent = recipientPlayer.displayName();
-            final String displayName;
-
-            if (displayComponent != null) {
-                displayName = PlainTextComponentSerializer.plainText().serialize(displayComponent);
-            } else {
-                final @NotNull Optional<Component> audienceNickname = recipient.get(Identity.DISPLAY_NAME);
-
-                displayName = audienceNickname
-                    .map(component -> PlainTextComponentSerializer.plainText().serialize(component))
-                    .orElse(recipientPlayer.username()); // Hacky workaround
-            }
-
-            return message.replaceText(TextReplacementConfig.builder()
-                .match(Pattern.compile(String.format("%s\\B(@%s|@%s)\\b", prefix, recipientPlayer.username(), displayName), Pattern.CASE_INSENSITIVE))
-                .replacement(matchedText -> {
-                    if (configFactory.primaryConfig().pings().playSound()) {
-                        recipient.playSound(configFactory.primaryConfig().pings().sound());
-                    }
-
-                    return Component.text(matchedText.content()).color(configFactory.primaryConfig().pings().highlightTextColor());
-                })
-                .build());
+            return this.convertPings(recipientPlayer, message);
         });
 
         events.subscribe(CarbonChatEvent.class, 1, false, event -> {
             event.renderers().add(0, this.renderer);
         });
+    }
+
+    public Component convertPings(final CarbonPlayer recipient, final Component message) {
+        final String prefix = this.configFactory.primaryConfig().pings().prefix();
+        final @Nullable Component displayComponent = recipient.displayName();
+        final String displayName;
+
+        if (displayComponent != null) {
+            displayName = PlainTextComponentSerializer.plainText().serialize(displayComponent);
+        } else {
+            final @NotNull Optional<Component> audienceNickname = recipient.get(Identity.DISPLAY_NAME);
+
+            displayName = audienceNickname
+                .map(component -> PlainTextComponentSerializer.plainText().serialize(component))
+                .orElse(recipient.username()); // Hacky workaround
+        }
+
+        return message.replaceText(TextReplacementConfig.builder()
+            .match(Pattern.compile(String.format("%s\\B(@%s|@%s)\\b", prefix, recipient.username(), displayName), Pattern.CASE_INSENSITIVE))
+            .replacement(matchedText -> {
+                if (this.configFactory.primaryConfig().pings().playSound()) {
+                    recipient.playSound(this.configFactory.primaryConfig().pings().sound());
+                }
+
+                return Component.text(matchedText.content()).color(this.configFactory.primaryConfig().pings().highlightTextColor());
+            })
+            .build());
     }
 
 }

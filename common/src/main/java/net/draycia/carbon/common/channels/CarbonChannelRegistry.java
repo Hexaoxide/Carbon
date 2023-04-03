@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -338,13 +337,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final @Nullable PacketService packetService = this.carbonChat.packetService();
 
         if (packetService != null) {
-            if (channel instanceof ConfigChatChannel configChatChannel) {
-                final @Nullable String format = configChatChannel.messageFormat(sender);
-
-                packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
-                    configChatChannel.permission(), channel.key(), sender.username(), format,
-                    Map.of("username", sender.username(), "message", plainMessage)));
-            }
+            packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
+                channel.permission(), channel.key(), sender.username(), renderedMessage));
         }
     }
 

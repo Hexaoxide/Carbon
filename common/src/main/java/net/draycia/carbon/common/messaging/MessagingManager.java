@@ -34,6 +34,7 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.CarbonShutdownEvent;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;
+import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.users.UserManagerInternal;
@@ -78,7 +79,8 @@ public class MessagingManager {
         final ConfigFactory configFactory,
         final CarbonChat carbonChat,
         final Logger logger,
-        final UserManagerInternal<?> userManager
+        final UserManagerInternal<?> userManager,
+        final PingHandler pingHandler
     ) {
         if (!configFactory.primaryConfig().messagingSettings().enabled()) {
             logger.info("Messaging services disabled in config. Cross-server will not work without this!");
@@ -106,7 +108,7 @@ public class MessagingManager {
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
         handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), this.packetService, handlerImpl));
-        handlerImpl.addHandler(new CarbonChatPacketHandler(this, userManager));
+        handlerImpl.addHandler(new CarbonChatPacketHandler(this, userManager, pingHandler));
 
         try {
             this.initMessagingService(this.packetService, handlerImpl, new File("/"),

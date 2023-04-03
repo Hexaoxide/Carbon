@@ -424,4 +424,5 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     public void saved() {
         this.properties().forEach(PersistentUserProperty::saved);
     }
+
 }

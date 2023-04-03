@@ -20,13 +20,11 @@
 package net.draycia.carbon.common.messaging;
 
 import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import ninja.egg82.messenger.handler.AbstractMessagingHandler;
 import ninja.egg82.messenger.packets.Packet;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,10 +35,16 @@ import org.jetbrains.annotations.NotNull;
 public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
     private final UserManagerInternal<?> userManager;
+    private final PingHandler pingHandler;
 
-    CarbonChatPacketHandler(final MessagingManager messagingManager, final UserManagerInternal<?> userManager) {
+    CarbonChatPacketHandler(
+        final MessagingManager messagingManager,
+        final UserManagerInternal<?> userManager,
+        final PingHandler pingHandler
+    ) {
         super(messagingManager.requirePacketService());
         this.userManager = userManager;
+        this.pingHandler = pingHandler;
     }
 
     @Override
@@ -51,20 +55,8 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         }
 
         if (!(packet instanceof ChatMessagePacket messagePacket)) {
-            this.logger.info("Messaging packet received - Not a ChatMessagePacket.");
             return false;
         }
-
-        this.logger.info("Messaging packet received");
-
-        final TagResolver.Builder tagResolver = TagResolver.builder();
-
-        for (final var entry : messagePacket.placeholders().entrySet()) {
-            tagResolver.tag(entry.getKey(), Tag.inserting(Component.text(entry.getValue())));
-        }
-
-        final var component = MiniMessage.miniMessage().deserialize(messagePacket.intermediary(),
-            tagResolver.build());
 
         for (final var recipient : CarbonChatProvider.carbonChat().server().players()) {
             if (recipient.hasPermission(messagePacket.channelPermission() + ".see")) {
@@ -73,7 +65,9 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
                         continue;
                     }
 
-                    recipient.sendMessage(component);
+                    final Component messageWithPings = this.pingHandler.convertPings(recipient, messagePacket.message());
+
+                    recipient.sendMessage(messageWithPings);
                 }
             }
         }

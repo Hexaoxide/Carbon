@@ -20,9 +20,9 @@
 package net.draycia.carbon.common.messaging.packets;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import ninja.egg82.messenger.utils.UUIDUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,8 +33,7 @@ public final class ChatMessagePacket extends CarbonPacket {
     private String channelPermission;
     private Key channelKey;
     private String username;
-    private String intermediary;
-    private Map<String, String> placeholders;
+    private Component message;
 
     public UUID userId() {
         return this.userId;
@@ -52,12 +51,8 @@ public final class ChatMessagePacket extends CarbonPacket {
         return this.username;
     }
 
-    public String intermediary() {
-        return this.intermediary;
-    }
-
-    public Map<String, String> placeholders() {
-        return this.placeholders;
+    public Component message() {
+        return this.message;
     }
 
     public ChatMessagePacket(final @NotNull UUID sender, final @NotNull ByteBuf data) {
@@ -75,16 +70,14 @@ public final class ChatMessagePacket extends CarbonPacket {
         final String channelPermission,
         final Key channelKey,
         final String username,
-        final String intermediary,
-        final Map<String, String> placeholders
+        final Component message
     ) {
         super(serverId);
         this.userId = userId;
         this.channelPermission = channelPermission;
         this.channelKey = channelKey;
         this.username = username;
-        this.intermediary = intermediary;
-        this.placeholders = placeholders;
+        this.message = message;
     }
 
     @Override
@@ -93,8 +86,7 @@ public final class ChatMessagePacket extends CarbonPacket {
         this.channelPermission = this.readString(buffer);
         this.channelKey = this.readKey(buffer);
         this.username = this.readString(buffer);
-        this.intermediary = this.readString(buffer);
-        this.placeholders = this.readStringMap(buffer);
+        this.message = this.readComponent(buffer);
     }
 
     @Override
@@ -103,8 +95,7 @@ public final class ChatMessagePacket extends CarbonPacket {
         this.writeString(this.channelPermission, buffer);
         this.writeKey(this.channelKey, buffer);
         this.writeString(this.username, buffer);
-        this.writeString(this.intermediary, buffer);
-        this.writeStringMap(this.placeholders, buffer);
+        this.writeComponent(this.message, buffer);
     }
 
 }
