@@ -79,7 +79,7 @@ public class PingHandler {
         }
 
         return message.replaceText(TextReplacementConfig.builder()
-            .match(Pattern.compile(String.format("%s\\B(@%s|@%s)\\b", prefix, recipient.username(), displayName), Pattern.CASE_INSENSITIVE))
+            .match(Pattern.compile(String.format("\\B(@%s|@%s)\\b", recipient.username(), displayName), Pattern.CASE_INSENSITIVE))
             .replacement(matchedText -> {
                 if (this.configFactory.primaryConfig().pings().playSound()) {
                     recipient.playSound(this.configFactory.primaryConfig().pings().sound());
