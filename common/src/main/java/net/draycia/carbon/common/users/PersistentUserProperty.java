@@ -30,6 +30,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -38,12 +39,12 @@ import org.jetbrains.annotations.ApiStatus;
 @DefaultQualifier(NonNull.class)
 public final class PersistentUserProperty<T> {
 
-    private @Nullable T value;
-    private volatile boolean changed = false;
+    private final AtomicReference<@Nullable T> valueReference;
     private final List<Runnable> updateListeners = new CopyOnWriteArrayList<>();
+    private volatile boolean changed = false;
 
     public PersistentUserProperty(final @Nullable T value) {
-        this.value = value;
+        this.valueReference = new AtomicReference<>(value);
     }
 
     /**
@@ -53,14 +54,14 @@ public final class PersistentUserProperty<T> {
      */
     @ApiStatus.Internal
     public void internalSet(final @Nullable T value) {
-        this.value = value;
+        this.valueReference.set(value);
     }
 
     public void set(final @Nullable T value) {
-        if (Objects.equals(value, this.value)) {
+        final @Nullable T old = this.valueReference.getAndSet(value);
+        if (Objects.equals(value, old)) {
             return;
         }
-        this.value = value;
         this.changed = true;
         for (final Runnable updateListener : this.updateListeners) {
             updateListener.run();
@@ -76,15 +77,15 @@ public final class PersistentUserProperty<T> {
     }
 
     public T get() {
-        return Objects.requireNonNull(this.value, "value required but not present");
+        return Objects.requireNonNull(this.valueReference.get(), "value required but not present");
     }
 
     public boolean hasValue() {
-        return this.value != null;
+        return this.valueReference.get() != null;
     }
 
     public @Nullable T orNull() {
-        return this.value;
+        return this.valueReference.get();
     }
 
     public boolean changed() {
