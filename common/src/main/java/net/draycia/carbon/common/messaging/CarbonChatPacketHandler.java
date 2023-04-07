@@ -72,6 +72,8 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             }
         }
 
+        CarbonChatProvider.carbonChat().server().console().sendMessage(Component.text("[Cross-Server] ").append(messagePacket.message()));
+
         return true;
     }
 

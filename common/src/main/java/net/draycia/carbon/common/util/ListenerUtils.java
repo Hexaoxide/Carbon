@@ -24,7 +24,6 @@ import java.util.List;
 import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.IgnoreHandler;
 import net.draycia.carbon.common.listeners.ItemLinkHandler;
-import net.draycia.carbon.common.listeners.MessagingHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.listeners.PingHandler;
 
@@ -35,7 +34,7 @@ public final class ListenerUtils {
     }
 
     public static final List<Class<?>> LISTENER_CLASSES = List.of(DeafenHandler.class, IgnoreHandler.class,
-        ItemLinkHandler.class, MessagingHandler.class, MuteHandler.class, PingHandler.class);
+        ItemLinkHandler.class, MuteHandler.class, PingHandler.class);
 
     public static void registerCommonListeners(final Injector injector) {
         for (final var listenerClass : LISTENER_CLASSES) {

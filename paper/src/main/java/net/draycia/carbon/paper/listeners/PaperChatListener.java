@@ -30,6 +30,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
@@ -38,6 +39,7 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.event.EventSubscriber;
+import ninja.egg82.messenger.services.PacketService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -136,6 +138,19 @@ public final class PaperChatListener implements Listener {
 
             return renderedMessage;
         });
+
+        Component networkMessage = chatEvent.message();
+
+        for (final var renderer : chatEvent.renderers()) {
+            networkMessage = renderer.render(sender, sender, networkMessage, event.originalMessage());
+        }
+
+        final @Nullable PacketService packetService = this.carbonChat.packetService();
+
+        if (packetService != null) {
+            packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
+                channel.permission(), channel.key(), sender.username(), networkMessage));
+        }
     }
 
 }

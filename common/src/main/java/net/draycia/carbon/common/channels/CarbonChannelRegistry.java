@@ -330,6 +330,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
         }
 
+        // TODO: Fix this, messages aren't rendered per person here :(
         for (final Audience recipient : chatEvent.recipients()) {
             recipient.sendMessage(renderedMessage);
         }
