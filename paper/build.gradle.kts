@@ -20,7 +20,8 @@ dependencies {
   implementation(libs.bstatsBukkit)
 
   // Plugins
-  compileOnly("me.clip:placeholderapi:2.10.9") // TODO: move this to libs.versions.yml
+  compileOnly(libs.placeholderapi)
+  compileOnly(libs.miniplaceholders)
   compileOnly(libs.essentialsXDiscord)
   compileOnly(libs.discordsrv)
 }
@@ -54,6 +55,7 @@ paper {
   dependencies += PaperPluginDescription.Dependency("PlaceholderAPI", false)
   dependencies += PaperPluginDescription.Dependency("EssentialsDiscord", false)
   dependencies += PaperPluginDescription.Dependency("DiscordSRV", false)
+  dependencies += PaperPluginDescription.Dependency("MiniPlaceholders", false)
   website = GITHUB_REPO_URL
 }
 

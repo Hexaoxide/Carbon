@@ -21,6 +21,7 @@ package net.draycia.carbon.paper.messages;
 
 import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -49,6 +50,8 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
         }
         return null;
     });
+
+    private final Supplier<Boolean> miniPlaceholdersAvailable = Suppliers.memoize(CarbonChatPaper::miniPlaceholdersLoaded);
 
     private final MiniMessage miniMessage;
     private final ConfigFactory configFactory;
@@ -82,24 +85,40 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
                 entry.getValue());
         }
 
-        final Component message;
-
-        if (receiver instanceof SourcedAudience sourced && this.parser.get() != null) {
-            if (sourced.sender() instanceof CarbonPlayer sender && sender.online()) {
-                if (sourced.recipient() instanceof CarbonPlayer recipient && recipient.online()) {
-                    message = this.parser.get().parseRelational(Bukkit.getPlayer(sender.uuid()),
-                        Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, tagResolver.build());
-                } else {
-                    message = this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, tagResolver.build());
-                }
-            } else {
-                message = this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
-            }
-        } else {
-            message = this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        if (this.miniPlaceholdersAvailable.get()) {
+            tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
         }
 
-        return message;
+        if (!(receiver instanceof SourcedAudience sourced)) {
+            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        }
+
+        if (!(sourced.sender() instanceof CarbonPlayer sender) || sender.online()) {
+            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        }
+
+        if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
+            if (this.miniPlaceholdersAvailable.get()) {
+                tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(Bukkit.getPlayer(sender.uuid())));
+            }
+            if (this.parser.get() != null) {
+                return this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, tagResolver.build());
+            }
+            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        }
+
+        if (this.miniPlaceholdersAvailable.get()) {
+            tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
+                Bukkit.getPlayer(sender.uuid()),
+                Bukkit.getPlayer(recipient.uuid())
+            ));
+        }
+        if (this.parser.get() != null) {
+            return this.parser.get().parseRelational(Bukkit.getPlayer(sender.uuid()),
+                Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, tagResolver.build());
+        }
+
+        return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
     }
 
 }

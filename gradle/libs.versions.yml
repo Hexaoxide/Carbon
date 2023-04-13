@@ -37,6 +37,8 @@ versions:
   luckPermsApi: 5.3
   essentialsx: 2.19.3
   discordsrv: 1.26.0
+  placeholderapi: 2.10.9
+  miniplaceholders: 2.0.0
   jdbi: 3.34.0
   hikari: 5.0.1
   mysql: 8.0.31
@@ -326,5 +328,14 @@ dependencies:
     group: com.discordsrv
     name: discordsrv
     version: { ref: discordsrv }
+
+  placeholderapi:
+    group: me.clip
+    name: placeholderapi
+    version: { ref: placeholderapi }
+  miniplaceholders:
+    group: io.github.miniplaceholders
+    name: miniplaceholders-api
+    version: { ref: miniplaceholders }
 
 bundles:
