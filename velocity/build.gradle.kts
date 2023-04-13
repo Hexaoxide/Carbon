@@ -22,6 +22,8 @@ dependencies {
   implementation(libs.cloudVelocity)
 
   velocityRun("com.velocitypowered", "velocity-proxy", libs.versions.velocityApi.get())
+
+  compileOnly(libs.miniplaceholders)
 }
 
 tasks {

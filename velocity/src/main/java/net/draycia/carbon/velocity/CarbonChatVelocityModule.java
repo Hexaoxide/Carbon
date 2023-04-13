@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,23 +27,28 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.util.Component;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
+import net.draycia.carbon.velocity.users.VelocityProfileResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -51,36 +56,31 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatVelocityModule extends AbstractModule {
 
-    private final Logger logger;
-    private final Path dataDirectory;
+    private final Logger logger = LogManager.getLogger("carbonchat");
     private final PluginContainer pluginContainer;
     private final ProxyServer proxyServer;
-    private final CarbonChatVelocity carbonChatVelocity;
+    private final Path dataDirectory;
 
     CarbonChatVelocityModule(
-        final Logger logger,
-        final Path dataDirectory,
         final PluginContainer pluginContainer,
         final ProxyServer proxyServer,
-        final CarbonChatVelocity carbonChatVelocity
+        final Path dataDirectory
     ) {
-        this.logger = logger;
-        this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
         this.proxyServer = proxyServer;
-        this.carbonChatVelocity = carbonChatVelocity;
+        this.dataDirectory = dataDirectory;
     }
 
     @Provides
     @Singleton
-    public CommandManager<Commander> createCommandManager() {
+    public CommandManager<Commander> createCommandManager(final UserManager<?> userManager) {
         final VelocityCommandManager<Commander> commandManager = new VelocityCommandManager<>(
             this.pluginContainer,
             this.proxyServer,
             AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
             commandSender -> {
                 if (commandSender instanceof Player player) {
-                    return new VelocityPlayerCommander(this.carbonChatVelocity, player);
+                    return new VelocityPlayerCommander(userManager, player);
                 }
 
                 return VelocityCommander.from(commandSender);
@@ -110,11 +110,14 @@ public final class CarbonChatVelocityModule extends AbstractModule {
     public void configure() {
         this.install(new CarbonCommonModule());
 
-        this.bind(CarbonChat.class).toInstance(this.carbonChatVelocity);
-        this.bind(Logger.class).toInstance(this.logger);
-        this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.dataDirectory);
+        this.bind(CarbonChat.class).to(CarbonChatVelocity.class);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);
         this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
+        this.bind(ProfileResolver.class).to(VelocityProfileResolver.class);
+        this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.dataDirectory);
+        this.bind(Logger.class).toInstance(this.logger);
+        this.bind(new TypeLiteral<UserManager<?>>() {}).to(VelocityUserManager.class);
+        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(VelocityUserManager.class);
     }
 
 }
