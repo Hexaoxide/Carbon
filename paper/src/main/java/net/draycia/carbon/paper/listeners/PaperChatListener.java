@@ -30,6 +30,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
@@ -57,13 +58,15 @@ public final class PaperChatListener implements Listener {
 
     private final CarbonChatPaper carbonChat;
     private final ChannelRegistry registry;
+    private final CarbonMessages carbonMessages;
 
     private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     @Inject
-    public PaperChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
+    public PaperChatListener(final CarbonChat carbonChat, final ChannelRegistry registry, final CarbonMessages carbonMessages) {
         this.carbonChat = (CarbonChatPaper) carbonChat;
         this.registry = registry;
+        this.carbonMessages = carbonMessages;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -99,6 +102,11 @@ public final class PaperChatListener implements Listener {
                     .build());
                 break;
             }
+        }
+
+        if (sender.leftChannels().contains(channel.key())) {
+            sender.joinChannel(channel);
+            this.carbonMessages.channelJoined(sender);
         }
 
         final var renderers = new ArrayList<KeyedRenderer>();
