@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.draycia.carbon.api.util.Component;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.util.ChatType;
 import net.kyori.adventure.audience.Audience;
@@ -31,6 +30,7 @@ import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -61,26 +61,11 @@ public class SpongeMessageRenderer<T extends Audience> implements IMessageRender
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
-        // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
-        String placeholderResolvedMessage = intermediateMessage;
+        this.configFactory.primaryConfig().customPlaceholders().forEach(
+            (key, value) -> tagResolver.resolver(Placeholder.unparsed(key, value))
+        );
 
-        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
-        }
-
-        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
-        final MessageType messageType;
-        final @Nullable ChatType chatType = method.getAnnotation(ChatType.class);
-
-        if (chatType != null) {
-            messageType = chatType.value();
-        } else {
-            messageType = MessageType.SYSTEM;
-        }
-
-        return new Component(message, messageType);
+        return MiniMessage.miniMessage().deserialize(intermediateMessage, tagResolver.build());;
     }
 
 }

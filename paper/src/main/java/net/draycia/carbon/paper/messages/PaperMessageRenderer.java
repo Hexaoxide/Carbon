@@ -34,6 +34,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
@@ -76,25 +77,20 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
-        // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
-        String placeholderResolvedMessage = intermediateMessage;
-
-        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
-        }
+        this.configFactory.primaryConfig().customPlaceholders().forEach(
+            (key, value) -> tagResolver.resolver(Placeholder.parsed(key, value))
+        );
 
         if (this.miniPlaceholdersAvailable.get()) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
         }
 
         if (!(receiver instanceof SourcedAudience sourced)) {
-            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+            return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
         if (!(sourced.sender() instanceof CarbonPlayer sender) || sender.online()) {
-            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+            return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
         if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
@@ -102,9 +98,9 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
                 tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(Bukkit.getPlayer(sender.uuid())));
             }
             if (this.parser.get() != null) {
-                return this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, tagResolver.build());
+                return this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), intermediateMessage, tagResolver.build());
             }
-            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+            return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
         if (this.miniPlaceholdersAvailable.get()) {
@@ -115,10 +111,10 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
         }
         if (this.parser.get() != null) {
             return this.parser.get().parseRelational(Bukkit.getPlayer(sender.uuid()),
-                Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, tagResolver.build());
+                Bukkit.getPlayer(recipient.uuid()), intermediateMessage, tagResolver.build());
         }
 
-        return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
     }
 
 }
