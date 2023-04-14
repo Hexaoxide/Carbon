@@ -19,12 +19,25 @@
  */
 package net.draycia.carbon.common.util;
 
+import com.google.common.base.Suppliers;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public final class Strings {
+
+    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
+    public static final Supplier<TextReplacementConfig> URL_REPLACEMENT_CONFIG = Suppliers.memoize(
+        () -> TextReplacementConfig.builder()
+            .match(DEFAULT_URL_PATTERN)
+            .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
+            .build()
+    );
 
     private Strings() {
     }
