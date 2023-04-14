@@ -40,7 +40,7 @@ import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -79,7 +79,7 @@ public class DSRVChatHook implements ChatHook {
                 renderedMessage = renderer.render(carbonPlayer, carbonPlayer, renderedMessage, renderedMessage);
             }
 
-            final var messageContents = PlainTextComponentSerializer.plainText().serialize(renderedMessage);
+            final var messageContents = LegacyComponentSerializer.legacySection().serialize(renderedMessage);
             Component eventMessage = ConfigChatChannel.parseMessageTags(carbonPlayer, messageContents);
 
             if (carbonPlayer.hasPermission("carbon.chatlinks")) {
@@ -92,7 +92,7 @@ public class DSRVChatHook implements ChatHook {
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");
 
             final @Nullable Player player = ((CarbonPlayerPaper) carbonPlayer).bukkitPlayer();
-            final String message = PlainTextComponentSerializer.plainText().serialize(eventMessage);
+            final String message = LegacyComponentSerializer.legacySection().serialize(eventMessage);
 
             if (player != null) {
                 DiscordSRV.getPlugin().processChatMessage(player, message, chatChannel.commandName(), event.result().cancelled());

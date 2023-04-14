@@ -2,7 +2,11 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
+
+val Project.releaseNotes: Provider<String>
+  get() = providers.environmentVariable("RELEASE_NOTES")
 
 /**
  * Relocate a package into the `net.draycia.carbon.libs` namespace.
