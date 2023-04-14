@@ -20,6 +20,7 @@
 package net.draycia.carbon.fabric;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.Objects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
@@ -28,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class MinecraftServerHolder {
 
     private @Nullable MinecraftServer server;
