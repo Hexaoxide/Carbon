@@ -22,7 +22,7 @@ hangarPublish.publications.register("plugin") {
     platformVersions.add("1.19.4")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
-      url("EssentialsDiscord", "https://essentialsx.net/") {
+      hangar("EssentialsX", "Essentials") {
         required.set(false)
       }
       url("DiscordSRV", "https://www.spigotmc.org/resources/discordsrv.18494/") {
