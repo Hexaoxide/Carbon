@@ -189,6 +189,10 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         return this.messagingManager.get().packetService();
     }
 
+    public boolean isProxy() {
+        return false;
+    }
+
     public Injector injector() {
         return this.injector;
     }

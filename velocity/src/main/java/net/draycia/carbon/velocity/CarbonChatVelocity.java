@@ -111,4 +111,9 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
         this.shutdown();
     }
 
+    @Override
+    public boolean isProxy() {
+        return true;
+    }
+
 }
