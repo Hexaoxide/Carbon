@@ -31,7 +31,7 @@ hangarPublish.publications.register("plugin") {
       url("PlaceholderAPI", "https://www.spigotmc.org/resources/placeholderapi.6245/") {
         required.set(false)
       }
-      hangar("MiniPlaceholders", "MiniPlaceholders/MiniPlaceholders") {
+      hangar("MiniPlaceholders", "MiniPlaceholders") {
         required.set(false)
       }
     }
@@ -41,7 +41,7 @@ hangarPublish.publications.register("plugin") {
     platformVersions.add("3.2")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
-      hangar("MiniPlaceholders", "MiniPlaceholders/MiniPlaceholders") {
+      hangar("MiniPlaceholders", "MiniPlaceholders") {
         required.set(false)
       }
     }
