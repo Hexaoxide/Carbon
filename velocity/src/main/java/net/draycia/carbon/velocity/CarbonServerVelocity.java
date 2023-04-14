@@ -21,13 +21,12 @@ package net.draycia.carbon.velocity;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
-import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -48,7 +47,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
 
     @Override
     public @NotNull Audience audience() {
-        return Audience.audience(this.console(), Audience.audience(this.players()));
+        return this.server;
     }
 
     @Override
@@ -57,16 +56,11 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
     }
 
     @Override
-    public List<CarbonPlayerVelocity> players() {
-        final var players = new ArrayList<CarbonPlayerVelocity>();
-
-        for (final var player : this.server.getAllPlayers()) {
-            final CarbonPlayerVelocity carbonPlayer = (CarbonPlayerVelocity) this.userManager.user(player.getUniqueId()).join();
-
-            carbonPlayer.player().ifPresent(p -> players.add(carbonPlayer));
-        }
-
-        return players;
+    public List<? extends CarbonPlayer> players() {
+        return this.server.getAllPlayers().stream()
+            .map(player -> this.userManager.user(player.getUniqueId()).getNow(null))
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     @Override
