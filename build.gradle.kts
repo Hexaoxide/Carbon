@@ -44,6 +44,9 @@ hangarPublish.publications.register("plugin") {
       hangar("MiniPlaceholders", "MiniPlaceholders") {
         required.set(false)
       }
+      hangar("4drian3d", "UnSignedVelocity") {
+        required.set(false)
+      }
     }
   }
 }
