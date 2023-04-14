@@ -25,9 +25,9 @@ import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -76,11 +76,14 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
 
             if (receiver instanceof SourcedAudience sourced) {
-                if (sourced.sender() instanceof CarbonPlayer sender) {
-                    if (sourced.recipient() instanceof CarbonPlayer recipient) {
-                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(sender, recipient));
+                if (sourced.sender() instanceof CarbonPlayerVelocity sender && sender.online()) {
+                    if (sourced.recipient() instanceof CarbonPlayerVelocity recipient && recipient.online()) {
+                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
+                            sender.player().orElseThrow(),
+                            recipient.player().orElseThrow()
+                        ));
                     } else {
-                        tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender));
+                        tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender.player().orElseThrow()));
                     }
                 }
             }
