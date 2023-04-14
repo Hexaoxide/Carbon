@@ -43,28 +43,28 @@ import java.nio.file.Path;
         @Dependency(id = "miniplaceholders", optional = true)
     }
 )
-public class CarbonVelocityBootstrap {
+public final class CarbonVelocityBootstrap {
+
+    private final CarbonChatVelocity carbonVelocity;
 
     @Inject
-    private Injector injector;
-    @Inject
-    private ProxyServer proxyServer;
-    @Inject
-    private PluginContainer pluginContainer;
-    @Inject
-    @DataDirectory
-    private Path dataDirectory;
-    private CarbonChatVelocity carbonVelocity;
+    public CarbonVelocityBootstrap(
+        final Injector injector,
+        final ProxyServer proxyServer,
+        final PluginContainer pluginContainer,
+        @DataDirectory final Path dataDirectory
+    ) {
+        this.carbonVelocity = injector.createChildInjector(new CarbonChatVelocityModule(
+            pluginContainer, proxyServer, dataDirectory)).getInstance(CarbonChatVelocity.class);
+    }
 
     @Subscribe
-    void onProxyInitialize(final ProxyInitializeEvent event) {
-        this.carbonVelocity = this.injector.createChildInjector(new CarbonChatVelocityModule(
-            this.pluginContainer, this.proxyServer, this.dataDirectory)).getInstance(CarbonChatVelocity.class);
+    public void onProxyInitialize(final ProxyInitializeEvent event) {
         this.carbonVelocity.onInitialization(this);
     }
 
     @Subscribe
-    void onProxyShutdown(final ProxyShutdownEvent event) {
+    public void onProxyShutdown(final ProxyShutdownEvent event) {
         this.carbonVelocity.onShutdown();
     }
 
