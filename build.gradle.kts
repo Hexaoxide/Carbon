@@ -10,13 +10,11 @@ description = "CarbonChat - A modern chat plugin"
 val projectVersion: String by project // get from gradle.properties
 version = projectVersion
 
-val projectVer = project.version as String
-
 hangarPublish.publications.register("plugin") {
-  version.set(projectVer)
+  version.set(projectVersion)
   owner.set("Vicarious")
   slug.set("Carbon")
-  channel.set(if (projectVer.contains("+beta.")) "Beta" else "Release")
+  channel.set(if (projectVersion.contains("+beta.")) "Beta" else "Release")
   changelog.set(releaseNotes)
   apiKey.set(providers.environmentVariable("HANGAR_UPLOAD_KEY"))
   platforms.register(Platforms.PAPER) {
