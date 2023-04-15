@@ -129,6 +129,10 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         }
     }
 
+    public JavaPlugin bukkitPlugin() {
+        return this.plugin;
+    }
+
     void onDisable() {
         this.shutdown();
     }

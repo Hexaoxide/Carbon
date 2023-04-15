@@ -24,12 +24,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
+import net.draycia.carbon.paper.CarbonServerPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
@@ -52,14 +54,28 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     public CarbonPlayerPaper(final CarbonPlayerCommon carbonPlayerCommon) {
         this.carbonPlayerCommon = carbonPlayerCommon;
-        this.player().ifPresent(player -> Optional.ofNullable(carbonPlayerCommon.displayName()).ifPresent(displayName -> {
-            if (!Objects.equals(player.displayName(), displayName)) {
-                player.displayName(displayName);
-            }
-            if (!Objects.equals(player.playerListName(), displayName)) {
-                player.playerListName(displayName);
-            }
-        }));
+
+        if (!this.hasCustomDisplayName()) {
+            return;
+        }
+
+        final Optional<Player> optionalPlayer = this.player();
+
+        if (optionalPlayer.isEmpty()) {
+            return;
+        }
+
+        final Player player = optionalPlayer.get();
+
+        if (CarbonServerPaper.isFolia() && !Bukkit.isOwnedByCurrentRegion(player)) {
+            player.getScheduler().run(Bukkit.getPluginManager().getPlugin("CarbonChat"), task -> {
+                player.displayName(carbonPlayerCommon.displayName());
+                player.playerListName(carbonPlayerCommon.displayName());
+            }, null);
+        } else {
+            player.displayName(carbonPlayerCommon.displayName());
+            player.playerListName(carbonPlayerCommon.displayName());
+        }
     }
 
     private Optional<Player> player() {

@@ -26,6 +26,7 @@ versions:
   bstats: 3.0.0
   paperApi: 1.19.4-R0.1-SNAPSHOT
   paperTrail: 0.0.1-SNAPSHOT
+  foliaApi: 1.19.4-R0.1-SNAPSHOT
   kyoriEventApi: 5.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT
   kyoriMoonshine: 2.0.4
@@ -281,6 +282,10 @@ dependencies:
     group: io.papermc
     name: paper-trail
     version: { ref: paperTrail }
+  foliaApi:
+    group: dev.folia
+    name: folia-api
+    version: { ref: foliaApi }
 
   velocityApi:
     group: com.velocitypowered

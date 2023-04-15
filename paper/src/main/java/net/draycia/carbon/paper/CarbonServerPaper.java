@@ -69,4 +69,13 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
         return this.userManager;
     }
 
+    public static boolean isFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (final ClassNotFoundException ignored) {
+            return false;
+        }
+    }
+
 }

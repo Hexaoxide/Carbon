@@ -10,7 +10,7 @@ dependencies {
   implementation(projects.carbonchatCommon)
 
   // Server
-  compileOnly(libs.paperApi)
+  compileOnly(libs.foliaApi)
   implementation(libs.paperTrail)
 
   // Commands
@@ -37,6 +37,7 @@ tasks {
   }
   runServer {
     minecraftVersion("1.19.4")
+    this.serverJar(workingDir.resolve("run/folia-1.19.4-22.jar"))
   }
 }
 
@@ -57,6 +58,7 @@ paper {
   dependencies += PaperPluginDescription.Dependency("DiscordSRV", false)
   dependencies += PaperPluginDescription.Dependency("MiniPlaceholders", false)
   website = GITHUB_REPO_URL
+  foliaSupported = true
 }
 
 bukkit {
