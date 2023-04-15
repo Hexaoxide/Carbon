@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.indraLicenseHeader)
   implementation(libs.licenser)
   implementation(libs.pluginYml)
+  implementation(libs.minotaur)
   implementation("org.spongepowered:configurate-yaml:4.0.0")
   compileOnly("com.fasterxml.jackson.core:jackson-core:2.14.0")
   compileOnly("com.fasterxml.jackson.core:jackson-annotations:2.14.0")

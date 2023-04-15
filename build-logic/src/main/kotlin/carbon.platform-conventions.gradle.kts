@@ -1,5 +1,6 @@
 plugins {
   id("carbon.base-conventions")
+  id("com.modrinth.minotaur")
 }
 
 val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")
@@ -14,6 +15,18 @@ tasks {
   build {
     dependsOn(copyJar)
   }
+}
+
+val projectVersion = project.version as String
+
+modrinth {
+  projectId.set("QzooIsZI")
+  versionType.set(if (projectVersion.contains("+beta.")) "beta" else "release")
+  file.set(platformExtension.jarTask.flatMap { it.archiveFile })
+  changelog.set(releaseNotes)
+  token.set(providers.environmentVariable("MODRINTH_TOKEN"))
+  required.project("luckperms")
+  gameVersions.add("1.19.4")
 }
 
 //val projectVersion = version as String
