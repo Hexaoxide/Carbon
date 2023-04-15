@@ -38,14 +38,18 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+
+import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public class PaperMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
 
-    private final Supplier<@MonotonicNonNull PlaceholderAPIMiniMessageParser> parser = Suppliers.memoize(() -> {
+    private final Supplier<@MonotonicNonNull PlaceholderAPIMiniMessageParser> placeholderApiProcessor = Suppliers.memoize(() -> {
         if (CarbonChatPaper.papiLoaded()) {
             return PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
         }
@@ -89,32 +93,48 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
             return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
-        if (!(sourced.sender() instanceof CarbonPlayer sender) || sender.online()) {
+        if (!(sourced.sender() instanceof CarbonPlayer sender && sender.online())) {
             return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
+        final Player senderBukkitPlayer = requireNonNull(Bukkit.getPlayer(sender.uuid()));
+
         if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
             if (this.miniPlaceholdersAvailable.get()) {
-                tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(Bukkit.getPlayer(sender.uuid())));
+                tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(senderBukkitPlayer));
             }
-            if (this.parser.get() != null) {
-                return this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), intermediateMessage, tagResolver.build());
+            if (this.hasPlaceholderAPI()) {
+                return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
+                    intermediateMessage, tagResolver.build());
+            }
+            return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
+        }
+
+        final @Nullable Player recipientBukkitPlayer = Bukkit.getPlayer(recipient.uuid());
+        if (recipientBukkitPlayer == null) {
+            if (this.hasPlaceholderAPI()) {
+                return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
+                    intermediateMessage, tagResolver.build());
             }
             return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
         if (this.miniPlaceholdersAvailable.get()) {
             tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
-                Bukkit.getPlayer(sender.uuid()),
-                Bukkit.getPlayer(recipient.uuid())
+                senderBukkitPlayer,
+                recipientBukkitPlayer
             ));
         }
-        if (this.parser.get() != null) {
-            return this.parser.get().parseRelational(Bukkit.getPlayer(sender.uuid()),
-                Bukkit.getPlayer(recipient.uuid()), intermediateMessage, tagResolver.build());
+        if (this.hasPlaceholderAPI()) {
+            return this.placeholderApiProcessor.get().parseRelational(senderBukkitPlayer,
+                recipientBukkitPlayer, intermediateMessage, tagResolver.build());
         }
 
         return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
+    }
+
+    private boolean hasPlaceholderAPI() {
+        return this.placeholderApiProcessor.get() != null;
     }
 
 }
