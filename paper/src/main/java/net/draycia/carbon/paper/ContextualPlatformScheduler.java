@@ -48,10 +48,8 @@ public class ContextualPlatformScheduler implements PlatformScheduler {
                 runnable.run();
             } else {
                 player.getScheduler().run(plugin, scheduledTask -> {
-                    if (!scheduledTask.isCancelled()) {
-                        runnable.run();
-                    }
-                }, () -> {});
+                    runnable.run();
+                }, null);
             }
         }
     }
