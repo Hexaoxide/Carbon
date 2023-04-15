@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -33,13 +32,13 @@ import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.event.ClickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
+import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
@@ -49,8 +48,6 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
 
     private final CarbonChatFabric carbonChatFabric;
     private final ChannelRegistry channelRegistry;
-
-    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     public FabricChatListener(final CarbonChatFabric carbonChatFabric, final ChannelRegistry channelRegistry) {
         this.carbonChatFabric = carbonChatFabric;
@@ -66,10 +63,7 @@ public class FabricChatListener implements Consumer<ChatCallback.Chat> {
         Component eventMessage = text(chat.message());
 
         if (sender.hasPermission("carbon.chatlinks")) {
-            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
-                .match(DEFAULT_URL_PATTERN)
-                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
-                .build());
+            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
         }
 
         for (final var chatChannel : this.channelRegistry) {

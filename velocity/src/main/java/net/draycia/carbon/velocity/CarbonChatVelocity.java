@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,158 +21,99 @@ package net.draycia.carbon.velocity;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.plugin.Dependency;
-import com.velocitypowered.api.plugin.Plugin;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import java.util.Set;
-import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
+import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.api.util.Component;
+import net.draycia.carbon.common.CarbonChatInternal;
+import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
-import net.draycia.carbon.common.util.CloudUtils;
-import net.draycia.carbon.common.util.ListenerUtils;
+import net.draycia.carbon.common.users.ProfileCache;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
+import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
-import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-@Plugin(
-    id = "$[ID]",
-    name = "$[NAME]",
-    version = "$[VERSION]",
-    description = "$[DESCRIPTION]",
-    url = "$[URL]",
-    authors = {"Draycia"},
-    dependencies = {@Dependency(id = "luckperms")}
-)
 @DefaultQualifier(NonNull.class)
-public class CarbonChatVelocity implements CarbonChat {
+@Singleton
+public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity> {
 
     private static final Set<Class<?>> LISTENER_CLASSES = Set.of(
         VelocityChatListener.class,
         VelocityPlayerJoinListener.class
     );
 
-    private final Path dataDirectory;
     private final ProxyServer proxyServer;
-    private final Logger logger;
-    private final Injector injector;
-
-    private final CarbonMessages carbonMessages;
-    private final ChannelRegistry channelRegistry;
-    private final CarbonServerVelocity carbonServer;
-    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
-    private final UUID serverId = UUID.randomUUID();
-
-    private @MonotonicNonNull MessagingManager messagingManager = null;
 
     @Inject
     public CarbonChatVelocity(
-        @DataDirectory final Path dataDirectory,
         final ProxyServer proxyServer,
+        final Injector injector,
         final PluginContainer pluginContainer,
-        final Injector injector
+        @DataDirectory final Path dataDirectory,
+        @PeriodicTasks final ScheduledExecutorService periodicTasks,
+        final ProfileCache profileCache,
+        final ProfileResolver profileResolver,
+        final ExecutionCoordinatorHolder commandExecutor,
+        final IMessageRenderer<Audience, String, Component, Component> renderer,
+        final VelocityUserManager userManager,
+        final CarbonServerVelocity carbonServer,
+        final CarbonMessages carbonMessages,
+        final CarbonEventHandler eventHandler,
+        final CarbonChannelRegistry channelRegistry,
+        final Provider<MessagingManager> messagingManager
     ) {
-        CarbonChatProvider.register(this);
-
-        this.dataDirectory = dataDirectory;
+        super(
+            injector, LogManager.getLogger(pluginContainer.getDescription().getId()),
+            dataDirectory,
+            periodicTasks,
+            profileCache,
+            profileResolver,
+            userManager,
+            commandExecutor,
+            carbonServer,
+            carbonMessages,
+            eventHandler,
+            channelRegistry,
+            renderer,
+            messagingManager
+        );
         this.proxyServer = proxyServer;
-        this.logger = LogManager.getLogger(pluginContainer.getDescription().getId());
 
-        final CarbonChatVelocityModule carbonVelocityModule;
-
-        carbonVelocityModule = new CarbonChatVelocityModule(
-            this.logger, this.dataDirectory, pluginContainer, this.proxyServer, this);
-
-        this.injector = injector.createChildInjector(carbonVelocityModule);
-
-        this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
-        this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
-        this.carbonServer = this.injector.getInstance(CarbonServerVelocity.class);
+        CarbonChatProvider.register(this);
     }
 
-    @Subscribe
-    public void onProxyInitialization(final ProxyInitializeEvent event) {
+    public void onInitialization(final CarbonVelocityBootstrap carbonVelocityBootstrap) {
+        this.init();
+        this.packetService();
+
         for (final Class<?> clazz : LISTENER_CLASSES) {
-            this.proxyServer.getEventManager().register(this, this.injector.getInstance(clazz));
+            this.proxyServer.getEventManager().register(carbonVelocityBootstrap, this.injector().getInstance(clazz));
         }
+    }
 
-        // Listeners
-        ListenerUtils.registerCommonListeners(this.injector);
-
-        // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
-
-        // Commands
-        CloudUtils.loadCommands(this.injector);
-        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
-        CloudUtils.registerCommands(commandSettings);
+    public void onShutdown() {
+        this.shutdown();
     }
 
     @Override
-    public UUID serverId() {
-        return this.serverId;
-    }
-
-    @Override
-    public @Nullable PacketService packetService() {
-        if (this.messagingManager == null) {
-            this.messagingManager = this.injector.getInstance(MessagingManager.class);
-        }
-
-        return this.messagingManager.packetService();
-    }
-
-    @Override
-    public Logger logger() {
-        return this.logger;
-    }
-
-    @Override
-    public Path dataDirectory() {
-        return this.dataDirectory;
-    }
-
-    @Override
-    public CarbonServerVelocity server() {
-        return this.carbonServer;
-    }
-
-    @Override
-    public ChannelRegistry channelRegistry() {
-        return this.channelRegistry;
-    }
-
-    @Override
-    public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
-        return this.injector.getInstance(VelocityMessageRenderer.class);
-    }
-
-    public CarbonMessages carbonMessages() {
-        return this.carbonMessages;
-    }
-
-    @Override
-    public final @NonNull CarbonEventHandler eventHandler() {
-        return this.eventHandler;
+    public boolean isProxy() {
+        return true;
     }
 
 }

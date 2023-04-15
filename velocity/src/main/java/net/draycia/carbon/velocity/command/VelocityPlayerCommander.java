@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@ package net.draycia.carbon.velocity.command;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,7 +33,7 @@ import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public record VelocityPlayerCommander(
-    CarbonChat carbon,
+    UserManager<?> userManager,
     Player player
 ) implements PlayerCommander, VelocityCommander {
 
@@ -49,7 +49,12 @@ public record VelocityPlayerCommander(
 
     @Override
     public CarbonPlayer carbonPlayer() {
-        return requireNonNull(this.carbon.server().userManager().carbonPlayer(this.player.getUniqueId()).join().player(), "No CarbonPlayer for logged in Player!");
+        return requireNonNull(this.userManager.user(this.player.getUniqueId()).join(), "No CarbonPlayer for logged in Player!");
+    }
+
+    @Override
+    public boolean hasPermission(final String permission) {
+        return this.player.hasPermission(permission);
     }
 
 }

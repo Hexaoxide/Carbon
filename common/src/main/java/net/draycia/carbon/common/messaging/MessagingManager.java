@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.events.CarbonShutdownEvent;
+import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.listeners.PingHandler;
@@ -83,7 +84,9 @@ public class MessagingManager {
         final PingHandler pingHandler
     ) {
         if (!configFactory.primaryConfig().messagingSettings().enabled()) {
-            logger.info("Messaging services disabled in config. Cross-server will not work without this!");
+            if (!((CarbonChatInternal<?>) carbonChat).isProxy()) {
+                logger.info("Messaging services disabled in config. Cross-server will not work without this!");
+            }
             this.messagingService = EMPTY_MESSAGING_SERVICE;
             this.packetService = null;
             this.carbonChat = carbonChat;

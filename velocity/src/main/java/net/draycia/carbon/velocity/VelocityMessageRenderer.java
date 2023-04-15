@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,30 +20,34 @@
 package net.draycia.carbon.velocity;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.plugin.PluginManager;
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.draycia.carbon.api.util.Component;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class VelocityMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
 
     private final ConfigFactory configFactory;
+    private final PluginManager pluginManager;
 
     @Inject
-    public VelocityMessageRenderer(final ConfigFactory configFactory) {
+    public VelocityMessageRenderer(final ConfigFactory configFactory, final PluginManager pluginManager) {
         this.configFactory = configFactory;
+        this.pluginManager = pluginManager;
     }
 
     @Override
@@ -60,26 +64,28 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
-        // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
-        String placeholderResolvedMessage = intermediateMessage;
+        this.configFactory.primaryConfig().customPlaceholders().forEach(
+            (key, value) -> tagResolver.resolver(Placeholder.parsed(key, value))
+        );
 
-        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
+        if (this.pluginManager.isLoaded("miniplaceholders")) {
+            tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
+
+            if (receiver instanceof SourcedAudience sourced) {
+                if (sourced.sender() instanceof CarbonPlayerVelocity sender && sender.online()) {
+                    if (sourced.recipient() instanceof CarbonPlayerVelocity recipient && recipient.online()) {
+                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
+                            sender.player().orElseThrow(),
+                            recipient.player().orElseThrow()
+                        ));
+                    } else {
+                        tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender.player().orElseThrow()));
+                    }
+                }
+            }
         }
 
-        final Component message = MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
-        final MessageType messageType;
-        final @Nullable ChatType chatType = method.getAnnotation(ChatType.class);
-
-        if (chatType != null) {
-            messageType = chatType.value();
-        } else {
-            messageType = MessageType.SYSTEM;
-        }
-
-        return new Component(message, messageType);
+        return MiniMessage.miniMessage().deserialize(intermediateMessage, tagResolver.build());
     }
 
 }

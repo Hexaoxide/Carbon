@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,25 +23,21 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
-import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.event.ClickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
+import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
@@ -51,13 +47,13 @@ public final class VelocityChatListener {
 
     private final CarbonChatVelocity carbonChat;
     private final ChannelRegistry registry;
-
-    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
+    private final UserManager<?> userManager;
 
     @Inject
-    private VelocityChatListener(final CarbonChat carbonChat, final ChannelRegistry registry) {
+    private VelocityChatListener(final CarbonChat carbonChat, final ChannelRegistry registry, final UserManager<?> userManager) {
         this.carbonChat = (CarbonChatVelocity) carbonChat;
         this.registry = registry;
+        this.userManager = userManager;
     }
 
     @Subscribe
@@ -68,23 +64,13 @@ public final class VelocityChatListener {
 
         event.setResult(PlayerChatEvent.ChatResult.denied());
 
-        final ComponentPlayerResult<? extends CarbonPlayer> playerResult = this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).join();
-        final @Nullable CarbonPlayer sender = playerResult.player();
-
-        if (sender == null) {
-            return;
-        }
-
+        final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-
         final var originalMessage = event.getResult().getMessage().orElse(event.getMessage());
         Component eventMessage = text(originalMessage);
 
         if (sender.hasPermission("carbon.chatlinks")) {
-            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
-                .match(DEFAULT_URL_PATTERN)
-                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
-                .build());
+            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
         }
 
         for (final var chatChannel : this.registry) {
@@ -108,7 +94,7 @@ public final class VelocityChatListener {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, false);
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
         if (!result.wasSuccessful()) {
@@ -128,13 +114,7 @@ public final class VelocityChatListener {
                 renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
             }
 
-            final Identity identity = sender.hasPermission("carbon.hideidentity") ? Identity.nil() : sender.identity();
-
-            if (!(recipient instanceof CarbonPlayer)) {
-                recipient.sendMessage(identity, renderedMessage);
-            } else {
-                recipient.sendMessage(identity, renderedMessage);
-            }
+            recipient.sendMessage(renderedMessage);
         }
 
         event.setResult(PlayerChatEvent.ChatResult.denied());

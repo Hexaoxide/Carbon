@@ -1,7 +1,7 @@
 /*
  * CarbonChat
  *
- * Copyright (c) 2021 Josua Parks (Vicarious)
+ * Copyright (c) 2023 Josua Parks (Vicarious)
  *                    Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,37 +22,40 @@ package net.draycia.carbon.velocity.listeners;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.util.PlayerUtils;
-import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
+import com.velocitypowered.api.event.connection.LoginEvent;
+import net.draycia.carbon.velocity.VelocityUserManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.slf4j.Logger;
 
 @DefaultQualifier(NonNull.class)
 public class VelocityPlayerJoinListener {
 
-    private final CarbonChat carbonChat;
-    private final UserManager<CarbonPlayerCommon> userManager;
+    private final VelocityUserManager userManager;
+    private final Logger logger;
 
     @Inject
     public VelocityPlayerJoinListener(
-        final CarbonChat carbonChat,
-        final UserManager<CarbonPlayerCommon> userManager
+        final VelocityUserManager userManager,
+        final Logger logger
     ) {
-        this.carbonChat = carbonChat;
         this.userManager = userManager;
+        this.logger = logger;
+    }
+
+    @Subscribe
+    public void onPlayerJoin(final LoginEvent event) {
+        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(thr -> {
+            this.logger.warn("Exception handling player join", thr);
+            return null;
+        });
     }
 
     @Subscribe
     public void onPlayerLeave(final DisconnectEvent event) {
-        this.carbonChat.server().userManager().carbonPlayer(event.getPlayer().getUniqueId()).thenAccept(result -> {
-            if (result.player() == null) {
-                return;
-            }
-
-            PlayerUtils.saveAndInvalidatePlayer(this.carbonChat.server(), this.userManager, (CarbonPlayerVelocity) result.player());
+        this.userManager.loggedOut(event.getPlayer().getUniqueId()).exceptionally(ex -> {
+            this.logger.warn("Exception saving data for player " + event.getPlayer().getUsername() + " with uuid " + event.getPlayer().getUniqueId());
+            return null;
         });
     }
 

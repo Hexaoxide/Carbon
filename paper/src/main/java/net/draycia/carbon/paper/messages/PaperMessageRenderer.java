@@ -21,6 +21,7 @@ package net.draycia.carbon.paper.messages;
 
 import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -33,6 +34,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
@@ -49,6 +51,8 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
         }
         return null;
     });
+
+    private final Supplier<Boolean> miniPlaceholdersAvailable = Suppliers.memoize(CarbonChatPaper::miniPlaceholdersLoaded);
 
     private final MiniMessage miniMessage;
     private final ConfigFactory configFactory;
@@ -73,33 +77,44 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        // https://github.com/KyoriPowered/adventure-text-minimessage/issues/131
-        // TLDR: 25/10/21, tags in templates aren't parsed. we want them parsed.
-        String placeholderResolvedMessage = intermediateMessage;
+        this.configFactory.primaryConfig().customPlaceholders().forEach(
+            (key, value) -> tagResolver.resolver(Placeholder.parsed(key, value))
+        );
 
-        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
+        if (this.miniPlaceholdersAvailable.get()) {
+            tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
         }
 
-        final Component message;
+        if (!(receiver instanceof SourcedAudience sourced)) {
+            return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
+        }
 
-        if (receiver instanceof SourcedAudience sourced && this.parser.get() != null) {
-            if (sourced.sender() instanceof CarbonPlayer sender && sender.online()) {
-                if (sourced.recipient() instanceof CarbonPlayer recipient && recipient.online()) {
-                    message = this.parser.get().parseRelational(Bukkit.getPlayer(sender.uuid()),
-                        Bukkit.getPlayer(recipient.uuid()), placeholderResolvedMessage, tagResolver.build());
-                } else {
-                    message = this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), placeholderResolvedMessage, tagResolver.build());
-                }
-            } else {
-                message = this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        if (!(sourced.sender() instanceof CarbonPlayer sender) || sender.online()) {
+            return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
+        }
+
+        if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
+            if (this.miniPlaceholdersAvailable.get()) {
+                tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(Bukkit.getPlayer(sender.uuid())));
             }
-        } else {
-            message = this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+            if (this.parser.get() != null) {
+                return this.parser.get().parse(Bukkit.getPlayer(sender.uuid()), intermediateMessage, tagResolver.build());
+            }
+            return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
-        return message;
+        if (this.miniPlaceholdersAvailable.get()) {
+            tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
+                Bukkit.getPlayer(sender.uuid()),
+                Bukkit.getPlayer(recipient.uuid())
+            ));
+        }
+        if (this.parser.get() != null) {
+            return this.parser.get().parseRelational(Bukkit.getPlayer(sender.uuid()),
+                Bukkit.getPlayer(recipient.uuid()), intermediateMessage, tagResolver.build());
+        }
+
+        return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
     }
 
 }

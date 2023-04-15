@@ -47,6 +47,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         The "console" format is what's shown to console.
         The "discord" format is what's shown to supported discord integrations.
         If PlaceholderAPI is installed, PAPI placeholders (with %) are supported.
+        If MiniPlaceholders is installed, its placeholders (with <>) are supported.
         The keys are group names, the values are chat formats (MiniMessage).
         For example:
             basic {

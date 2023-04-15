@@ -137,4 +137,8 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
     }
 
+    public static boolean miniPlaceholdersLoaded() {
+        return Bukkit.getPluginManager().isPluginEnabled("MiniPlaceholders");
+    }
+
 }
