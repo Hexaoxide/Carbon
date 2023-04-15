@@ -49,7 +49,7 @@ import static java.util.Objects.requireNonNull;
 @DefaultQualifier(NonNull.class)
 public class PaperMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
 
-    private final Supplier<@MonotonicNonNull PlaceholderAPIMiniMessageParser> parser = Suppliers.memoize(() -> {
+    private final Supplier<@MonotonicNonNull PlaceholderAPIMiniMessageParser> placeholderApiProcessor = Suppliers.memoize(() -> {
         if (CarbonChatPaper.papiLoaded()) {
             return PlaceholderAPIMiniMessageParser.create(MiniMessage.miniMessage());
         }
@@ -103,16 +103,18 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
             if (this.miniPlaceholdersAvailable.get()) {
                 tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(senderBukkitPlayer));
             }
-            if (this.parser.get() != null) {
-                return this.parser.get().parse(senderBukkitPlayer, intermediateMessage, tagResolver.build());
+            if (this.hasPlaceholderAPI()) {
+                return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
+                    intermediateMessage, tagResolver.build());
             }
             return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
 
         final @Nullable Player recipientBukkitPlayer = Bukkit.getPlayer(recipient.uuid());
         if (recipientBukkitPlayer == null) {
-            if (this.parser.get() != null) {
-                return this.parser.get().parse(senderBukkitPlayer, intermediateMessage, tagResolver.build());
+            if (this.hasPlaceholderAPI()) {
+                return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
+                    intermediateMessage, tagResolver.build());
             }
             return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
         }
@@ -123,12 +125,16 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
                 recipientBukkitPlayer
             ));
         }
-        if (this.parser.get() != null) {
-            return this.parser.get().parseRelational(senderBukkitPlayer,
+        if (this.hasPlaceholderAPI()) {
+            return this.placeholderApiProcessor.get().parseRelational(senderBukkitPlayer,
                 recipientBukkitPlayer, intermediateMessage, tagResolver.build());
         }
 
         return this.miniMessage.deserialize(intermediateMessage, tagResolver.build());
+    }
+
+    private boolean hasPlaceholderAPI() {
+        return this.placeholderApiProcessor.get() != null;
     }
 
 }
