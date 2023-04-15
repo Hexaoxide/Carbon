@@ -34,6 +34,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
+
 @DefaultQualifier(NonNull.class)
 public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, ServerPlayConnectionEvents.Disconnect {
 
@@ -70,10 +72,8 @@ public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, 
 
     @Override
     public void onPlayDisconnect(final ServerGamePacketListenerImpl handler, final MinecraftServer server) {
-        this.userManager.loggedOut(handler.getPlayer().getGameProfile().getId()).exceptionally(thr -> {
-            this.logger.warn("Exception saving data for player " + handler.getPlayer().getGameProfile().getName() + " with uuid " + handler.getPlayer().getGameProfile().getId());
-            return null;
-        });
+        this.userManager.loggedOut(handler.getPlayer().getGameProfile().getId())
+            .exceptionally(saveExceptionHandler(this.logger, handler.getPlayer().getGameProfile().getName(), handler.getPlayer().getGameProfile().getId()));
     }
 
 }

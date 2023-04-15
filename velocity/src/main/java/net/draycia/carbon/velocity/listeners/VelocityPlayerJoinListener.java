@@ -24,9 +24,12 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import net.draycia.carbon.velocity.VelocityUserManager;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.slf4j.Logger;
+
+import static net.draycia.carbon.common.util.PlayerUtils.joinExceptionHandler;
+import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
 
 @DefaultQualifier(NonNull.class)
 public class VelocityPlayerJoinListener {
@@ -45,18 +48,13 @@ public class VelocityPlayerJoinListener {
 
     @Subscribe
     public void onPlayerJoin(final LoginEvent event) {
-        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(thr -> {
-            this.logger.warn("Exception handling player join", thr);
-            return null;
-        });
+        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger));
     }
 
     @Subscribe
     public void onPlayerLeave(final DisconnectEvent event) {
-        this.userManager.loggedOut(event.getPlayer().getUniqueId()).exceptionally(ex -> {
-            this.logger.warn("Exception saving data for player " + event.getPlayer().getUsername() + " with uuid " + event.getPlayer().getUniqueId());
-            return null;
-        });
+        this.userManager.loggedOut(event.getPlayer().getUniqueId())
+            .exceptionally(saveExceptionHandler(this.logger, event.getPlayer().getUsername(), event.getPlayer().getUniqueId()));
     }
 
 }

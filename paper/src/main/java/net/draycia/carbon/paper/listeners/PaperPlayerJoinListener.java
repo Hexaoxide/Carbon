@@ -31,6 +31,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+import static net.draycia.carbon.common.util.PlayerUtils.joinExceptionHandler;
+import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
+
 @DefaultQualifier(NonNull.class)
 public class PaperPlayerJoinListener implements Listener {
 
@@ -56,18 +59,13 @@ public class PaperPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
-        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(thr -> {
-            this.logger.warn("Exception handling player join", thr);
-            return null;
-        });
+        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(final PlayerQuitEvent event) {
-        this.userManager.loggedOut(event.getPlayer().getUniqueId()).exceptionally(thr -> {
-            this.logger.warn("Exception saving data for player " + event.getPlayer().getName() + " with uuid " + event.getPlayer().getUniqueId());
-            return null;
-        });
+        this.userManager.loggedOut(event.getPlayer().getUniqueId())
+            .exceptionally(saveExceptionHandler(this.logger, event.getPlayer().getName(), event.getPlayer().getUniqueId()));
     }
 
 }

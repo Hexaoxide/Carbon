@@ -20,12 +20,15 @@
 package net.draycia.carbon.common.util;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -51,11 +54,22 @@ public final class PlayerUtils {
         final Logger logger
     ) {
         final var saveResult = userManager.saveIfNeeded(player);
-        saveResult.exceptionally(thr -> {
-            logger.warn("Exception saving data for player {} with UUID {}", player.username(), player.uuid(), thr);
-            return null;
-        });
+        saveResult.exceptionally(saveExceptionHandler(logger, player.username(), player.uuid()));
         return saveResult;
+    }
+
+    public static <T> Function<Throwable, @Nullable T> joinExceptionHandler(final Logger logger) {
+        return thr -> {
+            logger.warn("Exception handling player join", thr);
+            return null;
+        };
+    }
+
+    public static Function<Throwable, @Nullable Void> saveExceptionHandler(final Logger logger, final String username, final UUID uuid) {
+        return thr -> {
+            logger.warn("Exception saving data for player {} with uuid {}", username, uuid);
+            return null;
+        };
     }
 
 }
