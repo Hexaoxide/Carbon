@@ -61,7 +61,7 @@ jobs:
       - name: Create changelog and Pre-Release
         if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
         id: make-changelog
-        uses: Hexaoxide/auto-release-changelog@changelog-output
+        uses: Hexaoxide/auto-release-changelog@changelog_output
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: CarbonChat ${{ steps.vars.outputs.tag }}
