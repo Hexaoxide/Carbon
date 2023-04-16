@@ -5,12 +5,12 @@ on:
     tags: [ "v**" ]
   pull_request:
   release:
-    types: [ released ]
+    types: [ published ]
 
 jobs:
   build:
     # Only run on PRs if the source branch is on someone else's repo
-    if: ${{ (github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name) && (github.event.name != 'push' || !startsWith(github.ref, 'refs/tags/') || contains(github.ref, '+beta.')) }}
+    if: ${{ (github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name) && (github.event.name != 'push' || !startsWith(github.ref, 'refs/tags/') || contains(github.ref, '-beta.')) }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -55,24 +55,24 @@ jobs:
 #          ORG_GRADLE_PROJECT_parksUsername: "${{ secrets.CI_USER }}"
 #          ORG_GRADLE_PROJECT_parksPassword: "${{ secrets.CI_PASS }}"
       - name: Parse tag
-        if: "${{ github.event_name == 'push' && contains(github.ref, '+beta.') }}"
+        if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - name: Create Pre-Release and changelog
-        if: "${{ github.event_name == 'push' && contains(github.ref, '+beta.') }}"
+        if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
         uses: MC-Machinations/auto-release-changelog@v1.1.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: CarbonChat ${{ steps.vars.outputs.tag }}
           pre-release: true
       - name: Publish (Pre-)Release to Modrinth
-        if: "${{ env.STATUS == 'release' && (github.event_name == 'release' || (github.event_name == 'push' && contains(github.ref, '+beta.'))) }}"
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
         run: ./gradlew :carbonchat-paper:modrinth :carbonchat-velocity:modrinth
         env:
           MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: Publish (Pre-)Release to Hangar
-        if: "${{ env.STATUS == 'release' && (github.event_name == 'release' || (github.event_name == 'push' && contains(github.ref, '+beta.'))) }}"
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
         run: ./gradlew publishAllPublicationsToHangar
         env:
           HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
