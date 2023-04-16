@@ -21,7 +21,7 @@ val projectVersion = project.version as String
 
 modrinth {
   projectId.set("QzooIsZI")
-  versionType.set(if (projectVersion.contains("+beta.")) "beta" else "release")
+  versionType.set(if (projectVersion.contains("-beta.")) "beta" else "release")
   file.set(platformExtension.jarTask.flatMap { it.archiveFile })
   changelog.set(releaseNotes)
   token.set(providers.environmentVariable("MODRINTH_TOKEN"))

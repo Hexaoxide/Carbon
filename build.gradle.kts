@@ -14,7 +14,7 @@ hangarPublish.publications.register("plugin") {
   version.set(projectVersion)
   owner.set("Vicarious")
   slug.set("Carbon")
-  channel.set(if (projectVersion.contains("+beta.")) "Beta" else "Release")
+  channel.set(if (projectVersion.contains("-beta.")) "Beta" else "Release")
   changelog.set(releaseNotes)
   apiKey.set(providers.environmentVariable("HANGAR_UPLOAD_KEY"))
   platforms.register(Platforms.PAPER) {
