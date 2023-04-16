@@ -63,11 +63,7 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        String placeholderResolvedMessage = intermediateMessage;
-        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
-        }
+        final String placeholderResolvedMessage = this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (this.pluginManager.isLoaded("miniplaceholders")) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());

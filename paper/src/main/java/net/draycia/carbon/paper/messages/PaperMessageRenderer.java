@@ -80,11 +80,7 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        String placeholderResolvedMessage = intermediateMessage;
-        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
-        }
+        final String placeholderResolvedMessage = this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (this.miniPlaceholdersAvailable.get()) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());

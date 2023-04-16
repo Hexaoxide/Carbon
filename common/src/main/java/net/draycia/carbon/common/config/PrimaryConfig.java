@@ -104,6 +104,15 @@ public class PrimaryConfig {
         return this.customPlaceholders;
     }
 
+    public String applyCustomPlaceholders(final String string) {
+        String placeholderResolvedMessage = string;
+        for (final var entry : this.customPlaceholders.entrySet()) {
+            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
+                entry.getValue());
+        }
+        return placeholderResolvedMessage;
+    }
+
     public @Nullable List<String> customChatSuggestions() {
         return this.customChatSuggestions;
     }

@@ -57,13 +57,7 @@ public class FabricMessageRenderer<T extends Audience> implements IMessageRender
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        String placeholderResolvedMessage = intermediateMessage;
-        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
-        }
-
-        return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
+        return MiniMessage.miniMessage().deserialize(this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage), tagResolver.build());
     }
 
 }
