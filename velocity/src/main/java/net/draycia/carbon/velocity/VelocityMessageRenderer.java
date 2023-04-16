@@ -32,7 +32,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -64,9 +63,11 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        this.configFactory.primaryConfig().customPlaceholders().forEach(
-            (key, value) -> tagResolver.resolver(Placeholder.parsed(key, value))
-        );
+        String placeholderResolvedMessage = intermediateMessage;
+        for (final var entry : this.configFactory.primaryConfig().customPlaceholders().entrySet()) {
+            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
+                entry.getValue());
+        }
 
         if (this.pluginManager.isLoaded("miniplaceholders")) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
@@ -85,7 +86,7 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
             }
         }
 
-        return MiniMessage.miniMessage().deserialize(intermediateMessage, tagResolver.build());
+        return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
     }
 
 }
