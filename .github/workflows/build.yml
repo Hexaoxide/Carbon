@@ -5,7 +5,7 @@ on:
     tags: [ "v**" ]
   pull_request:
   release:
-    types: [ released ]
+    types: [ published ]
 
 jobs:
   build:
@@ -60,38 +60,26 @@ jobs:
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       - name: Create changelog and Pre-Release
         if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
-        id: make-changelog
-        uses: Hexaoxide/auto-release-changelog@changelog_output
+        uses: MC-Machinations/auto-release-changelog@v1.1.3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_RELEASE_TOKEN }}
           title: CarbonChat ${{ steps.vars.outputs.tag }}
           pre-release: true
           files: |
             build/libs/carbonchat-paper-*.jar
             build/libs/carbonchat-velocity-*.jar
-      - name: Choose changelog
-        id: changelog
-        env:
-          FROM_RELEASE: ${{ github.event.release.body }}
-          GENERATED: ${{ steps.make-changelog.outputs.changelog }}
-        run: |
-          if [[ -z "$FROM_RELEASE" ]]; then
-            echo "CHANGELOG=$GENERATED" >> $GITHUB_ENV
-          else
-            echo "CHANGELOG=$FROM_RELEASE" >> $GITHUB_ENV
-          fi
       - name: Publish (Pre-)Release to Modrinth
-        if: "${{ env.STATUS == 'release' && (github.event_name == 'release' || (github.event_name == 'push' && contains(github.ref, '-beta.'))) }}"
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
         run: ./gradlew :carbonchat-paper:modrinth :carbonchat-velocity:modrinth
         env:
           MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
-          RELEASE_NOTES: "${{ env.CHANGELOG }}"
+          RELEASE_NOTES: "${{ github.event.release.body }}"
 #      - name: Publish (Pre-)Release to Hangar
-#        if: "${{ env.STATUS == 'release' && (github.event_name == 'release' || (github.event_name == 'push' && contains(github.ref, '-beta.'))) }}"
+#        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
 #        run: ./gradlew publishAllPublicationsToHangar
 #        env:
 #          HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
-#          RELEASE_NOTES: "${{ env.CHANGELOG }}"
+#          RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
