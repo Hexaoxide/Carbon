@@ -5,7 +5,7 @@ on:
     tags: [ "v**" ]
   pull_request:
   release:
-    types: [ published ]
+    types: [ released ]
 
 jobs:
   build:
@@ -58,25 +58,40 @@ jobs:
         if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - name: Create Pre-Release and changelog
+      - name: Create changelog and Pre-Release
         if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
-        uses: MC-Machinations/auto-release-changelog@v1.1.3
+        id: make-changelog
+        uses: Hexaoxide/auto-release-changelog@changelog-output
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: CarbonChat ${{ steps.vars.outputs.tag }}
           pre-release: true
+          files: |
+            build/libs/carbonchat-paper-*.jar
+            build/libs/carbonchat-velocity-*.jar
+      - name: Choose changelog
+        id: changelog
+        env:
+          FROM_RELEASE: ${{ github.event.release.body }}
+          GENERATED: ${{ steps.make-changelog.outputs.changelog }}
+        run: |
+          if [[ -z "$FROM_RELEASE" ]]; then
+            echo "CHANGELOG=$GENERATED" >> $GITHUB_ENV
+          else
+            echo "CHANGELOG=$FROM_RELEASE" >> $GITHUB_ENV
+          fi
       - name: Publish (Pre-)Release to Modrinth
-        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        if: "${{ env.STATUS == 'release' && (github.event_name == 'release' || (github.event_name == 'push' && contains(github.ref, '-beta.'))) }}"
         run: ./gradlew :carbonchat-paper:modrinth :carbonchat-velocity:modrinth
         env:
           MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
-          RELEASE_NOTES: "${{ github.event.release.body }}"
+          RELEASE_NOTES: "${{ env.CHANGELOG }}"
       - name: Publish (Pre-)Release to Hangar
-        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        if: "${{ env.STATUS == 'release' && (github.event_name == 'release' || (github.event_name == 'push' && contains(github.ref, '-beta.'))) }}"
         run: ./gradlew publishAllPublicationsToHangar
         env:
           HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
-          RELEASE_NOTES: "${{ github.event.release.body }}"
+          RELEASE_NOTES: "${{ env.CHANGELOG }}"
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
