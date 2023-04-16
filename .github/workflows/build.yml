@@ -62,7 +62,7 @@ jobs:
         if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
         uses: MC-Machinations/auto-release-changelog@v1.1.3
         with:
-          token: ${{ secrets.GITHUB_RELEASE_TOKEN }}
+          token: ${{ secrets.RELEASE_TOKEN }}
           title: CarbonChat ${{ steps.vars.outputs.tag }}
           pre-release: true
           files: |
