@@ -27,9 +27,6 @@ modrinth {
   token.set(providers.environmentVariable("MODRINTH_TOKEN"))
   required.project("luckperms")
   optional.project("miniplaceholders")
-  if (project.name == "carbon-velocity") {
-      optional.project("unsignedvelocity")
-  }
   gameVersions.add("1.19.4")
 }
 

@@ -43,3 +43,7 @@ blossom {
     replaceToken("$[$k]", v)
   }
 }
+
+modrinth {
+  optional.project("unsignedvelocity")
+}
