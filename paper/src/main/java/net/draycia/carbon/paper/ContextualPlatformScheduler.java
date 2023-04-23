@@ -10,10 +10,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ContextualPlatformScheduler implements PlatformScheduler {
 
-    private final CarbonChat carbonChat;
+    private final CarbonChatPaper carbonChat;
     private boolean isFolia;
 
-    public ContextualPlatformScheduler(final CarbonChat carbonChat) {
+    public ContextualPlatformScheduler(final CarbonChatPaper carbonChat) {
         this.carbonChat = carbonChat;
 
         try {
@@ -29,7 +29,7 @@ public class ContextualPlatformScheduler implements PlatformScheduler {
     }
 
     public void scheduleForPlayer(final CarbonPlayer carbonPlayer, final Runnable runnable) {
-        final JavaPlugin plugin = ((CarbonChatPaper) this.carbonChat).bukkitPlugin();
+        final JavaPlugin plugin = this.carbonChat.bukkitPlugin();
 
         if (!isFolia()) {
             if (Bukkit.isPrimaryThread()) {

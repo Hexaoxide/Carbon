@@ -23,9 +23,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
+import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
@@ -65,15 +67,10 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
         final Player player = optionalPlayer.get();
 
-        if (CarbonServerPaper.isFolia() && !Bukkit.isOwnedByCurrentRegion(player)) {
-            player.getScheduler().run(Bukkit.getPluginManager().getPlugin("CarbonChat"), task -> {
-                player.displayName(carbonPlayerCommon.displayName());
-                player.playerListName(carbonPlayerCommon.displayName());
-            }, null);
-        } else {
+        ((CarbonChatInternal<?>) CarbonChatProvider.carbonChat()).platformScheduler().scheduleForPlayer(this, () -> {
             player.displayName(carbonPlayerCommon.displayName());
             player.playerListName(carbonPlayerCommon.displayName());
-        }
+        });
     }
 
     private Optional<Player> player() {
@@ -127,11 +124,10 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
         this.carbonPlayerCommon.displayName(displayName);
 
         this.player().ifPresent(player -> {
-            // Update player's name in chat
-            player.displayName(displayName);
-
-            // Update player's name in the tab player list
-            player.playerListName(displayName);
+            ((CarbonChatInternal<?>) CarbonChatProvider.carbonChat()).platformScheduler().scheduleForPlayer(this, () -> {
+                player.displayName(carbonPlayerCommon.displayName());
+                player.playerListName(carbonPlayerCommon.displayName());
+            });
         });
     }
 

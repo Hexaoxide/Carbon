@@ -144,6 +144,8 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         this.commandExecutor.shutdown();
     }
 
+    public abstract PlatformScheduler platformScheduler();
+
     @Override
     public UUID serverId() {
         return this.serverId;

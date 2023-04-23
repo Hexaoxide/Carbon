@@ -32,6 +32,7 @@ import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PeriodicTasks;
+import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -66,6 +67,8 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
     private final JavaPlugin plugin;
 
+    private final PlatformScheduler platformScheduler;
+
     @Inject
     private CarbonChatPaper(
         final Injector injector,
@@ -98,6 +101,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
             messagingManager
         );
         this.plugin = plugin;
+        this.platformScheduler = new ContextualPlatformScheduler(this);
     }
 
     void onEnable() {
@@ -135,6 +139,11 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
     void onDisable() {
         this.shutdown();
+    }
+
+    @Override
+    public PlatformScheduler platformScheduler() {
+        return this.platformScheduler;
     }
 
     public static boolean papiLoaded() {
