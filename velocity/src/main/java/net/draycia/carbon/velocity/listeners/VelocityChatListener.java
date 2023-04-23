@@ -22,7 +22,11 @@ package net.draycia.carbon.velocity.listeners;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
+import com.velocitypowered.api.network.ProtocolVersion;
+import com.velocitypowered.api.plugin.PluginManager;
+import com.velocitypowered.api.proxy.Player;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
@@ -34,6 +38,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.slf4j.Logger;
 
 import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
@@ -48,17 +53,49 @@ public final class VelocityChatListener {
     private final CarbonChatVelocity carbonChat;
     private final ChannelRegistry registry;
     private final UserManager<?> userManager;
+    private final Logger logger;
+    private final AtomicInteger timesWarned = new AtomicInteger(0);
+    private final PluginManager pluginManager;
 
     @Inject
-    private VelocityChatListener(final CarbonChat carbonChat, final ChannelRegistry registry, final UserManager<?> userManager) {
+    private VelocityChatListener(
+        final CarbonChat carbonChat,
+        final ChannelRegistry registry,
+        final UserManager<?> userManager,
+        final Logger logger,
+        final PluginManager pluginManager
+    ) {
         this.carbonChat = (CarbonChatVelocity) carbonChat;
         this.registry = registry;
         this.userManager = userManager;
+        this.logger = logger;
+        this.pluginManager = pluginManager;
     }
 
     @Subscribe
     public void onPlayerChat(final PlayerChatEvent event) {
         if (!event.getResult().isAllowed()) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        final boolean signedVersion = player.getIdentifiedKey() != null
+            && player.getProtocolVersion().compareTo(ProtocolVersion.MINECRAFT_1_19_1) >= 0;
+        if (signedVersion && !this.pluginManager.isLoaded("unsignedvelocity")) {
+            if (this.timesWarned.getAndIncrement() < 3) {
+                this.logger.warn("""
+                    
+                    ==================================================
+                    We have avoided modifying the {}'s chat ,
+                    since it uses a version higher than 1.19.1,
+                    where this function is not supported.
+                    
+                    If you want to keep this function working,
+                    install UnSignedVelocity.
+                    ==================================================
+                    """, player.getUsername()
+                );
+            }
             return;
         }
 
