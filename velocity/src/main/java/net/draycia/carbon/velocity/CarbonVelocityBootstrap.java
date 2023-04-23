@@ -40,7 +40,8 @@ import java.nio.file.Path;
     authors = {"Draycia"},
     dependencies = {
         @Dependency(id = "luckperms"),
-        @Dependency(id = "miniplaceholders", optional = true)
+        @Dependency(id = "miniplaceholders", optional = true),
+        @Dependency(id = "unsignedvelocity", optional = true)
     }
 )
 public final class CarbonVelocityBootstrap {
