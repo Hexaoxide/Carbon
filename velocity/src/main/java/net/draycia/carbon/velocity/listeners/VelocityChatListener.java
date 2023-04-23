@@ -86,8 +86,8 @@ public final class VelocityChatListener {
                 this.logger.warn("""
                     
                     ==================================================
-                    We have avoided modifying the {}'s chat ,
-                    since it uses a version higher than 1.19.1,
+                    We have avoided modifying {}'s chat ,
+                    since they use a version higher than 1.19.1,
                     where this function is not supported.
                     
                     If you want to keep this function working,
