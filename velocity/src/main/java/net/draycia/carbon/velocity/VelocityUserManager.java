@@ -22,7 +22,6 @@ package net.draycia.carbon.velocity;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -35,13 +34,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public class VelocityUserManager extends PlatformUserManager<CarbonPlayerVelocity> {
 
-    protected final UserManager<CarbonPlayerCommon> proxiedUserManager;
     private final ProxyServer proxyServer;
 
     @Inject
     public VelocityUserManager(@Backing final UserManagerInternal<CarbonPlayerCommon> proxiedUserManager, final ProxyServer proxyServer) {
         super(proxiedUserManager);
-        this.proxiedUserManager = proxiedUserManager;
         this.proxyServer = proxyServer;
     }
 
