@@ -78,3 +78,7 @@ carbonPermission.permissions.get().forEach {
     }
   }
 }
+
+modrinth {
+  loaders.addAll("paper", "folia")
+}
