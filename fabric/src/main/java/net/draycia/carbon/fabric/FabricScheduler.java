@@ -17,29 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common;
+package net.draycia.carbon.fabric;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.PlatformScheduler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface PlatformScheduler {
+@Singleton
+public final class FabricScheduler implements PlatformScheduler {
 
-    void scheduleForPlayer(CarbonPlayer carbonPlayer, Runnable runnable);
+    private final MinecraftServerHolder serverHolder;
 
-    @Singleton
-    final class RunImmediately implements PlatformScheduler {
-        @Inject
-        private RunImmediately() {
-        }
+    @Inject
+    private FabricScheduler(final MinecraftServerHolder serverHolder) {
+        this.serverHolder = serverHolder;
+    }
 
-        @Override
-        public void scheduleForPlayer(final CarbonPlayer carbonPlayer, final Runnable runnable) {
-            runnable.run();
-        }
+    @Override
+    public void scheduleForPlayer(final CarbonPlayer carbonPlayer, final Runnable runnable) {
+        this.serverHolder.requireServer().execute(runnable);
     }
 
 }

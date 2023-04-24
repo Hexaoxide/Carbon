@@ -23,11 +23,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import net.draycia.carbon.api.CarbonChatProvider;
+import java.util.function.Consumer;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
-import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
@@ -55,22 +54,9 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     public CarbonPlayerPaper(final CarbonPlayerCommon carbonPlayerCommon) {
         this.carbonPlayerCommon = carbonPlayerCommon;
 
-        if (!this.hasCustomDisplayName()) {
-            return;
+        if (this.hasCustomDisplayName()) {
+            this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
         }
-
-        final Optional<Player> optionalPlayer = this.player();
-
-        if (optionalPlayer.isEmpty()) {
-            return;
-        }
-
-        final Player player = optionalPlayer.get();
-
-        ((CarbonChatInternal<?>) CarbonChatProvider.carbonChat()).platformScheduler().scheduleForPlayer(this, () -> {
-            player.displayName(carbonPlayerCommon.displayName());
-            player.playerListName(carbonPlayerCommon.displayName());
-        });
     }
 
     private Optional<Player> player() {
@@ -123,11 +109,13 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon.displayName(displayName);
 
-        this.player().ifPresent(player -> {
-            ((CarbonChatInternal<?>) CarbonChatProvider.carbonChat()).platformScheduler().scheduleForPlayer(this, () -> {
-                player.displayName(carbonPlayerCommon.displayName());
-                player.playerListName(carbonPlayerCommon.displayName());
-            });
+        this.player().ifPresent(this.applyDisplayNameToBukkit(displayName));
+    }
+
+    private Consumer<Player> applyDisplayNameToBukkit(final @Nullable Component displayName) {
+        return bukkit -> this.carbonPlayerCommon.schedule(() -> {
+            bukkit.displayName(displayName);
+            bukkit.playerListName(displayName);
         });
     }
 
