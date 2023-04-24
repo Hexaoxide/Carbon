@@ -54,9 +54,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     public CarbonPlayerPaper(final CarbonPlayerCommon carbonPlayerCommon) {
         this.carbonPlayerCommon = carbonPlayerCommon;
 
-        if (this.hasCustomDisplayName()) {
-            this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
-        }
+        this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
     }
 
     private Optional<Player> player() {
