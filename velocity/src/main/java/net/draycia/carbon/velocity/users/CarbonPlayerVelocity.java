@@ -29,6 +29,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
@@ -51,7 +52,7 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
 
     @Override
     public @NotNull Audience audience() {
-        return this.player().map(value -> (Audience) value).orElse(Audience.empty());
+        return this.player().map(value -> (Audience) value).orElseGet(() -> EmptyAudienceWithPointers.forCarbonPlayer(this));
     }
 
     @Override

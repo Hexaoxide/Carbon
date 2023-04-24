@@ -30,6 +30,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.MinecraftServerHolder;
 import net.kyori.adventure.audience.Audience;
@@ -59,7 +60,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public @NonNull Audience audience() {
-        return this.player().orElseThrow();
+        return this.player().map(p -> (Audience) p).orElseGet(() -> EmptyAudienceWithPointers.forCarbonPlayer(this));
     }
 
     public Optional<ServerPlayer> player() {
