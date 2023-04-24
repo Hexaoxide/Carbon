@@ -37,9 +37,10 @@ tasks {
   }
   runServer {
     minecraftVersion("1.19.4")
-    this.serverJar(workingDir.resolve("run/folia-1.19.4-22.jar"))
   }
 }
+
+runPaper.folia.registerTask()
 
 paper {
   name = rootProject.name
