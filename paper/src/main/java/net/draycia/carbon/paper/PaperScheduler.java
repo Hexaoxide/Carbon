@@ -71,6 +71,8 @@ public final class PaperScheduler implements PlatformScheduler {
         }
     }
 
+    // inner class to avoid Guice trying to load ScheduledTask when scanning for methods to inject,
+    // and finding the synthetic method generated for our ScheduledTask consumer lambda
     private final class Folia implements PlatformScheduler {
 
         @Override
