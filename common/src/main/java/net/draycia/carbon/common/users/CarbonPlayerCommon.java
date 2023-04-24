@@ -51,7 +51,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     private transient @MonotonicNonNull @Inject CarbonChat carbonChat;
     private transient @MonotonicNonNull @Inject ProfileResolver profileResolver;
-    private transient long transientLoadedSince = -1;
+    private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
     protected final PersistentUserProperty<Boolean> deafened;
