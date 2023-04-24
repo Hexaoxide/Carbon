@@ -49,34 +49,46 @@ public final class PaperScheduler implements PlatformScheduler {
 
     private final JavaPlugin plugin;
     private final Server server;
+    private final @Nullable Folia folia;
 
     @Inject
     private PaperScheduler(final JavaPlugin plugin, final Server server) {
         this.plugin = plugin;
         this.server = server;
+        this.folia = FOLIA ? new Folia() : null;
     }
 
     public void scheduleForPlayer(final CarbonPlayer carbonPlayer, final Runnable runnable) {
-        if (!FOLIA) {
-            if (this.server.isPrimaryThread()) {
-                runnable.run();
-            } else {
-                this.server.getScheduler().runTask(this.plugin, runnable);
-            }
+        if (this.folia != null) {
+            this.folia.scheduleForPlayer(carbonPlayer, runnable);
+            return;
+        }
+
+        if (this.server.isPrimaryThread()) {
+            runnable.run();
         } else {
-            final @Nullable Player player = this.server.getPlayer(carbonPlayer.uuid());
+            this.server.getScheduler().runTask(this.plugin, runnable);
+        }
+    }
+
+    private final class Folia implements PlatformScheduler {
+
+        @Override
+        public void scheduleForPlayer(final CarbonPlayer carbonPlayer, final Runnable runnable) {
+            final @Nullable Player player = PaperScheduler.this.server.getPlayer(carbonPlayer.uuid());
 
             if (player == null) {
                 runnable.run();
                 return;
             }
 
-            if (this.server.isOwnedByCurrentRegion(player)) {
+            if (PaperScheduler.this.server.isOwnedByCurrentRegion(player)) {
                 runnable.run();
             } else {
-                player.getScheduler().run(this.plugin, $ -> runnable.run(), null);
+                player.getScheduler().run(PaperScheduler.this.plugin, $ -> runnable.run(), null);
             }
         }
+
     }
 
 }
