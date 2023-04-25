@@ -22,8 +22,8 @@ package net.draycia.carbon.paper.users;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -52,14 +52,8 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     public CarbonPlayerPaper(final CarbonPlayerCommon carbonPlayerCommon) {
         this.carbonPlayerCommon = carbonPlayerCommon;
-        this.player().ifPresent(player -> Optional.ofNullable(carbonPlayerCommon.displayName()).ifPresent(displayName -> {
-            if (!Objects.equals(player.displayName(), displayName)) {
-                player.displayName(displayName);
-            }
-            if (!Objects.equals(player.playerListName(), displayName)) {
-                player.playerListName(displayName);
-            }
-        }));
+
+        this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
     }
 
     private Optional<Player> player() {
@@ -112,12 +106,13 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon.displayName(displayName);
 
-        this.player().ifPresent(player -> {
-            // Update player's name in chat
-            player.displayName(displayName);
+        this.player().ifPresent(this.applyDisplayNameToBukkit(displayName));
+    }
 
-            // Update player's name in the tab player list
-            player.playerListName(displayName);
+    private Consumer<Player> applyDisplayNameToBukkit(final @Nullable Component displayName) {
+        return bukkit -> this.carbonPlayerCommon.schedule(() -> {
+            bukkit.displayName(displayName);
+            bukkit.playerListName(displayName);
         });
     }
 

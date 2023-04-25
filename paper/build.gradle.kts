@@ -10,7 +10,7 @@ dependencies {
   implementation(projects.carbonchatCommon)
 
   // Server
-  compileOnly(libs.paperApi)
+  compileOnly(libs.foliaApi)
   implementation(libs.paperTrail)
 
   // Commands
@@ -40,6 +40,8 @@ tasks {
   }
 }
 
+runPaper.folia.registerTask()
+
 paper {
   name = rootProject.name
   version = project.version as String
@@ -57,6 +59,7 @@ paper {
   dependencies += PaperPluginDescription.Dependency("DiscordSRV", false)
   dependencies += PaperPluginDescription.Dependency("MiniPlaceholders", false)
   website = GITHUB_REPO_URL
+  foliaSupported = true
 }
 
 bukkit {
@@ -75,4 +78,8 @@ carbonPermission.permissions.get().forEach {
       childrenMap = it.children
     }
   }
+}
+
+modrinth {
+  loaders.addAll("paper", "folia")
 }

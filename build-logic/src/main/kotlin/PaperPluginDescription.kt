@@ -65,6 +65,7 @@ class PaperPluginDescription(project: Project) : PluginDescription {
   @Optional
   @JsonProperty("default-permission")
   var defaultPermission: BukkitPluginDescription.Permission.Default? = null
+  @Input @Optional @JsonProperty("folia-supported") var foliaSupported: Boolean? = null
 
   @Nested
   val dependencies: MutableList<Dependency> = mutableListOf()

@@ -34,6 +34,7 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
+import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
@@ -122,6 +123,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(FabricLoader.getInstance().getConfigDir().resolve(this.modContainer.getMetadata().getId()));
         this.bind(CarbonServer.class).to(CarbonServerFabric.class);
         this.bind(ProfileResolver.class).to(FabricProfileResolver.class);
+        this.bind(PlatformScheduler.class).to(FabricScheduler.class);
         this.bind(new TypeLiteral<UserManager<?>>() {}).to(FabricUserManager.class);
         this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(FabricUserManager.class);
     }

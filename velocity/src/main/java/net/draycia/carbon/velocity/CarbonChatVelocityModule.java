@@ -38,6 +38,7 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
+import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.users.ProfileResolver;
@@ -116,6 +117,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(ProfileResolver.class).to(VelocityProfileResolver.class);
         this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.dataDirectory);
         this.bind(Logger.class).toInstance(this.logger);
+        this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
         this.bind(new TypeLiteral<UserManager<?>>() {}).to(VelocityUserManager.class);
         this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(VelocityUserManager.class);
     }
