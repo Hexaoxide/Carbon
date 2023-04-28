@@ -34,6 +34,7 @@ import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.event.EventSubscriber;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,7 +46,7 @@ import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
-public class FabricChatPreviewListener implements ChatDecorator {
+public class FabricChatDecorator implements ChatDecorator {
 
     private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
@@ -54,7 +55,7 @@ public class FabricChatPreviewListener implements ChatDecorator {
     private final ChannelRegistry channelRegistry;
 
     @Inject
-    public FabricChatPreviewListener(
+    public FabricChatDecorator(
         final ConfigFactory configFactory,
         final CarbonChatFabric carbonChat,
         final ChannelRegistry channelRegistry
@@ -108,10 +109,18 @@ public class FabricChatPreviewListener implements ChatDecorator {
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, message, this.carbonChat.server().players(), renderers, channel, null);
+        final var recipients = channel.recipients(sender);
+        final var chatEvent = new CarbonChatEvent(sender, message, recipients, renderers, channel, null);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
-        if (!result.wasSuccessful()) {
+        if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
+            if (!result.exceptions().isEmpty()) {
+                for (var entry : result.exceptions().entrySet()) {
+                    this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
+                    entry.getValue().printStackTrace();
+                }
+            }
+
             final var failure = chatEvent.result().reason();
 
             if (!failure.equals(empty())) {
@@ -131,7 +140,6 @@ public class FabricChatPreviewListener implements ChatDecorator {
         final Component mojangComponent = FabricAudiences.nonWrappingSerializer().serialize(renderedMessage);
 
         return CompletableFuture.completedFuture(mojangComponent);
-        // TODO: recipients?
         // TODO: per-player formatting?
     }
 
