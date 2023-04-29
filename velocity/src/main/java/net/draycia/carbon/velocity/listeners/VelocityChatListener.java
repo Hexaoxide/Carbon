@@ -136,7 +136,7 @@ public final class VelocityChatListener {
 
         if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
             if (!result.exceptions().isEmpty()) {
-                for (var entry : result.exceptions().entrySet()) {
+                for (final var entry : result.exceptions().entrySet()) {
                     this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
                     entry.getValue().printStackTrace();
                 }

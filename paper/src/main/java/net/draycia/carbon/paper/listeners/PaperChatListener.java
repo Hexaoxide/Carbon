@@ -22,8 +22,6 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
@@ -38,7 +36,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.kyori.event.EventSubscriber;
 import ninja.egg82.messenger.services.PacketService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -114,7 +111,7 @@ public final class PaperChatListener implements Listener {
 
         if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
             if (!result.exceptions().isEmpty()) {
-                for (var entry : result.exceptions().entrySet()) {
+                for (final var entry : result.exceptions().entrySet()) {
                     this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
                     entry.getValue().printStackTrace();
                 }
