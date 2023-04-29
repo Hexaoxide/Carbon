@@ -50,7 +50,7 @@ import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
-public class FabricChatDecorator implements ServerMessageEvents.AllowChatMessage {
+public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
 
     private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
@@ -59,7 +59,7 @@ public class FabricChatDecorator implements ServerMessageEvents.AllowChatMessage
     private final ChannelRegistry channelRegistry;
 
     @Inject
-    public FabricChatDecorator(
+    public FabricChatHandler(
         final ConfigFactory configFactory,
         final CarbonChatFabric carbonChat,
         final ChannelRegistry channelRegistry
