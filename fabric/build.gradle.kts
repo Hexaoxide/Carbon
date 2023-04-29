@@ -68,3 +68,7 @@ tasks {
     }
   }
 }
+
+modrinth {
+  loaders.addAll("fabric")
+}
