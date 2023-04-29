@@ -22,7 +22,6 @@ package net.draycia.carbon.fabric.listeners;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
@@ -30,13 +29,18 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.fabric.CarbonChatFabric;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.event.EventSubscriber;
-import net.minecraft.network.chat.ChatDecorator;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FilterMask;
+import net.minecraft.network.chat.OutgoingChatMessage;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +50,7 @@ import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
-public class FabricChatDecorator implements ChatDecorator {
+public class FabricChatDecorator implements ServerMessageEvents.AllowChatMessage {
 
     private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
@@ -66,16 +70,16 @@ public class FabricChatDecorator implements ChatDecorator {
     }
 
     @Override
-    public CompletableFuture<Component> decorate(final @Nullable ServerPlayer serverPlayer, final Component component) {
+    public boolean allowChatMessage(final PlayerChatMessage chatMessage, final ServerPlayer serverPlayer, final ChatType.Bound bound) {
         if (serverPlayer == null) {
-            return CompletableFuture.completedFuture(component);
+            return false;
         }
 
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(serverPlayer.getUUID()).join();
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
 
-        String content = component.getString();
+        String content = chatMessage.decoratedContent().getString();
 
         for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
             content = content.replace(placeholder.getKey(), placeholder.getValue());
@@ -127,20 +131,32 @@ public class FabricChatDecorator implements ChatDecorator {
                 sender.sendMessage(failure);
             }
 
-            return CompletableFuture.completedFuture(component);
+            return false;
         }
 
-        // start here
-        var renderedMessage = chatEvent.message();
+        for (final var recipient : chatEvent.recipients()) {
+            var renderedMessage = chatEvent.message();
 
-        for (final var renderer : chatEvent.renderers()) {
-            renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
+            for (final var renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
+            }
+
+            final net.kyori.adventure.text.Component finishedMessage = renderedMessage;
+
+            final Component nativeMessage = FabricAudiences.nonWrappingSerializer().serialize(finishedMessage);
+            final PlayerChatMessage customChatMessage = new PlayerChatMessage(chatMessage.link(), chatMessage.signature(), chatMessage.signedBody(), nativeMessage, FilterMask.FULLY_FILTERED);
+            final ChatType.Bound customBound = ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), nativeMessage);
+
+            if (recipient instanceof CommandSourceStack recipientSource) {
+                recipientSource.sendChatMessage(new OutgoingChatMessage.Player(customChatMessage), false, customBound);
+            } else if (recipient instanceof CarbonPlayerFabric carbonPlayerFabric) {
+                carbonPlayerFabric.player().ifPresent(fabricPlayer -> {
+                    fabricPlayer.sendChatMessage(new OutgoingChatMessage.Player(customChatMessage), false, customBound);
+                });
+            }
         }
 
-        final Component mojangComponent = FabricAudiences.nonWrappingSerializer().serialize(renderedMessage);
-
-        return CompletableFuture.completedFuture(mojangComponent);
-        // TODO: per-player formatting?
+        return false;
     }
 
 }

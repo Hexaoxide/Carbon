@@ -42,6 +42,7 @@ import net.draycia.carbon.fabric.listeners.FabricJoinQuitListener;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
@@ -110,7 +111,7 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
     }
 
     private void registerChatListener() {
-        ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, this.injector().getInstance(FabricChatDecorator.class));
+        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register(this.injector().getInstance(FabricChatDecorator.class));
     }
 
     private void registerServerLifecycleListeners() {
