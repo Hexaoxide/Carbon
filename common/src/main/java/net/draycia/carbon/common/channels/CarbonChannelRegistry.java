@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -317,7 +316,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
         if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
             if (!result.exceptions().isEmpty()) {
-                for (var entry : result.exceptions().entrySet()) {
+                for (final var entry : result.exceptions().entrySet()) {
                     this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
                     entry.getValue().printStackTrace();
                 }
