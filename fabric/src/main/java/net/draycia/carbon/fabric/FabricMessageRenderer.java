@@ -20,10 +20,14 @@
 package net.draycia.carbon.fabric;
 
 import com.google.inject.Inject;
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
+import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -57,7 +61,26 @@ public class FabricMessageRenderer<T extends Audience> implements IMessageRender
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        return MiniMessage.miniMessage().deserialize(this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage), tagResolver.build());
+        final String placeholderResolvedMessage = this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage);
+
+        if (FabricLoader.getInstance().isModLoaded("miniplaceholders")) {
+            tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
+
+            if (receiver instanceof SourcedAudience sourced) {
+                if (sourced.sender() instanceof CarbonPlayerFabric sender && sender.online()) {
+                    if (sourced.recipient() instanceof CarbonPlayerFabric recipient && recipient.online()) {
+                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
+                            sender.player().orElseThrow(),
+                            recipient.player().orElseThrow()
+                        ));
+                    } else {
+                        tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender.player().orElseThrow()));
+                    }
+                }
+            }
+        }
+
+        return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
     }
 
 }

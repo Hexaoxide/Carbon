@@ -29,5 +29,8 @@
         "adventure-platform-fabric": "*",
         "minecraft": "~1.19.3",
         "luckperms": ">=5.0.0"
+    },
+    "suggests": {
+        "miniplaceholders": "*"
     }
 }
