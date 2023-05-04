@@ -22,7 +22,6 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
-import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
@@ -37,7 +36,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.kyori.event.EventSubscriber;
 import ninja.egg82.messenger.services.PacketService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,6 +48,7 @@ import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
+import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
@@ -110,9 +109,18 @@ public final class PaperChatListener implements Listener {
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, event.signedMessage());
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
-        if (!result.wasSuccessful()) {
-            for (final Map.Entry<EventSubscriber<?>, Throwable> entry : result.exceptions().entrySet()) {
-                this.carbonChat.logger().error(entry.getValue());
+        if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
+            if (!result.exceptions().isEmpty()) {
+                for (final var entry : result.exceptions().entrySet()) {
+                    this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
+                    entry.getValue().printStackTrace();
+                }
+            }
+
+            final var failure = chatEvent.result().reason();
+
+            if (!failure.equals(empty())) {
+                sender.sendMessage(failure);
             }
         }
 

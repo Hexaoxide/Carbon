@@ -34,6 +34,8 @@ dependencies {
 
   modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
+
+  modImplementation(libs.miniplaceholders)
 }
 
 carbonPlatform {
@@ -67,4 +69,8 @@ tasks {
       )
     }
   }
+}
+
+modrinth {
+  loaders.addAll("fabric")
 }

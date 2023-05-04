@@ -134,14 +134,19 @@ public final class VelocityChatListener {
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
         final var result = this.carbonChat.eventHandler().emit(chatEvent);
 
-        if (!result.wasSuccessful()) {
-            final var message = chatEvent.result().reason();
-
-            if (!message.equals(empty())) {
-                sender.sendMessage(message);
+        if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
+            if (!result.exceptions().isEmpty()) {
+                for (final var entry : result.exceptions().entrySet()) {
+                    this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
+                    entry.getValue().printStackTrace();
+                }
             }
 
-            return;
+            final var failure = chatEvent.result().reason();
+
+            if (!failure.equals(empty())) {
+                sender.sendMessage(failure);
+            }
         }
 
         for (final var recipient : chatEvent.recipients()) {

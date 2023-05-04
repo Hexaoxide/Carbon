@@ -36,14 +36,12 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.fabric.callback.ChatCallback;
 import net.draycia.carbon.fabric.command.DeleteMessageCommand;
-import net.draycia.carbon.fabric.listeners.FabricChatListener;
-import net.draycia.carbon.fabric.listeners.FabricChatPreviewListener;
+import net.draycia.carbon.fabric.listeners.FabricChatHandler;
 import net.draycia.carbon.fabric.listeners.FabricJoinQuitListener;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
@@ -112,9 +110,7 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
     }
 
     private void registerChatListener() {
-        ChatCallback.setup();
-        ChatCallback.INSTANCE.registerListener(new FabricChatListener(this, this.channelRegistry()));
-        ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, this.injector().getInstance(FabricChatPreviewListener.class));
+        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register(this.injector().getInstance(FabricChatHandler.class));
     }
 
     private void registerServerLifecycleListeners() {
