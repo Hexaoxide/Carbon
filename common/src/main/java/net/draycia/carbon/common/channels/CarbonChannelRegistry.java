@@ -329,20 +329,25 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             }
         }
 
-        var renderedMessage = chatEvent.message();
-
-        for (final var renderer : chatEvent.renderers()) {
-            renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
-        }
-
-        // TODO: Fix this, messages aren't rendered per person here :(
         for (final Audience recipient : chatEvent.recipients()) {
+            var renderedMessage = chatEvent.message();
+
+            for (final var renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
+            }
+
             recipient.sendMessage(renderedMessage);
         }
 
         final @Nullable PacketService packetService = this.carbonChat.packetService();
 
         if (packetService != null) {
+            var renderedMessage = chatEvent.message();
+
+            for (final var renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
+            }
+
             packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
                 channel.permission(), channel.key(), sender.username(), renderedMessage));
         }
