@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -91,6 +92,11 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
         }
 
         if (!(sourced.sender() instanceof CarbonPlayer sender && sender.online())) {
+            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        }
+
+        // We can't/shouldn't resolve placeholders for non-players
+        if (sender instanceof ConsoleCarbonPlayer) {
             return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
         }
 
