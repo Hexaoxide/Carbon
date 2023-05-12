@@ -34,6 +34,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.util.ChannelUtils;
 import net.draycia.carbon.common.util.DiscordRecipient;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
@@ -60,6 +61,11 @@ public class DSRVChatHook implements ChatHook {
         CarbonChatProvider.carbonChat().eventHandler().subscribe(CarbonChatEvent.class, event -> {
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
+
+            if (carbonPlayer instanceof ConsoleCarbonPlayer) {
+                return;
+            }
+
             final ImmutablePair<CarbonPlayer, ChatChannel> pair = new ImmutablePair<>(carbonPlayer, chatChannel);
             Component messageComponent = awaitingEvent.getIfPresent(pair);
             awaitingEvent.invalidate(pair);
