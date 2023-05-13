@@ -60,7 +60,6 @@ import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistryGetter;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;

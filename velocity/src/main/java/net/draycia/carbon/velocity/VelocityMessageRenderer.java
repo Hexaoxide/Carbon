@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -70,14 +71,17 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
 
             if (receiver instanceof SourcedAudience sourced) {
                 if (sourced.sender() instanceof CarbonPlayerVelocity sender && sender.online()) {
+                    tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender.player().orElseThrow()));
+
                     if (sourced.recipient() instanceof CarbonPlayerVelocity recipient && recipient.online()) {
                         tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
                             sender.player().orElseThrow(),
                             recipient.player().orElseThrow()
                         ));
-                    } else {
-                        tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender.player().orElseThrow()));
                     }
+                } else if (sourced.sender() instanceof ConsoleCarbonPlayer console) {
+                    // I don't know if this will ever actually resolve anything, or if anything supports console audience
+                    tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(console));
                 }
             }
         }
