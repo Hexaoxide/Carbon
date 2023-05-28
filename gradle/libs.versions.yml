@@ -41,7 +41,7 @@ versions:
   essentialsx: 2.19.3
   discordsrv: 1.26.0
   placeholderapi: 2.10.9
-  miniplaceholders: 2.0.0
+  miniplaceholders: 2.2.0
   jdbi: 3.34.0
   hikari: 5.0.1
   mysql: 8.0.31
