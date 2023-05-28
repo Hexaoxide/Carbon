@@ -67,14 +67,10 @@ public class FabricMessageRenderer<T extends Audience> implements IMessageRender
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
 
             if (receiver instanceof SourcedAudience sourced) {
-                if (sourced.sender() instanceof CarbonPlayerFabric sender && sender.online()) {
+                if (sourced.sender() instanceof CarbonPlayerFabric sender) {
+                    tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender));
                     if (sourced.recipient() instanceof CarbonPlayerFabric recipient && recipient.online()) {
-                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
-                            sender.player().orElseThrow(),
-                            recipient.player().orElseThrow()
-                        ));
-                    } else {
-                        tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender.player().orElseThrow()));
+                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(sender, recipient));
                     }
                 }
             }

@@ -69,14 +69,10 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
 
             if (receiver instanceof SourcedAudience sourced) {
-                if (sourced.sender() instanceof CarbonPlayerVelocity sender && sender.online()) {
-                    if (sourced.recipient() instanceof CarbonPlayerVelocity recipient && recipient.online()) {
-                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
-                            sender.player().orElseThrow(),
-                            recipient.player().orElseThrow()
-                        ));
-                    } else {
-                        tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender.player().orElseThrow()));
+                if (sourced.sender() instanceof CarbonPlayerVelocity sender) {
+                    tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender));
+                    if (sourced.recipient() instanceof CarbonPlayerVelocity recipient) {
+                        tagResolver.resolver(MiniPlaceholders.getRelationalGlobalPlaceholders(sender, recipient));
                     }
                 }
             }
