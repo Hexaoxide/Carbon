@@ -154,6 +154,13 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void selectedChannel(final @Nullable ChatChannel chatChannel);
 
+    /**
+     * Determines which channel the message should go to, and removes any channel prefixes from the message
+     *
+     * @param message the message to be sent
+     * @return the channel and message
+     * @since 2.1.0
+     */
     ChannelMessage channelForMessage(final Component message);
 
     record ChannelMessage(Component message, @Nullable ChatChannel channel) {}
