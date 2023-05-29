@@ -154,6 +154,10 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void selectedChannel(final @Nullable ChatChannel chatChannel);
 
+    ChannelMessage channelForMessage(final Component message);
+
+    record ChannelMessage(Component message, @Nullable ChatChannel channel) {}
+
     /**
      * Checks if the player has the specified permission.
      *
@@ -355,4 +359,5 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.1.0
      */
     void leaveChannel(final ChatChannel channel);
+
 }

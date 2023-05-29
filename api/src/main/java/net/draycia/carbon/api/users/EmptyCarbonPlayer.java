@@ -91,6 +91,11 @@ class EmptyCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
+    public ChannelMessage channelForMessage(final Component message) {
+        return new ChannelMessage(message, null);
+    }
+
+    @Override
     public boolean hasPermission(final String permission) {
         return false;
     }

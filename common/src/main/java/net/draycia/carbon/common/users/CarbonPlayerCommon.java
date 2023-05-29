@@ -39,6 +39,8 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -363,6 +365,34 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         } else {
             this.selectedChannel.set(chatChannel.key());
         }
+    }
+
+    @Override
+    public ChannelMessage channelForMessage(final Component message) {
+        final String text = PlainTextComponentSerializer.plainText().serialize(message);
+        Component formattedMessage = message;
+
+        @Nullable ChatChannel channel = this.selectedChannel();
+
+        for (final ChatChannel chatChannel : this.carbonChat.channelRegistry()) {
+            final @MonotonicNonNull String prefix = chatChannel.quickPrefix();
+
+            if (prefix == null) {
+                continue;
+            }
+
+            if (text.startsWith(prefix) && chatChannel.speechPermitted(this).permitted()) {
+                channel = chatChannel;
+                formattedMessage = formattedMessage.replaceText(TextReplacementConfig.builder()
+                    .once()
+                    .matchLiteral(channel.quickPrefix())
+                    .replacement(Component.empty())
+                    .build());
+                break;
+            }
+        }
+
+        return new ChannelMessage(formattedMessage, channel);
     }
 
     @Override

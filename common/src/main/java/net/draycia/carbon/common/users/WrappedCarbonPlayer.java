@@ -150,6 +150,11 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
+    public ChannelMessage channelForMessage(final Component message) {
+        return this.carbonPlayerCommon().channelForMessage(message);
+    }
+
+    @Override
     public @Nullable ChatChannel selectedChannel() {
         return this.carbonPlayerCommon().selectedChannel();
     }
