@@ -28,6 +28,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
@@ -57,16 +58,19 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
     private final ConfigFactory configFactory;
     private final CarbonChatFabric carbonChat;
     private final ChannelRegistry channelRegistry;
+    private final CarbonMessages carbonMessages;
 
     @Inject
     public FabricChatHandler(
         final ConfigFactory configFactory,
         final CarbonChatFabric carbonChat,
-        final ChannelRegistry channelRegistry
+        final ChannelRegistry channelRegistry,
+        final CarbonMessages carbonMessages
     ) {
         this.configFactory = configFactory;
         this.carbonChat = carbonChat;
         this.channelRegistry = channelRegistry;
+        this.carbonMessages = carbonMessages;
     }
 
     @Override
@@ -94,20 +98,17 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
                 .build());
         }
 
-        for (final var chatChannel : this.channelRegistry) {
-            if (chatChannel.quickPrefix() == null) {
-                continue;
-            }
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
 
-            if (content.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
-                channel = chatChannel;
-                message = message.replaceText(TextReplacementConfig.builder()
-                    .once()
-                    .matchLiteral(channel.quickPrefix())
-                    .replacement(text())
-                    .build());
-                break;
-            }
+        if (channelMessage.channel() != null) {
+            channel = channelMessage.channel();
+        }
+
+        message = channelMessage.message();
+
+        if (sender.leftChannels().contains(channel.key())) {
+            sender.joinChannel(channel);
+            this.carbonMessages.channelJoined(sender);
         }
 
         final var renderers = new ArrayList<KeyedRenderer>();

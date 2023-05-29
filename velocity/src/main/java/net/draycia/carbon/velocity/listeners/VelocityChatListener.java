@@ -33,6 +33,7 @@ import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -56,6 +57,7 @@ public final class VelocityChatListener {
     private final Logger logger;
     private final AtomicInteger timesWarned = new AtomicInteger(0);
     private final PluginManager pluginManager;
+    private final CarbonMessages carbonMessages;
 
     @Inject
     private VelocityChatListener(
@@ -63,13 +65,15 @@ public final class VelocityChatListener {
         final ChannelRegistry registry,
         final UserManager<?> userManager,
         final Logger logger,
-        final PluginManager pluginManager
+        final PluginManager pluginManager,
+        final CarbonMessages carbonMessages
     ) {
         this.carbonChat = (CarbonChatVelocity) carbonChat;
         this.registry = registry;
         this.userManager = userManager;
         this.logger = logger;
         this.pluginManager = pluginManager;
+        this.carbonMessages = carbonMessages;
     }
 
     @Subscribe
@@ -110,20 +114,17 @@ public final class VelocityChatListener {
             eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
         }
 
-        for (final var chatChannel : this.registry) {
-            if (chatChannel.quickPrefix() == null) {
-                continue;
-            }
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
 
-            if (originalMessage.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
-                channel = chatChannel;
-                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
-                    .once()
-                    .matchLiteral(channel.quickPrefix())
-                    .replacement(text())
-                    .build());
-                break;
-            }
+        if (channelMessage.channel() != null) {
+            channel = channelMessage.channel();
+        }
+
+        eventMessage = channelMessage.message();
+
+        if (sender.leftChannels().contains(channel.key())) {
+            sender.joinChannel(channel);
+            this.carbonMessages.channelJoined(sender);
         }
 
         final var recipients = channel.recipients(sender);

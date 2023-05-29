@@ -81,21 +81,14 @@ public final class PaperChatListener implements Listener {
             eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
         }
 
-        for (final var chatChannel : this.registry) {
-            if (chatChannel.quickPrefix() == null) {
-                continue;
-            }
 
-            if (messageContents.startsWith(chatChannel.quickPrefix()) && chatChannel.speechPermitted(sender).permitted()) {
-                channel = chatChannel;
-                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
-                    .once()
-                    .matchLiteral(channel.quickPrefix())
-                    .replacement(text())
-                    .build());
-                break;
-            }
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
+
+        if (channelMessage.channel() != null) {
+            channel = channelMessage.channel();
         }
+
+        eventMessage = channelMessage.message();
 
         if (sender.leftChannels().contains(channel.key())) {
             sender.joinChannel(channel);

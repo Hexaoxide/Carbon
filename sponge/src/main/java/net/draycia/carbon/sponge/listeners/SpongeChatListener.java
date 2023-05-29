@@ -62,16 +62,19 @@ public final class SpongeChatListener {
 
     private final CarbonChatSponge carbonChat;
     private final ChannelRegistry registry;
+    private final CarbonMessages carbonMessages;
 
     private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     @Inject
     private SpongeChatListener(
         final CarbonChat carbonChat,
-        final ChannelRegistry registry
+        final ChannelRegistry registry,
+        final CarbonMessages carbonMessages
     ) {
         this.carbonChat = (CarbonChatSponge) carbonChat;
         this.registry = registry;
+        this.carbonMessages = carbonMessages;
     }
 
     @Listener
@@ -89,11 +92,17 @@ public final class SpongeChatListener {
         final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
         var eventMessage = event.message();
 
-        if (sender.hasPermission("carbon.chatlinks")) {
-            eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
-                .match(DEFAULT_URL_PATTERN)
-                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
-                .build());
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
+
+        if (channelMessage.channel() != null) {
+            channel = channelMessage.channel();
+        }
+
+        eventMessage = channelMessage.message();
+
+        if (sender.leftChannels().contains(channel.key())) {
+            sender.joinChannel(channel);
+            this.carbonMessages.channelJoined(sender);
         }
 
         for (final var chatChannel : this.registry) {
