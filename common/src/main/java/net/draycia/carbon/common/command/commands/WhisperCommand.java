@@ -98,10 +98,10 @@ public class WhisperCommand extends CarbonCommand {
                 final String message = handler.get("message");
                 final CarbonPlayer recipient = handler.get("player");
 
-                if (sender.equals(recipient)) {
-                    this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
-                    return;
-                }
+//                if (sender.equals(recipient)) {
+//                    this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+//                    return;
+//                }
 
                 if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                     final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);

@@ -37,7 +37,7 @@ import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.messages.ReceiverResolver;
+import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.StandardPlaceholderResolverStrategyButDifferent;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
@@ -92,7 +92,7 @@ public final class CarbonCommonModule extends AbstractModule {
     @Provides
     @Singleton
     public CarbonMessages carbonMessages(
-        final ReceiverResolver receiverResolver,
+        final SourcedReceiverResolver receiverResolver,
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
         final StringPlaceholderResolver<Audience> stringPlaceholderResolver,

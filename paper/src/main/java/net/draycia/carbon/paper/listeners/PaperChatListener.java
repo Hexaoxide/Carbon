@@ -34,7 +34,6 @@ import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import ninja.egg82.messenger.services.PacketService;
 import org.bukkit.event.EventHandler;
@@ -49,7 +48,6 @@ import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
-import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperChatListener implements Listener {
@@ -80,7 +78,6 @@ public final class PaperChatListener implements Listener {
         if (sender.hasPermission("carbon.chatlinks")) {
             eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
         }
-
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
 

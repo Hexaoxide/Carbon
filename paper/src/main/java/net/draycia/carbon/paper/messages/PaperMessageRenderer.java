@@ -55,8 +55,6 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
         return null;
     });
 
-    private final Supplier<Boolean> miniPlaceholdersAvailable = Suppliers.memoize(CarbonChatPaper::miniPlaceholdersLoaded);
-
     private final MiniMessage miniMessage;
     private final ConfigFactory configFactory;
 
@@ -82,7 +80,7 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
 
         final String placeholderResolvedMessage = this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
-        if (this.miniPlaceholdersAvailable.get()) {
+        if (CarbonChatPaper.miniPlaceholdersLoaded()) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
         }
 
@@ -96,10 +94,11 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
 
         final Player senderBukkitPlayer = requireNonNull(Bukkit.getPlayer(sender.uuid()));
 
+        if (CarbonChatPaper.miniPlaceholdersLoaded()) {
+            tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(senderBukkitPlayer));
+        }
+
         if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
-            if (this.miniPlaceholdersAvailable.get()) {
-                tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(senderBukkitPlayer));
-            }
             if (this.hasPlaceholderAPI()) {
                 return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
                     placeholderResolvedMessage, tagResolver.build());
@@ -116,7 +115,7 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
             return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
         }
 
-        if (this.miniPlaceholdersAvailable.get()) {
+        if (CarbonChatPaper.miniPlaceholdersLoaded()) {
             tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
                 senderBukkitPlayer,
                 recipientBukkitPlayer

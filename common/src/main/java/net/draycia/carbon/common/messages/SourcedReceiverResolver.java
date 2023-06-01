@@ -43,6 +43,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import javax.inject.Singleton;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.receiver.IReceiverLocator;
 import net.kyori.moonshine.receiver.IReceiverLocatorResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -61,10 +62,16 @@ public final class SourcedReceiverResolver implements IReceiverLocatorResolver<S
     private static final class Resolver implements IReceiverLocator<SourcedAudience> {
         @Override
         public SourcedAudience locate(final Method method, final Object proxy, final @Nullable Object[] parameters) {
-            for (final Object parameter : parameters) {
-                if (parameter instanceof SourcedAudience audience) {
-                    return audience;
-                }
+            if (parameters.length == 0) {
+                return SourcedAudience.empty();
+            }
+
+            final @Nullable Object parameter = parameters[0];
+
+            if (parameter instanceof SourcedAudience sourcedAudience) {
+                return sourcedAudience;
+            } else if (parameter instanceof Audience audience) {
+                return new SourcedAudience(audience, audience);
             }
 
             return SourcedAudience.empty();
