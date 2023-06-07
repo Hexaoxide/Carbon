@@ -44,16 +44,16 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.events.CarbonReloadEvent;
-import net.draycia.carbon.common.events.ChannelRegisterEvent;
+import net.draycia.carbon.common.event.events.CarbonReloadEvent;
+import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.audience.Audience;
@@ -75,7 +75,6 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.kyori.adventure.text.Component.empty;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
@@ -246,7 +245,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             exception.printStackTrace();
         }
 
-        this.carbonChat.eventHandler().emit(new ChannelRegisterEvent(this.channelMap.values(), this));
+        this.carbonChat.eventHandler().emit(new ChannelRegisterEventImpl(this.channelMap.values(), this));
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
@@ -312,21 +311,10 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
         final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel, null);
-        final var result = this.carbonChat.eventHandler().emit(chatEvent);
+        this.carbonChat.eventHandler().emit(chatEvent);
 
-        if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
-            if (!result.exceptions().isEmpty()) {
-                for (final var entry : result.exceptions().entrySet()) {
-                    this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
-                    entry.getValue().printStackTrace();
-                }
-            }
-
-            final var failure = chatEvent.result().reason();
-
-            if (!failure.equals(empty())) {
-                sender.sendMessage(failure);
-            }
+        if (chatEvent.cancelled()) {
+            return;
         }
 
         for (final Audience recipient : chatEvent.recipients()) {

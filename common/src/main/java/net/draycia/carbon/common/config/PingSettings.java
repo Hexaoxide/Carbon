@@ -30,15 +30,15 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class PingSettings {
 
     @Comment("The color your name will be when another player mentions you.")
-    private TextColor highlightTextColor = NamedTextColor.YELLOW;
+    private final TextColor highlightTextColor = NamedTextColor.YELLOW;
 
-    private String prefix = "@";
+    private final String prefix = "@";
 
-    private boolean playSound = false;
-    private Key name = Key.key("block.anvil.use");
-    private Sound.Source source = Sound.Source.MASTER;
-    private float volume = 1.0f; // 0.0 -> infinity
-    private float pitch = 1.0f; // 0.0 -> 2.0
+    private final boolean playSound = false;
+    private final Key name = Key.key("block.anvil.use");
+    private final Sound.Source source = Sound.Source.MASTER;
+    private final float volume = 1.0f; // 0.0 -> infinity
+    private final float pitch = 1.0f; // 0.0 -> 2.0
 
     public TextColor highlightTextColor() {
         return this.highlightTextColor;

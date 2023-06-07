@@ -71,6 +71,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
 
     @Provides
     @Singleton
+    @SuppressWarnings("unused")
     public CommandManager<Commander> commandManager(final UserManager<?> userManager, final CarbonMessages messages, final ExecutionCoordinatorHolder executionCoordinatorHolder) {
         final PaperCommandManager<Commander> commandManager;
 
@@ -107,12 +108,14 @@ public final class CarbonChatPaperModule extends AbstractModule {
 
     @Provides
     @Singleton
+    @SuppressWarnings("unchecked,unused")
     public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
         return injector.getInstance(PaperMessageRenderer.class);
     }
 
     @Provides
     @Singleton
+    @SuppressWarnings("unchecked,unused")
     public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
         return injector.getInstance(PaperMessageRenderer.class);
     }

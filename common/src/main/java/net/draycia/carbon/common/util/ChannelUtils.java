@@ -22,7 +22,6 @@ package net.draycia.carbon.common.util;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -40,7 +39,7 @@ public final class ChannelUtils {
 
         for (final CarbonPlayer recipient : CarbonChatProvider.carbonChat().server().players()) {
             if (channel.hearingPermitted(recipient).permitted()) {
-                recipient.sendMessage(originalMessage, MessageType.CHAT);
+                recipient.sendMessage(originalMessage);
             }
         }
     }

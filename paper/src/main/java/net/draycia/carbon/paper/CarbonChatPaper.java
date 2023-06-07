@@ -28,12 +28,12 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.events.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
@@ -71,7 +71,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         final Injector injector,
         final JavaPlugin plugin,
         final CarbonMessages carbonMessages,
-        final CarbonEventHandler eventHandler,
+        final CarbonEventHandlerImpl eventHandler,
         final CarbonChannelRegistry channelRegistry,
         final Provider<MessagingManager> messagingManager,
         final CarbonServer carbonServer,

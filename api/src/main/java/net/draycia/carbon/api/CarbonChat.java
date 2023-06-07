@@ -22,7 +22,7 @@ package net.draycia.carbon.api;
 import java.nio.file.Path;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;

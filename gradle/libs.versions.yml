@@ -27,7 +27,7 @@ versions:
   paperApi: 1.19.4-R0.1-SNAPSHOT
   paperTrail: 0.0.1-SNAPSHOT
   foliaApi: 1.19.4-R0.1-SNAPSHOT
-  kyoriEventApi: 5.0.0-SNAPSHOT
+  event: 1.0.0-SNAPSHOT
   kyoriRegistry: 1.0.0-SNAPSHOT
   kyoriMoonshine: 2.0.4
   log4j: 2.17.2
@@ -101,10 +101,11 @@ dependencies:
     group: org.apache.logging.log4j
     name: log4j-api
 
-  kyoriEventApi:
-    group: net.kyori
+  event:
+    group: com.seiama
     name: event-api
-    version: { ref: kyoriEventApi }
+    version: { ref: event }
+
   kyoriRegistry:
     group: net.kyori
     name: registry

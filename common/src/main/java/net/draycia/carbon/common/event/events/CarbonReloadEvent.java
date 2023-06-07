@@ -17,21 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.users;
+package net.draycia.carbon.common.event.events;
 
-import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.jetbrains.annotations.ApiStatus;
+import net.draycia.carbon.api.event.CarbonEvent;
 
-/**
- * The result of a player data operation.
- *
- * @param player the {@link CarbonPlayer}, or null if unsuccessful
- * @param reason the reason of the result, typically empty unless {@link #player} is null
- * @since 2.0.0
- */
-@Deprecated(forRemoval = true)
-@ApiStatus.Internal
-public record ComponentPlayerResult<C extends CarbonPlayer>(@MonotonicNonNull C player, Component reason) {
+public class CarbonReloadEvent implements CarbonEvent {
+
+
 
 }

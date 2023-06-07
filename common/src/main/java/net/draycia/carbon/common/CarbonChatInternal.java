@@ -27,10 +27,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -80,7 +81,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,
-        final CarbonEventHandler eventHandler,
+        final CarbonEventHandlerImpl eventHandler,
         final CarbonChannelRegistry channelRegistry,
         final IMessageRenderer<Audience, String, Component, Component> renderer,
         final Provider<MessagingManager> messagingManagerProvider
@@ -180,6 +181,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
         return (IMessageRenderer<T, String, Component, Component>) this.renderer;
     }

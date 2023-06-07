@@ -17,9 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.events;
+package net.draycia.carbon.api.event.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.event.CarbonEvent;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;

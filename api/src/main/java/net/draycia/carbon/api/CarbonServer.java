@@ -21,7 +21,6 @@ package net.draycia.carbon.api;
 
 import java.util.List;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -49,15 +48,5 @@ public interface CarbonServer extends Audience {
      * @since 2.0.0
      */
     List<? extends CarbonPlayer> players();
-
-    /**
-     * Manager used to load/obtain and save {@link CarbonPlayer CarbonPlayers}.
-     *
-     * @deprecated Use {@link CarbonChat#userManager} (internal code: inject the UserManager)
-     * @return the user manager
-     * @since 2.1.0
-     */
-    @Deprecated(forRemoval = true)
-    UserManager<? extends CarbonPlayer> userManager();
 
 }

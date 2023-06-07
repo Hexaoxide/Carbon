@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -44,7 +44,6 @@ import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
-import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
@@ -132,21 +131,11 @@ public final class VelocityChatListener {
         renderers.add(keyedRenderer(key("carbon", "default"), channel));
 
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
-        final var result = this.carbonChat.eventHandler().emit(chatEvent);
+        this.carbonChat.eventHandler().emit(chatEvent);
 
-        if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
-            if (!result.exceptions().isEmpty()) {
-                for (final var entry : result.exceptions().entrySet()) {
-                    this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
-                    entry.getValue().printStackTrace();
-                }
-            }
-
-            final var failure = chatEvent.result().reason();
-
-            if (!failure.equals(empty())) {
-                sender.sendMessage(failure);
-            }
+        if (chatEvent.cancelled()) {
+            event.setResult(PlayerChatEvent.ChatResult.denied());
+            return;
         }
 
         for (final var recipient : chatEvent.recipients()) {

@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.events.CarbonShutdownEvent;
+import net.draycia.carbon.api.event.events.CarbonShutdownEvent;
 import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;

@@ -17,10 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.events;
+package net.draycia.carbon.api.event.events;
 
+import com.seiama.event.Cancellable;
 import java.util.List;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.kyori.adventure.audience.Audience;
@@ -31,15 +33,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static net.kyori.adventure.text.Component.empty;
-
 /**
- * {@link ResultedCarbonEvent} that's called when chat components are rendered for online players.
+ * Event that's called when chat components are rendered for online players.
  *
  * @since 2.0.0
  */
 @DefaultQualifier(NonNull.class)
-public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Result> {
+public class CarbonChatEvent implements CarbonEvent, Cancellable {
 
     private final List<KeyedRenderer> renderers;
     private final CarbonPlayer sender;
@@ -48,10 +48,10 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     private final @MonotonicNonNull ChatChannel chatChannel;
     private final @MonotonicNonNull SignedMessage signedMessage;
     private Component message;
-    private Result result = Result.ALLOWED;
+    private boolean cancelled = false;
 
     /**
-     * {@link ResultedCarbonEvent} that's called when players send messages in chat.
+     * Event that's called when players send messages in chat.
      *
      * @param sender          the sender of the message
      * @param originalMessage the original message that was sent
@@ -161,45 +161,13 @@ public class CarbonChatEvent implements ResultedCarbonEvent<CarbonChatEvent.Resu
     }
 
     @Override
-    public Result result() {
-        return this.result;
+    public boolean cancelled() {
+        return this.cancelled;
     }
 
     @Override
-    public void result(final Result result) {
-        this.result = result;
-    }
-
-    /**
-     * The result of this event.
-     *
-     * @since 2.0.0
-     */
-    public record Result(boolean cancelled, Component reason) implements ResultedCarbonEvent.Result {
-
-        private static final Result ALLOWED = new Result(false, empty());
-
-        /**
-         * Returns a Result that denotes the event was allowed and not cancelled.
-         *
-         * @return an allowed result
-         * @since 2.0.0
-         */
-        public static Result allowed() {
-            return ALLOWED;
-        }
-
-        /**
-         * Returns a Result that denotes the event was denied and cancelled.
-         *
-         * @param reason the reason the event was denied
-         * @return a denied result
-         * @since 2.0.0
-         */
-        public static Result denied(final Component reason) {
-            return new Result(true, reason);
-        }
-
+    public void cancelled(final boolean cancelled) {
+        this.cancelled = cancelled;
     }
 
 }

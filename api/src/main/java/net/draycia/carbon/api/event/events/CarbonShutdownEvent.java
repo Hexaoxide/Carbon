@@ -17,12 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.events;
+package net.draycia.carbon.api.event.events;
 
-import net.draycia.carbon.api.events.CarbonEvent;
+// TODO: emit event on server shutdown
 
-public class CarbonReloadEvent implements CarbonEvent {
+import net.draycia.carbon.api.event.CarbonEvent;
 
-
-
+/**
+ * An event that's called when the server shuts down.
+ *
+ * @since 2.1.0
+ */
+public class CarbonShutdownEvent implements CarbonEvent {
 }

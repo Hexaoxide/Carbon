@@ -24,7 +24,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
@@ -47,7 +47,6 @@ import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
-import static net.kyori.adventure.text.Component.empty;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperChatListener implements Listener {
@@ -97,21 +96,11 @@ public final class PaperChatListener implements Listener {
 
         final var recipients = channel.recipients(sender);
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, event.signedMessage());
-        final var result = this.carbonChat.eventHandler().emit(chatEvent);
+        this.carbonChat.eventHandler().emit(chatEvent);
 
-        if (!result.wasSuccessful() || chatEvent.result().cancelled()) {
-            if (!result.exceptions().isEmpty()) {
-                for (final var entry : result.exceptions().entrySet()) {
-                    this.carbonChat.logger().error("Exception in event handler: " + entry.getKey().getClass().getName());
-                    entry.getValue().printStackTrace();
-                }
-            }
-
-            final var failure = chatEvent.result().reason();
-
-            if (!failure.equals(empty())) {
-                sender.sendMessage(failure);
-            }
+        if (chatEvent.cancelled()) {
+            event.setCancelled(true);
+            return;
         }
 
         try {

@@ -75,7 +75,7 @@ public final class ConfigChatChannel implements ChatChannel {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private @Nullable Key key = Key.key("carbon", "global");
+    private final @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
         The permission required to use the /channel <channelname> and /<channelname> commands.
@@ -84,22 +84,22 @@ public final class ConfigChatChannel implements ChatChannel {
         To read messages you must have the permission carbon.channel.global.see
         To send messages you must have the permission carbon.channel.global.speak
         """)
-    private @Nullable String permission = "carbon.channel.global";
+    private final @Nullable String permission = "carbon.channel.global";
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    private final @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
     @Comment("Messages will be sent in this channel if they start with this prefix.")
-    private @Nullable String quickPrefix = "";
+    private final @Nullable String quickPrefix = "";
 
-    private @Nullable
+    private final @Nullable
     Boolean shouldRegisterCommands = true;
 
-    private @Nullable
+    private final @Nullable
     String commandName = null;
 
-    private @Nullable
+    private final @Nullable
     List<String> commandAliases = Collections.emptyList();
 
     private transient @Nullable ConfigChannelMessages carbonMessages = null;
@@ -109,15 +109,15 @@ public final class ConfigChatChannel implements ChatChannel {
         A value of '0' requires that both players are in the same world.
         On velocity, '0' requires that both players are in the same server.
         """)
-    private int radius = -1;
+    private final int radius = -1;
 
     @Comment("""
         If true, players will be able to see if they're not sending messages to anyone
         because they're out of range from the radius.
         """)
-    private boolean emptyRadiusRecipientsMessage = true;
+    private final boolean emptyRadiusRecipientsMessage = true;
 
-    private transient @Nullable ConfigChannelMessages messageService = null;
+    private final transient @Nullable ConfigChannelMessages messageService = null;
 
     @Override
     public @Nullable String quickPrefix() {

@@ -57,7 +57,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
                 discord="<message>"
             }
         """)
-    private Map<String, String> defaults = Map.of(
+    private final Map<String, String> defaults = Map.of(
         "default_format", "<display_name>: <message>",
         "console", "[<channel>] <username> - <uuid>: <message>",
         "discord", "<message>"
@@ -69,7 +69,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         You can safely delete this section if you don't want to use this feature.
         Will fall back to the defaults section if no format was found for the player.
         """)
-    private Map<Locale, Map<String, String>> locales = Map.of(
+    private final Map<Locale, Map<String, String>> locales = Map.of(
         Locale.US, Map.of("default_format", "<display_name>: <message>")
     );
 

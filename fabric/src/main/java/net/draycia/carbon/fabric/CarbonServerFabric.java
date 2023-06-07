@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
@@ -63,11 +61,6 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
             .map(serverPlayer -> this.userManager.user(serverPlayer.getUUID()).getNow(null))
             .filter(Objects::nonNull)
             .toList();
-    }
-
-    @Override
-    public UserManager<CarbonPlayerFabric> userManager() {
-        return this.userManager;
     }
 
 }

@@ -63,9 +63,4 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
             .toList();
     }
 
-    @Override
-    public UserManager<? extends CarbonPlayer> userManager() {
-        return this.userManager;
-    }
-
 }

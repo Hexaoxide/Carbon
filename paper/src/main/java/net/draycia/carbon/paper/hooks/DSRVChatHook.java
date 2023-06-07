@@ -31,7 +31,7 @@ import github.scarsz.discordsrv.util.PluginUtil;
 import java.time.Duration;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.util.ChannelUtils;
@@ -95,7 +95,7 @@ public class DSRVChatHook implements ChatHook {
             final String message = PlainTextComponentSerializer.plainText().serialize(eventMessage);
 
             if (player != null) {
-                DiscordSRV.getPlugin().processChatMessage(player, message, chatChannel.commandName(), event.result().cancelled());
+                DiscordSRV.getPlugin().processChatMessage(player, message, chatChannel.commandName(), event.cancelled());
             }
         });
 

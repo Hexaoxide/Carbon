@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Server;
@@ -62,11 +60,6 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
             .map(bukkit -> this.userManager.user(bukkit.getUniqueId()).getNow(null))
             .filter(Objects::nonNull)
             .toList();
-    }
-
-    @Override
-    public UserManager<CarbonPlayerPaper> userManager() {
-        return this.userManager;
     }
 
     public static boolean isFolia() {

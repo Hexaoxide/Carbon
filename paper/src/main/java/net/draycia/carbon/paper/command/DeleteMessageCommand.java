@@ -27,7 +27,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.inject.Inject;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.events.CarbonChatEvent;
+import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;

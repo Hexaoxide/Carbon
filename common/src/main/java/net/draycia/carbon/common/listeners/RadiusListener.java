@@ -20,8 +20,8 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.events.CarbonChatEvent;
-import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import org.checkerframework.checker.nullness.qual.NonNull;

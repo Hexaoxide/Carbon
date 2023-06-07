@@ -50,7 +50,7 @@ abstract class RegistryDataLoaderMixin {
         ),
         locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked,rawtypes")
     private static void carbon$injectMessageTypes(
         final ResourceManager resourceManager,
         final RegistryAccess registryAccess,

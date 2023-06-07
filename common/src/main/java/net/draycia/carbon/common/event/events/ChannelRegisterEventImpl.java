@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.events;
+package net.draycia.carbon.common.event.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.events.CarbonChannelRegisterEvent;
-import net.draycia.carbon.api.events.CarbonEvent;
+import net.draycia.carbon.api.event.CarbonEvent;
+import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,7 +33,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @since 2.1.0
  */
 @DefaultQualifier(NonNull.class)
-public class ChannelRegisterEvent implements CarbonChannelRegisterEvent {
+public class ChannelRegisterEventImpl implements CarbonChannelRegisterEvent {
 
     private final Iterable<ChatChannel> channels;
     private final CarbonChannelRegistry registry;
@@ -44,7 +44,7 @@ public class ChannelRegisterEvent implements CarbonChannelRegisterEvent {
      * @param channels the channels that were registered
      * @since 2.1.0
      */
-    public ChannelRegisterEvent(final Iterable<ChatChannel> channels, final CarbonChannelRegistry registry) {
+    public ChannelRegisterEventImpl(final Iterable<ChatChannel> channels, final CarbonChannelRegistry registry) {
         this.channels = channels;
         this.registry = registry;
     }

@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.events.CarbonReloadEvent;
+import net.draycia.carbon.common.event.CarbonReloadEvent;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.RefreshGameEvent;
 

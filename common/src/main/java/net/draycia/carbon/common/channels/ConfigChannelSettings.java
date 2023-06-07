@@ -36,7 +36,7 @@ public final class ConfigChannelSettings {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private @Nullable Key key = Key.key("carbon", "basic");
+    private final @Nullable Key key = Key.key("carbon", "basic");
 
     @Comment("""
         The permission required to use the channel.
@@ -44,19 +44,19 @@ public final class ConfigChannelSettings {
         To send messages you must have the permission carbon.channel.basic.speak
         If you want to give both, grant carbon.channel.basic or carbon.channel.basic.*
         """)
-    private @Nullable String permission = "carbon.channel.basic";
+    private final @Nullable String permission = "carbon.channel.basic";
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    private final @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
     @Comment("Messages will be sent in this channel if they start with this prefix.")
-    private @Nullable String quickPrefix = "";
+    private final @Nullable String quickPrefix = "";
 
-    private @Nullable Boolean shouldRegisterCommands = true;
+    private final @Nullable Boolean shouldRegisterCommands = true;
 
-    private @Nullable String commandName = null;
+    private final @Nullable String commandName = null;
 
-    private @Nullable List<String> commandAliases = Collections.emptyList();
+    private final @Nullable List<String> commandAliases = Collections.emptyList();
 
 }

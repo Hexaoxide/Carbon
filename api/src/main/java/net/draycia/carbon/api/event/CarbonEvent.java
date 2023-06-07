@@ -17,14 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.events;
-
-// TODO: emit event on server shutdown
+package net.draycia.carbon.api.event;
 
 /**
- * An event that's called when the server shuts down.
+ * Interface to represent that an event belongs to carbon.
  *
- * @since 2.1.0
+ * @since 1.0.0
  */
-public class CarbonShutdownEvent implements CarbonEvent {
+public interface CarbonEvent {
+
 }

@@ -26,7 +26,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.events.CarbonReloadEvent;
+import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;

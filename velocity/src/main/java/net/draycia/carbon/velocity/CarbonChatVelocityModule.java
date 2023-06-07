@@ -97,12 +97,14 @@ public final class CarbonChatVelocityModule extends AbstractModule {
 
     @Provides
     @Singleton
+    @SuppressWarnings("unchecked,unused")
     public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
         return injector.getInstance(VelocityMessageRenderer.class);
     }
 
     @Provides
     @Singleton
+    @SuppressWarnings("unchecked,unused")
     public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
         return injector.getInstance(VelocityMessageRenderer.class);
     }

@@ -18,7 +18,7 @@ dependencies {
 
   compileOnlyApi(libs.checkerQual)
 
-  api(libs.kyoriEventApi)
+  api(libs.event)
   api(libs.kyoriRegistry) {
     exclude("com.google.guava")
   }

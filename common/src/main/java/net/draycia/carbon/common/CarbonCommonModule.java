@@ -29,11 +29,12 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.events.CarbonEventHandler;
+import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -86,7 +87,7 @@ public final class CarbonCommonModule extends AbstractModule {
     @Provides
     @Singleton
     public CarbonEventHandler eventHandler() {
-        return new CarbonEventHandler();
+        return new CarbonEventHandlerImpl();
     }
 
     @Provides
