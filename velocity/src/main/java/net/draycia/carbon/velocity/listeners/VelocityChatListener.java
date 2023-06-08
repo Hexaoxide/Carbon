@@ -134,7 +134,6 @@ public final class VelocityChatListener {
         this.carbonChat.eventHandler().emit(chatEvent);
 
         if (chatEvent.cancelled()) {
-            event.setResult(PlayerChatEvent.ChatResult.denied());
             return;
         }
 
@@ -147,8 +146,6 @@ public final class VelocityChatListener {
 
             recipient.sendMessage(renderedMessage);
         }
-
-        event.setResult(PlayerChatEvent.ChatResult.denied());
     }
 
 }
