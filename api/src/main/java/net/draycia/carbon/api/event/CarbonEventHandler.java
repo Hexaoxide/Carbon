@@ -23,6 +23,11 @@ import com.seiama.event.EventSubscriber;
 import com.seiama.event.EventSubscription;
 import java.util.function.Consumer;
 
+/**
+ * Carbon event dispatcher.
+ *
+ * @since 2.1.0
+ */
 public interface CarbonEventHandler {
 
     /**
