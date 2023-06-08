@@ -6,7 +6,7 @@ plugins {
   id("net.kyori.indra.publishing.sonatype")
 }
 
-group = "net.draycia"
+group = "de.hexaoxi"
 description = "CarbonChat - A modern chat plugin"
 val projectVersion: String by project // get from gradle.properties
 version = projectVersion
