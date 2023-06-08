@@ -29,5 +29,5 @@ indent_style = space
 insert_final_newline = true
 max_line_length = off
 
-[{*.kt, *.kts, *.yml}]
+[{*.kt,*.kts,*.yml}]
 indent_size = 2

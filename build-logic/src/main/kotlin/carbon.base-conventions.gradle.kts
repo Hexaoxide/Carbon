@@ -2,15 +2,11 @@ plugins {
   id("net.kyori.indra")
   id("net.kyori.indra.git")
   id("net.kyori.indra.checkstyle")
-  id("net.kyori.indra.publishing")
   id("net.kyori.indra.license-header")
 }
 
 indra {
   gpl3OnlyLicense()
-
-  publishReleasesTo("parksReleases", "https://repo.parks.dev/repository/maven-releases/")
-  publishSnapshotsTo("parksSnapshots", "https://repo.parks.dev/repository/maven-snapshots/")
 
   javaVersions {
     target(17)

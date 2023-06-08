@@ -42,18 +42,20 @@ jobs:
           else
             echo "STATUS=release" >> $GITHUB_ENV
           fi
-#      - name: Publish Snapshot to Maven
-#        if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/2.1' }}"
-#        run: ./gradlew publish --stacktrace
-#        env:
-#          ORG_GRADLE_PROJECT_parksUsername: "${{ secrets.CI_USER }}"
-#          ORG_GRADLE_PROJECT_parksPassword: "${{ secrets.CI_PASS }}"
-#      - name: Publish (Pre-)Release to Maven
-#        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-#        run: ./gradlew publish --stacktrace
-#        env:
-#          ORG_GRADLE_PROJECT_parksUsername: "${{ secrets.CI_USER }}"
-#          ORG_GRADLE_PROJECT_parksPassword: "${{ secrets.CI_PASS }}"
+      -   name: "publish snapshot to sonatype snapshots"
+          if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/2.1' }}"
+          run: ./gradlew publish
+          env:
+            ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
+            ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
+      -   name: "publish (pre-)release to maven central"
+          if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+          run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+          env:
+            ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
+            ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
+            ORG_GRADLE_PROJECT_signingKey: "${{ secrets.SIGNING_KEY }}"
+            ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.SIGNING_PASSWORD }}"
       - name: Parse tag
         if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
         id: vars

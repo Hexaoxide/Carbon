@@ -3,6 +3,7 @@ import io.papermc.hangarpublishplugin.model.Platforms
 plugins {
   id("carbon.build-logic")
   id("io.papermc.hangar-publish-plugin")
+  id("net.kyori.indra.publishing.sonatype")
 }
 
 group = "net.draycia"
@@ -49,4 +50,8 @@ hangarPublish.publications.register("plugin") {
       }
     }
   }
+}
+
+indraSonatype {
+  useAlternateSonatypeOSSHost("s01")
 }

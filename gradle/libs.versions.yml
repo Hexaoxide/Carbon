@@ -9,9 +9,10 @@ plugins:
   xyz.jpenilla.run-paper: &run-task 2.1.0
   xyz.jpenilla.run-velocity: *run-task
   io.papermc.hangar-publish-plugin: 0.0.5
+  net.kyori.indra.publishing.sonatype: &indra 3.0.1
 
 versions:
-  indra: 3.0.1
+  indra: *indra
   licenser: 0.6.1
   shadow: 8.1.0
   adventure: 4.13.0

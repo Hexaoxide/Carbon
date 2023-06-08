@@ -1,5 +1,5 @@
 plugins {
-  id("carbon.base-conventions")
+  id("carbon.publishing-conventions")
 }
 
 dependencies {
