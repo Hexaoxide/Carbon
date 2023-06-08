@@ -35,20 +35,13 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.util.ChannelUtils;
-import net.draycia.carbon.common.util.DiscordRecipient;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import static github.scarsz.discordsrv.util.MessageUtil.DEFAULT_URL_PATTERN;
-import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.kyori.adventure.key.Key.key;
 
 public class DSRVChatHook implements ChatHook {
 
@@ -68,31 +61,13 @@ public class DSRVChatHook implements ChatHook {
                 messageComponent = event.message();
             }
 
-            var renderedMessage = keyedRenderer(key("carbon", "discord"), chatChannel).render(carbonPlayer, DiscordRecipient.INSTANCE, messageComponent, messageComponent);
-
-            // TODO: Should we bother with any of these renders?
-            for (final var renderer : event.renderers()) {
-                if (renderer.key().asString().equals("carbon:default")) {
-                    continue;
-                }
-
-                renderedMessage = renderer.render(carbonPlayer, carbonPlayer, renderedMessage, renderedMessage);
-            }
-
-            final var messageContents = PlainTextComponentSerializer.plainText().serialize(renderedMessage);
-            Component eventMessage = ConfigChatChannel.parseMessageTags(carbonPlayer, messageContents);
-
-            if (carbonPlayer.hasPermission("carbon.chatlinks")) {
-                eventMessage = eventMessage.replaceText(TextReplacementConfig.builder()
-                    .match(DEFAULT_URL_PATTERN)
-                    .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
-                    .build());
-            }
+            final String messageContents = PlainTextComponentSerializer.plainText().serialize(messageComponent);
+            Component parsedMessage = ConfigChatChannel.parseMessageTags(carbonPlayer, messageContents);
 
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");
 
             final @Nullable Player player = ((CarbonPlayerPaper) carbonPlayer).bukkitPlayer();
-            final String message = PlainTextComponentSerializer.plainText().serialize(eventMessage);
+            final String message = PlainTextComponentSerializer.plainText().serialize(parsedMessage);
 
             if (player != null) {
                 DiscordSRV.getPlugin().processChatMessage(player, message, chatChannel.commandName(), event.cancelled());
