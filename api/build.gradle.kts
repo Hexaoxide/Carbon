@@ -2,6 +2,8 @@ plugins {
   id("carbon.publishing-conventions")
 }
 
+description = "API for interfacing with the CarbonChat Minecraft mod/plugin"
+
 dependencies {
   // Doesn't add any dependencies, only version constraints
   api(platform(libs.adventureBom))
