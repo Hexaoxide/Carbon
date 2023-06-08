@@ -26,6 +26,7 @@ import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -127,9 +128,17 @@ public class ReplyCommand extends CarbonCommand {
                 final Component senderName = CarbonPlayer.renderName(sender);
                 final Component recipientName = CarbonPlayer.renderName(recipient);
 
-                this.carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, message);
-                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, message);
-                this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, message);
+                final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEvent(sender, recipient, Component.text(message));
+                this.carbonChat.eventHandler().emit(privateChatEvent);
+
+                if (privateChatEvent.cancelled()) {
+                    this.carbonMessages.whisperError(sender, CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient));
+                    return;
+                }
+
+                this.carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, privateChatEvent.message());
+                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, privateChatEvent.message());
+                this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, privateChatEvent.message());
 
                 final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
                 if (messageSound != null) {

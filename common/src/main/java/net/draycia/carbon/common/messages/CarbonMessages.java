@@ -123,7 +123,7 @@ public interface CarbonMessages {
         final SourcedAudience audience,
         @Placeholder("sender_display_name") final Component senderDisplayName,
         @Placeholder("recipient_display_name") final Component recipientDisplayName,
-        final String message
+        final Component message
     );
 
     @Message("whisper.from")
@@ -131,7 +131,7 @@ public interface CarbonMessages {
         final SourcedAudience audience,
         @Placeholder("sender_display_name") final Component senderDisplayName,
         @Placeholder("recipient_display_name") final Component recipientDisplayName,
-        final String message
+        final Component message
     );
 
     @Message("whisper.console")
@@ -139,7 +139,14 @@ public interface CarbonMessages {
         final Audience audience,
         @Placeholder("sender_display_name") final Component senderDisplayName,
         @Placeholder("recipient_display_name") final Component recipientDisplayName,
-        final String message
+        final Component message
+    );
+
+    @Message("whisper.error")
+    void whisperError(
+        final Audience audience,
+        @Placeholder("sender_display_name") final Component senderDisplayName,
+        @Placeholder("recipient_display_name") final Component recipientDisplayName
     );
 
     @Message("reply.target.missing")
