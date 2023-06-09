@@ -23,14 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.util.Tristate;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -151,7 +155,30 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     @Override
     public ChannelMessage channelForMessage(final Component message) {
-        return this.carbonPlayerCommon().channelForMessage(message);
+        final String text = PlainTextComponentSerializer.plainText().serialize(message);
+        Component formattedMessage = message;
+
+        @Nullable ChatChannel channel = this.selectedChannel();
+
+        for (final ChatChannel chatChannel : CarbonChatProvider.carbonChat().channelRegistry()) {
+            final @MonotonicNonNull String prefix = chatChannel.quickPrefix();
+
+            if (prefix == null) {
+                continue;
+            }
+
+            if (text.startsWith(prefix) && chatChannel.speechPermitted(this).permitted()) {
+                channel = chatChannel;
+                formattedMessage = formattedMessage.replaceText(TextReplacementConfig.builder()
+                    .once()
+                    .matchLiteral(channel.quickPrefix())
+                    .replacement(Component.empty())
+                    .build());
+                break;
+            }
+        }
+
+        return new ChannelMessage(formattedMessage, channel);
     }
 
     @Override

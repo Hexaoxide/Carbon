@@ -53,7 +53,6 @@ import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -75,7 +74,7 @@ public final class ConfigChatChannel implements ChatChannel {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private final @Nullable Key key = Key.key("carbon", "global");
+    private @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
         The permission required to use the /channel <channelname> and /<channelname> commands.
@@ -84,23 +83,20 @@ public final class ConfigChatChannel implements ChatChannel {
         To read messages you must have the permission carbon.channel.global.see
         To send messages you must have the permission carbon.channel.global.speak
         """)
-    private final @Nullable String permission = "carbon.channel.global";
+    private @Nullable String permission = null;
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private final @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    private @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
     @Comment("Messages will be sent in this channel if they start with this prefix.")
-    private final @Nullable String quickPrefix = "";
+    private @Nullable String quickPrefix = null;
 
-    private final @Nullable
-    Boolean shouldRegisterCommands = true;
+    private @Nullable Boolean shouldRegisterCommands = true;
 
-    private final @Nullable
-    String commandName = null;
+    private @Nullable String commandName = null;
 
-    private final @Nullable
-    List<String> commandAliases = Collections.emptyList();
+    private @Nullable List<String> commandAliases = Collections.emptyList();
 
     private transient @Nullable ConfigChannelMessages carbonMessages = null;
 
@@ -109,15 +105,13 @@ public final class ConfigChatChannel implements ChatChannel {
         A value of '0' requires that both players are in the same world.
         On velocity, '0' requires that both players are in the same server.
         """)
-    private final int radius = -1;
+    private int radius = -1;
 
     @Comment("""
         If true, players will be able to see if they're not sending messages to anyone
         because they're out of range from the radius.
         """)
-    private final boolean emptyRadiusRecipientsMessage = true;
-
-    private final transient @Nullable ConfigChannelMessages messageService = null;
+    private boolean emptyRadiusRecipientsMessage = true;
 
     @Override
     public @Nullable String quickPrefix() {
@@ -296,7 +290,11 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public @MonotonicNonNull String permission() {
+    public String permission() {
+        if (this.permission == null) {
+            return "carbon.channel." + this.key().value();
+        }
+
         return this.permission;
     }
 

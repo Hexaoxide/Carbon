@@ -62,7 +62,7 @@ public class DSRVChatHook implements ChatHook {
             }
 
             final String messageContents = PlainTextComponentSerializer.plainText().serialize(messageComponent);
-            Component parsedMessage = ConfigChatChannel.parseMessageTags(carbonPlayer, messageContents);
+            final Component parsedMessage = ConfigChatChannel.parseMessageTags(carbonPlayer, messageContents);
 
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");
 
