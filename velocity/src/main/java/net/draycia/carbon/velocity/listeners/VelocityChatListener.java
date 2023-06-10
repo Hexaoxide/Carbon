@@ -20,6 +20,7 @@
 package net.draycia.carbon.velocity.listeners;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
@@ -74,7 +75,7 @@ public final class VelocityChatListener {
         this.carbonMessages = carbonMessages;
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.LAST)
     public void onPlayerChat(final PlayerChatEvent event) {
         if (!event.getResult().isAllowed()) {
             return;
