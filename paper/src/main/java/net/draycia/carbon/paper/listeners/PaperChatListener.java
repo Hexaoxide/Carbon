@@ -128,15 +128,15 @@ public final class PaperChatListener implements Listener {
             return renderedMessage;
         });
 
-        Component networkMessage = chatEvent.message();
-
-        for (final var renderer : chatEvent.renderers()) {
-            networkMessage = renderer.render(sender, sender, networkMessage, event.originalMessage());
-        }
-
         final @Nullable PacketService packetService = this.carbonChat.packetService();
 
         if (packetService != null) {
+            Component networkMessage = chatEvent.message();
+
+            for (final var renderer : chatEvent.renderers()) {
+                networkMessage = renderer.render(sender, sender, networkMessage, event.originalMessage());
+            }
+
             packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
                 channel.permission(), channel.key(), sender.username(), networkMessage));
         }
