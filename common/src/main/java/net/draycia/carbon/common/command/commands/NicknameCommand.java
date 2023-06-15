@@ -119,11 +119,11 @@ public class NicknameCommand extends CarbonCommand {
     private void applyNickname(final Commander sender, final CarbonPlayer target, final String nick) {
         // Lazy since the sender might not have permission to set the nickname
         final Supplier<Component> parsedNick = Suppliers.memoize(() -> parseNickname(sender, nick));
+        target.displayName(parsedNick.get());
 
         if (sender instanceof PlayerCommander playerCommander
             && playerCommander.carbonPlayer().uuid().equals(target.uuid())) {
             // Setting own nickname
-            target.displayName(parsedNick.get());
             this.carbonMessages.nicknameSet(sender, parsedNick.get());
         } else {
             // Setting other player's nickname
