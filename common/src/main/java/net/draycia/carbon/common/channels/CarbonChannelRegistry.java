@@ -60,6 +60,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.registry.DefaultedRegistryGetter;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
@@ -76,6 +77,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
+import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
@@ -311,7 +313,13 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, Component.text(plainMessage), recipients, renderers, channel, null);
+        Component eventMessage = ConfigChatChannel.parseMessageTags(sender, plainMessage);
+
+        if (sender.hasPermission("carbon.chatlinks")) {
+            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
+        }
+
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
         this.carbonChat.eventHandler().emit(chatEvent);
 
         if (chatEvent.cancelled()) {

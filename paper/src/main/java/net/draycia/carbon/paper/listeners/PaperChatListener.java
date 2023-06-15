@@ -116,7 +116,7 @@ public final class PaperChatListener implements Listener {
             final Audience recipientViewer;
 
             if (recipientUUID.isPresent()) {
-                recipientViewer = this.carbonChat.userManager().user(viewer.get(Identity.UUID).orElseThrow()).join();
+                recipientViewer = this.carbonChat.userManager().user(recipientUUID.get()).join();
             } else {
                 recipientViewer = viewer;
             }
