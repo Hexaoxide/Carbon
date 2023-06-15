@@ -57,6 +57,7 @@ import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistryGetter;
@@ -318,12 +319,20 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
 
         for (final Audience recipient : chatEvent.recipients()) {
+            final var recipientUUID = recipient.get(Identity.UUID);
+            final Audience recipientViewer;
+
             var renderedMessage = chatEvent.message();
 
-            for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
+            if (recipientUUID.isPresent()) {
+                recipientViewer = this.carbonChat.userManager().user(recipient.get(Identity.UUID).orElseThrow()).join();
+            } else {
+                recipientViewer = recipient;
             }
 
+            for (final var renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, recipientViewer, renderedMessage, chatEvent.originalMessage());
+            }
             recipient.sendMessage(renderedMessage);
         }
 
