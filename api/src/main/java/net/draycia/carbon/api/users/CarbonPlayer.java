@@ -22,6 +22,7 @@ package net.draycia.carbon.api.users;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -33,6 +34,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Generic abstraction for players.
@@ -54,10 +56,8 @@ public interface CarbonPlayer extends Audience, Identified {
     static Component renderName(final CarbonPlayer player) {
         if (player.hasCustomDisplayName()) {
             return Objects.requireNonNull(player.displayName());
-        } else if (player.get(Identity.DISPLAY_NAME).isPresent()) {
-            return player.get(Identity.DISPLAY_NAME).get();
         } else {
-            return Component.text(player.username());
+            return player.get(Identity.DISPLAY_NAME).orElseGet(() -> Component.text(player.username()));
         }
     }
 
