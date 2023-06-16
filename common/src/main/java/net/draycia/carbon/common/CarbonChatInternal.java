@@ -23,7 +23,6 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
-import com.google.inject.util.Types;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
