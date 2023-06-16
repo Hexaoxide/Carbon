@@ -20,8 +20,11 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -41,6 +44,7 @@ import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public class PingHandler {
 
     private final Key pingKey = key("carbon", "pings");
@@ -58,7 +62,7 @@ public class PingHandler {
             return this.convertPings(recipientPlayer, message);
         });
 
-        events.subscribe(CarbonChatEvent.class, 1, true, event -> {
+        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
             event.renderers().add(0, this.renderer);
         });
     }

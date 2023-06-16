@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.event;
 
+import com.google.inject.Singleton;
 import com.seiama.event.EventConfig;
 import com.seiama.event.EventSubscriber;
 import com.seiama.event.EventSubscription;
@@ -38,6 +39,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @since 1.0.0
  */
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class CarbonEventHandlerImpl implements CarbonEventHandler {
 
     private final EventRegistry<CarbonEvent> eventRegistry = new SimpleEventRegistry<>(CarbonEvent.class);

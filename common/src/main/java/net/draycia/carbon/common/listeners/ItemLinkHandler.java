@@ -29,7 +29,7 @@ public class ItemLinkHandler {
 
     @Inject
     public ItemLinkHandler(final CarbonEventHandler events) {
-        events.subscribe(CarbonChatEvent.class, 2, true, event -> {
+        events.subscribe(CarbonChatEvent.class, 2, false, event -> {
             if (!event.sender().hasPermission("carbon.itemlink")) {
                 return;
             }

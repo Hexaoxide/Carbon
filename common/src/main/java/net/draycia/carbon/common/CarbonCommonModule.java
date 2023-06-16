@@ -86,7 +86,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public CarbonEventHandler eventHandler() {
+    public CarbonEventHandlerImpl eventHandler() {
         return new CarbonEventHandlerImpl();
     }
 
@@ -128,6 +128,7 @@ public final class CarbonCommonModule extends AbstractModule {
         this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
         this.install(new FactoryModuleBuilder().build(PacketFactory.class));
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
+        this.bind(CarbonEventHandler.class).to(CarbonEventHandlerImpl.class);
     }
 
 }
