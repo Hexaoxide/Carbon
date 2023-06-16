@@ -71,17 +71,13 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
         final boolean acceptsCancelled,
         final Consumer<T> consumer
     ) {
-        final EventConfig eventConfig = new CarbonEventConfig(order, acceptsCancelled, false);
+        final EventConfig eventConfig = EventConfig.defaults().order(order).acceptsCancelled(acceptsCancelled);
         return this.eventRegistry.subscribe(eventClass, eventConfig, consumer::accept);
     }
 
     @Override
     public void emit(final CarbonEvent event) {
         this.eventBus.post(event);
-    }
-
-    private record CarbonEventConfig(int order, boolean acceptsCancelled, boolean exact) implements EventConfig {
-
     }
 
 }
