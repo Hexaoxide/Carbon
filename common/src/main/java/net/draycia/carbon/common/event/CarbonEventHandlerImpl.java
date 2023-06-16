@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.event;
 
+import com.seiama.event.EventConfig;
 import com.seiama.event.EventSubscriber;
 import com.seiama.event.EventSubscription;
 import com.seiama.event.bus.EventBus;
@@ -54,19 +55,25 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
         return this.eventRegistry.subscribe(eventClass, subscriber);
     }
 
+    // TODO: support EventConfig#exact()
     @Override
     public <T extends CarbonEvent> EventSubscription<T> subscribe(
         final Class<T> eventClass,
-        final int priority,
+        final int order,
         final boolean acceptsCancelled,
         final Consumer<T> consumer
     ) {
-        return this.eventRegistry.subscribe(eventClass, new EventSubscriberImpl<>(consumer, priority, acceptsCancelled));
+        final EventConfig eventConfig = new CarbonEventConfig(order, acceptsCancelled, false);
+        return this.eventRegistry.subscribe(eventClass, eventConfig, consumer::accept);
     }
 
     @Override
     public void emit(final CarbonEvent event) {
         this.eventBus.post(event);
+    }
+
+    private record CarbonEventConfig(int order, boolean acceptsCancelled, boolean exact) implements EventConfig {
+
     }
 
 }

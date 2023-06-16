@@ -43,14 +43,14 @@ import static net.kyori.adventure.key.Key.key;
 @DefaultQualifier(NonNull.class)
 public class PingHandler {
 
-    private final Key muteKey = key("carbon", "pings");
+    private final Key pingKey = key("carbon", "pings");
     private final KeyedRenderer renderer;
     private final ConfigFactory configFactory;
 
     @Inject
     public PingHandler(final CarbonEventHandler events, final ConfigFactory configFactory) {
         this.configFactory = configFactory;
-        this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
+        this.renderer = keyedRenderer(this.pingKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
                 return message;
             }
@@ -58,7 +58,7 @@ public class PingHandler {
             return this.convertPings(recipientPlayer, message);
         });
 
-        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
+        events.subscribe(CarbonChatEvent.class, 1, true, event -> {
             event.renderers().add(0, this.renderer);
         });
     }
