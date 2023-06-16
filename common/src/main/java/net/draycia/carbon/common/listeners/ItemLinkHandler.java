@@ -25,7 +25,7 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.text.TextReplacementConfig;
 
-public class ItemLinkHandler {
+public class ItemLinkHandler implements Listener {
 
     @Inject
     public ItemLinkHandler(final CarbonEventHandler events) {

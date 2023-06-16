@@ -27,7 +27,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class DeafenHandler {
+public class DeafenHandler implements Listener {
 
     @Inject
     public DeafenHandler(final CarbonEventHandler events) {

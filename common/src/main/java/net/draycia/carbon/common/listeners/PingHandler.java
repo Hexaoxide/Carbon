@@ -43,7 +43,7 @@ import static net.kyori.adventure.key.Key.key;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class PingHandler {
+public class PingHandler implements Listener {
 
     private final Key pingKey = key("carbon", "pings");
     private final KeyedRenderer renderer;

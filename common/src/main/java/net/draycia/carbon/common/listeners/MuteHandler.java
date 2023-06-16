@@ -33,7 +33,7 @@ import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 
 @DefaultQualifier(NonNull.class)
-public class MuteHandler {
+public class MuteHandler implements Listener {
 
     private final Key muteKey = key("carbon", "mute");
     private CarbonMessages carbonMessages;
