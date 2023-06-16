@@ -56,7 +56,7 @@ public interface CarbonEventHandler {
      * @return                 the subscription, so that it may be unregistered
      * @since 2.0.0
      */
-    <T extends CarbonEvent> EventSubscription<T>  subscribe(
+    <T extends CarbonEvent> EventSubscription<T> subscribe(
         final Class<T> eventClass,
         final int order,
         final boolean acceptsCancelled,

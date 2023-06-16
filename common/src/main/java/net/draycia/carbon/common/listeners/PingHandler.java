@@ -20,11 +20,9 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
-import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;

@@ -86,12 +86,6 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public CarbonEventHandlerImpl eventHandler() {
-        return new CarbonEventHandlerImpl();
-    }
-
-    @Provides
-    @Singleton
     public CarbonMessages carbonMessages(
         final SourcedReceiverResolver receiverResolver,
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
