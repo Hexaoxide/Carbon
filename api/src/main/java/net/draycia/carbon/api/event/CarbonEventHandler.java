@@ -49,7 +49,7 @@ public interface CarbonEventHandler {
      * Includes extra values to control when the consumer is executed.
      *
      * @param eventClass       the class to listen for
-     * @param priority         the priority of the consumer
+     * @param order            the order of the consumer
      * @param acceptsCancelled if the consumer should be executed if the event is cancelled early
      * @param consumer         the consumer that's executed when the event is emitted
      * @param <T>              the class to listen for
@@ -58,7 +58,7 @@ public interface CarbonEventHandler {
      */
     <T extends CarbonEvent> EventSubscription<T> subscribe(
         final Class<T> eventClass,
-        final int priority,
+        final int order,
         final boolean acceptsCancelled,
         final Consumer<T> consumer
     );

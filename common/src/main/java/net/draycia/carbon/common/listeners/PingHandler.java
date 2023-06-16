@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -41,16 +42,17 @@ import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 
 @DefaultQualifier(NonNull.class)
-public class PingHandler {
+@Singleton
+public class PingHandler implements Listener {
 
-    private final Key muteKey = key("carbon", "pings");
+    private final Key pingKey = key("carbon", "pings");
     private final KeyedRenderer renderer;
     private final ConfigFactory configFactory;
 
     @Inject
     public PingHandler(final CarbonEventHandler events, final ConfigFactory configFactory) {
         this.configFactory = configFactory;
-        this.renderer = keyedRenderer(this.muteKey, (sender, recipient, message, originalMessage) -> {
+        this.renderer = keyedRenderer(this.pingKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
                 return message;
             }

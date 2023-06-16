@@ -60,7 +60,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.registry.DefaultedRegistryGetter;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;

@@ -17,18 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.event;
+package net.draycia.carbon.common.listeners;
 
-import com.seiama.event.EventSubscriber;
-import java.util.function.Consumer;
-import net.draycia.carbon.api.event.CarbonEvent;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-public record EventSubscriberImpl<T extends CarbonEvent>(Consumer<T> consumer, int postOrder, boolean acceptsCancelled) implements EventSubscriber<T> {
-
-    @Override
-    public void on(final @NonNull T event) {
-        this.consumer.accept(event);
-    }
-
+public interface Listener {
 }

@@ -24,6 +24,7 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.multibindings.Multibinder;
 import io.leangen.geantyref.TypeToken;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,6 +36,13 @@ import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
+import net.draycia.carbon.common.listeners.DeafenHandler;
+import net.draycia.carbon.common.listeners.IgnoreHandler;
+import net.draycia.carbon.common.listeners.ItemLinkHandler;
+import net.draycia.carbon.common.listeners.Listener;
+import net.draycia.carbon.common.listeners.MuteHandler;
+import net.draycia.carbon.common.listeners.PingHandler;
+import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -86,12 +94,6 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public CarbonEventHandler eventHandler() {
-        return new CarbonEventHandlerImpl();
-    }
-
-    @Provides
-    @Singleton
     public CarbonMessages carbonMessages(
         final SourcedReceiverResolver receiverResolver,
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
@@ -128,6 +130,15 @@ public final class CarbonCommonModule extends AbstractModule {
         this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
         this.install(new FactoryModuleBuilder().build(PacketFactory.class));
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
+        this.bind(CarbonEventHandler.class).to(CarbonEventHandlerImpl.class);
+
+        final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
+        listeners.addBinding().to(DeafenHandler.class);
+        listeners.addBinding().to(IgnoreHandler.class);
+        listeners.addBinding().to(ItemLinkHandler.class);
+        listeners.addBinding().to(MuteHandler.class);
+        listeners.addBinding().to(PingHandler.class);
+        listeners.addBinding().to(RadiusListener.class);
     }
 
 }

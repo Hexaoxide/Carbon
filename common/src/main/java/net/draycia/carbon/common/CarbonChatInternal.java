@@ -20,8 +20,11 @@
 package net.draycia.carbon.common;
 
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Provider;
+import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +34,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
-import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
-import net.draycia.carbon.common.listeners.RadiusListener;
+import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
@@ -40,7 +42,6 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ConcurrentUtil;
-import net.draycia.carbon.common.util.ListenerUtils;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -81,7 +82,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,
-        final CarbonEventHandlerImpl eventHandler,
+        final CarbonEventHandler eventHandler,
         final CarbonChannelRegistry channelRegistry,
         final IMessageRenderer<Audience, String, Component, Component> renderer,
         final Provider<MessagingManager> messagingManagerProvider
@@ -105,8 +106,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
 
     protected void init() {
         // Listeners
-        ListenerUtils.registerCommonListeners(this.injector);
-        this.injector.getInstance(RadiusListener.class);
+        final Set<Listener> listeners = this.injector.getInstance(Key.get(new TypeLiteral<Set<Listener>>() {}));
 
         // Commands
         // This is a bit awkward looking
