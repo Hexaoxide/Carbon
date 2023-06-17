@@ -82,7 +82,7 @@ public class PingHandler implements Listener {
 
         return message.replaceText(TextReplacementConfig.builder()
             // \B(@Username|@Displayname)\b
-            .match(Pattern.compile(String.format("\\B(%1$2s%2$2s|%1$2s%3$2s)\\b", prefix, recipient.username(), displayName), Pattern.CASE_INSENSITIVE))
+            .match(Pattern.compile(String.format("\\B%1$s(%2$s|%3$s)\\b", prefix, recipient.username(), displayName), Pattern.CASE_INSENSITIVE))
             .replacement(matchedText -> {
                 if (this.configFactory.primaryConfig().pings().playSound()) {
                     recipient.playSound(this.configFactory.primaryConfig().pings().sound());
