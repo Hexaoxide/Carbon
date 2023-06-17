@@ -1,6 +1,6 @@
 plugins {
-    id("carbon.base-conventions")
-    id("net.kyori.indra.publishing")
+  id("carbon.base-conventions")
+  id("net.kyori.indra.publishing")
 }
 
 
@@ -14,8 +14,10 @@ indra {
   configurePublications {
     pom {
       developers {
-        //developer {
-        //}
+        developer {
+          id.set("Vicarious")
+          name.set("Josua Parks")
+        }
       }
     }
   }
