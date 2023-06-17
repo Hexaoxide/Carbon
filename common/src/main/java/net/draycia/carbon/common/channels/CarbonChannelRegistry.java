@@ -48,6 +48,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
@@ -99,7 +100,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     private @MonotonicNonNull Key defaultKey;
     //private @MonotonicNonNull ChatChannel basicChannel;
     private final CarbonMessages carbonMessages;
-    private final CarbonChat carbonChat;
+    private final CarbonChatInternal<?> carbonChat;
 
     private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
@@ -120,7 +121,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         this.configFactory = configFactory;
         this.carbonMessages = carbonMessages;
         //this.basicChannel = basicChannel;
-        this.carbonChat = carbonChat;
+        this.carbonChat = (CarbonChatInternal<?>) carbonChat;
 
         events.subscribe(CarbonReloadEvent.class, event -> this.reloadRegisteredConfigChannels());
     }

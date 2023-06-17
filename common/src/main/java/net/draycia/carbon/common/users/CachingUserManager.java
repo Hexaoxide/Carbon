@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
@@ -44,8 +45,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public abstract class CachingUserManager implements UserManagerInternal<CarbonPlayerCommon> {
 
     protected final Logger logger;
-    protected final ExecutorService executor;
     protected final ProfileResolver profileResolver;
+    private final ExecutorService executor;
     private final MembersInjector<CarbonPlayerCommon> playerInjector;
     private final Provider<MessagingManager> messagingManager;
     private final PacketFactory packetFactory;
@@ -54,14 +55,13 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     protected CachingUserManager(
         final Logger logger,
-        final ExecutorService executorService,
         final ProfileResolver profileResolver,
         final MembersInjector<CarbonPlayerCommon> playerInjector,
         final Provider<MessagingManager> messagingManager,
         final PacketFactory packetFactory
     ) {
         this.logger = logger;
-        this.executor = executorService;
+        this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, this.getClass().getSimpleName()));
         this.profileResolver = profileResolver;
         this.playerInjector = playerInjector;
         this.messagingManager = messagingManager;
@@ -71,6 +71,12 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     }
 
     protected abstract CarbonPlayerCommon loadOrCreate(UUID uuid);
+
+    protected abstract void saveSync(CarbonPlayerCommon player);
+
+    private CompletableFuture<Void> save(final CarbonPlayerCommon player) {
+        return CompletableFuture.runAsync(() -> this.saveSync(player), this.executor);
+    }
 
     @Override
     public void saveCompleteMessageReceived(final UUID playerId) {
@@ -95,8 +101,6 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
             });
         });
     }
-
-    protected abstract CompletableFuture<Void> save(CarbonPlayerCommon player);
 
     @Override
     public CompletableFuture<CarbonPlayerCommon> user(final UUID uuid) {

@@ -22,14 +22,11 @@ package net.draycia.carbon.common.users.db;
 import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -55,7 +52,6 @@ public abstract class DatabaseUserManager extends CachingUserManager {
     ) {
         super(
             logger,
-            Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "DatabaseUserManager")),
             profileResolver,
             playerInjector,
             messagingManager,
@@ -66,8 +62,8 @@ public abstract class DatabaseUserManager extends CachingUserManager {
     }
 
     @Override
-    public final CompletableFuture<Void> save(final CarbonPlayerCommon player) {
-        return CompletableFuture.runAsync(() -> this.jdbi.withHandle(handle -> {
+    public final void saveSync(final CarbonPlayerCommon player) {
+        this.jdbi.withHandle(handle -> {
             this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
                 .execute();
 
@@ -91,7 +87,7 @@ public abstract class DatabaseUserManager extends CachingUserManager {
             }
             // TODO: save ignoredplayers
             return null;
-        }), this.executor);
+        });
     }
 
     abstract protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player);
