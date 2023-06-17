@@ -186,7 +186,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         return (IMessageRenderer<T, String, Component, Component>) this.renderer;
     }
 
-    @Override
     public @Nullable PacketService packetService() {
         return this.messagingManager.get().packetService();
     }

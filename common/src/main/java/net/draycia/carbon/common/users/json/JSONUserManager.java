@@ -29,8 +29,6 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.DataDirectory;
@@ -42,7 +40,6 @@ import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.PersistentUserProperty;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -68,7 +65,6 @@ public class JSONUserManager extends CachingUserManager {
     ) throws IOException {
         super(
             logger,
-            Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, "JSONUserManager")),
             profileResolver,
             playerInjector,
             messagingManager,
@@ -123,22 +119,20 @@ public class JSONUserManager extends CachingUserManager {
     }
 
     @Override
-    public CompletableFuture<Void> save(final CarbonPlayerCommon player) {
-        return CompletableFuture.runAsync(() -> {
-            final Path userFile = this.userFile(player.uuid());
+    public void saveSync(final CarbonPlayerCommon player) {
+        final Path userFile = this.userFile(player.uuid());
 
-            try {
-                final String json = this.serializer.toJson(player);
+        try {
+            final String json = this.serializer.toJson(player);
 
-                if (json == null || json.isBlank()) {
-                    throw new IllegalStateException("No data to save - toJson returned null or blank.");
-                }
-
-                Files.writeString(userFile, json);
-            } catch (final IOException exception) {
-                throw new RuntimeException("Exception while saving data for player [%s]".formatted(player.username()), exception);
+            if (json == null || json.isBlank()) {
+                throw new IllegalStateException("No data to save - toJson returned null or blank.");
             }
-        }, this.executor);
+
+            Files.writeString(userFile, json);
+        } catch (final IOException exception) {
+            throw new RuntimeException("Exception while saving data for player [%s]".formatted(player.username()), exception);
+        }
     }
 
 }

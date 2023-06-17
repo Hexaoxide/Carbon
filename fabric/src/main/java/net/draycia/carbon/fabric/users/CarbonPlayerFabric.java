@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -36,7 +35,6 @@ import net.draycia.carbon.fabric.MinecraftServerHolder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -48,12 +46,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerFabric extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
-    private final CarbonPlayerCommon carbonPlayerCommon;
     private final MinecraftServerHolder serverHolder;
     private final Provider<CarbonChatFabric> carbonChatFabric;
 
     public CarbonPlayerFabric(final CarbonPlayerCommon carbonPlayerCommon, final MinecraftServerHolder serverHolder, final Provider<CarbonChatFabric> carbonChatFabric) {
-        this.carbonPlayerCommon = carbonPlayerCommon;
+        super(carbonPlayerCommon);
         this.serverHolder = serverHolder;
         this.carbonChatFabric = carbonChatFabric;
     }
@@ -76,21 +73,6 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     }
 
     @Override
-    public List<Key> leftChannels() {
-        return this.carbonPlayerCommon.leftChannels();
-    }
-
-    @Override
-    public void joinChannel(final ChatChannel channel) {
-        this.carbonPlayerCommon.joinChannel(channel);
-    }
-
-    @Override
-    public void leaveChannel(final ChatChannel channel) {
-        this.carbonPlayerCommon.leaveChannel(channel);
-    }
-
-    @Override
     public @Nullable Locale locale() {
         return this.player()
             .flatMap(player -> player.get(Identity.LOCALE))
@@ -100,11 +82,6 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     @Override
     public boolean online() {
         return this.player().isPresent();
-    }
-
-    @Override
-    public CarbonPlayerCommon carbonPlayerCommon() {
-        return this.carbonPlayerCommon;
     }
 
     @Override

@@ -22,11 +22,9 @@ package net.draycia.carbon.paper.users;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -35,7 +33,6 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -51,14 +48,12 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
-    private final CarbonPlayerCommon carbonPlayerCommon;
-
     @AssistedInject
     private CarbonPlayerPaper(
         final @Assisted CarbonPlayerCommon carbonPlayerCommon,
         final ConfigFactory config
     ) {
-        this.carbonPlayerCommon = carbonPlayerCommon;
+        super(carbonPlayerCommon);
 
         if (config.primaryConfig().useCarbonNicknames()) {
             this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
@@ -67,11 +62,6 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     private Optional<Player> player() {
         return Optional.ofNullable(Bukkit.getPlayer(this.carbonPlayerCommon.uuid()));
-    }
-
-    @Override
-    public CarbonPlayerCommon carbonPlayerCommon() {
-        return this.carbonPlayerCommon;
     }
 
     @Override
@@ -188,21 +178,6 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
         return this.hasVanishMeta();
     }
 
-    @Override
-    public List<Key> leftChannels() {
-        return this.carbonPlayerCommon.leftChannels();
-    }
-
-    @Override
-    public void joinChannel(final ChatChannel channel) {
-        this.carbonPlayerCommon.joinChannel(channel);
-    }
-
-    @Override
-    public void leaveChannel(final ChatChannel channel) {
-        this.carbonPlayerCommon.leaveChannel(channel);
-    }
-
     // Supported by PremiumVanish, SuperVanish, VanishNoPacket
     private boolean hasVanishMeta() {
         return this.player().stream()
@@ -214,22 +189,6 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     public @Nullable Player bukkitPlayer() {
         return Bukkit.getPlayer(this.uuid());
-    }
-
-    @Override
-    public boolean equals(final @Nullable Object other) {
-        if (other == null || this.getClass() != other.getClass()) {
-            return false;
-        }
-
-        final CarbonPlayerPaper that = (CarbonPlayerPaper) other;
-
-        return this.carbonPlayerCommon.equals(that.carbonPlayerCommon);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.carbonPlayerCommon.hashCode();
     }
 
     public interface Factory {

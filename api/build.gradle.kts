@@ -31,6 +31,4 @@ dependencies {
   // Provided by Minecraft
   compileOnlyApi(libs.gson)
   compileOnlyApi(libs.log4jApi)
-
-  api(libs.messenger)
 }

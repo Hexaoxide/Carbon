@@ -41,6 +41,7 @@ dependencies {
   api(libs.mariadb)
 
   // Messaging
+  api(libs.messenger)
   api(libs.messengerNats)
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)

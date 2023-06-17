@@ -47,9 +47,4 @@ public class VelocityUserManager extends PlatformUserManager<CarbonPlayerVelocit
         return new CarbonPlayerVelocity(this.proxyServer, common);
     }
 
-    @Override
-    protected void updateTransientLoadedStatus(final CarbonPlayerVelocity wrapped) {
-        wrapped.carbonPlayerCommon().markTransientLoaded(wrapped.player().isEmpty());
-    }
-
 }

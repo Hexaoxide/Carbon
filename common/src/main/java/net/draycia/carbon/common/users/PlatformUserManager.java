@@ -37,14 +37,12 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
     public CompletableFuture<C> user(final UUID uuid) {
         return this.backingManager.user(uuid).thenApply(common -> {
             final C wrapped = this.wrap(common);
-            this.updateTransientLoadedStatus(wrapped);
+            common.markTransientLoaded(!wrapped.online());
             return wrapped;
         });
     }
 
     protected abstract C wrap(final CarbonPlayerCommon common);
-
-    protected abstract void updateTransientLoadedStatus(C wrapped);
 
     @Override
     public void shutdown() {
