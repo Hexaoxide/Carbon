@@ -5,6 +5,8 @@ plugins {
   id("net.kyori.indra.license-header")
 }
 
+version = rootProject.version
+
 indra {
   gpl3OnlyLicense()
 
