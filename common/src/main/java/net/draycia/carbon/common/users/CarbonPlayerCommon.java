@@ -34,6 +34,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.PlatformScheduler;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -53,6 +54,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private transient @MonotonicNonNull @Inject CarbonChat carbonChat;
     private transient @MonotonicNonNull @Inject ProfileResolver profileResolver;
     private transient @MonotonicNonNull @Inject PlatformScheduler scheduler;
+    private transient @MonotonicNonNull @Inject ConfigFactory config;
     private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
@@ -167,6 +169,13 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable Component displayName() {
+        if (!this.config.primaryConfig().useCarbonNicknames()) {
+            return null;
+        }
+        return this.displayName.orNull();
+    }
+
+    public @Nullable Component displayNameRaw() {
         return this.displayName.orNull();
     }
 
@@ -410,6 +419,9 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean hasCustomDisplayName() {
+        if (!this.config.primaryConfig().useCarbonNicknames()) {
+            return false;
+        }
         return this.displayName.hasValue();
     }
 

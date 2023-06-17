@@ -28,6 +28,7 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
@@ -46,6 +47,7 @@ import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
+import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.draycia.carbon.paper.users.PaperProfileResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -135,6 +137,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
         this.bind(new TypeLiteral<UserManager<?>>() {}).to(PaperUserManager.class);
         this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(PaperUserManager.class);
+        this.install(new FactoryModuleBuilder().build(CarbonPlayerPaper.Factory.class));
     }
 
 }

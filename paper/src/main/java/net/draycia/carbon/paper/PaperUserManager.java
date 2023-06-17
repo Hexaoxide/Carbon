@@ -33,14 +33,20 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public final class PaperUserManager extends PlatformUserManager<CarbonPlayerPaper> {
 
+    private final CarbonPlayerPaper.Factory playerFactory;
+
     @Inject
-    private PaperUserManager(final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager) {
+    private PaperUserManager(
+        final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager,
+        final CarbonPlayerPaper.Factory playerFactory
+    ) {
         super(backingManager);
+        this.playerFactory = playerFactory;
     }
 
     @Override
     protected CarbonPlayerPaper wrap(final CarbonPlayerCommon common) {
-        return new CarbonPlayerPaper(common);
+        return this.playerFactory.wrap(common);
     }
 
     @Override
