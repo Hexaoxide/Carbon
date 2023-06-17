@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.paper.users;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +29,7 @@ import java.util.function.Consumer;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
@@ -50,10 +53,16 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     private final CarbonPlayerCommon carbonPlayerCommon;
 
-    public CarbonPlayerPaper(final CarbonPlayerCommon carbonPlayerCommon) {
+    @AssistedInject
+    private CarbonPlayerPaper(
+        final @Assisted CarbonPlayerCommon carbonPlayerCommon,
+        final ConfigFactory config
+    ) {
         this.carbonPlayerCommon = carbonPlayerCommon;
 
-        this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
+        if (config.primaryConfig().useCarbonNicknames()) {
+            this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
+        }
     }
 
     private Optional<Player> player() {
@@ -104,7 +113,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     @Override
     public void displayName(final @Nullable Component displayName) {
-        this.carbonPlayerCommon.displayName(displayName);
+        super.displayName(displayName);
 
         this.player().ifPresent(this.applyDisplayNameToBukkit(displayName));
     }
@@ -221,6 +230,10 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     @Override
     public int hashCode() {
         return this.carbonPlayerCommon.hashCode();
+    }
+
+    public interface Factory {
+        CarbonPlayerPaper wrap(CarbonPlayerCommon common);
     }
 
 }

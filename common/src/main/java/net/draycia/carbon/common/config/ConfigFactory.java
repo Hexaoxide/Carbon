@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.config;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +38,7 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public class ConfigFactory {
 
     private final Path dataDirectory;

@@ -86,9 +86,13 @@ public interface CarbonPlayer extends Audience, Identified {
     String username();
 
     /**
-     * Checks if the player has a display name set through {@link CarbonPlayer#displayName(Component)}.
+     * Checks if the player has a display name set.
      *
-     * @return if the player has a display name set through {@link CarbonPlayer#displayName(Component)}
+     * <p>Will always return {@code false} when Carbon's nickname management is disabled.</p>
+     *
+     * @return if the player has a custom display name set
+     * @see #displayName()
+     * @see #displayName(Component)
      * @since 2.0.0
      */
     boolean hasCustomDisplayName();
@@ -96,17 +100,24 @@ public interface CarbonPlayer extends Audience, Identified {
     /**
      * Gets the player's display name, shown in places like chat and tab menu.
      *
+     * <p>Will always return {@code null} when Carbon's nickname management is disabled.</p>
+     *
      * @return the player's display name
+     * @see #hasCustomDisplayName()
+     * @see #displayName(Component)
      * @since 2.0.0
      */
-
     @Nullable Component displayName();
 
     /**
-     * Sets the player's display name.<br>
-     * Setting null is equivalent to setting the display name to the username.
+     * Sets the player's display name.
+     *
+     * <p>Setting {@code null} is equivalent to setting the display name to the username.</p>
+     * <p>Won't have any visible effect when Carbon's nickname management is disabled.</p>
      *
      * @param displayName the new display name
+     * @see #displayName()
+     * @see #hasCustomDisplayName()
      * @since 2.0.0
      */
     void displayName(final @Nullable Component displayName);

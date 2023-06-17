@@ -80,6 +80,9 @@ public class PrimaryConfig {
 
     private final MessagingSettings messagingSettings = new MessagingSettings();
 
+    @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
+    private boolean useCarbonNicknames = true;
+
     public Locale defaultLocale() {
         return this.defaultLocale;
     }
@@ -131,6 +134,10 @@ public class PrimaryConfig {
 
     public @Nullable Sound messageSound() {
         return this.messageSound;
+    }
+
+    public boolean useCarbonNicknames() {
+        return this.useCarbonNicknames;
     }
 
     public enum StorageType {

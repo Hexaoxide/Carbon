@@ -118,7 +118,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
             .bind("deafened", player.deafened())
             .bind("selectedchannel", player.selectedChannelKey())
             .bind("username", player.username())
-            .bind("displayname", player.displayName())
+            .bind("displayname", player.displayNameRaw())
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying());
