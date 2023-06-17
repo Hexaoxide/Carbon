@@ -49,4 +49,7 @@ dependencies {
   api(libs.jedis)
   api(libs.rabbitmq)
   api(libs.nats)
+
+  // we shade and relocate a newer version than minecraft provides
+  compileOnlyApi(libs.guava)
 }

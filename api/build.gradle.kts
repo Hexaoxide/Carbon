@@ -28,9 +28,6 @@ dependencies {
   api(libs.kyoriMoonshineCore)
   api(libs.kyoriMoonshineStandard)
 
-  // we shade and relocate a newer version than minecraft provides
-  compileOnlyApi(libs.guava)
-
   // Provided by Minecraft
   compileOnlyApi(libs.gson)
   compileOnlyApi(libs.log4jApi)
