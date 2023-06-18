@@ -70,6 +70,7 @@ jobs:
           files: |
             build/libs/carbonchat-paper-*.jar
             build/libs/carbonchat-velocity-*.jar
+            build/libs/carbonchat-fabric-*.jar
       - name: Publish (Pre-)Release to Modrinth
         if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
         run: ./gradlew :carbonchat-paper:modrinth :carbonchat-velocity:modrinth :carbonchat-fabric:modrinth
