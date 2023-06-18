@@ -131,7 +131,7 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
 
             final Component nativeMessage = FabricAudiences.nonWrappingSerializer().serialize(finishedMessage);
             final PlayerChatMessage customChatMessage = new PlayerChatMessage(chatMessage.link(), chatMessage.signature(), chatMessage.signedBody(), nativeMessage, FilterMask.FULLY_FILTERED);
-            final ChatType.Bound customBound = ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level.registryAccess(), nativeMessage);
+            final ChatType.Bound customBound = ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level().registryAccess(), nativeMessage);
 
             if (recipient instanceof CommandSourceStack recipientSource) {
                 recipientSource.sendChatMessage(new OutgoingChatMessage.Player(customChatMessage), false, customBound);

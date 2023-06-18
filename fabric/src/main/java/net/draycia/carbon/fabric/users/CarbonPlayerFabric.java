@@ -119,7 +119,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return false;
         }
 
-        return player.get().getLevel().equals(otherPlayer.getLevel());
+        return player.get().level().equals(otherPlayer.level());
     }
 
     @Override

@@ -27,7 +27,7 @@ modrinth {
   token.set(providers.environmentVariable("MODRINTH_TOKEN"))
   required.project("luckperms")
   optional.project("miniplaceholders")
-  gameVersions.add("1.19.4")
+  gameVersions.addAll("1.19.4", "1.20.1")
 }
 
 //val projectVersion = version as String

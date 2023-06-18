@@ -15,8 +15,8 @@ dependencies {
   minecraft(libs.fabricMinecraft)
   mappings(loom.officialMojangMappings())
   modImplementation(libs.fabricLoader)
-  modImplementation("net.fabricmc.fabric-api:fabric-api:0.76.0+1.19.4")
-  modImplementation("net.fabricmc.fabric-api:fabric-api-deprecated:0.76.0+1.19.4") // LuckPerms needs to work at dev time
+  modImplementation("net.fabricmc.fabric-api:fabric-api:0.83.0+1.20.1")
+  modImplementation("net.fabricmc.fabric-api:fabric-api-deprecated:0.83.0+1.20.1") // LuckPerms needs to work at dev time
 
   carbon(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
@@ -72,5 +72,6 @@ tasks {
 }
 
 modrinth {
+  gameVersions.set(listOf(libs.versions.fabricMinecraft.get()))
   loaders.addAll("fabric")
 }
