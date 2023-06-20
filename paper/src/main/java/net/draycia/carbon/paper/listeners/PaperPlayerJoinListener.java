@@ -20,6 +20,8 @@
 package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
+import java.util.List;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.paper.PaperUserManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +31,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static net.draycia.carbon.common.util.PlayerUtils.joinExceptionHandler;
@@ -37,16 +40,19 @@ import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
 @DefaultQualifier(NonNull.class)
 public class PaperPlayerJoinListener implements Listener {
 
+    private final ConfigFactory configFactory;
     private final Logger logger;
     private final ProfileCache profileCache;
     private final PaperUserManager userManager;
 
     @Inject
     public PaperPlayerJoinListener(
+        final ConfigFactory configFactory,
         final Logger logger,
         final ProfileCache profileCache,
         final PaperUserManager userManager
     ) {
+        this.configFactory = configFactory;
         this.logger = logger;
         this.profileCache = profileCache;
         this.userManager = userManager;
@@ -60,6 +66,14 @@ public class PaperPlayerJoinListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
         this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger));
+
+        final @Nullable List<String> suggestions = this.configFactory.primaryConfig().customChatSuggestions();
+
+        if (suggestions == null || suggestions.isEmpty()) {
+            return;
+        }
+
+        event.getPlayer().addAdditionalChatCompletions(suggestions);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
