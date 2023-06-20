@@ -34,13 +34,13 @@ public class DatabaseSettings {
         MariaDB: jdbc:mariadb://host:3306/DB
         PostgreSQL: jdbc:postgresql://host:5432/database
         """)
-    private final String url = "jdbc:mysql://localhost:3306/carbon";
+    private String url = "jdbc:mysql://localhost:3306/carbon";
 
     @Comment("The connection username.")
-    private final String username = "username";
+    private String username = "username";
 
     @Comment("The connection password.")
-    private final String password = "password";
+    private String password = "password";
 
     public String url() {
         return this.url;

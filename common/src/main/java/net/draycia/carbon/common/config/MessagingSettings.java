@@ -33,25 +33,25 @@ public class MessagingSettings {
     private final boolean enabled = false;
 
     @Comment("Options: RABBITMQ, NATS, REDIS")
-    private final MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
+    private MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
 
     @Comment("")
-    private final String url = "127.0.0.1";
+    private String url = "127.0.0.1";
 
     @Comment("")
-    private final int port = 5672; // RabbitMQ 5672, NATS 4222, Redis 6379
+    private int port = 5672; // RabbitMQ 5672, NATS 4222, Redis 6379
 
     @Comment("RabbitMQ VHost")
-    private final String vhost = "/"; // RabbitMQ only
+    private String vhost = "/"; // RabbitMQ only
 
     @Comment("NATS credentials file")
-    private final String credentialsFile = ""; // NATS only
+    private String credentialsFile = ""; // NATS only
 
     @Comment("RabbitMQ username")
-    private final String username = "username"; // RabbitMQ only
+    private String username = "username"; // RabbitMQ only
 
     @Comment("RabbitMQ and Redis password")
-    private final String password = "password"; // RabbitMQ and Redis only
+    private String password = "password"; // RabbitMQ and Redis only
 
     public boolean enabled() {
         return this.enabled;

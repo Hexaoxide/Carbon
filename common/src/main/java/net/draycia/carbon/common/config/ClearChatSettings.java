@@ -35,13 +35,13 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class ClearChatSettings {
 
     @Comment("The message that will be sent to each player.")
-    private final String message = "";
+    private String message = "";
 
     @Comment("The number of times the message will be sent to each player.")
-    private final int iterations = 50;
+    private int iterations = 50;
 
     @Comment("The message to be sent after chat is cleared.")
-    private final String broadcast = "<gold>Chat has been cleared by </gold><green><display_name><green><gold>.";
+    private String broadcast = "<gold>Chat has been cleared by </gold><green><display_name><green><gold>.";
 
     private @MonotonicNonNull Component messageComponent = null;
 
