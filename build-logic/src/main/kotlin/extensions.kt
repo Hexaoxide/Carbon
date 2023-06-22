@@ -21,7 +21,7 @@ fun ShadowJar.relocateDependency(pkg: String) {
 fun ShadowJar.standardRelocations() {
   relocateDependency("org.bstats")
   relocateDependency("net.kyori.adventure.serializer.configurate4")
-  relocateDependency("net.kyori.event")
+  relocateDependency("com.seiama.event")
   relocateDependency("net.kyori.moonshine")
   relocateDependency("net.kyori.registry")
   relocateDependency("org.spongepowered.configurate")

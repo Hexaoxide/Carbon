@@ -20,6 +20,7 @@ tasks {
   shadowJar {
     dependencies {
       relocateDependency("io.leangen.geantyref")
+      relocateDependency("com.google.inject.assistedinject")
 
       // included in velocity
       exclude(dependency("com.google.inject:guice"))

@@ -33,9 +33,6 @@ dependencies {
   api(libs.hikariCP)
   api(libs.flyway)
   api(libs.flywayMysql)
-  compileOnlyApi(libs.mysql) {
-    exclude ("com.google.protobuf")
-  }
   api(libs.postgresql)
   api(libs.caffeine)
   api(libs.mariadb)
