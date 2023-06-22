@@ -148,13 +148,6 @@ public final class MySQLUserManager extends DatabaseUserManager {
         }
 
         public MySQLUserManager create() {
-            try {
-                Class.forName("org.mariadb.jdbc.Driver");
-                Class.forName("com.mysql.cj.jdbc.Driver"); // Manually loading this might not be necessary
-            } catch (final ClassNotFoundException exception) {
-                throw new RuntimeException("Could not find required class", exception);
-            }
-
             final HikariConfig hikariConfig = new HikariConfig();
             hikariConfig.setMaximumPoolSize(20);
             hikariConfig.setJdbcUrl(this.databaseSettings.url());
