@@ -22,6 +22,7 @@ package net.draycia.carbon.common.users.db;
 import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
 import java.util.UUID;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CachingUserManager;
@@ -40,6 +41,7 @@ public abstract class DatabaseUserManager extends CachingUserManager {
 
     protected final Jdbi jdbi;
     protected final QueriesLocator locator;
+    protected final ChannelRegistry channelRegistry;
 
     protected DatabaseUserManager(
         final Jdbi jdbi,
@@ -48,7 +50,8 @@ public abstract class DatabaseUserManager extends CachingUserManager {
         final ProfileResolver profileResolver,
         final MembersInjector<CarbonPlayerCommon> playerInjector,
         final Provider<MessagingManager> messagingManager,
-        final PacketFactory packetFactory
+        final PacketFactory packetFactory,
+        final ChannelRegistry channelRegistry
     ) {
         super(
             logger,
@@ -59,6 +62,7 @@ public abstract class DatabaseUserManager extends CachingUserManager {
         );
         this.jdbi = jdbi;
         this.locator = locator;
+        this.channelRegistry = channelRegistry;
     }
 
     @Override

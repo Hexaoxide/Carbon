@@ -30,6 +30,7 @@ import java.util.ServiceLoader;
 import java.util.UUID;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.DatabaseSettings;
@@ -57,16 +58,14 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class MySQLUserManager extends DatabaseUserManager {
 
-    private final CarbonChat carbonChat;
-
     private MySQLUserManager(
-        final CarbonChat carbonChat,
         final Jdbi jdbi,
         final Logger logger,
         final ProfileResolver profileResolver,
         final MembersInjector<CarbonPlayerCommon> playerInjector,
         final Provider<MessagingManager> messagingManager,
-        final PacketFactory packetFactory
+        final PacketFactory packetFactory,
+        final ChannelRegistry channelRegistry
     ) {
         super(
             jdbi,
@@ -75,10 +74,9 @@ public final class MySQLUserManager extends DatabaseUserManager {
             profileResolver,
             playerInjector,
             messagingManager,
-            packetFactory
+            packetFactory,
+            channelRegistry
         );
-
-        this.carbonChat = carbonChat;
     }
 
     @Override
@@ -101,7 +99,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
                 .bind("id", uuid)
                 .mapTo(Key.class)
                 .forEach(channel -> {
-                    final @Nullable ChatChannel chatChannel = this.carbonChat.channelRegistry().get(channel);
+                    final @Nullable ChatChannel chatChannel = this.channelRegistry.get(channel);
 
                     if (chatChannel == null) {
                         return;
@@ -129,17 +127,17 @@ public final class MySQLUserManager extends DatabaseUserManager {
 
     public static final class Factory {
 
-        private final CarbonChat carbonChat;
         private final DatabaseSettings databaseSettings;
         private final Logger logger;
         private final ProfileResolver profileResolver;
         private final MembersInjector<CarbonPlayerCommon> playerInjector;
         private final Provider<MessagingManager> messagingManager;
         private final PacketFactory packetFactory;
+        private final ChannelRegistry channelRegistry;
 
         @Inject
         private Factory(
-            final CarbonChat carbonChat,
+            final ChannelRegistry channelRegistry,
             final ConfigFactory configFactory,
             final Logger logger,
             final ProfileResolver profileResolver,
@@ -147,7 +145,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
             final Provider<MessagingManager> messagingManager,
             final PacketFactory packetFactory
         ) {
-            this.carbonChat = carbonChat;
+            this.channelRegistry = channelRegistry;
             this.databaseSettings = configFactory.primaryConfig().databaseSettings();
             this.logger = logger;
             this.profileResolver = profileResolver;
@@ -190,7 +188,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
                 .registerRowMapper(new MySQLPlayerRowMapper())
                 .installPlugin(new SqlObjectPlugin());
 
-            return new MySQLUserManager(this.carbonChat, jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory);
+            return new MySQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory, this.channelRegistry);
         }
 
     }
