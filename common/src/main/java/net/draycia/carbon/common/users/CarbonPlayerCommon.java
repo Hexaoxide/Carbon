@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -51,7 +51,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     private static final long KEEP_TRANSIENT_LOADS_FOR = Duration.ofMinutes(2).toMillis();
 
-    private transient @MonotonicNonNull @Inject CarbonChat carbonChat;
+    private transient @MonotonicNonNull @Inject ChannelRegistry channelRegistry;
     private transient @MonotonicNonNull @Inject ProfileResolver profileResolver;
     private transient @MonotonicNonNull @Inject PlatformScheduler scheduler;
     private transient @MonotonicNonNull @Inject ConfigFactory config;
@@ -158,10 +158,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return Audience.empty();
     }
 
-    protected CarbonPlayer carbonPlayer() {
-        return this;
-    }
-
     @Override
     public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
         return null;
@@ -186,7 +182,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean hasPermission(final String permission) {
-        return this.carbonPlayer().hasPermission(permission);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -355,10 +351,14 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public @Nullable ChatChannel selectedChannel() {
         if (!this.selectedChannel.hasValue()) {
-            return this.carbonChat.channelRegistry().defaultValue();
+            return this.channelRegistry.defaultValue();
         }
 
-        return this.carbonChat.channelRegistry().get(this.selectedChannel.get());
+        return this.channelRegistry.get(this.selectedChannel.get());
+    }
+
+    public ChannelRegistry channelRegistry() {
+        return this.channelRegistry;
     }
 
     public @Nullable Key selectedChannelKey() {
@@ -376,7 +376,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public ChannelMessage channelForMessage(final Component message) {
-        return new ChannelMessage(message, null);
+        throw new UnsupportedOperationException();
     }
 
     @Override

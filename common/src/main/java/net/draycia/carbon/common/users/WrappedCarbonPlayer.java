@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -169,7 +168,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
         @Nullable ChatChannel channel = this.selectedChannel();
 
-        for (final ChatChannel chatChannel : CarbonChatProvider.carbonChat().channelRegistry()) {
+        for (final ChatChannel chatChannel : this.carbonPlayerCommon.channelRegistry()) {
             final @MonotonicNonNull String prefix = chatChannel.quickPrefix();
 
             if (prefix == null) {
