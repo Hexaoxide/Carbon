@@ -46,14 +46,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class DSRVChatHook implements ChatHook {
 
+    private final CarbonChat carbonChat;
+
     @Inject
     public DSRVChatHook(final CarbonChat carbonChat) {
+        this.carbonChat = carbonChat;
 
         final Cache<ImmutablePair<CarbonPlayer, ChatChannel>, Component> awaitingEvent = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMillis(25))
             .build();
 
-        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, event -> {
+        this.carbonChat.eventHandler().subscribe(CarbonChatEvent.class, event -> {
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
             final ImmutablePair<CarbonPlayer, ChatChannel> pair = new ImmutablePair<>(carbonPlayer, chatChannel);
@@ -92,7 +95,7 @@ public class DSRVChatHook implements ChatHook {
     @Override
     public void broadcastMessageToChannel(final String channel, final github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component message) {
         final String mmFormattedMessage = MiniMessage.miniMessage().serialize(message);
-        ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, ChannelUtils.locateChannel(channel));
+        ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, this.carbonChat.channelRegistry().byCommandName(channel));
     }
 
     @Override

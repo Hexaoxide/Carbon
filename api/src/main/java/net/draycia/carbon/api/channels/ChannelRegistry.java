@@ -22,6 +22,7 @@ package net.draycia.carbon.api.channels;
 import net.draycia.carbon.api.util.DefaultedKeyValueRegistry;
 import net.kyori.adventure.key.Key;
 import net.kyori.registry.Registry;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Registry for chat channels.
@@ -37,5 +38,13 @@ public interface ChannelRegistry extends Registry<Key, ChatChannel>, DefaultedKe
      * @since 2.1.0
      */
     void registerChannelCommands(final ChatChannel channel);
+
+    /**
+     * Gets the channel with the corresponding command name.
+     *
+     * @param channelName the command used to speak in the channel
+     * @return the channel
+     */
+    @Nullable ChatChannel byCommandName(final String channelName);
 
 }

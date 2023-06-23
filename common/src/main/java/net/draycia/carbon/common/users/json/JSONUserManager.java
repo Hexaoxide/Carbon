@@ -29,9 +29,10 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.DataDirectory;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
@@ -51,6 +52,7 @@ public class JSONUserManager extends CachingUserManager {
 
     private final Gson serializer;
     private final Path userDirectory;
+    private final ChannelRegistry channelRegistry;
 
     @Inject
     public JSONUserManager(
@@ -61,7 +63,8 @@ public class JSONUserManager extends CachingUserManager {
         final ChatChannelSerializerGson channelSerializer,
         final UUIDSerializerGson uuidSerializer,
         final Provider<MessagingManager> messagingManager,
-        final PacketFactory packetFactory
+        final PacketFactory packetFactory,
+        final CarbonChannelRegistry channelRegistry
     ) throws IOException {
         super(
             logger,
@@ -71,6 +74,7 @@ public class JSONUserManager extends CachingUserManager {
             packetFactory
         );
         this.userDirectory = dataDirectory.resolve("users");
+        this.channelRegistry = channelRegistry;
 
         Files.createDirectories(this.userDirectory);
 
@@ -98,9 +102,7 @@ public class JSONUserManager extends CachingUserManager {
                     throw new IllegalStateException("Player file found but was empty.");
                 }
                 player.leftChannels().forEach(channel -> {
-                    if (CarbonChatProvider.carbonChat()
-                        .channelRegistry()
-                        .get(channel) == null) {
+                    if (this.channelRegistry.get(channel) == null) {
                         player.joinChannel(channel, true);
                     }
                 });

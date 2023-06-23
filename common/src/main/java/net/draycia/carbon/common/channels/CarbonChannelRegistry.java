@@ -42,7 +42,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -162,7 +161,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             if (startVersion != endVersion) { // we might not have made any changes
                 // TODO: use logger
-                CarbonChatProvider.carbonChat().logger().info("Updated config schema from " + startVersion + " to " + endVersion);
+                //CarbonChatProvider.carbonChat().logger().info("Updated config schema from " + startVersion + " to " + endVersion);
             }
         }
 
@@ -183,6 +182,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 if (chatChannel == null) {
                     return;
                 }
+
+                this.injector.injectMembers(chatChannel);
 
                 final @Nullable ChatChannel existingChannel = this.get(chatChannel.key());
 
@@ -225,6 +226,8 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                     this.logger.warn("Failed to load channel from file [" + fileName + "]");
                     return;
                 }
+
+                this.injector.injectMembers(chatChannel);
 
                 if (chatChannel.shouldRegisterCommands()) {
                     this.registerChannelCommands(chatChannel);
@@ -472,6 +475,17 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
 
         return this.defaultValue();
+    }
+
+    @Override
+    public @Nullable ChatChannel byCommandName(final String channelName) {
+        for (final ChatChannel channel : this) {
+            if (channel.commandName().equalsIgnoreCase(channelName)) {
+                return channel;
+            }
+        }
+
+        return null;
     }
 
 }

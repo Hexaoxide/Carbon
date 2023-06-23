@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.channels;
 
+import com.google.inject.Inject;
 import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
@@ -53,6 +54,7 @@ import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -68,6 +70,8 @@ import static net.kyori.adventure.text.Component.text;
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
 public final class ConfigChatChannel implements ChatChannel {
+
+    private transient @MonotonicNonNull @Inject CarbonChat carbonChat;
 
     @Comment("""
         The channel's key, used to track the channel.
@@ -220,14 +224,14 @@ public final class ConfigChatChannel implements ChatChannel {
     public List<Audience> recipients(final CarbonPlayer sender) {
         final List<Audience> recipients = new ArrayList<>();
 
-        for (final CarbonPlayer player : CarbonChatProvider.carbonChat().server().players()) {
+        for (final CarbonPlayer player : this.carbonChat.server().players()) {
             if (this.hearingPermitted(player).permitted()) {
                 recipients.add(player);
             }
         }
 
         // console too!
-        recipients.add(CarbonChatProvider.carbonChat().server().console());
+        recipients.add(this.carbonChat.server().console());
 
         return recipients;
     }
@@ -265,7 +269,7 @@ public final class ConfigChatChannel implements ChatChannel {
             return Moonshine.<ConfigChannelMessages, SourcedAudience>builder(new TypeToken<ConfigChannelMessages>() {})
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
-                .rendered(CarbonChatProvider.carbonChat().messageRenderer())
+                .rendered(this.carbonChat.messageRenderer())
                 .sent(carbonMessageSender)
                 .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)

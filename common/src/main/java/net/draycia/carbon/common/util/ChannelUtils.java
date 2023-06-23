@@ -24,7 +24,6 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class ChannelUtils {
 
@@ -42,16 +41,6 @@ public final class ChannelUtils {
                 recipient.sendMessage(originalMessage);
             }
         }
-    }
-
-    public static @Nullable ChatChannel locateChannel(final String channelName) {
-        for (final ChatChannel channel : CarbonChatProvider.carbonChat().channelRegistry()) {
-            if (channel.commandName().equalsIgnoreCase(channelName)) {
-                return channel;
-            }
-        }
-
-        return null;
     }
 
 }

@@ -32,7 +32,6 @@ import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.util.ChannelUtils;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -78,7 +77,7 @@ public class JoinCommand extends CarbonCommand {
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandJoinDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-                final @Nullable ChatChannel channel = ChannelUtils.locateChannel(handler.get("channel"));
+                final @Nullable ChatChannel channel = this.carbonChat.channelRegistry().byCommandName(handler.get("channel"));
                 if (channel == null) {
                     this.carbonMessages.channelNotFound(sender);
                     return;
