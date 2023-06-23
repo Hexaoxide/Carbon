@@ -19,7 +19,7 @@
  */
 package net.draycia.carbon.common.messaging;
 
-import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
@@ -34,15 +34,18 @@ import org.jetbrains.annotations.NotNull;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
+    private final CarbonChat carbonChat;
     private final UserManagerInternal<?> userManager;
     private final PingHandler pingHandler;
 
     CarbonChatPacketHandler(
+        final CarbonChat carbonChat,
         final MessagingManager messagingManager,
         final UserManagerInternal<?> userManager,
         final PingHandler pingHandler
     ) {
         super(messagingManager.requirePacketService());
+        this.carbonChat = carbonChat;
         this.userManager = userManager;
         this.pingHandler = pingHandler;
     }
@@ -58,7 +61,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             return false;
         }
 
-        for (final var recipient : CarbonChatProvider.carbonChat().server().players()) {
+        for (final var recipient : this.carbonChat.server().players()) {
             if (recipient.hasPermission(messagePacket.channelPermission() + ".see")) {
                 if (recipient.hasPermission("carbon.crossserver")) {
                     if (recipient.ignoring(messagePacket.userId())) {
@@ -72,7 +75,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             }
         }
 
-        CarbonChatProvider.carbonChat().server().console().sendMessage(Component.text("[Cross-Server] ").append(messagePacket.message()));
+        this.carbonChat.server().console().sendMessage(Component.text("[Cross-Server] ").append(messagePacket.message()));
 
         return true;
     }

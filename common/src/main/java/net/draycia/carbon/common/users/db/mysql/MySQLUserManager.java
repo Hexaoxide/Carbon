@@ -30,7 +30,6 @@ import java.util.ServiceLoader;
 import java.util.UUID;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.DatabaseSettings;
@@ -58,7 +57,10 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 @DefaultQualifier(NonNull.class)
 public final class MySQLUserManager extends DatabaseUserManager {
 
+    private final CarbonChat carbonChat;
+
     private MySQLUserManager(
+        final CarbonChat carbonChat,
         final Jdbi jdbi,
         final Logger logger,
         final ProfileResolver profileResolver,
@@ -75,6 +77,8 @@ public final class MySQLUserManager extends DatabaseUserManager {
             messagingManager,
             packetFactory
         );
+
+        this.carbonChat = carbonChat;
     }
 
     @Override
@@ -97,12 +101,12 @@ public final class MySQLUserManager extends DatabaseUserManager {
                 .bind("id", uuid)
                 .mapTo(Key.class)
                 .forEach(channel -> {
-                    final @Nullable ChatChannel chatChannel = CarbonChatProvider.carbonChat()
-                        .channelRegistry()
-                        .get(channel);
+                    final @Nullable ChatChannel chatChannel = this.carbonChat.channelRegistry().get(channel);
+
                     if (chatChannel == null) {
                         return;
                     }
+
                     carbonPlayerCommon.get().leaveChannel(chatChannel, true);
                 });
             return carbonPlayerCommon.get();
@@ -125,6 +129,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
 
     public static final class Factory {
 
+        private final CarbonChat carbonChat;
         private final DatabaseSettings databaseSettings;
         private final Logger logger;
         private final ProfileResolver profileResolver;
@@ -134,6 +139,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
 
         @Inject
         private Factory(
+            final CarbonChat carbonChat,
             final ConfigFactory configFactory,
             final Logger logger,
             final ProfileResolver profileResolver,
@@ -141,6 +147,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
             final Provider<MessagingManager> messagingManager,
             final PacketFactory packetFactory
         ) {
+            this.carbonChat = carbonChat;
             this.databaseSettings = configFactory.primaryConfig().databaseSettings();
             this.logger = logger;
             this.profileResolver = profileResolver;
@@ -183,7 +190,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
                 .registerRowMapper(new MySQLPlayerRowMapper())
                 .installPlugin(new SqlObjectPlugin());
 
-            return new MySQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory);
+            return new MySQLUserManager(this.carbonChat, jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory);
         }
 
     }

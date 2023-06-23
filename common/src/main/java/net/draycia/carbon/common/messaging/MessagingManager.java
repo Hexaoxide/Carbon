@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.event.events.CarbonShutdownEvent;
 import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -111,7 +110,7 @@ public class MessagingManager {
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
         handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), this.packetService, handlerImpl));
-        handlerImpl.addHandler(new CarbonChatPacketHandler(this, userManager, pingHandler));
+        handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager, pingHandler));
 
         try {
             this.initMessagingService(this.packetService, handlerImpl, new File("/"),
@@ -140,7 +139,7 @@ public class MessagingManager {
             }
         }, 0, 1, TimeUnit.SECONDS);
 
-        CarbonChatProvider.carbonChat().eventHandler().subscribe(CarbonShutdownEvent.class, 0, false, event -> {
+        carbonChat.eventHandler().subscribe(CarbonShutdownEvent.class, 0, false, event -> {
             this.onShutdown();
         });
     }

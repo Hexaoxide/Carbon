@@ -21,6 +21,7 @@ package net.draycia.carbon.paper.hooks;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.inject.Inject;
 import github.scarsz.discordsrv.Debug;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.api.Subscribe;
@@ -29,7 +30,7 @@ import github.scarsz.discordsrv.dependencies.kyori.adventure.text.minimessage.Mi
 import github.scarsz.discordsrv.hooks.chat.ChatHook;
 import github.scarsz.discordsrv.util.PluginUtil;
 import java.time.Duration;
-import net.draycia.carbon.api.CarbonChatProvider;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -45,12 +46,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class DSRVChatHook implements ChatHook {
 
-    public DSRVChatHook() {
+    @Inject
+    public DSRVChatHook(final CarbonChat carbonChat) {
+
         final Cache<ImmutablePair<CarbonPlayer, ChatChannel>, Component> awaitingEvent = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMillis(25))
             .build();
 
-        CarbonChatProvider.carbonChat().eventHandler().subscribe(CarbonChatEvent.class, event -> {
+        carbonChat.eventHandler().subscribe(CarbonChatEvent.class, event -> {
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
             final ImmutablePair<CarbonPlayer, ChatChannel> pair = new ImmutablePair<>(carbonPlayer, chatChannel);

@@ -27,6 +27,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import java.io.IOException;
@@ -98,9 +99,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     private final Logger logger;
     private final ConfigFactory configFactory;
     private @MonotonicNonNull Key defaultKey;
-    //private @MonotonicNonNull ChatChannel basicChannel;
     private final CarbonMessages carbonMessages;
-    private final CarbonChatInternal<?> carbonChat;
+    private final CarbonEventHandler eventHandler;
+    private final Provider<CarbonChat> carbonChatProvider;
 
     private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
@@ -111,17 +112,16 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final Logger logger,
         final ConfigFactory configFactory,
         final CarbonMessages carbonMessages,
-        //final BasicChatChannel basicChannel,
-        final CarbonChat carbonChat,
-        final CarbonEventHandler events
+        final CarbonEventHandler events,
+        final Provider<CarbonChat> carbonChatProvider
     ) {
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
         this.configFactory = configFactory;
         this.carbonMessages = carbonMessages;
-        //this.basicChannel = basicChannel;
-        this.carbonChat = (CarbonChatInternal<?>) carbonChat;
+        this.eventHandler = events;
+        this.carbonChatProvider = carbonChatProvider;
 
         events.subscribe(CarbonReloadEvent.class, event -> this.reloadRegisteredConfigChannels());
     }
@@ -248,7 +248,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             exception.printStackTrace();
         }
 
-        this.carbonChat.eventHandler().emit(new ChannelRegisterEventImpl(this.channelMap.values(), this));
+        this.eventHandler.emit(new ChannelRegisterEventImpl(this.channelMap.values(), this));
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
@@ -320,11 +320,13 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         }
 
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
-        this.carbonChat.eventHandler().emit(chatEvent);
+        this.eventHandler.emit(chatEvent);
 
         if (chatEvent.cancelled()) {
             return;
         }
+
+        final CarbonChatInternal<?> carbonChat = (CarbonChatInternal<?>) this.carbonChatProvider.get();
 
         for (final Audience recipient : chatEvent.recipients()) {
             final var recipientUUID = recipient.get(Identity.UUID);
@@ -333,7 +335,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             var renderedMessage = chatEvent.message();
 
             if (recipientUUID.isPresent()) {
-                recipientViewer = this.carbonChat.userManager().user(recipient.get(Identity.UUID).orElseThrow()).join();
+                recipientViewer = carbonChat.userManager().user(recipient.get(Identity.UUID).orElseThrow()).join();
             } else {
                 recipientViewer = recipient;
             }
@@ -344,7 +346,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             recipient.sendMessage(renderedMessage);
         }
 
-        final @Nullable PacketService packetService = this.carbonChat.packetService();
+        final @Nullable PacketService packetService = carbonChat.packetService();
 
         if (packetService != null) {
             var renderedMessage = chatEvent.message();
@@ -353,7 +355,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
             }
 
-            packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
+            packetService.queuePacket(new ChatMessagePacket(carbonChat.serverId(), sender.uuid(),
                 channel.permission(), channel.key(), sender.username(), renderedMessage));
         }
     }

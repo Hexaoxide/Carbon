@@ -125,7 +125,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
         if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
             this.logger().info("DiscordSRV found! Enabling hook.");
-            DiscordSRV.getPlugin().getPluginHooks().add(new DSRVChatHook());
+            DiscordSRV.getPlugin().getPluginHooks().add(new DSRVChatHook(this));
         }
     }
 
