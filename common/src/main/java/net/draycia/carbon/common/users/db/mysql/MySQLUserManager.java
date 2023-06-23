@@ -24,7 +24,9 @@ import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Driver;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.UUID;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
@@ -148,6 +150,9 @@ public final class MySQLUserManager extends DatabaseUserManager {
         }
 
         public MySQLUserManager create() {
+            ServiceLoader.load(Driver.class).stream()
+                .forEach(provider -> forceInit(provider.type()));
+
             final HikariConfig hikariConfig = new HikariConfig();
             hikariConfig.setMaximumPoolSize(20);
             hikariConfig.setJdbcUrl(this.databaseSettings.url());
@@ -181,6 +186,15 @@ public final class MySQLUserManager extends DatabaseUserManager {
             return new MySQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory);
         }
 
+    }
+
+    public static <T> Class<T> forceInit(final Class<T> klass) {
+        try {
+            Class.forName(klass.getName(), true, klass.getClassLoader());
+        } catch (final ClassNotFoundException e) {
+            throw new AssertionError(e);
+        }
+        return klass;
     }
 
 }
