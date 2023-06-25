@@ -24,9 +24,7 @@ import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.sql.Driver;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.UUID;
 import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
@@ -45,6 +43,7 @@ import net.draycia.carbon.common.users.db.KeyArgumentFactory;
 import net.draycia.carbon.common.users.db.KeyColumnMapper;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.draycia.carbon.common.util.SQLDrivers;
 import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -155,8 +154,7 @@ public final class MySQLUserManager extends DatabaseUserManager {
         }
 
         public MySQLUserManager create() {
-            ServiceLoader.load(Driver.class).stream()
-                .forEach(provider -> forceInit(provider.type()));
+            SQLDrivers.loadFrom(this.getClass().getClassLoader());
 
             final HikariConfig hikariConfig = new HikariConfig();
             hikariConfig.setMaximumPoolSize(20);
@@ -191,15 +189,6 @@ public final class MySQLUserManager extends DatabaseUserManager {
             return new MySQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory, this.channelRegistry);
         }
 
-    }
-
-    public static <T> Class<T> forceInit(final Class<T> klass) {
-        try {
-            Class.forName(klass.getName(), true, klass.getClassLoader());
-        } catch (final ClassNotFoundException e) {
-            throw new AssertionError(e);
-        }
-        return klass;
     }
 
 }

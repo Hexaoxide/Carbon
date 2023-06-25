@@ -42,6 +42,7 @@ import net.draycia.carbon.common.users.db.KeyArgumentFactory;
 import net.draycia.carbon.common.users.db.KeyColumnMapper;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.draycia.carbon.common.util.SQLDrivers;
 import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -156,12 +157,8 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
         }
 
         public PostgreSQLUserManager create() {
-            try {
-                Class.forName("org.postgresql.Driver");
-                PluginRegister.REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
-            } catch (final ClassNotFoundException exception) {
-                throw new RuntimeException("Could not find required class", exception);
-            }
+            SQLDrivers.loadFrom(this.getClass().getClassLoader());
+            PluginRegister.REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
 
             final HikariConfig hikariConfig = new HikariConfig();
             hikariConfig.setMaximumPoolSize(20);
