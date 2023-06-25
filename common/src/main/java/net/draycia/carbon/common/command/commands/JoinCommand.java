@@ -24,9 +24,9 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -40,17 +40,17 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class JoinCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
+    final CarbonChannelRegistry channelRegistry;
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
 
     @Inject
     public JoinCommand(
-        final CarbonChat carbonChat,
+        final CarbonChannelRegistry channelRegistry,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages
     ) {
-        this.carbonChat = carbonChat;
+        this.channelRegistry = channelRegistry;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
     }
@@ -77,7 +77,7 @@ public class JoinCommand extends CarbonCommand {
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandJoinDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-                final @Nullable ChatChannel channel = this.carbonChat.channelRegistry().byCommandName(handler.get("channel"));
+                final @Nullable ChatChannel channel = this.channelRegistry.byCommandName(handler.get("channel"));
                 if (channel == null) {
                     this.carbonMessages.channelNotFound(sender);
                     return;

@@ -35,14 +35,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class DiscordMessageListener implements Listener {
+public final class DiscordMessageListener implements Listener {
 
     private final CarbonChat carbonChat;
     private final JavaPlugin plugin;
     private final Map<Key, MessageType> channelMessageTypes = new HashMap<>();
 
     @Inject
-    public DiscordMessageListener(
+    private DiscordMessageListener(
         final JavaPlugin plugin,
         final CarbonChat carbonChat,
         final Logger logger

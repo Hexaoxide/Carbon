@@ -142,6 +142,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     // https://github.com/SpongePowered/Configurate/blob/1ec74f6474237585aee858b636d9761d237839d5/examples/src/main/java/org/spongepowered/configurate/examples/Transformations.java#L107
+
     /**
      * Apply the transformations to a node.
      *
@@ -149,7 +150,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
      * occurred</p>
      *
      * @param node the node to transform
-     * @param <N> node type
+     * @param <N>  node type
      * @return provided node, after transformation
      */
     public static <N extends ConfigurationNode> N updateNode(final N node) throws ConfigurateException {
@@ -477,7 +478,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         return this.defaultValue();
     }
 
-    @Override
     public @Nullable ChatChannel byCommandName(final String channelName) {
         for (final ChatChannel channel : this) {
             if (channel.commandName().equalsIgnoreCase(channelName)) {

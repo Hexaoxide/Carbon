@@ -30,10 +30,11 @@ import github.scarsz.discordsrv.dependencies.kyori.adventure.text.minimessage.Mi
 import github.scarsz.discordsrv.hooks.chat.ChatHook;
 import github.scarsz.discordsrv.util.PluginUtil;
 import java.time.Duration;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.util.ChannelUtils;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
@@ -44,19 +45,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class DSRVChatHook implements ChatHook {
+public final class DSRVChatHook implements ChatHook {
 
-    private final CarbonChat carbonChat;
+    private final CarbonChannelRegistry channelRegistry;
 
     @Inject
-    public DSRVChatHook(final CarbonChat carbonChat) {
-        this.carbonChat = carbonChat;
+    private DSRVChatHook(final CarbonEventHandler events, final CarbonChannelRegistry channelRegistry) {
+        this.channelRegistry = channelRegistry;
 
         final Cache<ImmutablePair<CarbonPlayer, ChatChannel>, Component> awaitingEvent = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMillis(25))
             .build();
 
-        this.carbonChat.eventHandler().subscribe(CarbonChatEvent.class, event -> {
+        events.subscribe(CarbonChatEvent.class, event -> {
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
             final ImmutablePair<CarbonPlayer, ChatChannel> pair = new ImmutablePair<>(carbonPlayer, chatChannel);
@@ -95,7 +96,7 @@ public class DSRVChatHook implements ChatHook {
     @Override
     public void broadcastMessageToChannel(final String channel, final github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component message) {
         final String mmFormattedMessage = MiniMessage.miniMessage().serialize(message);
-        ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, this.carbonChat.channelRegistry().byCommandName(channel));
+        ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, this.channelRegistry.byCommandName(channel));
     }
 
     @Override
