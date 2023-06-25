@@ -30,7 +30,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class MessagingSettings {
 
-    private final boolean enabled = false;
+    private boolean enabled = false;
 
     @Comment("Options: RABBITMQ, NATS, REDIS")
     private MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
