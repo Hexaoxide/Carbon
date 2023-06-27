@@ -28,7 +28,6 @@ import github.scarsz.discordsrv.api.Subscribe;
 import github.scarsz.discordsrv.api.events.GameChatMessagePreProcessEvent;
 import github.scarsz.discordsrv.dependencies.kyori.adventure.text.minimessage.MiniMessage;
 import github.scarsz.discordsrv.hooks.chat.ChatHook;
-import github.scarsz.discordsrv.util.PluginUtil;
 import java.time.Duration;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -43,15 +42,22 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class DSRVChatHook implements ChatHook {
 
     private final CarbonChannelRegistry channelRegistry;
+    private final JavaPlugin plugin;
 
     @Inject
-    private DSRVChatHook(final CarbonEventHandler events, final CarbonChannelRegistry channelRegistry) {
+    private DSRVChatHook(
+        final CarbonEventHandler events,
+        final CarbonChannelRegistry channelRegistry,
+        final JavaPlugin plugin
+    ) {
         this.channelRegistry = channelRegistry;
+        this.plugin = plugin;
 
         final Cache<ImmutablePair<CarbonPlayer, ChatChannel>, Component> awaitingEvent = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMillis(25))
@@ -101,7 +107,7 @@ public final class DSRVChatHook implements ChatHook {
 
     @Override
     public Plugin getPlugin() {
-        return PluginUtil.getPlugin("CarbonChat");
+        return this.plugin;
     }
 
 }
