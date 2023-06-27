@@ -43,7 +43,11 @@ public class PrimaryConfig {
     """)
     private Key defaultChannel = Key.key("carbon", "global");
 
-    @Comment("The service that will be used to store and load player information.")
+    @Comment("""
+    The service that will be used to store and load player information.
+    One of: JSON, MYSQL, or PSQL.
+    NB: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!
+    """)
     private StorageType storageType = StorageType.JSON;
 
     @Comment("")
