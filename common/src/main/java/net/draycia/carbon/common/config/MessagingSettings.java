@@ -32,13 +32,11 @@ public class MessagingSettings {
 
     private boolean enabled = false;
 
-    @Comment("Options: RABBITMQ, NATS, REDIS")
+    @Comment("One of: RABBITMQ, NATS, REDIS")
     private MessagingManager.@NonNull BrokerType brokerType = MessagingManager.BrokerType.NONE;
 
-    @Comment("")
     private String url = "127.0.0.1";
 
-    @Comment("")
     private int port = 5672; // RabbitMQ 5672, NATS 4222, Redis 6379
 
     @Comment("RabbitMQ VHost")

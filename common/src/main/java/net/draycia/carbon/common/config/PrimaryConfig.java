@@ -45,12 +45,15 @@ public class PrimaryConfig {
 
     @Comment("""
     The service that will be used to store and load player information.
-    One of: JSON, MYSQL, or PSQL.
-    NB: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!
+    One of: JSON, MYSQL, PSQL
+    Note: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!
     """)
     private StorageType storageType = StorageType.JSON;
 
-    @Comment("")
+    @Comment("""
+    When "storage-type" is set to MYSQL or PSQL, this section configures the database connection.
+    If JSON storage is used, this section can be ignored.
+    """)
     private DatabaseSettings databaseSettings = new DatabaseSettings();
 
     @Comment("Various ClearChat command settings.")
