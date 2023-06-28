@@ -38,7 +38,7 @@ public class CarbonPaperLoader implements PluginLoader {
         maven.addRepository(new RemoteRepository.Builder("paper", "default", "https://repo.papermc.io/repository/maven-public/").build());
 
         maven.addDependency(new Dependency(new DefaultArtifact("com.github.luben:zstd-jni:1.5.1-1"), null));
-        maven.addDependency(new Dependency(new DefaultArtifact("com.google.protobuf:protobuf-java:3.21.12"), null));
+        maven.addDependency(new Dependency(new DefaultArtifact("org.postgresql:postgresql:42.3.1"), null));
 
         classpathBuilder.addLibrary(maven);
     }
