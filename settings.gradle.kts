@@ -14,6 +14,7 @@ dependencyResolutionManagement {
       mavenContent {
         snapshotsOnly()
         includeModule("cloud.commandframework", "cloud-sponge")
+        includeModule("net.kyori", "adventure-platform-fabric") // 5.10.0-SNAPSHOT for 1.20 support
       }
     }
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
