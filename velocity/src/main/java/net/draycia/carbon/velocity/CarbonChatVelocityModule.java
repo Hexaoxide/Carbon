@@ -20,7 +20,6 @@
 package net.draycia.carbon.velocity;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.velocity.VelocityCommandManager;
 import cloud.commandframework.velocity.arguments.PlayerArgument;
 import com.google.inject.AbstractModule;
@@ -41,8 +40,11 @@ import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
 import net.draycia.carbon.velocity.users.VelocityProfileResolver;
@@ -74,11 +76,15 @@ public final class CarbonChatVelocityModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public CommandManager<Commander> createCommandManager(final UserManager<?> userManager) {
+    public CommandManager<Commander> createCommandManager(
+        final ExecutionCoordinatorHolder executionCoordinatorHolder,
+        final UserManager<?> userManager,
+        final CarbonMessages messages
+    ) {
         final VelocityCommandManager<Commander> commandManager = new VelocityCommandManager<>(
             this.pluginContainer,
             this.proxyServer,
-            AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
+            executionCoordinatorHolder.executionCoordinator(),
             commandSender -> {
                 if (commandSender instanceof Player player) {
                     return new VelocityPlayerCommander(userManager, player);
@@ -89,6 +95,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
             commander -> ((VelocityCommander) commander).commandSource()
         );
 
+        CloudUtils.decorateCommandManager(commandManager, messages);
         final var brigadierManager = commandManager.brigadierManager();
         brigadierManager.setNativeNumberSuggestions(false);
 
