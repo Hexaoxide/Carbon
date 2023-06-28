@@ -36,6 +36,15 @@ dependencies {
   include(libs.adventurePlatformFabric)
 
   modImplementation(libs.miniplaceholders)
+
+  include(libs.postgresql)
+  runtimeOnly(libs.postgresql)
+  include(libs.mysql)
+  runtimeOnly(libs.mysql)
+  include(libs.protobuf)
+  runtimeOnly(libs.protobuf)
+  include(libs.zstdjni)
+  runtimeOnly(libs.zstdjni)
 }
 
 carbonPlatform {

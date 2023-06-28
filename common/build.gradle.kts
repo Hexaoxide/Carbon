@@ -33,9 +33,7 @@ dependencies {
   api(libs.hikariCP)
   api(libs.flyway)
   api(libs.flywayMysql)
-  api(libs.postgresql)
   api(libs.caffeine)
-  api(libs.mariadb)
 
   // Messaging
   api(libs.messenger)
@@ -43,7 +41,6 @@ dependencies {
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)
   api(libs.netty)
-  compileOnlyApi(libs.zstdjni)
   api(libs.jedis)
   api(libs.rabbitmq)
   api(libs.nats)

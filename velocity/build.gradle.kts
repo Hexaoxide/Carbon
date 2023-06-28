@@ -14,6 +14,10 @@ dependencies {
 
   implementation(libs.cloudVelocity)
   compileOnly(libs.miniplaceholders)
+
+  runtimeOnly(libs.postgresql)
+  runtimeOnly(libs.mysql)
+  runtimeOnly(libs.zstdjni)
 }
 
 tasks {
@@ -21,6 +25,12 @@ tasks {
     dependencies {
       relocateDependency("io.leangen.geantyref")
       relocateDependency("com.google.inject.assistedinject")
+
+      relocateDependency("org.postgresql")
+      relocateDependency("com.github.luben.zstd")
+      relocateDependency("com.google.protobuf")
+      relocateDependency("com.mysql.cj")
+      relocateDependency("com.mysql.jdbc")
 
       // included in velocity
       exclude(dependency("com.google.inject:guice"))
