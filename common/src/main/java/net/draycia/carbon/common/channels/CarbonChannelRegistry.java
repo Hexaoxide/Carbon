@@ -247,7 +247,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             final String channels = String.join(", ", channelList);
 
-            this.logger.warn("Registered channels: [" + channels + "]");
+            this.logger.info("Registered channels: [" + channels + "]");
         } catch (final IOException exception) {
             exception.printStackTrace();
         }
