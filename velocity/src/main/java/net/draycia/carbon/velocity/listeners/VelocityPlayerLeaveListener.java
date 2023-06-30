@@ -22,23 +22,23 @@ package net.draycia.carbon.velocity.listeners;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.EventTask;
-import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import net.draycia.carbon.velocity.VelocityUserManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static net.draycia.carbon.common.util.PlayerUtils.joinExceptionHandler;
+import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
 
 @DefaultQualifier(NonNull.class)
-public class VelocityPlayerJoinListener implements VelocityListener<LoginEvent> {
+public final class VelocityPlayerLeaveListener implements VelocityListener<DisconnectEvent> {
 
     private final VelocityUserManager userManager;
     private final Logger logger;
 
     @Inject
-    public VelocityPlayerJoinListener(
+    public VelocityPlayerLeaveListener(
         final VelocityUserManager userManager,
         final Logger logger
     ) {
@@ -48,14 +48,18 @@ public class VelocityPlayerJoinListener implements VelocityListener<LoginEvent> 
 
     @Override
     public void register(final EventManager eventManager, final CarbonVelocityBootstrap bootstrap) {
-        eventManager.register(bootstrap, LoginEvent.class, this);
+        eventManager.register(bootstrap, DisconnectEvent.class, this);
     }
 
     @Override
-    public EventTask executeAsync(final LoginEvent event) {
-        return EventTask.async(
-            () -> this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger))
-        );
+    public EventTask executeAsync(final DisconnectEvent event) {
+        return EventTask.async(() -> {
+            if (event.getLoginStatus() == DisconnectEvent.LoginStatus.CONFLICTING_LOGIN) {
+                return;
+            }
+            this.userManager.loggedOut(event.getPlayer().getUniqueId())
+                .exceptionally(saveExceptionHandler(this.logger, event.getPlayer().getUsername(), event.getPlayer().getUniqueId()));
+        });
     }
 
 }
