@@ -75,7 +75,7 @@ public final class VelocityChatListener {
         this.carbonMessages = carbonMessages;
     }
 
-    @Subscribe(order = PostOrder.LAST)
+    @Subscribe(order = PostOrder.LATE)
     public void onPlayerChat(final PlayerChatEvent event) {
         if (!event.getResult().isAllowed()) {
             return;
