@@ -79,7 +79,7 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
 
     @Override
     public void register(final EventManager eventManager, final CarbonVelocityBootstrap bootstrap) {
-        eventManager.register(bootstrap, PlayerChatEvent.class, PostOrder.LATE, this);
+        eventManager.register(bootstrap, PlayerChatEvent.class, PostOrder.LAST, this);
     }
 
     @Override
