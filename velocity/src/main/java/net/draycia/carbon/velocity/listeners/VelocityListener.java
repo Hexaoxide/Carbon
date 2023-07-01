@@ -25,5 +25,5 @@ import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 
 public interface VelocityListener<E> extends AwaitingEventExecutor<E> {
 
-    void register(final EventManager eventManager, final CarbonVelocityBootstrap bootstrap);
+    void register(EventManager eventManager, CarbonVelocityBootstrap bootstrap);
 }

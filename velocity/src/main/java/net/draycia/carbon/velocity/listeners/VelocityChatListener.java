@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.velocity.listeners;
 
+import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.EventTask;
@@ -29,6 +30,8 @@ import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.Player;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
@@ -57,8 +60,8 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
     private final UserManager<?> userManager;
     private final Logger logger;
     private final AtomicInteger timesWarned = new AtomicInteger(0);
-    private final PluginManager pluginManager;
     private final CarbonMessages carbonMessages;
+    private final Supplier<Boolean> signedSupplier;
 
     @Inject
     private VelocityChatListener(
@@ -73,8 +76,11 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
         this.registry = registry;
         this.userManager = userManager;
         this.logger = logger;
-        this.pluginManager = pluginManager;
         this.carbonMessages = carbonMessages;
+        this.signedSupplier = Suppliers.memoize(
+            () -> pluginManager.isLoaded("unsignedvelocity")
+                || pluginManager.isLoaded("signedvelocity")
+        );
     }
 
     @Override
@@ -84,16 +90,19 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
 
     @Override
     public EventTask executeAsync(final PlayerChatEvent event) {
-        return EventTask.async(() -> {
-            if (!event.getResult().isAllowed()) {
-                return;
-            }
-            final Player player = event.getPlayer();
-            final boolean signedVersion = player.getIdentifiedKey() != null
-                && player.getProtocolVersion().compareTo(ProtocolVersion.MINECRAFT_1_19_1) >= 0;
-            if (signedVersion && !this.pluginManager.isLoaded("unsignedvelocity")) {
-                if (this.timesWarned.getAndIncrement() < 3) {
-                    this.logger.warn("""
+        return EventTask.async(() -> this.executeEvent(event));
+    }
+
+    private void executeEvent(final PlayerChatEvent event) {
+        if (!event.getResult().isAllowed()) {
+            return;
+        }
+        final Player player = event.getPlayer();
+        final boolean signedVersion = player.getIdentifiedKey() != null
+            && player.getProtocolVersion().compareTo(ProtocolVersion.MINECRAFT_1_19_1) >= 0;
+        if (signedVersion && !signedSupplier.get()) {
+            if (this.timesWarned.getAndIncrement() < 3) {
+                this.logger.warn("""
                         
                         ==================================================
                         We have avoided modifying {}'s chat ,
@@ -104,57 +113,56 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
                         install UnSignedVelocity.
                         ==================================================
                         """, player.getUsername()
-                    );
-                }
-                return;
+                );
+            }
+            return;
+        }
+
+        event.setResult(PlayerChatEvent.ChatResult.denied());
+
+        final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
+        var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
+        final var originalMessage = event.getResult().getMessage().orElse(event.getMessage());
+        Component eventMessage = text(originalMessage);
+
+        if (sender.hasPermission("carbon.chatlinks")) {
+            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
+        }
+
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
+
+        if (channelMessage.channel() != null) {
+            channel = channelMessage.channel();
+        }
+
+        eventMessage = channelMessage.message();
+
+        if (sender.leftChannels().contains(channel.key())) {
+            sender.joinChannel(channel);
+            this.carbonMessages.channelJoined(sender);
+        }
+
+        final var recipients = channel.recipients(sender);
+
+        final var renderers = new ArrayList<KeyedRenderer>();
+        renderers.add(keyedRenderer(key("carbon", "default"), channel));
+
+        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
+        this.carbonChat.eventHandler().emit(chatEvent);
+
+        if (chatEvent.cancelled()) {
+            return;
+        }
+
+        for (final var recipient : chatEvent.recipients()) {
+            var renderedMessage = chatEvent.message();
+
+            for (final var renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
             }
 
-            event.setResult(PlayerChatEvent.ChatResult.denied());
-
-            final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
-            var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-            final var originalMessage = event.getResult().getMessage().orElse(event.getMessage());
-            Component eventMessage = text(originalMessage);
-
-            if (sender.hasPermission("carbon.chatlinks")) {
-                eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
-            }
-
-            final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
-
-            if (channelMessage.channel() != null) {
-                channel = channelMessage.channel();
-            }
-
-            eventMessage = channelMessage.message();
-
-            if (sender.leftChannels().contains(channel.key())) {
-                sender.joinChannel(channel);
-                this.carbonMessages.channelJoined(sender);
-            }
-
-            final var recipients = channel.recipients(sender);
-
-            final var renderers = new ArrayList<KeyedRenderer>();
-            renderers.add(keyedRenderer(key("carbon", "default"), channel));
-
-            final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
-            this.carbonChat.eventHandler().emit(chatEvent);
-
-            if (chatEvent.cancelled()) {
-                return;
-            }
-
-            for (final var recipient : chatEvent.recipients()) {
-                var renderedMessage = chatEvent.message();
-
-                for (final var renderer : chatEvent.renderers()) {
-                    renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
-                }
-
-                recipient.sendMessage(renderedMessage);
-            }
-        });
+            recipient.sendMessage(renderedMessage);
+        }
     }
 
 }
