@@ -27,6 +27,7 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.Player;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -34,6 +35,7 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
 import net.kyori.adventure.text.Component;
@@ -57,6 +59,7 @@ public final class VelocityChatListener {
     private final AtomicInteger timesWarned = new AtomicInteger(0);
     private final PluginManager pluginManager;
     private final CarbonMessages carbonMessages;
+    final ConfigFactory configFactory;
 
     @Inject
     private VelocityChatListener(
@@ -65,7 +68,8 @@ public final class VelocityChatListener {
         final UserManager<?> userManager,
         final Logger logger,
         final PluginManager pluginManager,
-        final CarbonMessages carbonMessages
+        final CarbonMessages carbonMessages,
+        final ConfigFactory configFactory
     ) {
         this.carbonChat = (CarbonChatVelocity) carbonChat;
         this.registry = registry;
@@ -73,6 +77,7 @@ public final class VelocityChatListener {
         this.logger = logger;
         this.pluginManager = pluginManager;
         this.carbonMessages = carbonMessages;
+        this.configFactory = configFactory;
     }
 
     @Subscribe(order = PostOrder.LATE)
@@ -106,8 +111,14 @@ public final class VelocityChatListener {
 
         final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-        final var originalMessage = event.getResult().getMessage().orElse(event.getMessage());
-        Component eventMessage = text(originalMessage);
+
+        String content = event.getResult().getMessage().orElse(event.getMessage());
+
+        for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
+            content = content.replace(placeholder.getKey(), placeholder.getValue());
+        }
+
+        Component eventMessage = text(content);
 
         if (sender.hasPermission("carbon.chatlinks")) {
             eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());

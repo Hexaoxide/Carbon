@@ -22,12 +22,14 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
+import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.paper.CarbonChatPaper;
@@ -54,12 +56,19 @@ public final class PaperChatListener implements Listener {
     private final CarbonChatPaper carbonChat;
     private final ChannelRegistry registry;
     private final CarbonMessages carbonMessages;
+    final ConfigFactory configFactory;
 
     @Inject
-    public PaperChatListener(final CarbonChat carbonChat, final ChannelRegistry registry, final CarbonMessages carbonMessages) {
+    public PaperChatListener(
+        final CarbonChat carbonChat,
+        final ChannelRegistry registry,
+        final CarbonMessages carbonMessages,
+        final ConfigFactory configFactory
+    ) {
         this.carbonChat = (CarbonChatPaper) carbonChat;
         this.registry = registry;
         this.carbonMessages = carbonMessages;
+        this.configFactory = configFactory;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -71,8 +80,14 @@ public final class PaperChatListener implements Listener {
         }
 
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-        final var messageContents = PlainTextComponentSerializer.plainText().serialize(event.message());
-        Component eventMessage = ConfigChatChannel.parseMessageTags(sender, messageContents);
+
+        String content = PlainTextComponentSerializer.plainText().serialize(event.message());
+
+        for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
+            content = content.replace(placeholder.getKey(), placeholder.getValue());
+        }
+
+        Component eventMessage = ConfigChatChannel.parseMessageTags(sender, content);
 
         if (sender.hasPermission("carbon.chatlinks")) {
             eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
