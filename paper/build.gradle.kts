@@ -34,6 +34,7 @@ tasks {
   shadowJar {
     relocateDependency("io.papermc.papertrail")
     relocateDependency("io.leangen.geantyref")
+    relocateCloud()
   }
   runServer {
     minecraftVersion("1.20.1")

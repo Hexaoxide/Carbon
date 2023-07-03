@@ -23,22 +23,16 @@ dependencies {
 tasks {
   shadowJar {
     dependencies {
-      relocateDependency("com.github.benmanes")
-      relocateDependency("com.github.luben.zstd")
+      relocateCloud()
+      standardRuntimeRelocations()
       relocateDependency("com.google.inject.assistedinject")
-      relocateDependency("com.rabbitmq")
       relocateDependency("io.leangen.geantyref")
-      relocateDependency("io.nats")
       relocateDependency("me.lucko.jarrelocator")
-      relocateDependency("org.apache.commons.pool2")
-      relocateDependency("org.jdbi")
       relocateDependency("org.objectweb.asm")
-      relocateDependency("redis.clients.jedis")
     }
   }
   writeDependencies {
     standardRuntimeRelocations()
-
     relocateDependency("com.google.inject.assistedinject")
   }
   runVelocity {

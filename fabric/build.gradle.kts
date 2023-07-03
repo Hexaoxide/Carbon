@@ -51,28 +51,15 @@ carbonPlatform {
   jarTask.set(tasks.remapJar)
 }
 
-carbonShadowPlatform {
-  relocateCloud.set(false)
-}
-
 tasks {
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
-
     relocateDependency("cloud.commandframework.minecraft.extras")
-    relocateDependency("com.github.benmanes")
-    relocateDependency("com.github.luben.zstd")
-    relocateDependency("com.rabbitmq")
-    relocateDependency("io.nats")
-    relocateDependency("org.apache.commons.pool2")
-    relocateDependency("org.jdbi")
-    relocateDependency("redis.clients.jedis")
-
+    standardRuntimeRelocations()
     relocateGuice()
   }
   writeDependencies {
     standardRuntimeRelocations()
-
     relocateGuice()
   }
   processResources {
