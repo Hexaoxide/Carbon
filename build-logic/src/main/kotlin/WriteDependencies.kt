@@ -62,10 +62,9 @@ abstract class WriteDependencies : DefaultTask() {
     val seen = mutableSetOf<String>()
     for (dependency in deps()) {
       val id = dependency.resolvedVariant.owner as ModuleComponentIdentifier
-      if (id.displayName in seen) {
+      if (!seen.add(id.displayName)) {
         continue
       }
-      seen += id.displayName
       val file = files.single { it.name.equals("${id.module}-${id.version}.jar") }
       outputLines.append(id.displayName).append(" ").append(file.toPath().hashFile(HashingAlgorithm.SHA256).asHexString()).append("\n")
     }
