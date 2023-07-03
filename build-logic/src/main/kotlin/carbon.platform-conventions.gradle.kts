@@ -44,6 +44,7 @@ val writeDeps = tasks.register("writeDependencies", WriteDependencies::class) {
   outputFileName.set("carbon-dependencies.list")
   outputDir.set(layout.buildDirectory.dir("generated/dependencyList"))
   repos.add("https://repo.papermc.io/repository/maven-public/")
+  repos.add("https://repo.maven.apache.org/maven2/")
 }
 
 sourceSets.main {
