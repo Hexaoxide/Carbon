@@ -54,14 +54,18 @@ abstract class WriteDependencies : DefaultTask() {
   fun run() {
     val outputLines = StringBuilder()
     val outputFile = outputDir.get().file(outputFileName.get()).asFile
-    val deps = deps()
     val files = files.files
     for (repo in repos()) {
       outputLines.append(repo).append("\n")
     }
     outputLines.append("end_repos\n")
-    for (dependency in deps.toList()) {
+    val seen = mutableSetOf<String>()
+    for (dependency in deps()) {
       val id = dependency.resolvedVariant.owner as ModuleComponentIdentifier
+      if (id.displayName in seen) {
+        continue
+      }
+      seen += id.displayName
       val file = files.single { it.name.equals("${id.module}-${id.version}.jar") }
       outputLines.append(id.displayName).append(" ").append(file.toPath().hashFile(HashingAlgorithm.SHA256).asHexString()).append("\n")
     }
