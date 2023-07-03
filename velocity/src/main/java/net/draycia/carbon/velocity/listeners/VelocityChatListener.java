@@ -31,7 +31,6 @@ import com.velocitypowered.api.proxy.Player;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
@@ -100,7 +99,7 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
         final Player player = event.getPlayer();
         final boolean signedVersion = player.getIdentifiedKey() != null
             && player.getProtocolVersion().compareTo(ProtocolVersion.MINECRAFT_1_19_1) >= 0;
-        if (signedVersion && !signedSupplier.get()) {
+        if (signedVersion && !this.signedSupplier.get()) {
             if (this.timesWarned.getAndIncrement() < 3) {
                 this.logger.warn("""
                         
