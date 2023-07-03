@@ -31,7 +31,6 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("org.spongepowered.configurate")
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.thirdparty.publicsuffix")
-  relocateDependency("org.jdbi")
   relocateDependency("com.zaxxer.hikari")
   relocateDependency("redis.clients.jedis")
   relocateDependency("ninja.egg82.messenger")

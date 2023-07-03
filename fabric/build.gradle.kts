@@ -63,6 +63,7 @@ tasks {
     configurations = arrayListOf(carbon) as List<FileCollection>
     relocateDependency("cloud.commandframework.minecraft.extras")
     relocateDependency("com.github.luben.zstd")
+    relocateDependency("org.jdbi")
     relocateDependency("com.github.benmanes")
   }
   writeDependencies {

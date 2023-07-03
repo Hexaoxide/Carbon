@@ -35,6 +35,7 @@ tasks {
       relocateDependency("com.github.luben.zstd")
       relocateDependency("me.lucko.jarrelocator")
       relocateDependency("org.objectweb.asm")
+      relocateDependency("org.jdbi")
       relocateDependency("com.github.benmanes")
 
       // included in velocity
