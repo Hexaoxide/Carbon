@@ -9,6 +9,11 @@ val runtimeDownload: Configuration by configurations.creating {
   attributes {
     attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
   }
+
+  exclude("org.checkerframework", "checker-qual")
+  exclude("org.slf4j", "slf4j-api")
+  exclude("com.google.errorprone", "error_prone_annotations")
+  exclude("io.leangen.geantyref", "geantyref")
 }
 
 val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")

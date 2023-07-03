@@ -35,6 +35,7 @@ tasks {
       relocateDependency("com.github.luben.zstd")
       relocateDependency("me.lucko.jarrelocator")
       relocateDependency("org.objectweb.asm")
+      relocateDependency("com.github.benmanes")
 
       // included in velocity
       exclude(dependency("com.google.inject:guice"))
@@ -49,6 +50,7 @@ tasks {
     relocateDependency("com.mysql.jdbc")
 
     relocateDependency("org.jdbi")
+    relocateDependency("com.github.benmanes")
   }
   runVelocity {
       velocityVersion(libs.versions.velocityApi.get())

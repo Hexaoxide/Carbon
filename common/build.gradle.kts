@@ -45,6 +45,7 @@ dependencies {
   api(libs.nats)
 
   compileOnlyApi(libs.jarRelocator)
+  compileOnlyApi(libs.caffeine)
 
   // we shade and relocate a newer version than minecraft provides
   compileOnlyApi(libs.guava)

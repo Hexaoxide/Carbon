@@ -68,8 +68,6 @@ fun ShadowJar.configureShadowJar() {
     exclude(dependency("it.unimi.dsi:fastutil"))
     exclude(dependency("org.checkerframework:checker-qual"))
     exclude(dependency("org.slf4j:slf4j-api"))
-
-    // todo copy excludes to runtimeDownload (may need to try and handle transitive deps ourselves on paper)
   }
 }
 

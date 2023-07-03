@@ -59,17 +59,13 @@ abstract class WriteDependencies : DefaultTask() {
       outputLines.append(repo).append("\n")
     }
     outputLines.append("end_repos\n")
-    val seen = mutableSetOf<String>()
     for (dependency in deps()) {
       val id = dependency.resolvedVariant.owner as ModuleComponentIdentifier
-      if (!seen.add(id.displayName)) {
-        continue
-      }
       val file = files.single { it.name.equals("${id.module}-${id.version}.jar") }
       outputLines.append(id.displayName).append(" ").append(file.toPath().hashFile(HashingAlgorithm.SHA256).asHexString()).append("\n")
     }
     outputLines.append("end_deps\n")
-    for (r in relocations.get()) {
+    for (r in relocations.get().sorted()) {
       outputLines.append(r).append("\n")
     }
     outputFile.parentFile.mkdirs()
@@ -90,10 +86,12 @@ abstract class WriteDependencies : DefaultTask() {
   private val Project.settings: Settings
     get() = (gradle as GradleInternal).settings
 
-  private fun deps(): MutableSet<ResolvedDependencyResult> {
-    val ret = mutableSetOf<ResolvedDependencyResult>()
-    ret.addFrom(tree.get().dependencies)
-    return ret
+  private fun deps(): List<ResolvedDependencyResult> {
+    val set = mutableSetOf<ResolvedDependencyResult>()
+    set.addFrom(tree.get().dependencies)
+    return set.associateBy { it.resolvedVariant.owner.displayName }
+      .map { it.value }
+      .sortedBy { it.resolvedVariant.owner.displayName }
   }
 
   private fun MutableSet<ResolvedDependencyResult>.addFrom(dependencies: Set<DependencyResult>) {

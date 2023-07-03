@@ -21,16 +21,15 @@ package net.draycia.carbon.paper;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
+import io.papermc.paper.plugin.loader.library.impl.JarLibrary;
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.Objects;
+import net.draycia.carbon.common.util.DependencyDownloader;
+import org.apache.logging.log4j.LogManager;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.repository.RemoteRepository;
 import org.springframework.lang.NonNull;
 
 @DefaultQualifier(NonNull.class)
@@ -40,32 +39,22 @@ public class CarbonPaperLoader implements PluginLoader {
     public void classloader(final PluginClasspathBuilder classpathBuilder) {
         final MavenLibraryResolver maven = new MavenLibraryResolver();
 
+        final DependencyDownloader downloader;
         try (
-            final InputStream stream = this.getClass().getClassLoader().getResourceAsStream("carbon-dependencies.list");
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(stream)))
+            final InputStream stream = Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("carbon-dependencies.list"))
         ) {
-            boolean doneWithRepos = false;
-            int repoIndex = 0;
-            for (;;) {
-                final String line = reader.readLine();
-                if (line == null) {
-                    break;
-                }
-                if (line.equals("end_deps")) {
-                    break;
-                } else if (line.equals("end_repos")) {
-                    doneWithRepos = true;
-                    continue;
-                }
-                if (doneWithRepos) {
-                    final String[] split = line.split(" ");
-                    maven.addDependency(new Dependency(new DefaultArtifact(split[0]), null));
-                } else {
-                    maven.addRepository(new RemoteRepository.Builder("carbon" + repoIndex++, "default", line).build());
-                }
-            }
+            downloader = new DependencyDownloader(
+                LogManager.getLogger(this.getClass().getSimpleName()),
+                classpathBuilder.getContext().getDataDirectory().resolve("libraries")
+            );
+
+            downloader.load(stream);
         } catch (final IOException e) {
             throw new RuntimeException(e);
+        }
+
+        for (final Path path : downloader.resolve()) {
+            classpathBuilder.addLibrary(new JarLibrary(path));
         }
 
         classpathBuilder.addLibrary(maven);

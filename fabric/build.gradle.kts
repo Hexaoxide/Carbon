@@ -63,6 +63,7 @@ tasks {
     configurations = arrayListOf(carbon) as List<FileCollection>
     relocateDependency("cloud.commandframework.minecraft.extras")
     relocateDependency("com.github.luben.zstd")
+    relocateDependency("com.github.benmanes")
   }
   writeDependencies {
     relocateDependency("org.postgresql")
@@ -72,6 +73,7 @@ tasks {
     relocateDependency("com.mysql.jdbc")
 
     relocateDependency("org.jdbi")
+    relocateDependency("com.github.benmanes")
   }
   processResources {
     val props = mapOf(
