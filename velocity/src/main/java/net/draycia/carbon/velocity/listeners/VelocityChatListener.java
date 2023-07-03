@@ -29,6 +29,7 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.Player;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.CarbonChat;
@@ -37,6 +38,7 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
@@ -61,6 +63,7 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
     private final AtomicInteger timesWarned = new AtomicInteger(0);
     private final CarbonMessages carbonMessages;
     private final Supplier<Boolean> signedSupplier;
+    final ConfigFactory configFactory;
 
     @Inject
     private VelocityChatListener(
@@ -69,13 +72,15 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
         final UserManager<?> userManager,
         final Logger logger,
         final PluginManager pluginManager,
-        final CarbonMessages carbonMessages
+        final CarbonMessages carbonMessages,
+        final ConfigFactory configFactory
     ) {
         this.carbonChat = (CarbonChatVelocity) carbonChat;
         this.registry = registry;
         this.userManager = userManager;
         this.logger = logger;
         this.carbonMessages = carbonMessages;
+        this.configFactory = configFactory;
         this.signedSupplier = Suppliers.memoize(
             () -> pluginManager.isLoaded("unsignedvelocity")
                 || pluginManager.isLoaded("signedvelocity")
@@ -96,22 +101,23 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
         if (!event.getResult().isAllowed()) {
             return;
         }
+
         final Player player = event.getPlayer();
         final boolean signedVersion = player.getIdentifiedKey() != null
             && player.getProtocolVersion().compareTo(ProtocolVersion.MINECRAFT_1_19_1) >= 0;
         if (signedVersion && !this.signedSupplier.get()) {
             if (this.timesWarned.getAndIncrement() < 3) {
                 this.logger.warn("""
-                        
-                        ==================================================
-                        We have avoided modifying {}'s chat ,
-                        since they use a version higher than 1.19.1,
-                        where this function is not supported.
-                        
-                        If you want to keep this function working,
-                        install UnSignedVelocity.
-                        ==================================================
-                        """, player.getUsername()
+                    
+                    ==================================================
+                    We have avoided modifying {}'s chat ,
+                    since they use a version higher than 1.19.1,
+                    where this function is not supported.
+                    
+                    If you want to keep this function working,
+                    install UnSignedVelocity.
+                    ==================================================
+                    """, player.getUsername()
                 );
             }
             return;
@@ -121,8 +127,14 @@ public final class VelocityChatListener implements VelocityListener<PlayerChatEv
 
         final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
         var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-        final var originalMessage = event.getResult().getMessage().orElse(event.getMessage());
-        Component eventMessage = text(originalMessage);
+
+        String content = event.getResult().getMessage().orElse(event.getMessage());
+
+        for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
+            content = content.replace(placeholder.getKey(), placeholder.getValue());
+        }
+
+        Component eventMessage = text(content);
 
         if (sender.hasPermission("carbon.chatlinks")) {
             eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
