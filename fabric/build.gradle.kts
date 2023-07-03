@@ -52,39 +52,28 @@ carbonPlatform {
 }
 
 carbonShadowPlatform {
-  relocateGuice.set(true)
   relocateCloud.set(false)
 }
 
 tasks {
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
-    relocateDependency("cloud.commandframework.minecraft.extras")
-    relocateDependency("com.github.luben.zstd")
-    relocateDependency("org.jdbi")
-    relocateDependency("com.github.benmanes")
 
+    relocateDependency("cloud.commandframework.minecraft.extras")
+    relocateDependency("com.github.benmanes")
+    relocateDependency("com.github.luben.zstd")
+    relocateDependency("com.rabbitmq")
     relocateDependency("io.nats")
     relocateDependency("org.apache.commons.pool2")
+    relocateDependency("org.jdbi")
     relocateDependency("redis.clients.jedis")
-    relocateDependency("com.rabbitmq")
+
+    relocateGuice()
   }
   writeDependencies {
-    relocateDependency("org.postgresql")
-    relocateDependency("com.github.luben.zstd")
-    relocateDependency("com.google.protobuf")
-    relocateDependency("com.mysql.cj")
-    relocateDependency("com.mysql.jdbc")
-    relocateDependency("org.mariadb.jdbc")
+    standardRuntimeRelocations()
 
-    relocateDependency("org.jdbi")
-    relocateDependency("com.github.benmanes")
-
-    relocateDependency("io.nats")
-    relocateDependency("net.i2p.crypto")
-    relocateDependency("org.apache.commons.pool2")
-    relocateDependency("redis.clients.jedis")
-    relocateDependency("com.rabbitmq")
+    relocateGuice()
   }
   processResources {
     val props = mapOf(

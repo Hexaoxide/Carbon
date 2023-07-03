@@ -22,16 +22,8 @@ extensions.configure<CarbonPlatformExtension> {
 
 afterEvaluate {
   tasks.shadowJar {
-    if (shadowPlatform.relocateGuice.get()) {
-      relocateGuice()
-    }
     if (shadowPlatform.relocateCloud.get()) {
       relocateCloud()
-    }
-  }
-  tasks.named("writeDependencies", WriteDependencies::class) {
-    if (shadowPlatform.relocateGuice.get()) {
-      relocateGuice()
     }
   }
 }

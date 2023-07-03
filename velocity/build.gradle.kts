@@ -23,41 +23,21 @@ dependencies {
 tasks {
   shadowJar {
     dependencies {
-      relocateDependency("io.leangen.geantyref")
-      relocateDependency("com.google.inject.assistedinject")
-
-      relocateDependency("com.github.luben.zstd")
-      relocateDependency("me.lucko.jarrelocator")
-      relocateDependency("org.objectweb.asm")
-      relocateDependency("org.jdbi")
       relocateDependency("com.github.benmanes")
-
-      relocateDependency("io.nats")
-      relocateDependency("org.apache.commons.pool2")
-      relocateDependency("redis.clients.jedis")
+      relocateDependency("com.github.luben.zstd")
+      relocateDependency("com.google.inject.assistedinject")
       relocateDependency("com.rabbitmq")
-
-      // included in velocity
-      exclude(dependency("com.google.inject:guice"))
-      exclude(dependency("aopalliance:aopalliance"))
-      exclude(dependency("javax.inject:javax.inject"))
+      relocateDependency("io.leangen.geantyref")
+      relocateDependency("io.nats")
+      relocateDependency("me.lucko.jarrelocator")
+      relocateDependency("org.apache.commons.pool2")
+      relocateDependency("org.jdbi")
+      relocateDependency("org.objectweb.asm")
+      relocateDependency("redis.clients.jedis")
     }
   }
   writeDependencies {
-    relocateDependency("org.postgresql")
-    relocateDependency("com.google.protobuf")
-    relocateDependency("com.mysql.cj")
-    relocateDependency("com.mysql.jdbc")
-    relocateDependency("org.mariadb.jdbc")
-
-    relocateDependency("org.jdbi")
-    relocateDependency("com.github.benmanes")
-
-    relocateDependency("io.nats")
-    relocateDependency("net.i2p.crypto")
-    relocateDependency("org.apache.commons.pool2")
-    relocateDependency("redis.clients.jedis")
-    relocateDependency("com.rabbitmq")
+    standardRuntimeRelocations()
 
     relocateDependency("com.google.inject.assistedinject")
   }

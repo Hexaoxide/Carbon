@@ -13,6 +13,7 @@ fun Task.relocateDependency(pkg: String) {
   when (this) {
     is ShadowJar -> relocateDependency(pkg)
     is WriteDependencies -> relocateDependency(pkg)
+    else -> error("relocateDependency must be called on a ShadowJar or WriteDependencies task, not ${this.javaClass.name}")
   }
 }
 
@@ -25,6 +26,22 @@ fun ShadowJar.relocateDependency(pkg: String) {
 
 fun WriteDependencies.relocateDependency(pkg: String) {
   relocate(pkg, "carbonchat.libs.$pkg")
+}
+
+fun Task.standardRuntimeRelocations() {
+  relocateDependency("com.github.benmanes")
+  relocateDependency("com.github.luben.zstd")
+  relocateDependency("com.google.protobuf")
+  relocateDependency("com.mysql.cj")
+  relocateDependency("com.mysql.jdbc")
+  relocateDependency("com.rabbitmq")
+  relocateDependency("io.nats")
+  relocateDependency("net.i2p.crypto")
+  relocateDependency("org.apache.commons.pool2")
+  relocateDependency("org.jdbi")
+  relocateDependency("org.mariadb.jdbc")
+  relocateDependency("org.postgresql")
+  relocateDependency("redis.clients.jedis")
 }
 
 /**
