@@ -9,10 +9,14 @@ val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")
 
 /**
- * Relocate a package into the `net.draycia.carbon.libs` namespace.
+ * Relocate a package into the `carbonchat.` namespace.
  */
 fun ShadowJar.relocateDependency(pkg: String) {
-  relocate(pkg, "net.draycia.carbon.libs.$pkg")
+  relocate(pkg, "carbonchat.libs.$pkg")
+}
+
+fun WriteDependencies.relocateDependency(pkg: String) {
+  relocate(pkg, "carbonchat.libs.$pkg")
 }
 
 /**
@@ -28,7 +32,6 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.thirdparty.publicsuffix")
   relocateDependency("org.jdbi")
-  relocateDependency("com.github.benmanes")
   relocateDependency("com.zaxxer.hikari")
   relocateDependency("redis.clients.jedis")
   relocateDependency("ninja.egg82.messenger")

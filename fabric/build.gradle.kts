@@ -37,14 +37,16 @@ dependencies {
 
   modImplementation(libs.miniplaceholders)
 
-  include(libs.postgresql)
-  runtimeOnly(libs.postgresql)
-  include(libs.mysql)
-  runtimeOnly(libs.mysql)
-  include(libs.protobuf)
-  runtimeOnly(libs.protobuf)
-  include(libs.zstdjni)
-  runtimeOnly(libs.zstdjni)
+  runtimeDownload(libs.jdbiCore)
+  runtimeDownload(libs.jdbiObject)
+  runtimeDownload(libs.jdbiPostgres)
+  runtimeDownload(libs.postgresql)
+  runtimeDownload(libs.mysql)
+  runtimeDownload(libs.zstdjni)
+  include(libs.jarRelocator)
+  runtimeOnly(libs.jarRelocator) {
+    isTransitive = false
+  }
 }
 
 carbonPlatform {
@@ -60,6 +62,16 @@ tasks {
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
     relocateDependency("cloud.commandframework.minecraft.extras")
+    relocateDependency("com.github.luben.zstd")
+  }
+  writeDependencies {
+    relocateDependency("org.postgresql")
+    relocateDependency("com.github.luben.zstd")
+    relocateDependency("com.google.protobuf")
+    relocateDependency("com.mysql.cj")
+    relocateDependency("com.mysql.jdbc")
+
+    relocateDependency("org.jdbi")
   }
   processResources {
     val props = mapOf(

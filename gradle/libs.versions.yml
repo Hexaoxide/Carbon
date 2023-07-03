@@ -239,6 +239,11 @@ dependencies:
     name: caffeine
     version: { ref: caffeine }
 
+  jarRelocator:
+    group: me.lucko
+    name: jar-relocator
+    version: 1.7
+
   messenger:
     group: ninja.egg82
     name: messenger-api

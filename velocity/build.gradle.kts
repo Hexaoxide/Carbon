@@ -15,9 +15,15 @@ dependencies {
   implementation(libs.cloudVelocity)
   compileOnly(libs.miniplaceholders)
 
-  runtimeOnly(libs.postgresql)
-  runtimeOnly(libs.mysql)
-  runtimeOnly(libs.zstdjni)
+  runtimeOnly(libs.jarRelocator)
+
+  runtimeDownload(libs.postgresql)
+  runtimeDownload(libs.mysql)
+  runtimeDownload(libs.zstdjni)
+
+  runtimeDownload(libs.jdbiCore)
+  runtimeDownload(libs.jdbiObject)
+  runtimeDownload(libs.jdbiPostgres)
 }
 
 tasks {
@@ -26,17 +32,23 @@ tasks {
       relocateDependency("io.leangen.geantyref")
       relocateDependency("com.google.inject.assistedinject")
 
-      relocateDependency("org.postgresql")
       relocateDependency("com.github.luben.zstd")
-      relocateDependency("com.google.protobuf")
-      relocateDependency("com.mysql.cj")
-      relocateDependency("com.mysql.jdbc")
+      relocateDependency("me.lucko.jarrelocator")
+      relocateDependency("org.objectweb.asm")
 
       // included in velocity
       exclude(dependency("com.google.inject:guice"))
       exclude(dependency("aopalliance:aopalliance"))
       exclude(dependency("javax.inject:javax.inject"))
     }
+  }
+  writeDependencies {
+    relocateDependency("org.postgresql")
+    relocateDependency("com.google.protobuf")
+    relocateDependency("com.mysql.cj")
+    relocateDependency("com.mysql.jdbc")
+
+    relocateDependency("org.jdbi")
   }
   runVelocity {
       velocityVersion(libs.versions.velocityApi.get())

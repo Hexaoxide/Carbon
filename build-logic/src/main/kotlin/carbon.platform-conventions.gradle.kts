@@ -3,6 +3,14 @@ plugins {
   id("com.modrinth.minotaur")
 }
 
+val runtimeDownload: Configuration by configurations.creating {
+  isCanBeResolved = true
+  isCanBeConsumed = false
+  attributes {
+    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+  }
+}
+
 val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")
 
 tasks {
@@ -28,6 +36,20 @@ modrinth {
   required.project("luckperms")
   optional.project("miniplaceholders")
   gameVersions.addAll("1.19.4", "1.20.1")
+}
+
+val writeDeps = tasks.register("writeDependencies", WriteDependencies::class) {
+  tree.set(runtimeDownload.incoming.resolutionResult.rootComponent)
+  files.from(runtimeDownload)
+  outputFileName.set("carbon-dependencies.list")
+  outputDir.set(layout.buildDirectory.dir("generated/dependencyList"))
+  repos.add("https://repo.papermc.io/repository/maven-public/")
+}
+
+sourceSets.main {
+  resources {
+    srcDir(writeDeps)
+  }
 }
 
 //val projectVersion = version as String

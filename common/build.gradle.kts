@@ -27,13 +27,12 @@ dependencies {
   compileOnlyApi(libs.luckPermsApi)
 
   // Storage
-  api(libs.jdbiCore)
-  api(libs.jdbiObject)
-  api(libs.jdbiPostgres)
+  compileOnlyApi(libs.jdbiCore)
+  compileOnlyApi(libs.jdbiObject)
+  compileOnlyApi(libs.jdbiPostgres)
   api(libs.hikariCP)
   api(libs.flyway)
   api(libs.flywayMysql)
-  api(libs.caffeine)
 
   // Messaging
   api(libs.messenger)
@@ -44,6 +43,8 @@ dependencies {
   api(libs.jedis)
   api(libs.rabbitmq)
   api(libs.nats)
+
+  compileOnlyApi(libs.jarRelocator)
 
   // we shade and relocate a newer version than minecraft provides
   compileOnlyApi(libs.guava)

@@ -24,6 +24,15 @@ dependencies {
   compileOnly(libs.miniplaceholders)
   compileOnly(libs.essentialsXDiscord)
   compileOnly(libs.discordsrv)
+
+  compileOnly(libs.caffeine)
+  runtimeDownload(libs.caffeine)
+  runtimeDownload(libs.postgresql)
+  runtimeDownload(libs.zstdjni)
+
+  runtimeDownload(libs.jdbiCore)
+  runtimeDownload(libs.jdbiObject)
+  runtimeDownload(libs.jdbiPostgres)
 }
 
 carbonShadowPlatform {
@@ -37,6 +46,9 @@ tasks {
   }
   runServer {
     minecraftVersion("1.20.1")
+  }
+  writeDependencies {
+    transitive.set(false) // Paper resolves transitive deps for us
   }
 }
 
