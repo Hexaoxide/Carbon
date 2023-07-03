@@ -29,4 +29,9 @@ afterEvaluate {
       relocateCloud()
     }
   }
+  tasks.named("writeDependencies", WriteDependencies::class) {
+    if (shadowPlatform.relocateGuice.get()) {
+      relocateGuice()
+    }
+  }
 }

@@ -18,6 +18,22 @@ val runtimeDownload: Configuration by configurations.creating {
 
 val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")
 
+dependencies {
+  runtimeDownload(libs.postgresql)
+  runtimeDownload(libs.mariadb)
+  runtimeDownload(libs.zstdjni)
+  runtimeDownload(libs.jdbiCore)
+  runtimeDownload(libs.jdbiObject)
+  runtimeDownload(libs.jdbiPostgres)
+  runtimeDownload(libs.caffeine)
+  runtimeDownload(libs.jedis)
+  runtimeDownload(libs.rabbitmq)
+  runtimeDownload(libs.nats)
+  runtimeDownload(libs.assistedInject) {
+    isTransitive = false
+  }
+}
+
 tasks {
   val copyJar = register<FileCopyTask>("copyJar") {
     fileToCopy.set(platformExtension.jarTask.flatMap { it.archiveFile })

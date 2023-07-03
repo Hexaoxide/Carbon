@@ -37,15 +37,13 @@ dependencies {
 
   modImplementation(libs.miniplaceholders)
 
-  runtimeDownload(libs.jdbiCore)
-  runtimeDownload(libs.jdbiObject)
-  runtimeDownload(libs.jdbiPostgres)
-  runtimeDownload(libs.postgresql)
   runtimeDownload(libs.mysql)
-  runtimeDownload(libs.zstdjni)
   include(libs.jarRelocator)
   runtimeOnly(libs.jarRelocator) {
     isTransitive = false
+  }
+  runtimeDownload(libs.guice) {
+    exclude("com.google.guava")
   }
 }
 
@@ -65,6 +63,11 @@ tasks {
     relocateDependency("com.github.luben.zstd")
     relocateDependency("org.jdbi")
     relocateDependency("com.github.benmanes")
+
+    relocateDependency("io.nats")
+    relocateDependency("org.apache.commons.pool2")
+    relocateDependency("redis.clients.jedis")
+    relocateDependency("com.rabbitmq")
   }
   writeDependencies {
     relocateDependency("org.postgresql")
@@ -72,9 +75,16 @@ tasks {
     relocateDependency("com.google.protobuf")
     relocateDependency("com.mysql.cj")
     relocateDependency("com.mysql.jdbc")
+    relocateDependency("org.mariadb.jdbc")
 
     relocateDependency("org.jdbi")
     relocateDependency("com.github.benmanes")
+
+    relocateDependency("io.nats")
+    relocateDependency("net.i2p.crypto")
+    relocateDependency("org.apache.commons.pool2")
+    relocateDependency("redis.clients.jedis")
+    relocateDependency("com.rabbitmq")
   }
   processResources {
     val props = mapOf(

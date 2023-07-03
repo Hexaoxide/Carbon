@@ -25,17 +25,9 @@ dependencies {
   compileOnly(libs.essentialsXDiscord)
   compileOnly(libs.discordsrv)
 
-  runtimeDownload(libs.caffeine)
-  runtimeDownload(libs.postgresql)
-  runtimeDownload(libs.zstdjni)
-
-  runtimeDownload(libs.jdbiCore)
-  runtimeDownload(libs.jdbiObject)
-  runtimeDownload(libs.jdbiPostgres)
-}
-
-carbonShadowPlatform {
-  relocateGuice.set(true)
+  runtimeDownload(libs.guice) {
+    exclude("com.google.guava")
+  }
 }
 
 tasks {

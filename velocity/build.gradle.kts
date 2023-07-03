@@ -17,13 +17,7 @@ dependencies {
 
   runtimeOnly(libs.jarRelocator)
 
-  runtimeDownload(libs.postgresql)
   runtimeDownload(libs.mysql)
-  runtimeDownload(libs.zstdjni)
-
-  runtimeDownload(libs.jdbiCore)
-  runtimeDownload(libs.jdbiObject)
-  runtimeDownload(libs.jdbiPostgres)
 }
 
 tasks {
@@ -38,6 +32,11 @@ tasks {
       relocateDependency("org.jdbi")
       relocateDependency("com.github.benmanes")
 
+      relocateDependency("io.nats")
+      relocateDependency("org.apache.commons.pool2")
+      relocateDependency("redis.clients.jedis")
+      relocateDependency("com.rabbitmq")
+
       // included in velocity
       exclude(dependency("com.google.inject:guice"))
       exclude(dependency("aopalliance:aopalliance"))
@@ -49,9 +48,18 @@ tasks {
     relocateDependency("com.google.protobuf")
     relocateDependency("com.mysql.cj")
     relocateDependency("com.mysql.jdbc")
+    relocateDependency("org.mariadb.jdbc")
 
     relocateDependency("org.jdbi")
     relocateDependency("com.github.benmanes")
+
+    relocateDependency("io.nats")
+    relocateDependency("net.i2p.crypto")
+    relocateDependency("org.apache.commons.pool2")
+    relocateDependency("redis.clients.jedis")
+    relocateDependency("com.rabbitmq")
+
+    relocateDependency("com.google.inject.assistedinject")
   }
   runVelocity {
       velocityVersion(libs.versions.velocityApi.get())

@@ -20,10 +20,12 @@ dependencies {
   }
 
   // Other
-  api(libs.guice) {
+  compileOnlyApi(libs.guice) {
     exclude("com.google.guava")
   }
-  api(libs.assistedInject)
+  compileOnlyApi(libs.assistedInject) {
+    isTransitive = false
+  }
   compileOnlyApi(libs.luckPermsApi)
 
   // Storage
@@ -39,10 +41,7 @@ dependencies {
   api(libs.messengerNats)
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)
-  api(libs.netty)
-  api(libs.jedis)
-  api(libs.rabbitmq)
-  api(libs.nats)
+  compileOnlyApi(libs.netty)
 
   compileOnlyApi(libs.jarRelocator)
   compileOnlyApi(libs.caffeine)
