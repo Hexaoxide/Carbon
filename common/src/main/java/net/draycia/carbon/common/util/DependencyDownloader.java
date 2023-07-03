@@ -45,6 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
@@ -69,10 +70,17 @@ public final class DependencyDownloader {
 
     public Set<Path> resolve() {
         final Set<Path> ret = ConcurrentHashMap.newKeySet();
+        final AtomicBoolean didWork = new AtomicBoolean(false);
+
+        final Runnable doingWork = () -> {
+            if (didWork.compareAndSet(false, true)) {
+                this.logger.info("Resolving dependencies...");
+            }
+        };
 
         final List<Callable<Void>> tasks = this.dependencies.stream().map(dep -> (Callable<Void>) () -> {
             try {
-                final Path resolve = this.resolve(dep);
+                final Path resolve = this.resolve(dep, doingWork);
                 if (!resolve.getFileName().toString().endsWith(".jar")) {
                     return null;
                 }
@@ -85,6 +93,7 @@ public final class DependencyDownloader {
                 if (Files.isRegularFile(output)) {
                     return null;
                 }
+                doingWork.run();
                 final JarRelocator relocator = new JarRelocator(resolve.toFile(), output.toFile(), this.relocations);
                 //this.logger.info("relocating {}", resolve);
                 relocator.run();
@@ -97,13 +106,16 @@ public final class DependencyDownloader {
 
         this.executeTasks(tasks);
 
+        if (didWork.get()) {
+            this.logger.info("Done resolving dependencies.");
+        }
+
         return ret;
     }
 
     private void executeTasks(final List<Callable<Void>> tasks) {
         final ExecutorService executor = this.makeExecutor();
         try {
-            this.logger.info("Resolving dependencies...");
             final List<Future<Void>> result = executor.invokeAll(tasks, 10, TimeUnit.MINUTES);
             @Nullable RuntimeException err = null;
             for (final Future<Void> f : result) {
@@ -119,7 +131,6 @@ public final class DependencyDownloader {
             if (err != null) {
                 throw err;
             }
-            this.logger.info("Done resolving dependencies.");
         } catch (final InterruptedException e) {
             this.logger.error("Interrupted", e);
             Thread.currentThread().interrupt();
@@ -128,7 +139,7 @@ public final class DependencyDownloader {
         }
     }
 
-    private Path resolve(final Dependency dependency) throws IOException {
+    private Path resolve(final Dependency dependency, final Runnable attemptingDownloadCallback) throws IOException {
         final HttpClient client = HttpClient.newHttpClient();
         @Nullable Path resolved = null;
         final Path outputFile = this.cacheDir.resolve(String.format(
@@ -145,6 +156,7 @@ public final class DependencyDownloader {
             }
             Files.delete(outputFile);
         }
+        attemptingDownloadCallback.run();
         for (final String repository : this.repositories) {
             final String urlString = String.format(
                 "%s%s/%s/%s/%s-%s.jar",
