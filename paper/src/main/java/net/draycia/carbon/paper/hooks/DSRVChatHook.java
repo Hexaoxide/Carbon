@@ -102,7 +102,13 @@ public final class DSRVChatHook implements ChatHook {
     @Override
     public void broadcastMessageToChannel(final String channel, final github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component message) {
         final String mmFormattedMessage = MiniMessage.miniMessage().serialize(message);
-        ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, this.channelRegistry.byCommandName(channel));
+        final ChatChannel chatChannel = this.channelRegistry.byCommandName(channel);
+
+        if (chatChannel == null) {
+            this.plugin.getLogger().warning("Error sending message from Discord to Minecraft, no matching channel found for [" + channel + "]");
+        } else {
+            ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, chatChannel);
+        }
     }
 
     @Override
