@@ -20,53 +20,25 @@
 package net.draycia.carbon.fabric;
 
 import com.google.inject.Guice;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.util.Objects;
 import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.common.util.DependencyDownloader;
+import net.draycia.carbon.common.util.CarbonDependencies;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
-import org.apache.logging.log4j.LogManager;
 
 public class CarbonFabricBootstrap implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        this.loadDependencies();
+        CarbonDependencies.load(
+            FabricLoader.getInstance().getConfigDir().resolve("carbonchat").resolve("libraries"),
+            path -> FabricLauncherBase.getLauncher().propose(path.toUri().toURL())
+        );
 
         final CarbonChatFabric carbonChat = Guice.createInjector(new CarbonChatFabricModule())
             .getInstance(CarbonChatFabric.class);
         CarbonChatProvider.register(carbonChat);
         carbonChat.onInitialize();
-    }
-
-    private void loadDependencies() {
-        final DependencyDownloader downloader = new DependencyDownloader(
-            LogManager.getLogger(this.getClass().getSimpleName()),
-            FabricLoader.getInstance().getConfigDir().resolve("carbonchat").resolve("libraries")
-        );
-
-        try (final InputStream stream = Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("carbon-dependencies.list"))) {
-            downloader.load(stream);
-        } catch (final IOException ex) {
-            throw new RuntimeException("Couldn't load dependencies", ex);
-        }
-
-        for (final Path dep : downloader.resolve()) {
-            addJarToClasspath(dep);
-        }
-    }
-
-    private static void addJarToClasspath(final Path file) {
-        try {
-            FabricLauncherBase.getLauncher().propose(file.toUri().toURL());
-        } catch (final MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

@@ -29,12 +29,8 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Objects;
-import net.draycia.carbon.common.util.DependencyDownloader;
-import org.apache.logging.log4j.LogManager;
+import net.draycia.carbon.common.util.CarbonDependencies;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 @Plugin(
@@ -73,7 +69,11 @@ public final class CarbonVelocityBootstrap {
 
     @Subscribe
     public void onProxyInitialize(final ProxyInitializeEvent event) {
-        this.loadDependencies(this.dataDirectory);
+        CarbonDependencies.load(
+            this.dataDirectory.resolve("libraries"),
+            path -> this.proxy.getPluginManager().addToClasspath(this, path)
+        );
+
         this.injector = this.parentInjector.createChildInjector(
             new CarbonChatVelocityModule(this.pluginContainer, this.proxy, this.dataDirectory));
         this.injector.getInstance(CarbonChatVelocity.class).onInitialization(this);
@@ -82,27 +82,6 @@ public final class CarbonVelocityBootstrap {
     @Subscribe
     public void onProxyShutdown(final ProxyShutdownEvent event) {
         this.injector.getInstance(CarbonChatVelocity.class).onShutdown();
-    }
-
-    private void loadDependencies(final Path dataDir) {
-        final DependencyDownloader downloader = new DependencyDownloader(
-            LogManager.getLogger(this.getClass().getSimpleName()),
-            dataDir.resolve("libraries")
-        );
-
-        try (final InputStream stream = Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("carbon-dependencies.list"))) {
-            downloader.load(stream);
-        } catch (final IOException ex) {
-            throw new RuntimeException("Couldn't load dependencies", ex);
-        }
-
-        for (final Path dep : downloader.resolve()) {
-            this.addJarToClasspath(dep);
-        }
-    }
-
-    private void addJarToClasspath(final Path file) {
-        this.proxy.getPluginManager().addToClasspath(this, file);
     }
 
 }
