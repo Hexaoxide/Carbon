@@ -26,12 +26,6 @@ dependencyResolutionManagement {
     maven("https://repo.papermc.io/repository/maven-public/")
     // Sponge API
     maven("https://repo.spongepowered.org/repository/maven-public/")
-    // Velocity Proxy for run config
-    ivy("https://versions.velocitypowered.com/download/") {
-      patternLayout { artifact("[revision].[ext]") }
-      metadataSources { artifact() }
-      content { includeModule("com.velocitypowered", "velocity-proxy") }
-    }
     // PlaceholderAPI
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
       content { includeGroup("me.clip") }
