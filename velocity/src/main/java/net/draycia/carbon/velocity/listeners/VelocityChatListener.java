@@ -19,9 +19,11 @@
  */
 package net.draycia.carbon.velocity.listeners;
 
+import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.EventManager;
+import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.PostOrder;
-import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.PluginManager;
@@ -29,6 +31,7 @@ import com.velocitypowered.api.proxy.Player;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
@@ -38,6 +41,7 @@ import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
+import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -50,15 +54,15 @@ import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
-public final class VelocityChatListener {
+public final class VelocityChatListener implements VelocityListener<PlayerChatEvent> {
 
     private final CarbonChatVelocity carbonChat;
     private final ChannelRegistry registry;
     private final UserManager<?> userManager;
     private final Logger logger;
     private final AtomicInteger timesWarned = new AtomicInteger(0);
-    private final PluginManager pluginManager;
     private final CarbonMessages carbonMessages;
+    private final Supplier<Boolean> signedSupplier;
     final ConfigFactory configFactory;
 
     @Inject
@@ -75,13 +79,25 @@ public final class VelocityChatListener {
         this.registry = registry;
         this.userManager = userManager;
         this.logger = logger;
-        this.pluginManager = pluginManager;
         this.carbonMessages = carbonMessages;
         this.configFactory = configFactory;
+        this.signedSupplier = Suppliers.memoize(
+            () -> pluginManager.isLoaded("unsignedvelocity")
+                || pluginManager.isLoaded("signedvelocity")
+        );
     }
 
-    @Subscribe(order = PostOrder.LATE)
-    public void onPlayerChat(final PlayerChatEvent event) {
+    @Override
+    public void register(final EventManager eventManager, final CarbonVelocityBootstrap bootstrap) {
+        eventManager.register(bootstrap, PlayerChatEvent.class, PostOrder.LAST, this);
+    }
+
+    @Override
+    public EventTask executeAsync(final PlayerChatEvent event) {
+        return EventTask.async(() -> this.executeEvent(event));
+    }
+
+    private void executeEvent(final PlayerChatEvent event) {
         if (!event.getResult().isAllowed()) {
             return;
         }
@@ -89,7 +105,7 @@ public final class VelocityChatListener {
         final Player player = event.getPlayer();
         final boolean signedVersion = player.getIdentifiedKey() != null
             && player.getProtocolVersion().compareTo(ProtocolVersion.MINECRAFT_1_19_1) >= 0;
-        if (signedVersion && !this.pluginManager.isLoaded("unsignedvelocity")) {
+        if (signedVersion && !this.signedSupplier.get()) {
             if (this.timesWarned.getAndIncrement() < 3) {
                 this.logger.warn("""
                     

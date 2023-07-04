@@ -40,7 +40,9 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
+import net.draycia.carbon.velocity.listeners.VelocityListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
+import net.draycia.carbon.velocity.listeners.VelocityPlayerLeaveListener;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -53,9 +55,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity> {
 
-    private static final Set<Class<?>> LISTENER_CLASSES = Set.of(
+    private static final Set<Class<? extends VelocityListener<?>>> LISTENER_CLASSES = Set.of(
         VelocityChatListener.class,
-        VelocityPlayerJoinListener.class
+        VelocityPlayerJoinListener.class,
+        VelocityPlayerLeaveListener.class
     );
 
     private final ProxyServer proxyServer;
@@ -102,8 +105,8 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
         this.init();
         this.packetService();
 
-        for (final Class<?> clazz : LISTENER_CLASSES) {
-            this.proxyServer.getEventManager().register(carbonVelocityBootstrap, this.injector().getInstance(clazz));
+        for (final Class<? extends VelocityListener<?>> clazz : LISTENER_CLASSES) {
+            this.injector().getInstance(clazz).register(this.proxyServer.getEventManager(), carbonVelocityBootstrap);
         }
     }
 
