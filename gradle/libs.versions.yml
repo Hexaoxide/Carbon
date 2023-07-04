@@ -49,6 +49,7 @@ versions:
   protobuf: 3.21.9
   flyway: 8.5.13 # DO NOT UPDATE. Something will break.
   caffeine: 3.0.5
+  mariadb: 3.0.8
   messenger: 1.0.0-SNAPSHOT
   netty: 4.1.68.Final
   zstdjni: 1.5.1-1
@@ -238,6 +239,15 @@ dependencies:
     group: com.github.ben-manes.caffeine
     name: caffeine
     version: { ref: caffeine }
+  mariadb:
+    group: org.mariadb.jdbc
+    name: mariadb-java-client
+    version: { ref: mariadb }
+
+  jarRelocator:
+    group: me.lucko
+    name: jar-relocator
+    version: 1.7
 
   messenger:
     group: ninja.egg82

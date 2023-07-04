@@ -15,28 +15,23 @@ dependencies {
   implementation(libs.cloudVelocity)
   compileOnly(libs.miniplaceholders)
 
-  runtimeOnly(libs.postgresql)
-  runtimeOnly(libs.mysql)
-  runtimeOnly(libs.zstdjni)
+  runtimeOnly(libs.jarRelocator)
+
+  runtimeDownload(libs.mysql)
 }
 
 tasks {
   shadowJar {
-    dependencies {
-      relocateDependency("io.leangen.geantyref")
-      relocateDependency("com.google.inject.assistedinject")
-
-      relocateDependency("org.postgresql")
-      relocateDependency("com.github.luben.zstd")
-      relocateDependency("com.google.protobuf")
-      relocateDependency("com.mysql.cj")
-      relocateDependency("com.mysql.jdbc")
-
-      // included in velocity
-      exclude(dependency("com.google.inject:guice"))
-      exclude(dependency("aopalliance:aopalliance"))
-      exclude(dependency("javax.inject:javax.inject"))
-    }
+    relocateCloud()
+    standardRuntimeRelocations()
+    relocateDependency("com.google.inject.assistedinject")
+    relocateDependency("io.leangen.geantyref")
+    relocateDependency("me.lucko.jarrelocator")
+    relocateDependency("org.objectweb.asm")
+  }
+  writeDependencies {
+    standardRuntimeRelocations()
+    relocateDependency("com.google.inject.assistedinject")
   }
   runVelocity {
       velocityVersion(libs.versions.velocityApi.get())

@@ -24,19 +24,22 @@ dependencies {
   compileOnly(libs.miniplaceholders)
   compileOnly(libs.essentialsXDiscord)
   compileOnly(libs.discordsrv)
-}
 
-carbonShadowPlatform {
-  relocateGuice.set(true)
+  runtimeDownload(libs.guice) {
+    exclude("com.google.guava")
+  }
 }
 
 tasks {
   shadowJar {
     relocateDependency("io.papermc.papertrail")
     relocateDependency("io.leangen.geantyref")
+    relocateCloud()
   }
   runServer {
     minecraftVersion("1.20.1")
+  }
+  writeDependencies {
   }
 }
 

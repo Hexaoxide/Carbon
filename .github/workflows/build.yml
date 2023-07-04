@@ -77,12 +77,12 @@ jobs:
         env:
           MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
-#      - name: Publish (Pre-)Release to Hangar
-#        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-#        run: ./gradlew publishAllPublicationsToHangar
-#        env:
-#          HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
-#          RELEASE_NOTES: "${{ github.event.release.body }}"
+      - name: Publish (Pre-)Release to Hangar
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: ./gradlew publishAllPublicationsToHangar
+        env:
+          HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
+          RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:

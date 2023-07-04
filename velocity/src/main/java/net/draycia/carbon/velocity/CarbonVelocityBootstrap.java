@@ -29,7 +29,13 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Objects;
+import net.draycia.carbon.common.util.DependencyDownloader;
+import org.apache.logging.log4j.LogManager;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 @Plugin(
     id = "$[ID]",
@@ -46,7 +52,11 @@ import java.nio.file.Path;
 )
 public final class CarbonVelocityBootstrap {
 
-    private final CarbonChatVelocity carbonVelocity;
+    private final Injector parentInjector;
+    private final PluginContainer pluginContainer;
+    private final ProxyServer proxy;
+    private final Path dataDirectory;
+    private @MonotonicNonNull Injector injector;
 
     @Inject
     public CarbonVelocityBootstrap(
@@ -55,18 +65,44 @@ public final class CarbonVelocityBootstrap {
         final PluginContainer pluginContainer,
         @DataDirectory final Path dataDirectory
     ) {
-        this.carbonVelocity = injector.createChildInjector(new CarbonChatVelocityModule(
-            pluginContainer, proxyServer, dataDirectory)).getInstance(CarbonChatVelocity.class);
+        this.proxy = proxyServer;
+        this.parentInjector = injector;
+        this.pluginContainer = pluginContainer;
+        this.dataDirectory = dataDirectory;
     }
 
     @Subscribe
     public void onProxyInitialize(final ProxyInitializeEvent event) {
-        this.carbonVelocity.onInitialization(this);
+        this.loadDependencies(this.dataDirectory);
+        this.injector = this.parentInjector.createChildInjector(
+            new CarbonChatVelocityModule(this.pluginContainer, this.proxy, this.dataDirectory));
+        this.injector.getInstance(CarbonChatVelocity.class).onInitialization(this);
     }
 
     @Subscribe
     public void onProxyShutdown(final ProxyShutdownEvent event) {
-        this.carbonVelocity.onShutdown();
+        this.injector.getInstance(CarbonChatVelocity.class).onShutdown();
+    }
+
+    private void loadDependencies(final Path dataDir) {
+        final DependencyDownloader downloader = new DependencyDownloader(
+            LogManager.getLogger(this.getClass().getSimpleName()),
+            dataDir.resolve("libraries")
+        );
+
+        try (final InputStream stream = Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("carbon-dependencies.list"))) {
+            downloader.load(stream);
+        } catch (final IOException ex) {
+            throw new RuntimeException("Couldn't load dependencies", ex);
+        }
+
+        for (final Path dep : downloader.resolve()) {
+            this.addJarToClasspath(dep);
+        }
+    }
+
+    private void addJarToClasspath(final Path file) {
+        this.proxy.getPluginManager().addToClasspath(this, file);
     }
 
 }

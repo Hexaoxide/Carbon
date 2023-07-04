@@ -20,30 +20,31 @@ dependencies {
   }
 
   // Other
-  api(libs.guice) {
+  compileOnlyApi(libs.guice) {
     exclude("com.google.guava")
   }
-  api(libs.assistedInject)
+  compileOnlyApi(libs.assistedInject) {
+    isTransitive = false
+  }
   compileOnlyApi(libs.luckPermsApi)
 
   // Storage
-  api(libs.jdbiCore)
-  api(libs.jdbiObject)
-  api(libs.jdbiPostgres)
+  compileOnlyApi(libs.jdbiCore)
+  compileOnlyApi(libs.jdbiObject)
+  compileOnlyApi(libs.jdbiPostgres)
   api(libs.hikariCP)
   api(libs.flyway)
   api(libs.flywayMysql)
-  api(libs.caffeine)
 
   // Messaging
   api(libs.messenger)
   api(libs.messengerNats)
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)
-  api(libs.netty)
-  api(libs.jedis)
-  api(libs.rabbitmq)
-  api(libs.nats)
+  compileOnlyApi(libs.netty)
+
+  compileOnlyApi(libs.jarRelocator)
+  compileOnlyApi(libs.caffeine)
 
   // we shade and relocate a newer version than minecraft provides
   compileOnlyApi(libs.guava)

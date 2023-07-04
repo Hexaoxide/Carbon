@@ -21,11 +21,15 @@ package net.draycia.carbon.paper;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
+import io.papermc.paper.plugin.loader.library.impl.JarLibrary;
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.Objects;
+import net.draycia.carbon.common.util.DependencyDownloader;
+import org.apache.logging.log4j.LogManager;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.repository.RemoteRepository;
 import org.springframework.lang.NonNull;
 
 @DefaultQualifier(NonNull.class)
@@ -35,10 +39,23 @@ public class CarbonPaperLoader implements PluginLoader {
     public void classloader(final PluginClasspathBuilder classpathBuilder) {
         final MavenLibraryResolver maven = new MavenLibraryResolver();
 
-        maven.addRepository(new RemoteRepository.Builder("paper", "default", "https://repo.papermc.io/repository/maven-public/").build());
+        final DependencyDownloader downloader;
+        try (
+            final InputStream stream = Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("carbon-dependencies.list"))
+        ) {
+            downloader = new DependencyDownloader(
+                LogManager.getLogger(this.getClass().getSimpleName()),
+                classpathBuilder.getContext().getDataDirectory().resolve("libraries")
+            );
 
-        maven.addDependency(new Dependency(new DefaultArtifact("com.github.luben:zstd-jni:1.5.1-1"), null));
-        maven.addDependency(new Dependency(new DefaultArtifact("org.postgresql:postgresql:42.3.1"), null));
+            downloader.load(stream);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (final Path path : downloader.resolve()) {
+            classpathBuilder.addLibrary(new JarLibrary(path));
+        }
 
         classpathBuilder.addLibrary(maven);
     }
