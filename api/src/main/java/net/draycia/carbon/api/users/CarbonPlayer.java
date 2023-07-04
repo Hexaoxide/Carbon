@@ -179,7 +179,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param channel The channel the message should be sent to
      * @since 2.1.0
      */
-    record ChannelMessage(Component message, @Nullable ChatChannel channel) {}
+    record ChannelMessage(Component message, ChatChannel channel) {}
 
     /**
      * Checks if the player has the specified permission.

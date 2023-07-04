@@ -22,7 +22,7 @@ package net.draycia.carbon.fabric.listeners;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Map;
-import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -42,7 +42,6 @@ import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 
@@ -50,19 +49,16 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
 
     private final ConfigFactory configFactory;
     private final CarbonChatFabric carbonChat;
-    private final ChannelRegistry channelRegistry;
     private final CarbonMessages carbonMessages;
 
     @Inject
     public FabricChatHandler(
         final ConfigFactory configFactory,
         final CarbonChatFabric carbonChat,
-        final ChannelRegistry channelRegistry,
         final CarbonMessages carbonMessages
     ) {
         this.configFactory = configFactory;
         this.carbonChat = carbonChat;
-        this.channelRegistry = channelRegistry;
         this.carbonMessages = carbonMessages;
     }
 
@@ -74,8 +70,6 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
 
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(serverPlayer.getUUID()).join();
 
-        var channel = requireNonNullElse(sender.selectedChannel(), this.channelRegistry.defaultValue());
-
         String content = chatMessage.decoratedContent().getString();
 
         for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
@@ -85,10 +79,7 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
         net.kyori.adventure.text.Component message = MiniMessage.miniMessage().deserialize(content);
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
-
-        if (channelMessage.channel() != null) {
-            channel = channelMessage.channel();
-        }
+        final ChatChannel channel = channelMessage.channel();
 
         message = channelMessage.message();
 

@@ -24,7 +24,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -45,28 +45,23 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperChatListener implements Listener {
 
     private final CarbonChatPaper carbonChat;
-    private final ChannelRegistry registry;
     private final CarbonMessages carbonMessages;
     final ConfigFactory configFactory;
 
     @Inject
     public PaperChatListener(
         final CarbonChat carbonChat,
-        final ChannelRegistry registry,
         final CarbonMessages carbonMessages,
         final ConfigFactory configFactory
     ) {
         this.carbonChat = (CarbonChatPaper) carbonChat;
-        this.registry = registry;
         this.carbonMessages = carbonMessages;
         this.configFactory = configFactory;
     }
@@ -79,8 +74,6 @@ public final class PaperChatListener implements Listener {
             return;
         }
 
-        var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-
         String content = PlainTextComponentSerializer.plainText().serialize(event.message());
 
         for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
@@ -90,10 +83,7 @@ public final class PaperChatListener implements Listener {
         Component eventMessage = ConfigChatChannel.parseMessageTags(sender, content);
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
-
-        if (channelMessage.channel() != null) {
-            channel = channelMessage.channel();
-        }
+        final ChatChannel channel = channelMessage.channel();
 
         eventMessage = channelMessage.message();
 
