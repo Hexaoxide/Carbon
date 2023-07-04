@@ -35,6 +35,7 @@ import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import ninja.egg82.messenger.services.PacketService;
@@ -44,9 +45,6 @@ import org.bukkit.event.Listener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.kyori.adventure.key.Key.key;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperChatListener implements Listener {
@@ -80,12 +78,12 @@ public final class PaperChatListener implements Listener {
             content = content.replace(placeholder.getKey(), placeholder.getValue());
         }
 
-        Component eventMessage = ConfigChatChannel.parseMessageTags(sender, content);
+        Component message = ConfigChatChannel.parseMessageTags(sender, content);
 
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
         final ChatChannel channel = channelMessage.channel();
 
-        eventMessage = channelMessage.message();
+        message = channelMessage.message();
 
         if (sender.leftChannels().contains(channel.key())) {
             sender.joinChannel(channel);
@@ -93,10 +91,10 @@ public final class PaperChatListener implements Listener {
         }
 
         final var renderers = new ArrayList<KeyedRenderer>();
-        renderers.add(keyedRenderer(key("carbon", "default"), channel));
+        renderers.add(KeyedRenderer.keyedRenderer(Key.key("carbon", "default"), channel));
 
         final var recipients = channel.recipients(sender);
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, event.signedMessage());
+        final var chatEvent = new CarbonChatEvent(sender, message, recipients, renderers, channel, event.signedMessage());
         this.carbonChat.eventHandler().emit(chatEvent);
 
         if (chatEvent.cancelled()) {
@@ -111,7 +109,7 @@ public final class PaperChatListener implements Listener {
             exception.printStackTrace();
         }
 
-        event.renderer((source, sourceDisplayName, message, viewer) -> {
+        event.renderer(($, $$, $$$, viewer) -> {
             var renderedMessage = chatEvent.message();
             final var recipientUUID = viewer.get(Identity.UUID);
             final Audience recipientViewer;

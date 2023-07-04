@@ -35,17 +35,15 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonChatVelocity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.slf4j.Logger;
-
-import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.kyori.adventure.key.Key.key;
-import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
 public final class VelocityChatListener {
@@ -112,24 +110,23 @@ public final class VelocityChatListener {
             content = content.replace(placeholder.getKey(), placeholder.getValue());
         }
 
-        Component eventMessage = text(content);
+        Component message = ConfigChatChannel.parseMessageTags(sender, content);
 
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
         final ChatChannel channel = channelMessage.channel();
 
-        eventMessage = channelMessage.message();
+        message = channelMessage.message();
 
         if (sender.leftChannels().contains(channel.key())) {
             sender.joinChannel(channel);
             this.carbonMessages.channelJoined(sender);
         }
 
-        final var recipients = channel.recipients(sender);
-
         final var renderers = new ArrayList<KeyedRenderer>();
-        renderers.add(keyedRenderer(key("carbon", "default"), channel));
+        renderers.add(KeyedRenderer.keyedRenderer(Key.key("carbon", "default"), channel));
 
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
+        final var recipients = channel.recipients(sender);
+        final var chatEvent = new CarbonChatEvent(sender, message, recipients, renderers, channel, null);
         this.carbonChat.eventHandler().emit(chatEvent);
 
         if (chatEvent.cancelled()) {

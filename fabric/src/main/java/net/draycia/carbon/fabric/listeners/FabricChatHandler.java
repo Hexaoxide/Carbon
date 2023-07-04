@@ -26,24 +26,22 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FilterMask;
 import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
-
-import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.kyori.adventure.key.Key.key;
 
 public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
 
@@ -76,7 +74,7 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
             content = content.replace(placeholder.getKey(), placeholder.getValue());
         }
 
-        net.kyori.adventure.text.Component message = MiniMessage.miniMessage().deserialize(content);
+        Component message = ConfigChatChannel.parseMessageTags(sender, content);
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
         final ChatChannel channel = channelMessage.channel();
@@ -89,10 +87,10 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
         }
 
         final var renderers = new ArrayList<KeyedRenderer>();
-        renderers.add(keyedRenderer(key("carbon", "default"), channel));
+        renderers.add(KeyedRenderer.keyedRenderer(Key.key("carbon", "default"), channel));
 
         final var recipients = channel.recipients(sender);
-        final var chatEvent = new CarbonChatEvent(sender, message, recipients, renderers, channel, null);
+        final var chatEvent = new CarbonChatEvent(sender, message, recipients, renderers, channel, chatMessage);
         this.carbonChat.eventHandler().emit(chatEvent);
 
         if (chatEvent.cancelled()) {
@@ -106,9 +104,9 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
                 renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
             }
 
-            final net.kyori.adventure.text.Component finishedMessage = renderedMessage;
+            final Component finishedMessage = renderedMessage;
 
-            final Component nativeMessage = FabricAudiences.nonWrappingSerializer().serialize(finishedMessage);
+            final net.minecraft.network.chat.Component nativeMessage = FabricAudiences.nonWrappingSerializer().serialize(finishedMessage);
             final PlayerChatMessage customChatMessage = new PlayerChatMessage(chatMessage.link(), chatMessage.signature(), chatMessage.signedBody(), nativeMessage, FilterMask.FULLY_FILTERED);
             final ChatType.Bound customBound = ChatType.bind(CarbonChatFabric.CHAT_TYPE, serverPlayer.level().registryAccess(), nativeMessage);
 
