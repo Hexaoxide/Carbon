@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 
 import static java.util.Objects.requireNonNullElse;
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.text;
 
@@ -119,10 +118,6 @@ public final class VelocityChatListener {
         }
 
         Component eventMessage = text(content);
-
-        if (sender.hasPermission("carbon.chatlinks")) {
-            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
-        }
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
 

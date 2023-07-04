@@ -22,7 +22,6 @@ package net.draycia.carbon.fabric.listeners;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.regex.Pattern;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -33,8 +32,6 @@ import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
-import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ChatType;
@@ -50,8 +47,6 @@ import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 
 public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
-
-    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
 
     private final ConfigFactory configFactory;
     private final CarbonChatFabric carbonChat;
@@ -88,13 +83,6 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
         }
 
         net.kyori.adventure.text.Component message = MiniMessage.miniMessage().deserialize(content);
-
-        if (sender.hasPermission("carbon.chatlinks")) {
-            message = message.replaceText(TextReplacementConfig.builder()
-                .match(DEFAULT_URL_PATTERN)
-                .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
-                .build());
-        }
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
 

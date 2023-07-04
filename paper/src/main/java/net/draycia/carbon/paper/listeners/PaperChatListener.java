@@ -89,10 +89,6 @@ public final class PaperChatListener implements Listener {
 
         Component eventMessage = ConfigChatChannel.parseMessageTags(sender, content);
 
-        if (sender.hasPermission("carbon.chatlinks")) {
-            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
-        }
-
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
 
         if (channelMessage.channel() != null) {

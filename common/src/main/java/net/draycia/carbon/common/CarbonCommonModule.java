@@ -37,6 +37,7 @@ import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.listeners.DeafenHandler;
+import net.draycia.carbon.common.listeners.HyperlinkHandler;
 import net.draycia.carbon.common.listeners.IgnoreHandler;
 import net.draycia.carbon.common.listeners.ItemLinkHandler;
 import net.draycia.carbon.common.listeners.Listener;
@@ -134,6 +135,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(DeafenHandler.class);
+        listeners.addBinding().to(HyperlinkHandler.class);
         listeners.addBinding().to(IgnoreHandler.class);
         listeners.addBinding().to(ItemLinkHandler.class);
         listeners.addBinding().to(MuteHandler.class);

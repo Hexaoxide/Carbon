@@ -77,7 +77,6 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
@@ -318,10 +317,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
         Component eventMessage = ConfigChatChannel.parseMessageTags(sender, plainMessage);
-
-        if (sender.hasPermission("carbon.chatlinks")) {
-            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
-        }
 
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
         this.eventHandler.emit(chatEvent);
