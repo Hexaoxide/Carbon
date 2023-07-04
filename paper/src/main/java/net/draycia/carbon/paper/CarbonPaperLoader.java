@@ -22,7 +22,6 @@ package net.draycia.carbon.paper;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import io.papermc.paper.plugin.loader.library.impl.JarLibrary;
-import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -37,17 +36,13 @@ public class CarbonPaperLoader implements PluginLoader {
 
     @Override
     public void classloader(final PluginClasspathBuilder classpathBuilder) {
-        final MavenLibraryResolver maven = new MavenLibraryResolver();
-
-        final DependencyDownloader downloader;
+        final DependencyDownloader downloader = new DependencyDownloader(
+            LogManager.getLogger(this.getClass().getSimpleName()),
+            classpathBuilder.getContext().getDataDirectory().resolve("libraries")
+        );
         try (
             final InputStream stream = Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("carbon-dependencies.list"))
         ) {
-            downloader = new DependencyDownloader(
-                LogManager.getLogger(this.getClass().getSimpleName()),
-                classpathBuilder.getContext().getDataDirectory().resolve("libraries")
-            );
-
             downloader.load(stream);
         } catch (final IOException e) {
             throw new RuntimeException(e);
@@ -56,8 +51,6 @@ public class CarbonPaperLoader implements PluginLoader {
         for (final Path path : downloader.resolve()) {
             classpathBuilder.addLibrary(new JarLibrary(path));
         }
-
-        classpathBuilder.addLibrary(maven);
     }
 
 }
