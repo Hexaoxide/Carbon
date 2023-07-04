@@ -56,13 +56,11 @@ import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.registry.DefaultedRegistryGetter;
-import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -316,7 +314,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
-        Component eventMessage = ConfigChatChannel.parseMessageTags(sender, plainMessage);
+        final Component eventMessage = ConfigChatChannel.parseMessageTags(sender, plainMessage);
 
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
         this.eventHandler.emit(chatEvent);
@@ -343,19 +341,6 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 renderedMessage = renderer.render(sender, recipientViewer, renderedMessage, chatEvent.originalMessage());
             }
             recipient.sendMessage(renderedMessage);
-        }
-
-        final @Nullable PacketService packetService = carbonChat.packetService();
-
-        if (packetService != null) {
-            var renderedMessage = chatEvent.message();
-
-            for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, sender, renderedMessage, chatEvent.message());
-            }
-
-            packetService.queuePacket(new ChatMessagePacket(carbonChat.serverId(), sender.uuid(),
-                channel.permission(), channel.key(), sender.username(), renderedMessage));
         }
     }
 

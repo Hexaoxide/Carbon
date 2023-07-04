@@ -41,6 +41,7 @@ import net.draycia.carbon.common.listeners.HyperlinkHandler;
 import net.draycia.carbon.common.listeners.IgnoreHandler;
 import net.draycia.carbon.common.listeners.ItemLinkHandler;
 import net.draycia.carbon.common.listeners.Listener;
+import net.draycia.carbon.common.listeners.MessagePacketHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.listeners.RadiusListener;
@@ -138,6 +139,7 @@ public final class CarbonCommonModule extends AbstractModule {
         listeners.addBinding().to(HyperlinkHandler.class);
         listeners.addBinding().to(IgnoreHandler.class);
         listeners.addBinding().to(ItemLinkHandler.class);
+        listeners.addBinding().to(MessagePacketHandler.class);
         listeners.addBinding().to(MuteHandler.class);
         listeners.addBinding().to(PingHandler.class);
         listeners.addBinding().to(RadiusListener.class);

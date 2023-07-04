@@ -20,19 +20,15 @@
 package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
-import java.util.ArrayList;
-import java.util.Map;
-import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -43,11 +39,9 @@ import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
+public class FabricChatHandler extends ChatListenerInternal implements ServerMessageEvents.AllowChatMessage {
 
-    private final ConfigFactory configFactory;
     private final CarbonChatFabric carbonChat;
-    private final CarbonMessages carbonMessages;
 
     @Inject
     public FabricChatHandler(
@@ -55,9 +49,8 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
         final CarbonChatFabric carbonChat,
         final CarbonMessages carbonMessages
     ) {
-        this.configFactory = configFactory;
+        super(carbonChat, carbonMessages, configFactory);
         this.carbonChat = carbonChat;
-        this.carbonMessages = carbonMessages;
     }
 
     @Override
@@ -68,39 +61,17 @@ public class FabricChatHandler implements ServerMessageEvents.AllowChatMessage {
 
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(serverPlayer.getUUID()).join();
 
-        String content = chatMessage.decoratedContent().getString();
-
-        for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
-            content = content.replace(placeholder.getKey(), placeholder.getValue());
-        }
-
-        Component message = ConfigChatChannel.parseMessageTags(sender, content);
-
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
-        final ChatChannel channel = channelMessage.channel();
-
-        message = channelMessage.message();
-
-        if (sender.leftChannels().contains(channel.key())) {
-            sender.joinChannel(channel);
-            this.carbonMessages.channelJoined(sender);
-        }
-
-        final var renderers = new ArrayList<KeyedRenderer>();
-        renderers.add(KeyedRenderer.keyedRenderer(Key.key("carbon", "default"), channel));
-
-        final var recipients = channel.recipients(sender);
-        final var chatEvent = new CarbonChatEvent(sender, message, recipients, renderers, channel, chatMessage);
-        this.carbonChat.eventHandler().emit(chatEvent);
+        final String content = chatMessage.decoratedContent().getString();
+        final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
 
         if (chatEvent.cancelled()) {
             return false;
         }
 
         for (final var recipient : chatEvent.recipients()) {
-            var renderedMessage = chatEvent.message();
+            Component renderedMessage = chatEvent.message();
 
-            for (final var renderer : chatEvent.renderers()) {
+            for (final KeyedRenderer renderer : chatEvent.renderers()) {
                 renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
             }
 
