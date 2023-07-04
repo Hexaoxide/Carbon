@@ -22,14 +22,12 @@ dependencies {
 
 tasks {
   shadowJar {
-    dependencies {
-      relocateCloud()
-      standardRuntimeRelocations()
-      relocateDependency("com.google.inject.assistedinject")
-      relocateDependency("io.leangen.geantyref")
-      relocateDependency("me.lucko.jarrelocator")
-      relocateDependency("org.objectweb.asm")
-    }
+    relocateCloud()
+    standardRuntimeRelocations()
+    relocateDependency("com.google.inject.assistedinject")
+    relocateDependency("io.leangen.geantyref")
+    relocateDependency("me.lucko.jarrelocator")
+    relocateDependency("org.objectweb.asm")
   }
   writeDependencies {
     standardRuntimeRelocations()
