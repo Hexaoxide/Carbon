@@ -38,9 +38,8 @@ import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.kyori.adventure.audience.Audience;
-import net.draycia.carbon.velocity.CarbonChatVelocity;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -52,8 +51,6 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
     private final UserManager<?> userManager;
     private final Logger logger;
     private final AtomicInteger timesWarned = new AtomicInteger(0);
-    private final PluginManager pluginManager;
-    private final CarbonMessages carbonMessages;
     private final Supplier<Boolean> signedSupplier;
     final ConfigFactory configFactory;
 
@@ -69,8 +66,6 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         super(carbonChat, carbonMessages, configFactory);
         this.userManager = userManager;
         this.logger = logger;
-        this.pluginManager = pluginManager;
-        this.carbonMessages = carbonMessages;
         this.configFactory = configFactory;
         this.signedSupplier = Suppliers.memoize(
             () -> pluginManager.isLoaded("unsignedvelocity")
