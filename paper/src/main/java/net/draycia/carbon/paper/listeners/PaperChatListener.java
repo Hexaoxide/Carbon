@@ -21,23 +21,15 @@ package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import java.util.ArrayList;
-import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
-import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import ninja.egg82.messenger.services.PacketService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -45,29 +37,20 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static java.util.Objects.requireNonNullElse;
-import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-import static net.draycia.carbon.common.util.Strings.URL_REPLACEMENT_CONFIG;
-import static net.kyori.adventure.key.Key.key;
-
 @DefaultQualifier(NonNull.class)
-public final class PaperChatListener implements Listener {
+public final class PaperChatListener extends ChatListenerInternal implements Listener {
 
-    private final CarbonChatPaper carbonChat;
-    private final ChannelRegistry registry;
-    private final CarbonMessages carbonMessages;
+    private final CarbonChat carbonChat;
     final ConfigFactory configFactory;
 
     @Inject
     public PaperChatListener(
         final CarbonChat carbonChat,
-        final ChannelRegistry registry,
         final CarbonMessages carbonMessages,
         final ConfigFactory configFactory
     ) {
-        this.carbonChat = (CarbonChatPaper) carbonChat;
-        this.registry = registry;
-        this.carbonMessages = carbonMessages;
+        super(carbonChat, carbonMessages, configFactory);
+        this.carbonChat = carbonChat;
         this.configFactory = configFactory;
     }
 
@@ -79,39 +62,8 @@ public final class PaperChatListener implements Listener {
             return;
         }
 
-        var channel = requireNonNullElse(sender.selectedChannel(), this.registry.defaultValue());
-
-        String content = PlainTextComponentSerializer.plainText().serialize(event.message());
-
-        for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
-            content = content.replace(placeholder.getKey(), placeholder.getValue());
-        }
-
-        Component eventMessage = ConfigChatChannel.parseMessageTags(sender, content);
-
-        if (sender.hasPermission("carbon.chatlinks")) {
-            eventMessage = eventMessage.replaceText(URL_REPLACEMENT_CONFIG.get());
-        }
-
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(eventMessage);
-
-        if (channelMessage.channel() != null) {
-            channel = channelMessage.channel();
-        }
-
-        eventMessage = channelMessage.message();
-
-        if (sender.leftChannels().contains(channel.key())) {
-            sender.joinChannel(channel);
-            this.carbonMessages.channelJoined(sender);
-        }
-
-        final var renderers = new ArrayList<KeyedRenderer>();
-        renderers.add(keyedRenderer(key("carbon", "default"), channel));
-
-        final var recipients = channel.recipients(sender);
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, event.signedMessage());
-        this.carbonChat.eventHandler().emit(chatEvent);
+        final String content = PlainTextComponentSerializer.plainText().serialize(event.message());
+        final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, event.signedMessage());
 
         if (chatEvent.cancelled()) {
             event.setCancelled(true);
@@ -120,20 +72,20 @@ public final class PaperChatListener implements Listener {
 
         try {
             event.viewers().clear();
-            event.viewers().addAll(recipients);
+            event.viewers().addAll(chatEvent.recipients());
         } catch (final UnsupportedOperationException exception) {
             exception.printStackTrace();
         }
 
-        event.renderer((source, sourceDisplayName, message, viewer) -> {
+        event.renderer(($, $$, $$$, recipient) -> {
             var renderedMessage = chatEvent.message();
-            final var recipientUUID = viewer.get(Identity.UUID);
+            final var recipientUUID = recipient.get(Identity.UUID);
             final Audience recipientViewer;
 
             if (recipientUUID.isPresent()) {
                 recipientViewer = this.carbonChat.userManager().user(recipientUUID.get()).join();
             } else {
-                recipientViewer = viewer;
+                recipientViewer = recipient;
             }
 
             for (final var renderer : chatEvent.renderers()) {
@@ -142,19 +94,6 @@ public final class PaperChatListener implements Listener {
 
             return renderedMessage;
         });
-
-        final @Nullable PacketService packetService = this.carbonChat.packetService();
-
-        if (packetService != null) {
-            Component networkMessage = chatEvent.message();
-
-            for (final var renderer : chatEvent.renderers()) {
-                networkMessage = renderer.render(sender, sender, networkMessage, event.originalMessage());
-            }
-
-            packetService.queuePacket(new ChatMessagePacket(this.carbonChat.serverId(), sender.uuid(),
-                channel.permission(), channel.key(), sender.username(), networkMessage));
-        }
     }
 
 }

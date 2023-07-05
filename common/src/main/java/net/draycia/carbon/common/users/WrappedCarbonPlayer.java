@@ -40,6 +40,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
+import static java.util.Objects.requireNonNullElse;
+
 @DefaultQualifier(NonNull.class)
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
@@ -166,7 +168,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         final String text = PlainTextComponentSerializer.plainText().serialize(message);
         Component formattedMessage = message;
 
-        @Nullable ChatChannel channel = this.selectedChannel();
+        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon().channelRegistry().defaultValue());
 
         for (final ChatChannel chatChannel : this.carbonPlayerCommon.channelRegistry()) {
             final @MonotonicNonNull String prefix = chatChannel.quickPrefix();
