@@ -37,29 +37,30 @@ dependencies {
 
   modImplementation(libs.miniplaceholders)
 
-  include(libs.postgresql)
-  runtimeOnly(libs.postgresql)
-  include(libs.mysql)
-  runtimeOnly(libs.mysql)
-  include(libs.protobuf)
-  runtimeOnly(libs.protobuf)
-  include(libs.zstdjni)
-  runtimeOnly(libs.zstdjni)
+  runtimeDownload(libs.mysql)
+  include(libs.jarRelocator)
+  runtimeOnly(libs.jarRelocator) {
+    isTransitive = false
+  }
+  runtimeDownload(libs.guice) {
+    exclude("com.google.guava")
+  }
 }
 
 carbonPlatform {
   jarTask.set(tasks.remapJar)
 }
 
-carbonShadowPlatform {
-  relocateGuice.set(true)
-  relocateCloud.set(false)
-}
-
 tasks {
   shadowJar {
     configurations = arrayListOf(carbon) as List<FileCollection>
     relocateDependency("cloud.commandframework.minecraft.extras")
+    standardRuntimeRelocations()
+    relocateGuice()
+  }
+  writeDependencies {
+    standardRuntimeRelocations()
+    relocateGuice()
   }
   processResources {
     val props = mapOf(
@@ -76,6 +77,21 @@ tasks {
         "endToken" to "}",
         "tokens" to props
       )
+    }
+  }
+
+  runServer {
+    dependsOn(shadowJar)
+    doFirst {
+      val build = layout.buildDirectory.asFile.get().absolutePath
+      val jar = shadowJar.get().archiveFile.get().asFile
+      val mods = file("run/mods")
+      mods.mkdirs()
+      jar.copyTo(mods.resolve("carbonchat-dev.jar"), overwrite = true)
+      val newClasspath = classpath.filter {
+        !it.absolutePath.startsWith(build)
+      }.files
+      classpath = files(newClasspath)
     }
   }
 }

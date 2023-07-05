@@ -17,24 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.paper;
+package net.draycia.carbon.velocity.listeners;
 
-import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
-import io.papermc.paper.plugin.loader.PluginLoader;
-import io.papermc.paper.plugin.loader.library.impl.JarLibrary;
-import net.draycia.carbon.common.util.CarbonDependencies;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.springframework.lang.NonNull;
+import com.velocitypowered.api.event.AwaitingEventExecutor;
+import com.velocitypowered.api.event.EventManager;
+import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 
-@DefaultQualifier(NonNull.class)
-public class CarbonPaperLoader implements PluginLoader {
+public interface VelocityListener<E> extends AwaitingEventExecutor<E> {
 
-    @Override
-    public void classloader(final PluginClasspathBuilder classpathBuilder) {
-        CarbonDependencies.load(
-            classpathBuilder.getContext().getDataDirectory().resolve("libraries"),
-            path -> classpathBuilder.addLibrary(new JarLibrary(path))
-        );
-    }
-
+    void register(EventManager eventManager, CarbonVelocityBootstrap bootstrap);
 }

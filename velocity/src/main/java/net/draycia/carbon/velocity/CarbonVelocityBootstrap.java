@@ -30,6 +30,8 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
+import net.draycia.carbon.common.util.CarbonDependencies;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 @Plugin(
     id = "$[ID]",
@@ -46,7 +48,11 @@ import java.nio.file.Path;
 )
 public final class CarbonVelocityBootstrap {
 
-    private final CarbonChatVelocity carbonVelocity;
+    private final Injector parentInjector;
+    private final PluginContainer pluginContainer;
+    private final ProxyServer proxy;
+    private final Path dataDirectory;
+    private @MonotonicNonNull Injector injector;
 
     @Inject
     public CarbonVelocityBootstrap(
@@ -55,18 +61,27 @@ public final class CarbonVelocityBootstrap {
         final PluginContainer pluginContainer,
         @DataDirectory final Path dataDirectory
     ) {
-        this.carbonVelocity = injector.createChildInjector(new CarbonChatVelocityModule(
-            pluginContainer, proxyServer, dataDirectory)).getInstance(CarbonChatVelocity.class);
+        this.proxy = proxyServer;
+        this.parentInjector = injector;
+        this.pluginContainer = pluginContainer;
+        this.dataDirectory = dataDirectory;
     }
 
     @Subscribe
     public void onProxyInitialize(final ProxyInitializeEvent event) {
-        this.carbonVelocity.onInitialization(this);
+        CarbonDependencies.load(
+            this.dataDirectory.resolve("libraries"),
+            path -> this.proxy.getPluginManager().addToClasspath(this, path)
+        );
+
+        this.injector = this.parentInjector.createChildInjector(
+            new CarbonChatVelocityModule(this.pluginContainer, this.proxy, this.dataDirectory));
+        this.injector.getInstance(CarbonChatVelocity.class).onInitialization(this);
     }
 
     @Subscribe
     public void onProxyShutdown(final ProxyShutdownEvent event) {
-        this.carbonVelocity.onShutdown();
+        this.injector.getInstance(CarbonChatVelocity.class).onShutdown();
     }
 
 }

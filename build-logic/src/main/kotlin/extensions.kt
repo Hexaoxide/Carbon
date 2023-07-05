@@ -2,23 +2,52 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
 
 val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")
 
+fun Task.relocateDependency(pkg: String) {
+  when (this) {
+    is ShadowJar -> relocateDependency(pkg)
+    is WriteDependencies -> relocateDependency(pkg)
+    else -> error("relocateDependency must be called on a ShadowJar or WriteDependencies task, not ${this.javaClass.name}")
+  }
+}
+
 /**
- * Relocate a package into the `net.draycia.carbon.libs` namespace.
+ * Relocate a package into the `carbonchat.libs.` namespace.
  */
 fun ShadowJar.relocateDependency(pkg: String) {
-  relocate(pkg, "net.draycia.carbon.libs.$pkg")
+  relocate(pkg, "carbonchat.libs.$pkg")
+}
+
+fun WriteDependencies.relocateDependency(pkg: String) {
+  relocate(pkg, "carbonchat.libs.$pkg")
+}
+
+fun Task.standardRuntimeRelocations() {
+  relocateDependency("com.github.benmanes")
+  relocateDependency("com.github.luben.zstd")
+  relocateDependency("com.google.protobuf")
+  relocateDependency("com.mysql.cj")
+  relocateDependency("com.mysql.jdbc")
+  relocateDependency("com.rabbitmq")
+  relocateDependency("io.nats")
+  relocateDependency("net.i2p.crypto")
+  relocateDependency("org.apache.commons.pool2")
+  relocateDependency("org.jdbi")
+  relocateDependency("org.mariadb.jdbc")
+  relocateDependency("org.postgresql")
+  relocateDependency("redis.clients.jedis")
 }
 
 /**
  * Relocates dependencies which we bundle and relocate on all platforms.
  */
-fun ShadowJar.standardRelocations() {
+fun Task.standardRelocations() {
   relocateDependency("org.bstats")
   relocateDependency("net.kyori.adventure.serializer.configurate4")
   relocateDependency("com.seiama.event")
@@ -27,25 +56,18 @@ fun ShadowJar.standardRelocations() {
   relocateDependency("org.spongepowered.configurate")
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.thirdparty.publicsuffix")
-  relocateDependency("org.jdbi")
-  relocateDependency("com.github.benmanes")
   relocateDependency("com.zaxxer.hikari")
-  relocateDependency("redis.clients.jedis")
   relocateDependency("ninja.egg82.messenger")
   relocateDependency("org.antlr")
-  relocateDependency("io.nats")
-  relocateDependency("com.rabbitmq")
   relocateDependency("com.electronwill")
-  relocateDependency("net.i2p.crypto")
-  relocateDependency("org.apache.commons.pool2")
   relocateDependency("org.flywaydb")
 }
 
-fun ShadowJar.relocateCloud() {
+fun Task.relocateCloud() {
   relocateDependency("cloud.commandframework")
 }
 
-fun ShadowJar.relocateGuice() {
+fun Task.relocateGuice() {
   relocateDependency("com.google.inject")
   relocateDependency("org.aopalliance")
   relocateDependency("javax.inject")

@@ -3,7 +3,36 @@ plugins {
   id("com.modrinth.minotaur")
 }
 
+val runtimeDownload: Configuration by configurations.creating {
+  isCanBeResolved = true
+  isCanBeConsumed = false
+  attributes {
+    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+  }
+
+  exclude("org.checkerframework", "checker-qual")
+  exclude("org.slf4j", "slf4j-api")
+  exclude("com.google.errorprone", "error_prone_annotations")
+  exclude("io.leangen.geantyref", "geantyref")
+}
+
 val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")
+
+dependencies {
+  runtimeDownload(libs.postgresql)
+  runtimeDownload(libs.mariadb)
+  runtimeDownload(libs.zstdjni)
+  runtimeDownload(libs.jdbiCore)
+  runtimeDownload(libs.jdbiObject)
+  runtimeDownload(libs.jdbiPostgres)
+  runtimeDownload(libs.caffeine)
+  runtimeDownload(libs.jedis)
+  runtimeDownload(libs.rabbitmq)
+  runtimeDownload(libs.nats)
+  runtimeDownload(libs.assistedInject) {
+    isTransitive = false
+  }
+}
 
 tasks {
   val copyJar = register<FileCopyTask>("copyJar") {
@@ -28,6 +57,21 @@ modrinth {
   required.project("luckperms")
   optional.project("miniplaceholders")
   gameVersions.addAll("1.19.4", "1.20.1")
+}
+
+val writeDeps = tasks.register("writeDependencies", WriteDependencies::class) {
+  tree.set(runtimeDownload.incoming.resolutionResult.rootComponent)
+  files.from(runtimeDownload)
+  outputFileName.set("carbon-dependencies.list")
+  outputDir.set(layout.buildDirectory.dir("generated/dependencyList"))
+  repos.add("https://repo.papermc.io/repository/maven-public/")
+  repos.add("https://repo.maven.apache.org/maven2/")
+}
+
+sourceSets.main {
+  resources {
+    srcDir(writeDeps)
+  }
 }
 
 //val projectVersion = version as String
