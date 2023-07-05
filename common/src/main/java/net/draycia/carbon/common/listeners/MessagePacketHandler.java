@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -35,10 +36,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class MessagePacketHandler implements Listener {
 
     @Inject
-    public MessagePacketHandler(final CarbonEventHandler events, final CarbonChatInternal<?> carbonChat) {
+    public MessagePacketHandler(final CarbonEventHandler events, final CarbonChat carbonChat) {
 
         events.subscribe(CarbonChatEvent.class, 100, false, event -> {
-            final @Nullable PacketService packetService = carbonChat.packetService();
+            final @Nullable PacketService packetService = ((CarbonChatInternal<?>) carbonChat).packetService();
             final CarbonPlayer sender = event.sender();
 
             if (packetService != null) {
