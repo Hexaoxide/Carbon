@@ -59,6 +59,7 @@ public final class DependencyDownloader {
     private final List<Relocation> relocations = new ArrayList<>();
     private final Logger logger;
     private final Path cacheDir;
+    private final HttpClient client;
 
     public DependencyDownloader(
         final Logger logger,
@@ -66,6 +67,10 @@ public final class DependencyDownloader {
     ) {
         this.logger = logger;
         this.cacheDir = cacheDir;
+        this.client = HttpClient.newBuilder()
+            // using a cached thread pool (default) is completely redundant with how we use the client
+            .executor(Runnable::run)
+            .build();
     }
 
     public Set<Path> resolve() {
@@ -140,7 +145,6 @@ public final class DependencyDownloader {
     }
 
     private Path resolve(final Dependency dependency, final Runnable attemptingDownloadCallback) throws IOException {
-        final HttpClient client = HttpClient.newHttpClient();
         @Nullable Path resolved = null;
         final Path outputFile = this.cacheDir.resolve(String.format(
             "%s/%s/%s/%s-%s.jar",
@@ -178,7 +182,7 @@ public final class DependencyDownloader {
             try {
                 Files.createDirectories(outputFile.getParent());
                 //this.logger.info("attempting to download " + urlString);
-                response = client.send(request, HttpResponse.BodyHandlers.ofFile(
+                response = this.client.send(request, HttpResponse.BodyHandlers.ofFile(
                     outputFile,
                     StandardOpenOption.TRUNCATE_EXISTING,
                     StandardOpenOption.CREATE,
