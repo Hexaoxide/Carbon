@@ -48,4 +48,7 @@ dependencies {
 
   // we shade and relocate a newer version than minecraft provides
   compileOnlyApi(libs.guava)
+
+  // Plugins
+  compileOnly(libs.miniplaceholders)
 }

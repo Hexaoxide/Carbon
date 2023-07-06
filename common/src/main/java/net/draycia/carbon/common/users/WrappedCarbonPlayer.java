@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users;
 
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -81,16 +82,32 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return LuckPermsProvider.get().getUserManager().getUser(this.uuid());
     }
 
-    public Component parseMessageTags(final String message) {
-        return parseMessageTags(message, this::hasPermission);
+    // TODO: replace this with something cleaner
+    private boolean miniPlaceholdersLoaded() {
+        try {
+            Class.forName("io.github.miniplaceholders.api.MiniPlaceholders");
+            return true;
+        } catch (final ClassNotFoundException ignored) {
+        }
+
+        return false;
     }
 
-    public static Component parseMessageTags(final String message, final Predicate<String> permission) {
+    public Component parseMessageTags(final String message) {
+        final TagResolver.Builder resolver = TagResolver.builder();
+
+        if (this.miniPlaceholdersLoaded() && this.hasPermission("carbon.chatplaceholders")) {
+            resolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
+            resolver.resolver(MiniPlaceholders.getAudiencePlaceholders(this));
+        }
+
+        return parseMessageTags(message, this::hasPermission, resolver);
+    }
+
+    protected static Component parseMessageTags(final String message, final Predicate<String> permission, final TagResolver.Builder resolver) {
         if (!permission.test("carbon.messagetags")) {
             return Component.text(message);
         }
-
-        final TagResolver.Builder resolver = TagResolver.builder();
 
         for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
             if (permission.test("carbon.messagetags." + entry.getKey())) {
@@ -109,6 +126,10 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         final MiniMessage miniMessage = MiniMessage.builder().tags(resolver.build()).build();
 
         return miniMessage.deserialize(message);
+    }
+
+    public static Component parseMessageTags(final String message, final Predicate<String> permission) {
+        return parseMessageTags(message, permission, TagResolver.builder());
     }
 
     @Override
