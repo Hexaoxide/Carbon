@@ -71,9 +71,6 @@ public class PrimaryConfig {
     @Comment("The suggestions shown when using the TAB key in chat.")
     private List<String> customChatSuggestions = List.of();
 
-    @Comment("The placeholders replaced in chat messages, this WILL work with chat previews.")
-    private Map<String, String> chatPlaceholders = Map.of();
-
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
 
@@ -116,7 +113,7 @@ public class PrimaryConfig {
 
     public String applyCustomPlaceholders(final String string) {
         String placeholderResolvedMessage = string;
-        for (final var entry : this.customPlaceholders.entrySet()) {
+        for (final var entry : this.customPlaceholders().entrySet()) {
             placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }
@@ -125,10 +122,6 @@ public class PrimaryConfig {
 
     public @Nullable List<String> customChatSuggestions() {
         return this.customChatSuggestions;
-    }
-
-    public @Nullable Map<String, String> chatPlaceholders() {
-        return this.chatPlaceholders;
     }
 
     public PingSettings pings() {
