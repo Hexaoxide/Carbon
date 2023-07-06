@@ -127,8 +127,17 @@ public class PrimaryConfig {
         return this.customChatSuggestions;
     }
 
-    public @Nullable Map<String, String> chatPlaceholders() {
+    public Map<String, String> chatPlaceholders() {
         return this.chatPlaceholders;
+    }
+
+    public String applyChatPlaceholders(final String string) {
+        String placeholderResolvedMessage = string;
+        for (final var entry : this.chatPlaceholders().entrySet()) {
+            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
+                entry.getValue());
+        }
+        return placeholderResolvedMessage;
     }
 
     public PingSettings pings() {

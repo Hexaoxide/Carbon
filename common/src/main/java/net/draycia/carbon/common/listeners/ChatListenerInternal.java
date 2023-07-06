@@ -52,12 +52,7 @@ public abstract class ChatListenerInternal {
     }
 
     protected CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage) {
-        String content = messageContent;
-
-        for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
-            content = content.replace(placeholder.getKey(), placeholder.getValue());
-        }
-
+        String content = this.configFactory.primaryConfig().applyChatPlaceholders(messageContent);
         Component message = ConfigChatChannel.parseMessageTags(sender, content);
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
