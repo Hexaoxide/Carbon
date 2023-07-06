@@ -24,6 +24,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
@@ -40,14 +41,17 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class PaperChatListener extends ChatListenerInternal implements Listener {
 
     private final CarbonChat carbonChat;
+    final ConfigFactory configFactory;
 
     @Inject
     public PaperChatListener(
         final CarbonChat carbonChat,
-        final CarbonMessages carbonMessages
+        final CarbonMessages carbonMessages,
+        final ConfigFactory configFactory
     ) {
-        super(carbonChat, carbonMessages);
+        super(carbonChat, carbonMessages, configFactory);
         this.carbonChat = carbonChat;
+        this.configFactory = configFactory;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

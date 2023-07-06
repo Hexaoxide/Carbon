@@ -21,12 +21,14 @@ package net.draycia.carbon.common.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
@@ -35,19 +37,28 @@ import net.kyori.adventure.text.Component;
 
 public abstract class ChatListenerInternal {
 
+    private final ConfigFactory configFactory;
     private final CarbonMessages carbonMessages;
     private final CarbonChat carbonChat;
 
     protected ChatListenerInternal(
         final CarbonChat carbonChat,
-        final CarbonMessages carbonMessages
+        final CarbonMessages carbonMessages,
+        final ConfigFactory configFactory
     ) {
+        this.configFactory = configFactory;
         this.carbonMessages = carbonMessages;
         this.carbonChat = carbonChat;
     }
 
     protected CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage) {
-        Component message = ConfigChatChannel.parseMessageTags(sender, messageContent);
+        String content = messageContent;
+
+        for (final Map.Entry<String, String> placeholder : this.configFactory.primaryConfig().chatPlaceholders().entrySet()) {
+            content = content.replace(placeholder.getKey(), placeholder.getValue());
+        }
+
+        Component message = ConfigChatChannel.parseMessageTags(sender, content);
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
         final ChatChannel channel = channelMessage.channel();
