@@ -67,10 +67,7 @@ public final class DependencyDownloader {
     ) {
         this.logger = logger;
         this.cacheDir = cacheDir;
-        this.client = HttpClient.newBuilder()
-            // using a cached thread pool (default) is completely redundant with how we use the client
-            .executor(Runnable::run)
-            .build();
+        this.client = HttpClient.newHttpClient();
     }
 
     public Set<Path> resolve() {
