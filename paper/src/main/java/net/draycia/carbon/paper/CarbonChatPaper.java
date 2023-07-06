@@ -39,6 +39,7 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.paper.hooks.DSRVChatHook;
+import net.draycia.carbon.paper.hooks.PAPIChatHook;
 import net.draycia.carbon.paper.listeners.DiscordMessageListener;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
@@ -124,8 +125,11 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
-            this.logger().info("DiscordSRV found! Enabling hook.");
             DiscordSRV.getPlugin().getPluginHooks().add(this.injector().getInstance(DSRVChatHook.class));
+        }
+
+        if (papiLoaded()) {
+            this.injector().getInstance(PAPIChatHook.class);
         }
     }
 

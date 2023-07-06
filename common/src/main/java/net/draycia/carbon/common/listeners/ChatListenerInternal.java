@@ -21,15 +21,15 @@ package net.draycia.carbon.common.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.key.Key;
@@ -53,7 +53,19 @@ public abstract class ChatListenerInternal {
 
     protected CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage) {
         String content = this.configFactory.primaryConfig().applyChatPlaceholders(messageContent);
-        Component message = ConfigChatChannel.parseMessageTags(sender, content);
+
+        final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
+        this.carbonChat.eventHandler().emit(earlyChatEvent);
+
+        content = earlyChatEvent.message();
+
+        Component message;
+
+        if (sender instanceof WrappedCarbonPlayer wrapped) {
+            message = wrapped.parseMessageTags(content);
+        } else {
+            message = WrappedCarbonPlayer.parseMessageTags(content, sender::hasPermission);
+        }
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
         final ChatChannel channel = channelMessage.channel();

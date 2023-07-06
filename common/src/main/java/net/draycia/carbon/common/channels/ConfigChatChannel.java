@@ -24,18 +24,15 @@ import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
-import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
@@ -46,10 +43,6 @@ import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
@@ -157,56 +150,6 @@ public final class ConfigChatChannel implements ChatChannel {
             sender.username(),
             message
         );
-    }
-
-    public static final Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
-        Map.entry("hover", StandardTags.hoverEvent()),
-        Map.entry("click", StandardTags.clickEvent()),
-        Map.entry("color", StandardTags.color()),
-        Map.entry("keybind", StandardTags.keybind()),
-        Map.entry("translatable", StandardTags.translatable()),
-        Map.entry("insertion", StandardTags.insertion()),
-        Map.entry("font", StandardTags.font()),
-        // Decoration tags are handled separately
-        //Map.entry("decoration", StandardTags.decoration()),
-        Map.entry("gradient", StandardTags.gradient()),
-        Map.entry("rainbow", StandardTags.rainbow()),
-        Map.entry("reset", StandardTags.reset()),
-        Map.entry("newline", StandardTags.newline())
-    );
-
-    public static Component parseMessageTags(final Commander sender, final String message) {
-        return parseMessageTags(message, sender::hasPermission);
-    }
-
-    public static Component parseMessageTags(final CarbonPlayer sender, final String message) {
-        return parseMessageTags(message, sender::hasPermission);
-    }
-
-    public static Component parseMessageTags(final String message, final Predicate<String> permission) {
-        if (!permission.test("carbon.messagetags")) {
-            return Component.text(message);
-        }
-
-        final TagResolver.Builder resolver = TagResolver.builder();
-
-        for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
-            if (permission.test("carbon.messagetags." + entry.getKey())) {
-                resolver.resolver(entry.getValue());
-            }
-        }
-
-        for (final TextDecoration decoration : TextDecoration.values()) {
-            if (!permission.test("carbon.messagetags." + decoration.name())) {
-                continue;
-            }
-
-            resolver.resolver(StandardTags.decorations(decoration));
-        }
-
-        final MiniMessage miniMessage = MiniMessage.builder().tags(resolver.build()).build();
-
-        return miniMessage.deserialize(message);
     }
 
     @Override

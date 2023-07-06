@@ -22,7 +22,9 @@ package net.draycia.carbon.common.users;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -30,6 +32,10 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -45,6 +51,22 @@ import static java.util.Objects.requireNonNullElse;
 @DefaultQualifier(NonNull.class)
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
+    public static final Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
+        Map.entry("hover", StandardTags.hoverEvent()),
+        Map.entry("click", StandardTags.clickEvent()),
+        Map.entry("color", StandardTags.color()),
+        Map.entry("keybind", StandardTags.keybind()),
+        Map.entry("translatable", StandardTags.translatable()),
+        Map.entry("insertion", StandardTags.insertion()),
+        Map.entry("font", StandardTags.font()),
+        // Decoration tags are handled separately
+        //Map.entry("decoration", StandardTags.decoration()),
+        Map.entry("gradient", StandardTags.gradient()),
+        Map.entry("rainbow", StandardTags.rainbow()),
+        Map.entry("reset", StandardTags.reset()),
+        Map.entry("newline", StandardTags.newline())
+    );
+
     protected final CarbonPlayerCommon carbonPlayerCommon;
 
     protected WrappedCarbonPlayer(final CarbonPlayerCommon carbonPlayerCommon) {
@@ -57,6 +79,36 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     public @Nullable User user() {
         return LuckPermsProvider.get().getUserManager().getUser(this.uuid());
+    }
+
+    public Component parseMessageTags(final String message) {
+        return parseMessageTags(message, this::hasPermission);
+    }
+
+    public static Component parseMessageTags(final String message, final Predicate<String> permission) {
+        if (!permission.test("carbon.messagetags")) {
+            return Component.text(message);
+        }
+
+        final TagResolver.Builder resolver = TagResolver.builder();
+
+        for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
+            if (permission.test("carbon.messagetags." + entry.getKey())) {
+                resolver.resolver(entry.getValue());
+            }
+        }
+
+        for (final TextDecoration decoration : TextDecoration.values()) {
+            if (!permission.test("carbon.messagetags." + decoration.name())) {
+                continue;
+            }
+
+            resolver.resolver(StandardTags.decorations(decoration));
+        }
+
+        final MiniMessage miniMessage = MiniMessage.builder().tags(resolver.build()).build();
+
+        return miniMessage.deserialize(message);
     }
 
     @Override

@@ -34,12 +34,13 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.ChannelUtils;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -54,10 +55,12 @@ public final class DSRVChatHook implements ChatHook {
     private DSRVChatHook(
         final CarbonEventHandler events,
         final CarbonChannelRegistry channelRegistry,
-        final JavaPlugin plugin
+        final JavaPlugin plugin,
+        final Logger logger
     ) {
         this.channelRegistry = channelRegistry;
         this.plugin = plugin;
+        logger.info("DiscordSRV found! Enabling hook.");
 
         final Cache<ImmutablePair<CarbonPlayer, ChatChannel>, Component> awaitingEvent = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMillis(25))
@@ -75,12 +78,18 @@ public final class DSRVChatHook implements ChatHook {
             }
 
             final String messageContents = PlainTextComponentSerializer.plainText().serialize(messageComponent);
-            final Component parsedMessage = ConfigChatChannel.parseMessageTags(carbonPlayer, messageContents);
+            final Component eventMessage;
+
+            if (carbonPlayer instanceof WrappedCarbonPlayer wrapped) {
+                eventMessage = wrapped.parseMessageTags(messageContents);
+            } else {
+                eventMessage = WrappedCarbonPlayer.parseMessageTags(messageContents, carbonPlayer::hasPermission);
+            }
 
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");
 
             final @Nullable Player player = ((CarbonPlayerPaper) carbonPlayer).bukkitPlayer();
-            final String message = PlainTextComponentSerializer.plainText().serialize(parsedMessage);
+            final String message = PlainTextComponentSerializer.plainText().serialize(eventMessage);
 
             if (player != null) {
                 DiscordSRV.getPlugin().processChatMessage(player, message, chatChannel.commandName(), event.cancelled());

@@ -56,6 +56,7 @@ import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
@@ -314,7 +315,13 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final var renderers = new ArrayList<KeyedRenderer>();
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
-        final Component eventMessage = ConfigChatChannel.parseMessageTags(sender, plainMessage);
+        final Component eventMessage;
+
+        if (sender instanceof WrappedCarbonPlayer wrapped) {
+            eventMessage = wrapped.parseMessageTags(plainMessage);
+        } else {
+            eventMessage = WrappedCarbonPlayer.parseMessageTags(plainMessage, sender::hasPermission);
+        }
 
         final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
         this.eventHandler.emit(chatEvent);

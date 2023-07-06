@@ -27,7 +27,6 @@ import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -35,6 +34,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -158,7 +158,7 @@ public class NicknameCommand extends CarbonCommand {
 
     private static Component parseNickname(final Commander sender, final String nick) {
         // trim one level of quotes, to allow for nicknames which collide with command literals
-        return ConfigChatChannel.parseMessageTags(sender, trimQuotes(nick));
+        return WrappedCarbonPlayer.parseMessageTags(trimQuotes(nick), sender::hasPermission);
     }
 
     private static String trimQuotes(final String string) {
