@@ -19,15 +19,22 @@
  */
 package net.draycia.carbon.common.messaging;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.common.listeners.PingHandler;
+import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.event.events.CarbonChatEvent;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import ninja.egg82.messenger.handler.AbstractMessagingHandler;
 import ninja.egg82.messenger.packets.Packet;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,18 +43,15 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
     private final CarbonChat carbonChat;
     private final UserManagerInternal<?> userManager;
-    private final PingHandler pingHandler;
 
     CarbonChatPacketHandler(
         final CarbonChat carbonChat,
         final MessagingManager messagingManager,
-        final UserManagerInternal<?> userManager,
-        final PingHandler pingHandler
+        final UserManagerInternal<?> userManager
     ) {
         super(messagingManager.requirePacketService());
         this.carbonChat = carbonChat;
         this.userManager = userManager;
-        this.pingHandler = pingHandler;
     }
 
     @Override
@@ -61,21 +65,36 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             return false;
         }
 
-        for (final var recipient : this.carbonChat.server().players()) {
-            if (recipient.hasPermission(messagePacket.channelPermission() + ".see")) {
-                if (recipient.hasPermission("carbon.crossserver")) {
-                    if (recipient.ignoring(messagePacket.userId())) {
-                        continue;
-                    }
+        final CarbonPlayer sender = this.carbonChat.userManager().user(messagePacket.userId()).join();
 
-                    final Component messageWithPings = this.pingHandler.convertPings(recipient, messagePacket.message());
+        final @Nullable ChatChannel channel = this.carbonChat.channelRegistry().get(messagePacket.channelKey());
 
-                    recipient.sendMessage(messageWithPings);
-                }
-            }
+        if (channel == null) {
+            return false;
         }
 
-        this.carbonChat.server().console().sendMessage(Component.text("[Cross-Server] ").append(messagePacket.message()));
+        final List<KeyedRenderer> renderers = new ArrayList<>();
+
+        final List<Audience> recipients = channel.recipients(sender);
+        final CarbonChatEvent chatEvent = new CarbonChatEvent(sender, messagePacket.message(), recipients, renderers, channel, null);
+        this.carbonChat.eventHandler().emit(chatEvent);
+
+        for (final Audience recipient : recipients) {
+            if (recipient instanceof CarbonPlayer carbonRecipient
+                && !carbonRecipient.hasPermission("carbon.crossserver")) {
+                continue;
+            }
+
+            Component renderedMessage = chatEvent.message();
+
+            for (final KeyedRenderer renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, recipient, renderedMessage, messagePacket.message());
+            }
+
+            recipient.sendMessage(renderedMessage);
+        }
+
+        this.carbonChat.server().console().sendMessage(Component.text("[Cross-Server] ").append(chatEvent.message()));
 
         return true;
     }

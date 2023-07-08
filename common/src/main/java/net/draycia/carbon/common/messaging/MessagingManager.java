@@ -110,7 +110,7 @@ public class MessagingManager {
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
         handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), this.packetService, handlerImpl));
-        handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager, pingHandler));
+        handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager));
 
         try {
             this.initMessagingService(this.packetService, handlerImpl, new File("/"),
