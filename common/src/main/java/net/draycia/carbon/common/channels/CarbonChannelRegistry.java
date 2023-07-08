@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.channels;
 
+import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import com.google.common.collect.BiMap;
@@ -39,7 +40,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -53,6 +56,7 @@ import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -257,7 +261,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(channelFile);
 
         try {
-            final var loaded = updateNode(loader.load());
+            final ConfigurationNode loaded = updateNode(loader.load());
             loader.save(loaded);
             return MAPPER.load(loaded);
         } catch (final ConfigurateException exception) {
@@ -273,10 +277,10 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
             final Path configFile = this.configChannelDir.resolve("global.conf");
 
-            final var loader = this.configFactory.configurationLoader(configFile);
-            final var node = loader.load();
+            final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(configFile);
+            final ConfigurationNode node = loader.load();
 
-            final var configChannel = this.injector.getInstance(ConfigChatChannel.class);
+            final ConfigChatChannel configChannel = this.injector.getInstance(ConfigChatChannel.class);
 
             node.set(ConfigChatChannel.class, configChannel);
             loader.save(node);
@@ -310,9 +314,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final ChatChannel channel,
         final String plainMessage
     ) {
-        final var recipients = channel.recipients(sender);
+        final List<Audience> recipients = channel.recipients(sender);
 
-        final var renderers = new ArrayList<KeyedRenderer>();
+        final List<KeyedRenderer> renderers = new ArrayList<>();
         renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
 
         final Component eventMessage;
@@ -323,7 +327,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             eventMessage = WrappedCarbonPlayer.parseMessageTags(plainMessage, sender::hasPermission);
         }
 
-        final var chatEvent = new CarbonChatEvent(sender, eventMessage, recipients, renderers, channel, null);
+        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, eventMessage, recipients, renderers, channel, null);
         this.eventHandler.emit(chatEvent);
 
         if (chatEvent.cancelled()) {
@@ -333,10 +337,10 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final CarbonChatInternal<?> carbonChat = (CarbonChatInternal<?>) this.carbonChatProvider.get();
 
         for (final Audience recipient : chatEvent.recipients()) {
-            final var recipientUUID = recipient.get(Identity.UUID);
+            final Optional<UUID> recipientUUID = recipient.get(Identity.UUID);
             final Audience recipientViewer;
 
-            var renderedMessage = chatEvent.message();
+            Component renderedMessage = chatEvent.message();
 
             if (recipientUUID.isPresent()) {
                 recipientViewer = carbonChat.userManager().user(recipient.get(Identity.UUID).orElseThrow()).join();
@@ -344,7 +348,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 recipientViewer = recipient;
             }
 
-            for (final var renderer : chatEvent.renderers()) {
+            for (final KeyedRenderer renderer : chatEvent.renderers()) {
                 renderedMessage = renderer.render(sender, recipientViewer, renderedMessage, chatEvent.originalMessage());
             }
             recipient.sendMessage(renderedMessage);
@@ -366,7 +370,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final CommandManager<Commander> commandManager =
             this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
 
-        var builder = commandManager.commandBuilder(channel.commandName(),
+        Command.Builder<Commander> builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .argument(StringArgument.<Commander>builder("message").greedy().asOptional().build());
 
@@ -383,9 +387,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
         final Key channelKey = channel.key();
 
-        final var command = builder.senderType(PlayerCommander.class)
+        final Command<Commander> command = builder.senderType(PlayerCommander.class)
             .handler(handler -> {
-                final var sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final @Nullable ChatChannel chatChannel = this.get(channelKey);
 
                 if (sender.muted()) {
@@ -410,7 +414,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
         commandManager.command(command);
 
-        final var channelCommand = commandManager.commandBuilder("channel", "ch")
+        final Command<Commander> channelCommand = commandManager.commandBuilder("channel", "ch")
             .literal(channelKey.value())
             .proxies(command)
             .build();

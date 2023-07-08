@@ -26,6 +26,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.users.UserManagerInternal;
@@ -76,7 +77,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         final List<KeyedRenderer> renderers = new ArrayList<>();
 
         final List<Audience> recipients = channel.recipients(sender);
-        final CarbonChatEvent chatEvent = new CarbonChatEvent(sender, messagePacket.message(), recipients, renderers, channel, null);
+        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null);
         this.carbonChat.eventHandler().emit(chatEvent);
 
         for (final Audience recipient : recipients) {

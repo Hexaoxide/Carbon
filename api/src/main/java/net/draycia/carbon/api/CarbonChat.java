@@ -24,9 +24,6 @@ import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -97,13 +94,5 @@ public interface CarbonChat {
      * @since 2.0.0
      */
     ChannelRegistry channelRegistry();
-
-    /**
-     * The message renderer, tailored for the current platform.
-     *
-     * @return the message renderer
-     * @since 2.0.0
-     */
-    <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer();
 
 }

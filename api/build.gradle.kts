@@ -20,14 +20,6 @@ dependencies {
 
   compileOnlyApi(libs.checkerQual)
 
-  compileOnlyApi(libs.event)
-  compileOnlyApi(libs.kyoriRegistry) {
-    exclude("com.google.guava")
-  }
-  compileOnlyApi(libs.kyoriMoonshine)
-  compileOnlyApi(libs.kyoriMoonshineCore)
-  compileOnlyApi(libs.kyoriMoonshineStandard)
-
   // Provided by Minecraft
   compileOnlyApi(libs.gson)
   compileOnlyApi(libs.log4jApi)

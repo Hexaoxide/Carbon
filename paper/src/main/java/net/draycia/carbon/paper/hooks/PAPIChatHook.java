@@ -22,7 +22,7 @@ package net.draycia.carbon.paper.hooks;
 import com.google.inject.Inject;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.draycia.carbon.api.event.CarbonEventHandler;
-import net.draycia.carbon.api.util.ColorUtils;
+import net.draycia.carbon.common.util.ColorUtils;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.paper.CarbonChatPaper;

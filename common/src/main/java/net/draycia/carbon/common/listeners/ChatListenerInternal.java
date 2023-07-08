@@ -27,6 +27,7 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -82,7 +83,7 @@ public abstract class ChatListenerInternal {
 
         final List<Audience> recipients = channel.recipients(sender);
 
-        final CarbonChatEvent chatEvent = new CarbonChatEvent(sender, message, recipients, renderers, channel, signedMessage);
+        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, message, recipients, renderers, channel, signedMessage);
 
         this.carbonChat.eventHandler().emit(chatEvent);
 

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.util;
+package net.draycia.carbon.common.util;
 
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.format.NamedTextColor;

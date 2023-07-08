@@ -31,6 +31,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
 import net.draycia.carbon.common.messages.SourcedMessageSender;
@@ -212,7 +213,7 @@ public final class ConfigChatChannel implements ChatChannel {
             return Moonshine.<ConfigChannelMessages, SourcedAudience>builder(new TypeToken<ConfigChannelMessages>() {})
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
-                .rendered(this.carbonChat.messageRenderer())
+                .rendered(((CarbonChatInternal<?>) this.carbonChat).messageRenderer())
                 .sent(carbonMessageSender)
                 .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)

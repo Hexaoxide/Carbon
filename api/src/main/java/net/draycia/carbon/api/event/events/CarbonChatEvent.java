@@ -19,9 +19,9 @@
  */
 package net.draycia.carbon.api.event.events;
 
-import com.seiama.event.Cancellable;
 import java.util.List;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.event.Cancellable;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -30,7 +30,6 @@ import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -39,44 +38,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @since 2.0.0
  */
 @DefaultQualifier(NonNull.class)
-public class CarbonChatEvent implements CarbonEvent, Cancellable {
-
-    private final List<KeyedRenderer> renderers;
-    private final CarbonPlayer sender;
-    private final Component originalMessage;
-    private final List<? extends Audience> recipients;
-    private final @MonotonicNonNull ChatChannel chatChannel;
-    private final @MonotonicNonNull SignedMessage signedMessage;
-    private Component message;
-    private boolean cancelled = false;
-
-    /**
-     * Event that's called when players send messages in chat.
-     *
-     * @param sender          the sender of the message
-     * @param originalMessage the original message that was sent
-     * @param recipients      the recipients of the message
-     * @param renderers       the renderers of the message
-     * @param chatChannel     the channel the message was sent in
-     * @param signedMessage   the signature information for the message, if present
-     * @since 2.0.0
-     */
-    public CarbonChatEvent(
-        final CarbonPlayer sender,
-        final Component originalMessage,
-        final List<? extends Audience> recipients,
-        final List<KeyedRenderer> renderers,
-        final @Nullable ChatChannel chatChannel,
-        final @Nullable SignedMessage signedMessage
-    ) {
-        this.sender = sender;
-        this.originalMessage = originalMessage;
-        this.message = originalMessage;
-        this.recipients = recipients;
-        this.renderers = renderers;
-        this.chatChannel = chatChannel;
-        this.signedMessage = signedMessage;
-    }
+public interface CarbonChatEvent extends CarbonEvent, Cancellable {
 
     /**
      * Get the renderers used to construct components for each of the recipients.
@@ -84,9 +46,7 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      * @return The per-recipient component renderers.
      * @since 2.0.0
      */
-    public List<KeyedRenderer> renderers() {
-        return this.renderers;
-    }
+    List<KeyedRenderer> renderers();
 
     /**
      * If the message is being previewed by the player.
@@ -94,9 +54,7 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      * @return if the message is being previewed
      * @since 2.1.0
      */
-    public @MonotonicNonNull SignedMessage signedMessage() {
-        return this.signedMessage;
-    }
+    @MonotonicNonNull SignedMessage signedMessage();
 
     /**
      * Get the sender of the message.
@@ -104,9 +62,7 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      * @return The message sender.
      * @since 2.0.0
      */
-    public CarbonPlayer sender() {
-        return this.sender;
-    }
+    CarbonPlayer sender();
 
     /**
      * Get the original message that was sent.
@@ -114,9 +70,7 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      * @return The original message.
      * @since 2.0.0
      */
-    public Component originalMessage() {
-        return this.originalMessage;
-    }
+    Component originalMessage();
 
     /**
      * Get the chat message that will be sent.
@@ -124,9 +78,7 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      * @return The chat message.
      * @since 2.0.0
      */
-    public Component message() {
-        return this.message;
-    }
+    Component message();
 
     /**
      * Set the chat message that will be sent.
@@ -134,9 +86,7 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      * @param message new message
      * @since 2.0.0
      */
-    public void message(final Component message) {
-        this.message = message;
-    }
+    void message(final Component message);
 
     /**
      * The chat channel the message was sent in.
@@ -144,9 +94,7 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      * @return the chat channel
      * @since 2.0.0
      */
-    public @MonotonicNonNull ChatChannel chatChannel() {
-        return this.chatChannel;
-    }
+    @MonotonicNonNull ChatChannel chatChannel();
 
     /**
      * The recipients of the message.
@@ -156,18 +104,6 @@ public class CarbonChatEvent implements CarbonEvent, Cancellable {
      *     entries may be players, console, or other audience implementations
      * @since 2.0.0
      */
-    public List<? extends Audience> recipients() {
-        return this.recipients;
-    }
-
-    @Override
-    public boolean cancelled() {
-        return this.cancelled;
-    }
-
-    @Override
-    public void cancelled(final boolean cancelled) {
-        this.cancelled = cancelled;
-    }
+    List<? extends Audience> recipients();
 
 }

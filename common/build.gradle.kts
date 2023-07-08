@@ -44,6 +44,14 @@ dependencies {
   api(libs.messengerRedis)
   compileOnlyApi(libs.netty)
 
+  implementation(libs.event)
+  implementation(libs.kyoriRegistry) {
+    exclude("com.google.guava")
+  }
+  implementation(libs.kyoriMoonshine)
+  implementation(libs.kyoriMoonshineCore)
+  implementation(libs.kyoriMoonshineStandard)
+
   compileOnlyApi(libs.jarRelocator)
   compileOnlyApi(libs.caffeine)
 

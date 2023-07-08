@@ -56,7 +56,7 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
     }
 
     @Override
-    public <T extends CarbonEvent> CarbonEventSubscription subscribe(
+    public <T extends CarbonEvent> CarbonEventSubscription<T> subscribe(
         final Class<T> eventClass,
         final CarbonEventSubscriber<T> subscriber
     ) {

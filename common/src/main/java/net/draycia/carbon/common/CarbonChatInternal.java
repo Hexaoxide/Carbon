@@ -180,7 +180,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         return this.channelRegistry;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
         return (IMessageRenderer<T, String, Component, Component>) this.renderer;
