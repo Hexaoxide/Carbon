@@ -19,15 +19,15 @@
  */
 package net.draycia.carbon.api.event;
 
-import com.seiama.event.EventSubscriber;
-import com.seiama.event.EventSubscription;
-import java.util.function.Consumer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
  * Carbon event dispatcher.
  *
  * @since 2.1.0
  */
+@DefaultQualifier(NonNull.class)
 public interface CarbonEventHandler {
 
     /**
@@ -39,9 +39,9 @@ public interface CarbonEventHandler {
      * @return           the subscription, so that it may be unregistered
      * @since 2.0.0
      */
-    <T extends CarbonEvent> EventSubscription<T> subscribe(
+    <T extends CarbonEvent> CarbonEventSubscription<T> subscribe(
         final Class<T> eventClass,
-        final EventSubscriber<T> subscriber
+        final CarbonEventSubscriber<T> subscriber
     );
 
     /**
@@ -51,16 +51,16 @@ public interface CarbonEventHandler {
      * @param eventClass       the class to listen for
      * @param order            the order of the consumer
      * @param acceptsCancelled if the consumer should be executed if the event is cancelled early
-     * @param consumer         the consumer that's executed when the event is emitted
+     * @param subscriber       the consumer that's executed when the event is emitted
      * @param <T>              the class to listen for
      * @return                 the subscription, so that it may be unregistered
      * @since 2.0.0
      */
-    <T extends CarbonEvent> EventSubscription<T> subscribe(
+    <T extends CarbonEvent> CarbonEventSubscription<T> subscribe(
         final Class<T> eventClass,
         final int order,
         final boolean acceptsCancelled,
-        final Consumer<T> consumer
+        final CarbonEventSubscriber<T> subscriber
     );
 
     /**
@@ -69,8 +69,9 @@ public interface CarbonEventHandler {
      * the event while it's being emitted.
      *
      * @param event the event to be emitted
+     * @param <T> the class to emit
      * @since 2.0.0
      */
-    void emit(final CarbonEvent event);
+    <T extends CarbonEvent> void emit(final T event);
 
 }

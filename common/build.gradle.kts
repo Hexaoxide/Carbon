@@ -27,6 +27,7 @@ dependencies {
     isTransitive = false
   }
   compileOnlyApi(libs.luckPermsApi)
+  compileOnlyApi(libs.event)
 
   // Storage
   compileOnlyApi(libs.jdbiCore)

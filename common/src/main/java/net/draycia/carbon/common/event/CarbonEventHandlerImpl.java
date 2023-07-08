@@ -22,15 +22,15 @@ package net.draycia.carbon.common.event;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.seiama.event.EventConfig;
-import com.seiama.event.EventSubscriber;
 import com.seiama.event.EventSubscription;
 import com.seiama.event.bus.EventBus;
 import com.seiama.event.bus.SimpleEventBus;
 import com.seiama.event.registry.EventRegistry;
 import com.seiama.event.registry.SimpleEventRegistry;
-import java.util.function.Consumer;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.event.CarbonEventSubscriber;
+import net.draycia.carbon.api.event.CarbonEventSubscription;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -56,27 +56,29 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
     }
 
     @Override
-    public <T extends CarbonEvent> EventSubscription<T> subscribe(
+    public <T extends CarbonEvent> CarbonEventSubscription subscribe(
         final Class<T> eventClass,
-        final EventSubscriber<T> subscriber
+        final CarbonEventSubscriber<T> subscriber
     ) {
-        return this.eventRegistry.subscribe(eventClass, subscriber);
+        this.eventRegistry.subscribe(eventClass, subscriber::on);
+        return new CarbonEventSubscriptionImpl<>(eventClass, subscriber);
     }
 
     // TODO: support EventConfig#exact()
     @Override
-    public <T extends CarbonEvent> EventSubscription<T> subscribe(
+    public <T extends CarbonEvent> CarbonEventSubscription<T> subscribe(
         final Class<T> eventClass,
         final int order,
         final boolean acceptsCancelled,
-        final Consumer<T> consumer
+        final CarbonEventSubscriber<T> subscriber
     ) {
         final EventConfig eventConfig = EventConfig.defaults().order(order).acceptsCancelled(acceptsCancelled);
-        return this.eventRegistry.subscribe(eventClass, eventConfig, consumer::accept);
+        this.eventRegistry.subscribe(eventClass, eventConfig, subscriber::on);
+        return new CarbonEventSubscriptionImpl<>(eventClass, subscriber);
     }
 
     @Override
-    public void emit(final CarbonEvent event) {
+    public <T extends CarbonEvent> void emit(final T event) {
         this.eventBus.post(event);
     }
 
