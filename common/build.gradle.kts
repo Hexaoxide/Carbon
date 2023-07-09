@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+
 plugins {
   id("carbon.base-conventions")
 }
@@ -44,13 +46,13 @@ dependencies {
   api(libs.messengerRedis)
   compileOnlyApi(libs.netty)
 
-  implementation(libs.event)
-  implementation(libs.kyoriRegistry) {
+  api(libs.event)
+  api(libs.registry) {
     exclude("com.google.guava")
   }
-  implementation(libs.kyoriMoonshine)
-  implementation(libs.kyoriMoonshineCore)
-  implementation(libs.kyoriMoonshineStandard)
+  api(libs.kyoriMoonshine)
+  api(libs.kyoriMoonshineCore)
+  api(libs.kyoriMoonshineStandard)
 
   compileOnlyApi(libs.jarRelocator)
   compileOnlyApi(libs.caffeine)

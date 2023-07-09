@@ -22,22 +22,18 @@ package net.draycia.carbon.common.channels;
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import com.seiama.registry.Registry;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -65,7 +61,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.registry.DefaultedRegistryGetter;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -83,7 +78,7 @@ import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistryGetter<Key, ChatChannel> {
+public class CarbonChannelRegistry implements ChannelRegistry {
 
     private static @MonotonicNonNull ObjectMapper<ConfigChatChannel> MAPPER;
 
@@ -104,7 +99,9 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     private final CarbonEventHandler eventHandler;
     private final Provider<CarbonChat> carbonChatProvider;
 
-    private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
+    private final Registry<Key, ChatChannel> channelRegistry = Registry.create();
+    //
+    // private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
     @Inject
     public CarbonChannelRegistry(
@@ -188,13 +185,13 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
 
                 this.injector.injectMembers(chatChannel);
 
-                final @Nullable ChatChannel existingChannel = this.get(chatChannel.key());
+                final @Nullable ChatChannel existingChannel = this.channel(chatChannel.key());
 
                 if (existingChannel == null) {
                     return;
                 }
 
-                this.register(chatChannel.key(), chatChannel);
+                this.register(chatChannel);
             });
         } catch (final IOException exception) {
             exception.printStackTrace();
@@ -209,9 +206,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             this.registerDefaultChannel();
             return;
         } else if (this.isPathEmpty(this.configChannelDir)) {
-            final ChatChannel basicChannel = this.injector.getInstance(BasicChatChannel.class);
-
-            this.register(basicChannel.key(), basicChannel);
+            this.register(this.injector.getInstance(BasicChatChannel.class));
         }
 
         // otherwise, register all channels found
@@ -237,14 +232,14 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
                 }
             });
 
-            if (!this.channelMap.containsKey(this.defaultKey)) {
+            if (this.channel(this.defaultKey) == null) {
                 this.logger.warn("No default channel found! Default channel key: [" + this.defaultKey().asString() + "]");
             }
 
             final List<String> channelList = new ArrayList<>();
 
-            for (final ChatChannel chatChannel : this.channelMap.values()) {
-                channelList.add(chatChannel.key().asString());
+            for (final Key key : this.keys()) {
+                channelList.add(key.asString());
             }
 
             final String channels = String.join(", ", channelList);
@@ -254,7 +249,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             exception.printStackTrace();
         }
 
-        this.eventHandler.emit(new ChannelRegisterEventImpl(this.channelMap.values(), this));
+        this.eventHandler.emit(new ChannelRegisterEventImpl(this.keys(), this));
     }
 
     public @Nullable ChatChannel loadChannel(final Path channelFile) {
@@ -285,7 +280,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             node.set(ConfigChatChannel.class, configChannel);
             loader.save(node);
 
-            this.register(configChannel.key(), configChannel);
+            this.register(configChannel);
         } catch (final IOException exception) {
             exception.printStackTrace();
         }
@@ -304,7 +299,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
             this.logger.info("Default channel is [" + channelKey + "]");
         }
 
-        this.register(channelKey, channel);
+        this.register(channel);
 
         return channel;
     }
@@ -390,7 +385,7 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
         final Command<Commander> command = builder.senderType(PlayerCommander.class)
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-                final @Nullable ChatChannel chatChannel = this.get(channelKey);
+                final @Nullable ChatChannel chatChannel = this.channel(channelKey);
 
                 if (sender.muted()) {
                     this.carbonMessages.muteCannotSpeak(sender);
@@ -423,34 +418,38 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     @Override
-    public @NonNull ChatChannel register(final @NonNull Key key, final @NonNull ChatChannel value) {
-        this.channelMap.put(key, value);
-        return value;
+    public void register(final ChatChannel channel) {
+        this.channelRegistry.register(channel.key(), channel);
     }
 
     @Override
-    public @Nullable ChatChannel get(final @NonNull Key key) {
-        return this.channelMap.get(key);
+    public @Nullable ChatChannel channel(final Key key) {
+        return this.channelRegistry.getOrCreateHolder(key).value();
     }
 
     @Override
-    public @Nullable Key key(final @NonNull ChatChannel value) {
-        return this.channelMap.inverse().get(value);
+    public @Nullable ChatChannel channelByValue(final String value) {
+        if (value.contains(":")) {
+            return this.channel(Key.key(value));
+        }
+
+        for (final Key key : this.keys()) {
+            if (key.value().equalsIgnoreCase(value)) {
+                return this.channel(key);
+            }
+        }
+
+        return null;
     }
 
     @Override
-    public @NonNull Set<Key> keySet() {
-        return Collections.unmodifiableSet(this.channelMap.keySet());
+    public @NonNull Set<Key> keys() {
+        return Collections.unmodifiableSet(this.channelRegistry.keys());
     }
 
     @Override
-    public @NonNull Iterator<ChatChannel> iterator() {
-        return Iterators.unmodifiableIterator(this.channelMap.values().iterator());
-    }
-
-    @Override
-    public ChatChannel defaultValue() {
-        return Objects.requireNonNull(this.get(this.defaultKey));
+    public ChatChannel defaultChannel() {
+        return Objects.requireNonNull(this.channel(this.defaultKey));
     }
 
     @Override
@@ -459,24 +458,14 @@ public class CarbonChannelRegistry implements ChannelRegistry, DefaultedRegistry
     }
 
     @Override
-    public ChatChannel getOrDefault(final Key key) {
-        final @Nullable ChatChannel channel = this.get(key);
+    public ChatChannel keyOrDefault(final Key key) {
+        final @Nullable ChatChannel channel = this.channel(key);
 
         if (channel != null) {
             return channel;
         }
 
-        return this.defaultValue();
-    }
-
-    public @Nullable ChatChannel byCommandName(final String channelName) {
-        for (final ChatChannel channel : this) {
-            if (channel.commandName().equalsIgnoreCase(channelName)) {
-                return channel;
-            }
-        }
-
-        return null;
+        return this.defaultChannel();
     }
 
 }

@@ -29,7 +29,7 @@ versions:
   paperTrail: 0.0.1-SNAPSHOT
   foliaApi: 1.19.4-R0.1-SNAPSHOT
   event: 1.0.0-SNAPSHOT
-  kyoriRegistry: 1.0.0-SNAPSHOT
+  registry: 1.0.0-SNAPSHOT
   kyoriMoonshine: 2.0.4
   log4j: 2.17.2
   guice: 5.1.0
@@ -107,11 +107,11 @@ dependencies:
     group: com.seiama
     name: event-api
     version: { ref: event }
-
-  kyoriRegistry:
-    group: net.kyori
+  registry:
+    group: com.seiama
     name: registry
-    version: { ref: kyoriRegistry }
+    version: { ref: registry }
+
   kyoriMoonshine:
     group: net.kyori.moonshine
     name: moonshine

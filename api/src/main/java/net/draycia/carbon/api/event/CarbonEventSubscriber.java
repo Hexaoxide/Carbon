@@ -23,6 +23,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An EventSubscriber.
+ *
+ * @param <T> CarbonEvent implementations
+ * @since 2.1.0
+ */
 @DefaultQualifier(NonNull.class)
 public interface CarbonEventSubscriber<T extends CarbonEvent> {
 

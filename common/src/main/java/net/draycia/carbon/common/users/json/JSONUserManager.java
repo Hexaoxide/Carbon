@@ -102,7 +102,7 @@ public class JSONUserManager extends CachingUserManager {
                     throw new IllegalStateException("Player file found but was empty.");
                 }
                 player.leftChannels().forEach(channel -> {
-                    if (this.channelRegistry.get(channel) == null) {
+                    if (this.channelRegistry.channel(channel) == null) {
                         player.joinChannel(channel, true);
                     }
                 });

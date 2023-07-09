@@ -64,7 +64,7 @@ public final class DiscordMessageListener implements Listener {
         var channel = result.selectedChannel();
 
         if (channel == null) {
-            channel = this.carbonChat.channelRegistry().defaultValue();
+            channel = this.carbonChat.channelRegistry().defaultChannel();
         }
 
         final var messageType = this.channelMessageTypes.get(channel.key());
@@ -80,10 +80,10 @@ public final class DiscordMessageListener implements Listener {
         final @Nullable DiscordService discord = Bukkit.getServicesManager().load(DiscordService.class);
 
         if (discord != null) {
-            this.carbonChat.channelRegistry().forEach(channel -> {
-                final MessageType channelMessageType = new MessageType(channel.key().value());
+            this.carbonChat.channelRegistry().keys().forEach(key -> {
+                final MessageType channelMessageType = new MessageType(key.value());
                 discord.registerMessageType(this.plugin, channelMessageType);
-                this.channelMessageTypes.put(channel.key(), channelMessageType);
+                this.channelMessageTypes.put(key, channelMessageType);
             });
         }
     }

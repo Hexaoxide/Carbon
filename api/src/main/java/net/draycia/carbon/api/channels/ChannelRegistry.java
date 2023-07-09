@@ -19,16 +19,17 @@
  */
 package net.draycia.carbon.api.channels;
 
-import net.draycia.carbon.api.util.DefaultedKeyValueRegistry;
+import java.util.Set;
 import net.kyori.adventure.key.Key;
-import net.kyori.registry.Registry;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Registry for chat channels.
  *
  * @since 2.0.0
  */
-public interface ChannelRegistry extends Registry<Key, ChatChannel>, DefaultedKeyValueRegistry<Key, ChatChannel> {
+public interface ChannelRegistry {
 
     /**
      * Registers ingame commands for the channel.
@@ -37,5 +38,64 @@ public interface ChannelRegistry extends Registry<Key, ChatChannel>, DefaultedKe
      * @since 2.1.0
      */
     void registerChannelCommands(final ChatChannel channel);
+
+    /**
+     * Registers the chat channel with it's key.
+     *
+     * @param channel the channel to register
+     * @since 2.1.0
+     */
+    void register(final ChatChannel channel);
+
+    /**
+     * Gets the channel with the matching key.
+     *
+     * @param key the channel's key
+     * @return the channel
+     * @since 2.1.0
+     */
+    @Nullable ChatChannel channel(final Key key);
+
+    /**
+     * Gets the channel with the matching key's value.
+     *
+     * @param value the channel's key's value
+     * @return the channel
+     * @since 2.1.0
+     */
+    @Nullable ChatChannel channelByValue(final String value);
+
+    /**
+     * Gets the default key.
+     *
+     * @return the default key
+     * @since 2.1.0
+     */
+    @NonNull Key defaultKey();
+
+    /**
+     * Gets the default value.
+     *
+     * @return the default value
+     * @since 2.1.0
+     */
+    @NonNull ChatChannel defaultChannel();
+
+    /**
+     * Gets the list of registered channel keys.
+     *
+     * @return the registered channel keys
+     * @since 2.1.0
+     */
+    @NonNull Set<Key> keys();
+
+    /**
+     * Gets the channel with the matching key, otherwise the default channel.
+     *
+     * @param key the channel key
+     * @return the channel, or the default one
+     * @since 2.1.0
+     */
+    ChatChannel keyOrDefault(final Key key);
 
 }

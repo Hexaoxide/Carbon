@@ -22,6 +22,12 @@ package net.draycia.carbon.api.event;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+/**
+ * An EventSubscription.
+ *
+ * @param <T> CarbonEvent implementations
+ * @since 2.1.0
+ */
 @DefaultQualifier(NonNull.class)
 public interface CarbonEventSubscription<T extends CarbonEvent> {
 

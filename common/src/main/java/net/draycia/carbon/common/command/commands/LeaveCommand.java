@@ -70,7 +70,8 @@ public class LeaveCommand extends CarbonCommand {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(StringArgument.<Commander>builder("channel").greedy().withSuggestionsProvider((context, s) -> {
                 final CarbonPlayer sender = ((PlayerCommander) context.getSender()).carbonPlayer();
-                return this.channelRegistry.stream()
+                return this.channelRegistry.keys().stream()
+                    .map(this.channelRegistry::channel)
                     .filter(x -> !sender.leftChannels().contains(x.key()) && x.speechPermitted(sender).permitted())
                     .map(x -> x.key().value())
                     .toList();
@@ -80,7 +81,7 @@ public class LeaveCommand extends CarbonCommand {
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandLeaveDescription())
             .handler(handler -> {
                 final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
-                final @Nullable ChatChannel channel = this.channelRegistry.byCommandName(handler.get("channel"));
+                final @Nullable ChatChannel channel = this.channelRegistry.channelByValue(handler.get("channel"));
                 if (channel == null) {
                     this.carbonMessages.channelNotFound(sender);
                     return;

@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.api.event.events;
 
+import java.util.Set;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.kyori.adventure.key.Key;
@@ -39,7 +40,7 @@ public interface CarbonChannelRegisterEvent extends CarbonEvent {
      * @return the registered channels
      * @since 2.1.0
      */
-    Iterable<ChatChannel> channels();
+    Set<Key> channelKeys();
 
     /**
      * Registers additional channels to the registry. Does not re-emit the event.

@@ -68,7 +68,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
         final CarbonPlayer sender = this.carbonChat.userManager().user(messagePacket.userId()).join();
 
-        final @Nullable ChatChannel channel = this.carbonChat.channelRegistry().get(messagePacket.channelKey());
+        final @Nullable ChatChannel channel = this.carbonChat.channelRegistry().channel(messagePacket.channelKey());
 
         if (channel == null) {
             return false;

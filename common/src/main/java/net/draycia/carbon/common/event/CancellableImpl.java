@@ -35,5 +35,4 @@ public class CancellableImpl implements Cancellable, com.seiama.event.Cancellabl
         this.cancelled = cancelled;
     }
 
-
 }

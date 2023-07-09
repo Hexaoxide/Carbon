@@ -241,9 +241,10 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         final String text = PlainTextComponentSerializer.plainText().serialize(message);
         Component formattedMessage = message;
 
-        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon().channelRegistry().defaultValue());
+        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon().channelRegistry().defaultChannel());
 
-        for (final ChatChannel chatChannel : this.carbonPlayerCommon.channelRegistry()) {
+        for (final Key channelKey : this.carbonPlayerCommon.channelRegistry().keys()) {
+            final @MonotonicNonNull ChatChannel chatChannel = this.carbonPlayerCommon.channelRegistry().channel(channelKey);
             final @MonotonicNonNull String prefix = chatChannel.quickPrefix();
 
             if (prefix == null) {

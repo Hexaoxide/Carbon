@@ -35,6 +35,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonPrivateChatEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.key.Key;
@@ -125,7 +126,7 @@ public class WhisperCommand extends CarbonCommand {
                 final Component senderName = CarbonPlayer.renderName(sender);
                 final Component recipientName = CarbonPlayer.renderName(recipient);
 
-                final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEvent(sender, recipient, Component.text(message));
+                final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEventImpl(sender, recipient, Component.text(message));
                 this.carbonChat.eventHandler().emit(privateChatEvent);
 
                 if (privateChatEvent.cancelled()) {

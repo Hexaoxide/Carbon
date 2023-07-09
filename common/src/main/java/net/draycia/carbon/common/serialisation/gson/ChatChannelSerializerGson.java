@@ -57,7 +57,7 @@ public class ChatChannelSerializerGson extends TypeAdapter<ChatChannel> {
         @Subst("namespace:value") final @Nullable String channelName = in.nextString();
 
         if (channelName != null) {
-            return this.registry.get(key(channelName));
+            return this.registry.channel(key(channelName));
         }
 
         return null;

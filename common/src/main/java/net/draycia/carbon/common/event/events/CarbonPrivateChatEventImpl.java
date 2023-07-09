@@ -17,11 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.event.events;
+package net.draycia.carbon.common.event.events;
 
-import net.draycia.carbon.api.event.Cancellable;
-import net.draycia.carbon.api.event.CarbonEvent;
+import java.util.Objects;
+import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.event.CancellableImpl;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -32,39 +33,33 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @since 2.1.0
  */
 @DefaultQualifier(NonNull.class)
-public interface CarbonPrivateChatEvent extends CarbonEvent, Cancellable {
+public class CarbonPrivateChatEventImpl extends CancellableImpl implements CarbonPrivateChatEvent {
 
-    /**
-     * Sets the message that will be sent.
-     *
-     * @param message the new message
-     * @throws NullPointerException if message is null
-     * @since 2.1.0
-     */
-    void message(final Component message);
+    private final CarbonPlayer sender;
+    private final CarbonPlayer recipient;
 
-    /**
-     * The message that will be sent.
-     *
-     * @return the message
-     * @since 2.1.0
-     */
-    Component message();
+    private Component message;
 
-    /**
-     * The message sender.
-     *
-     * @return the sender of the message
-     * @since 2.1.0
-     */
-    CarbonPlayer sender();
+    public CarbonPrivateChatEventImpl(final CarbonPlayer sender, final CarbonPlayer recipient, final Component message) {
+        this.sender = sender;
+        this.recipient = recipient;
+        this.message = message;
+    }
 
-    /**
-     * The message recipient.
-     *
-     * @return the recipient of the message
-     * @since 2.1.0
-     */
-    CarbonPlayer recipient();
+    public void message(final Component message) {
+        this.message = Objects.requireNonNull(message);
+    }
+
+    public Component message() {
+        return this.message;
+    }
+
+    public CarbonPlayer sender() {
+        return this.sender;
+    }
+
+    public CarbonPlayer recipient() {
+        return this.recipient;
+    }
 
 }

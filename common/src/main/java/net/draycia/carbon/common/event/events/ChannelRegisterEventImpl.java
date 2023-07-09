@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.event.events;
 
+import java.util.Set;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
@@ -35,26 +36,28 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class ChannelRegisterEventImpl implements CarbonChannelRegisterEvent {
 
-    private final Iterable<ChatChannel> channels;
+    private final Set<Key> channelKeys;
     private final CarbonChannelRegistry registry;
 
     /**
      * {@link CarbonEvent} that's called when channels are registered.
      *
-     * @param channels the channels that were registered
+     * @param channelKeys the channels that were registered
      * @since 2.1.0
      */
-    public ChannelRegisterEventImpl(final Iterable<ChatChannel> channels, final CarbonChannelRegistry registry) {
-        this.channels = channels;
+    public ChannelRegisterEventImpl(final Set<Key> channelKeys, final CarbonChannelRegistry registry) {
+        this.channelKeys = channelKeys;
         this.registry = registry;
     }
 
-    public Iterable<ChatChannel> channels() {
-        return this.channels;
+    @Override
+    public Set<Key> channelKeys() {
+        return this.channelKeys;
     }
 
+    @Override
     public void register(final Key key, final ChatChannel channel, final boolean registerCommands) {
-        this.registry.register(key, channel);
+        this.registry.register(channel);
 
         if (registerCommands) {
             this.registry.registerChannelCommands(channel);

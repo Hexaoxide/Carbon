@@ -101,7 +101,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
                 .bind("id", uuid)
                 .mapTo(Key.class)
                 .forEach(channel -> {
-                    final @Nullable ChatChannel chatChannel = this.channelRegistry.get(channel);
+                    final @Nullable ChatChannel chatChannel = this.channelRegistry.channel(channel);
 
                     if (chatChannel == null) {
                         return;

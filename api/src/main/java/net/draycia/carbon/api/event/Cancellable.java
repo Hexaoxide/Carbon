@@ -19,10 +19,27 @@
  */
 package net.draycia.carbon.api.event;
 
+/**
+ * Marks an event as cancellable.
+ *
+ * @since 2.1.0
+ */
 public interface Cancellable {
 
+    /**
+     * Gets if the event is cancelled.
+     *
+     * @return if the event is cancelled
+     * @since 2.1.0
+     */
     boolean cancelled();
 
+    /**
+     * Sets the cancelled state.
+     *
+     * @param cancelled sets the cancelled state
+     * @since 2.1.0
+     */
     void cancelled(final boolean cancelled);
 
 }
