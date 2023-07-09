@@ -38,6 +38,7 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.paper.hooks.CarbonPAPIPlaceholders;
 import net.draycia.carbon.paper.hooks.DSRVChatHook;
 import net.draycia.carbon.paper.hooks.PAPIChatHook;
 import net.draycia.carbon.paper.listeners.DiscordMessageListener;
@@ -130,6 +131,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
 
         if (papiLoaded()) {
             this.injector().getInstance(PAPIChatHook.class);
+            this.injector().getInstance(CarbonPAPIPlaceholders.class);
         }
     }
 
