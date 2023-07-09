@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -53,6 +54,7 @@ import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.util.Exceptions;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -92,7 +94,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private final CarbonEventHandler eventHandler;
     private final Provider<CarbonChat> carbonChatProvider;
 
-    private final Registry<Key, ChatChannel> channelRegistry = Registry.create();
+    private volatile Registry<Key, ChatChannel> channelRegistry = Registry.create();
+    private final Set<Key> configChannels = ConcurrentHashMap.newKeySet();
     //
     // private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
@@ -115,7 +118,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.eventHandler = events;
         this.carbonChatProvider = carbonChatProvider;
 
-        events.subscribe(CarbonReloadEvent.class, event -> this.reloadRegisteredConfigChannels());
+        events.subscribe(CarbonReloadEvent.class, event -> this.reloadConfigChannels());
     }
 
     public static ConfigurationTransformation.Versioned versioned() {
@@ -162,64 +165,45 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         return node;
     }
 
-    public void reloadRegisteredConfigChannels() {
-        try (final Stream<Path> paths = Files.walk(this.configChannelDir)) {
-            paths.forEach(path -> {
-                final String fileName = path.getFileName().toString();
-
-                if (!fileName.endsWith(".conf")) {
-                    return;
-                }
-
-                final @Nullable ChatChannel chatChannel = this.registerChannelFromPath(path);
-
-                if (chatChannel == null) {
-                    return;
-                }
-
-                this.injector.injectMembers(chatChannel);
-
-                final @Nullable ChatChannel existingChannel = this.channel(chatChannel.key());
-
-                if (existingChannel == null) {
-                    return;
-                }
-
-                this.register(chatChannel);
-            });
-        } catch (final IOException exception) {
-            exception.printStackTrace();
+    public void reloadConfigChannels() {
+        final Registry<Key, ChatChannel> newRegistry = Registry.create();
+        // Copy API registrations over
+        for (final Key registered : this.channelRegistry.keys()) {
+            if (!this.configChannels.contains(registered)) {
+                newRegistry.register(registered, this.channelRegistry.getHolder(registered).valueOrThrow());
+            }
         }
+        this.configChannels.clear();
+        this.channelRegistry = newRegistry;
+        this.loadConfigChannels(this.carbonMessages);
     }
 
-    public void loadConfigChannels(final CarbonMessages carbonMessages) {
+    public void loadConfigChannels(final CarbonMessages messages) {
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
-        if (!Files.exists(this.configChannelDir)) {
+        if (!Files.exists(this.configChannelDir) || this.isPathEmpty(this.configChannelDir)) {
             // no channels to register, register default channel
             this.registerDefaultChannel();
             return;
-        } else if (this.isPathEmpty(this.configChannelDir)) {
-            this.register(this.injector.getInstance(BasicChatChannel.class));
         }
 
         // otherwise, register all channels found
         try (final Stream<Path> paths = Files.walk(this.configChannelDir)) {
             paths.forEach(path -> {
                 final String fileName = path.getFileName().toString();
-
                 if (!fileName.endsWith(".conf")) {
                     return;
                 }
 
-                final @Nullable ChatChannel chatChannel = this.registerChannelFromPath(path);
-
+                final @Nullable ChatChannel chatChannel = this.channelFromPath(path);
                 if (chatChannel == null) {
                     this.logger.warn("Failed to load channel from file [" + fileName + "]");
                     return;
                 }
 
                 this.injector.injectMembers(chatChannel);
+                this.configChannels.add(chatChannel.key());
+                this.register(chatChannel);
 
                 if (chatChannel.shouldRegisterCommands()) {
                     this.registerChannelCommands(chatChannel);
@@ -240,7 +224,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
             this.logger.info("Registered channels: [" + channels + "]");
         } catch (final IOException exception) {
-            exception.printStackTrace();
+            throw Exceptions.rethrow(exception);
         }
 
         this.eventHandler.emit(new ChannelRegisterEventImpl(this.keys(), this));
@@ -275,12 +259,13 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             loader.save(node);
 
             this.register(configChannel);
+            this.configChannels.add(configChannel.key());
         } catch (final IOException exception) {
-            exception.printStackTrace();
+            throw Exceptions.rethrow(exception);
         }
     }
 
-    private @Nullable ChatChannel registerChannelFromPath(final Path channelPath) {
+    private @Nullable ChatChannel channelFromPath(final Path channelPath) {
         final @Nullable ChatChannel channel = this.loadChannel(channelPath);
 
         if (channel == null) {
@@ -293,7 +278,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             this.logger.info("Default channel is [" + channelKey + "]");
         }
 
-        this.register(channel);
+        //this.register(channel);
 
         return channel;
     }
@@ -324,10 +309,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
             return !directory.iterator().hasNext();
         } catch (final IOException exception) {
-            exception.printStackTrace();
+            throw Exceptions.rethrow(exception);
         }
-
-        return false;
     }
 
     @Override
