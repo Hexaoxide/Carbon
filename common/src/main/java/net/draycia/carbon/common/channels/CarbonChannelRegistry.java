@@ -427,7 +427,6 @@ public class CarbonChannelRegistry implements ChannelRegistry {
         return this.channelRegistry.getOrCreateHolder(key).value();
     }
 
-    @Override
     public @Nullable ChatChannel channelByValue(final String value) {
         if (value.contains(":")) {
             return this.channel(Key.key(value));

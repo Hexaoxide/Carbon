@@ -57,15 +57,6 @@ public interface ChannelRegistry {
     @Nullable ChatChannel channel(final Key key);
 
     /**
-     * Gets the channel with the matching key's value.
-     *
-     * @param value the channel's key's value
-     * @return the channel
-     * @since 2.1.0
-     */
-    @Nullable ChatChannel channelByValue(final String value);
-
-    /**
      * Gets the default key.
      *
      * @return the default key
