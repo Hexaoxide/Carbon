@@ -24,7 +24,6 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.seiama.registry.Registry;
@@ -38,8 +37,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -92,10 +91,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private @MonotonicNonNull Key defaultKey;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
-    private final Provider<CarbonChat> carbonChatProvider;
 
     private volatile Registry<Key, ChatChannel> channelRegistry = Registry.create();
     private final Set<Key> configChannels = ConcurrentHashMap.newKeySet();
+    private final AtomicBoolean firstRegister = new AtomicBoolean(true);
     //
     // private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
@@ -106,8 +105,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final Logger logger,
         final ConfigFactory configFactory,
         final CarbonMessages carbonMessages,
-        final CarbonEventHandler events,
-        final Provider<CarbonChat> carbonChatProvider
+        final CarbonEventHandler events
     ) {
         super(events, carbonMessages, configFactory);
         this.configChannelDir = dataDirectory.resolve("channels");
@@ -116,7 +114,6 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.configFactory = configFactory;
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
-        this.carbonChatProvider = carbonChatProvider;
 
         events.subscribe(CarbonReloadEvent.class, event -> this.reloadConfigChannels());
     }
@@ -179,6 +176,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     }
 
     public void loadConfigChannels(final CarbonMessages messages) {
+        final boolean firstRegister = this.firstRegister.compareAndSet(true, false);
+
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
         if (!Files.exists(this.configChannelDir) || this.isPathEmpty(this.configChannelDir)) {
@@ -205,7 +204,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                 this.configChannels.add(chatChannel.key());
                 this.register(chatChannel);
 
-                if (chatChannel.shouldRegisterCommands()) {
+                if (firstRegister // We only support commands being registered at startup currently
+                    && chatChannel.shouldRegisterCommands()) {
                     this.registerChannelCommands(chatChannel);
                 }
             });
