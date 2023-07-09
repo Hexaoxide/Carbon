@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import com.seiama.event.EventConfig;
 import com.seiama.registry.Registry;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -115,7 +116,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
 
-        events.subscribe(CarbonReloadEvent.class, event -> this.reloadConfigChannels());
+        events.subscribe(CarbonReloadEvent.class, -99, EventConfig.DEFAULT_ACCEPTS_CANCELLED, event -> this.reloadConfigChannels());
     }
 
     public static ConfigurationTransformation.Versioned versioned() {

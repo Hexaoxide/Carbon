@@ -21,6 +21,7 @@ package net.draycia.carbon.common.config;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.seiama.event.EventConfig;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,7 +57,7 @@ public class ConfigFactory {
         this.dataDirectory = dataDirectory;
         this.locale = locale;
 
-        events.subscribe(CarbonReloadEvent.class, event -> this.reloadPrimaryConfig());
+        events.subscribe(CarbonReloadEvent.class, -100, EventConfig.DEFAULT_ACCEPTS_CANCELLED, event -> this.reloadPrimaryConfig());
     }
 
     public @Nullable PrimaryConfig reloadPrimaryConfig() {

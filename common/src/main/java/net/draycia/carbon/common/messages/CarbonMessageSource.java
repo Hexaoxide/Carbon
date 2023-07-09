@@ -21,6 +21,7 @@ package net.draycia.carbon.common.messages;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.seiama.event.EventConfig;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -86,7 +87,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
         this.reloadTranslations();
 
-        events.subscribe(CarbonReloadEvent.class, event -> {
+        events.subscribe(CarbonReloadEvent.class, -99, EventConfig.DEFAULT_ACCEPTS_CANCELLED, event -> {
             this.reloadTranslations();
         });
     }
