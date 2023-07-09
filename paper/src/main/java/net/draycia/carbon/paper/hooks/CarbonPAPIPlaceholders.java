@@ -60,7 +60,7 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, @NotNull String params) {
+    public String onPlaceholderRequest(final Player player, final @NotNull String params) {
         if (player == null) {
             return null;
         }
