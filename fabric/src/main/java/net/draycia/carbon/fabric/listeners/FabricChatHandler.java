@@ -49,7 +49,7 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
         final CarbonChatFabric carbonChat,
         final CarbonMessages carbonMessages
     ) {
-        super(carbonChat, carbonMessages, configFactory);
+        super(carbonChat.eventHandler(), carbonMessages, configFactory);
         this.carbonChat = carbonChat;
     }
 

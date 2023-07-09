@@ -36,9 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -47,18 +45,15 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
+import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
@@ -74,11 +69,9 @@ import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
-import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
-
 @Singleton
 @DefaultQualifier(NonNull.class)
-public class CarbonChannelRegistry implements ChannelRegistry {
+public class CarbonChannelRegistry extends ChatListenerInternal implements ChannelRegistry {
 
     private static @MonotonicNonNull ObjectMapper<ConfigChatChannel> MAPPER;
 
@@ -113,6 +106,7 @@ public class CarbonChannelRegistry implements ChannelRegistry {
         final CarbonEventHandler events,
         final Provider<CarbonChat> carbonChatProvider
     ) {
+        super(events, carbonMessages, configFactory);
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
@@ -309,43 +303,19 @@ public class CarbonChannelRegistry implements ChannelRegistry {
         final ChatChannel channel,
         final String plainMessage
     ) {
-        final List<Audience> recipients = channel.recipients(sender);
-
-        final List<KeyedRenderer> renderers = new ArrayList<>();
-        renderers.add(keyedRenderer(Key.key("carbon", "default"), channel));
-
-        final Component eventMessage;
-
-        if (sender instanceof WrappedCarbonPlayer wrapped) {
-            eventMessage = wrapped.parseMessageTags(plainMessage);
-        } else {
-            eventMessage = WrappedCarbonPlayer.parseMessageTags(plainMessage, sender::hasPermission);
-        }
-
-        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, eventMessage, recipients, renderers, channel, null);
-        this.eventHandler.emit(chatEvent);
+        final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
 
         if (chatEvent.cancelled()) {
             return;
         }
 
-        final CarbonChatInternal<?> carbonChat = (CarbonChatInternal<?>) this.carbonChatProvider.get();
-
         for (final Audience recipient : chatEvent.recipients()) {
-            final Optional<UUID> recipientUUID = recipient.get(Identity.UUID);
-            final Audience recipientViewer;
-
             Component renderedMessage = chatEvent.message();
 
-            if (recipientUUID.isPresent()) {
-                recipientViewer = carbonChat.userManager().user(recipient.get(Identity.UUID).orElseThrow()).join();
-            } else {
-                recipientViewer = recipient;
+            for (final KeyedRenderer renderer : chatEvent.renderers()) {
+                renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
             }
 
-            for (final KeyedRenderer renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipientViewer, renderedMessage, chatEvent.originalMessage());
-            }
             recipient.sendMessage(renderedMessage);
         }
     }

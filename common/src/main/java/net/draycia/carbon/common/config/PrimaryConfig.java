@@ -74,6 +74,9 @@ public class PrimaryConfig {
     @Comment("The placeholders replaced in chat messages, this WILL work with chat previews.")
     private Map<String, String> chatPlaceholders = Map.of();
 
+    @Comment("Basic regex based chat filter.")
+    private Map<String, String> chatFilter = Map.of();
+
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
 
@@ -116,7 +119,7 @@ public class PrimaryConfig {
 
     public String applyCustomPlaceholders(final String string) {
         String placeholderResolvedMessage = string;
-        for (final var entry : this.customPlaceholders.entrySet()) {
+        for (final var entry : this.customPlaceholders().entrySet()) {
             placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }
@@ -138,6 +141,20 @@ public class PrimaryConfig {
                 entry.getValue());
         }
         return placeholderResolvedMessage;
+    }
+
+    public Map<String, String> chatFilters() {
+        return this.chatFilter;
+    }
+
+    public String applyChatFilters(final String string) {
+        String filteredMessage = string;
+
+        for (final Map.Entry<String, String> entry : this.chatFilters().entrySet()) {
+            filteredMessage = filteredMessage.replaceAll(entry.getKey(), entry.getValue());
+        }
+
+        return filteredMessage;
     }
 
     public PingSettings pings() {

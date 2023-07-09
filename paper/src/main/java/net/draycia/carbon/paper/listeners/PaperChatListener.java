@@ -49,7 +49,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final CarbonMessages carbonMessages,
         final ConfigFactory configFactory
     ) {
-        super(carbonChat, carbonMessages, configFactory);
+        super(carbonChat.eventHandler(), carbonMessages, configFactory);
         this.carbonChat = carbonChat;
         this.configFactory = configFactory;
     }

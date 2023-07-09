@@ -63,7 +63,7 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         final CarbonMessages carbonMessages,
         final ConfigFactory configFactory
     ) {
-        super(carbonChat, carbonMessages, configFactory);
+        super(carbonChat.eventHandler(), carbonMessages, configFactory);
         this.userManager = userManager;
         this.logger = logger;
         this.configFactory = configFactory;

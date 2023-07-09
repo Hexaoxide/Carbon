@@ -21,8 +21,8 @@ package net.draycia.carbon.common.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -35,43 +35,48 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public abstract class ChatListenerInternal {
 
     private final ConfigFactory configFactory;
     private final CarbonMessages carbonMessages;
-    private final CarbonChat carbonChat;
+    private final CarbonEventHandler carbonEventHandler;
 
     protected ChatListenerInternal(
-        final CarbonChat carbonChat,
+        final CarbonEventHandler carbonEventHandler,
         final CarbonMessages carbonMessages,
         final ConfigFactory configFactory
     ) {
         this.configFactory = configFactory;
         this.carbonMessages = carbonMessages;
-        this.carbonChat = carbonChat;
+        this.carbonEventHandler = carbonEventHandler;
     }
 
     protected CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage) {
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(Component.text(messageContent));
+        final ChatChannel channel = channelMessage.channel();
+        final String message = PlainTextComponentSerializer.plainText().serialize(channelMessage.message());
+
+        return this.prepareAndEmitChatEvent(sender, message, signedMessage, channel);
+    }
+
+    protected CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage, final ChatChannel channel) {
         String content = this.configFactory.primaryConfig().applyChatPlaceholders(messageContent);
+        content = this.configFactory.primaryConfig().applyChatFilters(content);
 
         final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
-        this.carbonChat.eventHandler().emit(earlyChatEvent);
+        this.carbonEventHandler.emit(earlyChatEvent);
 
         content = earlyChatEvent.message();
 
-        Component message;
+        final Component message;
 
         if (sender instanceof WrappedCarbonPlayer wrapped) {
             message = wrapped.parseMessageTags(content);
         } else {
             message = WrappedCarbonPlayer.parseMessageTags(content, sender::hasPermission);
         }
-
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(message);
-        final ChatChannel channel = channelMessage.channel();
-
-        message = channelMessage.message();
 
         if (sender.leftChannels().contains(channel.key())) {
             sender.joinChannel(channel);
@@ -85,7 +90,7 @@ public abstract class ChatListenerInternal {
 
         final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, message, recipients, renderers, channel, signedMessage);
 
-        this.carbonChat.eventHandler().emit(chatEvent);
+        this.carbonEventHandler.emit(chatEvent);
 
         return chatEvent;
     }
