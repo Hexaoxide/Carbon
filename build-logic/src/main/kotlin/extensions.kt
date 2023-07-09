@@ -52,7 +52,7 @@ fun Task.standardRelocations() {
   relocateDependency("net.kyori.adventure.serializer.configurate4")
   relocateDependency("com.seiama.event")
   relocateDependency("net.kyori.moonshine")
-  relocateDependency("net.kyori.registry")
+  relocateDependency("com.seiama.registry")
   relocateDependency("org.spongepowered.configurate")
   relocateDependency("com.typesafe.config")
   relocateDependency("com.google.thirdparty.publicsuffix")
