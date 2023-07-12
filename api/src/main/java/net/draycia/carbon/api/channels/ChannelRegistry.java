@@ -20,6 +20,7 @@
 package net.draycia.carbon.api.channels;
 
 import java.util.Set;
+import java.util.function.Consumer;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -32,15 +33,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public interface ChannelRegistry {
 
     /**
-     * Registers ingame commands for the channel.
+     * Registers the chat channel with its key.
      *
-     * @param channel the channel to register commands for
-     * @since 2.1.0
-     */
-    void registerChannelCommands(final ChatChannel channel);
-
-    /**
-     * Registers the chat channel with it's key.
+     * <p>Registrations will persist when reloading Carbon's configuration.</p>
      *
      * @param channel the channel to register
      * @since 2.1.0
@@ -88,5 +83,16 @@ public interface ChannelRegistry {
      * @since 2.1.0
      */
     ChatChannel keyOrDefault(final Key key);
+
+    /**
+     * The provided action will be executed immediately for all currently registered
+     * channels.
+     *
+     * <p>When new channels are registered, the action will be invoked again for each new channel.</p>
+     *
+     * @param action action
+     * @since 2.1.0
+     */
+    void allKeys(Consumer<Key> action);
 
 }

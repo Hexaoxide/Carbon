@@ -20,14 +20,19 @@
 package net.draycia.carbon.api.event.events;
 
 import java.util.Set;
-import net.draycia.carbon.api.channels.ChatChannel;
+import java.util.function.Consumer;
+import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
- * {@link CarbonEvent} that's called when channels are registered.
+ * {@link CarbonEvent} that's called after new channels are registered.
+ *
+ * <p>Note that some invocations of this event may be too early for
+ * API consumers to be notified. Prefer using {@link ChannelRegistry#allKeys(Consumer)}
+ * when knowledge of all registered channels is needed.</p>
  *
  * @since 2.1.0
  */
@@ -35,21 +40,19 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public interface CarbonChannelRegisterEvent extends CarbonEvent {
 
     /**
-     * The channels that were registered.
+     * Gets the channel registry.
      *
-     * @return the registered channels
+     * @return the channel registry
      * @since 2.1.0
      */
-    Set<Key> channelKeys();
+    ChannelRegistry channelRegistry();
 
     /**
-     * Registers additional channels to the registry. Does not re-emit the event.
+     * Gets the key(s) that were registered to trigger this event.
      *
-     * @param key The key the channel is identified with in the registry
-     * @param channel the channel to register
-     * @param registerCommands if commands for the channel should be registered
+     * @return key(s) registered
      * @since 2.1.0
      */
-    void register(final Key key, final ChatChannel channel, final boolean registerCommands);
+    Set<Key> registered();
 
 }
