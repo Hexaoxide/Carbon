@@ -24,7 +24,10 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
@@ -44,6 +47,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
@@ -107,6 +111,21 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
         this.registerPlayerStatusListeners();
 
         this.injector().getInstance(DeleteMessageCommand.class).init();
+
+        this.loadAddonEntrypoints();
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void loadAddonEntrypoints() {
+        final List<EntrypointContainer<Consumer>> containers = FabricLoader.getInstance().getEntrypointContainers("carbonchat", Consumer.class);
+        for (final EntrypointContainer<Consumer> container : containers) {
+            try {
+                final Consumer<CarbonChat> entrypoint = container.getEntrypoint();
+                entrypoint.accept(this);
+            } catch (final Throwable t) {
+                this.logger().error("Failed to invoke 'carbonchat' entrypoint for addon mod '{}'", container.getProvider().getMetadata().getId(), t);
+            }
+        }
     }
 
     private void registerChatListener() {
