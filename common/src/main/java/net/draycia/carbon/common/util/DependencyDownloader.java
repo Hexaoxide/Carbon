@@ -177,10 +177,9 @@ public final class DependencyDownloader {
             }
             final HttpResponse<Path> response;
             try {
-                Files.createDirectories(outputFile.getParent());
                 //this.logger.info("attempting to download " + urlString);
                 response = this.client.send(request, HttpResponse.BodyHandlers.ofFile(
-                    outputFile,
+                    FileUtil.mkParentDirs(outputFile),
                     StandardOpenOption.TRUNCATE_EXISTING,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.WRITE
@@ -201,26 +200,13 @@ public final class DependencyDownloader {
             throw new IllegalStateException(String.format("Could not resolve dependency %s from any of %s", dependency, this.repositories));
         }
         if (!checkHash(dependency, resolved)) {
-            throw new IllegalStateException("Hash for downloaded file %s was incorrect (expected: %s, got: %s)".formatted(resolved, dependency.sha256(), hashString(resolved)));
+            throw new IllegalStateException("Hash for downloaded file %s was incorrect (expected: %s, got: %s)".formatted(resolved, dependency.sha256(), FileUtil.hashString(resolved)));
         }
         return resolved;
     }
 
     private static boolean checkHash(final Dependency dependency, final Path resolved) throws IOException {
-        return hashString(resolved).equalsIgnoreCase(dependency.sha256());
-    }
-
-    private static String hashString(final Path resolved) throws IOException {
-        final byte[] hash = com.google.common.io.Files.asByteSource(resolved.toFile()).hash(Hashing.sha256()).asBytes();
-        return asHexString(hash);
-    }
-
-    private static String asHexString(final byte[] bytes) {
-        final StringBuilder sb = new StringBuilder(bytes.length * 2);
-        for (final byte b : bytes) {
-            sb.append("%02x".formatted(b & 0xFF));
-        }
-        return sb.toString();
+        return FileUtil.hashString(resolved).equalsIgnoreCase(dependency.sha256());
     }
 
     private ExecutorService makeExecutor() {

@@ -29,8 +29,6 @@ import com.google.inject.TypeLiteral;
 import com.seiama.event.EventConfig;
 import com.seiama.registry.Registry;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +37,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -55,6 +52,7 @@ import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.Exceptions;
+import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -181,57 +179,68 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
-        if (!Files.exists(this.configChannelDir) || this.isPathEmpty(this.configChannelDir)) {
-            // no channels to register, register default channel
-            this.registerDefaultChannel();
-            return;
+        List<Path> channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
+        if (channelConfigs.isEmpty()) {
+            this.saveDefaultChannelConfig();
+            channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
         }
 
-        // otherwise, register all channels found
-        try (final Stream<Path> paths = Files.walk(this.configChannelDir)) {
-            paths.forEach(path -> {
-                final String fileName = path.getFileName().toString();
-                if (!fileName.endsWith(".conf")) {
-                    return;
-                }
-
-                final @Nullable ChatChannel chatChannel = this.channelFromPath(path);
-                if (chatChannel == null) {
-                    this.logger.warn("Failed to load channel from file [" + fileName + "]");
-                    return;
-                }
-
-                this.injector.injectMembers(chatChannel);
-                this.configChannels.add(chatChannel.key());
-                this.register(chatChannel);
-
-                if (firstRegister // We only support commands being registered at startup currently
-                    && chatChannel.shouldRegisterCommands()) {
-                    this.registerChannelCommands(chatChannel);
-                }
-            });
-
-            if (this.channel(this.defaultKey) == null) {
-                this.logger.warn("No default channel found! Default channel key: [" + this.defaultKey().asString() + "]");
+        for (final Path channelConfigFile : channelConfigs) {
+            final String fileName = channelConfigFile.getFileName().toString();
+            if (!fileName.endsWith(".conf")) {
+                continue;
             }
 
-            final List<String> channelList = new ArrayList<>();
-
-            for (final Key key : this.keys()) {
-                channelList.add(key.asString());
+            final @Nullable ChatChannel chatChannel = this.loadChannel(channelConfigFile);
+            if (chatChannel == null) {
+                continue;
+            }
+            final Key channelKey = chatChannel.key();
+            if (this.defaultKey.equals(channelKey)) {
+                this.logger.info("Default channel is [" + channelKey + "]");
             }
 
-            final String channels = String.join(", ", channelList);
+            this.injector.injectMembers(chatChannel);
+            this.configChannels.add(chatChannel.key());
+            this.register(chatChannel);
 
-            this.logger.info("Registered channels: [" + channels + "]");
-        } catch (final IOException exception) {
-            throw Exceptions.rethrow(exception);
+            if (firstRegister // We only support commands being registered at startup currently
+                && chatChannel.shouldRegisterCommands()) {
+                this.registerChannelCommands(chatChannel);
+            }
         }
+
+        if (this.channel(this.defaultKey) == null) {
+            this.logger.warn("No default channel found! Default channel key: [" + this.defaultKey().asString() + "]");
+        }
+
+        final List<String> channelList = new ArrayList<>();
+
+        for (final Key key : this.keys()) {
+            channelList.add(key.asString());
+        }
+
+        final String channels = String.join(", ", channelList);
+
+        this.logger.info("Registered channels: [" + channels + "]");
 
         this.eventHandler.emit(new ChannelRegisterEventImpl(this.keys(), this));
     }
 
-    public @Nullable ChatChannel loadChannel(final Path channelFile) {
+    private void saveDefaultChannelConfig() {
+        try {
+            final Path configFile = this.configChannelDir.resolve("global.conf");
+            final ConfigChatChannel configChannel = this.injector.getInstance(ConfigChatChannel.class);
+            final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(FileUtil.mkParentDirs(configFile));
+            final ConfigurationNode node = loader.createNode();
+            node.set(ConfigChatChannel.class, configChannel);
+            loader.save(node);
+        } catch (final IOException exception) {
+            throw Exceptions.rethrow(exception);
+        }
+    }
+
+    private @Nullable ChatChannel loadChannel(final Path channelFile) {
         final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(channelFile);
 
         try {
@@ -239,49 +248,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             loader.save(loaded);
             return MAPPER.load(loaded);
         } catch (final ConfigurateException exception) {
-            exception.printStackTrace();
+            this.logger.warn("Failed to load channel from file '{}'", channelFile, exception);
         }
 
         return null;
-    }
-
-    private void registerDefaultChannel() {
-        try {
-            Files.createDirectories(this.configChannelDir);
-
-            final Path configFile = this.configChannelDir.resolve("global.conf");
-
-            final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(configFile);
-            final ConfigurationNode node = loader.load();
-
-            final ConfigChatChannel configChannel = this.injector.getInstance(ConfigChatChannel.class);
-
-            node.set(ConfigChatChannel.class, configChannel);
-            loader.save(node);
-
-            this.register(configChannel);
-            this.configChannels.add(configChannel.key());
-        } catch (final IOException exception) {
-            throw Exceptions.rethrow(exception);
-        }
-    }
-
-    private @Nullable ChatChannel channelFromPath(final Path channelPath) {
-        final @Nullable ChatChannel channel = this.loadChannel(channelPath);
-
-        if (channel == null) {
-            return null;
-        }
-
-        final Key channelKey = channel.key();
-
-        if (this.defaultKey.equals(channelKey)) {
-            this.logger.info("Default channel is [" + channelKey + "]");
-        }
-
-        //this.register(channel);
-
-        return channel;
     }
 
     private void sendMessageInChannelAsPlayer(
@@ -303,14 +273,6 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             }
 
             recipient.sendMessage(renderedMessage);
-        }
-    }
-
-    private boolean isPathEmpty(final Path path) {
-        try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
-            return !directory.iterator().hasNext();
-        } catch (final IOException exception) {
-            throw Exceptions.rethrow(exception);
         }
     }
 

@@ -46,4 +46,12 @@ public final class Strings {
         return s == null ? null : s.trim();
     }
 
+    public static String asHexString(final byte[] bytes) {
+        final StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (final byte b : bytes) {
+            sb.append("%02x".formatted(b & 0xFF));
+        }
+        return sb.toString();
+    }
+
 }

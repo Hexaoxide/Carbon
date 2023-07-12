@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
+import net.draycia.carbon.common.util.FileUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -178,11 +179,8 @@ public final class ProfileCache {
 
     public synchronized void save() {
         this.cleanup();
-        try {
-            Files.createDirectories(this.cacheFile.getParent());
-            try (final BufferedWriter writer = Files.newBufferedWriter(this.cacheFile)) {
-                this.gson.toJson(this.entries, writer);
-            }
+        try (final BufferedWriter writer = Files.newBufferedWriter(FileUtil.mkParentDirs(this.cacheFile))) {
+            this.gson.toJson(this.entries, writer);
         } catch (final IOException ex) {
             throw new RuntimeException("Failed to save cache", ex);
         }

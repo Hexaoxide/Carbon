@@ -41,6 +41,7 @@ import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.PersistentUserProperty;
 import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -131,7 +132,7 @@ public class JSONUserManager extends CachingUserManager {
                 throw new IllegalStateException("No data to save - toJson returned null or blank.");
             }
 
-            Files.writeString(userFile, json);
+            Files.writeString(FileUtil.mkParentDirs(userFile), json);
         } catch (final IOException exception) {
             throw new RuntimeException("Exception while saving data for player [%s]".formatted(player.username()), exception);
         }
