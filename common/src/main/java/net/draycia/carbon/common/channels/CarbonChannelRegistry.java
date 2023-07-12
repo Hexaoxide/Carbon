@@ -32,14 +32,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
@@ -93,7 +95,6 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
     private volatile Registry<Key, ChatChannel> channelRegistry = Registry.create();
     private final Set<Key> configChannels = ConcurrentHashMap.newKeySet();
-    private final AtomicBoolean firstRegister = new AtomicBoolean(true);
     //
     // private final BiMap<Key, ChatChannel> channelMap = Maps.synchronizedBiMap(HashBiMap.create());
 
@@ -163,20 +164,52 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
     public void reloadConfigChannels() {
         final Registry<Key, ChatChannel> newRegistry = Registry.create();
+
         // Copy API registrations over
         for (final Key registered : this.channelRegistry.keys()) {
             if (!this.configChannels.contains(registered)) {
                 newRegistry.register(registered, this.channelRegistry.getHolder(registered).valueOrThrow());
             }
         }
+
+        final Set<Key> oldConfigChannels = Set.copyOf(this.configChannels);
         this.configChannels.clear();
+
+        final Registry<Key, ChatChannel> oldRegistry = this.channelRegistry;
         this.channelRegistry = newRegistry;
-        this.loadConfigChannels(this.carbonMessages);
+
+        this.loadConfigChannels_(this.carbonMessages);
+
+        // Re-add any deleted channels; users must restart for them to be removed
+        // (don't want to leave behind commands that just error, or confuse addons)
+        for (final Key old : oldConfigChannels) {
+            if (!this.configChannels.contains(old)) {
+                this.configChannels.add(old);
+                this.channelRegistry.register(old, oldRegistry.getHolder(old).valueOrThrow());
+                this.logger.warn("The config file for channel [{}] was deleted, but removing " +
+                    "channels at runtime is not currently supported. You must restart the plugin " +
+                    "for the removal to take effect.", old);
+            }
+        }
+
+        // Determine new channels and fire event if needed
+        final Set<Key> newConfigChannels = new HashSet<>();
+        for (final Key configChannel : this.configChannels) {
+            if (!oldConfigChannels.contains(configChannel)) {
+                newConfigChannels.add(configChannel);
+            }
+        }
+        if (!newConfigChannels.isEmpty()) {
+            this.eventHandler.emit(new ChannelRegisterEventImpl(this, Set.copyOf(newConfigChannels)));
+        }
     }
 
     public void loadConfigChannels(final CarbonMessages messages) {
-        final boolean firstRegister = this.firstRegister.compareAndSet(true, false);
+        this.loadConfigChannels_(messages);
+        this.eventHandler.emit(new ChannelRegisterEventImpl(this, Set.copyOf(this.configChannels)));
+    }
 
+    private void loadConfigChannels_(final CarbonMessages messages) {
         this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
 
         List<Path> channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
@@ -202,12 +235,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
             this.injector.injectMembers(chatChannel);
             this.configChannels.add(chatChannel.key());
-            this.register(chatChannel);
-
-            if (firstRegister // We only support commands being registered at startup currently
-                && chatChannel.shouldRegisterCommands()) {
-                this.registerChannelCommands(chatChannel);
-            }
+            this.register(chatChannel, false);
         }
 
         if (this.channel(this.defaultKey) == null) {
@@ -223,8 +251,6 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final String channels = String.join(", ", channelList);
 
         this.logger.info("Registered channels: [" + channels + "]");
-
-        this.eventHandler.emit(new ChannelRegisterEventImpl(this.keys(), this));
     }
 
     private void saveDefaultChannelConfig() {
@@ -276,10 +302,12 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
     }
 
-    @Override
-    public void registerChannelCommands(final ChatChannel channel) {
+    private void registerChannelCommands(final ChatChannel channel) {
         final CommandManager<Commander> commandManager =
             this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<CommandManager<Commander>>() {}));
+        if (!commandManager.isCommandRegistrationAllowed() || commandManager.commandTree().getNamedNode(channel.commandName()) != null) {
+            return;
+        }
 
         Command.Builder<Commander> builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
@@ -335,7 +363,17 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
     @Override
     public void register(final ChatChannel channel) {
+        this.register(channel, true);
+    }
+
+    public void register(final ChatChannel channel, final boolean fireRegisterEvent) {
         this.channelRegistry.register(channel.key(), channel);
+        if (channel.shouldRegisterCommands()) {
+            this.registerChannelCommands(channel);
+        }
+        if (fireRegisterEvent) {
+            this.eventHandler.emit(new ChannelRegisterEventImpl(this, Set.of(channel.key())));
+        }
     }
 
     @Override
@@ -381,6 +419,21 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
 
         return this.defaultChannel();
+    }
+
+    @Override
+    public void allKeys(final Consumer<Key> action) {
+        for (final Key key : this.channelRegistry.keys()) {
+            action.accept(key);
+        }
+        this.eventHandler.subscribe(
+            CarbonChannelRegisterEvent.class,
+            event -> {
+                for (final Key key : event.registered()) {
+                    action.accept(key);
+                }
+            }
+        );
     }
 
 }

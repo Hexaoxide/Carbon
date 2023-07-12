@@ -20,48 +20,16 @@
 package net.draycia.carbon.common.event.events;
 
 import java.util.Set;
-import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-/**
- * {@link CarbonEvent} that's called when channels are registered.
- *
- * @since 2.1.0
- */
 @DefaultQualifier(NonNull.class)
-public class ChannelRegisterEventImpl implements CarbonChannelRegisterEvent {
-
-    private final Set<Key> channelKeys;
-    private final CarbonChannelRegistry registry;
-
-    /**
-     * {@link CarbonEvent} that's called when channels are registered.
-     *
-     * @param channelKeys the channels that were registered
-     * @since 2.1.0
-     */
-    public ChannelRegisterEventImpl(final Set<Key> channelKeys, final CarbonChannelRegistry registry) {
-        this.channelKeys = channelKeys;
-        this.registry = registry;
-    }
-
-    @Override
-    public Set<Key> channelKeys() {
-        return this.channelKeys;
-    }
-
-    @Override
-    public void register(final Key key, final ChatChannel channel, final boolean registerCommands) {
-        this.registry.register(channel);
-
-        if (registerCommands) {
-            this.registry.registerChannelCommands(channel);
-        }
-    }
+public record ChannelRegisterEventImpl(
+    CarbonChannelRegistry channelRegistry,
+    Set<Key> registered
+) implements CarbonChannelRegisterEvent {
 
 }
