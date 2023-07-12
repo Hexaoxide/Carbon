@@ -29,8 +29,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
- * The main plugin interface.<br>
- * Instances may be obtained through {@link CarbonChatProvider#carbonChat()}.
+ * The main plugin interface.
+ *
+ * <p>Instances may be obtained through {@link CarbonChatProvider#carbonChat()} once Carbon is loaded.</p>
+ * <p>On most platforms, you should use the provided load order mechanism to ensure your addon loads after
+ * Carbon.</p>
+ * <p>On Fabric, use the {@code carbonchat} entrypoint (type: {@code Consumer<CarbonChat>}) to have a callback
+ * when Carbon is loaded.</p>
  *
  * @since 1.0.0
  */
