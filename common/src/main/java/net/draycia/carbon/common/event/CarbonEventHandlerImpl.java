@@ -27,11 +27,17 @@ import com.seiama.event.bus.EventBus;
 import com.seiama.event.bus.SimpleEventBus;
 import com.seiama.event.registry.EventRegistry;
 import com.seiama.event.registry.SimpleEventRegistry;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.CarbonEventSubscriber;
 import net.draycia.carbon.api.event.CarbonEventSubscription;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -43,16 +49,21 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public final class CarbonEventHandlerImpl implements CarbonEventHandler {
 
-    @Inject
-    private CarbonEventHandlerImpl() {
+    private final Logger logger;
 
+    @Inject
+    private CarbonEventHandlerImpl(final Logger logger) {
+        this.logger = logger;
     }
 
     private final EventRegistry<CarbonEvent> eventRegistry = new SimpleEventRegistry<>(CarbonEvent.class);
     private final EventBus<CarbonEvent> eventBus = new SimpleEventBus<>(this.eventRegistry, this::onException);
+    private final ThreadLocal<Deque<List<ListenerException<?>>>> threadLocalExceptionStack = ThreadLocal.withInitial(ArrayDeque::new);
 
+    @SuppressWarnings("unchecked")
     private <E> void onException(final EventSubscription<E> subscription, final E event, final Throwable throwable) {
-        throwable.printStackTrace();
+        this.logger.warn("Exception handling event subscription {} for event {}", subscription, event, throwable);
+        this.threadLocalExceptionStack.get().peek().add(new ListenerException<>((EventSubscription<Object>) subscription, event, throwable));
     }
 
     @Override
@@ -79,7 +90,31 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
 
     @Override
     public <T extends CarbonEvent> void emit(final T event) {
+        this.threadLocalExceptionStack.get().push(new ArrayList<>());
         this.eventBus.post(event);
+        this.threadLocalExceptionStack.get().pop();
     }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <T extends CarbonEvent> EmitResult<T> emitWithResult(final T event) {
+        this.threadLocalExceptionStack.get().push(new ArrayList<>());
+        this.eventBus.post(event);
+        final List<ListenerException<T>> exceptions = (List) this.threadLocalExceptionStack.get().pop();
+        if (exceptions.isEmpty()) {
+            return (EmitResult<T>) EmitResult.SUCCESS;
+        } else {
+            return new EmitResult<>(exceptions);
+        }
+    }
+
+    public record EmitResult<E>(@Nullable List<ListenerException<E>> exceptions) {
+        private static final EmitResult<?> SUCCESS = new EmitResult<>(null);
+
+        public boolean noErrors() {
+            return this.exceptions == null;
+        }
+    }
+
+    public record ListenerException<E>(EventSubscription<E> subscription, E event, Throwable throwable) {}
 
 }

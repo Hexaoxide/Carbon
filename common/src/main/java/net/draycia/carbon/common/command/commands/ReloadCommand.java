@@ -26,6 +26,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
@@ -38,16 +39,19 @@ public class ReloadCommand extends CarbonCommand {
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
     final CarbonMessages carbonMessages;
+    private final CarbonEventHandlerImpl events;
 
     @Inject
     public ReloadCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final CarbonMessages carbonMessages
+        final CarbonMessages carbonMessages,
+        final CarbonEventHandlerImpl events
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
+        this.events = events;
     }
 
     @Override
@@ -68,9 +72,12 @@ public class ReloadCommand extends CarbonCommand {
             .senderType(Commander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReloadDescription())
             .handler(handler -> {
-                // TODO: Check if all listeners succeeded
-                this.carbonChat.eventHandler().emit(new CarbonReloadEvent());
-                this.carbonMessages.configReloaded(handler.getSender());
+                final var result = this.events.emitWithResult(new CarbonReloadEvent());
+                if (result.noErrors()) {
+                    this.carbonMessages.configReloaded(handler.getSender());
+                } else {
+                    this.carbonMessages.configReloadFailed(handler.getSender());
+                }
             })
             .build();
 
