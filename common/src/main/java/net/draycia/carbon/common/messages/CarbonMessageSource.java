@@ -67,7 +67,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonMessageSource implements IMessageSource<Audience, String> {
 
     private final Locale defaultLocale;
-    private final Map<Locale, Properties> locales = new HashMap<>();
+    private volatile Map<Locale, Properties> locales = Map.of();
     private final Path pluginJar;
     private final Logger logger;
     private final Path dataDirectory;
@@ -110,6 +110,8 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     }
 
     private void reloadTranslations() throws IOException {
+        final Map<Locale, Properties> map = new HashMap<>();
+
         final Path localeDirectory = this.dataDirectory.resolve("locale");
 
         // Create locale directory
@@ -132,7 +134,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                     return;
                 }
 
-                this.readLocale(localeDirectory, localeFile, locale);
+                this.tryLoadLocale(map, localeDirectory, localeFile, locale);
             }));
 
         try (final Stream<Path> paths = Files.list(localeDirectory)) {
@@ -145,16 +147,25 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                     return;
                 }
 
-                if (this.locales.containsKey(locale)) {
+                if (map.containsKey(locale)) {
                     return;
                 }
 
-                this.readLocale(localeDirectory, localeFile, locale);
+                this.tryLoadLocale(map, localeDirectory, localeFile, locale);
             });
+        }
+
+        this.locales = Map.copyOf(map);
+    }
+
+    private void tryLoadLocale(final Map<Locale, Properties> map, final Path localeDirectory, final Path localeFile, final Locale locale) {
+        final @Nullable Properties properties = this.readLocale(localeDirectory, localeFile, locale);
+        if (properties != null) {
+            map.put(locale, properties);
         }
     }
 
-    private void readLocale(final Path localeDirectory, final Path localeFile, final Locale locale) {
+    private @Nullable Properties readLocale(final Path localeDirectory, final Path localeFile, final Locale locale) {
         this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile);
 
         final Properties properties = new Properties() {
@@ -170,11 +181,12 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
         try {
             this.loadProperties(properties, localeDirectory, localeFile);
-            this.locales.put(locale, properties);
 
             this.logger.info("Successfully loaded locale {} ({})", locale.getDisplayName(), locale);
+            return properties;
         } catch (final IOException ex) {
             this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, localeFile, ex);
+            return null;
         }
     }
 
@@ -247,37 +259,40 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     private void loadProperties(
         final Properties properties,
         final Path localeDirectory,
-        final Path localeFile
+        final Path sourceFile
     ) throws IOException {
-        final Path savedFile = localeDirectory.resolve(localeFile.getFileName().toString());
-        if (localeFile.normalize().toAbsolutePath().equals(savedFile.normalize().toAbsolutePath())) {
-            // Origin file and destination file are the same (ie locale was not in the jar, user added)
-            return;
-        }
+        final Path userFile = localeDirectory.resolve(sourceFile.getFileName().toString());
+        final boolean samePath = sourceFile.normalize().toAbsolutePath().equals(userFile.normalize().toAbsolutePath());
 
-        // If the file in the localeDirectory exists, read it to the properties
-        if (Files.isRegularFile(savedFile)) {
-            final InputStream inputStream = Files.newInputStream(savedFile);
+        if (Files.isRegularFile(userFile)) {
+            // If the file in the localeDirectory exists, read it to the properties
+            final InputStream inputStream = Files.newInputStream(userFile);
             try (final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
                 properties.load(reader);
             }
+        } else if (samePath && !Files.isRegularFile(userFile)) {
+            throw new IllegalStateException("sourceFile == userFile, and is not a regular file (%s)".formatted(userFile));
         }
 
-        boolean write = !Files.isRegularFile(savedFile);
+        boolean write = false;
 
         // Read the file in the jar and add missing entries
-        try (final Reader reader = new InputStreamReader(Files.newInputStream(localeFile), StandardCharsets.UTF_8)) {
-            final Properties packaged = new Properties();
-            packaged.load(reader);
+        if (Files.isRegularFile(sourceFile) && !samePath) {
+            try (final Reader reader = new InputStreamReader(Files.newInputStream(sourceFile), StandardCharsets.UTF_8)) {
+                final Properties packaged = new Properties();
+                packaged.load(reader);
 
-            for (final Map.Entry<Object, Object> entry : packaged.entrySet()) {
-                write |= properties.putIfAbsent(entry.getKey(), entry.getValue()) == null;
+                for (final Map.Entry<Object, Object> entry : packaged.entrySet()) {
+                    write |= properties.putIfAbsent(entry.getKey(), entry.getValue()) == null;
+                }
             }
         }
 
+        // todo: copy missing entries from default english locale as well?
+
         // Write properties back to file
         if (write) {
-            try (final Writer outputStream = Files.newBufferedWriter(savedFile)) {
+            try (final Writer outputStream = Files.newBufferedWriter(userFile)) {
                 properties.store(outputStream, null);
             }
         }
