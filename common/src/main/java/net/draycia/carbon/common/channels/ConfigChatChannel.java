@@ -43,6 +43,7 @@ import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.KeyPattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
@@ -68,11 +69,20 @@ public final class ConfigChatChannel implements ChatChannel {
     private transient @MonotonicNonNull @Inject CarbonChat carbonChat;
 
     @Comment("""
+        The channel's name.
+        This is also what's used for channel commands.
+        The 'key' option overrides this.
+        Must follow the format of [a-z0-9/.-_]
+        """)
+    @KeyPattern
+    private String name = "global";
+
+    @Comment("""
         The channel's key, used to track the channel.
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private @Nullable Key key = Key.key("carbon", "global");
+    private @Nullable Key key = null;
 
     @Comment("""
         The permission required to use the /channel <channelname> and /<channelname> commands.
@@ -92,6 +102,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     private @Nullable Boolean shouldRegisterCommands = true;
 
+    @Deprecated(since = "2.0", forRemoval = true)
     private @Nullable String commandName = null;
 
     private @Nullable List<String> commandAliases = Collections.emptyList();
@@ -128,7 +139,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Override
     public String commandName() {
-        return Objects.requireNonNullElse(this.commandName, this.key.value());
+        return Objects.requireNonNullElse(this.commandName, this.key().value());
     }
 
     @Override
@@ -161,7 +172,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return ChannelPermissionResult.allowedIf(empty(), () -> player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this.key));
+        return ChannelPermissionResult.allowedIf(empty(), () -> player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this.key()));
     }
 
     @Override
@@ -193,7 +204,11 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Override
     public @NonNull Key key() {
-        return Objects.requireNonNull(this.key);
+        if (this.key != null) {
+            return this.key;
+        }
+
+        return Key.key("carbon", this.name);
     }
 
     public String messageFormat(final CarbonPlayer sender) {
