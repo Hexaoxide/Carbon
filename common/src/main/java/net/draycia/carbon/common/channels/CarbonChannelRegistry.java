@@ -56,6 +56,7 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.Exceptions;
 import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
@@ -224,10 +225,21 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                 continue;
             }
 
-            final @Nullable ChatChannel chatChannel = this.loadChannel(channelConfigFile);
+            final @Nullable ChatChannel chatChannel;
+
+            try {
+                chatChannel = this.loadChannel(channelConfigFile);
+            } catch (final ConfigurateException configurateException) {
+                if (this.findThrowableRootCause(configurateException) instanceof InvalidKeyException keyException) {
+                    this.logger.error("Invalid channel key found: " + keyException.getMessage());
+                }
+                continue;
+            }
+
             if (chatChannel == null) {
                 continue;
             }
+
             final Key channelKey = chatChannel.key();
             if (this.defaultKey.equals(channelKey)) {
                 this.logger.info("Default channel is [" + channelKey + "]");
@@ -253,6 +265,15 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.logger.info("Registered channels: [" + channels + "]");
     }
 
+    private Throwable findThrowableRootCause(Throwable throwable) {
+        Objects.requireNonNull(throwable);
+        Throwable rootCause = throwable;
+        while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause;
+    }
+
     private void saveDefaultChannelConfig() {
         try {
             final Path configFile = this.configChannelDir.resolve("global.conf");
@@ -266,18 +287,17 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
     }
 
-    private @Nullable ChatChannel loadChannel(final Path channelFile) {
+    private @Nullable ChatChannel loadChannel(final Path channelFile) throws ConfigurateException {
         final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(channelFile);
 
         try {
             final ConfigurationNode loaded = updateNode(loader.load());
             loader.save(loaded);
             return MAPPER.load(loaded);
-        } catch (final ConfigurateException exception) {
-            this.logger.warn("Failed to load channel from file '{}'", channelFile, exception);
+        } catch (final ConfigurateException configurateException) {
+            this.logger.warn("Failed to load channel from file '{}'", channelFile);
+            throw configurateException;
         }
-
-        return null;
     }
 
     private void sendMessageInChannelAsPlayer(
