@@ -105,8 +105,6 @@ public class MuteInfoCommand extends CarbonCommand {
                         this.carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
                     }
                 }
-
-                this.carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
             })
             .build();
 
