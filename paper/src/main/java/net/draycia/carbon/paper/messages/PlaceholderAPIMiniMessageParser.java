@@ -84,6 +84,9 @@ public final class PlaceholderAPIMiniMessageParser {
     public Component parseRelational(final Player one, final Player two, final String input) {
         return this.parseRelational(one, two, input, TagResolver.empty());
     }
+    private Component parseLegacy(String s) {
+        return LegacyComponentSerializer.legacySection().deserialize(ChatColor.translateAlternateColorCodes('&', s));
+    }
 
     private Component parse(
         final Pattern pattern,
@@ -105,7 +108,7 @@ public final class PlaceholderAPIMiniMessageParser {
             } else {
                 final String key = "papi_generated_template_" + id;
                 id++;
-                tagResolver.tag(key, Tag.inserting(LegacyComponentSerializer.legacySection().deserialize(replaced)));
+                tagResolver.tag(key, Tag.inserting(this.parseLegacy(replaced)));
                 matcher.appendReplacement(builder, Matcher.quoteReplacement("<" + key + ">"));
             }
         }
