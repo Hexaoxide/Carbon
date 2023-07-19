@@ -84,7 +84,8 @@ public final class PlaceholderAPIMiniMessageParser {
     public Component parseRelational(final Player one, final Player two, final String input) {
         return this.parseRelational(one, two, input, TagResolver.empty());
     }
-    private Component parseLegacy(String s) {
+
+    private Component parseLegacy(final String s) {
         return LegacyComponentSerializer.legacySection().deserialize(ChatColor.translateAlternateColorCodes('&', s));
     }
 
