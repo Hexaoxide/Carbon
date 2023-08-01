@@ -1,5 +1,3 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
   id("carbon.shadow-platform")
   id("quiet-fabric-loom")
@@ -63,21 +61,13 @@ tasks {
     relocateGuice()
   }
   processResources {
-    val props = mapOf(
-      "modId" to rootProject.name.toLowerCase(),
+    replace("fabric.mod.json", mapOf(
+      "modId" to rootProject.name.lowercase(),
       "name" to rootProject.name,
       "version" to project.version,
       "description" to project.description,
       "github_url" to GITHUB_REPO_URL
-    )
-    inputs.properties(props)
-    filesMatching("fabric.mod.json") {
-      filter<ReplaceTokens>(
-        "beginToken" to "\${",
-        "endToken" to "}",
-        "tokens" to props
-      )
-    }
+    ))
   }
 
   runServer {

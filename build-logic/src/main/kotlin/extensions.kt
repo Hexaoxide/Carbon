@@ -1,10 +1,27 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.filter
 import org.gradle.kotlin.dsl.the
+import org.gradle.language.jvm.tasks.ProcessResources
+
+fun ProcessResources.replace(
+  pattern: String,
+  tokens: Map<String, Any?>
+) {
+  inputs.properties(tokens)
+  filesMatching(pattern) {
+    filter<ReplaceTokens>(
+      "beginToken" to "\${",
+      "endToken" to "}",
+      "tokens" to tokens
+    )
+  }
+}
 
 val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")

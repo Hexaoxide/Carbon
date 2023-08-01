@@ -1,8 +1,5 @@
-import java.util.Locale
-
 plugins {
   id("carbon.shadow-platform")
-  id("net.kyori.blossom")
   id("xyz.jpenilla.run-velocity")
 }
 
@@ -10,7 +7,6 @@ dependencies {
   implementation(projects.carbonchatCommon)
 
   compileOnly(libs.velocityApi)
-  annotationProcessor(libs.velocityApi)
 
   implementation(libs.cloudVelocity)
   compileOnly(libs.miniplaceholders)
@@ -36,17 +32,14 @@ tasks {
   runVelocity {
       velocityVersion(libs.versions.velocityApi.get())
   }
-}
-
-blossom {
-  mapOf(
-    "ID" to rootProject.name.lowercase(Locale.ROOT),
-    "NAME" to rootProject.name,
-    "VERSION" to version,
-    "DESCRIPTION" to description,
-    "URL" to GITHUB_REPO_URL
-  ).forEach { (k, v) ->
-    replaceToken("$[$k]", v)
+  processResources {
+    replace("velocity-plugin.json", mapOf(
+      "id" to rootProject.name.lowercase(),
+      "name" to rootProject.name,
+      "version" to project.version,
+      "description" to project.description,
+      "url" to GITHUB_REPO_URL
+    ))
   }
 }
 

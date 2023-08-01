@@ -1,0 +1,25 @@
+{
+    "id": "${id}",
+    "name": "${name}",
+    "version": "${version}",
+    "description": "${description}",
+    "url": "${url}",
+    "authors": [
+        "Draycia"
+    ],
+    "dependencies": [
+        {
+            "id": "luckperms",
+            "optional": false
+        },
+        {
+            "id": "miniplaceholders",
+            "optional": true
+        },
+        {
+            "id": "unsignedvelocity",
+            "optional": true
+        }
+    ],
+    "main": "net.draycia.carbon.velocity.CarbonVelocityBootstrap"
+}

@@ -24,8 +24,6 @@ import com.google.inject.Injector;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
-import com.velocitypowered.api.plugin.Dependency;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -33,19 +31,6 @@ import java.nio.file.Path;
 import net.draycia.carbon.common.util.CarbonDependencies;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
-@Plugin(
-    id = "$[ID]",
-    name = "$[NAME]",
-    version = "$[VERSION]",
-    description = "$[DESCRIPTION]",
-    url = "$[URL]",
-    authors = {"Draycia"},
-    dependencies = {
-        @Dependency(id = "luckperms"),
-        @Dependency(id = "miniplaceholders", optional = true),
-        @Dependency(id = "unsignedvelocity", optional = true)
-    }
-)
 public final class CarbonVelocityBootstrap {
 
     private final Injector parentInjector;
