@@ -47,6 +47,7 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
     private final List<? extends Audience> recipients;
     private final @MonotonicNonNull ChatChannel chatChannel;
     private final @MonotonicNonNull SignedMessage signedMessage;
+    public final boolean origin;
     private Component message;
 
     public CarbonChatEventImpl(
@@ -57,6 +58,18 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
         final @Nullable ChatChannel chatChannel,
         final @Nullable SignedMessage signedMessage
     ) {
+        this(sender, originalMessage, recipients, renderers, chatChannel, signedMessage, true);
+    }
+
+    public CarbonChatEventImpl(
+        final CarbonPlayer sender,
+        final Component originalMessage,
+        final List<? extends Audience> recipients,
+        final List<KeyedRenderer> renderers,
+        final @Nullable ChatChannel chatChannel,
+        final @Nullable SignedMessage signedMessage,
+        final boolean origin
+    ) {
         this.sender = sender;
         this.originalMessage = originalMessage;
         this.message = originalMessage;
@@ -64,6 +77,7 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
         this.renderers = renderers;
         this.chatChannel = chatChannel;
         this.signedMessage = signedMessage;
+        this.origin = origin;
     }
 
     public List<KeyedRenderer> renderers() {

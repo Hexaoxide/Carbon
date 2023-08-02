@@ -62,10 +62,14 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             return true;
         }
 
-        if (!(packet instanceof ChatMessagePacket messagePacket)) {
-            return false;
+        if (packet instanceof ChatMessagePacket messagePacket) {
+            return this.handleMessagePacket(messagePacket);
         }
 
+        return false;
+    }
+
+    private boolean handleMessagePacket(final ChatMessagePacket messagePacket) {
         final CarbonPlayer sender = this.carbonChat.userManager().user(messagePacket.userId()).join();
 
         final @Nullable ChatChannel channel = this.carbonChat.channelRegistry().channel(messagePacket.channelKey());
@@ -77,7 +81,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         final List<KeyedRenderer> renderers = new ArrayList<>();
 
         final List<Audience> recipients = channel.recipients(sender);
-        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null);
+        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null, false);
         this.carbonChat.eventHandler().emit(chatEvent);
 
         for (final Audience recipient : recipients) {
