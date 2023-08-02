@@ -20,29 +20,34 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.CarbonChatInternal;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
+import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.kyori.adventure.text.Component;
-import ninja.egg82.messenger.services.PacketService;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class MessagePacketHandler implements Listener {
 
     @Inject
-    public MessagePacketHandler(final CarbonEventHandler events, final CarbonChat carbonChat) {
-
+    public MessagePacketHandler(
+        final CarbonEventHandler events,
+        final CarbonChat carbonChat,
+        final Provider<MessagingManager> messaging
+    ) {
         events.subscribe(CarbonChatEvent.class, 100, false, event -> {
-            final @Nullable PacketService packetService = ((CarbonChatInternal<?>) carbonChat).packetService();
-            final CarbonPlayer sender = event.sender();
+            if (!(event instanceof CarbonChatEventImpl e) || !e.origin) {
+                return;
+            }
 
-            if (packetService != null) {
+            messaging.get().withPacketService(packetService -> {
+                final CarbonPlayer sender = event.sender();
                 Component networkMessage = event.message();
 
                 for (final var renderer : event.renderers()) {
@@ -51,7 +56,7 @@ public class MessagePacketHandler implements Listener {
 
                 packetService.queuePacket(new ChatMessagePacket(carbonChat.serverId(), sender.uuid(),
                     event.chatChannel().permission(), event.chatChannel().key(), sender.username(), networkMessage));
-            }
+            });
         });
     }
 
