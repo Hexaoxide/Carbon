@@ -8,7 +8,7 @@ plugins:
   xyz.jpenilla.run-paper: &run-task 2.1.0
   xyz.jpenilla.run-velocity: *run-task
   io.papermc.hangar-publish-plugin: 0.0.5
-  net.kyori.indra.publishing.sonatype: &indra 3.0.1
+  net.kyori.indra.publishing.sonatype: &indra 3.1.2
 
 versions:
   indra: *indra
@@ -19,7 +19,7 @@ versions:
   cloudSponge: 1.8.0-SNAPSHOT
   configurate: 4.1.2
   typesafeConfig: 1.4.1
-  checkerQual: 3.35.0
+  checkerQual: 3.37.0
   stylecheck: 0.1
   gson: 2.10
   guava: 30.1-jre
@@ -47,7 +47,7 @@ versions:
   mysql: 8.0.33
   protobuf: 3.21.9
   flyway: 8.5.13 # DO NOT UPDATE. Something will break.
-  caffeine: 3.0.5
+  caffeine: 3.1.7
   mariadb: 3.0.8
   messenger: 1.0.0-SNAPSHOT
   netty: 4.1.68.Final
