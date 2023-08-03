@@ -24,23 +24,29 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
+import com.google.inject.Provider;
+import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.events.CarbonPrivateChatEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.util.CloudUtils;
+import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
+import net.draycia.carbon.common.messaging.packets.WhisperPacket;
+import net.draycia.carbon.common.users.NetworkUsers;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -48,25 +54,22 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class WhisperCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
     private final ArgumentFactory argumentFactory;
-    final ConfigFactory configFactory;
+    private final WhisperHandler whisper;
 
     @Inject
     public WhisperCommand(
-        final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
         final ArgumentFactory argumentFactory,
-        final ConfigFactory configFactory
+        final WhisperHandler whisper
     ) {
-        this.carbonChat = carbonChat;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
         this.argumentFactory = argumentFactory;
-        this.configFactory = configFactory;
+        this.whisper = whisper;
     }
 
     @Override
@@ -89,67 +92,147 @@ public class WhisperCommand extends CarbonCommand {
             .permission("carbon.whisper.message")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandWhisperDescription())
-            .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+            .handler(ctx -> {
+                final CarbonPlayer sender = ((PlayerCommander) ctx.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
                     this.carbonMessages.muteCannotSpeak(sender);
                     return;
                 }
 
-                final String message = handler.get("message");
-                final CarbonPlayer recipient = handler.get("player");
+                final String message = ctx.get("message");
+                final CarbonPlayer recipient = ctx.get("player");
 
-                if (sender.equals(recipient)) {
-                    this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
-                    return;
-                }
-
-                if (!recipient.online() || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
-                    final var rawNameInput = CloudUtils.rawInputByMatchingName(handler.getRawInput(), recipient);
-                    final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(rawNameInput, handler);
-
-                    this.carbonMessages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
-                    return;
-                }
-
-                if (sender.ignoring(recipient)) {
-                    this.carbonMessages.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
-                    return;
-                }
-
-                if (recipient.ignoring(sender)) {
-                    this.carbonMessages.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
-                    return;
-                }
-
-                final Component senderName = CarbonPlayer.renderName(sender);
-                final Component recipientName = CarbonPlayer.renderName(recipient);
-
-                final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEventImpl(sender, recipient, Component.text(message));
-                this.carbonChat.eventHandler().emit(privateChatEvent);
-
-                if (privateChatEvent.cancelled()) {
-                    this.carbonMessages.whisperError(sender, CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient));
-                    return;
-                }
-
-                this.carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, privateChatEvent.message());
-                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, privateChatEvent.message());
-                this.carbonMessages.whisperConsoleLog(this.carbonChat.server().console(), senderName, recipientName, privateChatEvent.message());
-
-                final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
-                if (messageSound != null) {
-                    recipient.playSound(messageSound);
-                }
-
-                sender.lastWhisperTarget(recipient.uuid());
-                sender.whisperReplyTarget(recipient.uuid());
-                recipient.whisperReplyTarget(sender.uuid());
+                this.whisper.whisper(sender, recipient, message);
             })
             .build();
 
         this.commandManager.command(command);
+    }
+
+    public static final class WhisperHandler {
+
+        private final Logger logger;
+        private final CarbonMessages carbonMessages;
+        private final ConfigFactory configFactory;
+        private final Provider<MessagingManager> messaging;
+        private final PacketFactory packetFactory;
+        private final UserManager<? extends CarbonPlayer> userManager;
+        private final CarbonServer server;
+        private final CarbonEventHandler events;
+        private final NetworkUsers network;
+
+        @Inject
+        private WhisperHandler(
+            final Logger logger,
+            final CarbonMessages carbonMessages,
+            final ConfigFactory configFactory,
+            final Provider<MessagingManager> messaging,
+            final PacketFactory packetFactory,
+            final UserManager<?> userManager,
+            final CarbonServer server,
+            final CarbonEventHandler events,
+            final NetworkUsers network
+        ) {
+            this.logger = logger;
+            this.carbonMessages = carbonMessages;
+            this.configFactory = configFactory;
+            this.messaging = messaging;
+            this.packetFactory = packetFactory;
+            this.userManager = userManager;
+            this.server = server;
+            this.events = events;
+            this.network = network;
+        }
+
+        public void whisper(
+            final CarbonPlayer sender,
+            final CarbonPlayer recipient,
+            final String message
+        ) {
+            if (sender.equals(recipient)) {
+                this.carbonMessages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                return;
+            }
+
+            if (!this.network.online(recipient) || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
+                //final var rawNameInput = CloudUtils.rawInputByMatchingName(ctx.getRawInput(), recipient);
+                //final var exception = new CarbonPlayerArgument.CarbonPlayerParseException(/*rawNameInput*/ recipient.username(), null);
+
+                // todo
+                this.carbonMessages.errorCommandArgumentParsing(sender, Component.text("No such player " + recipient.username()));
+                return;
+            }
+
+            final boolean localRecipient = recipient.online();
+
+            if (sender.ignoring(recipient)) {
+                this.carbonMessages.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
+                return;
+            }
+
+            if (recipient.ignoring(sender)) {
+                this.carbonMessages.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
+                return;
+            }
+
+            final Component senderName = CarbonPlayer.renderName(sender);
+            final Component recipientName = CarbonPlayer.renderName(recipient);
+
+            final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEventImpl(sender, recipient, Component.text(message));
+            this.events.emit(privateChatEvent);
+
+            if (privateChatEvent.cancelled()) {
+                this.carbonMessages.whisperError(sender, CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient));
+                return;
+            }
+
+            this.carbonMessages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, privateChatEvent.message());
+            if (localRecipient) {
+                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, privateChatEvent.message());
+            }
+            this.carbonMessages.whisperConsoleLog(this.server.console(), senderName, recipientName, privateChatEvent.message());
+
+            final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
+            if (localRecipient && messageSound != null) {
+                recipient.playSound(messageSound);
+            }
+
+            sender.lastWhisperTarget(recipient.uuid());
+            sender.whisperReplyTarget(recipient.uuid());
+            if (localRecipient) {
+                recipient.whisperReplyTarget(sender.uuid());
+            } else {
+                this.messaging.get().withPacketService(packetService -> {
+                    packetService.queuePacket(this.packetFactory.whisperPacket(sender.uuid(), recipient.uuid(), privateChatEvent.message()));
+                });
+            }
+        }
+
+        public void handlePacket(final WhisperPacket packet) {
+            final @Nullable CarbonPlayer recipient = this.server.players().stream()
+                .filter(p -> p.uuid().equals(packet.to()))
+                .findFirst()
+                .orElse(null);
+            if (recipient == null) {
+                return;
+            }
+            this.userManager.user(packet.from()).thenAccept(sender -> {
+                final Component senderName = CarbonPlayer.renderName(sender);
+                final Component recipientName = CarbonPlayer.renderName(recipient);
+
+                recipient.whisperReplyTarget(sender.uuid());
+                this.carbonMessages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, packet.message());
+                this.carbonMessages.whisperConsoleLog(this.server.console(), senderName, recipientName, packet.message());
+                final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
+                if (messageSound != null) {
+                    recipient.playSound(messageSound);
+                }
+            }).exceptionally(ex -> {
+                this.logger.warn("Failed to handle whisper packet {}", packet, ex);
+                return null;
+            });
+        }
     }
 
 }

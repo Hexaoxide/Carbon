@@ -37,6 +37,7 @@ import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
@@ -138,6 +139,11 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     }
 
     protected void shutdown() {
+        this.messagingManager.get().withPacketService(packetService -> {
+            packetService.queuePacket(this.injector.getInstance(PacketFactory.class).clearLocalPlayersPacket());
+            packetService.flushQueue(); // todo remove
+        });
+        // this.messagingManager.get().onShutdown(); // todo fix this taking so long
         ConcurrentUtil.shutdownExecutor(this.periodicTasks, TimeUnit.MILLISECONDS, 500);
         this.profileCache.save();
         this.profileResolver.shutdown();

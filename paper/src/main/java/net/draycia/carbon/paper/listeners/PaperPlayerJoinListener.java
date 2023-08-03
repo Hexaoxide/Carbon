@@ -20,8 +20,11 @@
 package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.util.List;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.paper.PaperUserManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -44,23 +48,36 @@ public class PaperPlayerJoinListener implements Listener {
     private final Logger logger;
     private final ProfileCache profileCache;
     private final PaperUserManager userManager;
+    private final Provider<MessagingManager> messaging;
+    private final PacketFactory packetFactory;
 
     @Inject
     public PaperPlayerJoinListener(
         final ConfigFactory configFactory,
         final Logger logger,
         final ProfileCache profileCache,
-        final PaperUserManager userManager
+        final PaperUserManager userManager,
+        final Provider<MessagingManager> messaging,
+        final PacketFactory packetFactory
     ) {
         this.configFactory = configFactory;
         this.logger = logger;
         this.profileCache = profileCache;
         this.userManager = userManager;
+        this.messaging = messaging;
+        this.packetFactory = packetFactory;
+    }
+
+    @EventHandler
+    public void onLogin(final PlayerLoginEvent event) {
+        this.profileCache.cache(event.getPlayer().getUniqueId(), event.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void cacheProfile(final PlayerJoinEvent event) {
-        this.profileCache.cache(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+    public void onJoinEarly(final PlayerJoinEvent event) {
+        this.messaging.get().withPacketService(packetService -> {
+            packetService.queuePacket(this.packetFactory.addLocalPlayerPacket(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGH)

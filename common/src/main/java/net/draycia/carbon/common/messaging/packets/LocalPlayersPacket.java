@@ -20,34 +20,46 @@
 package net.draycia.carbon.common.messaging.packets;
 
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import io.netty.buffer.ByteBuf;
 import java.util.Map;
 import java.util.UUID;
-import net.kyori.adventure.text.Component;
+import net.draycia.carbon.api.CarbonChat;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface PacketFactory {
+public final class LocalPlayersPacket extends CarbonPacket {
 
-    SaveCompletedPacket saveCompletedPacket(UUID playerId);
+    private @MonotonicNonNull Map<UUID, String> players;
 
-    LocalPlayersPacket localPlayersPacket(Map<UUID, String> players);
-
-    default LocalPlayersPacket clearLocalPlayersPacket() {
-        return this.localPlayersPacket(Map.of());
+    @AssistedInject
+    public LocalPlayersPacket(
+        final CarbonChat carbonChat,
+        final @Assisted Map<UUID, String> players
+    ) {
+        super(carbonChat.serverId());
+        this.players = players;
     }
 
-    LocalPlayerChangePacket localPlayerChangePacket(UUID player, @Nullable String name, LocalPlayerChangePacket.ChangeType type);
-
-    default LocalPlayerChangePacket addLocalPlayerPacket(final UUID id, final String name) {
-        return this.localPlayerChangePacket(id, name, LocalPlayerChangePacket.ChangeType.ADD);
+    public LocalPlayersPacket(final UUID sender, final ByteBuf data) {
+        super(sender);
+        this.read(data);
     }
 
-    default LocalPlayerChangePacket removeLocalPlayerPacket(final UUID id) {
-        return this.localPlayerChangePacket(id, null, LocalPlayerChangePacket.ChangeType.REMOVE);
+    public Map<UUID, String> players() {
+        return this.players;
     }
 
-    WhisperPacket whisperPacket(@Assisted("from") UUID from, @Assisted("to") UUID to, Component msg);
+    @Override
+    public void read(final ByteBuf buffer) {
+        this.players = this.readMap(buffer, this::readUUID, this::readString);
+    }
+
+    @Override
+    public void write(final ByteBuf buffer) {
+        this.writeMap(this.players, this::writeUUID, this::writeString, buffer);
+    }
 
 }

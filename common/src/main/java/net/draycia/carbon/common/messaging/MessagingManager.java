@@ -23,6 +23,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,13 +33,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.event.events.CarbonShutdownEvent;
+import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.CarbonChatInternal;
+import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.config.MessagingSettings;
-import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
+import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
+import net.draycia.carbon.common.messaging.packets.WhisperPacket;
+import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
@@ -70,7 +79,7 @@ public class MessagingManager {
     private static final byte protocolVersion = 0;
 
     private final CarbonChat carbonChat;
-    private final @MonotonicNonNull ScheduledExecutorService executorService;
+    private final @MonotonicNonNull ScheduledExecutorService scheduledExecutor;
     private final @MonotonicNonNull PacketService packetService;
     private @MonotonicNonNull MessagingService messagingService;
 
@@ -78,9 +87,12 @@ public class MessagingManager {
     public MessagingManager(
         final ConfigFactory configFactory,
         final CarbonChat carbonChat,
+        final CarbonServer server,
         final Logger logger,
         final UserManagerInternal<?> userManager,
-        final PingHandler pingHandler
+        final NetworkUsers networkUsers,
+        final WhisperCommand.WhisperHandler whisper,
+        final PacketFactory packetFactory
     ) {
         if (!configFactory.primaryConfig().messagingSettings().enabled()) {
             if (!((CarbonChatInternal<?>) carbonChat).isProxy()) {
@@ -89,7 +101,7 @@ public class MessagingManager {
             this.messagingService = EMPTY_MESSAGING_SERVICE;
             this.packetService = null;
             this.carbonChat = carbonChat;
-            this.executorService = null;
+            this.scheduledExecutor = null;
             return;
         }
 
@@ -102,15 +114,24 @@ public class MessagingManager {
         //PacketManager.register(HeartbeatPacket.class, HeartbeatPacket::new);
         PacketManager.register(ChatMessagePacket.class, ChatMessagePacket::new);
         PacketManager.register(SaveCompletedPacket.class, SaveCompletedPacket::new);
+        PacketManager.register(LocalPlayersPacket.class, LocalPlayersPacket::new);
+        PacketManager.register(LocalPlayerChangePacket.class, LocalPlayerChangePacket::new);
+        PacketManager.register(WhisperPacket.class, WhisperPacket::new);
 
-        this.packetService = new PacketService(4, false, protocolVersion);
-        this.executorService = new ExceptionLoggingScheduledThreadPoolExecutor(10,
+        this.packetService = new PacketService(4, false, protocolVersion) {
+            // todo super is broken - calls remove on COWIterator
+            @Override
+            public boolean removeMessenger(final @NonNull String serviceName) {
+                return true;
+            }
+        };
+        this.scheduledExecutor = new ExceptionLoggingScheduledThreadPoolExecutor(4,
             ConcurrentUtil.carbonThreadFactory(carbonChat.logger(), "MessagingManager"), carbonChat.logger());
         this.carbonChat = carbonChat;
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
-        handlerImpl.addHandler(new CarbonServerHandler(carbonChat.serverId(), this.packetService, handlerImpl));
-        handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager));
+        handlerImpl.addHandler(new CarbonServerHandler(server, carbonChat.serverId(), this.packetService, handlerImpl, packetFactory));
+        handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager, networkUsers, whisper));
 
         try {
             this.initMessagingService(this.packetService, handlerImpl, new File("/"),
@@ -126,22 +147,18 @@ public class MessagingManager {
         this.packetService.flushQueue();
 
         // Broadcast keepalive packets
-        this.executorService.scheduleAtFixedRate(() -> {
+        this.scheduledExecutor.scheduleAtFixedRate(() -> {
             this.packetService.queuePacket(new KeepAlivePacket(carbonChat.serverId()));
             this.packetService.flushQueue();
         }, 5, 5, TimeUnit.SECONDS);
 
-        this.executorService.scheduleAtFixedRate(() -> {
+        this.scheduledExecutor.scheduleAtFixedRate(() -> {
             try {
                 this.packetService.flushQueue();
             } catch (final IndexOutOfBoundsException ignored) {
 
             }
-        }, 0, 1, TimeUnit.SECONDS);
-
-        carbonChat.eventHandler().subscribe(CarbonShutdownEvent.class, 0, false, event -> {
-            this.onShutdown();
-        });
+        }, 0, 250, TimeUnit.MILLISECONDS);
     }
 
     public @Nullable PacketService packetService() {
@@ -158,13 +175,13 @@ public class MessagingManager {
         }
     }
 
-    private void onShutdown() {
-        if (this.executorService != null) {
-            ConcurrentUtil.shutdownExecutor(this.executorService, TimeUnit.SECONDS, 10);
-        }
+    public void onShutdown() {
         if (this.packetService != null) {
             this.packetService.flushQueue();
             this.packetService.shutdown();
+        }
+        if (this.scheduledExecutor != null) {
+            ConcurrentUtil.shutdownExecutor(this.scheduledExecutor, TimeUnit.MILLISECONDS, 500);
         }
         this.messagingService.close();
     }
@@ -231,12 +248,30 @@ public class MessagingManager {
 
     private static final class CarbonServerHandler extends AbstractServerMessagingHandler {
 
+        private final CarbonServer server;
+        private final PacketFactory packetFactory;
+
         private CarbonServerHandler(
-            final @NotNull UUID serverId,
-            final @NotNull PacketService packetService,
-            final @NotNull MessagingHandler messagingHandler
+            final @NonNull CarbonServer server,
+            final @NonNull UUID serverId,
+            final @NonNull PacketService packetService,
+            final @NonNull MessagingHandler messagingHandler,
+            final @NonNull PacketFactory packetFactory
         ) {
             super(serverId, packetService, messagingHandler);
+            this.server = server;
+            this.packetFactory = packetFactory;
+        }
+
+        @Override
+        protected void handleInitialization(final @NonNull InitializationPacket packet) {
+            super.handleInitialization(packet);
+            final List<? extends CarbonPlayer> players = this.server.players();
+            final Map<UUID, String> map = new HashMap<>();
+            for (final CarbonPlayer player : players) {
+                map.put(player.uuid(), player.username());
+            }
+            this.packetService.queuePacket(this.packetFactory.localPlayersPacket(map));
         }
 
     }

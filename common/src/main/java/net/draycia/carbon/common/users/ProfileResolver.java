@@ -25,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+// todo use data from NetworkPlayers?
 @DefaultQualifier(NonNull.class)
 public interface ProfileResolver {
 

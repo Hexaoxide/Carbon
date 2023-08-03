@@ -144,6 +144,9 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     @Override
     public CompletableFuture<Void> loggedOut(final UUID uuid) {
+        this.messagingManager.get().withPacketService(packetService -> {
+            packetService.queuePacket(this.packetFactory.removeLocalPlayerPacket(uuid));
+        });
         this.cacheLock.lock();
         try {
             final @Nullable CompletableFuture<CarbonPlayerCommon> remove = this.cache.remove(uuid);

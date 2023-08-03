@@ -23,6 +23,7 @@ license {
   exclude("net/draycia/carbon/common/command/argument/OptionValueParser.java")
   exclude("net/draycia/carbon/common/messages/PrefixedDelegateIterator.java")
   exclude("net/draycia/carbon/common/messages/StandardPlaceholderResolverStrategyButDifferent.java")
+  exclude("com/google/inject/assistedinject")
 }
 
 tasks {

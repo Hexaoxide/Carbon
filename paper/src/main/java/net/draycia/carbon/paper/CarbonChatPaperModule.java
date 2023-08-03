@@ -21,7 +21,6 @@ package net.draycia.carbon.paper;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
-import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
@@ -38,7 +37,6 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
@@ -132,7 +130,6 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.bootstrap.getDataFolder().toPath());
         this.bind(CarbonServer.class).to(CarbonServerPaper.class);
-        this.bind(PlayerSuggestions.class).toInstance(new PlayerArgument.PlayerParser<Commander>()::suggestions);
         this.bind(ProfileResolver.class).to(PaperProfileResolver.class);
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
         this.bind(new TypeLiteral<UserManager<?>>() {}).to(PaperUserManager.class);

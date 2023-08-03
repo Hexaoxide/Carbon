@@ -21,11 +21,16 @@ package net.draycia.carbon.common;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.assistedinject.FactoryProvider3;
 import com.google.inject.multibindings.Multibinder;
 import io.leangen.geantyref.TypeToken;
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +38,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
+import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
@@ -58,11 +64,13 @@ import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
 import net.draycia.carbon.common.users.json.JSONUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.draycia.carbon.common.util.Exceptions;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -130,9 +138,10 @@ public final class CarbonCommonModule extends AbstractModule {
     @Override
     protected void configure() {
         this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
-        this.install(new FactoryModuleBuilder().build(PacketFactory.class));
+        this.install(factoryModule(PacketFactory.class));
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
         this.bind(CarbonEventHandler.class).to(CarbonEventHandlerImpl.class);
+        this.bind(PlayerSuggestions.class).to(NetworkUsers.class);
 
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(DeafenHandler.class);
@@ -143,6 +152,25 @@ public final class CarbonCommonModule extends AbstractModule {
         listeners.addBinding().to(MuteHandler.class);
         listeners.addBinding().to(PingHandler.class);
         listeners.addBinding().to(RadiusListener.class);
+    }
+
+    // Helper to create a FactoryProvider3 module
+    private static <T> Module factoryModule(final Class<T> factoryInterface) {
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                try {
+                    final Provider<T> factoryProvider = new FactoryProvider3<>(
+                        com.google.inject.Key.get(TypeLiteral.get(factoryInterface)),
+                        null,
+                        MethodHandles.privateLookupIn(factoryInterface, MethodHandles.lookup())
+                    );
+                    this.binder().bind(factoryInterface).toProvider(factoryProvider);
+                } catch (final Exception e) {
+                    throw Exceptions.rethrow(e);
+                }
+            }
+        };
     }
 
 }

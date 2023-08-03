@@ -20,8 +20,11 @@
 package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.util.List;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -43,23 +46,32 @@ public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, 
     private final Logger logger;
     private final ConfigFactory configFactory;
     private final UserManagerInternal<?> userManager;
+    private final Provider<MessagingManager> messaging;
+    private final PacketFactory packetFactory;
 
     @Inject
     public FabricJoinQuitListener(
         final Logger logger,
         final ConfigFactory configFactory,
         final ProfileCache profileCache,
-        final UserManagerInternal<?> userManager
+        final UserManagerInternal<?> userManager,
+        final Provider<MessagingManager> messaging,
+        final PacketFactory packetFactory
     ) {
         this.logger = logger;
         this.configFactory = configFactory;
         this.profileCache = profileCache;
         this.userManager = userManager;
+        this.messaging = messaging;
+        this.packetFactory = packetFactory;
     }
 
     @Override
     public void onPlayReady(final ServerGamePacketListenerImpl handler, final PacketSender sender, final MinecraftServer server) {
         this.profileCache.cache(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName());
+        this.messaging.get().withPacketService(packetService -> {
+            packetService.queuePacket(this.packetFactory.addLocalPlayerPacket(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName()));
+        });
 
         final @Nullable List<String> suggestions = this.configFactory.primaryConfig().customChatSuggestions();
 
