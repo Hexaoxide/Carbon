@@ -23,6 +23,8 @@ import io.netty.buffer.ByteBuf;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -56,21 +58,30 @@ public abstract class CarbonPacket extends AbstractPacket {
         return Key.key(value);
     }
 
-    protected final void writeStringMap(final Map<String, String> map, final ByteBuf buffer) {
+    protected final <K, V> void writeMap(
+        final Map<K, V> map,
+        final BiConsumer<K, ByteBuf> keyWriter,
+        final BiConsumer<V, ByteBuf> valueWriter,
+        final ByteBuf buffer
+    ) {
         this.writeVarInt(map.size(), buffer);
 
-        for (final Map.Entry<String, String> entry : map.entrySet()) {
-            this.writeString(entry.getKey(), buffer);
-            this.writeString(entry.getValue(), buffer);
+        for (final Map.Entry<K, V> entry : map.entrySet()) {
+            keyWriter.accept(entry.getKey(), buffer);
+            valueWriter.accept(entry.getValue(), buffer);
         }
     }
 
-    protected final Map<String, String> readStringMap(final ByteBuf buffer) {
+    protected final <K, V> Map<K, V> readMap(
+        final ByteBuf buffer,
+        final Function<ByteBuf, K> keyReader,
+        final Function<ByteBuf, V> valueReader
+    ) {
         final int size = this.readVarInt(buffer);
-        final Map<String, String> map = new HashMap<>();
+        final Map<K, V> map = new HashMap<>();
 
         for (int i = 0; i < size; i++) {
-            map.put(this.readString(buffer), this.readString(buffer));
+            map.put(keyReader.apply(buffer), valueReader.apply(buffer));
         }
 
         return map;

@@ -35,4 +35,6 @@
               checks="MissingJavadocPackage"/>
     <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/](paper|sponge|common|velocity|fabric)[\\/].*"
               checks="MissingJavadocType"/>
+    <suppress files="src[\\/]main[\\/]java[\\/]com[\\/]google[\\/]inject[\\/]assistedinject[\\/].*"
+              checks="[a-zA-Z0-9]*"/>
 </suppressions>

@@ -1,3 +1,5 @@
+import xyz.jpenilla.runpaper.task.RunServer
+
 plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
@@ -37,7 +39,12 @@ tasks {
     relocateCloud()
   }
   runServer {
-    minecraftVersion("1.20.1")
+    version.set(libs.versions.minecraft)
+  }
+  register<RunServer>("runServer2") {
+    version.set(libs.versions.minecraft)
+    pluginJars.from(shadowJar.flatMap { it.archiveFile })
+    runDirectory.set(layout.projectDirectory.dir("run2"))
   }
   writeDependencies {
   }

@@ -87,6 +87,6 @@ tasks {
 }
 
 modrinth {
-  gameVersions.set(listOf(libs.versions.fabricMinecraft.get()))
+  gameVersions.set(listOf(libs.versions.minecraft.get()))
   loaders.addAll("fabric")
 }

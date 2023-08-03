@@ -36,7 +36,6 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
@@ -106,13 +105,6 @@ public final class CarbonChatFabricModule extends AbstractModule {
     @SuppressWarnings("unchecked,unused")
     public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
         return injector.getInstance(FabricMessageRenderer.class);
-    }
-
-    @Provides
-    public PlayerSuggestions playerSuggestions(final MinecraftServerHolder serverHolder) {
-        return (ctx, input) -> serverHolder.requireServer().getPlayerList().getPlayers().stream()
-            .map(player -> player.getGameProfile().getName())
-            .toList();
     }
 
     @Override
