@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.audience.Audience;
@@ -72,6 +73,9 @@ public class FabricMessageRenderer<T extends Audience> implements IMessageRender
                     if (sourced.recipient() instanceof CarbonPlayerFabric recipient && recipient.online()) {
                         tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(sender, recipient));
                     }
+                } else if (sourced.sender() instanceof ConsoleCarbonPlayer console) {
+                    // I don't know if this will ever actually resolve anything, or if anything supports console audience
+                    tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(console));
                 }
             }
         }

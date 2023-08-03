@@ -38,6 +38,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -53,6 +55,7 @@ import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.util.Exceptions;
 import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
@@ -280,9 +283,30 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         return null;
     }
 
+    private void sendMessageInChannelAsConsole(
+        final Audience sender,
+        final ChatChannel channel,
+        final String plainMessage
+    ) {
+        final List<Audience> recipients = CarbonChatProvider.carbonChat().server().players()
+            .stream().filter(player -> channel.hearingPermitted(player).permitted())
+            .collect(Collectors.toList());
+
+        this.sendMessageInChannel(new ConsoleCarbonPlayer(sender), channel, recipients, plainMessage);
+    }
+
     private void sendMessageInChannelAsPlayer(
         final CarbonPlayer sender,
         final ChatChannel channel,
+        final String plainMessage
+    ) {
+        this.sendMessageInChannel(sender, channel, channel.recipients(sender), plainMessage);
+    }
+
+    private void sendMessageInChannel(
+        final CarbonPlayer sender,
+        final ChatChannel channel,
+        final List<Audience> recipients,
         final String plainMessage
     ) {
         final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
@@ -291,7 +315,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             return;
         }
 
-        for (final Audience recipient : chatEvent.recipients()) {
+        for (final Audience recipient : recipients) {
             Component renderedMessage = chatEvent.message();
 
             for (final KeyedRenderer renderer : chatEvent.renderers()) {
@@ -326,27 +350,40 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         final Key channelKey = channel.key();
 
-        final Command<Commander> command = builder.senderType(PlayerCommander.class)
+        final Command<Commander> command = builder.senderType(Commander.class)
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final Commander commander = handler.getSender();
                 final @Nullable ChatChannel chatChannel = this.channel(channelKey);
 
-                if (sender.muted()) {
-                    this.carbonMessages.muteCannotSpeak(sender);
+                if (!(commander instanceof PlayerCommander playerCommander)) {
+                    if (chatChannel != null && handler.contains("message")) {
+                        final String message = handler.get("message");
+
+                        // TODO: trigger platform events related to chat
+                        this.sendMessageInChannelAsConsole(commander, chatChannel, message);
+                    }
+
                     return;
                 }
-                if (sender.leftChannels().contains(channelKey) && chatChannel != null) {
-                    sender.joinChannel(chatChannel);
-                    this.carbonMessages.channelJoined(sender);
+
+                final var player = playerCommander.carbonPlayer();
+
+                if (player.muted()) {
+                    this.carbonMessages.muteCannotSpeak(player);
+                    return;
+                }
+                if (player.leftChannels().contains(channelKey) && chatChannel != null) {
+                    player.joinChannel(chatChannel);
+                    this.carbonMessages.channelJoined(player);
                 }
                 if (handler.contains("message")) {
                     final String message = handler.get("message");
 
                     // TODO: trigger platform events related to chat
-                    this.sendMessageInChannelAsPlayer(sender, chatChannel, message);
+                    this.sendMessageInChannelAsPlayer(player, chatChannel, message);
                 } else {
-                    sender.selectedChannel(chatChannel);
-                    this.carbonMessages.changedChannels(sender, channelKey.value());
+                    player.selectedChannel(chatChannel);
+                    this.carbonMessages.changedChannels(player, channelKey.value());
                 }
             })
             .build();

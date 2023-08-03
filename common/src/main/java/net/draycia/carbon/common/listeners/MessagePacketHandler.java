@@ -28,6 +28,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -43,6 +44,9 @@ public class MessagePacketHandler implements Listener {
     ) {
         events.subscribe(CarbonChatEvent.class, 100, false, event -> {
             if (!(event instanceof CarbonChatEventImpl e) || !e.origin) {
+                return;
+            }
+            if (event.sender() instanceof ConsoleCarbonPlayer) {
                 return;
             }
 
