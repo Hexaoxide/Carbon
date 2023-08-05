@@ -55,21 +55,27 @@ public final class NetworkUsers implements PlayerSuggestions {
     private final CarbonServer server;
     private final Map<UUID, Map<UUID, String>> map = new ConcurrentHashMap<>();
     private final UserManager<? extends CarbonPlayer> userManager;
+    private final ProfileCache profileCache;
 
     @Inject
     private NetworkUsers(
         final CarbonServer server,
-        final UserManager<?> userManager
+        final UserManager<?> userManager,
+        final ProfileCache profileCache
     ) {
         this.server = server;
         this.userManager = userManager;
+        this.profileCache = profileCache;
     }
 
     public void handlePacket(final LocalPlayerChangePacket packet) {
         final Map<UUID, String> serverMap = this.map.computeIfAbsent(packet.getSender(), $ -> new ConcurrentHashMap<>());
 
         switch (packet.changeType()) {
-            case ADD -> serverMap.put(packet.playerId(), packet.playerName());
+            case ADD -> {
+                serverMap.put(packet.playerId(), packet.playerName());
+                this.profileCache.cache(packet.playerId(), packet.playerName());
+            }
             case REMOVE -> serverMap.remove(packet.playerId());
         }
 
@@ -83,6 +89,8 @@ public final class NetworkUsers implements PlayerSuggestions {
             final Map<UUID, String> serverMap = this.map.computeIfAbsent(packet.getSender(), $ -> new ConcurrentHashMap<>());
             serverMap.clear();
             serverMap.putAll(packet.players());
+
+            packet.players().forEach(this.profileCache::cache);
         }
     }
 
