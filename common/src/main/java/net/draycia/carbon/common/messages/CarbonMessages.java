@@ -250,7 +250,7 @@ public interface CarbonMessages {
     void errorCommandArgumentParsing(final Audience audience, @Placeholder("throwable_message") final Component throwableMessage);
 
     @Message("error.command.invalid_player")
-    Component errorCommandInvalidPlayer(final Audience audience, final String input);
+    Component errorCommandInvalidPlayer(String input);
 
     @Message("error.command.invalid_sender")
     void errorCommandInvalidSender(final Audience audience, final String sender_type);

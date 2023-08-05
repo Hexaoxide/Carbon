@@ -1,40 +1,35 @@
-//
-// MIT License
-//
-// Copyright (c) 2021 Alexander Söderberg & Contributors
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2023 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.draycia.carbon.common.command.argument;
 
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
-import cloud.commandframework.captions.Caption;
-import cloud.commandframework.captions.CaptionVariable;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
-import cloud.commandframework.exceptions.parsing.ParserException;
+import cloud.commandframework.keys.CloudKey;
+import cloud.commandframework.keys.SimpleCloudKey;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import io.leangen.geantyref.TypeToken;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -42,14 +37,13 @@ import java.util.function.BiFunction;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.exception.ComponentException;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-/**
- * Argument that parses into a {@link CarbonPlayer}.
- */
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerArgument extends CommandArgument<Commander, CarbonPlayer> {
 
@@ -60,26 +54,21 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
         final @Nullable BiFunction<CommandContext<Commander>, String,
             List<String>> suggestionsProvider,
         final ArgumentDescription defaultDescription,
-        final CarbonPlayerParser parser
+        final Parser parser
     ) {
         super(required, name, parser, defaultValue, CarbonPlayer.class, suggestionsProvider, defaultDescription);
     }
 
     public static final class Builder extends CommandArgument.TypedBuilder<Commander, CarbonPlayer, Builder> {
 
-        private final CarbonPlayerParser parser;
+        private final Parser parser;
 
         @AssistedInject
-        private Builder(final @Assisted String name, final CarbonPlayerParser parser) {
+        private Builder(final @Assisted String name, final Parser parser) {
             super(CarbonPlayer.class, name);
             this.parser = parser;
         }
 
-        /**
-         * Builder a new boolean component.
-         *
-         * @return constructed component
-         */
         @Override
         public CarbonPlayerArgument build() {
             return new CarbonPlayerArgument(
@@ -94,21 +83,27 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
 
     }
 
-    public static final class CarbonPlayerParser implements ArgumentParser<Commander, CarbonPlayer> {
+    public static final class Parser implements ArgumentParser<Commander, CarbonPlayer> {
+
+        // This hack only works properly when there is 0 or 1 CarbonPlayerArguments in a chain, since we don't use the arg name
+        public static CloudKey<String> INPUT_STRING = SimpleCloudKey.of(Parser.class.getSimpleName() + "-input", TypeToken.get(String.class));
 
         private final PlayerSuggestions suggestions;
         private final UserManager<?> userManager;
         private final ProfileResolver profileResolver;
+        private final CarbonMessages messages;
 
         @Inject
-        private CarbonPlayerParser(
+        private Parser(
             final PlayerSuggestions suggestions,
             final UserManager<?> userManager,
-            final ProfileResolver profileResolver
+            final ProfileResolver profileResolver,
+            final CarbonMessages messages
         ) {
             this.suggestions = suggestions;
             this.userManager = userManager;
             this.profileResolver = profileResolver;
+            this.messages = messages;
         }
 
         @Override
@@ -116,14 +111,7 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
             final CommandContext<Commander> commandContext,
             final Queue<String> inputQueue
         ) {
-            final @Nullable String input = inputQueue.peek();
-
-            if (input == null) {
-                return ArgumentParseResult.failure(new NoInputProvidedException(
-                    CarbonPlayerParser.class,
-                    commandContext
-                ));
-            }
+            final String input = inputQueue.peek();
 
             final @Nullable CarbonPlayer join = this.profileResolver.resolveUUID(input, commandContext.isSuggestions()).thenCompose(uuid -> {
                 if (uuid == null) {
@@ -133,9 +121,10 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
             }).join();
 
             if (join == null) {
-                return ArgumentParseResult.failure(new CarbonPlayerParseException(input, commandContext));
+                return ArgumentParseResult.failure(new ParseException(input, this.messages));
             }
 
+            commandContext.store(INPUT_STRING, input);
             inputQueue.remove();
             return ArgumentParseResult.success(join);
         }
@@ -150,38 +139,16 @@ public final class CarbonPlayerArgument extends CommandArgument<Commander, Carbo
 
     }
 
-    /**
-     * CarbonPlayer parse exception.
-     */
-    public static final class CarbonPlayerParseException extends ParserException {
+    public static final class ParseException extends ComponentException {
 
         private static final long serialVersionUID = -8331761537951077684L;
         private final String input;
 
-        /**
-         * Construct a new CarbonPlayer parse exception.
-         *
-         * @param input   string input
-         * @param context command context
-         */
-        public CarbonPlayerParseException(
-            final String input,
-            final CommandContext<?> context
-        ) {
-            super(
-                CarbonPlayerParser.class,
-                context,
-                Caption.of("argument.parse.failure.player"),
-                CaptionVariable.of("input", input)
-            );
+        public ParseException(final String input, final CarbonMessages messages) {
+            super(messages.errorCommandInvalidPlayer(input));
             this.input = input;
         }
 
-        /**
-         * Get the supplied input.
-         *
-         * @return string value
-         */
         public String input() {
             return this.input;
         }

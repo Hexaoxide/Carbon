@@ -80,15 +80,15 @@ public class ContinueCommand extends CarbonCommand {
             .permission("carbon.whisper.continue")
             .senderType(PlayerCommander.class)
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandContinueDescription())
-            .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+            .handler(ctx -> {
+                final CarbonPlayer sender = ((PlayerCommander) ctx.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
                     this.carbonMessages.muteCannotSpeak(sender);
                     return;
                 }
 
-                final String message = handler.get("message");
+                final String message = ctx.get("message");
                 final UUID whisperTarget = sender.lastWhisperTarget();
 
                 if (whisperTarget == null) {
