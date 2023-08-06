@@ -309,9 +309,9 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final List<Audience> recipients,
         final String plainMessage
     ) {
-        final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
+        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
 
-        if (chatEvent.cancelled()) {
+        if (chatEvent == null || chatEvent.cancelled()) {
             return;
         }
 

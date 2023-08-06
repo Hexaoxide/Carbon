@@ -63,9 +63,9 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         }
 
         final String content = PlainTextComponentSerializer.plainText().serialize(event.message());
-        final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, event.signedMessage());
+        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, event.signedMessage());
 
-        if (chatEvent.cancelled()) {
+        if (chatEvent == null || chatEvent.cancelled()) {
             event.setCancelled(true);
             return;
         }

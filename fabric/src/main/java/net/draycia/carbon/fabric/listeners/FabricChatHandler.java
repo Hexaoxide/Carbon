@@ -62,9 +62,9 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(serverPlayer.getUUID()).join();
 
         final String content = chatMessage.decoratedContent().getString();
-        final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
+        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
 
-        if (chatEvent.cancelled()) {
+        if (chatEvent == null || chatEvent.cancelled()) {
             return false;
         }
 

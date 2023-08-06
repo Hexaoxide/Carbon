@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.listeners;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -35,8 +36,14 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentIteratorType;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public abstract class ChatListenerInternal {
 
     private final ConfigFactory configFactory;
@@ -53,7 +60,7 @@ public abstract class ChatListenerInternal {
         this.carbonEventHandler = carbonEventHandler;
     }
 
-    protected CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage) {
+    protected @Nullable CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage) {
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(Component.text(messageContent));
         final ChatChannel channel = channelMessage.channel();
         final String message = PlainTextComponentSerializer.plainText().serialize(channelMessage.message());
@@ -61,7 +68,7 @@ public abstract class ChatListenerInternal {
         return this.prepareAndEmitChatEvent(sender, message, signedMessage, channel);
     }
 
-    protected CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage, final ChatChannel channel) {
+    protected @Nullable CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage, final ChatChannel channel) {
         String content = this.configFactory.primaryConfig().applyChatPlaceholders(messageContent);
         content = this.configFactory.primaryConfig().applyChatFilters(content);
 
@@ -76,6 +83,9 @@ public abstract class ChatListenerInternal {
             message = wrapped.parseMessageTags(content);
         } else {
             message = WrappedCarbonPlayer.parseMessageTags(content, sender::hasPermission);
+        }
+        if (probablyBlank(message)) {
+            return null;
         }
 
         if (sender.leftChannels().contains(channel.key())) {
@@ -93,6 +103,22 @@ public abstract class ChatListenerInternal {
         this.carbonEventHandler.emit(chatEvent);
 
         return chatEvent;
+    }
+
+    private static boolean probablyBlank(final Component component) {
+        final Iterator<Component> it = component.iterator(ComponentIteratorType.DEPTH_FIRST);
+        while (it.hasNext()) {
+            final Component c = it.next();
+            if (!(c instanceof TextComponent text)) {
+                // Assume non-text components probably aren't blank
+                return false;
+            } else if (!text.content().isBlank()) {
+                // Found some content, definitely not blank
+                return false;
+            }
+        }
+        // Likely blank
+        return true;
     }
 
 }

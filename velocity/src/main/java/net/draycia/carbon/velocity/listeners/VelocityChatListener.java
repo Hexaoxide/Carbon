@@ -42,6 +42,7 @@ import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.slf4j.Logger;
 
@@ -114,9 +115,9 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
 
         final String content = event.getResult().getMessage().orElse(event.getMessage());
-        final CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
+        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
 
-        if (chatEvent.cancelled()) {
+        if (chatEvent == null || chatEvent.cancelled()) {
             return;
         }
 
