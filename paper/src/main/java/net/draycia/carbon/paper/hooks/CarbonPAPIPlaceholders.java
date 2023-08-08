@@ -26,9 +26,12 @@ import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.OfflinePlayer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     private final UserManager<?> userManager;
@@ -40,17 +43,17 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
     }
 
     @Override
-    public @NotNull String getIdentifier() {
+    public String getIdentifier() {
         return "carbonchat";
     }
 
     @Override
-    public @NotNull String getAuthor() {
+    public String getAuthor() {
         return "Draycia";
     }
 
     @Override
-    public @NotNull String getVersion() {
+    public String getVersion() {
         return "1.0.0";
     }
 
@@ -60,11 +63,7 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(final Player player, final @NotNull String params) {
-        if (player == null) {
-            return null;
-        }
-
+    public @Nullable String onRequest(final OfflinePlayer player, final String params) {
         final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
 
         final Component nickname = CarbonPlayer.renderName(carbonPlayer);
