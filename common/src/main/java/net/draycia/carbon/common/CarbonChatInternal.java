@@ -141,9 +141,8 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     protected void shutdown() {
         this.messagingManager.get().withPacketService(packetService -> {
             packetService.queuePacket(this.injector.getInstance(PacketFactory.class).clearLocalPlayersPacket());
-            packetService.flushQueue(); // todo remove
         });
-        // this.messagingManager.get().onShutdown(); // todo fix this taking so long
+        this.messagingManager.get().onShutdown();
         ConcurrentUtil.shutdownExecutor(this.periodicTasks, TimeUnit.MILLISECONDS, 500);
         this.profileCache.save();
         this.profileResolver.shutdown();

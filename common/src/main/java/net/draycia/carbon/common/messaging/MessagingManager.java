@@ -176,14 +176,14 @@ public class MessagingManager {
     }
 
     public void onShutdown() {
+        if (this.scheduledExecutor != null) {
+            ConcurrentUtil.shutdownExecutor(this.scheduledExecutor, TimeUnit.MILLISECONDS, 500);
+        }
         if (this.packetService != null) {
             this.packetService.flushQueue();
             this.packetService.shutdown();
         }
-        if (this.scheduledExecutor != null) {
-            ConcurrentUtil.shutdownExecutor(this.scheduledExecutor, TimeUnit.MILLISECONDS, 500);
-        }
-        this.messagingService.close();
+        // this.messagingService.close(); // todo - this is really slow, easier to just skip for now
     }
 
     private void initMessagingService(
