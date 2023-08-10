@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -178,17 +177,6 @@ public final class ConfigChatChannel implements ChatChannel {
 
         // console too!
         recipients.add(this.server.console());
-
-        return recipients;
-    }
-
-    @Override
-    public Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients) {
-        try {
-            recipients.removeIf(it -> !this.hearingPermitted(it).permitted());
-        } catch (final UnsupportedOperationException ignored) {
-
-        }
 
         return recipients;
     }

@@ -20,7 +20,6 @@
 package net.draycia.carbon.api.channels;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
@@ -69,16 +68,6 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     List<Audience> recipients(CarbonPlayer sender);
-
-    /**
-     * Filters the given recipients and removes entries that may not see messages in this channel.
-     *
-     * @param sender     the sender of messages
-     * @param recipients the recipients
-     * @return the recipients that may receive messages
-     * @since 2.0.0
-     */
-    Set<CarbonPlayer> filterRecipients(CarbonPlayer sender, Set<CarbonPlayer> recipients);
 
     /**
      * Messages will be sent in this channel if they start with this prefix.
