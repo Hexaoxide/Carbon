@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Server;
@@ -36,10 +37,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonServerPaper implements CarbonServer, ForwardingAudience.Single {
 
     private final Server server;
-    private final PaperUserManager userManager;
+    private final UserManager<?> userManager;
 
     @Inject
-    private CarbonServerPaper(final Server server, final PaperUserManager userManager) {
+    private CarbonServerPaper(final Server server, final UserManager<?> userManager) {
         this.server = server;
         this.userManager = userManager;
     }
@@ -60,15 +61,6 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
             .map(bukkit -> this.userManager.user(bukkit.getUniqueId()).getNow(null))
             .filter(Objects::nonNull)
             .toList();
-    }
-
-    public static boolean isFolia() {
-        try {
-            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-            return true;
-        } catch (final ClassNotFoundException ignored) {
-            return false;
-        }
     }
 
 }

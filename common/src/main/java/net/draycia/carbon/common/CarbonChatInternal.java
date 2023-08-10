@@ -37,6 +37,7 @@ import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
@@ -72,7 +73,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final UserManagerInternal<C> userManager,
+        final PlatformUserManager userManager,
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,
@@ -86,7 +87,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         this.periodicTasks = periodicTasks;
         this.profileCache = profileCache;
         this.profileResolver = profileResolver;
-        this.userManager = userManager;
+        this.userManager = (UserManagerInternal<C>) userManager;
         this.commandExecutor = commandExecutor;
         this.carbonServer = carbonServer;
         this.carbonMessages = carbonMessages;

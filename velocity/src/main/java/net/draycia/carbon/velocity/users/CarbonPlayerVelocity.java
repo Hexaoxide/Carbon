@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.velocity.users;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.Locale;
@@ -42,7 +44,8 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
 
     private final ProxyServer server;
 
-    public CarbonPlayerVelocity(final ProxyServer server, final CarbonPlayerCommon carbonPlayerCommon) {
+    @AssistedInject
+    private CarbonPlayerVelocity(final ProxyServer server, @Assisted final CarbonPlayerCommon carbonPlayerCommon) {
         super(carbonPlayerCommon);
         this.server = server;
     }

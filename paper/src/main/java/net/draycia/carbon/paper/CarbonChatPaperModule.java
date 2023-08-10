@@ -25,7 +25,6 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
@@ -38,8 +37,8 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
@@ -114,8 +113,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(CarbonServer.class).to(CarbonServerPaper.class);
         this.bind(ProfileResolver.class).to(PaperProfileResolver.class);
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
-        this.bind(new TypeLiteral<UserManager<?>>() {}).to(PaperUserManager.class);
-        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(PaperUserManager.class);
+        this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerPaper.class));
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
         this.install(new FactoryModuleBuilder().build(CarbonPlayerPaper.Factory.class));
     }

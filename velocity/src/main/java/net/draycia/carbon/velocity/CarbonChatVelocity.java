@@ -35,6 +35,7 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
@@ -67,7 +68,7 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
         final ExecutionCoordinatorHolder commandExecutor,
-        final VelocityUserManager userManager,
+        final PlatformUserManager userManager,
         final CarbonServerVelocity carbonServer,
         final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,

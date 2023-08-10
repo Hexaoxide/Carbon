@@ -34,6 +34,7 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.paper.hooks.CarbonPAPIPlaceholders;
@@ -72,7 +73,7 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         final CarbonChannelRegistry channelRegistry,
         final Provider<MessagingManager> messagingManager,
         final CarbonServer carbonServer,
-        final PaperUserManager userManager,
+        final PlatformUserManager userManager,
         @PeriodicTasks final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,

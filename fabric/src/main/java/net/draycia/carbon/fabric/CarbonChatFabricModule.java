@@ -25,11 +25,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
@@ -37,11 +35,12 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
+import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.draycia.carbon.fabric.users.FabricProfileResolver;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -100,8 +99,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
         this.bind(CarbonServer.class).to(CarbonServerFabric.class);
         this.bind(ProfileResolver.class).to(FabricProfileResolver.class);
         this.bind(PlatformScheduler.class).to(FabricScheduler.class);
-        this.bind(new TypeLiteral<UserManager<?>>() {}).to(FabricUserManager.class);
-        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(FabricUserManager.class);
+        this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerFabric.class));
         this.bind(CarbonMessageRenderer.class).to(FabricMessageRenderer.class);
     }
 

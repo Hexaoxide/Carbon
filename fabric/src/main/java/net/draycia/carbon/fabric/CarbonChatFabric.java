@@ -35,6 +35,7 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.fabric.command.DeleteMessageCommand;
@@ -67,7 +68,7 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
         final @PeriodicTasks ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final FabricUserManager userManager,
+        final PlatformUserManager userManager,
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,

@@ -24,7 +24,6 @@ import cloud.commandframework.velocity.VelocityCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -39,11 +38,12 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
+import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.draycia.carbon.velocity.users.VelocityProfileResolver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -106,8 +106,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.dataDirectory);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
-        this.bind(new TypeLiteral<UserManager<?>>() {}).to(VelocityUserManager.class);
-        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(VelocityUserManager.class);
+        this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerVelocity.class));
         this.bind(CarbonMessageRenderer.class).to(VelocityMessageRenderer.class);
     }
 

@@ -20,6 +20,8 @@
 package net.draycia.carbon.fabric.users;
 
 import com.google.inject.Provider;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -48,7 +50,8 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     private final MinecraftServerHolder serverHolder;
     private final Provider<CarbonChatFabric> carbonChatFabric;
 
-    public CarbonPlayerFabric(final CarbonPlayerCommon carbonPlayerCommon, final MinecraftServerHolder serverHolder, final Provider<CarbonChatFabric> carbonChatFabric) {
+    @AssistedInject
+    public CarbonPlayerFabric(final @Assisted CarbonPlayerCommon carbonPlayerCommon, final MinecraftServerHolder serverHolder, final Provider<CarbonChatFabric> carbonChatFabric) {
         super(carbonPlayerCommon);
         this.serverHolder = serverHolder;
         this.carbonChatFabric = carbonChatFabric;

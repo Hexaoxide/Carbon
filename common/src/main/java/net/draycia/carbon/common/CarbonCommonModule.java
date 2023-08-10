@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
@@ -66,6 +67,7 @@ import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.NetworkUsers;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
@@ -142,6 +144,8 @@ public final class CarbonCommonModule extends AbstractModule {
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
         this.bind(CarbonEventHandler.class).to(CarbonEventHandlerImpl.class);
         this.bind(PlayerSuggestions.class).to(NetworkUsers.class);
+        this.bind(new TypeLiteral<UserManager<?>>() {}).to(PlatformUserManager.class);
+        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(PlatformUserManager.class);
 
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(DeafenHandler.class);
