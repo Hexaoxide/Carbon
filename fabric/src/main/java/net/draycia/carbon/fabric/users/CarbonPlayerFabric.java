@@ -20,7 +20,6 @@
 package net.draycia.carbon.fabric.users;
 
 import com.google.inject.Provider;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -170,7 +169,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return "default";
         }
 
-        return this.user().getPrimaryGroup();
+        return super.primaryGroup();
     }
 
     @Override
@@ -179,13 +178,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return List.of("default");
         }
 
-        final var groups = new ArrayList<String>();
-
-        for (final var group : this.user().getInheritedGroups(this.user().getQueryOptions())) {
-            groups.add(group.getName());
-        }
-
-        return groups;
+        return super.groups();
     }
 
 }

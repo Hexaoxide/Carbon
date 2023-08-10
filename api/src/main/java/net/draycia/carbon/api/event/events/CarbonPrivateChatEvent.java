@@ -41,7 +41,7 @@ public interface CarbonPrivateChatEvent extends CarbonEvent, Cancellable {
      * @throws NullPointerException if message is null
      * @since 2.1.0
      */
-    void message(final Component message);
+    void message(Component message);
 
     /**
      * The message that will be sent.

@@ -24,13 +24,11 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import github.scarsz.discordsrv.DiscordSRV;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
-import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
@@ -45,9 +43,6 @@ import net.draycia.carbon.paper.listeners.DiscordMessageListener;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -78,15 +73,14 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
         final Provider<MessagingManager> messagingManager,
         final CarbonServer carbonServer,
         final PaperUserManager userManager,
-        @DataDirectory final Path dataDirectory,
         @PeriodicTasks final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final ExecutionCoordinatorHolder commandExecutor,
-        final IMessageRenderer<Audience, String, Component, Component> renderer
+        final ExecutionCoordinatorHolder commandExecutor
     ) {
         super(
-            injector, LogManager.getLogger("CarbonChat"), dataDirectory,
+            injector,
+            LogManager.getLogger("CarbonChat"),
             periodicTasks,
             profileCache,
             profileResolver,
@@ -96,7 +90,6 @@ public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper>
             carbonMessages,
             eventHandler,
             channelRegistry,
-            renderer,
             messagingManager
         );
         this.plugin = plugin;

@@ -79,6 +79,7 @@ public class MessagingManager {
     private static final byte protocolVersion = 0;
 
     private final CarbonChat carbonChat;
+    private final Logger logger;
     private final @MonotonicNonNull ScheduledExecutorService scheduledExecutor;
     private final @MonotonicNonNull PacketService packetService;
     private @MonotonicNonNull MessagingService messagingService;
@@ -94,13 +95,14 @@ public class MessagingManager {
         final WhisperCommand.WhisperHandler whisper,
         final PacketFactory packetFactory
     ) {
+        this.carbonChat = carbonChat;
+        this.logger = logger;
         if (!configFactory.primaryConfig().messagingSettings().enabled()) {
             if (!((CarbonChatInternal<?>) carbonChat).isProxy()) {
                 logger.info("Messaging services disabled in config. Cross-server will not work without this!");
             }
             this.messagingService = EMPTY_MESSAGING_SERVICE;
             this.packetService = null;
-            this.carbonChat = carbonChat;
             this.scheduledExecutor = null;
             return;
         }
@@ -126,8 +128,7 @@ public class MessagingManager {
             }
         };
         this.scheduledExecutor = new ExceptionLoggingScheduledThreadPoolExecutor(4,
-            ConcurrentUtil.carbonThreadFactory(carbonChat.logger(), "MessagingManager"), carbonChat.logger());
-        this.carbonChat = carbonChat;
+            ConcurrentUtil.carbonThreadFactory(logger, "MessagingManager"), logger);
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
         handlerImpl.addHandler(new CarbonServerHandler(server, carbonChat.serverId(), this.packetService, handlerImpl, packetFactory));
@@ -197,7 +198,7 @@ public class MessagingManager {
 
         switch (messagingSettings.brokerType()) {
             case RABBITMQ -> {
-                this.carbonChat.logger().info("Initializing RabbitMQ Messaging services...");
+                this.logger.info("Initializing RabbitMQ Messaging services...");
 
                 final RabbitMQMessagingService.Builder builder = RabbitMQMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port(), messagingSettings.vhost())
@@ -210,7 +211,7 @@ public class MessagingManager {
                 this.messagingService = builder.build();
             }
             case NATS -> {
-                this.carbonChat.logger().info("Initializing NATS Messaging services...");
+                this.logger.info("Initializing NATS Messaging services...");
 
                 final NATSMessagingService.Builder builder = NATSMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port())
@@ -223,7 +224,7 @@ public class MessagingManager {
                 this.messagingService = builder.build();
             }
             case REDIS -> {
-                this.carbonChat.logger().info("Initializing Redis Messaging services...");
+                this.logger.info("Initializing Redis Messaging services...");
 
                 final RedisMessagingService.Builder builder = RedisMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port());

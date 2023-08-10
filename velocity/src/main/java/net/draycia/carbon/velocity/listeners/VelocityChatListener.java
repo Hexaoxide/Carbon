@@ -31,16 +31,14 @@ import com.velocitypowered.api.proxy.Player;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -115,20 +113,14 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
 
         final String content = event.getResult().getMessage().orElse(event.getMessage());
-        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return;
         }
 
         for (final Audience recipient : chatEvent.recipients()) {
-            Component renderedMessage = chatEvent.message();
-
-            for (final KeyedRenderer renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
-            }
-
-            recipient.sendMessage(renderedMessage);
+            recipient.sendMessage(chatEvent.renderFor(recipient));
         }
     }
 

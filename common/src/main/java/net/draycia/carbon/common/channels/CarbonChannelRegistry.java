@@ -26,7 +26,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
-import com.seiama.event.EventConfig;
 import com.seiama.registry.Registry;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -44,13 +43,12 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
-import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
@@ -60,7 +58,6 @@ import net.draycia.carbon.common.util.Exceptions;
 import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -118,7 +115,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
 
-        events.subscribe(CarbonReloadEvent.class, -99, EventConfig.DEFAULT_ACCEPTS_CANCELLED, event -> this.reloadConfigChannels());
+        events.subscribe(CarbonReloadEvent.class, -99, true, event -> this.reloadConfigChannels());
     }
 
     public static ConfigurationTransformation.Versioned versioned() {
@@ -309,20 +306,14 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final List<Audience> recipients,
         final String plainMessage
     ) {
-        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return;
         }
 
         for (final Audience recipient : recipients) {
-            Component renderedMessage = chatEvent.message();
-
-            for (final KeyedRenderer renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
-            }
-
-            recipient.sendMessage(renderedMessage);
+            recipient.sendMessage(chatEvent.renderFor(recipient));
         }
     }
 

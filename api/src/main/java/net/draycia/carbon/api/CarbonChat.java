@@ -19,17 +19,16 @@
  */
 package net.draycia.carbon.api;
 
-import java.nio.file.Path;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
- * The main plugin interface.
+ * The {@link CarbonChat} interface is the gateway to interacting with the majority of the CarbonChat API.
  *
  * <p>Instances may be obtained through {@link CarbonChatProvider#carbonChat()} once Carbon is loaded.</p>
  * <p>On most platforms, you should use the provided load order mechanism to ensure your addon loads after
@@ -51,25 +50,8 @@ public interface CarbonChat {
     UUID serverId();
 
     /**
-     * The plugin's logger.<br>
-     * All messages will be logged through this.
-     *
-     * @return the plugin's logger
-     * @since 2.0.0
-     */
-    Logger logger();
-
-    /**
-     * The plugin's data storage directory.<br>
-     * This is where configs and misc files will be stored.
-     *
-     * @return the plugin's data directory
-     * @since 2.0.0
-     */
-    Path dataDirectory();
-
-    /**
-     * The event handler, used for listening to and emitting events.
+     * The {@link CarbonEventHandler event handler}, used for listening to
+     * and emitting {@link CarbonEvent events}.
      *
      * @return the event handler
      * @since 2.0.0

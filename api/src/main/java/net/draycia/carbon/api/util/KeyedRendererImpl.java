@@ -17,27 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.event;
+package net.draycia.carbon.api.util;
 
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-/**
- * An EventSubscriber.
- *
- * @param <T> CarbonEvent implementations
- * @since 2.1.0
- */
 @DefaultQualifier(NonNull.class)
-public interface CarbonEventSubscriber<T extends CarbonEvent> {
+record KeyedRendererImpl(Key key, ChatComponentRenderer renderer) implements KeyedRenderer {
 
-    /**
-     * Invokes this event consumer.
-     *
-     * @param event the event
-     * @throws Throwable if an exception is thrown
-     * @since 1.0.0
-     */
-    void on(T event) throws Throwable;
+    @Override
+    public Component render(
+        final CarbonPlayer sender,
+        final Audience recipient,
+        final Component message,
+        final Component originalMessage
+    ) {
+        return this.renderer.render(sender, recipient, message, originalMessage);
+    }
 
 }

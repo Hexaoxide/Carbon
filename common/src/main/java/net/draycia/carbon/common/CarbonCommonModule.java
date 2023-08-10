@@ -51,6 +51,7 @@ import net.draycia.carbon.common.listeners.MessagePacketHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.listeners.RadiusListener;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -76,7 +77,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -113,7 +113,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final BooleanPlaceholderResolver<Audience> booleanPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageSender carbonMessageSender,
-        final IMessageRenderer<Audience, String, Component, Component> messageRenderer
+        final CarbonMessageRenderer messageRenderer
     ) throws UnscannableMethodException {
         return Moonshine.<CarbonMessages, Audience>builder(new TypeToken<>() {})
             .receiverLocatorResolver(receiverResolver, 0)

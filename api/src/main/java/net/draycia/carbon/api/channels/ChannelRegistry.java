@@ -40,7 +40,7 @@ public interface ChannelRegistry {
      * @param channel the channel to register
      * @since 2.1.0
      */
-    void register(final ChatChannel channel);
+    void register(ChatChannel channel);
 
     /**
      * Gets the channel with the matching key.
@@ -49,7 +49,7 @@ public interface ChannelRegistry {
      * @return the channel
      * @since 2.1.0
      */
-    @Nullable ChatChannel channel(final Key key);
+    @Nullable ChatChannel channel(Key key);
 
     /**
      * Gets the default key.
@@ -82,7 +82,7 @@ public interface ChannelRegistry {
      * @return the channel, or the default one
      * @since 2.1.0
      */
-    ChatChannel keyOrDefault(final Key key);
+    ChatChannel keyOrDefault(Key key);
 
     /**
      * The provided action will be executed immediately for all currently registered

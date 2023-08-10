@@ -23,7 +23,6 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,9 +43,6 @@ import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.PlayerUtils;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -59,7 +55,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     private final UUID serverId;
     private final Injector injector;
     private final Logger logger;
-    private final Path dataDirectory;
     private final ScheduledExecutorService periodicTasks;
     private final ProfileCache profileCache;
     private final ProfileResolver profileResolver;
@@ -69,13 +64,11 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
     private final CarbonChannelRegistry channelRegistry;
-    private final IMessageRenderer<Audience, String, Component, Component> renderer;
     private final Provider<MessagingManager> messagingManager;
 
     protected CarbonChatInternal(
         final Injector injector,
         final Logger logger,
-        final Path dataDirectory,
         final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
@@ -85,13 +78,11 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,
         final CarbonChannelRegistry channelRegistry,
-        final IMessageRenderer<Audience, String, Component, Component> renderer,
         final Provider<MessagingManager> messagingManagerProvider
     ) {
         this.serverId = UUID.randomUUID();
         this.injector = injector;
         this.logger = logger;
-        this.dataDirectory = dataDirectory;
         this.periodicTasks = periodicTasks;
         this.profileCache = profileCache;
         this.profileResolver = profileResolver;
@@ -101,7 +92,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         this.carbonMessages = carbonMessages;
         this.eventHandler = eventHandler;
         this.channelRegistry = channelRegistry;
-        this.renderer = renderer;
         this.messagingManager = messagingManagerProvider;
     }
 
@@ -155,12 +145,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         return this.serverId;
     }
 
-    @Override
-    public Path dataDirectory() {
-        return this.dataDirectory;
-    }
-
-    @Override
     public Logger logger() {
         return this.logger;
     }
@@ -183,11 +167,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     @Override
     public CarbonChannelRegistry channelRegistry() {
         return this.channelRegistry;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
-        return (IMessageRenderer<T, String, Component, Component>) this.renderer;
     }
 
     public @Nullable PacketService packetService() {

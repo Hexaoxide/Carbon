@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.SourcedAudience;
-import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
@@ -41,6 +41,7 @@ import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResol
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.util.Exceptions;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -65,7 +66,8 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public final class ConfigChatChannel implements ChatChannel {
 
-    private transient @MonotonicNonNull @Inject CarbonChat carbonChat;
+    private transient @MonotonicNonNull @Inject CarbonServer server;
+    private transient @MonotonicNonNull @Inject CarbonMessageRenderer renderer;
 
     @Comment("""
         The channel's key, used to track the channel.
@@ -144,7 +146,7 @@ public final class ConfigChatChannel implements ChatChannel {
         final Component originalMessage
     ) {
         return this.carbonMessages().chatFormat(
-            new SourcedAudience(sender, recipient),
+            SourcedAudience.of(sender, recipient),
             sender.uuid(),
             this.key(),
             Objects.requireNonNull(CarbonPlayer.renderName(sender)),
@@ -168,14 +170,14 @@ public final class ConfigChatChannel implements ChatChannel {
     public List<Audience> recipients(final CarbonPlayer sender) {
         final List<Audience> recipients = new ArrayList<>();
 
-        for (final CarbonPlayer player : this.carbonChat.server().players()) {
+        for (final CarbonPlayer player : this.server.players()) {
             if (this.hearingPermitted(player).permitted()) {
                 recipients.add(player);
             }
         }
 
         // console too!
-        recipients.add(this.carbonChat.server().console());
+        recipients.add(this.server.console());
 
         return recipients;
     }
@@ -197,10 +199,10 @@ public final class ConfigChatChannel implements ChatChannel {
     }
 
     public String messageFormat(final CarbonPlayer sender) {
-        return this.messageSource.messageOf(new SourcedAudience(sender, sender), "");
+        return this.messageSource.messageOf(SourcedAudience.of(sender, sender), "");
     }
 
-    private @Nullable ConfigChannelMessages loadMessages() {
+    private ConfigChannelMessages loadMessages() {
         final SourcedReceiverResolver serverReceiverResolver = new SourcedReceiverResolver();
         final ComponentPlaceholderResolver<SourcedAudience> componentPlaceholderResolver = new ComponentPlaceholderResolver<>();
         final UUIDPlaceholderResolver<SourcedAudience> uuidPlaceholderResolver = new UUIDPlaceholderResolver<>();
@@ -213,7 +215,7 @@ public final class ConfigChatChannel implements ChatChannel {
             return Moonshine.<ConfigChannelMessages, SourcedAudience>builder(new TypeToken<ConfigChannelMessages>() {})
                 .receiverLocatorResolver(serverReceiverResolver, 0)
                 .sourced(this.messageSource)
-                .rendered(((CarbonChatInternal<?>) this.carbonChat).messageRenderer())
+                .rendered(this.renderer.asSourced())
                 .sent(carbonMessageSender)
                 .resolvingWithStrategy(new StandardPlaceholderResolverStrategy<>(new StandardSupertypeThenInterfaceSupertypeStrategy(false)))
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
@@ -223,10 +225,8 @@ public final class ConfigChatChannel implements ChatChannel {
                 .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
                 .create(this.getClass().getClassLoader());
         } catch (final UnscannableMethodException e) {
-            e.printStackTrace();
+            throw Exceptions.rethrow(e);
         }
-
-        return null;
     }
 
     private ConfigChannelMessages carbonMessages() {

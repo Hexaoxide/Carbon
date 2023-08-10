@@ -17,34 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.util;
+package net.draycia.carbon.common.messages;
 
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.ForwardingAudience;
-import org.jetbrains.annotations.NotNull;
 
-/**
- * An audience, where messages are sent from another Audience.
- *
- * @since 2.0.0
- */
-public record SourcedAudience(Audience sender, Audience recipient) implements ForwardingAudience.Single {
+record SourcedAudienceImpl(Audience sender, Audience recipient) implements SourcedAudience {
 
-    public static final SourcedAudience EMPTY = new SourcedAudience(Audience.empty(), Audience.empty());
-
-    /**
-     * An empty {@link SourcedAudience}, with an empty sender and recipient.
-     *
-     * @return an empty sourced audience
-     * @since 2.0.0
-     */
-    public static SourcedAudience empty() {
-        return EMPTY;
-    }
-
-    @Override
-    public @NotNull Audience audience() {
-        return this.recipient;
-    }
+    static final SourcedAudience EMPTY = new SourcedAudienceImpl(Audience.empty(), Audience.empty());
 
 }

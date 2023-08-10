@@ -42,8 +42,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface CarbonPlayer extends Audience, Identified {
 
-    CarbonPlayer EMPTY = new EmptyCarbonPlayer();
-
     /**
      * Returns the appropriate {@link Component} to represent the player's name.
      *
@@ -66,7 +64,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the distance from the other player, or -1
      * @since 2.1.0
      */
-    double distanceSquaredFrom(final CarbonPlayer other);
+    double distanceSquaredFrom(CarbonPlayer other);
 
     /**
      * Returns if both players are in the same world or server.
@@ -75,7 +73,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if both players are in the same world/server
      * @since 2.1.0
      */
-    boolean sameWorldAs(final CarbonPlayer other);
+    boolean sameWorldAs(CarbonPlayer other);
 
     /**
      * Gets the player's username.
@@ -112,7 +110,7 @@ public interface CarbonPlayer extends Audience, Identified {
     /**
      * Sets the player's display name.
      *
-     * <p>Setting {@code null} is equivalent to setting the display name to the username.</p>
+     * <p>Setting {@code null} will remove the current display name.</p>
      * <p>Won't have any visible effect when Carbon's nickname management is disabled.</p>
      *
      * @param displayName the new display name
@@ -120,7 +118,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @see #hasCustomDisplayName()
      * @since 2.0.0
      */
-    void displayName(final @Nullable Component displayName);
+    void displayName(@Nullable Component displayName);
 
     /**
      * The player's UUID, often used for identification purposes.
@@ -137,7 +135,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the chat component for the item in the slot, or null if the slot is empty
      * @since 2.0.0
      */
-    @Nullable Component createItemHoverComponent(final InventorySlot slot);
+    @Nullable Component createItemHoverComponent(InventorySlot slot);
 
     /**
      * The player's locale.
@@ -161,7 +159,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param chatChannel the channel
      * @since 2.0.0
      */
-    void selectedChannel(final @Nullable ChatChannel chatChannel);
+    void selectedChannel(@Nullable ChatChannel chatChannel);
 
     /**
      * Determines which channel the message should go to, and removes any channel prefixes from the message.
@@ -170,7 +168,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the channel and message
      * @since 2.1.0
      */
-    ChannelMessage channelForMessage(final Component message);
+    ChannelMessage channelForMessage(Component message);
 
     /**
      * A message and which channel it should be sent in.
@@ -188,7 +186,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if the player has the permission
      * @since 2.0.0
      */
-    boolean hasPermission(final String permission);
+    boolean hasPermission(String permission);
 
     /**
      * Returns the player's primary group.
@@ -229,7 +227,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if this player is ignoring the sender
      * @since 2.0.5
      */
-    boolean ignoring(final UUID player);
+    boolean ignoring(UUID player);
 
     /**
      * Checks if the other player is being ignored by this player.
@@ -238,7 +236,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if this player is ignoring the sender
      * @since 2.0.0
      */
-    boolean ignoring(final CarbonPlayer player);
+    boolean ignoring(CarbonPlayer player);
 
     /**
      * Adds the player to and removes the player from the ignore list.
@@ -247,7 +245,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param nowIgnoring if the player should be ignored
      * @since 2.0.0
      */
-    void ignoring(final UUID player, final boolean nowIgnoring);
+    void ignoring(UUID player, boolean nowIgnoring);
 
     /**
      * Adds the player to and removes the player from the ignore list.
@@ -256,7 +254,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param nowIgnoring if the player should be ignored
      * @since 2.0.0
      */
-    void ignoring(final CarbonPlayer player, boolean nowIgnoring);
+    void ignoring(CarbonPlayer player, boolean nowIgnoring);
 
     /**
      * Returns if the player is deafened and unable to read messages.
@@ -271,7 +269,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @since 2.0.0
      */
-    void deafened(final boolean deafened);
+    void deafened(boolean deafened);
 
     /**
      * Returns if the player is spying on messages and able to read muted/private messages.
@@ -286,7 +284,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @since 2.0.0
      */
-    void spying(final boolean spying);
+    void spying(boolean spying);
 
     /**
      * Sends the message as the player.
@@ -294,7 +292,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param message the message to be sent
      * @since 2.0.0
      */
-    void sendMessageAsPlayer(final String message);
+    void sendMessageAsPlayer(String message);
 
     /**
      * Returns whether the player is online.
@@ -318,7 +316,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param uuid the uuid of the reply target
      * @since 2.0.0
      */
-    void whisperReplyTarget(final @Nullable UUID uuid);
+    void whisperReplyTarget(@Nullable UUID uuid);
 
     /**
      * The last player this player has whispered.
@@ -334,7 +332,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param uuid the uuid of the whisper target
      * @since 2.0.0
      */
-    void lastWhisperTarget(final @Nullable UUID uuid);
+    void lastWhisperTarget(@Nullable UUID uuid);
 
     /**
      * If this player is vanished in another supported plugin.
@@ -353,7 +351,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if this player is aware of the other player
      * @since 2.0.0
      */
-    boolean awareOf(final CarbonPlayer other);
+    boolean awareOf(CarbonPlayer other);
 
     /**
      * A list of all the channels the player has left
@@ -373,7 +371,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param channel the channel to join.
      * @since 2.1.0
      */
-    void joinChannel(final ChatChannel channel);
+    void joinChannel(ChatChannel channel);
 
     /**
      * Leave a channel for this player.
@@ -381,6 +379,6 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param channel the channel to leave.
      * @since 2.1.0
      */
-    void leaveChannel(final ChatChannel channel);
+    void leaveChannel(ChatChannel channel);
 
 }

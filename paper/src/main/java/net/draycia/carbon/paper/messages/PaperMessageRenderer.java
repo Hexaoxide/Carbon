@@ -21,14 +21,16 @@ package net.draycia.carbon.paper.messages;
 
 import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
@@ -36,7 +38,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -47,7 +48,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
-public class PaperMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
+@Singleton
+public class PaperMessageRenderer implements CarbonMessageRenderer {
 
     private final Supplier<@MonotonicNonNull PlaceholderAPIMiniMessageParser> placeholderApiProcessor = Suppliers.memoize(() -> {
         if (CarbonChatPaper.papiLoaded()) {
@@ -67,7 +69,7 @@ public class PaperMessageRenderer<T extends Audience> implements IMessageRendere
 
     @Override
     public Component render(
-        final T receiver,
+        final Audience receiver,
         final String intermediateMessage,
         final Map<String, ? extends Component> resolvedPlaceholders,
         final Method method,

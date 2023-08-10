@@ -24,9 +24,7 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginContainer;
-import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -44,9 +42,6 @@ import net.draycia.carbon.velocity.listeners.VelocityListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerLeaveListener;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -68,12 +63,10 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
         final ProxyServer proxyServer,
         final Injector injector,
         final PluginContainer pluginContainer,
-        @DataDirectory final Path dataDirectory,
         @PeriodicTasks final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
         final ExecutionCoordinatorHolder commandExecutor,
-        final IMessageRenderer<Audience, String, Component, Component> renderer,
         final VelocityUserManager userManager,
         final CarbonServerVelocity carbonServer,
         final CarbonMessages carbonMessages,
@@ -82,8 +75,8 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
         final Provider<MessagingManager> messagingManager
     ) {
         super(
-            injector, LogManager.getLogger(pluginContainer.getDescription().getId()),
-            dataDirectory,
+            injector,
+            LogManager.getLogger(pluginContainer.getDescription().getId()),
             periodicTasks,
             profileCache,
             profileResolver,
@@ -93,7 +86,6 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
             carbonMessages,
             eventHandler,
             channelRegistry,
-            renderer,
             messagingManager
         );
         this.proxyServer = proxyServer;

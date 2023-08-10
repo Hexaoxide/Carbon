@@ -1,11 +1,11 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
-
 plugins {
   id("carbon.base-conventions")
 }
 
 dependencies {
   api(projects.carbonchatApi)
+  compileOnlyApi(platform(libs.log4jBom))
+  compileOnlyApi(libs.log4jApi)
 
   // Configs
   api(libs.configurateHocon)

@@ -30,7 +30,6 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -40,6 +39,7 @@ import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.events.CarbonPrivateChatEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.WhisperPacket;
@@ -198,9 +198,9 @@ public class WhisperCommand extends CarbonCommand {
                 return;
             }
 
-            this.messages.whisperSender(new SourcedAudience(sender, sender), senderName, recipientName, privateChatEvent.message());
+            this.messages.whisperSender(SourcedAudience.of(sender, sender), senderName, recipientName, privateChatEvent.message());
             if (localRecipient) {
-                this.messages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, privateChatEvent.message());
+                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderName, recipientName, privateChatEvent.message());
             }
             this.messages.whisperConsoleLog(this.server.console(), senderName, recipientName, privateChatEvent.message());
 
@@ -233,7 +233,7 @@ public class WhisperCommand extends CarbonCommand {
                 final Component recipientName = CarbonPlayer.renderName(recipient);
 
                 recipient.whisperReplyTarget(sender.uuid());
-                this.messages.whisperRecipient(new SourcedAudience(sender, recipient), senderName, recipientName, packet.message());
+                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderName, recipientName, packet.message());
                 this.messages.whisperConsoleLog(this.server.console(), senderName, recipientName, packet.message());
                 final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
                 if (messageSound != null) {

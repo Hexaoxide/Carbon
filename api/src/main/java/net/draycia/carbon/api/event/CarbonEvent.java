@@ -20,7 +20,7 @@
 package net.draycia.carbon.api.event;
 
 /**
- * Interface to represent that an event belongs to carbon.
+ * Marker interface for events.
  *
  * @since 1.0.0
  */

@@ -23,7 +23,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
- * Carbon event dispatcher.
+ * The {@link CarbonEventHandler} is responsible for managing {@link CarbonEventSubscription event subscriptions}
+ * and emitting {@link CarbonEvent events}.
  *
  * @since 2.1.0
  */
@@ -40,8 +41,8 @@ public interface CarbonEventHandler {
      * @since 2.0.0
      */
     <T extends CarbonEvent> CarbonEventSubscription<T> subscribe(
-        final Class<T> eventClass,
-        final CarbonEventSubscriber<T> subscriber
+        Class<T> eventClass,
+        CarbonEventSubscriber<T> subscriber
     );
 
     /**
@@ -57,21 +58,22 @@ public interface CarbonEventHandler {
      * @since 2.0.0
      */
     <T extends CarbonEvent> CarbonEventSubscription<T> subscribe(
-        final Class<T> eventClass,
-        final int order,
-        final boolean acceptsCancelled,
-        final CarbonEventSubscriber<T> subscriber
+        Class<T> eventClass,
+        int order,
+        boolean acceptsCancelled,
+        CarbonEventSubscriber<T> subscriber
     );
 
     /**
-     * Emits the supplied event.<br>
-     * Events are modified in place, so care should be taken to keep a reference to
-     * the event while it's being emitted.
+     * Emits the supplied event.
+     *
+     * <p>Events are modified in place, meaning you must keep a reference to the event
+     * yourself if you wish to inspect it's state after this call.</p>
      *
      * @param event the event to be emitted
      * @param <T> the class to emit
      * @since 2.0.0
      */
-    <T extends CarbonEvent> void emit(final T event);
+    <T extends CarbonEvent> void emit(T event);
 
 }

@@ -17,16 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.event.events;
+package net.draycia.carbon.common.messages;
 
-// TODO: emit event on server shutdown
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.moonshine.message.IMessageRenderer;
 
-import net.draycia.carbon.api.event.CarbonEvent;
+@FunctionalInterface
+public interface CarbonMessageRenderer extends IMessageRenderer<Audience, String, Component, Component> {
 
-/**
- * An event that's called when the server shuts down.
- *
- * @since 2.1.0
- */
-public class CarbonShutdownEvent implements CarbonEvent {
+    default IMessageRenderer<SourcedAudience, String, Component, Component> asSourced() {
+        return this::render;
+    }
+
 }

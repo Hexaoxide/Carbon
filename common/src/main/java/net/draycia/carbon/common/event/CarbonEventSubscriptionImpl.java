@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.event;
 
+import com.seiama.event.EventSubscription;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventSubscriber;
 import net.draycia.carbon.api.event.CarbonEventSubscription;
@@ -26,6 +27,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
- record CarbonEventSubscriptionImpl<T extends CarbonEvent>(Class<T> event, CarbonEventSubscriber<T> subscriber) implements CarbonEventSubscription<T> {
+record CarbonEventSubscriptionImpl<T extends CarbonEvent>(
+    Class<T> event,
+    CarbonEventSubscriber<T> subscriber,
+    EventSubscription<T> backingSubscription
+) implements CarbonEventSubscription<T> {
+
+    @Override
+    public void dispose() {
+        this.backingSubscription.dispose();
+    }
 
 }

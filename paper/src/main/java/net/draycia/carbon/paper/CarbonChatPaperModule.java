@@ -23,7 +23,6 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -32,12 +31,12 @@ import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
@@ -47,9 +46,6 @@ import net.draycia.carbon.paper.command.PaperPlayerCommander;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.draycia.carbon.paper.users.PaperProfileResolver;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Server;
@@ -106,20 +102,6 @@ public final class CarbonChatPaperModule extends AbstractModule {
         return commandManager;
     }
 
-    @Provides
-    @Singleton
-    @SuppressWarnings("unchecked,unused")
-    public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
-        return injector.getInstance(PaperMessageRenderer.class);
-    }
-
-    @Provides
-    @Singleton
-    @SuppressWarnings("unchecked,unused")
-    public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
-        return injector.getInstance(PaperMessageRenderer.class);
-    }
-
     @Override
     public void configure() {
         this.install(new CarbonCommonModule());
@@ -134,6 +116,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
         this.bind(new TypeLiteral<UserManager<?>>() {}).to(PaperUserManager.class);
         this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(PaperUserManager.class);
+        this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
         this.install(new FactoryModuleBuilder().build(CarbonPlayerPaper.Factory.class));
     }
 

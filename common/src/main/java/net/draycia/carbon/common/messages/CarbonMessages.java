@@ -20,7 +20,6 @@
 package net.draycia.carbon.common.messages;
 
 import java.util.UUID;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;

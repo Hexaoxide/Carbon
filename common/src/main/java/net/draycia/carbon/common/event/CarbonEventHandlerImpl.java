@@ -27,6 +27,7 @@ import com.seiama.event.bus.EventBus;
 import com.seiama.event.bus.SimpleEventBus;
 import com.seiama.event.registry.EventRegistry;
 import com.seiama.event.registry.SimpleEventRegistry;
+import net.draycia.carbon.api.event.Cancellable;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.CarbonEventSubscriber;
@@ -60,8 +61,11 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
         final Class<T> eventClass,
         final CarbonEventSubscriber<T> subscriber
     ) {
-        this.eventRegistry.subscribe(eventClass, subscriber::on);
-        return new CarbonEventSubscriptionImpl<>(eventClass, subscriber);
+        return new CarbonEventSubscriptionImpl<>(
+            eventClass,
+            subscriber,
+            this.eventRegistry.subscribe(eventClass, subscriber::on)
+        );
     }
 
     // TODO: support EventConfig#exact()
@@ -73,8 +77,17 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
         final CarbonEventSubscriber<T> subscriber
     ) {
         final EventConfig eventConfig = EventConfig.defaults().order(order).acceptsCancelled(acceptsCancelled);
-        this.eventRegistry.subscribe(eventClass, eventConfig, subscriber::on);
-        return new CarbonEventSubscriptionImpl<>(eventClass, subscriber);
+        return new CarbonEventSubscriptionImpl<>(
+            eventClass,
+            subscriber,
+            this.eventRegistry.subscribe(eventClass, eventConfig, event -> {
+                // Our events implement seiama Cancellable; but API consumers won't be able to do that
+                if (!acceptsCancelled && event instanceof Cancellable cancellable && cancellable.cancelled()) {
+                    return;
+                }
+                subscriber.on(event);
+            })
+        );
     }
 
     @Override

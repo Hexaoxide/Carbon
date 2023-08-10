@@ -52,11 +52,7 @@ public class MessagePacketHandler implements Listener {
 
             messaging.get().withPacketService(packetService -> {
                 final CarbonPlayer sender = event.sender();
-                Component networkMessage = event.message();
-
-                for (final var renderer : event.renderers()) {
-                    networkMessage = renderer.render(sender, sender, networkMessage, event.originalMessage());
-                }
+                final Component networkMessage = e.renderFor(sender);
 
                 packetService.queuePacket(new ChatMessagePacket(carbonChat.serverId(), sender.uuid(),
                     event.chatChannel().permission(), event.chatChannel().key(), sender.username(), networkMessage));
