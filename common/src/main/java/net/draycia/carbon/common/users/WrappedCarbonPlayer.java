@@ -42,7 +42,6 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.util.Tristate;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -256,11 +255,11 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         final String text = PlainTextComponentSerializer.plainText().serialize(message);
         Component formattedMessage = message;
 
-        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon().channelRegistry().defaultChannel());
+        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon.channelRegistry().defaultChannel());
 
         for (final Key channelKey : this.carbonPlayerCommon.channelRegistry().keys()) {
-            final @MonotonicNonNull ChatChannel chatChannel = this.carbonPlayerCommon.channelRegistry().channel(channelKey);
-            final @MonotonicNonNull String prefix = chatChannel.quickPrefix();
+            final ChatChannel chatChannel = this.carbonPlayerCommon.channelRegistry().channelOrThrow(channelKey);
+            final @Nullable String prefix = chatChannel.quickPrefix();
 
             if (prefix == null) {
                 continue;

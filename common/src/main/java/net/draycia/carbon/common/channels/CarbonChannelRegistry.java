@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import com.seiama.registry.Holder;
 import com.seiama.registry.Registry;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -406,7 +408,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
     @Override
     public @Nullable ChatChannel channel(final Key key) {
-        return this.channelRegistry.getOrCreateHolder(key).value();
+        final @Nullable Holder<ChatChannel> holder = this.channelRegistry.getHolder(key);
+        return holder == null ? null : holder.value();
     }
 
     public @Nullable ChatChannel channelByValue(final String value) {
@@ -439,7 +442,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     }
 
     @Override
-    public ChatChannel keyOrDefault(final Key key) {
+    public ChatChannel channelOrDefault(final Key key) {
         final @Nullable ChatChannel channel = this.channel(key);
 
         if (channel != null) {
@@ -447,6 +450,15 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
 
         return this.defaultChannel();
+    }
+
+    @Override
+    public ChatChannel channelOrThrow(final Key key) {
+        final @Nullable ChatChannel channel = this.channel(key);
+        if (channel != null) {
+            return channel;
+        }
+        throw new NoSuchElementException("No channel registered with key '" + key.asString() + "'");
     }
 
     @Override

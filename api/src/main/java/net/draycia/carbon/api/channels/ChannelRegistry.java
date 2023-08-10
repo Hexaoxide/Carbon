@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.api.channels;
 
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.kyori.adventure.key.Key;
@@ -26,7 +27,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Registry for chat channels.
+ * Registry for {@link ChatChannel chat channels}.
  *
  * @since 2.0.0
  */
@@ -43,7 +44,8 @@ public interface ChannelRegistry {
     void register(ChatChannel channel);
 
     /**
-     * Gets the channel with the matching key.
+     * Retrieve a channel by its key. If there is no matching channel,
+     * returns {@code null}.
      *
      * @param key the channel's key
      * @return the channel
@@ -52,7 +54,7 @@ public interface ChannelRegistry {
     @Nullable ChatChannel channel(Key key);
 
     /**
-     * Gets the default key.
+     * Gets the key for the default channel.
      *
      * @return the default key
      * @since 2.1.0
@@ -60,7 +62,7 @@ public interface ChannelRegistry {
     @NonNull Key defaultKey();
 
     /**
-     * Gets the default value.
+     * Gets the default channel.
      *
      * @return the default value
      * @since 2.1.0
@@ -76,13 +78,25 @@ public interface ChannelRegistry {
     @NonNull Set<Key> keys();
 
     /**
-     * Gets the channel with the matching key, otherwise the default channel.
+     * Retrieve a channel by its key. If there is no matching channel,
+     * returns {@link #defaultChannel() the default channel}.
      *
      * @param key the channel key
      * @return the channel, or the default one
      * @since 2.1.0
      */
-    ChatChannel keyOrDefault(Key key);
+    ChatChannel channelOrDefault(Key key);
+
+    /**
+     * Retrieve a channel by its key. If there is no matching channel,
+     * throws {@link NoSuchElementException}.
+     *
+     * @param key channel key
+     * @return channel
+     * @throws NoSuchElementException when no matching channel is found
+     * @since 2.1.0
+     */
+    ChatChannel channelOrThrow(Key key);
 
     /**
      * The provided action will be executed immediately for all currently registered

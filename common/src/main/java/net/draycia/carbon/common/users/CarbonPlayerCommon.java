@@ -44,7 +44,6 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
 public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Single {
@@ -154,7 +153,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public Audience audience() {
         return Audience.empty();
     }
 
