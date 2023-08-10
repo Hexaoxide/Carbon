@@ -99,7 +99,7 @@ public class MessagingManager {
         this.serverId = serverId;
         this.logger = logger;
         if (!configFactory.primaryConfig().messagingSettings().enabled()) {
-            if (!((CarbonChatInternal<?>) carbonChat).isProxy()) {
+            if (!((CarbonChatInternal) carbonChat).isProxy()) {
                 logger.info("Messaging services disabled in config. Cross-server will not work without this!");
             }
             this.messagingService = EMPTY_MESSAGING_SERVICE;

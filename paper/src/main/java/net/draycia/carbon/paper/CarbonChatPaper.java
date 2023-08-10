@@ -43,7 +43,6 @@ import net.draycia.carbon.paper.hooks.PAPIChatHook;
 import net.draycia.carbon.paper.listeners.DiscordMessageListener;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
-import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -54,7 +53,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public final class CarbonChatPaper extends CarbonChatInternal<CarbonPlayerPaper> {
+public final class CarbonChatPaper extends CarbonChatInternal {
 
     private static final Set<Class<? extends Listener>> LISTENER_CLASSES = Set.of(
         PaperChatListener.class,

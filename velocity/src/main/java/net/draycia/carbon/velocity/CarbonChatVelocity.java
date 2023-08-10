@@ -42,14 +42,13 @@ import net.draycia.carbon.velocity.listeners.VelocityChatListener;
 import net.draycia.carbon.velocity.listeners.VelocityListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerLeaveListener;
-import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import org.apache.logging.log4j.LogManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity> {
+public class CarbonChatVelocity extends CarbonChatInternal {
 
     private static final Set<Class<? extends VelocityListener<?>>> LISTENER_CLASSES = Set.of(
         VelocityChatListener.class,

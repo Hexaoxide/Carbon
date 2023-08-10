@@ -29,14 +29,13 @@ import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.event.CarbonEventHandler;
-import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
-import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.UserManagerInternal;
@@ -50,14 +49,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public abstract class CarbonChatInternal<C extends CarbonPlayer> implements CarbonChat {
+public abstract class CarbonChatInternal implements CarbonChat {
 
     private final Injector injector;
     private final Logger logger;
     private final ScheduledExecutorService periodicTasks;
     private final ProfileCache profileCache;
     private final ProfileResolver profileResolver;
-    private final UserManagerInternal<C> userManager;
+    private final UserManagerInternal<?> userManager;
     private final ExecutionCoordinatorHolder commandExecutor;
     private final CarbonServer carbonServer;
     private final CarbonMessages carbonMessages;
@@ -71,7 +70,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final PlatformUserManager userManager,
+        final UserManagerInternal<?> userManager,
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,
@@ -84,7 +83,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         this.periodicTasks = periodicTasks;
         this.profileCache = profileCache;
         this.profileResolver = profileResolver;
-        this.userManager = (UserManagerInternal<C>) userManager;
+        this.userManager = userManager;
         this.commandExecutor = commandExecutor;
         this.carbonServer = carbonServer;
         this.carbonMessages = carbonMessages;
@@ -148,7 +147,7 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
     }
 
     @Override
-    public UserManagerInternal<C> userManager() {
+    public UserManager<?> userManager() {
         return this.userManager;
     }
 
