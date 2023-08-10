@@ -196,8 +196,4 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
         return Bukkit.getPlayer(this.uuid());
     }
 
-    public interface Factory {
-        CarbonPlayerPaper wrap(CarbonPlayerCommon common);
-    }
-
 }
