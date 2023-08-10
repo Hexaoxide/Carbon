@@ -32,6 +32,7 @@ import net.minecraft.network.chat.ChatTypeDecoration;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -50,7 +51,7 @@ abstract class RegistryDataLoaderMixin {
         ),
         locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )
-    @SuppressWarnings("unchecked,rawtypes")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void carbon$injectMessageTypes(
         final ResourceManager resourceManager,
         final RegistryAccess registryAccess,
@@ -67,6 +68,7 @@ abstract class RegistryDataLoaderMixin {
         }
     }
 
+    @Unique
     private static ChatType carbonChatType() {
         return new ChatType(ChatTypeDecoration.withSender("%s"), ChatTypeDecoration.withSender("%s"));
     }
