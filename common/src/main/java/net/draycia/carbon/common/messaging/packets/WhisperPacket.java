@@ -23,7 +23,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.common.messaging.ServerId;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -38,12 +38,12 @@ public final class WhisperPacket extends CarbonPacket {
 
     @AssistedInject
     public WhisperPacket(
-        final CarbonChat carbonChat,
+        final @ServerId UUID serverId,
         final @Assisted("from") UUID from,
         final @Assisted("to") UUID to,
         final @Assisted Component message
     ) {
-        super(carbonChat.serverId());
+        super(serverId);
         this.from = from;
         this.to = to;
         this.message = message;

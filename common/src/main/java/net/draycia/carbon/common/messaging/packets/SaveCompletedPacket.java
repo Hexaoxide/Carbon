@@ -23,7 +23,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.common.messaging.ServerId;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -34,8 +34,8 @@ public final class SaveCompletedPacket extends CarbonPacket {
     private @MonotonicNonNull UUID player;
 
     @AssistedInject
-    public SaveCompletedPacket(final CarbonChat carbonChat, final @Assisted UUID player) {
-        super(carbonChat.serverId());
+    public SaveCompletedPacket(final @ServerId UUID serverId, final @Assisted UUID player) {
+        super(serverId);
         this.player = player;
     }
 

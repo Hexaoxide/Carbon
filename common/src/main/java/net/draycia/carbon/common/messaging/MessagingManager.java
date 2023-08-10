@@ -78,8 +78,8 @@ public class MessagingManager {
 
     private static final byte protocolVersion = 0;
 
-    private final CarbonChat carbonChat;
     private final Logger logger;
+    private final UUID serverId;
     private final @MonotonicNonNull ScheduledExecutorService scheduledExecutor;
     private final @MonotonicNonNull PacketService packetService;
     private @MonotonicNonNull MessagingService messagingService;
@@ -88,6 +88,7 @@ public class MessagingManager {
     public MessagingManager(
         final ConfigFactory configFactory,
         final CarbonChat carbonChat,
+        final @ServerId UUID serverId,
         final CarbonServer server,
         final Logger logger,
         final UserManagerInternal<?> userManager,
@@ -95,7 +96,7 @@ public class MessagingManager {
         final WhisperCommand.WhisperHandler whisper,
         final PacketFactory packetFactory
     ) {
-        this.carbonChat = carbonChat;
+        this.serverId = serverId;
         this.logger = logger;
         if (!configFactory.primaryConfig().messagingSettings().enabled()) {
             if (!((CarbonChatInternal<?>) carbonChat).isProxy()) {
@@ -131,7 +132,7 @@ public class MessagingManager {
             ConcurrentUtil.carbonThreadFactory(logger, "MessagingManager"), logger);
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
-        handlerImpl.addHandler(new CarbonServerHandler(server, carbonChat.serverId(), this.packetService, handlerImpl, packetFactory));
+        handlerImpl.addHandler(new CarbonServerHandler(server, serverId, this.packetService, handlerImpl, packetFactory));
         handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager, networkUsers, whisper));
 
         try {
@@ -144,12 +145,12 @@ public class MessagingManager {
 
         this.packetService.addMessenger(this.messagingService);
 
-        this.packetService.queuePacket(new InitializationPacket(carbonChat.serverId(), protocolVersion));
+        this.packetService.queuePacket(new InitializationPacket(serverId, protocolVersion));
         this.packetService.flushQueue();
 
         // Broadcast keepalive packets
         this.scheduledExecutor.scheduleAtFixedRate(() -> {
-            this.packetService.queuePacket(new KeepAlivePacket(carbonChat.serverId()));
+            this.packetService.queuePacket(new KeepAlivePacket(serverId));
             this.packetService.flushQueue();
         }, 5, 5, TimeUnit.SECONDS);
 
@@ -200,7 +201,7 @@ public class MessagingManager {
             case RABBITMQ -> {
                 this.logger.info("Initializing RabbitMQ Messaging services...");
 
-                final RabbitMQMessagingService.Builder builder = RabbitMQMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
+                final RabbitMQMessagingService.Builder builder = RabbitMQMessagingService.builder(packetService, name, channelName, this.serverId, handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port(), messagingSettings.vhost())
                     .timeout(5000);
 
@@ -213,7 +214,7 @@ public class MessagingManager {
             case NATS -> {
                 this.logger.info("Initializing NATS Messaging services...");
 
-                final NATSMessagingService.Builder builder = NATSMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
+                final NATSMessagingService.Builder builder = NATSMessagingService.builder(packetService, name, channelName, this.serverId, handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port())
                     .life(5000);
 
@@ -226,7 +227,7 @@ public class MessagingManager {
             case REDIS -> {
                 this.logger.info("Initializing Redis Messaging services...");
 
-                final RedisMessagingService.Builder builder = RedisMessagingService.builder(packetService, name, channelName, this.carbonChat.serverId(), handlerImpl, 0L, false, packetDir)
+                final RedisMessagingService.Builder builder = RedisMessagingService.builder(packetService, name, channelName, this.serverId, handlerImpl, 0L, false, packetDir)
                     .url(messagingSettings.url(), messagingSettings.port());
 
                 if (messagingSettings.password() != null && !messagingSettings.password().isBlank()) {

@@ -23,7 +23,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.common.messaging.ServerId;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -38,12 +38,12 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
 
     @AssistedInject
     public LocalPlayerChangePacket(
-        final CarbonChat carbonChat,
+        final @ServerId UUID serverId,
         final @Assisted UUID playerId,
         final @Assisted @Nullable String playerName,
         final @Assisted ChangeType changeType
     ) {
-        super(carbonChat.serverId());
+        super(serverId);
         if (changeType == ChangeType.ADD && playerName == null) {
             throw new IllegalArgumentException("playerName cannot be null for ChangeType.ADD");
         }

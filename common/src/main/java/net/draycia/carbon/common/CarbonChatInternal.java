@@ -24,7 +24,6 @@ import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
@@ -53,7 +52,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public abstract class CarbonChatInternal<C extends CarbonPlayer> implements CarbonChat {
 
-    private final UUID serverId;
     private final Injector injector;
     private final Logger logger;
     private final ScheduledExecutorService periodicTasks;
@@ -81,7 +79,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         final CarbonChannelRegistry channelRegistry,
         final Provider<MessagingManager> messagingManagerProvider
     ) {
-        this.serverId = UUID.randomUUID();
         this.injector = injector;
         this.logger = logger;
         this.periodicTasks = periodicTasks;
@@ -139,11 +136,6 @@ public abstract class CarbonChatInternal<C extends CarbonPlayer> implements Carb
         this.profileResolver.shutdown();
         this.userManager.shutdown();
         this.commandExecutor.shutdown();
-    }
-
-    @Override
-    public UUID serverId() {
-        return this.serverId;
     }
 
     public Logger logger() {

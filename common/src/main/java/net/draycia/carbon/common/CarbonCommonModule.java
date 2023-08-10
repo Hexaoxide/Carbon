@@ -63,6 +63,7 @@ import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResol
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.messaging.ServerId;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -141,6 +142,7 @@ public final class CarbonCommonModule extends AbstractModule {
     protected void configure() {
         this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
         this.install(factoryModule(PacketFactory.class));
+        this.bind(ServerId.KEY).toInstance(UUID.randomUUID());
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
         this.bind(CarbonEventHandler.class).to(CarbonEventHandlerImpl.class);
         this.bind(PlayerSuggestions.class).to(NetworkUsers.class);

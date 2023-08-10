@@ -21,12 +21,13 @@ package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import net.draycia.carbon.api.CarbonChat;
+import java.util.UUID;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.ServerId;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.text.Component;
@@ -39,7 +40,7 @@ public class MessagePacketHandler implements Listener {
     @Inject
     public MessagePacketHandler(
         final CarbonEventHandler events,
-        final CarbonChat carbonChat,
+        final @ServerId UUID serverId,
         final Provider<MessagingManager> messaging
     ) {
         events.subscribe(CarbonChatEvent.class, 100, false, event -> {
@@ -54,7 +55,7 @@ public class MessagePacketHandler implements Listener {
                 final CarbonPlayer sender = event.sender();
                 final Component networkMessage = e.renderFor(sender);
 
-                packetService.queuePacket(new ChatMessagePacket(carbonChat.serverId(), sender.uuid(),
+                packetService.queuePacket(new ChatMessagePacket(serverId, sender.uuid(),
                     event.chatChannel().permission(), event.chatChannel().key(), sender.username(), networkMessage));
             });
         });

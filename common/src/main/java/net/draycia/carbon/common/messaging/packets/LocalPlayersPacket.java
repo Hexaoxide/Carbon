@@ -24,7 +24,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import io.netty.buffer.ByteBuf;
 import java.util.Map;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.common.messaging.ServerId;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -36,10 +36,10 @@ public final class LocalPlayersPacket extends CarbonPacket {
 
     @AssistedInject
     public LocalPlayersPacket(
-        final CarbonChat carbonChat,
+        final @ServerId UUID serverId,
         final @Assisted Map<UUID, String> players
     ) {
-        super(carbonChat.serverId());
+        super(serverId);
         this.players = players;
     }
 

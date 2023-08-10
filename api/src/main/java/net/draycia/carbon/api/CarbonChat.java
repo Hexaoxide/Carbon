@@ -19,7 +19,6 @@
  */
 package net.draycia.carbon.api;
 
-import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -40,14 +39,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  */
 @DefaultQualifier(NonNull.class)
 public interface CarbonChat {
-
-    /**
-     * The server's ID, used for cross-server message handling.
-     *
-     * @return the server id
-     * @since 2.1.0
-     */
-    UUID serverId();
 
     /**
      * The {@link CarbonEventHandler event handler}, used for listening to
