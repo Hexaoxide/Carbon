@@ -30,6 +30,7 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -82,6 +83,11 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
 
         final var playerServer = player.get().getCurrentServer();
         return playerServer.isPresent() && playerServer.equals(otherPlayer.get().getCurrentServer());
+    }
+
+    @Override
+    protected Optional<Component> platformDisplayName() {
+        return this.player().flatMap(p -> p.get(Identity.DISPLAY_NAME));
     }
 
     @Override

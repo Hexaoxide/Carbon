@@ -66,7 +66,7 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
     public @Nullable String onRequest(final OfflinePlayer player, final String params) {
         final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
 
-        final Component nickname = CarbonPlayer.renderName(carbonPlayer);
+        final Component nickname = carbonPlayer.displayName();
 
         if (params.endsWith("nickname")) {
             return MiniMessage.miniMessage().serialize(nickname);

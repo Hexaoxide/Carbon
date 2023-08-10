@@ -94,17 +94,17 @@ public class IgnoreCommand extends CarbonCommand {
                 }
 
                 if (target.hasPermission("carbon.ignore.exempt")) {
-                    this.carbonMessages.ignoreExempt(sender, CarbonPlayer.renderName(target));
+                    this.carbonMessages.ignoreExempt(sender, target.displayName());
                     return;
                 }
 
                 if (target.ignoring(target)) {
-                    this.carbonMessages.alreadyIgnored(sender, CarbonPlayer.renderName(target));
+                    this.carbonMessages.alreadyIgnored(sender, target.displayName());
                     return;
                 }
 
                 sender.ignoring(target, true);
-                this.carbonMessages.nowIgnoring(sender, CarbonPlayer.renderName(target));
+                this.carbonMessages.nowIgnoring(sender, target.displayName());
             })
             .build();
 

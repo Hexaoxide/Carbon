@@ -56,12 +56,17 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
         super(carbonPlayerCommon);
 
         if (config.primaryConfig().useCarbonNicknames()) {
-            this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.displayName()));
+            this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.nickname()));
         }
     }
 
     private Optional<Player> player() {
         return Optional.ofNullable(Bukkit.getPlayer(this.carbonPlayerCommon.uuid()));
+    }
+
+    @Override
+    protected Optional<Component> platformDisplayName() {
+        return this.player().map(Player::displayName);
     }
 
     @Override
@@ -102,10 +107,10 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     }
 
     @Override
-    public void displayName(final @Nullable Component displayName) {
-        super.displayName(displayName);
+    public void nickname(final @Nullable Component nickname) {
+        super.nickname(nickname);
 
-        this.player().ifPresent(this.applyDisplayNameToBukkit(displayName));
+        this.player().ifPresent(this.applyDisplayNameToBukkit(nickname));
     }
 
     private Consumer<Player> applyDisplayNameToBukkit(final @Nullable Component displayName) {

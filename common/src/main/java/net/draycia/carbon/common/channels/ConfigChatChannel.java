@@ -149,7 +149,7 @@ public final class ConfigChatChannel implements ChatChannel {
             SourcedAudience.of(sender, recipient),
             sender.uuid(),
             this.key(),
-            Objects.requireNonNull(CarbonPlayer.renderName(sender)),
+            Objects.requireNonNull(sender.displayName()),
             sender.username(),
             message
         );

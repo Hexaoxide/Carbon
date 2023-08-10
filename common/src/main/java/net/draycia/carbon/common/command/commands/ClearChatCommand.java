@@ -23,7 +23,6 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -87,7 +86,7 @@ public class ClearChatCommand extends CarbonCommand {
                 final String username;
 
                 if (handler.getSender() instanceof PlayerCommander player) {
-                    senderName = CarbonPlayer.renderName(player.carbonPlayer());
+                    senderName = player.carbonPlayer().displayName();
                     username = player.carbonPlayer().username();
                 } else {
                     senderName = Component.text("Console");

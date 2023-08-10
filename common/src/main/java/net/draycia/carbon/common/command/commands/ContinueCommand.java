@@ -92,7 +92,7 @@ public class ContinueCommand extends CarbonCommand {
                 final UUID whisperTarget = sender.lastWhisperTarget();
 
                 if (whisperTarget == null) {
-                    this.carbonMessages.whisperTargetNotSet(sender, CarbonPlayer.renderName(sender));
+                    this.carbonMessages.whisperTargetNotSet(sender, sender.displayName());
                     return;
                 }
 

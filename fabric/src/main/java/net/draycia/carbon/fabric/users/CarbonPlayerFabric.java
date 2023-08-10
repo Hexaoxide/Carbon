@@ -181,4 +181,9 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
         return super.groups();
     }
 
+    @Override
+    protected Optional<Component> platformDisplayName() {
+        return this.player().flatMap(p -> p.get(Identity.DISPLAY_NAME));
+    }
+
 }

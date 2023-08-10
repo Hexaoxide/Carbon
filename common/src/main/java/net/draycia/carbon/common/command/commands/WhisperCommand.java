@@ -162,7 +162,7 @@ public class WhisperCommand extends CarbonCommand {
             final @Nullable String recipientInputString
         ) {
             if (sender.equals(recipient)) {
-                this.messages.whisperSelfError(sender, CarbonPlayer.renderName(sender));
+                this.messages.whisperSelfError(sender, sender.displayName());
                 return;
             }
 
@@ -178,23 +178,23 @@ public class WhisperCommand extends CarbonCommand {
             final boolean localRecipient = recipient.online();
 
             if (sender.ignoring(recipient)) {
-                this.messages.whisperIgnoringTarget(sender, CarbonPlayer.renderName(recipient));
+                this.messages.whisperIgnoringTarget(sender, recipient.displayName());
                 return;
             }
 
             if (recipient.ignoring(sender)) {
-                this.messages.whisperTargetIgnoring(sender, CarbonPlayer.renderName(recipient));
+                this.messages.whisperTargetIgnoring(sender, recipient.displayName());
                 return;
             }
 
-            final Component senderName = CarbonPlayer.renderName(sender);
-            final Component recipientName = CarbonPlayer.renderName(recipient);
+            final Component senderName = sender.displayName();
+            final Component recipientName = recipient.displayName();
 
             final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEventImpl(sender, recipient, Component.text(message));
             this.events.emit(privateChatEvent);
 
             if (privateChatEvent.cancelled()) {
-                this.messages.whisperError(sender, CarbonPlayer.renderName(sender), CarbonPlayer.renderName(recipient));
+                this.messages.whisperError(sender, sender.displayName(), recipient.displayName());
                 return;
             }
 
@@ -229,8 +229,8 @@ public class WhisperCommand extends CarbonCommand {
                 return;
             }
             this.userManager.user(packet.from()).thenAccept(sender -> {
-                final Component senderName = CarbonPlayer.renderName(sender);
-                final Component recipientName = CarbonPlayer.renderName(recipient);
+                final Component senderName = sender.displayName();
+                final Component recipientName = recipient.displayName();
 
                 recipient.whisperReplyTarget(sender.uuid());
                 this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderName, recipientName, packet.message());

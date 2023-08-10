@@ -102,7 +102,7 @@ public class MuteCommand extends CarbonCommand {
                 this.carbonMessages.muteAlertRecipient(target);
 
                 if (!sender.equals(target)) {
-                    this.carbonMessages.muteAlertPlayers(sender, CarbonPlayer.renderName(target));
+                    this.carbonMessages.muteAlertPlayers(sender, target.displayName());
                 }
 
                 for (final var player : this.carbonChat.server().players()) {
@@ -110,7 +110,7 @@ public class MuteCommand extends CarbonCommand {
                         continue;
                     }
 
-                    this.carbonMessages.muteAlertPlayers(player, CarbonPlayer.renderName(target));
+                    this.carbonMessages.muteAlertPlayers(player, target.displayName());
                 }
 
                 target.muted(true);

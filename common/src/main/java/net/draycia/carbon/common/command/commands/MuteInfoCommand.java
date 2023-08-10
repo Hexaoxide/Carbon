@@ -96,13 +96,13 @@ public class MuteInfoCommand extends CarbonCommand {
                     if (sender.equals(target)) {
                         this.carbonMessages.muteInfoSelfNotMuted(sender);
                     } else {
-                        this.carbonMessages.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
+                        this.carbonMessages.muteInfoNotMuted(sender, target.displayName());
                     }
                 } else {
                     if (sender.equals(target)) {
                         this.carbonMessages.muteInfoSelfMuted(sender);
                     } else {
-                        this.carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
+                        this.carbonMessages.muteInfoMuted(sender, target.displayName(), target.muted());
                     }
                 }
             })

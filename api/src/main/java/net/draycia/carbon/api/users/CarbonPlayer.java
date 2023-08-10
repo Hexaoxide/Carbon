@@ -21,13 +21,11 @@ package net.draycia.carbon.api.users;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -41,21 +39,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  */
 @DefaultQualifier(NonNull.class)
 public interface CarbonPlayer extends Audience, Identified {
-
-    /**
-     * Returns the appropriate {@link Component} to represent the player's name.
-     *
-     * @param player the player
-     * @return the player's name
-     * @since 2.0.0
-     */
-    static Component renderName(final CarbonPlayer player) {
-        if (player.hasCustomDisplayName()) {
-            return Objects.requireNonNull(player.displayName());
-        } else {
-            return player.get(Identity.DISPLAY_NAME).orElseGet(() -> Component.text(player.username()));
-        }
-    }
 
     /**
      * Returns the distance from the other {@link CarbonPlayer}, or -1 if the players are not in the same world.
@@ -84,41 +67,56 @@ public interface CarbonPlayer extends Audience, Identified {
     String username();
 
     /**
-     * Checks if the player has a display name set.
+     * Returns the player's display name.
+     *
+     * <p>The display name is the effective or displayed name of a player.
+     * When the player has a nickname set, either through Carbon or the platform,
+     * it will be reflected here. Else, a plain text component representing
+     * the player's name may be returned.</p>
+     *
+     * @return the player's display name
+     * @since 2.1.0
+     */
+    Component displayName();
+
+    /**
+     * Checks if the player has a nickname set.
      *
      * <p>Will always return {@code false} when Carbon's nickname management is disabled.</p>
      *
-     * @return if the player has a custom display name set
-     * @see #displayName()
-     * @see #displayName(Component)
-     * @since 2.0.0
+     * @return if the player has a nickname set
+     * @see #nickname()
+     * @see #nickname(Component)
+     * @since 2.1.0
      */
-    boolean hasCustomDisplayName();
+    boolean hasNickname();
 
     /**
-     * Gets the player's display name, shown in places like chat and tab menu.
+     * Gets the player's nickname, shown in places like chat and tab menu.
      *
      * <p>Will always return {@code null} when Carbon's nickname management is disabled.</p>
      *
-     * @return the player's display name
-     * @see #hasCustomDisplayName()
-     * @see #displayName(Component)
-     * @since 2.0.0
+     * @return the player's nickname
+     * @see #hasNickname()
+     * @see #nickname(Component)
+     * @see #displayName()
+     * @since 2.1.0
      */
-    @Nullable Component displayName();
+    @Nullable Component nickname();
 
     /**
-     * Sets the player's display name.
+     * Sets the player's nickname.
      *
-     * <p>Setting {@code null} will remove the current display name.</p>
+     * <p>Setting {@code null} will remove any current nickname.</p>
      * <p>Won't have any visible effect when Carbon's nickname management is disabled.</p>
      *
-     * @param displayName the new display name
+     * @param nickname the new nickname
+     * @see #hasNickname()
+     * @see #nickname()
      * @see #displayName()
-     * @see #hasCustomDisplayName()
-     * @since 2.0.0
+     * @since 2.1.0
      */
-    void displayName(@Nullable Component displayName);
+    void nickname(@Nullable Component nickname);
 
     /**
      * The player's UUID, often used for identification purposes.

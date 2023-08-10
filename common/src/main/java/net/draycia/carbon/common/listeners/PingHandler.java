@@ -21,22 +21,18 @@ package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
@@ -67,18 +63,7 @@ public class PingHandler implements Listener {
 
     public Component convertPings(final CarbonPlayer recipient, final Component message) {
         final String prefix = this.configFactory.primaryConfig().pings().prefix();
-        final @Nullable Component displayComponent = recipient.displayName();
-        final String displayName;
-
-        if (displayComponent != null) {
-            displayName = PlainTextComponentSerializer.plainText().serialize(displayComponent);
-        } else {
-            final @NotNull Optional<Component> audienceNickname = recipient.get(Identity.DISPLAY_NAME);
-
-            displayName = audienceNickname
-                .map(component -> PlainTextComponentSerializer.plainText().serialize(component))
-                .orElse(recipient.username()); // Hacky workaround
-        }
+        final String plainDisplayName = PlainTextComponentSerializer.plainText().serialize(recipient.displayName());
 
         return message.replaceText(TextReplacementConfig.builder()
             // \B(@Username|@Displayname)\b
@@ -87,7 +72,7 @@ public class PingHandler implements Listener {
                     "\\B%1$s(%2$s|%3$s)\\b",
                     Pattern.quote(prefix),
                     Pattern.quote(recipient.username()),
-                    Pattern.quote(displayName)),
+                    Pattern.quote(plainDisplayName)),
                 Pattern.CASE_INSENSITIVE))
             .replacement(matchedText -> {
                 if (this.configFactory.primaryConfig().pings().playSound()) {

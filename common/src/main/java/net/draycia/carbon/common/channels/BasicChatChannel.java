@@ -66,7 +66,7 @@ public final class BasicChatChannel implements ChatChannel {
         return this.service.basicChatFormat(
             recipient,
             sender.uuid(),
-            CarbonPlayer.renderName(sender),
+            sender.displayName(),
             sender.username(),
             message
         );

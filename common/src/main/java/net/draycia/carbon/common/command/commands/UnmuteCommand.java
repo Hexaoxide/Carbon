@@ -97,7 +97,7 @@ public class UnmuteCommand extends CarbonCommand {
                 this.carbonMessages.unmuteAlertRecipient(target);
 
                 if (!sender.equals(target)) {
-                    this.carbonMessages.unmuteAlertPlayers(sender, CarbonPlayer.renderName(target));
+                    this.carbonMessages.unmuteAlertPlayers(sender, target.displayName());
                 }
 
                 for (final var player : this.carbonChat.server().players()) {
@@ -109,7 +109,7 @@ public class UnmuteCommand extends CarbonCommand {
                         continue;
                     }
 
-                    this.carbonMessages.unmuteAlertPlayers(player, CarbonPlayer.renderName(target));
+                    this.carbonMessages.unmuteAlertPlayers(player, target.displayName());
                 }
 
                 target.muted(false);

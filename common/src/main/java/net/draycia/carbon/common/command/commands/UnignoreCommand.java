@@ -95,7 +95,7 @@ public class UnignoreCommand extends CarbonCommand {
                 }
 
                 sender.ignoring(target, false);
-                this.carbonMessages.noLongerIgnoring(sender, CarbonPlayer.renderName(target));
+                this.carbonMessages.noLongerIgnoring(sender, target.displayName());
             })
             .build();
 

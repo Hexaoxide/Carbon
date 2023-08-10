@@ -93,7 +93,7 @@ public class ReplyCommand extends CarbonCommand {
                 final @Nullable UUID replyTarget = sender.whisperReplyTarget();
 
                 if (replyTarget == null) {
-                    this.carbonMessages.replyTargetNotSet(sender, CarbonPlayer.renderName(sender));
+                    this.carbonMessages.replyTargetNotSet(sender, sender.displayName());
                     return;
                 }
 

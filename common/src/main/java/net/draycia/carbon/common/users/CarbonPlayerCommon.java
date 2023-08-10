@@ -164,7 +164,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public @Nullable Component displayName() {
+    public @Nullable Component nickname() {
         if (!this.config.primaryConfig().useCarbonNicknames()) {
             return null;
         }
@@ -176,8 +176,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public void displayName(final @Nullable Component displayName) {
-        this.displayName.set(displayName);
+    public void nickname(final @Nullable Component nickname) {
+        this.displayName.set(nickname);
     }
 
     @Override
@@ -398,6 +398,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return this.username;
     }
 
+    @Override
+    public Component displayName() {
+        throw new UnsupportedOperationException();
+    }
+
     public void username(final String username) {
         this.username = username;
     }
@@ -415,7 +420,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public boolean hasCustomDisplayName() {
+    public boolean hasNickname() {
         if (!this.config.primaryConfig().useCarbonNicknames()) {
             return false;
         }

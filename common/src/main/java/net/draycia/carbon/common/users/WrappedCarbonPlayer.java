@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -206,19 +207,33 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return this.carbonPlayerCommon.username();
     }
 
+    // take care not to call get(Identity.DISPLAY_NAME) on a CarbonPlayer
+    // from this method - it would result in a stack overflow when pointers
+    // are retrieved from EmptyAudienceWithPointers
     @Override
-    public boolean hasCustomDisplayName() {
-        return this.carbonPlayerCommon.hasCustomDisplayName();
+    public Component displayName() {
+        final @Nullable Component nick = this.nickname();
+        if (nick != null) {
+            return nick;
+        }
+        return this.platformDisplayName().orElseGet(() -> Component.text(this.username()));
+    }
+
+    protected abstract Optional<Component> platformDisplayName();
+
+    @Override
+    public boolean hasNickname() {
+        return this.carbonPlayerCommon.hasNickname();
     }
 
     @Override
-    public @Nullable Component displayName() {
-        return this.carbonPlayerCommon.displayName();
+    public @Nullable Component nickname() {
+        return this.carbonPlayerCommon.nickname();
     }
 
     @Override
-    public void displayName(final @Nullable Component displayName) {
-        this.carbonPlayerCommon.displayName(displayName);
+    public void nickname(final @Nullable Component nickname) {
+        this.carbonPlayerCommon.nickname(nickname);
     }
 
     @Override
