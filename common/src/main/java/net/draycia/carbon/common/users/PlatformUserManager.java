@@ -37,7 +37,7 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
 
     @Inject
     private PlatformUserManager(
-        final UserManagerInternal<CarbonPlayerCommon> backingManager,
+        final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager,
         final PlayerFactory playerFactory
     ) {
         this.backingManager = backingManager;
