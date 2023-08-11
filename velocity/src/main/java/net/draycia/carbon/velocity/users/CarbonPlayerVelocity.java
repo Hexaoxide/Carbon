@@ -80,8 +80,10 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
             return false;
         }
 
-        final var playerServer = player.get().getCurrentServer();
-        return playerServer.isPresent() && playerServer.equals(otherPlayer.get().getCurrentServer());
+        final var playerServer = player.get().getCurrentServer().get();
+        final var otherServer = otherPlayer.get().getCurrentServer().get();
+
+        return playerServer.getServer().equals(otherServer.getServer());
     }
 
     @Override
