@@ -19,7 +19,6 @@
  */
 package net.draycia.carbon.common.messages;
 
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageSender;
 import org.checkerframework.checker.nullness.qual.NonNull;

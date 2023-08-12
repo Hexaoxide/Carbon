@@ -26,7 +26,6 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
-import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
@@ -106,7 +105,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         final List<KeyedRenderer> renderers = new ArrayList<>();
 
         final List<Audience> recipients = channel.recipients(sender);
-        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null, false);
+        final CarbonChatEventImpl chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null, false);
         this.events.emit(chatEvent);
 
         for (final Audience recipient : recipients) {
@@ -115,13 +114,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
                 continue;
             }
 
-            Component renderedMessage = chatEvent.message();
-
-            for (final KeyedRenderer renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipient, renderedMessage, messagePacket.message());
-            }
-
-            recipient.sendMessage(renderedMessage);
+            recipient.sendMessage(chatEvent.renderFor(recipient));
         }
 
         this.server.console().sendMessage(Component.text("[Cross-Server] ").append(chatEvent.message()));

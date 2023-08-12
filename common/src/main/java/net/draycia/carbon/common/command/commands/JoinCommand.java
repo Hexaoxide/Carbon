@@ -38,11 +38,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class JoinCommand extends CarbonCommand {
+public final class JoinCommand extends CarbonCommand {
 
-    final CarbonChannelRegistry channelRegistry;
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
+    private final CarbonChannelRegistry channelRegistry;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
 
     @Inject
     public JoinCommand(

@@ -20,10 +20,9 @@
 package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
@@ -62,20 +61,14 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(serverPlayer.getUUID()).join();
 
         final String content = chatMessage.decoratedContent().getString();
-        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return false;
         }
 
         for (final var recipient : chatEvent.recipients()) {
-            Component renderedMessage = chatEvent.message();
-
-            for (final KeyedRenderer renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipient, renderedMessage, chatEvent.message());
-            }
-
-            final Component finishedMessage = renderedMessage;
+            final Component finishedMessage = chatEvent.renderFor(recipient);
 
             final net.minecraft.network.chat.Component nativeMessage = FabricAudiences.nonWrappingSerializer().serialize(finishedMessage);
             final PlayerChatMessage customChatMessage = new PlayerChatMessage(chatMessage.link(), chatMessage.signature(), chatMessage.signedBody(), nativeMessage, FilterMask.FULLY_FILTERED);

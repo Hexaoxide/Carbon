@@ -20,13 +20,15 @@
 package net.draycia.carbon.velocity;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginManager;
 import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
@@ -34,12 +36,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class VelocityMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
+@Singleton
+public class VelocityMessageRenderer implements CarbonMessageRenderer {
 
     private final ConfigFactory configFactory;
     private final PluginManager pluginManager;
@@ -52,7 +54,7 @@ public class VelocityMessageRenderer<T extends Audience> implements IMessageRend
 
     @Override
     public Component render(
-        final T receiver,
+        final Audience receiver,
         final String intermediateMessage,
         final Map<String, ? extends Component> resolvedPlaceholders,
         final Method method,

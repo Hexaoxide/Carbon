@@ -19,17 +19,13 @@
  */
 package net.draycia.carbon.api.util;
 
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
 
 /**
- * A chat renderer that's identifiable by key.
+ * A {@link ChatComponentRenderer chat renderer} that's identifiable by key.
  *
  * @since 2.0.0
  */
@@ -45,26 +41,7 @@ public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     static KeyedRenderer keyedRenderer(final Key key, final ChatComponentRenderer renderer) {
-        return new Impl(key, renderer);
-    }
-
-    /**
-     * Implementation of the keyed renderer.
-     *
-     * @since 2.0.0
-     */
-    record Impl(Key key, ChatComponentRenderer renderer) implements KeyedRenderer {
-
-        @Override
-        public @NotNull Component render(
-            final CarbonPlayer sender,
-            final Audience recipient,
-            final Component message,
-            final Component originalMessage
-        ) {
-            return this.renderer.render(sender, recipient, message, originalMessage);
-        }
-
+        return new KeyedRendererImpl(key, renderer);
     }
 
 }

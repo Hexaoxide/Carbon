@@ -19,30 +19,39 @@
  */
 package net.draycia.carbon.common.users;
 
+import com.google.inject.Inject;
+import com.google.inject.Module;
+import com.google.inject.Singleton;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+@Singleton
 @DefaultQualifier(NonNull.class)
-public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> implements UserManagerInternal<C> {
+public final class PlatformUserManager implements UserManagerInternal<WrappedCarbonPlayer> {
 
     private final UserManagerInternal<CarbonPlayerCommon> backingManager;
+    private final PlayerFactory playerFactory;
 
-    public PlatformUserManager(final UserManagerInternal<CarbonPlayerCommon> backingManager) {
+    @Inject
+    private PlatformUserManager(
+        final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager,
+        final PlayerFactory playerFactory
+    ) {
         this.backingManager = backingManager;
+        this.playerFactory = playerFactory;
     }
 
     @Override
-    public CompletableFuture<C> user(final UUID uuid) {
+    public CompletableFuture<WrappedCarbonPlayer> user(final UUID uuid) {
         return this.backingManager.user(uuid).thenApply(common -> {
-            final C wrapped = this.wrap(common);
+            final WrappedCarbonPlayer wrapped = this.playerFactory.wrap(common);
             common.markTransientLoaded(!wrapped.online());
             return wrapped;
         });
     }
-
-    protected abstract C wrap(final CarbonPlayerCommon common);
 
     @Override
     public void shutdown() {
@@ -55,7 +64,7 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
     }
 
     @Override
-    public CompletableFuture<Void> saveIfNeeded(final C player) {
+    public CompletableFuture<Void> saveIfNeeded(final WrappedCarbonPlayer player) {
         return this.backingManager.saveIfNeeded(player.carbonPlayerCommon());
     }
 
@@ -67,6 +76,18 @@ public abstract class PlatformUserManager<C extends WrappedCarbonPlayer> impleme
     @Override
     public void cleanup() {
         this.backingManager.cleanup();
+    }
+
+    public interface PlayerFactory {
+
+        WrappedCarbonPlayer wrap(CarbonPlayerCommon common);
+
+        static Module moduleFor(final Class<? extends WrappedCarbonPlayer> carbonPlayerImpl) {
+            return new FactoryModuleBuilder()
+                .implement(WrappedCarbonPlayer.class, carbonPlayerImpl)
+                .build(PlatformUserManager.PlayerFactory.class);
+        }
+
     }
 
 }

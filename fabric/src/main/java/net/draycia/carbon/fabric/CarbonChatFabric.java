@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -31,26 +30,22 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
-import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.fabric.command.DeleteMessageCommand;
 import net.draycia.carbon.fabric.listeners.FabricChatHandler;
 import net.draycia.carbon.fabric.listeners.FabricJoinQuitListener;
-import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.resources.ResourceKey;
@@ -61,7 +56,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabric> {
+public final class CarbonChatFabric extends CarbonChatInternal {
 
     public static ResourceKey<ChatType> CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, new ResourceLocation("carbon", "chat"));
 
@@ -69,17 +64,15 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
     private CarbonChatFabric(
         final Injector injector,
         final Logger logger,
-        final @DataDirectory Path dataDirectory,
         final @PeriodicTasks ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final FabricUserManager userManager,
+        final PlatformUserManager userManager,
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
         final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,
         final CarbonChannelRegistry channelRegistry,
-        final IMessageRenderer<Audience, String, Component, Component> renderer,
         final Provider<MessagingManager> messagingManagerProvider,
         @SuppressWarnings("unused") // Make sure it initializes now
         final MinecraftServerHolder minecraftServerHolder
@@ -87,7 +80,6 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
         super(
             injector,
             logger,
-            dataDirectory,
             periodicTasks,
             profileCache,
             profileResolver,
@@ -97,7 +89,6 @@ public final class CarbonChatFabric extends CarbonChatInternal<CarbonPlayerFabri
             carbonMessages,
             eventHandler,
             channelRegistry,
-            renderer,
             messagingManagerProvider
         );
     }

@@ -20,7 +20,8 @@
 package net.draycia.carbon.fabric.users;
 
 import com.google.inject.Provider;
-import java.util.ArrayList;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -49,7 +50,8 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     private final MinecraftServerHolder serverHolder;
     private final Provider<CarbonChatFabric> carbonChatFabric;
 
-    public CarbonPlayerFabric(final CarbonPlayerCommon carbonPlayerCommon, final MinecraftServerHolder serverHolder, final Provider<CarbonChatFabric> carbonChatFabric) {
+    @AssistedInject
+    public CarbonPlayerFabric(final @Assisted CarbonPlayerCommon carbonPlayerCommon, final MinecraftServerHolder serverHolder, final Provider<CarbonChatFabric> carbonChatFabric) {
         super(carbonPlayerCommon);
         this.serverHolder = serverHolder;
         this.carbonChatFabric = carbonChatFabric;
@@ -170,7 +172,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return "default";
         }
 
-        return this.user().getPrimaryGroup();
+        return super.primaryGroup();
     }
 
     @Override
@@ -179,13 +181,12 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return List.of("default");
         }
 
-        final var groups = new ArrayList<String>();
+        return super.groups();
+    }
 
-        for (final var group : this.user().getInheritedGroups(this.user().getQueryOptions())) {
-            groups.add(group.getName());
-        }
-
-        return groups;
+    @Override
+    protected Optional<Component> platformDisplayName() {
+        return this.player().flatMap(p -> p.get(Identity.DISPLAY_NAME));
     }
 
 }

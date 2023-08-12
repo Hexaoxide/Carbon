@@ -24,9 +24,7 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginContainer;
-import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.CarbonChatProvider;
@@ -34,26 +32,23 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.velocity.listeners.VelocityChatListener;
 import net.draycia.carbon.velocity.listeners.VelocityListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerLeaveListener;
-import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity> {
+public class CarbonChatVelocity extends CarbonChatInternal {
 
     private static final Set<Class<? extends VelocityListener<?>>> LISTENER_CLASSES = Set.of(
         VelocityChatListener.class,
@@ -68,13 +63,11 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
         final ProxyServer proxyServer,
         final Injector injector,
         final PluginContainer pluginContainer,
-        @DataDirectory final Path dataDirectory,
         @PeriodicTasks final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
         final ExecutionCoordinatorHolder commandExecutor,
-        final IMessageRenderer<Audience, String, Component, Component> renderer,
-        final VelocityUserManager userManager,
+        final PlatformUserManager userManager,
         final CarbonServerVelocity carbonServer,
         final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,
@@ -82,8 +75,8 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
         final Provider<MessagingManager> messagingManager
     ) {
         super(
-            injector, LogManager.getLogger(pluginContainer.getDescription().getId()),
-            dataDirectory,
+            injector,
+            LogManager.getLogger(pluginContainer.getDescription().getId()),
             periodicTasks,
             profileCache,
             profileResolver,
@@ -93,7 +86,6 @@ public class CarbonChatVelocity extends CarbonChatInternal<CarbonPlayerVelocity>
             carbonMessages,
             eventHandler,
             channelRegistry,
-            renderer,
             messagingManager
         );
         this.proxyServer = proxyServer;

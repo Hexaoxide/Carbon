@@ -41,11 +41,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class UpdateUsernameCommand extends CarbonCommand {
+public final class UpdateUsernameCommand extends CarbonCommand {
 
     private final UserManager<?> userManager;
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages messageService;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages messageService;
     private final ArgumentFactory argumentFactory;
     private final ProfileResolver profileResolver;
 

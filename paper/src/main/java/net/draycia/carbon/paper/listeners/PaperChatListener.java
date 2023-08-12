@@ -22,9 +22,9 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
@@ -63,7 +63,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         }
 
         final String content = PlainTextComponentSerializer.plainText().serialize(event.message());
-        final @Nullable CarbonChatEvent chatEvent = this.prepareAndEmitChatEvent(sender, content, event.signedMessage());
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, content, event.signedMessage());
 
         if (chatEvent == null || chatEvent.cancelled()) {
             event.setCancelled(true);
@@ -78,7 +78,6 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         }
 
         event.renderer(($, $$, $$$, recipient) -> {
-            var renderedMessage = chatEvent.message();
             final var recipientUUID = recipient.get(Identity.UUID);
             final Audience recipientViewer;
 
@@ -88,11 +87,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
                 recipientViewer = recipient;
             }
 
-            for (final var renderer : chatEvent.renderers()) {
-                renderedMessage = renderer.render(sender, recipientViewer, renderedMessage, event.originalMessage());
-            }
-
-            return renderedMessage;
+            return chatEvent.renderFor(recipientViewer);
         });
     }
 

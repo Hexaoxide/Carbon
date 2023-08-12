@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
-import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigFactory;
@@ -60,7 +59,7 @@ public abstract class ChatListenerInternal {
         this.carbonEventHandler = carbonEventHandler;
     }
 
-    protected @Nullable CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage) {
+    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage) {
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(Component.text(messageContent));
         final ChatChannel channel = channelMessage.channel();
         final String message = PlainTextComponentSerializer.plainText().serialize(channelMessage.message());
@@ -68,7 +67,7 @@ public abstract class ChatListenerInternal {
         return this.prepareAndEmitChatEvent(sender, message, signedMessage, channel);
     }
 
-    protected @Nullable CarbonChatEvent prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final SignedMessage signedMessage, final ChatChannel channel) {
+    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
         String content = this.configFactory.primaryConfig().applyChatPlaceholders(messageContent);
         content = this.configFactory.primaryConfig().applyChatFilters(content);
 
@@ -98,7 +97,7 @@ public abstract class ChatListenerInternal {
 
         final List<Audience> recipients = channel.recipients(sender);
 
-        final CarbonChatEvent chatEvent = new CarbonChatEventImpl(sender, message, recipients, renderers, channel, signedMessage);
+        final var chatEvent = new CarbonChatEventImpl(sender, message, recipients, renderers, channel, signedMessage);
 
         this.carbonEventHandler.emit(chatEvent);
 

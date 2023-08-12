@@ -36,10 +36,11 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.listeners.DeafenHandler;
@@ -51,6 +52,7 @@ import net.draycia.carbon.common.listeners.MessagePacketHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.listeners.RadiusListener;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -61,10 +63,12 @@ import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResol
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
+import net.draycia.carbon.common.messaging.ServerId;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.Backing;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.NetworkUsers;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
 import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
@@ -76,7 +80,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -113,7 +116,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final BooleanPlaceholderResolver<Audience> booleanPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
         final CarbonMessageSender carbonMessageSender,
-        final IMessageRenderer<Audience, String, Component, Component> messageRenderer
+        final CarbonMessageRenderer messageRenderer
     ) throws UnscannableMethodException {
         return Moonshine.<CarbonMessages, Audience>builder(new TypeToken<>() {})
             .receiverLocatorResolver(receiverResolver, 0)
@@ -139,9 +142,12 @@ public final class CarbonCommonModule extends AbstractModule {
     protected void configure() {
         this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
         this.install(factoryModule(PacketFactory.class));
+        this.bind(ServerId.KEY).toInstance(UUID.randomUUID());
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);
         this.bind(CarbonEventHandler.class).to(CarbonEventHandlerImpl.class);
         this.bind(PlayerSuggestions.class).to(NetworkUsers.class);
+        this.bind(new TypeLiteral<UserManager<?>>() {}).to(PlatformUserManager.class);
+        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(PlatformUserManager.class);
 
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(DeafenHandler.class);

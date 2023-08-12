@@ -23,9 +23,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
- * An EventSubscription.
+ * A subscription to a specific event type.
  *
- * @param <T> CarbonEvent implementations
+ * @param <T> event type
  * @since 2.1.0
  */
 @DefaultQualifier(NonNull.class)
@@ -40,11 +40,20 @@ public interface CarbonEventSubscription<T extends CarbonEvent> {
     Class<T> event();
 
     /**
-     * Gets the subscriber.
+     * Gets the {@link CarbonEventSubscriber subscriber}.
      *
      * @return the subscriber
      * @since 2.1.0
      */
     CarbonEventSubscriber<T> subscriber();
+
+    /**
+     * Disposes this subscription.
+     *
+     * <p>The subscriber held by this subscription will no longer receive events.</p>
+     *
+     * @since 2.1.0
+     */
+    void dispose();
 
 }

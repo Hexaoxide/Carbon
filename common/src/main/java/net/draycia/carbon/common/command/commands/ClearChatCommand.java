@@ -22,8 +22,7 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -36,21 +35,21 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class ClearChatCommand extends CarbonCommand {
+public final class ClearChatCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
-    final CommandManager<Commander> commandManager;
-    final ConfigFactory configFactory;
-    final CarbonMessages carbonMessages;
+    private final CarbonServer server;
+    private final CommandManager<Commander> commandManager;
+    private final ConfigFactory configFactory;
+    private final CarbonMessages carbonMessages;
 
     @Inject
     public ClearChatCommand(
-        final CarbonChat carbonChat,
+        final CarbonServer server,
         final CommandManager<Commander> commandManager,
         final ConfigFactory configFactory,
         final CarbonMessages carbonMessages
     ) {
-        this.carbonChat = carbonChat;
+        this.server = server;
         this.commandManager = commandManager;
         this.configFactory = configFactory;
         this.carbonMessages = carbonMessages;
@@ -76,7 +75,7 @@ public class ClearChatCommand extends CarbonCommand {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?
                 for (int i = 0; i < this.configFactory.primaryConfig().clearChatSettings().iterations(); i++) {
-                    for (final var player : this.carbonChat.server().players()) {
+                    for (final var player : this.server.players()) {
                         if (!player.hasPermission("carbon.clearchat.exempt")) {
                             player.sendMessage(this.configFactory.primaryConfig().clearChatSettings().message());
                         }
@@ -87,14 +86,14 @@ public class ClearChatCommand extends CarbonCommand {
                 final String username;
 
                 if (handler.getSender() instanceof PlayerCommander player) {
-                    senderName = CarbonPlayer.renderName(player.carbonPlayer());
+                    senderName = player.carbonPlayer().displayName();
                     username = player.carbonPlayer().username();
                 } else {
                     senderName = Component.text("Console");
                     username = "Console";
                 }
 
-                this.carbonChat.server().sendMessage(this.configFactory.primaryConfig().clearChatSettings()
+                this.server.sendMessage(this.configFactory.primaryConfig().clearChatSettings()
                     .broadcast(senderName, username));
             })
             .build();

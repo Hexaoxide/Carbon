@@ -24,8 +24,8 @@ import cloud.commandframework.arguments.standard.UUIDArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -37,21 +37,21 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class IgnoreCommand extends CarbonCommand {
+public final class IgnoreCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
+    private final UserManager<?> users;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
     private final ArgumentFactory argumentFactory;
 
     @Inject
     public IgnoreCommand(
-        final CarbonChat carbonChat,
+        final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
         final ArgumentFactory argumentFactory
     ) {
-        this.carbonChat = carbonChat;
+        this.users = userManager;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
         this.argumentFactory = argumentFactory;
@@ -87,24 +87,24 @@ public class IgnoreCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    target = this.carbonChat.userManager().user(handler.get("uuid")).join();
+                    target = this.users.user(handler.get("uuid")).join();
                 } else {
                     this.carbonMessages.ignoreTargetInvalid(sender);
                     return;
                 }
 
                 if (target.hasPermission("carbon.ignore.exempt")) {
-                    this.carbonMessages.ignoreExempt(sender, CarbonPlayer.renderName(target));
+                    this.carbonMessages.ignoreExempt(sender, target.displayName());
                     return;
                 }
 
                 if (target.ignoring(target)) {
-                    this.carbonMessages.alreadyIgnored(sender, CarbonPlayer.renderName(target));
+                    this.carbonMessages.alreadyIgnored(sender, target.displayName());
                     return;
                 }
 
                 sender.ignoring(target, true);
-                this.carbonMessages.nowIgnoring(sender, CarbonPlayer.renderName(target));
+                this.carbonMessages.nowIgnoring(sender, target.displayName());
             })
             .build();
 

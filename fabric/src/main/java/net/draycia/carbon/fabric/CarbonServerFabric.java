@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
@@ -37,10 +38,10 @@ import org.jetbrains.annotations.NotNull;
 public final class CarbonServerFabric implements CarbonServer, ForwardingAudience.Single {
 
     private final MinecraftServerHolder serverHolder;
-    private final FabricUserManager userManager;
+    private final UserManager<?> userManager;
 
     @Inject
-    private CarbonServerFabric(final MinecraftServerHolder serverHolder, final FabricUserManager userManager) {
+    private CarbonServerFabric(final MinecraftServerHolder serverHolder, final UserManager<?> userManager) {
         this.serverHolder = serverHolder;
         this.userManager = userManager;
     }

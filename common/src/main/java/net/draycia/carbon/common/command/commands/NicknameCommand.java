@@ -43,10 +43,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class NicknameCommand extends CarbonCommand {
+public final class NicknameCommand extends CarbonCommand {
 
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
     private final ArgumentFactory argumentFactory;
     private final ConfigFactory config;
 
@@ -114,7 +114,7 @@ public class NicknameCommand extends CarbonCommand {
     }
 
     private void resetNickname(final Commander sender, final CarbonPlayer target) {
-        target.displayName(null);
+        target.nickname(null);
 
         if (sender instanceof PlayerCommander playerCommander
             && playerCommander.carbonPlayer().uuid().equals(target.uuid())) {
@@ -127,7 +127,7 @@ public class NicknameCommand extends CarbonCommand {
     private void applyNickname(final Commander sender, final CarbonPlayer target, final String nick) {
         // Lazy since the sender might not have permission to set the nickname
         final Supplier<Component> parsedNick = Suppliers.memoize(() -> parseNickname(sender, nick));
-        target.displayName(parsedNick.get());
+        target.nickname(parsedNick.get());
 
         if (sender instanceof PlayerCommander playerCommander
             && playerCommander.carbonPlayer().uuid().equals(target.uuid())) {
@@ -141,16 +141,16 @@ public class NicknameCommand extends CarbonCommand {
     }
 
     private void checkOwnNickname(final CarbonPlayer sender) {
-        if (sender.displayName() != null) {
-            this.carbonMessages.nicknameShow(sender, sender.username(), sender.displayName());
+        if (sender.nickname() != null) {
+            this.carbonMessages.nicknameShow(sender, sender.username(), sender.nickname());
         } else {
             this.carbonMessages.nicknameShowUnset(sender, sender.username());
         }
     }
 
     private void checkOthersNickname(final Audience sender, final CarbonPlayer target) {
-        if (target.displayName() != null) {
-            this.carbonMessages.nicknameShowOthers(sender, target.username(), target.displayName());
+        if (target.nickname() != null) {
+            this.carbonMessages.nicknameShowOthers(sender, target.username(), target.nickname());
         } else {
             this.carbonMessages.nicknameShowOthersUnset(sender, target.username());
         }

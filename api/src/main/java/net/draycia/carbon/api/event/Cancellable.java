@@ -37,9 +37,9 @@ public interface Cancellable {
     /**
      * Sets the cancelled state.
      *
-     * @param cancelled sets the cancelled state
+     * @param cancelled new cancelled state
      * @since 2.1.0
      */
-    void cancelled(final boolean cancelled);
+    void cancelled(boolean cancelled);
 
 }

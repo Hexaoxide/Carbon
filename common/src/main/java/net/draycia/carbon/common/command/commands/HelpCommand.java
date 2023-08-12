@@ -49,9 +49,9 @@ import static net.kyori.adventure.text.format.TextColor.color;
 @DefaultQualifier(NonNull.class)
 public final class HelpCommand extends CarbonCommand {
 
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
-    final MinecraftHelp<Commander> minecraftHelp;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
+    private final MinecraftHelp<Commander> minecraftHelp;
 
     @Inject
     public HelpCommand(

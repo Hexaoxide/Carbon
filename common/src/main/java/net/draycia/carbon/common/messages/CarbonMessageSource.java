@@ -21,7 +21,6 @@ package net.draycia.carbon.common.messages;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.seiama.event.EventConfig;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -87,7 +86,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
         this.reloadTranslations();
 
-        events.subscribe(CarbonReloadEvent.class, -99, EventConfig.DEFAULT_ACCEPTS_CANCELLED, event -> {
+        events.subscribe(CarbonReloadEvent.class, -99, true, event -> {
             this.reloadTranslations();
         });
     }
@@ -194,6 +193,10 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     public String messageOf(final Audience receiver, final String messageKey) {
         Audience audience = receiver;
 
+        if (audience instanceof SourcedAudience sourced) {
+            audience = sourced.recipient();
+        }
+
         // Unwrap PlayerCommanders
         if (audience instanceof PlayerCommander playerCommander) {
             audience = playerCommander.carbonPlayer();
@@ -202,7 +205,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         if (audience instanceof CarbonPlayer player) {
             return this.forPlayer(messageKey, player);
         } else {
-            return this.forAudience(messageKey, audience);
+            return this.fromDefaultLocale(messageKey);
         }
     }
 
@@ -219,10 +222,10 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
             }
         }
 
-        return this.forAudience(key, player);
+        return this.fromDefaultLocale(key);
     }
 
-    private String forAudience(final String key, final Audience audience) {
+    private String fromDefaultLocale(final String key) {
         final Properties defaultProperties = this.locales.get(this.defaultLocale);
 
         if (defaultProperties != null) {

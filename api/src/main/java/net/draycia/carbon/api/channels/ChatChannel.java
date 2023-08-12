@@ -20,7 +20,6 @@
 package net.draycia.carbon.api.channels;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
@@ -50,7 +49,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @return if the player may speak
      * @since 2.0.0
      */
-    ChannelPermissionResult speechPermitted(final CarbonPlayer carbonPlayer);
+    ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer);
 
     /**
      * Checks if the player may receive messages from this channel.
@@ -59,7 +58,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @return if the player may receive messages
      * @since 2.0.0
      */
-    ChannelPermissionResult hearingPermitted(final CarbonPlayer player);
+    ChannelPermissionResult hearingPermitted(CarbonPlayer player);
 
     /**
      * Returns a list of all recipients that will receive messages from the sender.
@@ -68,17 +67,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @return the recipients
      * @since 2.0.0
      */
-    List<Audience> recipients(final CarbonPlayer sender);
-
-    /**
-     * Filters the given recipients and removes entries that may not see messages in this channel.
-     *
-     * @param sender     the sender of messages
-     * @param recipients the recipients
-     * @return the recipients that may receive messages
-     * @since 2.0.0
-     */
-    Set<CarbonPlayer> filterRecipients(final CarbonPlayer sender, final Set<CarbonPlayer> recipients);
+    List<Audience> recipients(CarbonPlayer sender);
 
     /**
      * Messages will be sent in this channel if they start with this prefix.

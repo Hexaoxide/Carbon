@@ -22,10 +22,8 @@ package net.draycia.carbon.velocity;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.velocity.VelocityCommandManager;
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -33,22 +31,20 @@ import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
+import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.draycia.carbon.velocity.users.VelocityProfileResolver;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -100,20 +96,6 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         return commandManager;
     }
 
-    @Provides
-    @Singleton
-    @SuppressWarnings("unchecked,unused")
-    public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
-        return injector.getInstance(VelocityMessageRenderer.class);
-    }
-
-    @Provides
-    @Singleton
-    @SuppressWarnings("unchecked,unused")
-    public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
-        return injector.getInstance(VelocityMessageRenderer.class);
-    }
-
     @Override
     public void configure() {
         this.install(new CarbonCommonModule());
@@ -124,8 +106,8 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.dataDirectory);
         this.bind(Logger.class).toInstance(this.logger);
         this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
-        this.bind(new TypeLiteral<UserManager<?>>() {}).to(VelocityUserManager.class);
-        this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(VelocityUserManager.class);
+        this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerVelocity.class));
+        this.bind(CarbonMessageRenderer.class).to(VelocityMessageRenderer.class);
     }
 
 }

@@ -26,7 +26,7 @@ import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
-import net.draycia.carbon.paper.PaperUserManager;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,7 +47,7 @@ public class PaperPlayerJoinListener implements Listener {
     private final ConfigFactory configFactory;
     private final Logger logger;
     private final ProfileCache profileCache;
-    private final PaperUserManager userManager;
+    private final UserManagerInternal<?> userManager;
     private final Provider<MessagingManager> messaging;
     private final PacketFactory packetFactory;
 
@@ -56,7 +56,7 @@ public class PaperPlayerJoinListener implements Listener {
         final ConfigFactory configFactory,
         final Logger logger,
         final ProfileCache profileCache,
-        final PaperUserManager userManager,
+        final UserManagerInternal<?> userManager,
         final Provider<MessagingManager> messaging,
         final PacketFactory packetFactory
     ) {

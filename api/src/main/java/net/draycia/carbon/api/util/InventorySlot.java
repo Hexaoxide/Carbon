@@ -39,11 +39,7 @@ public final class InventorySlot {
         return new InventorySlot(placeholders);
     }
 
-    private List<String> placeholders;
-
-    private InventorySlot() {
-
-    }
+    private final List<String> placeholders;
 
     private InventorySlot(final String... placeholders) {
         this.placeholders = List.of(placeholders);

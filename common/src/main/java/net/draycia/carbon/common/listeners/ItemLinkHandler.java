@@ -40,15 +40,11 @@ public class ItemLinkHandler implements Listener {
                         event.message()
                             .replaceText(TextReplacementConfig.builder()
                                 .matchLiteral("<" + placeholder + ">")
-                                .once()
+                                // .once()
                                 .replacement(builder -> {
                                     final var itemComponent = event.sender().createItemHoverComponent(slot);
 
-                                    if (itemComponent == null) {
-                                        return builder;
-                                    }
-
-                                    return event.sender().createItemHoverComponent(slot);
+                                    return itemComponent == null ? builder : itemComponent;
                                 })
                                 .build())
                     );

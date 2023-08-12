@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.velocity.users;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.util.Locale;
@@ -30,6 +32,7 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -41,7 +44,8 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
 
     private final ProxyServer server;
 
-    public CarbonPlayerVelocity(final ProxyServer server, final CarbonPlayerCommon carbonPlayerCommon) {
+    @AssistedInject
+    private CarbonPlayerVelocity(final ProxyServer server, @Assisted final CarbonPlayerCommon carbonPlayerCommon) {
         super(carbonPlayerCommon);
         this.server = server;
     }
@@ -84,6 +88,11 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
         final var otherServer = otherPlayer.get().getCurrentServer().get();
 
         return playerServer.getServer().equals(otherServer.getServer());
+    }
+
+    @Override
+    protected Optional<Component> platformDisplayName() {
+        return this.player().flatMap(p -> p.get(Identity.DISPLAY_NAME));
     }
 
     @Override

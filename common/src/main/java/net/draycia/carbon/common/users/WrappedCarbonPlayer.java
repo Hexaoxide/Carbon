@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -41,7 +42,6 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.util.Tristate;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -206,19 +206,33 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return this.carbonPlayerCommon.username();
     }
 
+    // take care not to call get(Identity.DISPLAY_NAME) on a CarbonPlayer
+    // from this method - it would result in a stack overflow when pointers
+    // are retrieved from EmptyAudienceWithPointers
     @Override
-    public boolean hasCustomDisplayName() {
-        return this.carbonPlayerCommon.hasCustomDisplayName();
+    public Component displayName() {
+        final @Nullable Component nick = this.nickname();
+        if (nick != null) {
+            return nick;
+        }
+        return this.platformDisplayName().orElseGet(() -> Component.text(this.username()));
+    }
+
+    protected abstract Optional<Component> platformDisplayName();
+
+    @Override
+    public boolean hasNickname() {
+        return this.carbonPlayerCommon.hasNickname();
     }
 
     @Override
-    public @Nullable Component displayName() {
-        return this.carbonPlayerCommon.displayName();
+    public @Nullable Component nickname() {
+        return this.carbonPlayerCommon.nickname();
     }
 
     @Override
-    public void displayName(final @Nullable Component displayName) {
-        this.carbonPlayerCommon.displayName(displayName);
+    public void nickname(final @Nullable Component nickname) {
+        this.carbonPlayerCommon.nickname(nickname);
     }
 
     @Override
@@ -241,11 +255,11 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         final String text = PlainTextComponentSerializer.plainText().serialize(message);
         Component formattedMessage = message;
 
-        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon().channelRegistry().defaultChannel());
+        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon.channelRegistry().defaultChannel());
 
         for (final Key channelKey : this.carbonPlayerCommon.channelRegistry().keys()) {
-            final @MonotonicNonNull ChatChannel chatChannel = this.carbonPlayerCommon.channelRegistry().channel(channelKey);
-            final @MonotonicNonNull String prefix = chatChannel.quickPrefix();
+            final ChatChannel chatChannel = this.carbonPlayerCommon.channelRegistry().channelOrThrow(channelKey);
+            final @Nullable String prefix = chatChannel.quickPrefix();
 
             if (prefix == null) {
                 continue;

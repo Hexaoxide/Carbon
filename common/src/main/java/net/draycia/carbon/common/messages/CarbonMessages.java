@@ -19,8 +19,6 @@
  */
 package net.draycia.carbon.common.messages;
 
-import java.util.UUID;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
@@ -33,15 +31,6 @@ public interface CarbonMessages {
      * ======================== Basic Chat =========================
      * =============================================================
      */
-
-    @Message("channel.format.basic")
-    Component basicChatFormat(
-        final Audience audience,
-        final UUID uuid,
-        @Placeholder("display_name") final Component displayName,
-        final String username,
-        final Component message
-    );
 
     @Message("channel.change")
     void changedChannels(final Audience audience, final String channel);

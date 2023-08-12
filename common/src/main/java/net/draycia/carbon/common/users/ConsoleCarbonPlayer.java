@@ -65,17 +65,22 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
-    public boolean hasCustomDisplayName() {
+    public Component displayName() {
+        return Component.text(this.username());
+    }
+
+    @Override
+    public boolean hasNickname() {
         return false;
     }
 
     @Override
-    public @Nullable Component displayName() {
+    public @Nullable Component nickname() {
         return null;
     }
 
     @Override
-    public void displayName(final @Nullable Component displayName) {
+    public void nickname(final @Nullable Component nickname) {
 
     }
 

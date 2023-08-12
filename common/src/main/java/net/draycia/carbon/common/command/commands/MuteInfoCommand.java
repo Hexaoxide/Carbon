@@ -24,8 +24,8 @@ import cloud.commandframework.arguments.standard.UUIDArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -37,21 +37,21 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class MuteInfoCommand extends CarbonCommand {
+public final class MuteInfoCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
+    private final UserManager<?> users;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
     private final ArgumentFactory argumentFactory;
 
     @Inject
     public MuteInfoCommand(
-        final CarbonChat carbonChat,
+        final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
         final ArgumentFactory argumentFactory
     ) {
-        this.carbonChat = carbonChat;
+        this.users = userManager;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
         this.argumentFactory = argumentFactory;
@@ -87,7 +87,7 @@ public class MuteInfoCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    target = this.carbonChat.userManager().user(handler.get("uuid")).join();
+                    target = this.users.user(handler.get("uuid")).join();
                 } else {
                     target = sender;
                 }
@@ -96,13 +96,13 @@ public class MuteInfoCommand extends CarbonCommand {
                     if (sender.equals(target)) {
                         this.carbonMessages.muteInfoSelfNotMuted(sender);
                     } else {
-                        this.carbonMessages.muteInfoNotMuted(sender, CarbonPlayer.renderName(target));
+                        this.carbonMessages.muteInfoNotMuted(sender, target.displayName());
                     }
                 } else {
                     if (sender.equals(target)) {
                         this.carbonMessages.muteInfoSelfMuted(sender);
                     } else {
-                        this.carbonMessages.muteInfoMuted(sender, CarbonPlayer.renderName(target), target.muted());
+                        this.carbonMessages.muteInfoMuted(sender, target.displayName(), target.muted());
                     }
                 }
             })

@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.util.SourcedAudience;
+import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.util.DiscordRecipient;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.message.IMessageSource;

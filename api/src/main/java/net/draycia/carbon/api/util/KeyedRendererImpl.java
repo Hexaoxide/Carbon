@@ -17,36 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.paper;
+package net.draycia.carbon.api.util;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import net.draycia.carbon.common.users.Backing;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.users.PlatformUserManager;
-import net.draycia.carbon.common.users.UserManagerInternal;
-import net.draycia.carbon.paper.users.CarbonPlayerPaper;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-@Singleton
-public final class PaperUserManager extends PlatformUserManager<CarbonPlayerPaper> {
-
-    private final CarbonPlayerPaper.Factory playerFactory;
-
-    @Inject
-    private PaperUserManager(
-        final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager,
-        final CarbonPlayerPaper.Factory playerFactory
-    ) {
-        super(backingManager);
-        this.playerFactory = playerFactory;
-    }
+record KeyedRendererImpl(Key key, ChatComponentRenderer renderer) implements KeyedRenderer {
 
     @Override
-    protected CarbonPlayerPaper wrap(final CarbonPlayerCommon common) {
-        return this.playerFactory.wrap(common);
+    public Component render(
+        final CarbonPlayer sender,
+        final Audience recipient,
+        final Component message,
+        final Component originalMessage
+    ) {
+        return this.renderer.render(sender, recipient, message, originalMessage);
     }
 
 }

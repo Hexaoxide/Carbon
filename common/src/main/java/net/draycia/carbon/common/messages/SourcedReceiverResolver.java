@@ -42,7 +42,6 @@ package net.draycia.carbon.common.messages;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import javax.inject.Singleton;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.receiver.IReceiverLocator;
 import net.kyori.moonshine.receiver.IReceiverLocatorResolver;
@@ -71,7 +70,7 @@ public final class SourcedReceiverResolver implements IReceiverLocatorResolver<S
             if (parameter instanceof SourcedAudience sourcedAudience) {
                 return sourcedAudience;
             } else if (parameter instanceof Audience audience) {
-                return new SourcedAudience(audience, audience);
+                return SourcedAudience.of(audience, audience);
             }
 
             return SourcedAudience.empty();

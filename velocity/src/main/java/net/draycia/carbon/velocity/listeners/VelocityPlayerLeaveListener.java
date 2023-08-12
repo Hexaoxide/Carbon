@@ -23,8 +23,8 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
-import net.draycia.carbon.velocity.VelocityUserManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -34,12 +34,12 @@ import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
 @DefaultQualifier(NonNull.class)
 public final class VelocityPlayerLeaveListener implements VelocityListener<DisconnectEvent> {
 
-    private final VelocityUserManager userManager;
+    private final UserManagerInternal<?> userManager;
     private final Logger logger;
 
     @Inject
     public VelocityPlayerLeaveListener(
-        final VelocityUserManager userManager,
+        final UserManagerInternal<?> userManager,
         final Logger logger
     ) {
         this.userManager = userManager;

@@ -22,9 +22,10 @@ package net.draycia.carbon.api;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Static accessor for the {@link CarbonChat} class.
+ * Static accessor for the {@link CarbonChat} instance.
  *
  * @since 1.0.0
  */
@@ -43,6 +44,7 @@ public final class CarbonChatProvider {
      * @param carbonChat the carbon implementation
      * @since 1.0.0
      */
+    @ApiStatus.Internal
     public static void register(final CarbonChat carbonChat) {
         CarbonChatProvider.instance = carbonChat;
     }
@@ -55,7 +57,7 @@ public final class CarbonChatProvider {
      */
     public static CarbonChat carbonChat() {
         if (CarbonChatProvider.instance == null) {
-            throw new IllegalStateException("CarbonChat not initialized!"); // LuckPerms design go brrrr
+            throw new IllegalStateException("CarbonChat not initialized!");
         }
 
         return CarbonChatProvider.instance;

@@ -80,36 +80,52 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
         this.origin = origin;
     }
 
+    @Override
     public List<KeyedRenderer> renderers() {
         return this.renderers;
     }
 
+    @Override
     public @MonotonicNonNull SignedMessage signedMessage() {
         return this.signedMessage;
     }
 
+    @Override
     public CarbonPlayer sender() {
         return this.sender;
     }
 
+    @Override
     public Component originalMessage() {
         return this.originalMessage;
     }
 
+    @Override
     public Component message() {
         return this.message;
     }
 
+    @Override
     public void message(final Component message) {
         this.message = message;
     }
 
+    @Override
     public @MonotonicNonNull ChatChannel chatChannel() {
         return this.chatChannel;
     }
 
+    @Override
     public List<? extends Audience> recipients() {
         return this.recipients;
+    }
+
+    public Component renderFor(final Audience viewer) {
+        Component renderedMessage = this.message();
+        for (final var renderer : this.renderers()) {
+            renderedMessage = renderer.render(this.sender, viewer, renderedMessage, this.message());
+        }
+        return renderedMessage;
     }
 
 }

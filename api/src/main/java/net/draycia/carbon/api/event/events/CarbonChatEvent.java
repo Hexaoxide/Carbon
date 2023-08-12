@@ -41,9 +41,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public interface CarbonChatEvent extends CarbonEvent, Cancellable {
 
     /**
-     * Get the renderers used to construct components for each of the recipients.
+     * Get the renderers used to construct components for each of the recipients. The returned list
+     * is mutable.
      *
-     * @return The per-recipient component renderers.
+     * @return renderers
      * @since 2.0.0
      */
     List<KeyedRenderer> renderers();

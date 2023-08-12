@@ -17,27 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.api.event;
+package net.draycia.carbon.common.messaging;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import com.google.inject.BindingAnnotation;
+import com.google.inject.Key;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.UUID;
 
 /**
- * An EventSubscriber.
- *
- * @param <T> CarbonEvent implementations
- * @since 2.1.0
+ * Injection binding annotation for the {@link UUID} identifier of
+ * the currently running Carbon instance for cross-server packet
+ * communications.
  */
-@DefaultQualifier(NonNull.class)
-public interface CarbonEventSubscriber<T extends CarbonEvent> {
-
-    /**
-     * Invokes this event consumer.
-     *
-     * @param event the event
-     * @throws Throwable if an exception is thrown
-     * @since 1.0.0
-     */
-    void on(T event) throws Throwable;
-
+@BindingAnnotation
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
+public @interface ServerId {
+    Key<UUID> KEY = Key.get(UUID.class, ServerId.class);
 }

@@ -21,13 +21,11 @@ package net.draycia.carbon.api.users;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -42,23 +40,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface CarbonPlayer extends Audience, Identified {
 
-    CarbonPlayer EMPTY = new EmptyCarbonPlayer();
-
-    /**
-     * Returns the appropriate {@link Component} to represent the player's name.
-     *
-     * @param player the player
-     * @return the player's name
-     * @since 2.0.0
-     */
-    static Component renderName(final CarbonPlayer player) {
-        if (player.hasCustomDisplayName()) {
-            return Objects.requireNonNull(player.displayName());
-        } else {
-            return player.get(Identity.DISPLAY_NAME).orElseGet(() -> Component.text(player.username()));
-        }
-    }
-
     /**
      * Returns the distance from the other {@link CarbonPlayer}, or -1 if the players are not in the same world.
      *
@@ -66,7 +47,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the distance from the other player, or -1
      * @since 2.1.0
      */
-    double distanceSquaredFrom(final CarbonPlayer other);
+    double distanceSquaredFrom(CarbonPlayer other);
 
     /**
      * Returns if both players are in the same world or server.
@@ -75,7 +56,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if both players are in the same world/server
      * @since 2.1.0
      */
-    boolean sameWorldAs(final CarbonPlayer other);
+    boolean sameWorldAs(CarbonPlayer other);
 
     /**
      * Gets the player's username.
@@ -86,41 +67,56 @@ public interface CarbonPlayer extends Audience, Identified {
     String username();
 
     /**
-     * Checks if the player has a display name set.
+     * Returns the player's display name.
+     *
+     * <p>The display name is the effective or displayed name of a player.
+     * When the player has a nickname set, either through Carbon or the platform,
+     * it will be reflected here. Else, a plain text component representing
+     * the player's name may be returned.</p>
+     *
+     * @return the player's display name
+     * @since 2.1.0
+     */
+    Component displayName();
+
+    /**
+     * Checks if the player has a nickname set.
      *
      * <p>Will always return {@code false} when Carbon's nickname management is disabled.</p>
      *
-     * @return if the player has a custom display name set
-     * @see #displayName()
-     * @see #displayName(Component)
-     * @since 2.0.0
+     * @return if the player has a nickname set
+     * @see #nickname()
+     * @see #nickname(Component)
+     * @since 2.1.0
      */
-    boolean hasCustomDisplayName();
+    boolean hasNickname();
 
     /**
-     * Gets the player's display name, shown in places like chat and tab menu.
+     * Gets the player's nickname, shown in places like chat and tab menu.
      *
      * <p>Will always return {@code null} when Carbon's nickname management is disabled.</p>
      *
-     * @return the player's display name
-     * @see #hasCustomDisplayName()
-     * @see #displayName(Component)
-     * @since 2.0.0
+     * @return the player's nickname
+     * @see #hasNickname()
+     * @see #nickname(Component)
+     * @see #displayName()
+     * @since 2.1.0
      */
-    @Nullable Component displayName();
+    @Nullable Component nickname();
 
     /**
-     * Sets the player's display name.
+     * Sets the player's nickname.
      *
-     * <p>Setting {@code null} is equivalent to setting the display name to the username.</p>
+     * <p>Setting {@code null} will remove any current nickname.</p>
      * <p>Won't have any visible effect when Carbon's nickname management is disabled.</p>
      *
-     * @param displayName the new display name
+     * @param nickname the new nickname
+     * @see #hasNickname()
+     * @see #nickname()
      * @see #displayName()
-     * @see #hasCustomDisplayName()
-     * @since 2.0.0
+     * @since 2.1.0
      */
-    void displayName(final @Nullable Component displayName);
+    void nickname(@Nullable Component nickname);
 
     /**
      * The player's UUID, often used for identification purposes.
@@ -137,7 +133,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the chat component for the item in the slot, or null if the slot is empty
      * @since 2.0.0
      */
-    @Nullable Component createItemHoverComponent(final InventorySlot slot);
+    @Nullable Component createItemHoverComponent(InventorySlot slot);
 
     /**
      * The player's locale.
@@ -161,7 +157,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param chatChannel the channel
      * @since 2.0.0
      */
-    void selectedChannel(final @Nullable ChatChannel chatChannel);
+    void selectedChannel(@Nullable ChatChannel chatChannel);
 
     /**
      * Determines which channel the message should go to, and removes any channel prefixes from the message.
@@ -170,7 +166,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return the channel and message
      * @since 2.1.0
      */
-    ChannelMessage channelForMessage(final Component message);
+    ChannelMessage channelForMessage(Component message);
 
     /**
      * A message and which channel it should be sent in.
@@ -188,7 +184,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if the player has the permission
      * @since 2.0.0
      */
-    boolean hasPermission(final String permission);
+    boolean hasPermission(String permission);
 
     /**
      * Returns the player's primary group.
@@ -229,7 +225,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if this player is ignoring the sender
      * @since 2.0.5
      */
-    boolean ignoring(final UUID player);
+    boolean ignoring(UUID player);
 
     /**
      * Checks if the other player is being ignored by this player.
@@ -238,7 +234,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if this player is ignoring the sender
      * @since 2.0.0
      */
-    boolean ignoring(final CarbonPlayer player);
+    boolean ignoring(CarbonPlayer player);
 
     /**
      * Adds the player to and removes the player from the ignore list.
@@ -247,7 +243,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param nowIgnoring if the player should be ignored
      * @since 2.0.0
      */
-    void ignoring(final UUID player, final boolean nowIgnoring);
+    void ignoring(UUID player, boolean nowIgnoring);
 
     /**
      * Adds the player to and removes the player from the ignore list.
@@ -256,7 +252,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param nowIgnoring if the player should be ignored
      * @since 2.0.0
      */
-    void ignoring(final CarbonPlayer player, boolean nowIgnoring);
+    void ignoring(CarbonPlayer player, boolean nowIgnoring);
 
     /**
      * Returns if the player is deafened and unable to read messages.
@@ -271,7 +267,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @since 2.0.0
      */
-    void deafened(final boolean deafened);
+    void deafened(boolean deafened);
 
     /**
      * Returns if the player is spying on messages and able to read muted/private messages.
@@ -286,7 +282,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @since 2.0.0
      */
-    void spying(final boolean spying);
+    void spying(boolean spying);
 
     /**
      * Sends the message as the player.
@@ -294,7 +290,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param message the message to be sent
      * @since 2.0.0
      */
-    void sendMessageAsPlayer(final String message);
+    void sendMessageAsPlayer(String message);
 
     /**
      * Returns whether the player is online.
@@ -318,7 +314,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param uuid the uuid of the reply target
      * @since 2.0.0
      */
-    void whisperReplyTarget(final @Nullable UUID uuid);
+    void whisperReplyTarget(@Nullable UUID uuid);
 
     /**
      * The last player this player has whispered.
@@ -334,7 +330,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param uuid the uuid of the whisper target
      * @since 2.0.0
      */
-    void lastWhisperTarget(final @Nullable UUID uuid);
+    void lastWhisperTarget(@Nullable UUID uuid);
 
     /**
      * If this player is vanished in another supported plugin.
@@ -353,7 +349,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if this player is aware of the other player
      * @since 2.0.0
      */
-    boolean awareOf(final CarbonPlayer other);
+    boolean awareOf(CarbonPlayer other);
 
     /**
      * A list of all the channels the player has left
@@ -373,7 +369,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param channel the channel to join.
      * @since 2.1.0
      */
-    void joinChannel(final ChatChannel channel);
+    void joinChannel(ChatChannel channel);
 
     /**
      * Leave a channel for this player.
@@ -381,6 +377,6 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param channel the channel to leave.
      * @since 2.1.0
      */
-    void leaveChannel(final ChatChannel channel);
+    void leaveChannel(ChatChannel channel);
 
 }

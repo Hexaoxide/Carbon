@@ -31,8 +31,9 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * {@link CarbonEvent} that's called after new channels are registered.
  *
  * <p>Note that some invocations of this event may be too early for
- * API consumers to be notified. Prefer using {@link ChannelRegistry#allKeys(Consumer)}
- * when knowledge of all registered channels is needed.</p>
+ * API consumers to be notified. {@link ChannelRegistry#allKeys(Consumer)}
+ * is provided as a helper for when knowledge of all registered channels
+ * is needed.</p>
  *
  * @since 2.1.0
  */

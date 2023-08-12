@@ -22,7 +22,7 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
-import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -33,19 +33,19 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class ReloadCommand extends CarbonCommand {
+public final class ReloadCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
+    private final CarbonEventHandler events;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
 
     @Inject
     public ReloadCommand(
-        final CarbonChat carbonChat,
+        final CarbonEventHandler eventHandler,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages
     ) {
-        this.carbonChat = carbonChat;
+        this.events = eventHandler;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
     }
@@ -69,7 +69,7 @@ public class ReloadCommand extends CarbonCommand {
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReloadDescription())
             .handler(handler -> {
                 // TODO: Check if all listeners succeeded
-                this.carbonChat.eventHandler().emit(new CarbonReloadEvent());
+                this.events.emit(new CarbonReloadEvent());
                 this.carbonMessages.configReloaded(handler.getSender());
             })
             .build();
