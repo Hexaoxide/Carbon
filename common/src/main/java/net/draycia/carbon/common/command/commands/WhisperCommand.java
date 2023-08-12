@@ -54,7 +54,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class WhisperCommand extends CarbonCommand {
+public final class WhisperCommand extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;

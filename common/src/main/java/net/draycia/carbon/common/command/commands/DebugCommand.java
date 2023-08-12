@@ -39,10 +39,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class DebugCommand extends CarbonCommand {
+public final class DebugCommand extends CarbonCommand {
 
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
     private final ArgumentFactory argumentFactory;
 
     @Inject

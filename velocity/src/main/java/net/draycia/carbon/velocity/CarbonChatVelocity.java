@@ -32,7 +32,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.PlatformUserManager;

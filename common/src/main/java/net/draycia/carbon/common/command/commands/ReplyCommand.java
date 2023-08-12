@@ -25,13 +25,12 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.UUID;
-import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -40,26 +39,23 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public class ReplyCommand extends CarbonCommand {
+public final class ReplyCommand extends CarbonCommand {
 
-    final CarbonChat carbonChat;
-    final CommandManager<Commander> commandManager;
-    final CarbonMessages carbonMessages;
-    final ConfigFactory configFactory;
+    private final UserManager<?> users;
+    private final CommandManager<Commander> commandManager;
+    private final CarbonMessages carbonMessages;
     private final WhisperCommand.WhisperHandler whisper;
 
     @Inject
     public ReplyCommand(
-        final CarbonChat carbonChat,
+        final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final ConfigFactory configFactory,
         final WhisperCommand.WhisperHandler whisper
     ) {
-        this.carbonChat = carbonChat;
+        this.users = userManager;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.configFactory = configFactory;
         this.whisper = whisper;
     }
 
@@ -97,7 +93,7 @@ public class ReplyCommand extends CarbonCommand {
                     return;
                 }
 
-                final @MonotonicNonNull CarbonPlayer recipient = this.carbonChat.userManager().user(replyTarget).join();
+                final @MonotonicNonNull CarbonPlayer recipient = this.users.user(replyTarget).join();
 
                 this.whisper.whisper(sender, recipient, message);
             })

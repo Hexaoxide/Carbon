@@ -35,7 +35,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.commands.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.PlatformUserManager;
