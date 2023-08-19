@@ -76,7 +76,14 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected abstract void saveSync(CarbonPlayerCommon player);
 
     private CompletableFuture<Void> save(final CarbonPlayerCommon player) {
-        return CompletableFuture.runAsync(() -> this.saveSync(player), this.executor);
+        return CompletableFuture.runAsync(() -> {
+            this.saveSync(player);
+            player.saved();
+            this.messagingManager.get().withPacketService(packetService -> {
+                packetService.queuePacket(this.packetFactory.saveCompletedPacket(player.uuid()));
+                packetService.flushQueue();
+            });
+        }, this.executor);
     }
 
     @Override
@@ -94,13 +101,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         if (!player.needsSave()) {
             return CompletableFuture.completedFuture(null);
         }
-        return this.save(player).whenComplete(($, $$) -> {
-            player.saved();
-            this.messagingManager.get().withPacketService(packetService -> {
-                packetService.queuePacket(this.packetFactory.saveCompletedPacket(player.uuid()));
-                packetService.flushQueue();
-            });
-        });
+        return this.save(player);
     }
 
     @Override
