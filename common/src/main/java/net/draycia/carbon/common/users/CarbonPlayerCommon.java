@@ -83,7 +83,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final boolean muted,
         final boolean deafened,
         final @Nullable Key selectedChannel,
-        final String username,
+        final @Nullable String username, // will be resolved when requested
         final UUID uuid,
         final @Nullable Component displayName,
         final @Nullable UUID lastWhisperTarget,

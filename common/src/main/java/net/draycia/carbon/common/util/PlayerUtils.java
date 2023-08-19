@@ -67,7 +67,7 @@ public final class PlayerUtils {
 
     public static Function<Throwable, @Nullable Void> saveExceptionHandler(final Logger logger, final String username, final UUID uuid) {
         return thr -> {
-            logger.warn("Exception saving data for player {} with uuid {}", username, uuid);
+            logger.warn("Exception saving data for player {} with uuid {}", username, uuid, thr);
             return null;
         };
     }

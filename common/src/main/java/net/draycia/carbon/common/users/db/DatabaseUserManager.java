@@ -21,6 +21,8 @@ package net.draycia.carbon.common.users.db;
 
 import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -34,7 +36,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
-import org.jdbi.v3.core.statement.Update;
 
 @DefaultQualifier(NonNull.class)
 public abstract class DatabaseUserManager extends CachingUserManager {
@@ -67,33 +68,46 @@ public abstract class DatabaseUserManager extends CachingUserManager {
 
     @Override
     public final void saveSync(final CarbonPlayerCommon player) {
-        this.jdbi.withHandle(handle -> {
-            this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
+        this.jdbi.useTransaction(handle -> {
+            handle.createUpdate(this.locator.query("insert-player"))
+                .bind("id", player.uuid())
+                .bind("muted", player.muted())
+                .bind("deafened", player.deafened())
+                .bind("selectedchannel", player.selectedChannelKey())
+                .bind("username", player.username()) // todo remove from db?
+                .bind("displayname", player.displayNameRaw())
+                .bind("lastwhispertarget", player.lastWhisperTarget())
+                .bind("whisperreplytarget", player.whisperReplyTarget())
+                .bind("spying", player.spying())
                 .execute();
 
-            if (!player.ignoredPlayers().isEmpty()) {
-                final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-ignores"));
+            handle.createUpdate(this.locator.query("clear-ignores"))
+                .bind("id", player.uuid())
+                .execute();
+            handle.createUpdate(this.locator.query("clear-leftchannels"))
+                .bind("id", player.uuid())
+                .execute();
 
-                for (final UUID ignoredPlayer : player.ignoredPlayers()) {
+            final Set<UUID> ignored = player.ignoredPlayers();
+            if (!ignored.isEmpty()) {
+                final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-ignores"));
+                for (final UUID ignoredPlayer : ignored) {
                     batch.bind("id", player.uuid()).bind("ignoredplayer", ignoredPlayer).add();
                 }
-
                 batch.execute();
             }
-            if (!player.leftChannels().isEmpty()) {
-                final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-leftchannels"));
 
-                for (final Key leftChannel : player.leftChannels()) {
+            final List<Key> left = player.leftChannels();
+            if (!left.isEmpty()) {
+                final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-leftchannels"));
+                for (final Key leftChannel : left) {
                     batch.bind("id", player.uuid()).bind("channel", leftChannel).add();
                 }
-
                 batch.execute();
             }
-            // TODO: save ignoredplayers
-            return null;
+
+            handle.commit();
         });
     }
-
-    abstract protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player);
 
 }
