@@ -1,11 +1,21 @@
-INSERT INTO carbon_users VALUES (
-    UNHEX(REPLACE(:id, '-', '')),
-    :muted,
-    :deafened,
-    :selectedchannel,
-    :username,
-    :displayname,
-    UNHEX(REPLACE(:lastwhispertarget, '-', '')),
-    UNHEX(REPLACE(:whisperreplytarget, '-', '')),
-    :spying
-);
+INSERT INTO carbon_users SET
+    id = UNHEX(REPLACE(:id, '-', '')),
+    muted = :muted,
+    deafened = :deafened,
+    selectedchannel = :selectedchannel,
+    username= :username,
+    displayname = :displayname,
+    lastwhispertarget = UNHEX(REPLACE(:lastwhispertarget, '-', '')),
+    whisperreplytarget = UNHEX(REPLACE(:whisperreplytarget, '-', '')),
+    spying = :spying
+ON DUPLICATE KEY UPDATE
+    id = UNHEX(REPLACE(:id, '-', '')),
+    muted = :muted,
+    deafened = :deafened,
+    selectedchannel = :selectedchannel,
+    username= :username,
+    displayname = :displayname,
+    lastwhispertarget = UNHEX(REPLACE(:lastwhispertarget, '-', '')),
+    whisperreplytarget = UNHEX(REPLACE(:whisperreplytarget, '-', '')),
+    spying = :spying
+;
