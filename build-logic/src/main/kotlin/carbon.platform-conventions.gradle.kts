@@ -32,6 +32,12 @@ dependencies {
   runtimeDownload(libs.assistedInject) {
     isTransitive = false
   }
+  runtimeDownload(libs.flyway) {
+    exclude("com.google", "gson")
+  }
+  runtimeDownload(libs.flywayMysql) {
+    isTransitive = false
+  }
 }
 
 tasks {

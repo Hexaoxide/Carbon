@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS carbon_users (
+CREATE TABLE carbon_users (
     id uuid NOT NULL PRIMARY KEY,
     muted BOOLEAN,
     deafened BOOLEAN,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS carbon_users (
     spying BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS carbon_ignores (
+CREATE TABLE carbon_ignores (
     id uuid NOT NULL,
     ignoredplayer uuid NOT NULL,
     PRIMARY KEY (id, ignoredplayer)

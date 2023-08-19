@@ -49,8 +49,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.internal.database.postgresql.PostgreSQLDatabaseType;
-import org.flywaydb.core.internal.plugin.PluginRegister;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
@@ -143,7 +141,6 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
 
         public PostgreSQLUserManager create() {
             SQLDrivers.loadFrom(this.getClass().getClassLoader());
-            PluginRegister.REGISTERED_PLUGINS.add(new PostgreSQLDatabaseType());
 
             final HikariConfig hikariConfig = new HikariConfig();
             hikariConfig.setMaximumPoolSize(20);
@@ -154,15 +151,17 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
 
             final DataSource dataSource = new HikariDataSource(hikariConfig);
 
-            Flyway.configure(CarbonChat.class.getClassLoader())
+            final Flyway flyway = Flyway.configure(CarbonChat.class.getClassLoader())
                 .baselineVersion("0")
                 .baselineOnMigrate(true)
                 .locations("queries/migrations/postgresql")
                 .dataSource(dataSource)
                 .validateMigrationNaming(true)
                 .validateOnMigrate(true)
-                .load()
-                .migrate();
+                .load();
+
+            flyway.repair();
+            flyway.migrate();
 
             final Jdbi jdbi = Jdbi.create(dataSource)
                 .registerArgument(new ComponentArgumentFactory())
