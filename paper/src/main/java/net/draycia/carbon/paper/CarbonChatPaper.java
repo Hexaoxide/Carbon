@@ -32,6 +32,7 @@ import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -45,6 +46,7 @@ import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -109,7 +111,7 @@ public final class CarbonChatPaper extends CarbonChatInternal {
         this.discoverDiscordHooks();
 
         final Metrics metrics = new Metrics(this.plugin, BSTATS_PLUGIN_ID);
-        // metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector().getInstance(ConfigFactory.class).primaryConfig().storageType().name()));
+        metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector().getInstance(ConfigFactory.class).primaryConfig().storageType().name()));
     }
 
     private void discoverDiscordHooks() {
