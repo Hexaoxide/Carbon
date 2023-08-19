@@ -1,11 +1,21 @@
-INSERT INTO carbon_users VALUES (
-    :id,
-    :muted,
-    :deafened,
-    :selectedchannel,
-    :username,
-    :displayname,
-    :lastwhispertarget,
-    :whisperreplytarget,
-    :spying
-);
+INSERT INTO carbon_users SET
+    id = :id,
+    muted = :muted,
+    deafened = :deafened,
+    selectedchannel = :selectedchannel,
+    username= :username,
+    displayname = :displayname,
+    lastwhispertarget = :lastwhispertarget,
+    whisperreplytarget = :whisperreplytarget,
+    spying = :spying
+ON CONFLICT (id) DO UPDATE SET
+    id = :id,
+    muted = :muted,
+    deafened = :deafened,
+    selectedchannel = :selectedchannel,
+    username= :username,
+    displayname = :displayname,
+    lastwhispertarget = :lastwhispertarget,
+    whisperreplytarget = :whisperreplytarget,
+    spying = :spying
+;

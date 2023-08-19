@@ -68,7 +68,7 @@ public abstract class DatabaseUserManager extends CachingUserManager {
     @Override
     public final void saveSync(final CarbonPlayerCommon player) {
         this.jdbi.withHandle(handle -> {
-            this.bindPlayerArguments(handle.createUpdate(this.locator.query("save-player")), player)
+            this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player)
                 .execute();
 
             if (!player.ignoredPlayers().isEmpty()) {
