@@ -45,7 +45,7 @@ public class MySQLPlayerRowMapper implements RowMapper<CarbonPlayerCommon> {
             rs.getBoolean("muted"),
             rs.getBoolean("deafened"),
             selectedChannel == null ? null : Key.key(selectedChannel),
-            Strings.trim(rs.getString("username")),
+            null,
             UUID.fromString(id),
             displayName == null ? null : GsonComponentSerializer.gson().deserialize(displayName),
             lastWhisperTarget == null ? null : UUID.fromString(lastWhisperTarget),

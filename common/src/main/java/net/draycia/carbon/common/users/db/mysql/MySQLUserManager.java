@@ -51,7 +51,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 @DefaultQualifier(NonNull.class)
@@ -108,20 +107,6 @@ public final class MySQLUserManager extends DatabaseUserManager {
                 });
             return carbonPlayerCommon.get();
         });
-    }
-
-    @Override
-    protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
-        return update
-            .bind("id", player.uuid())
-            .bind("muted", player.muted())
-            .bind("deafened", player.deafened())
-            .bind("selectedchannel", player.selectedChannelKey())
-            .bind("username", player.username())
-            .bind("displayname", player.displayNameRaw())
-            .bind("lastwhispertarget", player.lastWhisperTarget())
-            .bind("whisperreplytarget", player.whisperReplyTarget())
-            .bind("spying", player.spying());
     }
 
     public static final class Factory {

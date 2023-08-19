@@ -52,7 +52,6 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.internal.database.postgresql.PostgreSQLDatabaseType;
 import org.flywaydb.core.internal.plugin.PluginRegister;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
@@ -111,20 +110,6 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
                 });
             return carbonPlayerCommon;
         });
-    }
-
-    @Override
-    protected Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
-        return update
-            .bind("id", player.uuid())
-            .bind("muted", player.muted())
-            .bind("deafened", player.deafened())
-            .bind("selectedchannel", player.selectedChannelKey())
-            .bind("username", player.username())
-            .bind("displayname", player.displayNameRaw())
-            .bind("lastwhispertarget", player.lastWhisperTarget())
-            .bind("whisperreplytarget", player.whisperReplyTarget())
-            .bind("spying", player.spying());
     }
 
     public static final class Factory {

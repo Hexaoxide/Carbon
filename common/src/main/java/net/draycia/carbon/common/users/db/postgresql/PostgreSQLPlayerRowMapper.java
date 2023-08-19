@@ -42,7 +42,7 @@ public class PostgreSQLPlayerRowMapper implements RowMapper<CarbonPlayerCommon> 
             rs.getBoolean("muted"),
             rs.getBoolean("deafened"),
             selectedChannel == null ? null : Key.key(selectedChannel),
-            Strings.trim(rs.getString("username")),
+            null,
             rs.getObject("id", UUID.class),
             displayName == null ? null : GsonComponentSerializer.gson().deserialize(displayName),
             rs.getObject("lastwhispertarget", UUID.class),
