@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
@@ -59,12 +59,12 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
     });
 
     private final MiniMessage miniMessage;
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
 
     @Inject
-    public PaperMessageRenderer(final ConfigFactory configFactory) {
+    public PaperMessageRenderer(final ConfigManager configManager) {
         this.miniMessage = MiniMessage.miniMessage();
-        this.configFactory = configFactory;
+        this.configManager = configManager;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        final String placeholderResolvedMessage = this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage);
+        final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (CarbonChatPaper.miniPlaceholdersLoaded()) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());

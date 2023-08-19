@@ -36,7 +36,7 @@ import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonPrivateChatEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.SourcedAudience;
@@ -116,7 +116,7 @@ public final class WhisperCommand extends CarbonCommand {
 
         private final Logger logger;
         private final CarbonMessages messages;
-        private final ConfigFactory configFactory;
+        private final ConfigManager configManager;
         private final Provider<MessagingManager> messaging;
         private final PacketFactory packetFactory;
         private final UserManager<? extends CarbonPlayer> userManager;
@@ -128,7 +128,7 @@ public final class WhisperCommand extends CarbonCommand {
         private WhisperHandler(
             final Logger logger,
             final CarbonMessages messages,
-            final ConfigFactory configFactory,
+            final ConfigManager configManager,
             final Provider<MessagingManager> messaging,
             final PacketFactory packetFactory,
             final UserManager<?> userManager,
@@ -138,7 +138,7 @@ public final class WhisperCommand extends CarbonCommand {
         ) {
             this.logger = logger;
             this.messages = messages;
-            this.configFactory = configFactory;
+            this.configManager = configManager;
             this.messaging = messaging;
             this.packetFactory = packetFactory;
             this.userManager = userManager;
@@ -204,7 +204,7 @@ public final class WhisperCommand extends CarbonCommand {
             }
             this.messages.whisperConsoleLog(this.server.console(), senderName, recipientName, privateChatEvent.message());
 
-            final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
+            final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
             if (localRecipient && messageSound != null) {
                 recipient.playSound(messageSound);
             }
@@ -235,7 +235,7 @@ public final class WhisperCommand extends CarbonCommand {
                 recipient.whisperReplyTarget(sender.uuid());
                 this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderName, recipientName, packet.message());
                 this.messages.whisperConsoleLog(this.server.console(), senderName, recipientName, packet.message());
-                final @Nullable Sound messageSound = this.configFactory.primaryConfig().messageSound();
+                final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
                 if (messageSound != null) {
                     recipient.playSound(messageSound);
                 }

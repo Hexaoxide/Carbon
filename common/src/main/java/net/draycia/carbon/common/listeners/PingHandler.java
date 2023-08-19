@@ -26,7 +26,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -43,11 +43,11 @@ public class PingHandler implements Listener {
 
     private final Key pingKey = key("carbon", "pings");
     private final KeyedRenderer renderer;
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
 
     @Inject
-    public PingHandler(final CarbonEventHandler events, final ConfigFactory configFactory) {
-        this.configFactory = configFactory;
+    public PingHandler(final CarbonEventHandler events, final ConfigManager configManager) {
+        this.configManager = configManager;
         this.renderer = keyedRenderer(this.pingKey, (sender, recipient, message, originalMessage) -> {
             if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
                 return message;
@@ -62,7 +62,7 @@ public class PingHandler implements Listener {
     }
 
     public Component convertPings(final CarbonPlayer recipient, final Component message) {
-        final String prefix = this.configFactory.primaryConfig().pings().prefix();
+        final String prefix = this.configManager.primaryConfig().pings().prefix();
         final String plainDisplayName = PlainTextComponentSerializer.plainText().serialize(recipient.displayName());
 
         return message.replaceText(TextReplacementConfig.builder()
@@ -75,11 +75,11 @@ public class PingHandler implements Listener {
                     Pattern.quote(plainDisplayName)),
                 Pattern.CASE_INSENSITIVE))
             .replacement(matchedText -> {
-                if (this.configFactory.primaryConfig().pings().playSound()) {
-                    recipient.playSound(this.configFactory.primaryConfig().pings().sound());
+                if (this.configManager.primaryConfig().pings().playSound()) {
+                    recipient.playSound(this.configManager.primaryConfig().pings().sound());
                 }
 
-                return Component.text(matchedText.content()).color(this.configFactory.primaryConfig().pings().highlightTextColor());
+                return Component.text(matchedText.content()).color(this.configManager.primaryConfig().pings().highlightTextColor());
             })
             .build());
     }

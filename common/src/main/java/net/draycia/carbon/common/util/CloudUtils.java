@@ -58,7 +58,7 @@ import net.draycia.carbon.common.command.commands.UpdateUsernameCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.command.exception.CommandCompleted;
 import net.draycia.carbon.common.config.CommandConfig;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -105,7 +105,7 @@ public final class CloudUtils {
     }
 
     public static Map<Key, CommandSettings> loadCommandSettings(final Injector injector) {
-        final @Nullable CommandConfig commandConfig = injector.getInstance(ConfigFactory.class).loadCommandSettings();
+        final @Nullable CommandConfig commandConfig = injector.getInstance(ConfigManager.class).loadCommandSettings();
 
         if (commandConfig == null) {
             return CloudUtils.defaultCommandSettings();

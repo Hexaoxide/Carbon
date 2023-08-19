@@ -31,7 +31,6 @@ import com.google.inject.assistedinject.FactoryProvider3;
 import com.google.inject.multibindings.Multibinder;
 import io.leangen.geantyref.TypeToken;
 import java.lang.invoke.MethodHandles;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -41,7 +40,7 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.HyperlinkHandler;
@@ -90,8 +89,8 @@ public final class CarbonCommonModule extends AbstractModule {
     @Provides
     @Backing
     @Singleton
-    public UserManagerInternal<CarbonPlayerCommon> userManager(final ConfigFactory configFactory, final Injector injector) {
-        return switch (Objects.requireNonNull(configFactory.primaryConfig()).storageType()) {
+    public UserManagerInternal<CarbonPlayerCommon> userManager(final ConfigManager configManager, final Injector injector) {
+        return switch (configManager.primaryConfig().storageType()) {
             case MYSQL -> injector.getInstance(MySQLUserManager.Factory.class).create();
             case PSQL -> injector.getInstance(PostgreSQLUserManager.Factory.class).create();
             default -> injector.getInstance(JSONUserManager.class);

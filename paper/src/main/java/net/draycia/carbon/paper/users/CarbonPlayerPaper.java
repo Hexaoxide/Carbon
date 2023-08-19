@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.EmptyAudienceWithPointers;
@@ -51,7 +51,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     @AssistedInject
     private CarbonPlayerPaper(
         final @Assisted CarbonPlayerCommon carbonPlayerCommon,
-        final ConfigFactory config
+        final ConfigManager config
     ) {
         super(carbonPlayerCommon);
 

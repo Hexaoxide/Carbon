@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -51,7 +50,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.translation.Translator;
@@ -75,14 +74,14 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     private CarbonMessageSource(
         final CarbonEventHandler events,
         final @DataDirectory Path dataDirectory,
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final Logger logger
     ) throws IOException {
         this.dataDirectory = dataDirectory;
         this.pluginJar = pluginJar();
         this.logger = logger;
 
-        this.defaultLocale = Objects.requireNonNull(configFactory.primaryConfig()).defaultLocale();
+        this.defaultLocale = configManager.primaryConfig().defaultLocale();
 
         this.reloadTranslations();
 

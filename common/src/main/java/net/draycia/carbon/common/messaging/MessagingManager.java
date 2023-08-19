@@ -37,7 +37,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
@@ -86,7 +86,7 @@ public class MessagingManager {
 
     @Inject
     public MessagingManager(
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final CarbonChat carbonChat,
         final @ServerId UUID serverId,
         final CarbonServer server,
@@ -98,7 +98,7 @@ public class MessagingManager {
     ) {
         this.serverId = serverId;
         this.logger = logger;
-        if (!configFactory.primaryConfig().messagingSettings().enabled()) {
+        if (!configManager.primaryConfig().messagingSettings().enabled()) {
             if (!((CarbonChatInternal) carbonChat).isProxy()) {
                 logger.info("Messaging services disabled in config. Cross-server will not work without this!");
             }
@@ -137,7 +137,7 @@ public class MessagingManager {
 
         try {
             this.initMessagingService(this.packetService, handlerImpl, new File("/"),
-                configFactory.primaryConfig().messagingSettings());
+                configManager.primaryConfig().messagingSettings());
         } catch (final IOException | TimeoutException | InterruptedException e) {
             e.printStackTrace();
             return;

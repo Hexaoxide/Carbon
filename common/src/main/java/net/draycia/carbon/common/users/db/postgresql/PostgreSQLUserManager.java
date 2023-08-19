@@ -29,7 +29,7 @@ import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
@@ -123,7 +123,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
         @Inject
         private Factory(
             final ChannelRegistry channelRegistry,
-            final ConfigFactory configFactory,
+            final ConfigManager configManager,
             final Logger logger,
             final ProfileResolver profileResolver,
             final MembersInjector<CarbonPlayerCommon> playerInjector,
@@ -131,7 +131,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
             final PacketFactory packetFactory
         ) {
             this.channelRegistry = channelRegistry;
-            this.databaseSettings = configFactory.primaryConfig().databaseSettings();
+            this.databaseSettings = configManager.primaryConfig().databaseSettings();
             this.logger = logger;
             this.profileResolver = profileResolver;
             this.playerInjector = playerInjector;

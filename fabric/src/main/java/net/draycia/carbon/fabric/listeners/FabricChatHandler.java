@@ -21,7 +21,7 @@ package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -44,11 +44,11 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
 
     @Inject
     public FabricChatHandler(
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final CarbonChatFabric carbonChat,
         final CarbonMessages carbonMessages
     ) {
-        super(carbonChat.eventHandler(), carbonMessages, configFactory);
+        super(carbonChat.eventHandler(), carbonMessages, configManager);
         this.carbonChat = carbonChat;
     }
 

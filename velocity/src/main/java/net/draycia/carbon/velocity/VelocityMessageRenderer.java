@@ -26,7 +26,7 @@ import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
@@ -43,12 +43,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public class VelocityMessageRenderer implements CarbonMessageRenderer {
 
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
     private final PluginManager pluginManager;
 
     @Inject
-    public VelocityMessageRenderer(final ConfigFactory configFactory, final PluginManager pluginManager) {
-        this.configFactory = configFactory;
+    public VelocityMessageRenderer(final ConfigManager configManager, final PluginManager pluginManager) {
+        this.configManager = configManager;
         this.pluginManager = pluginManager;
     }
 
@@ -66,7 +66,7 @@ public class VelocityMessageRenderer implements CarbonMessageRenderer {
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        final String placeholderResolvedMessage = this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage);
+        final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (this.pluginManager.isLoaded("miniplaceholders")) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());

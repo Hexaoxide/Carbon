@@ -22,14 +22,16 @@ package net.draycia.carbon.common.config;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.serialisation.gson.LocaleSerializerConfigurate;
+import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
+import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -39,60 +41,58 @@ import org.spongepowered.configurate.loader.ConfigurationLoader;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class ConfigFactory {
+public final class ConfigManager {
+
+    private static final String PRIMARY_CONFIG_FILE_NAME = "config.conf";
+    private static final String COMMAND_SETTINGS_FILE_NAME = "command-settings.conf";
 
     private final Path dataDirectory;
     private final LocaleSerializerConfigurate locale;
+    private final Logger logger;
 
-    private @Nullable PrimaryConfig primaryConfig = null;
-    private @Nullable CommandConfig commandSettings = null;
+    private volatile @MonotonicNonNull PrimaryConfig primaryConfig = null;
 
     @Inject
-    public ConfigFactory(
+    private ConfigManager(
         final CarbonEventHandler events,
         @DataDirectory final Path dataDirectory,
-        final LocaleSerializerConfigurate locale
+        final LocaleSerializerConfigurate locale,
+        final Logger logger
     ) {
         this.dataDirectory = dataDirectory;
         this.locale = locale;
+        this.logger = logger;
 
         events.subscribe(CarbonReloadEvent.class, -100, true, event -> this.reloadPrimaryConfig());
     }
 
-    public @Nullable PrimaryConfig reloadPrimaryConfig() {
-        try {
-            this.primaryConfig = this.load(PrimaryConfig.class, "config.conf");
-        } catch (final IOException exception) {
-            exception.printStackTrace();
+    public void reloadPrimaryConfig() {
+        final @Nullable PrimaryConfig load = this.load(PrimaryConfig.class, PRIMARY_CONFIG_FILE_NAME);
+        if (load != null) {
+            this.primaryConfig = load;
+        } else {
+            this.logger.error("Failed to reload primary config, see above for further details");
         }
-
-        return this.primaryConfig;
     }
 
-    public @Nullable PrimaryConfig primaryConfig() {
+    public PrimaryConfig primaryConfig() {
         if (this.primaryConfig == null) {
-            return this.reloadPrimaryConfig();
+            synchronized (this) {
+                if (this.primaryConfig == null) {
+                    final @Nullable PrimaryConfig load = this.load(PrimaryConfig.class, PRIMARY_CONFIG_FILE_NAME);
+                    if (load == null) {
+                        throw new RuntimeException("Failed to initialize primary config, see above for further details");
+                    }
+                    this.primaryConfig = load;
+                }
+            }
         }
 
         return this.primaryConfig;
     }
 
     public @Nullable CommandConfig loadCommandSettings() {
-        try {
-            this.commandSettings = this.load(CommandConfig.class, "command-settings.conf");
-        } catch (final IOException exception) {
-            exception.printStackTrace();
-        }
-
-        return this.commandSettings;
-    }
-
-    public @Nullable CommandConfig commandSettings() {
-        if (this.commandSettings == null) {
-            return this.loadCommandSettings();
-        }
-
-        return this.commandSettings;
+        return this.load(CommandConfig.class, COMMAND_SETTINGS_FILE_NAME);
     }
 
     public ConfigurationLoader<?> configurationLoader(final Path file) {
@@ -111,27 +111,28 @@ public class ConfigFactory {
             .build();
     }
 
-    public <T> @Nullable T load(final Class<T> clazz, final String fileName) throws IOException {
-        if (!Files.exists(this.dataDirectory)) {
-            Files.createDirectories(this.dataDirectory);
-        }
-
+    public <T> @Nullable T load(final Class<T> clazz, final String fileName) {
         final Path file = this.dataDirectory.resolve(fileName);
+        try {
+            FileUtil.mkParentDirs(file);
+        } catch (final IOException ex) {
+            this.logger.error("Failed to create parent directories for '{}'", file, ex);
+            return null;
+        }
 
         final var loader = this.configurationLoader(file);
 
         try {
             final var node = loader.load();
             final @Nullable T config = node.get(clazz);
-
-            if (!Files.exists(file)) {
-                node.set(clazz, config);
-                loader.save(node);
+            if (config == null) {
+                throw new ConfigurateException(node, "Failed to deserialize " + clazz.getName() + " from node");
             }
-
+            node.set(clazz, config);
+            loader.save(node);
             return config;
         } catch (final ConfigurateException exception) {
-            exception.printStackTrace();
+            this.logger.error("Failed to load config '{}'", file, exception);
             return null;
         }
     }

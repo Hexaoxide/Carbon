@@ -22,7 +22,7 @@ package net.draycia.carbon.fabric.listeners;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.List;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
@@ -44,7 +44,7 @@ public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, 
 
     private final ProfileCache profileCache;
     private final Logger logger;
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
     private final UserManagerInternal<?> userManager;
     private final Provider<MessagingManager> messaging;
     private final PacketFactory packetFactory;
@@ -52,14 +52,14 @@ public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, 
     @Inject
     public FabricJoinQuitListener(
         final Logger logger,
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final ProfileCache profileCache,
         final UserManagerInternal<?> userManager,
         final Provider<MessagingManager> messaging,
         final PacketFactory packetFactory
     ) {
         this.logger = logger;
-        this.configFactory = configFactory;
+        this.configManager = configManager;
         this.profileCache = profileCache;
         this.userManager = userManager;
         this.messaging = messaging;
@@ -73,7 +73,7 @@ public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, 
             packetService.queuePacket(this.packetFactory.addLocalPlayerPacket(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName()));
         });
 
-        final @Nullable List<String> suggestions = this.configFactory.primaryConfig().customChatSuggestions();
+        final @Nullable List<String> suggestions = this.configManager.primaryConfig().customChatSuggestions();
 
         if (suggestions == null || suggestions.isEmpty()) {
             return;

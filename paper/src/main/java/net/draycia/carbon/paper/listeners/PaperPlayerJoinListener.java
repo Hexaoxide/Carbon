@@ -22,7 +22,7 @@ package net.draycia.carbon.paper.listeners;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.List;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
@@ -44,7 +44,7 @@ import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
 @DefaultQualifier(NonNull.class)
 public class PaperPlayerJoinListener implements Listener {
 
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
     private final Logger logger;
     private final ProfileCache profileCache;
     private final UserManagerInternal<?> userManager;
@@ -53,14 +53,14 @@ public class PaperPlayerJoinListener implements Listener {
 
     @Inject
     public PaperPlayerJoinListener(
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final Logger logger,
         final ProfileCache profileCache,
         final UserManagerInternal<?> userManager,
         final Provider<MessagingManager> messaging,
         final PacketFactory packetFactory
     ) {
-        this.configFactory = configFactory;
+        this.configManager = configManager;
         this.logger = logger;
         this.profileCache = profileCache;
         this.userManager = userManager;
@@ -84,7 +84,7 @@ public class PaperPlayerJoinListener implements Listener {
     public void onJoin(final PlayerJoinEvent event) {
         this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger));
 
-        final @Nullable List<String> suggestions = this.configFactory.primaryConfig().customChatSuggestions();
+        final @Nullable List<String> suggestions = this.configManager.primaryConfig().customChatSuggestions();
 
         if (suggestions == null || suggestions.isEmpty()) {
             return;

@@ -32,7 +32,7 @@ import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.CloudUtils;
@@ -48,14 +48,14 @@ public final class NicknameCommand extends CarbonCommand {
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
     private final ArgumentFactory argumentFactory;
-    private final ConfigFactory config;
+    private final ConfigManager config;
 
     @Inject
     public NicknameCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
         final ArgumentFactory argumentFactory,
-        final ConfigFactory config
+        final ConfigManager config
     ) {
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;

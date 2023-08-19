@@ -26,7 +26,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -45,16 +45,16 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public abstract class ChatListenerInternal {
 
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler carbonEventHandler;
 
     protected ChatListenerInternal(
         final CarbonEventHandler carbonEventHandler,
         final CarbonMessages carbonMessages,
-        final ConfigFactory configFactory
+        final ConfigManager configManager
     ) {
-        this.configFactory = configFactory;
+        this.configManager = configManager;
         this.carbonMessages = carbonMessages;
         this.carbonEventHandler = carbonEventHandler;
     }
@@ -68,8 +68,8 @@ public abstract class ChatListenerInternal {
     }
 
     protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
-        String content = this.configFactory.primaryConfig().applyChatPlaceholders(messageContent);
-        content = this.configFactory.primaryConfig().applyChatFilters(content);
+        String content = this.configManager.primaryConfig().applyChatPlaceholders(messageContent);
+        content = this.configManager.primaryConfig().applyChatFilters(content);
 
         final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
         this.carbonEventHandler.emit(earlyChatEvent);
