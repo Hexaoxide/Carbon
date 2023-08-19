@@ -96,8 +96,6 @@ public final class CarbonChatPaper extends CarbonChatInternal {
     }
 
     void onEnable() {
-        final Metrics metrics = new Metrics(this.plugin, BSTATS_PLUGIN_ID);
-
         this.init();
         this.packetService();
 
@@ -109,6 +107,9 @@ public final class CarbonChatPaper extends CarbonChatInternal {
         }
 
         this.discoverDiscordHooks();
+
+        final Metrics metrics = new Metrics(this.plugin, BSTATS_PLUGIN_ID);
+        // metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector().getInstance(ConfigFactory.class).primaryConfig().storageType().name()));
     }
 
     private void discoverDiscordHooks() {

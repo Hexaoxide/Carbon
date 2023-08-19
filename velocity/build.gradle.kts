@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
   implementation(projects.carbonchatCommon)
+  implementation(libs.bstatsVelocity)
 
   compileOnly(libs.velocityApi)
 

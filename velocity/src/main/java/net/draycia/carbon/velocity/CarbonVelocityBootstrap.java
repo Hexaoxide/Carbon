@@ -29,14 +29,18 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import net.draycia.carbon.common.util.CarbonDependencies;
+import org.bstats.velocity.Metrics;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 public final class CarbonVelocityBootstrap {
+
+    private static final int BSTATS_PLUGIN_ID = 19505;
 
     private final Injector parentInjector;
     private final PluginContainer pluginContainer;
     private final ProxyServer proxy;
     private final Path dataDirectory;
+    private final Metrics.Factory metricsFactory;
     private @MonotonicNonNull Injector injector;
 
     @Inject
@@ -44,12 +48,14 @@ public final class CarbonVelocityBootstrap {
         final Injector injector,
         final ProxyServer proxyServer,
         final PluginContainer pluginContainer,
-        @DataDirectory final Path dataDirectory
+        @DataDirectory final Path dataDirectory,
+        final Metrics.Factory metricsFactory
     ) {
         this.proxy = proxyServer;
         this.parentInjector = injector;
         this.pluginContainer = pluginContainer;
         this.dataDirectory = dataDirectory;
+        this.metricsFactory = metricsFactory;
     }
 
     @Subscribe
@@ -62,6 +68,9 @@ public final class CarbonVelocityBootstrap {
         this.injector = this.parentInjector.createChildInjector(
             new CarbonChatVelocityModule(this.pluginContainer, this.proxy, this.dataDirectory));
         this.injector.getInstance(CarbonChatVelocity.class).onInitialization(this);
+
+        final Metrics metrics = this.metricsFactory.make(this, BSTATS_PLUGIN_ID);
+        // metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector.getInstance(ConfigFactory.class).primaryConfig().storageType().name()));
     }
 
     @Subscribe

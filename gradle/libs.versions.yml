@@ -23,7 +23,7 @@ versions:
   stylecheck: 0.1
   gson: 2.10
   guava: 30.1-jre
-  bstats: 3.0.0
+  bstats: 3.0.2
   paperApi: 1.19.4-R0.1-SNAPSHOT
   paperTrail: 0.0.1-SNAPSHOT
   foliaApi: 1.19.4-R0.1-SNAPSHOT
@@ -183,6 +183,10 @@ dependencies:
   bstatsBukkit:
     group: org.bstats
     name: bstats-bukkit
+    version: { ref: bstats }
+  bstatsVelocity:
+    group: org.bstats
+    name: bstats-velocity
     version: { ref: bstats }
   bstatsSponge:
     group: org.bstats
