@@ -24,11 +24,14 @@ import com.google.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Map;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.DataDirectory;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.serialisation.gson.LocaleSerializerConfigurate;
 import net.draycia.carbon.common.util.FileUtil;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -91,8 +94,12 @@ public final class ConfigManager {
         return this.primaryConfig;
     }
 
-    public @Nullable CommandConfig loadCommandSettings() {
-        return this.load(CommandConfig.class, COMMAND_SETTINGS_FILE_NAME);
+    public Map<Key, CommandSettings> loadCommandSettings() {
+        final @Nullable CommandConfig load = this.load(CommandConfig.class, COMMAND_SETTINGS_FILE_NAME);
+        if (load == null) {
+            throw new RuntimeException("Failed to initialize command settings, see above for further details");
+        }
+        return load.settings();
     }
 
     public ConfigurationLoader<?> configurationLoader(final Path file) {

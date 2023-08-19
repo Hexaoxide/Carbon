@@ -33,7 +33,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -102,8 +102,7 @@ public abstract class CarbonChatInternal implements CarbonChat {
         // Commands
         // This is a bit awkward looking
         CloudUtils.loadCommands(this.injector);
-        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
-        CloudUtils.registerCommands(commandSettings);
+        CloudUtils.registerCommands(this.injector.getInstance(ConfigManager.class).loadCommandSettings());
 
         this.periodicTasks.scheduleAtFixedRate(
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager, this.logger),
@@ -128,7 +127,7 @@ public abstract class CarbonChatInternal implements CarbonChat {
         this.channelRegistry().loadConfigChannels(this.carbonMessages);
 
         CompletableFuture.runAsync(() -> {
-            if (!this.injector.getInstance(ConfigFactory.class).primaryConfig().updateChecker()) {
+            if (!this.injector.getInstance(ConfigManager.class).primaryConfig().updateChecker()) {
                 return;
             }
             new UpdateChecker(this.logger).checkVersion();
