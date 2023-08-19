@@ -36,8 +36,12 @@ dependencies {
   compileOnlyApi(libs.jdbiObject)
   compileOnlyApi(libs.jdbiPostgres)
   api(libs.hikariCP)
-  api(libs.flyway)
-  api(libs.flywayMysql)
+  compileOnlyApi(libs.flyway) {
+    exclude("com.google", "gson")
+  }
+  compileOnlyApi(libs.flywayMysql) {
+    isTransitive = false
+  }
 
   // Messaging
   api(libs.messenger)

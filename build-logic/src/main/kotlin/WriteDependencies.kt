@@ -97,6 +97,9 @@ abstract class WriteDependencies : DefaultTask() {
   private fun MutableSet<ResolvedDependencyResult>.addFrom(dependencies: Set<DependencyResult>) {
     for (dependency in dependencies) {
       dependency as ResolvedDependencyResult
+      if (dependency.resolvedVariant.attributes.toString().contains("org.gradle.category=platform")) {
+        continue
+      }
       add(dependency)
       if (transitive.get()) {
         addFrom(dependency.selected.dependencies)

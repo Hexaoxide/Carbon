@@ -46,7 +46,7 @@ versions:
   hikari: 5.0.1
   mysql: 8.0.33
   protobuf: 3.21.9
-  flyway: 8.5.13 # DO NOT UPDATE. Something will break.
+  flyway: 9.21.1
   caffeine: 3.1.7
   mariadb: 3.0.8
   messenger: 1.0.0-SNAPSHOT
