@@ -24,6 +24,7 @@ import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
@@ -32,6 +33,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.config.ConfigFactory;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -42,6 +44,7 @@ import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.PlayerUtils;
+import net.draycia.carbon.common.util.UpdateChecker;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -123,6 +126,13 @@ public abstract class CarbonChatInternal implements CarbonChat {
 
         // Load channels
         this.channelRegistry().loadConfigChannels(this.carbonMessages);
+
+        CompletableFuture.runAsync(() -> {
+            if (!this.injector.getInstance(ConfigFactory.class).primaryConfig().updateChecker()) {
+                return;
+            }
+            new UpdateChecker(this.logger).checkVersion();
+        });
     }
 
     protected void shutdown() {

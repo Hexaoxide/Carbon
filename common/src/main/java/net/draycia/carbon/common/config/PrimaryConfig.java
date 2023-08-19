@@ -93,6 +93,9 @@ public class PrimaryConfig {
     @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
     private boolean useCarbonNicknames = true;
 
+    @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
+    private boolean updateChecker = true;
+
     public Locale defaultLocale() {
         return this.defaultLocale;
     }
@@ -171,6 +174,10 @@ public class PrimaryConfig {
 
     public boolean useCarbonNicknames() {
         return this.useCarbonNicknames;
+    }
+
+    public boolean updateChecker() {
+        return this.updateChecker;
     }
 
     public enum StorageType {
