@@ -25,7 +25,7 @@ import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
@@ -43,11 +43,11 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public class FabricMessageRenderer implements CarbonMessageRenderer {
 
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
 
     @Inject
-    public FabricMessageRenderer(final ConfigFactory configFactory) {
-        this.configFactory = configFactory;
+    public FabricMessageRenderer(final ConfigManager configManager) {
+        this.configManager = configManager;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class FabricMessageRenderer implements CarbonMessageRenderer {
             tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
         }
 
-        final String placeholderResolvedMessage = this.configFactory.primaryConfig().applyCustomPlaceholders(intermediateMessage);
+        final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (FabricLoader.getInstance().isModLoaded("miniplaceholders")) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());

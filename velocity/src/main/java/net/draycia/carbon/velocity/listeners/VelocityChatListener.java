@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -51,7 +51,7 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
     private final Logger logger;
     private final AtomicInteger timesWarned = new AtomicInteger(0);
     private final Supplier<Boolean> signedSupplier;
-    final ConfigFactory configFactory;
+    final ConfigManager configManager;
 
     @Inject
     private VelocityChatListener(
@@ -60,12 +60,12 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         final Logger logger,
         final PluginManager pluginManager,
         final CarbonMessages carbonMessages,
-        final ConfigFactory configFactory
+        final ConfigManager configManager
     ) {
-        super(carbonChat.eventHandler(), carbonMessages, configFactory);
+        super(carbonChat.eventHandler(), carbonMessages, configManager);
         this.userManager = userManager;
         this.logger = logger;
-        this.configFactory = configFactory;
+        this.configManager = configManager;
         this.signedSupplier = Suppliers.memoize(
             () -> pluginManager.isLoaded("unsignedvelocity")
                 || pluginManager.isLoaded("signedvelocity")

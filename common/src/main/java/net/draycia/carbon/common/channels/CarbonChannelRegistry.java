@@ -49,7 +49,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
@@ -90,7 +90,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private final Path configChannelDir;
     private final Injector injector;
     private final Logger logger;
-    private final ConfigFactory configFactory;
+    private final ConfigManager configManager;
     private @MonotonicNonNull Key defaultKey;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
@@ -105,15 +105,15 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         @DataDirectory final Path dataDirectory,
         final Injector injector,
         final Logger logger,
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final CarbonMessages carbonMessages,
         final CarbonEventHandler events
     ) {
-        super(events, carbonMessages, configFactory);
+        super(events, carbonMessages, configManager);
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
-        this.configFactory = configFactory;
+        this.configManager = configManager;
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
 
@@ -212,7 +212,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     }
 
     private void loadConfigChannels_(final CarbonMessages messages) {
-        this.defaultKey = this.configFactory.primaryConfig().defaultChannel();
+        this.defaultKey = this.configManager.primaryConfig().defaultChannel();
 
         List<Path> channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
         if (channelConfigs.isEmpty()) {
@@ -259,7 +259,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         try {
             final Path configFile = this.configChannelDir.resolve("global.conf");
             final ConfigChatChannel configChannel = this.injector.getInstance(ConfigChatChannel.class);
-            final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(FileUtil.mkParentDirs(configFile));
+            final ConfigurationLoader<?> loader = this.configManager.configurationLoader(FileUtil.mkParentDirs(configFile));
             final ConfigurationNode node = loader.createNode();
             node.set(ConfigChatChannel.class, configChannel);
             loader.save(node);
@@ -269,7 +269,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     }
 
     private @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.configFactory.configurationLoader(channelFile);
+        final ConfigurationLoader<?> loader = this.configManager.configurationLoader(channelFile);
 
         try {
             final ConfigurationNode loaded = updateNode(loader.load());

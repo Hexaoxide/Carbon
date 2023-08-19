@@ -32,7 +32,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.config.ConfigFactory;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.key.Key;
@@ -49,7 +49,7 @@ public class DeleteMessageCommand extends CarbonCommand {
 
     final CarbonChat carbonChat;
     final CommandManager<Commander> commandManager;
-    final ConfigFactory configFactory;
+    final ConfigManager configManager;
     final CarbonMessages carbonMessages;
 
     final Cache<UUID, SignedMessage> signatureCache = Caffeine.newBuilder()
@@ -60,12 +60,12 @@ public class DeleteMessageCommand extends CarbonCommand {
     public DeleteMessageCommand(
         final CarbonChat carbonChat,
         final CommandManager<Commander> commandManager,
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final CarbonMessages carbonMessages
     ) {
         this.carbonChat = carbonChat;
         this.commandManager = commandManager;
-        this.configFactory = configFactory;
+        this.configManager = configManager;
         this.carbonMessages = carbonMessages;
     }
 
