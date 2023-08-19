@@ -3,6 +3,8 @@ plugins {
   id("com.modrinth.minotaur")
 }
 
+decorateVersion()
+
 val runtimeDownload: Configuration by configurations.creating {
   isCanBeResolved = true
   isCanBeConsumed = false
@@ -41,6 +43,15 @@ dependencies {
 }
 
 tasks {
+  jar {
+    manifest {
+      attributes(
+        "carbon-version" to project.version,
+        "carbon-commit" to lastCommitHash(),
+        "carbon-branch" to currentBranch(),
+      )
+    }
+  }
   val copyJar = register<FileCopyTask>("copyJar") {
     fileToCopy.set(platformExtension.jarTask.flatMap { it.archiveFile })
     destination.set(rootProject.layout.buildDirectory.dir("libs").flatMap {

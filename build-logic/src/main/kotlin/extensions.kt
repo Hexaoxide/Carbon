@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.eclipse.jgit.lib.Repository
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -108,8 +109,32 @@ fun ShadowJar.configureShadowJar() {
   }
 }
 
-fun Project.latestGitHash(): String? =
+fun Project.lastCommitHash(): String =
   the<IndraGitExtension>().commit()?.name?.substring(0, 7)
+    ?: error("Could not determine commit hash")
+
+fun Project.decorateVersion() {
+  val versionString = version as String
+  version = if (versionString.endsWith("-SNAPSHOT")) {
+    "$versionString+${lastCommitHash()}"
+  } else {
+    versionString
+  }
+}
+
+fun Project.currentBranch(): String {
+  System.getenv("GITHUB_HEAD_REF")?.takeIf { it.isNotEmpty() }
+    ?.let { return it }
+  System.getenv("GITHUB_REF")?.takeIf { it.isNotEmpty() }
+    ?.let { return it.replaceFirst("refs/heads/", "") }
+
+  val indraGit = the<IndraGitExtension>().takeIf { it.isPresent }
+
+  val ref = indraGit?.git()?.repository?.exactRef("HEAD")?.target
+    ?: return "detached-head"
+
+  return Repository.shortenRefName(ref.name)
+}
 
 val Project.libs: LibrariesForLibs
   get() = the()
