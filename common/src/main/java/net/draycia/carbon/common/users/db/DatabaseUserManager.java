@@ -74,7 +74,6 @@ public abstract class DatabaseUserManager extends CachingUserManager {
                 .bind("muted", player.muted())
                 .bind("deafened", player.deafened())
                 .bind("selectedchannel", player.selectedChannelKey())
-                .bind("username", player.username()) // todo remove from db?
                 .bind("displayname", player.displayNameRaw())
                 .bind("lastwhispertarget", player.lastWhisperTarget())
                 .bind("whisperreplytarget", player.whisperReplyTarget())
