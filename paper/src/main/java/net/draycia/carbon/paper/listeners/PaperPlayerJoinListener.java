@@ -38,8 +38,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static net.draycia.carbon.common.util.PlayerUtils.joinExceptionHandler;
-import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
+import static net.draycia.carbon.common.users.PlayerUtils.joinExceptionHandler;
+import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 
 @DefaultQualifier(NonNull.class)
 public class PaperPlayerJoinListener implements Listener {
@@ -82,7 +82,7 @@ public class PaperPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(final PlayerJoinEvent event) {
-        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger));
+        this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger, event.getPlayer().getName(), event.getPlayer().getUniqueId()));
 
         final @Nullable List<String> suggestions = this.configManager.primaryConfig().customChatSuggestions();
 

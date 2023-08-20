@@ -37,7 +37,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static net.draycia.carbon.common.util.PlayerUtils.saveExceptionHandler;
+import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 
 @DefaultQualifier(NonNull.class)
 public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, ServerPlayConnectionEvents.Disconnect {

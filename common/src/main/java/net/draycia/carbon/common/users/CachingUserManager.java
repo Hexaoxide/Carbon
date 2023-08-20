@@ -36,11 +36,12 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
-import net.draycia.carbon.common.util.PlayerUtils;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+
+import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 
 @DefaultQualifier(NonNull.class)
 public abstract class CachingUserManager implements UserManagerInternal<CarbonPlayerCommon> {
@@ -114,7 +115,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                     this.playerInjector.injectMembers(player);
                     if (this instanceof DatabaseUserManager) {
                         player.registerPropertyUpdateListener(() ->
-                            this.save(player).exceptionally(PlayerUtils.saveExceptionHandler(this.logger, player.username, uuid)));
+                            this.save(player).exceptionally(saveExceptionHandler(this.logger, player.username, uuid)));
                     }
                     return player;
                 }, this.executor);
@@ -136,7 +137,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 try {
                     entry.getValue().join();
                 } catch (final Exception ex) {
-                    this.logger.warn("Exception saving data for player with uuid " + entry.getKey());
+                    this.logger.warn("Exception saving data for player with uuid '{}'", entry.getKey(), ex);
                 }
             }
             ConcurrentUtil.shutdownExecutor(this.executor, TimeUnit.MILLISECONDS, 500);
@@ -175,10 +176,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                     continue;
                 }
                 this.cache.remove(entry.getKey());
-                this.saveIfNeeded(getNow).exceptionally(thr -> {
-                    this.logger.warn("Exception saving data for player {} with UUID {}", getNow.username(), getNow.uuid(), thr);
-                    return null;
-                });
+                this.saveIfNeeded(getNow).exceptionally(saveExceptionHandler(this.logger, getNow.username, getNow.uuid()));
             }
         } finally {
             this.cacheLock.unlock();

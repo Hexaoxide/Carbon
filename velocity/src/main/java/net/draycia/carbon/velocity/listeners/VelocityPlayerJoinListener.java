@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import static net.draycia.carbon.common.util.PlayerUtils.joinExceptionHandler;
+import static net.draycia.carbon.common.users.PlayerUtils.joinExceptionHandler;
 
 @DefaultQualifier(NonNull.class)
 public class VelocityPlayerJoinListener implements VelocityListener<LoginEvent> {
@@ -54,7 +54,7 @@ public class VelocityPlayerJoinListener implements VelocityListener<LoginEvent> 
     @Override
     public EventTask executeAsync(final LoginEvent event) {
         return EventTask.async(
-            () -> this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger))
+            () -> this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger, event.getPlayer().getUsername(), event.getPlayer().getUniqueId()))
         );
     }
 
