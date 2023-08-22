@@ -9,7 +9,6 @@ SELECT
     muted,
     deafened,
     selectedchannel,
-    username,
     displayname,
     LOWER(CONCAT(
       LEFT(HEX(lastwhispertarget), 8), '-',

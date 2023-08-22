@@ -3,7 +3,6 @@ SELECT
     muted,
     deafened,
     selectedchannel,
-    username,
     displayname,
     lastwhispertarget,
     whisperreplytarget,
