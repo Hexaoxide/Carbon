@@ -17,6 +17,13 @@ dependencies {
   runtimeDownload(libs.mysql)
 }
 
+configurations.runtimeClasspath {
+  resolutionStrategy.force(
+    "org.ow2.asm:asm:9.5",
+    "org.ow2.asm:asm-commons:9.5",
+  )
+}
+
 tasks {
   shadowJar {
     relocateCloud()
@@ -29,6 +36,7 @@ tasks {
   writeDependencies {
     standardRuntimeRelocations()
     relocateDependency("com.google.inject.assistedinject")
+    relocateDependency("io.leangen.geantyref")
   }
   runVelocity {
       velocityVersion(libs.versions.velocityApi.get())
