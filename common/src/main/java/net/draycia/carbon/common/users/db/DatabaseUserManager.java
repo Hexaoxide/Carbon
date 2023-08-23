@@ -36,6 +36,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
+import org.jdbi.v3.core.statement.Update;
 
 @DefaultQualifier(NonNull.class)
 public abstract class DatabaseUserManager extends CachingUserManager {
@@ -69,16 +70,10 @@ public abstract class DatabaseUserManager extends CachingUserManager {
     @Override
     public final void saveSync(final CarbonPlayerCommon player) {
         this.jdbi.useTransaction(handle -> {
-            handle.createUpdate(this.locator.query("insert-player"))
-                .bind("id", player.uuid())
-                .bind("muted", player.muted())
-                .bind("deafened", player.deafened())
-                .bind("selectedchannel", player.selectedChannelKey())
-                .bind("displayname", player.displayNameRaw())
-                .bind("lastwhispertarget", player.lastWhisperTarget())
-                .bind("whisperreplytarget", player.whisperReplyTarget())
-                .bind("spying", player.spying())
-                .execute();
+            final int inserted = bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();
+            if (inserted != 1) {
+                bindPlayerArguments(handle.createUpdate(this.locator.query("update-player")), player).execute();
+            }
 
             handle.createUpdate(this.locator.query("clear-ignores"))
                 .bind("id", player.uuid())
@@ -104,9 +99,18 @@ public abstract class DatabaseUserManager extends CachingUserManager {
                 }
                 batch.execute();
             }
-
-            handle.commit();
         });
+    }
+
+    private static Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
+        return update.bind("id", player.uuid())
+            .bind("muted", player.muted())
+            .bind("deafened", player.deafened())
+            .bind("selectedchannel", player.selectedChannelKey())
+            .bind("displayname", player.displayNameRaw())
+            .bind("lastwhispertarget", player.lastWhisperTarget())
+            .bind("whisperreplytarget", player.whisperReplyTarget())
+            .bind("spying", player.spying());
     }
 
 }

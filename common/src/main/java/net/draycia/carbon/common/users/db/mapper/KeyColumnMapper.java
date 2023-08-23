@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +28,7 @@ import org.intellij.lang.annotations.Subst;
 import org.jdbi.v3.core.mapper.ColumnMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
-public class KeyColumnMapper implements ColumnMapper<Key> {
+public final class KeyColumnMapper implements ColumnMapper<Key> {
 
     @Override
     public Key map(final ResultSet rs, final int columnNumber, final StatementContext ctx) throws SQLException {

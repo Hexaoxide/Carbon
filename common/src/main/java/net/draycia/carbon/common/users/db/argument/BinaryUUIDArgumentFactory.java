@@ -17,26 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.argument;
 
 import java.sql.Types;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import java.util.UUID;
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;
 import org.jdbi.v3.core.argument.Argument;
 import org.jdbi.v3.core.config.ConfigRegistry;
 
-public final class ComponentArgumentFactory extends AbstractArgumentFactory<Component> {
+public final class BinaryUUIDArgumentFactory extends AbstractArgumentFactory<UUID> {
 
-    final GsonComponentSerializer serializer = GsonComponentSerializer.gson();
-
-    public ComponentArgumentFactory() {
-        super(Types.VARCHAR);
+    public BinaryUUIDArgumentFactory() {
+        super(Types.BINARY); // BINARY(16)
     }
 
     @Override
-    public Argument build(final Component value, final ConfigRegistry config) {
-        return (position, statement, ctx) -> statement.setString(position, this.serializer.serialize(value));
+    public Argument build(final UUID value, final ConfigRegistry config) {
+        return (position, statement, ctx) -> statement.setBytes(position, unhex(value.toString().replace("-", "")));
+    }
+
+    private static byte[] unhex(final String s) {
+        final int len = s.length();
+        final byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
     }
 
 }
