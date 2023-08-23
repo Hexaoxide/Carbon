@@ -31,7 +31,7 @@ public final class DBType {
         return this.basePath;
     }
 
-    public static final DBType MYSQL = new DBType("queries/mysql/");
-    public static final DBType POSTGRESQL = new DBType("queries/mysql/");
+    public static final DBType MYSQL = new DBType("queries/");
+    public static final DBType POSTGRESQL = new DBType("queries/");
 
 }
