@@ -28,20 +28,19 @@ import org.jdbi.v3.core.locator.internal.ClasspathBuilder;
 
 public final class QueriesLocator {
 
+    private static final String PREFIX = "queries/";
     private static final Splitter SPLITTER = Splitter.on(';');
     private final ClasspathSqlLocator locator = ClasspathSqlLocator.create();
-    private final DBType dbType;
 
-    public QueriesLocator(final DBType dbType) {
-        this.dbType = dbType;
+    public QueriesLocator() {
     }
 
     public @NonNull String query(final @NonNull String name) {
-        return this.locate(this.dbType.basePath() + name);
+        return this.locate(PREFIX + name);
     }
 
     public @NonNull List<@NonNull String> queries(final @NonNull String name) {
-        return SPLITTER.splitToList(this.locator.locate(this.dbType.basePath() + name));
+        return SPLITTER.splitToList(this.locator.locate(PREFIX + name));
     }
 
     private String locate(final String name) {

@@ -35,7 +35,6 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.users.db.QueriesLocator;
 import net.draycia.carbon.common.users.db.argument.ComponentArgumentFactory;
@@ -71,7 +70,7 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
     ) {
         super(
             jdbi,
-            new QueriesLocator(DBType.POSTGRESQL),
+            new QueriesLocator(),
             logger,
             profileResolver,
             playerInjector,
