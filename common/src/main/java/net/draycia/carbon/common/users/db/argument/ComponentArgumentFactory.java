@@ -17,21 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.argument;
 
-public final class DBType {
+import java.sql.Types;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.jdbi.v3.core.argument.AbstractArgumentFactory;
+import org.jdbi.v3.core.argument.Argument;
+import org.jdbi.v3.core.config.ConfigRegistry;
 
-    private final String basePath;
+public final class ComponentArgumentFactory extends AbstractArgumentFactory<Component> {
 
-    private DBType(final String basePath) {
-        this.basePath = basePath;
+    public ComponentArgumentFactory() {
+        super(Types.VARCHAR);
     }
 
-    public String basePath() {
-        return this.basePath;
+    @Override
+    public Argument build(final Component value, final ConfigRegistry config) {
+        return (position, statement, ctx) -> statement.setString(position, GsonComponentSerializer.gson().serialize(value));
     }
-
-    public static final DBType MYSQL = new DBType("queries/mysql/");
-    public static final DBType POSTGRESQL = new DBType("queries/mysql/");
 
 }

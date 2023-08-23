@@ -1,4 +1,4 @@
-INSERT IGNORE INTO carbon_users SET
+UPDATE carbon_users SET
     id = :id,
     muted = :muted,
     deafened = :deafened,

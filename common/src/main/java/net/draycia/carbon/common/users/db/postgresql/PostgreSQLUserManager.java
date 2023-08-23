@@ -35,15 +35,19 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
-import net.draycia.carbon.common.users.db.KeyArgumentFactory;
-import net.draycia.carbon.common.users.db.KeyColumnMapper;
 import net.draycia.carbon.common.users.db.QueriesLocator;
+import net.draycia.carbon.common.users.db.argument.ComponentArgumentFactory;
+import net.draycia.carbon.common.users.db.argument.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.mapper.ComponentColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.KeyColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.NativeUUIDColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.PlayerRowMapper;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.SQLDrivers;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -166,8 +170,10 @@ public final class PostgreSQLUserManager extends DatabaseUserManager {
             final Jdbi jdbi = Jdbi.create(dataSource)
                 .registerArgument(new ComponentArgumentFactory())
                 .registerArgument(new KeyArgumentFactory())
-                .registerColumnMapper(new KeyColumnMapper())
-                .registerRowMapper(new PostgreSQLPlayerRowMapper())
+                .registerColumnMapper(Key.class, new KeyColumnMapper())
+                .registerColumnMapper(Component.class, new ComponentColumnMapper())
+                .registerColumnMapper(UUID.class, new NativeUUIDColumnMapper())
+                .registerRowMapper(new PlayerRowMapper())
                 .installPlugin(new SqlObjectPlugin())
                 .installPlugin(new PostgresPlugin());
 

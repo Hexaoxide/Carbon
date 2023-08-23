@@ -36,15 +36,20 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.common.users.db.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.DBType;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
-import net.draycia.carbon.common.users.db.KeyArgumentFactory;
-import net.draycia.carbon.common.users.db.KeyColumnMapper;
 import net.draycia.carbon.common.users.db.QueriesLocator;
+import net.draycia.carbon.common.users.db.argument.BinaryUUIDArgumentFactory;
+import net.draycia.carbon.common.users.db.argument.ComponentArgumentFactory;
+import net.draycia.carbon.common.users.db.argument.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.mapper.BinaryUUIDColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.ComponentColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.KeyColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.PlayerRowMapper;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.SQLDrivers;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -165,10 +170,12 @@ public final class MySQLUserManager extends DatabaseUserManager {
             final Jdbi jdbi = Jdbi.create(dataSource)
                 .registerArgument(new ComponentArgumentFactory())
                 .registerArgument(new KeyArgumentFactory())
-                .registerArgument(new MySQLUUIDArgumentFactory())
+                .registerArgument(new BinaryUUIDArgumentFactory())
+                .registerColumnMapper(Key.class, new KeyColumnMapper())
+                .registerColumnMapper(Component.class, new ComponentColumnMapper())
+                .registerColumnMapper(UUID.class, new BinaryUUIDColumnMapper())
+                .registerRowMapper(new PlayerRowMapper())
                 .registerArrayType(UUID.class, "uuid")
-                .registerColumnMapper(new KeyColumnMapper())
-                .registerRowMapper(new MySQLPlayerRowMapper())
                 .installPlugin(new SqlObjectPlugin());
 
             return new MySQLUserManager(jdbi, this.logger, this.profileResolver, this.playerInjector, this.messagingManager, this.packetFactory, this.channelRegistry);

@@ -17,21 +17,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.mapper;
 
-public final class DBType {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import net.draycia.carbon.common.util.Strings;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.jdbi.v3.core.mapper.ColumnMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
-    private final String basePath;
+public final class ComponentColumnMapper implements ColumnMapper<Component> {
 
-    private DBType(final String basePath) {
-        this.basePath = basePath;
+    @Override
+    public Component map(final ResultSet rs, final int columnNumber, final StatementContext ctx) throws SQLException {
+        return GsonComponentSerializer.gson().deserializeOrNull(Strings.trim(rs.getString(columnNumber)));
     }
-
-    public String basePath() {
-        return this.basePath;
-    }
-
-    public static final DBType MYSQL = new DBType("queries/mysql/");
-    public static final DBType POSTGRESQL = new DBType("queries/mysql/");
 
 }

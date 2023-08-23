@@ -17,21 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users.db;
+package net.draycia.carbon.common.users.db.mapper;
 
-public final class DBType {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
+import org.jdbi.v3.core.mapper.ColumnMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
-    private final String basePath;
+// todo: I'm not entirely sure that this is necessary, but I don't feel like testing PSQL
+public final class NativeUUIDColumnMapper implements ColumnMapper<UUID> {
 
-    private DBType(final String basePath) {
-        this.basePath = basePath;
+    @Override
+    public UUID map(final ResultSet rs, final int columnNumber, final StatementContext ctx) throws SQLException {
+        return rs.getObject(columnNumber, UUID.class);
     }
-
-    public String basePath() {
-        return this.basePath;
-    }
-
-    public static final DBType MYSQL = new DBType("queries/mysql/");
-    public static final DBType POSTGRESQL = new DBType("queries/mysql/");
 
 }

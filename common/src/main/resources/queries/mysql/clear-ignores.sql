@@ -1,1 +1,1 @@
-DELETE FROM carbon_ignores WHERE (id = UNHEX(REPLACE(:id, '-', '')));
+DELETE FROM carbon_ignores WHERE (id = :id);

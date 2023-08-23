@@ -1,1 +1,1 @@
-SELECT channel FROM carbon_leftchannels WHERE (id = UNHEX(REPLACE(:id, '-', '')));
+SELECT channel FROM carbon_leftchannels WHERE (id = :id);
