@@ -90,17 +90,20 @@ public final class DependencyDownloader {
                     ret.add(resolve);
                     return null;
                 }
-                final Path output = resolve.resolveSibling(resolve.getFileName().toString().replace(".jar", "-relocated.jar"));
-                ret.add(output);
-                if (Files.isRegularFile(output)) {
+                final Path relocated = resolve.resolveSibling(resolve.getFileName().toString().replace(".jar", "-relocated.jar"));
+                ret.add(relocated);
+                if (Files.isRegularFile(relocated)) {
                     return null;
                 }
                 doingWork.run();
+                final Path output = relocated.resolveSibling(relocated.getFileName().toString() + ".tmp");
+                Files.deleteIfExists(output);
                 final JarRelocator relocator = new JarRelocator(resolve.toFile(), output.toFile(), this.relocations);
                 //this.logger.info("relocating {}", resolve);
                 relocator.run();
+                Files.move(output, relocated);
                 //this.logger.info("done relocating {}", resolve);
-            } catch (final IOException e) {
+            } catch (final IOException | IllegalArgumentException e) {
                 throw new RuntimeException("Exception resolving " + dep, e);
             }
             return null;
