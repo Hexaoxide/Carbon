@@ -69,8 +69,10 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
-import net.draycia.carbon.common.users.db.mysql.MySQLUserManager;
-import net.draycia.carbon.common.users.db.postgresql.PostgreSQLUserManager;
+import net.draycia.carbon.common.users.db.DatabaseUserManager;
+import net.draycia.carbon.common.users.db.argument.BinaryUUIDArgumentFactory;
+import net.draycia.carbon.common.users.db.mapper.BinaryUUIDColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.NativeUUIDColumnMapper;
 import net.draycia.carbon.common.users.json.JSONUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.Exceptions;
@@ -82,6 +84,7 @@ import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jdbi.v3.postgres.PostgresPlugin;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonCommonModule extends AbstractModule {
@@ -91,9 +94,17 @@ public final class CarbonCommonModule extends AbstractModule {
     @Singleton
     public UserManagerInternal<CarbonPlayerCommon> userManager(final ConfigManager configManager, final Injector injector) {
         return switch (configManager.primaryConfig().storageType()) {
-            case MYSQL -> injector.getInstance(MySQLUserManager.Factory.class).create();
-            case PSQL -> injector.getInstance(PostgreSQLUserManager.Factory.class).create();
-            default -> injector.getInstance(JSONUserManager.class);
+            case MYSQL -> injector.getInstance(DatabaseUserManager.Factory.class).create(
+                "queries/migrations/mysql",
+                jdbi -> jdbi.registerArgument(new BinaryUUIDArgumentFactory())
+                    .registerColumnMapper(UUID.class, new BinaryUUIDColumnMapper())
+            );
+            case PSQL -> injector.getInstance(DatabaseUserManager.Factory.class).create(
+                "queries/migrations/postgresql",
+                jdbi -> jdbi.registerColumnMapper(UUID.class, new NativeUUIDColumnMapper())
+                    .installPlugin(new PostgresPlugin())
+            );
+            case JSON -> injector.getInstance(JSONUserManager.class);
         };
     }
 

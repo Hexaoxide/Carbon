@@ -19,33 +19,53 @@
  */
 package net.draycia.carbon.common.users.db;
 
+import com.google.inject.Inject;
 import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
+import javax.sql.DataSource;
+import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.users.db.argument.ComponentArgumentFactory;
+import net.draycia.carbon.common.users.db.argument.KeyArgumentFactory;
+import net.draycia.carbon.common.users.db.mapper.ComponentColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.KeyColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.PlayerRowMapper;
+import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.draycia.carbon.common.util.SQLDrivers;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 @DefaultQualifier(NonNull.class)
-public abstract class DatabaseUserManager extends CachingUserManager {
+public final class DatabaseUserManager extends CachingUserManager {
 
-    protected final Jdbi jdbi;
-    protected final QueriesLocator locator;
-    protected final ChannelRegistry channelRegistry;
+    private final Jdbi jdbi;
+    private final QueriesLocator locator;
+    private final ChannelRegistry channelRegistry;
 
-    protected DatabaseUserManager(
+    private DatabaseUserManager(
         final Jdbi jdbi,
         final QueriesLocator locator,
         final Logger logger,
@@ -65,6 +85,38 @@ public abstract class DatabaseUserManager extends CachingUserManager {
         this.jdbi = jdbi;
         this.locator = locator;
         this.channelRegistry = channelRegistry;
+    }
+
+    @Override
+    public CarbonPlayerCommon loadOrCreate(final UUID uuid) {
+        return this.jdbi.withHandle(handle -> {
+            final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
+                .bind("id", uuid)
+                .mapTo(CarbonPlayerCommon.class)
+                .findOne()
+                .orElse(null);
+            if (carbonPlayerCommon == null) {
+                return new CarbonPlayerCommon(null, uuid);
+            }
+
+            handle.createQuery(this.locator.query("select-ignores"))
+                .bind("id", uuid)
+                .mapTo(UUID.class)
+                .forEach(ignoredPlayer -> carbonPlayerCommon.ignoring(ignoredPlayer, true, true));
+            handle.createQuery(this.locator.query("select-leftchannels"))
+                .bind("id", uuid)
+                .mapTo(Key.class)
+                .forEach(channel -> {
+                    final @Nullable ChatChannel chatChannel = this.channelRegistry.channel(channel);
+
+                    if (chatChannel == null) {
+                        return;
+                    }
+
+                    carbonPlayerCommon.leaveChannel(chatChannel, true);
+                });
+            return carbonPlayerCommon;
+        });
     }
 
     @Override
@@ -111,6 +163,84 @@ public abstract class DatabaseUserManager extends CachingUserManager {
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying());
+    }
+
+    public static final class Factory {
+
+        private final ChannelRegistry channelRegistry;
+        private final DatabaseSettings databaseSettings;
+        private final Logger logger;
+        private final ProfileResolver profileResolver;
+        private final MembersInjector<CarbonPlayerCommon> playerInjector;
+        private final Provider<MessagingManager> messagingManager;
+        private final PacketFactory packetFactory;
+
+        @Inject
+        private Factory(
+            final ChannelRegistry channelRegistry,
+            final ConfigManager configManager,
+            final Logger logger,
+            final ProfileResolver profileResolver,
+            final MembersInjector<CarbonPlayerCommon> playerInjector,
+            final Provider<MessagingManager> messagingManager,
+            final PacketFactory packetFactory
+        ) {
+            this.channelRegistry = channelRegistry;
+            this.databaseSettings = configManager.primaryConfig().databaseSettings();
+            this.logger = logger;
+            this.profileResolver = profileResolver;
+            this.playerInjector = playerInjector;
+            this.messagingManager = messagingManager;
+            this.packetFactory = packetFactory;
+        }
+
+        public DatabaseUserManager create(final String migrationsLocation, final Consumer<Jdbi> configureJdbi) {
+            SQLDrivers.loadFrom(this.getClass().getClassLoader());
+
+            final HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setMaximumPoolSize(8);
+            hikariConfig.setJdbcUrl(this.databaseSettings.url());
+            hikariConfig.setUsername(this.databaseSettings.username());
+            hikariConfig.setPassword(this.databaseSettings.password());
+            hikariConfig.setPoolName("CarbonChat-HikariPool");
+            hikariConfig.setThreadFactory(ConcurrentUtil.carbonThreadFactory(this.logger, "HikariPool"));
+
+            final DataSource dataSource = new HikariDataSource(hikariConfig);
+
+            final Flyway flyway = Flyway.configure(CarbonChat.class.getClassLoader())
+                .baselineVersion("0")
+                .baselineOnMigrate(true)
+                .locations(migrationsLocation)
+                .dataSource(dataSource)
+                .validateMigrationNaming(true)
+                .validateOnMigrate(true)
+                .load();
+
+            flyway.repair();
+            flyway.migrate();
+
+            final Jdbi jdbi = Jdbi.create(dataSource)
+                .registerArgument(new ComponentArgumentFactory())
+                .registerArgument(new KeyArgumentFactory())
+                .registerRowMapper(CarbonPlayerCommon.class, new PlayerRowMapper())
+                .registerColumnMapper(Key.class, new KeyColumnMapper())
+                .registerColumnMapper(Component.class, new ComponentColumnMapper())
+                .installPlugin(new SqlObjectPlugin());
+
+            configureJdbi.accept(jdbi);
+
+            return new DatabaseUserManager(
+                jdbi,
+                new QueriesLocator(),
+                this.logger,
+                this.profileResolver,
+                this.playerInjector,
+                this.messagingManager,
+                this.packetFactory,
+                this.channelRegistry
+            );
+        }
+
     }
 
 }
