@@ -62,6 +62,7 @@ fun Task.standardRuntimeRelocations() {
   relocateDependency("redis.clients.jedis")
   relocateDependency("org.flywaydb")
   relocateDependency("com.fasterxml")
+  relocateDependency("org.h2")
 }
 
 /**

@@ -45,14 +45,14 @@ public class PrimaryConfig {
 
     @Comment("""
     The service that will be used to store and load player information.
-    One of: JSON, MYSQL, PSQL
+    One of: JSON, H2, MYSQL, PSQL
     Note: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!
     """)
     private StorageType storageType = StorageType.JSON;
 
     @Comment("""
     When "storage-type" is set to MYSQL or PSQL, this section configures the database connection.
-    If JSON storage is used, this section can be ignored.
+    If JSON or H2 storage is used, this section can be ignored.
     """)
     private DatabaseSettings databaseSettings = new DatabaseSettings();
 
@@ -183,7 +183,8 @@ public class PrimaryConfig {
     public enum StorageType {
         JSON,
         MYSQL,
-        PSQL
+        PSQL,
+        H2
     }
 
 }

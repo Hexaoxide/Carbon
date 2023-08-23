@@ -21,6 +21,7 @@ val runtimeDownload: Configuration by configurations.creating {
 val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")
 
 dependencies {
+  runtimeDownload(libs.h2)
   runtimeDownload(libs.postgresql)
   runtimeDownload(libs.mariadb)
   runtimeDownload(libs.zstdjni)

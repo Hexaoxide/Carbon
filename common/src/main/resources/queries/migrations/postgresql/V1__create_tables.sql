@@ -1,17 +1,17 @@
 CREATE TABLE carbon_users (
-    id uuid NOT NULL PRIMARY KEY,
+    id UUID NOT NULL PRIMARY KEY,
     muted BOOLEAN,
     deafened BOOLEAN,
     selectedchannel VARCHAR(256),
     username VARCHAR(20),
     displayname VARCHAR(1024),
-    lastwhispertarget uuid,
-    whisperreplytarget uuid,
+    lastwhispertarget UUID,
+    whisperreplytarget UUID,
     spying BOOLEAN
 );
 
 CREATE TABLE carbon_ignores (
-    id uuid NOT NULL,
-    ignoredplayer uuid NOT NULL,
+    id UUID NOT NULL,
+    ignoredplayer UUID NOT NULL,
     PRIMARY KEY (id, ignoredplayer)
 );

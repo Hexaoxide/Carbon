@@ -30,7 +30,9 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.assistedinject.FactoryProvider3;
 import com.google.inject.multibindings.Multibinder;
 import io.leangen.geantyref.TypeToken;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -41,6 +43,7 @@ import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.HyperlinkHandler;
@@ -76,6 +79,7 @@ import net.draycia.carbon.common.users.db.mapper.NativeUUIDColumnMapper;
 import net.draycia.carbon.common.users.json.JSONUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.Exceptions;
+import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -84,6 +88,7 @@ import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jdbi.v3.core.h2.H2DatabasePlugin;
 import org.jdbi.v3.postgres.PostgresPlugin;
 
 @DefaultQualifier(NonNull.class)
@@ -92,7 +97,11 @@ public final class CarbonCommonModule extends AbstractModule {
     @Provides
     @Backing
     @Singleton
-    public UserManagerInternal<CarbonPlayerCommon> userManager(final ConfigManager configManager, final Injector injector) {
+    public UserManagerInternal<CarbonPlayerCommon> userManager(
+        final @DataDirectory Path dataDirectory,
+        final ConfigManager configManager,
+        final Injector injector
+    ) throws IOException {
         return switch (configManager.primaryConfig().storageType()) {
             case MYSQL -> injector.getInstance(DatabaseUserManager.Factory.class).create(
                 "queries/migrations/mysql",
@@ -103,6 +112,11 @@ public final class CarbonCommonModule extends AbstractModule {
                 "queries/migrations/postgresql",
                 jdbi -> jdbi.registerColumnMapper(UUID.class, new NativeUUIDColumnMapper())
                     .installPlugin(new PostgresPlugin())
+            );
+            case H2 -> injector.getInstance(DatabaseUserManager.Factory.class).create(
+                "queries/migrations/h2",
+                jdbi -> jdbi.installPlugin(new H2DatabasePlugin()),
+                new DatabaseSettings("jdbc:h2:" + FileUtil.mkParentDirs(dataDirectory.resolve("users/userdata-h2")).toAbsolutePath() + ";MODE=MySQL", "", "")
             );
             case JSON -> injector.getInstance(JSONUserManager.class);
         };

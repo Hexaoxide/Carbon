@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
-import javax.sql.DataSource;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -64,9 +63,11 @@ public final class DatabaseUserManager extends CachingUserManager {
     private final Jdbi jdbi;
     private final QueriesLocator locator;
     private final ChannelRegistry channelRegistry;
+    private final HikariDataSource dataSource;
 
     private DatabaseUserManager(
         final Jdbi jdbi,
+        final HikariDataSource dataSource,
         final QueriesLocator locator,
         final Logger logger,
         final ProfileResolver profileResolver,
@@ -83,6 +84,7 @@ public final class DatabaseUserManager extends CachingUserManager {
             packetFactory
         );
         this.jdbi = jdbi;
+        this.dataSource = dataSource;
         this.locator = locator;
         this.channelRegistry = channelRegistry;
     }
@@ -120,7 +122,7 @@ public final class DatabaseUserManager extends CachingUserManager {
     }
 
     @Override
-    public final void saveSync(final CarbonPlayerCommon player) {
+    public void saveSync(final CarbonPlayerCommon player) {
         this.jdbi.useTransaction(handle -> {
             final int inserted = bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();
             if (inserted != 1) {
@@ -154,6 +156,12 @@ public final class DatabaseUserManager extends CachingUserManager {
         });
     }
 
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        this.dataSource.close();
+    }
+
     private static Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
         return update.bind("id", player.uuid())
             .bind("muted", player.muted())
@@ -168,7 +176,7 @@ public final class DatabaseUserManager extends CachingUserManager {
     public static final class Factory {
 
         private final ChannelRegistry channelRegistry;
-        private final DatabaseSettings databaseSettings;
+        private final ConfigManager configManager;
         private final Logger logger;
         private final ProfileResolver profileResolver;
         private final MembersInjector<CarbonPlayerCommon> playerInjector;
@@ -186,7 +194,7 @@ public final class DatabaseUserManager extends CachingUserManager {
             final PacketFactory packetFactory
         ) {
             this.channelRegistry = channelRegistry;
-            this.databaseSettings = configManager.primaryConfig().databaseSettings();
+            this.configManager = configManager;
             this.logger = logger;
             this.profileResolver = profileResolver;
             this.playerInjector = playerInjector;
@@ -195,17 +203,21 @@ public final class DatabaseUserManager extends CachingUserManager {
         }
 
         public DatabaseUserManager create(final String migrationsLocation, final Consumer<Jdbi> configureJdbi) {
+            return this.create(migrationsLocation, configureJdbi, this.configManager.primaryConfig().databaseSettings());
+        }
+
+        public DatabaseUserManager create(final String migrationsLocation, final Consumer<Jdbi> configureJdbi, final DatabaseSettings databaseSettings) {
             SQLDrivers.loadFrom(this.getClass().getClassLoader());
 
             final HikariConfig hikariConfig = new HikariConfig();
             hikariConfig.setMaximumPoolSize(8);
-            hikariConfig.setJdbcUrl(this.databaseSettings.url());
-            hikariConfig.setUsername(this.databaseSettings.username());
-            hikariConfig.setPassword(this.databaseSettings.password());
+            hikariConfig.setJdbcUrl(databaseSettings.url());
+            hikariConfig.setUsername(databaseSettings.username());
+            hikariConfig.setPassword(databaseSettings.password());
             hikariConfig.setPoolName("CarbonChat-HikariPool");
             hikariConfig.setThreadFactory(ConcurrentUtil.carbonThreadFactory(this.logger, "HikariPool"));
 
-            final DataSource dataSource = new HikariDataSource(hikariConfig);
+            final HikariDataSource dataSource = new HikariDataSource(hikariConfig);
 
             final Flyway flyway = Flyway.configure(CarbonChat.class.getClassLoader())
                 .baselineVersion("0")
@@ -231,6 +243,7 @@ public final class DatabaseUserManager extends CachingUserManager {
 
             return new DatabaseUserManager(
                 jdbi,
+                dataSource,
                 new QueriesLocator(),
                 this.logger,
                 this.profileResolver,

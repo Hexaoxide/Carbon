@@ -28,6 +28,15 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class DatabaseSettings {
 
+    public DatabaseSettings() {
+    }
+
+    public DatabaseSettings(final String url, final String username, final String password) {
+        this.url = url;
+        this.username = username;
+        this.password = password;
+    }
+
     @Comment("""
         JDBC URL. Suggested defaults for each DB:
         MySQL: jdbc:mysql://host:3306/DB

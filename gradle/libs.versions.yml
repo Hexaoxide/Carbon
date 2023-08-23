@@ -46,7 +46,7 @@ versions:
   hikari: 5.0.1
   mysql: 8.0.33
   protobuf: 3.21.9
-  flyway: 9.21.1
+  flyway: 9.21.2
   caffeine: 3.1.7
   mariadb: 3.0.8
   messenger: 1.0.0-SNAPSHOT
@@ -58,6 +58,7 @@ versions:
   nats: 2.12.0
   pluginYml: 0.5.3
   minotaur: 2.7.5
+  h2: 2.2.220
 
 dependencies:
   adventureBom:
@@ -246,6 +247,10 @@ dependencies:
     group: org.mariadb.jdbc
     name: mariadb-java-client
     version: { ref: mariadb }
+  h2:
+    group: com.h2database
+    name: h2
+    version: { ref: h2 }
 
   jarRelocator:
     group: me.lucko
