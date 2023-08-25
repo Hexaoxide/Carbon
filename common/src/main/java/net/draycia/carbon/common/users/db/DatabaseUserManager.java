@@ -170,7 +170,8 @@ public final class DatabaseUserManager extends CachingUserManager {
             .bind("displayname", player.displayNameRaw())
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
-            .bind("spying", player.spying());
+            .bind("spying", player.spying())
+            .bind("ignoringdirectmessages", player.ignoringDirectMessages());
     }
 
     public static final class Factory {

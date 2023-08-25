@@ -6,4 +6,5 @@ UPDATE carbon_users SET
     displayname = :displayname,
     lastwhispertarget = :lastwhispertarget,
     whisperreplytarget = :whisperreplytarget,
-    spying = :spying;
+    spying = :spying,
+    ignoringdirectmessages = :ignoringdirectmessages;
