@@ -85,6 +85,11 @@ public final class ContinueCommand extends CarbonCommand {
                     return;
                 }
 
+                if (sender.ignoringDirectMessages()) {
+                    this.carbonMessages.whisperIgnoringAll(sender);
+                    return;
+                }
+
                 final String message = ctx.get("message");
                 final @Nullable UUID whisperTarget = sender.lastWhisperTarget();
 

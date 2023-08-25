@@ -102,6 +102,11 @@ public final class WhisperCommand extends CarbonCommand {
                     return;
                 }
 
+                if (sender.ignoringDirectMessages()) {
+                    this.carbonMessages.whisperIgnoringAll(sender);
+                    return;
+                }
+
                 final String message = ctx.get("message");
                 final CarbonPlayer recipient = ctx.get("player");
 
@@ -184,6 +189,10 @@ public final class WhisperCommand extends CarbonCommand {
 
             if (recipient.ignoring(sender)) {
                 this.messages.whisperTargetIgnoring(sender, recipient.displayName());
+                return;
+            }
+
+            if (recipient.ignoringDirectMessages() && !sender.hasPermission("carbon.togglemsg.exempt")) {
                 return;
             }
 

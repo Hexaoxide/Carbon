@@ -70,6 +70,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     // Whispers
     protected transient @Nullable UUID lastWhisperTarget = null;
     protected transient @Nullable UUID whisperReplyTarget = null;
+    protected boolean ignoringdirectMessages = false;
 
     // Administrative
     protected final PersistentUserProperty<Boolean> spying;
@@ -260,6 +261,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     @Override
     public void spying(final boolean spying) {
         this.spying.set(spying);
+    }
+
+    @Override
+    public boolean ignoringDirectMessages() {
+        return this.ignoringdirectMessages;
+    }
+
+    @Override
+    public void ignoringDirectMessages(final boolean ignoring) {
+        this.ignoringdirectMessages = ignoring;
     }
 
     @Override
