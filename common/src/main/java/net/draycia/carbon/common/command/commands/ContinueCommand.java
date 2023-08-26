@@ -43,19 +43,19 @@ public final class ContinueCommand extends CarbonCommand {
 
     private final UserManager<?> users;
     private final CommandManager<Commander> commandManager;
-    private final CarbonMessages carbonMessages;
+    private final CarbonMessages messages;
     private final WhisperCommand.WhisperHandler whisper;
 
     @Inject
     public ContinueCommand(
         final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
-        final CarbonMessages carbonMessages,
+        final CarbonMessages messages,
         final WhisperCommand.WhisperHandler whisper
     ) {
         this.users = userManager;
         this.commandManager = commandManager;
-        this.carbonMessages = carbonMessages;
+        this.messages = messages;
         this.whisper = whisper;
     }
 
@@ -73,20 +73,15 @@ public final class ContinueCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(this.carbonMessages.commandContinueArgumentMessage()))
+                RichDescription.of(this.messages.commandContinueArgumentMessage()))
             .permission("carbon.whisper.continue")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandContinueDescription())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.commandContinueDescription())
             .handler(ctx -> {
                 final CarbonPlayer sender = ((PlayerCommander) ctx.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
-                    this.carbonMessages.muteCannotSpeak(sender);
-                    return;
-                }
-
-                if (sender.ignoringDirectMessages()) {
-                    this.carbonMessages.whisperIgnoringAll(sender);
+                    this.messages.muteCannotSpeak(sender);
                     return;
                 }
 
@@ -94,7 +89,7 @@ public final class ContinueCommand extends CarbonCommand {
                 final @Nullable UUID whisperTarget = sender.lastWhisperTarget();
 
                 if (whisperTarget == null) {
-                    this.carbonMessages.whisperTargetNotSet(sender, sender.displayName());
+                    this.messages.whisperTargetNotSet(sender, sender.displayName());
                     return;
                 }
 

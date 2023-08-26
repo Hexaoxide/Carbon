@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.messages;
 
+import javax.sound.sampled.AudioInputStream;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;
@@ -158,6 +159,9 @@ public interface CarbonMessages {
 
     @Message("whisper.ignored_by_target")
     void whisperTargetIgnoring(final Audience audience, final Component target);
+
+    @Message("whisper.ignored_dms")
+    void whisperTargetIgnoringDMs(final Audience audience, final Component target);
 
     @Message("whisper.toggled.on")
     void whispersToggledOn(final Audience audience);

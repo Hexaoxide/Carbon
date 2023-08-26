@@ -102,11 +102,6 @@ public final class WhisperCommand extends CarbonCommand {
                     return;
                 }
 
-                if (sender.ignoringDirectMessages()) {
-                    this.carbonMessages.whisperIgnoringAll(sender);
-                    return;
-                }
-
                 final String message = ctx.get("message");
                 final CarbonPlayer recipient = ctx.get("player");
 
@@ -171,6 +166,11 @@ public final class WhisperCommand extends CarbonCommand {
                 return;
             }
 
+            if (sender.ignoringDirectMessages() && !sender.hasPermission("carbon.togglemsg.exempt")) {
+                this.messages.whisperIgnoringAll(sender);
+                return;
+            }
+
             if (!this.network.online(recipient) || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                 final var exception = new CarbonPlayerArgument.ParseException(
                     recipientInputString == null ? recipient.username() : recipientInputString,
@@ -193,6 +193,7 @@ public final class WhisperCommand extends CarbonCommand {
             }
 
             if (recipient.ignoringDirectMessages() && !sender.hasPermission("carbon.togglemsg.exempt")) {
+                this.messages.whisperTargetIgnoringDMs(sender, recipient.displayName());
                 return;
             }
 

@@ -35,17 +35,14 @@ public class ToggleMessagesCommand extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
-    private final ArgumentFactory argumentFactory;
 
     @Inject
     public ToggleMessagesCommand(
         final CommandManager<Commander> commandManager,
-        final CarbonMessages carbonMessages,
-        final ArgumentFactory argumentFactory
+        final CarbonMessages carbonMessages
     ) {
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.argumentFactory = argumentFactory;
     }
 
     @Override
