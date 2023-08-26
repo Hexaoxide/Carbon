@@ -100,8 +100,11 @@ public final class CarbonCommonModule extends AbstractModule {
     public UserManagerInternal<CarbonPlayerCommon> userManager(
         final @DataDirectory Path dataDirectory,
         final ConfigManager configManager,
+        final Logger logger,
         final Injector injector
     ) throws IOException {
+        logger.info("Initializing " + configManager.primaryConfig().storageType() + " storage manager.");
+
         return switch (configManager.primaryConfig().storageType()) {
             case MYSQL -> injector.getInstance(DatabaseUserManager.Factory.class).create(
                 "queries/migrations/mysql",
