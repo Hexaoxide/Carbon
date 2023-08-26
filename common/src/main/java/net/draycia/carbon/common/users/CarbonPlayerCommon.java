@@ -145,7 +145,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             this.displayName,
             this.spying,
             this.ignoredPlayers,
-            this.leftChannels
+            this.leftChannels,
+            this.ignoringDirectMessages
         );
     }
 
