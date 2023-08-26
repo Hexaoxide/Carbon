@@ -43,7 +43,8 @@ public final class PlayerRowMapper implements RowMapper<CarbonPlayerCommon> {
             ctx.findColumnMapperFor(Component.class).orElseThrow().map(rs, "displayname", ctx),
             uuid.map(rs, "lastwhispertarget", ctx),
             uuid.map(rs, "whisperreplytarget", ctx),
-            rs.getBoolean("spying")
+            rs.getBoolean("spying"),
+            rs.getBoolean("ignoringdms")
         );
     }
 
