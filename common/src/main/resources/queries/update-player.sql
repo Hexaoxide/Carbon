@@ -1,5 +1,4 @@
 UPDATE carbon_users SET
-    id = :id,
     muted = :muted,
     deafened = :deafened,
     selectedchannel = :selectedchannel,
@@ -7,4 +6,5 @@ UPDATE carbon_users SET
     lastwhispertarget = :lastwhispertarget,
     whisperreplytarget = :whisperreplytarget,
     spying = :spying,
-    ignoringdms = :ignoringdms;
+    ignoringdms = :ignoringdms
+WHERE (id = :id);
