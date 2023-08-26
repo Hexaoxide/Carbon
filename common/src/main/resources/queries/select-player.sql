@@ -7,5 +7,5 @@ SELECT
     lastwhispertarget,
     whisperreplytarget,
     spying,
-    ignoringdirectmessages
+    ignoringdms
 FROM carbon_users WHERE (id = :id);

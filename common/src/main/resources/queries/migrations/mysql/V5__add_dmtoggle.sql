@@ -1,1 +1,1 @@
-ALTER TABLE carbon_users ADD COLUMN ignoringdirectmessages BOOLEAN;
+ALTER TABLE carbon_users ADD COLUMN ignoringdms BOOLEAN;

@@ -70,7 +70,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     // Whispers
     protected transient @Nullable UUID lastWhisperTarget = null;
     protected transient @Nullable UUID whisperReplyTarget = null;
-    protected boolean ignoringdirectMessages = false;
+    protected final PersistentUserProperty<Boolean> ignoringDirectMessages;
 
     // Administrative
     protected final PersistentUserProperty<Boolean> spying;
@@ -89,7 +89,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final @Nullable Component displayName,
         final @Nullable UUID lastWhisperTarget,
         final @Nullable UUID whisperReplyTarget,
-        final boolean spying
+        final boolean spying,
+        final boolean ignoreDirectMessages
     ) {
         this.muted = PersistentUserProperty.of(muted);
         this.deafened = PersistentUserProperty.of(deafened);
@@ -102,6 +103,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.spying = PersistentUserProperty.of(spying);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
+        this.ignoringDirectMessages = PersistentUserProperty.of(ignoreDirectMessages);
     }
 
     public CarbonPlayerCommon(
@@ -117,6 +119,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.username = username;
         this.uuid = uuid;
+        this.ignoringDirectMessages = PersistentUserProperty.of(false);
     }
 
     public CarbonPlayerCommon() {
@@ -127,6 +130,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.spying = PersistentUserProperty.of(false);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
+        this.ignoringDirectMessages = PersistentUserProperty.of(false);
     }
 
     public boolean needsSave() {
@@ -265,12 +269,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean ignoringDirectMessages() {
-        return this.ignoringdirectMessages;
+        return this.ignoringDirectMessages.get();
     }
 
     @Override
     public void ignoringDirectMessages(final boolean ignoring) {
-        this.ignoringdirectMessages = ignoring;
+        this.ignoringDirectMessages.set(ignoring);
     }
 
     @Override

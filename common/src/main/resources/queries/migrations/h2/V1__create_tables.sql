@@ -7,7 +7,7 @@ CREATE TABLE carbon_users (
     `lastwhispertarget` UUID,
     `whisperreplytarget` UUID,
     `spying` BOOLEAN,
-    `ignoringdirectmessages` BOOLEAN
+    `ignoringdms` BOOLEAN
 );
 
 CREATE TABLE carbon_ignores (

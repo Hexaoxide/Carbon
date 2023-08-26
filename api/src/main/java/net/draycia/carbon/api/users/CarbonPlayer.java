@@ -298,7 +298,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @param ignoring if the player is ignoring direct messages
      * @since 2.1.0
      */
-    void ignoringDirectMessages(final boolean ignoring);
+    void ignoringDirectMessages(boolean ignoring);
 
     /**
      * Sends the message as the player.
