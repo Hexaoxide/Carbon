@@ -43,19 +43,19 @@ public final class ReplyCommand extends CarbonCommand {
 
     private final UserManager<?> users;
     private final CommandManager<Commander> commandManager;
-    private final CarbonMessages carbonMessages;
+    private final CarbonMessages messages;
     private final WhisperCommand.WhisperHandler whisper;
 
     @Inject
     public ReplyCommand(
         final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
-        final CarbonMessages carbonMessages,
+        final CarbonMessages messages,
         final WhisperCommand.WhisperHandler whisper
     ) {
         this.users = userManager;
         this.commandManager = commandManager;
-        this.carbonMessages = carbonMessages;
+        this.messages = messages;
         this.whisper = whisper;
     }
 
@@ -73,15 +73,15 @@ public final class ReplyCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .argument(StringArgument.greedy("message"),
-                RichDescription.of(this.carbonMessages.commandReplyArgumentMessage()))
+                RichDescription.of(this.messages.commandReplyArgumentMessage()))
             .permission("carbon.whisper.reply")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReplyDescription())
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.commandReplyDescription())
             .handler(ctx -> {
                 final CarbonPlayer sender = ((PlayerCommander) ctx.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
-                    this.carbonMessages.muteCannotSpeak(sender);
+                    this.messages.muteCannotSpeak(sender);
                     return;
                 }
 
@@ -89,7 +89,7 @@ public final class ReplyCommand extends CarbonCommand {
                 final @Nullable UUID replyTarget = sender.whisperReplyTarget();
 
                 if (replyTarget == null) {
-                    this.carbonMessages.replyTargetNotSet(sender, sender.displayName());
+                    this.messages.replyTargetNotSet(sender, sender.displayName());
                     return;
                 }
 

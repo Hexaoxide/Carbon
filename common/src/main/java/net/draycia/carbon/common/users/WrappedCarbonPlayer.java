@@ -162,6 +162,16 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
+    public boolean ignoringDirectMessages() {
+        return this.carbonPlayerCommon.ignoringDirectMessages();
+    }
+
+    @Override
+    public void ignoringDirectMessages(final boolean ignoring) {
+        this.carbonPlayerCommon.ignoringDirectMessages(ignoring);
+    }
+
+    @Override
     public boolean hasPermission(final String permission) {
         final @Nullable User user = this.user();
 

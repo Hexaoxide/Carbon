@@ -175,6 +175,16 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
+    public boolean ignoringDirectMessages() {
+        return false;
+    }
+
+    @Override
+    public void ignoringDirectMessages(final boolean ignoring) {
+
+    }
+
+    @Override
     public void sendMessageAsPlayer(final String message) {
 
     }

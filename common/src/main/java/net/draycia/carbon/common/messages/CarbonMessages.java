@@ -150,11 +150,23 @@ public interface CarbonMessages {
         @Placeholder("sender_display_name") final Component senderDisplayName
     );
 
+    @Message("whisper.ignoring_all")
+    void whisperIgnoringAll(final Audience audience);
+
     @Message("whisper.ignoring_target")
     void whisperIgnoringTarget(final Audience audience, final Component target);
 
     @Message("whisper.ignored_by_target")
     void whisperTargetIgnoring(final Audience audience, final Component target);
+
+    @Message("whisper.ignored_dms")
+    void whisperTargetIgnoringDMs(final Audience audience, final Component target);
+
+    @Message("whisper.toggled.on")
+    void whispersToggledOn(final Audience audience);
+
+    @Message("whisper.toggled.off")
+    void whispersToggledOff(final Audience audience);
 
     /*
      * =============================================================
@@ -342,6 +354,9 @@ public interface CarbonMessages {
 
     @Message("command.reply.description")
     Component commandReplyDescription();
+
+    @Message("command.togglemsg.description")
+    Component commandToggleMsgDescription();
 
     @Message("command.unignore.argument.player")
     Component commandUnignoreArgumentPlayer();

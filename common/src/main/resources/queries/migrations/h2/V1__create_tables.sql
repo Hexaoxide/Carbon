@@ -6,7 +6,8 @@ CREATE TABLE carbon_users (
     `displayname` VARCHAR(1024),
     `lastwhispertarget` UUID,
     `whisperreplytarget` UUID,
-    `spying` BOOLEAN
+    `spying` BOOLEAN,
+    `ignoringdms` BOOLEAN
 );
 
 CREATE TABLE carbon_ignores (

@@ -6,5 +6,6 @@ SELECT
     displayname,
     lastwhispertarget,
     whisperreplytarget,
-    spying
+    spying,
+    ignoringdms
 FROM carbon_users WHERE (id = :id);

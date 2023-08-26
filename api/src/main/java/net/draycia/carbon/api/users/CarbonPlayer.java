@@ -285,6 +285,22 @@ public interface CarbonPlayer extends Audience, Identified {
     void spying(boolean spying);
 
     /**
+     * Controls if the player should receive direct messages or if they should be hidden.
+     *
+     * @return if the player is ignoring direct messages
+     * @since 2.1.0
+     */
+    boolean ignoringDirectMessages();
+
+    /**
+     * Sets whether the player should receive direct messages or if they should be hidden.
+     *
+     * @param ignoring if the player is ignoring direct messages
+     * @since 2.1.0
+     */
+    void ignoringDirectMessages(boolean ignoring);
+
+    /**
      * Sends the message as the player.
      *
      * @param message the message to be sent
