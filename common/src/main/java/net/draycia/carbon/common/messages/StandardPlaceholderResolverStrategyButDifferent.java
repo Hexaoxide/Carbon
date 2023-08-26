@@ -36,6 +36,7 @@ import net.kyori.moonshine.strategy.IPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.ISupertypeStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.configurate.util.NamingScheme;
 
 import static java.util.Collections.emptyNavigableSet;
 
@@ -43,12 +44,24 @@ import static java.util.Collections.emptyNavigableSet;
 public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> implements IPlaceholderResolverStrategy<R, I, F> {
 
     private final ISupertypeStrategy supertypeStrategy = new StandardSupertypeThenInterfaceSupertypeStrategy(false);
+    private final NamingScheme namingScheme;
+
+    /**
+     * Create a new {@link StandardPlaceholderResolverStrategyButDifferent}.
+     *
+     * @param placeholderParamaterDefaultNamingScheme the default naming scheme for placeholders that do not specify a name explicitly, applied to parameter names
+     */
+    public StandardPlaceholderResolverStrategyButDifferent(final NamingScheme placeholderParamaterDefaultNamingScheme) {
+        this.namingScheme = placeholderParamaterDefaultNamingScheme;
+    }
 
     @Override
-    public Map<String, ? extends F> resolvePlaceholders(final Moonshine<R, I, ?, F> moonshine,
-                                                        final R receiver, final I intermediateText,
-                                                        final MoonshineMethod<? extends R> moonshineMethod,
-                                                        final @Nullable Object[] parameters)
+    public Map<String, ? extends F> resolvePlaceholders(
+        final Moonshine<R, I, ?, F> moonshine,
+        final R receiver, final I intermediateText,
+        final MoonshineMethod<? extends R> moonshineMethod,
+        final @Nullable Object[] parameters
+    )
         throws PlaceholderResolvingException {
         if (parameters.length == 0) {
             return Collections.emptyMap();
@@ -61,7 +74,8 @@ public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> impl
             moonshineMethod.reflectMethod(), moonshine.proxiedType());
 
         // Don't resolve recipients
-        for (int idx = 1; idx < parameters.length; ++idx) {
+        final int start = moonshineMethod.reflectMethod().getReturnType() != Void.TYPE ? 0 : 1;
+        for (int idx = start; idx < parameters.length; ++idx) {
 
             final Parameter parameter = methodParameters[idx];
             final @Nullable Object value = parameters[idx];
@@ -77,7 +91,7 @@ public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> impl
 
             final String placeholderName = (placeholder != null && !placeholder.value().isEmpty())
                 ? placeholder.value()
-                : parameter.getName();
+                : this.namingScheme.coerce(parameter.getName());
 
             resolvingPlaceholders
                 .put(placeholderName, ContinuanceValue.continuanceValue(value, parameterType));
@@ -98,10 +112,14 @@ public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> impl
      * @param resolvingPlaceholders the placeholders to resolve
      * @param moonshineMethod       the method we are resolving a placeholder for
      */
-    private void resolvePlaceholder(final Moonshine<R, I, ?, F> moonshine, final R receiver,
-                                    final Map<String, F> finalisedPlaceholders,
-                                    final Map<String, ContinuanceValue<?>> resolvingPlaceholders,
-                                    final MoonshineMethod<? extends R> moonshineMethod, final @Nullable Object[] parameters)
+    private void resolvePlaceholder(
+        final Moonshine<R, I, ?, F> moonshine,
+        final R receiver,
+        final Map<String, F> finalisedPlaceholders,
+        final Map<String, ContinuanceValue<?>> resolvingPlaceholders,
+        final MoonshineMethod<? extends R> moonshineMethod,
+        final @Nullable Object[] parameters
+    )
         throws UnfinishedPlaceholderException {
         final var weightedPlaceholderResolvers = moonshine.weightedPlaceholderResolvers();
 

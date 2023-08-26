@@ -62,6 +62,7 @@ import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.StandardPlaceholderResolverStrategyButDifferent;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.IntPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
@@ -90,6 +91,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.h2.H2DatabasePlugin;
 import org.jdbi.v3.postgres.PostgresPlugin;
+import org.spongepowered.configurate.util.NamingSchemes;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonCommonModule extends AbstractModule {
@@ -136,6 +138,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final ComponentPlaceholderResolver<Audience> componentPlaceholderResolver,
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
         final StringPlaceholderResolver<Audience> stringPlaceholderResolver,
+        final IntPlaceholderResolver<Audience> intPlaceholderResolver,
         final KeyPlaceholderResolver<Audience> keyPlaceholderResolver,
         final BooleanPlaceholderResolver<Audience> booleanPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
@@ -147,10 +150,11 @@ public final class CarbonCommonModule extends AbstractModule {
             .sourced(carbonMessageSource)
             .rendered(messageRenderer)
             .sent(carbonMessageSender)
-            .resolvingWithStrategy(new StandardPlaceholderResolverStrategyButDifferent<>())
+            .resolvingWithStrategy(new StandardPlaceholderResolverStrategyButDifferent<>(NamingSchemes.SNAKE_CASE))
             .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
             .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
             .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
+            .weightedPlaceholderResolver(Integer.class, intPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
             .create(this.getClass().getClassLoader());

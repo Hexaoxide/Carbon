@@ -301,6 +301,16 @@ public interface CarbonMessages {
     @Message("command.ignorelist.description")
     Component commandIgnoreListDescription();
 
+    @Message("command.ignorelist.none_ignored")
+    void commandIgnoreListNoneIgnored(Audience audience);
+
+    @Message("command.ignorelist.pagination_header")
+    Component commandIgnoreListPaginationHeader(int page, int pages);
+
+    // todo make username placeholder work in click event commands (change placeholder type to TagResolver)
+    @Message("command.ignorelist.pagination_element")
+    Component commandIgnoreListPaginationElement(Component displayName, String username);
+
     @Message("command.join.description")
     Component commandJoinDescription();
 
@@ -408,5 +418,17 @@ public interface CarbonMessages {
 
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();
+
+    @Message("pagination.page_out_of_range")
+    Component paginationOutOfRange(int page, int pages);
+
+    @Message("pagination.click_for_next_page")
+    Component paginationClickForNextPage();
+
+    @Message("pagination.click_for_previous_page")
+    Component paginationClickForPreviousPage();
+
+    @Message("pagination.footer")
+    Component paginationFooter(int page, int pages, Component buttons);
 
 }
