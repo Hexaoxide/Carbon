@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -139,6 +140,11 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         }
 
         return true;
+    }
+
+    @Override
+    public Set<UUID> ignoring() {
+        return this.carbonPlayerCommon.ignoring();
     }
 
     @Override

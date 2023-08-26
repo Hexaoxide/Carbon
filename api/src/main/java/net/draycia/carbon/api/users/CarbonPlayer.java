@@ -21,6 +21,7 @@ package net.draycia.carbon.api.users;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
@@ -217,6 +218,14 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 2.0.0
      */
     void muted(boolean muted);
+
+    /**
+     * Gets the ids of the players this player is currently ignoring.
+     *
+     * @return the players currently ignored
+     * @since 2.1.0
+     */
+    Set<UUID> ignoring();
 
     /**
      * Checks if the other player is being ignored by this player.

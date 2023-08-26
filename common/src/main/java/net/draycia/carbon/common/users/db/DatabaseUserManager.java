@@ -136,7 +136,7 @@ public final class DatabaseUserManager extends CachingUserManager {
                 .bind("id", player.uuid())
                 .execute();
 
-            final Set<UUID> ignored = player.ignoredPlayers();
+            final Set<UUID> ignored = player.ignoring();
             if (!ignored.isEmpty()) {
                 final PreparedBatch batch = handle.prepareBatch(this.locator.query("save-ignores"));
                 for (final UUID ignoredPlayer : ignored) {

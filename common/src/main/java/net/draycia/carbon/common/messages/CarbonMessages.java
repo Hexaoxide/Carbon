@@ -298,6 +298,9 @@ public interface CarbonMessages {
     @Message("command.ignore.description")
     Component commandIgnoreDescription();
 
+    @Message("command.ignorelist.description")
+    Component commandIgnoreListDescription();
+
     @Message("command.join.description")
     Component commandJoinDescription();
 

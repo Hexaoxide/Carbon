@@ -210,7 +210,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.muted.set(muted);
     }
 
-    public Set<UUID> ignoredPlayers() {
+    @Override
+    public Set<UUID> ignoring() {
         return this.ignoredPlayers.get();
     }
 
