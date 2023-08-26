@@ -19,7 +19,6 @@
  */
 package net.draycia.carbon.common.messages;
 
-import javax.sound.sampled.AudioInputStream;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.annotation.Message;

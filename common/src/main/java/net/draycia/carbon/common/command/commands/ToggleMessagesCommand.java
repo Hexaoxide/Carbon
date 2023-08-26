@@ -23,7 +23,6 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
