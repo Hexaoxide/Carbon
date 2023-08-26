@@ -207,6 +207,9 @@ public interface CarbonMessages {
     @Message("ignore.already_ignored")
     void alreadyIgnored(final Audience audience, final Component target);
 
+    @Message("ignore.not_ignored")
+    void notIgnored(Audience audience, Component target);
+
     @Message("ignore.exempt")
     void ignoreExempt(final Audience audience, final Component target);
 

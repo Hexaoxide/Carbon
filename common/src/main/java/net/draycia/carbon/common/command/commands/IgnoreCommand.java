@@ -98,7 +98,7 @@ public final class IgnoreCommand extends CarbonCommand {
                     return;
                 }
 
-                if (target.ignoring(target)) {
+                if (sender.ignoring(target)) {
                     this.carbonMessages.alreadyIgnored(sender, target.displayName());
                     return;
                 }
