@@ -37,6 +37,7 @@ import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.IntPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
@@ -209,6 +210,7 @@ public final class ConfigChatChannel implements ChatChannel {
                 .weightedPlaceholderResolver(Component.class, componentPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
+                .weightedPlaceholderResolver(Integer.class, new IntPlaceholderResolver<>(), 0)
                 .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
                 .create(this.getClass().getClassLoader());

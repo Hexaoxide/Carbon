@@ -19,8 +19,10 @@
  */
 package net.draycia.carbon.common.users;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -132,6 +134,11 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     @Override
     public void muted(final boolean muted) {
 
+    }
+
+    @Override
+    public Set<UUID> ignoring() {
+        return Collections.emptySet();
     }
 
     @Override
