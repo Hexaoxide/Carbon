@@ -98,9 +98,12 @@ public class MessagingManager {
     ) {
         this.serverId = serverId;
         this.logger = logger;
-        if (!configManager.primaryConfig().messagingSettings().enabled()) {
-            if (!((CarbonChatInternal) carbonChat).isProxy()) {
+        final boolean proxy = ((CarbonChatInternal) carbonChat).isProxy();
+        if (proxy || !configManager.primaryConfig().messagingSettings().enabled()) {
+            if (!proxy) {
                 logger.info("Messaging services disabled in config. Cross-server will not work without this!");
+            } else if (configManager.primaryConfig().messagingSettings().enabled()) {
+                logger.warn("Messaging services enabled in config, but messaging is not supported on proxies. The messaging service is used for the configuration where Carbon is installed on all backends instead of the proxy.");
             }
             this.messagingService = EMPTY_MESSAGING_SERVICE;
             this.packetService = null;
