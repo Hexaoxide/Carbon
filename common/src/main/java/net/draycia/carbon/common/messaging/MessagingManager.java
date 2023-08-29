@@ -103,7 +103,7 @@ public class MessagingManager {
             if (!proxy) {
                 logger.info("Messaging services disabled in config. Cross-server will not work without this!");
             } else if (configManager.primaryConfig().messagingSettings().enabled()) {
-                logger.info("Messaging services enabled in config, but messaging is not supported on proxies. The messaging service is used for the configuration where Carbon is installed on all backends instead of the proxy.");
+                logger.warn("Messaging services enabled in config, but messaging is not supported on proxies. The messaging service is used for the configuration where Carbon is installed on all backends instead of the proxy.");
             }
             this.messagingService = EMPTY_MESSAGING_SERVICE;
             this.packetService = null;
