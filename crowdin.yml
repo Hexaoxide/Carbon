@@ -1,9 +1,5 @@
 files:
   - source: common/src/main/resources/locale/messages-en_US.properties
     translation: /common/src/main/resources/locale/messages-%locale_with_underscore%.properties
-targets:
-  - name: Default
-    sources:
-      - common/src/main/resources/locale/
-    file: /common/src/main/resources/locale/messages-%locale_with_underscore%.properties
-    format: crowdin-properties
+bundles:
+  - 1
