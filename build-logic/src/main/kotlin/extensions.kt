@@ -48,7 +48,7 @@ fun WriteDependencies.relocateDependency(pkg: String) {
 
 fun Task.standardRuntimeRelocations() {
   relocateDependency("com.github.benmanes")
-  relocateDependency("com.github.luben.zstd")
+  // relocateDependency("com.github.luben.zstd") // natives don't like relocation - hopefully nothing breaks :)
   relocateDependency("com.google.protobuf")
   relocateDependency("com.mysql.cj")
   relocateDependency("com.mysql.jdbc")

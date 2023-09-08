@@ -51,7 +51,7 @@ versions:
   mariadb: 3.0.8
   messenger: 1.0.0-SNAPSHOT
   netty: 4.1.68.Final
-  zstdjni: 1.5.1-1
+  zstdjni: 1.5.5-5
   jedis: 3.7.0
   postgresql: 42.6.0
   rabbitmq: 5.13.1
