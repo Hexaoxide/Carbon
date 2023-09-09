@@ -25,6 +25,7 @@ import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -211,12 +212,18 @@ public final class DatabaseUserManager extends CachingUserManager {
             SQLDrivers.loadFrom(this.getClass().getClassLoader());
 
             final HikariConfig hikariConfig = new HikariConfig();
-            hikariConfig.setMaximumPoolSize(8);
             hikariConfig.setJdbcUrl(databaseSettings.url());
             hikariConfig.setUsername(databaseSettings.username());
             hikariConfig.setPassword(databaseSettings.password());
             hikariConfig.setPoolName("CarbonChat-HikariPool");
             hikariConfig.setThreadFactory(ConcurrentUtil.carbonThreadFactory(this.logger, "HikariPool"));
+
+            final DatabaseSettings.ConnectionPool cfg = Objects.requireNonNull(this.configManager.primaryConfig().databaseSettings().connectionPool());
+            hikariConfig.setMaximumPoolSize(cfg.maximumPoolSize);
+            hikariConfig.setMinimumIdle(cfg.minimumIdle);
+            hikariConfig.setMaxLifetime(cfg.maximumLifetime);
+            hikariConfig.setKeepaliveTime(cfg.keepaliveTime);
+            hikariConfig.setConnectionTimeout(cfg.connectionTimeout);
 
             final HikariDataSource dataSource = new HikariDataSource(hikariConfig);
 

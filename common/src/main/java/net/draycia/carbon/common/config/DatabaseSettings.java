@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.config;
 
+import java.util.concurrent.TimeUnit;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
@@ -51,6 +52,9 @@ public class DatabaseSettings {
     @Comment("The connection password.")
     private String password = "password";
 
+    @Comment("Settings for the connection pool. This is an advanced configuration that most users won't need to touch.")
+    private ConnectionPool connectionPool = new ConnectionPool();
+
     public String url() {
         return this.url;
     }
@@ -61,6 +65,19 @@ public class DatabaseSettings {
 
     public String password() {
         return this.password;
+    }
+
+    public ConnectionPool connectionPool() {
+        return this.connectionPool;
+    }
+
+    @ConfigSerializable
+    public static class ConnectionPool {
+        public int maximumPoolSize = 8;
+        public int minimumIdle = 8;
+        public long maximumLifetime = TimeUnit.MINUTES.toMillis(30);
+        public long keepaliveTime = 0L;
+        public long connectionTimeout = TimeUnit.SECONDS.toMillis(30);
     }
 
 }
