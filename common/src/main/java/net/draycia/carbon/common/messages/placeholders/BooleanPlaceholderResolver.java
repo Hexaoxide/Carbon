@@ -22,18 +22,17 @@ package net.draycia.carbon.common.messages.placeholders;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.moonshine.placeholder.ConclusionValue;
 import net.kyori.moonshine.placeholder.ContinuanceValue;
 import net.kyori.moonshine.placeholder.IPlaceholderResolver;
 import net.kyori.moonshine.util.Either;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class BooleanPlaceholderResolver<R> implements IPlaceholderResolver<R, Boolean, Component> {
+public class BooleanPlaceholderResolver<R> implements IPlaceholderResolver<R, Boolean, Tag> {
 
     @Override
-    public @Nullable Map<String, Either<ConclusionValue<? extends Component>, ContinuanceValue<?>>>
-    resolve(
+    public @Nullable Map<String, Either<ConclusionValue<? extends Tag>, ContinuanceValue<?>>> resolve(
         final String placeholderName,
         final Boolean value,
         final R receiver,
@@ -42,10 +41,10 @@ public class BooleanPlaceholderResolver<R> implements IPlaceholderResolver<R, Bo
         final @Nullable Object[] parameters
     ) {
         if (value == null) {
-            return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(Component.text("false"))));
+            return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(Tag.preProcessParsed("false"))));
         }
 
-        return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(Component.text(value.toString()))));
+        return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(Tag.preProcessParsed(value.toString()))));
     }
 
 }

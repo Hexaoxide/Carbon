@@ -56,14 +56,14 @@ public class VelocityMessageRenderer implements CarbonMessageRenderer {
     public Component render(
         final Audience receiver,
         final String intermediateMessage,
-        final Map<String, ? extends Component> resolvedPlaceholders,
+        final Map<String, ? extends Tag> resolvedPlaceholders,
         final Method method,
         final Type owner
     ) {
         final TagResolver.Builder tagResolver = TagResolver.builder();
 
         for (final var entry : resolvedPlaceholders.entrySet()) {
-            tagResolver.tag(entry.getKey(), Tag.inserting(entry.getValue()));
+            tagResolver.tag(entry.getKey(), entry.getValue());
         }
 
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);

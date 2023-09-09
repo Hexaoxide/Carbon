@@ -21,12 +21,13 @@ package net.draycia.carbon.common.messages;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.moonshine.message.IMessageRenderer;
 
 @FunctionalInterface
-public interface CarbonMessageRenderer extends IMessageRenderer<Audience, String, Component, Component> {
+public interface CarbonMessageRenderer extends IMessageRenderer<Audience, String, Component, Tag> {
 
-    default IMessageRenderer<SourcedAudience, String, Component, Component> asSourced() {
+    default IMessageRenderer<SourcedAudience, String, Component, Tag> asSourced() {
         return this::render;
     }
 
