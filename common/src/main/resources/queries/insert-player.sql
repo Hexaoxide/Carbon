@@ -1,10 +1,21 @@
-INSERT IGNORE INTO carbon_users SET
-    id = :id,
-    muted = :muted,
-    deafened = :deafened,
-    selectedchannel = :selectedchannel,
-    displayname = :displayname,
-    lastwhispertarget = :lastwhispertarget,
-    whisperreplytarget = :whisperreplytarget,
-    spying = :spying,
-    ignoringdms = :ignoringdms;
+INSERT{!PSQL: IGNORE} INTO carbon_users(
+    id,
+    muted,
+    deafened,
+    selectedchannel,
+    displayname,
+    lastwhispertarget,
+    whisperreplytarget,
+    spying,
+    ignoringdms
+) VALUES (
+    :id,
+    :muted,
+    :deafened,
+    :selectedchannel,
+    :displayname,
+    :lastwhispertarget,
+    :whisperreplytarget,
+    :spying,
+    :ignoringdms
+){PSQL: ON CONFLICT DO NOTHING};
