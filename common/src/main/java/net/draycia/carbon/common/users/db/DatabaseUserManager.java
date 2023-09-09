@@ -258,7 +258,7 @@ public final class DatabaseUserManager extends CachingUserManager {
             return new DatabaseUserManager(
                 jdbi,
                 dataSource,
-                new QueriesLocator(),
+                new QueriesLocator(this.configManager.primaryConfig().storageType()),
                 this.logger,
                 this.profileResolver,
                 this.playerInjector,
