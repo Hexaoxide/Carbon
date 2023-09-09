@@ -15,7 +15,7 @@ versions:
   licenser: 0.6.1
   shadow: 8.1.1
   adventure: 4.14.0
-  cloud: 1.8.3
+  cloud: 1.8.4
   cloudSponge: 1.8.0-SNAPSHOT
   configurate: 4.1.2
   typesafeConfig: 1.4.1
