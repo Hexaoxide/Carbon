@@ -258,19 +258,19 @@ dependencies:
     version: 1.7
 
   messenger:
-    group: ninja.egg82
+    group: de.hexaoxi
     name: messenger-api
     version: { ref: messenger }
   messengerNats:
-    group: ninja.egg82
+    group: de.hexaoxi
     name: messenger-nats
     version: { ref: messenger }
   messengerRabbitmq:
-    group: ninja.egg82
+    group: de.hexaoxi
     name: messenger-rabbitmq
     version: { ref: messenger }
   messengerRedis:
-    group: ninja.egg82
+    group: de.hexaoxi
     name: messenger-redis
     version: { ref: messenger }
   netty:

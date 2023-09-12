@@ -126,14 +126,14 @@ public abstract class CarbonChatInternal implements CarbonChat {
         // Load channels
         this.channelRegistry().loadConfigChannels(this.carbonMessages);
 
+        this.messagingManager.get();
+
         CompletableFuture.runAsync(() -> {
             if (!this.injector.getInstance(ConfigManager.class).primaryConfig().updateChecker()) {
                 return;
             }
             new UpdateChecker(this.logger).checkVersion();
         });
-
-        this.messagingManager.get();
     }
 
     protected void shutdown() {

@@ -54,6 +54,7 @@ import ninja.egg82.messenger.MessagingService;
 import ninja.egg82.messenger.NATSMessagingService;
 import ninja.egg82.messenger.PacketManager;
 import ninja.egg82.messenger.RabbitMQMessagingService;
+import ninja.egg82.messenger.RedisMessagingService;
 import ninja.egg82.messenger.handler.AbstractServerMessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandlerImpl;
@@ -124,13 +125,7 @@ public class MessagingManager {
         PacketManager.register(LocalPlayerChangePacket.class, LocalPlayerChangePacket::new);
         PacketManager.register(WhisperPacket.class, WhisperPacket::new);
 
-        this.packetService = new PacketService(4, false, protocolVersion) {
-            // todo super is broken - calls remove on COWIterator
-            @Override
-            public boolean removeMessenger(final @NonNull String serviceName) {
-                return true;
-            }
-        };
+        this.packetService = new PacketService(4, false, protocolVersion);
         this.scheduledExecutor = new ExceptionLoggingScheduledThreadPoolExecutor(4,
             ConcurrentUtil.carbonThreadFactory(logger, "MessagingManager"), logger);
 

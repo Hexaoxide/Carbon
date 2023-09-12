@@ -3,16 +3,10 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 dependencyResolutionManagement {
   repositories {
     mavenCentral()
-    maven("https://repo.racci.dev/snapshots/") {
-      mavenContent {
-        snapshotsOnly()
-        includeGroup("ninja.egg82")
-      }
-    }
-    // temporary cloud snapshots repo for sponge-8
     maven("https://repo.jpenilla.xyz/snapshots/") {
       mavenContent {
         snapshotsOnly()
+        includeModuleByRegex("de\\.hexaoxi", "messenger-.*")
         includeModule("cloud.commandframework", "cloud-sponge")
       }
     }

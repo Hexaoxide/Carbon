@@ -48,7 +48,6 @@ dependencies {
   api(libs.messengerNats)
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)
-  compileOnly(libs.jedis)
   compileOnlyApi(libs.netty)
 
   api(libs.event)
