@@ -37,4 +37,6 @@
               checks="MissingJavadocType"/>
     <suppress files="src[\\/]main[\\/]java[\\/]com[\\/]google[\\/]inject[\\/]assistedinject[\\/].*"
               checks="[a-zA-Z0-9]*"/>
+    <suppress files="src[\\/]main[\\/]java[\\/]net[\\/]draycia[\\/]carbon[\\/]common[\\/]messaging[\\/]RedisMessagingService.java"
+              checks="[a-zA-Z0-9]*"/>
 </suppressions>

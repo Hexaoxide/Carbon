@@ -132,6 +132,8 @@ public abstract class CarbonChatInternal implements CarbonChat {
             }
             new UpdateChecker(this.logger).checkVersion();
         });
+
+        this.messagingManager.get();
     }
 
     protected void shutdown() {

@@ -49,11 +49,11 @@ import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
+import net.draycia.carbon.common.util.Exceptions;
 import ninja.egg82.messenger.MessagingService;
 import ninja.egg82.messenger.NATSMessagingService;
 import ninja.egg82.messenger.PacketManager;
 import ninja.egg82.messenger.RabbitMQMessagingService;
-import ninja.egg82.messenger.RedisMessagingService;
 import ninja.egg82.messenger.handler.AbstractServerMessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandler;
 import ninja.egg82.messenger.handler.MessagingHandlerImpl;
@@ -81,8 +81,8 @@ public class MessagingManager {
     private final Logger logger;
     private final UUID serverId;
     private final @MonotonicNonNull ScheduledExecutorService scheduledExecutor;
-    private final @MonotonicNonNull PacketService packetService;
-    private @MonotonicNonNull MessagingService messagingService;
+    private volatile @MonotonicNonNull PacketService packetService;
+    private final MessagingService messagingService;
 
     @Inject
     public MessagingManager(
@@ -139,11 +139,14 @@ public class MessagingManager {
         handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager, networkUsers, whisper));
 
         try {
-            this.initMessagingService(this.packetService, handlerImpl, new File("/"),
-                configManager.primaryConfig().messagingSettings());
+            this.messagingService = this.initMessagingService(
+                this.packetService,
+                handlerImpl,
+                new File("/"),
+                configManager.primaryConfig().messagingSettings()
+            );
         } catch (final IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-            return;
+            throw Exceptions.rethrow(e);
         }
 
         this.packetService.addMessenger(this.messagingService);
@@ -187,11 +190,12 @@ public class MessagingManager {
         if (this.packetService != null) {
             this.packetService.flushQueue();
             this.packetService.shutdown();
+            this.packetService = null;
         }
-        // this.messagingService.close(); // todo - this is really slow, easier to just skip for now
+        this.messagingService.close();
     }
 
-    private void initMessagingService(
+    private MessagingService initMessagingService(
         final PacketService packetService,
         final MessagingHandlerImpl handlerImpl,
         final File packetDir,
@@ -200,7 +204,7 @@ public class MessagingManager {
         final String name = "engine1";
         final String channelName = "carbon-data";
 
-        switch (messagingSettings.brokerType()) {
+        return switch (messagingSettings.brokerType()) {
             case RABBITMQ -> {
                 this.logger.info("Initializing RabbitMQ Messaging services...");
 
@@ -212,7 +216,7 @@ public class MessagingManager {
                     builder.credentials(messagingSettings.username(), messagingSettings.password());
                 }
 
-                this.messagingService = builder.build();
+                yield builder.build();
             }
             case NATS -> {
                 this.logger.info("Initializing NATS Messaging services...");
@@ -225,7 +229,7 @@ public class MessagingManager {
                     builder.credentials(messagingSettings.credentialsFile());
                 }
 
-                this.messagingService = builder.build();
+                yield builder.build();
             }
             case REDIS -> {
                 this.logger.info("Initializing Redis Messaging services...");
@@ -237,11 +241,11 @@ public class MessagingManager {
                     builder.credentials(messagingSettings.password());
                 }
 
-                this.messagingService = builder.build();
+                yield builder.build();
             }
             case NONE ->
                 throw new IllegalStateException("MessagingManager initialized with no messaging broker selected!");
-        }
+        };
     }
 
     public enum BrokerType {

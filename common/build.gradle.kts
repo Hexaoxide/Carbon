@@ -48,6 +48,7 @@ dependencies {
   api(libs.messengerNats)
   api(libs.messengerRabbitmq)
   api(libs.messengerRedis)
+  compileOnly(libs.jedis)
   compileOnlyApi(libs.netty)
 
   api(libs.event)
@@ -66,4 +67,8 @@ dependencies {
 
   // Plugins
   compileOnly(libs.miniplaceholders)
+}
+
+license {
+  exclude("**/net/draycia/carbon/common/messaging/RedisMessagingService.java")
 }

@@ -1,3 +1,5 @@
+import kotlin.io.path.invariantSeparatorsPathString
+
 plugins {
   id("carbon.shadow-platform")
   id("quiet-fabric-loom")
@@ -73,13 +75,13 @@ tasks {
   runServer {
     dependsOn(shadowJar)
     doFirst {
-      val build = layout.buildDirectory.asFile.get().absolutePath
       val jar = shadowJar.get().archiveFile.get().asFile
       val mods = file("run/mods")
       mods.mkdirs()
       jar.copyTo(mods.resolve("carbonchat-dev.jar"), overwrite = true)
       val newClasspath = classpath.filter {
-        !it.absolutePath.startsWith(build)
+        val s = it.toPath().toAbsolutePath().invariantSeparatorsPathString
+        !s.contains("build/libs") && !s.contains("build/classes") && !s.contains("build/resources")
       }.files
       classpath = files(newClasspath)
     }
