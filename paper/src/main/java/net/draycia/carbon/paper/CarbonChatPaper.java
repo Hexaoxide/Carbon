@@ -99,7 +99,6 @@ public final class CarbonChatPaper extends CarbonChatInternal {
 
     void onEnable() {
         this.init();
-        this.packetService();
 
         for (final Class<? extends Listener> listenerClass : LISTENER_CLASSES) {
             this.plugin.getServer().getPluginManager().registerEvents(

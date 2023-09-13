@@ -153,6 +153,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
             });
         }
 
+        this.logger.info("Loaded {} locales: [{}]", map.size(), map.keySet().stream().map(Locale::toString).collect(Collectors.joining(", ")));
         this.locales = Map.copyOf(map);
     }
 
@@ -164,7 +165,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     }
 
     private @Nullable Properties readLocale(final Path localeDirectory, final Path localeFile, final Locale locale) {
-        this.logger.info("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile);
+        this.logger.debug("Found locale {} ({}) in: {}", locale.getDisplayName(), locale, localeFile);
 
         final Properties properties = new Properties() {
             @Override
@@ -180,7 +181,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         try {
             this.loadProperties(properties, localeDirectory, localeFile);
 
-            this.logger.info("Successfully loaded locale {} ({})", locale.getDisplayName(), locale);
+            this.logger.debug("Successfully loaded locale {} ({})", locale.getDisplayName(), locale);
             return properties;
         } catch (final IOException ex) {
             this.logger.warn("Unable to load locale {} ({}) from source: {}", locale.getDisplayName(), locale, localeFile, ex);
