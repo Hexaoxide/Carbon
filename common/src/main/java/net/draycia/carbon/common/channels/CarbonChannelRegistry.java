@@ -212,6 +212,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     }
 
     private void loadConfigChannels_(final CarbonMessages messages) {
+        this.logger.info("Loading config channels...");
         this.defaultKey = this.configManager.primaryConfig().defaultChannel();
 
         List<Path> channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");

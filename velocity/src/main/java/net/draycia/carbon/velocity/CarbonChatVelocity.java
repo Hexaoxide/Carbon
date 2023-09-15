@@ -67,9 +67,9 @@ public class CarbonChatVelocity extends CarbonChatInternal {
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
         final ExecutionCoordinatorHolder commandExecutor,
+        final CarbonMessages carbonMessages,
         final PlatformUserManager userManager,
         final CarbonServerVelocity carbonServer,
-        final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,
         final CarbonChannelRegistry channelRegistry,
         final Provider<MessagingManager> messagingManager
@@ -95,7 +95,6 @@ public class CarbonChatVelocity extends CarbonChatInternal {
 
     public void onInitialization(final CarbonVelocityBootstrap carbonVelocityBootstrap) {
         this.init();
-        this.packetService();
 
         for (final Class<? extends VelocityListener<?>> clazz : LISTENER_CLASSES) {
             this.injector().getInstance(clazz).register(this.proxyServer.getEventManager(), carbonVelocityBootstrap);

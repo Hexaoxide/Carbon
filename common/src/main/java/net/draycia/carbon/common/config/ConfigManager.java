@@ -70,6 +70,7 @@ public final class ConfigManager {
     }
 
     public void reloadPrimaryConfig() {
+        this.logger.info("Reloading configuration....");
         final @Nullable PrimaryConfig load = this.load(PrimaryConfig.class, PRIMARY_CONFIG_FILE_NAME);
         if (load != null) {
             this.primaryConfig = load;
@@ -82,6 +83,7 @@ public final class ConfigManager {
         if (this.primaryConfig == null) {
             synchronized (this) {
                 if (this.primaryConfig == null) {
+                    this.logger.info("Loading configuration....");
                     final @Nullable PrimaryConfig load = this.load(PrimaryConfig.class, PRIMARY_CONFIG_FILE_NAME);
                     if (load == null) {
                         throw new RuntimeException("Failed to initialize primary config, see above for further details");

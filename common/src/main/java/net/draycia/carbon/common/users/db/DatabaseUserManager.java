@@ -53,6 +53,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.logging.Log;
+import org.flywaydb.core.api.logging.LogCreator;
+import org.flywaydb.core.api.logging.LogFactory;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
@@ -236,8 +239,11 @@ public final class DatabaseUserManager extends CachingUserManager {
                 .validateOnMigrate(true)
                 .load();
 
+            LogFactory.setLogCreator(new CarbonLogCreator(this.logger));
+            this.logger.info("Executing Flyway database migrations...");
             flyway.repair();
             flyway.migrate();
+            LogFactory.setLogCreator(null);
 
             final Jdbi jdbi = Jdbi.create(dataSource)
                 .registerArgument(new ComponentArgumentFactory())
@@ -262,6 +268,48 @@ public final class DatabaseUserManager extends CachingUserManager {
             );
         }
 
+    }
+
+    private record CarbonLogCreator(Logger logger) implements LogCreator {
+        public Log createLogger(final Class<?> clazz) {
+            final Logger l = this.logger;
+            return new Log() {
+                @Override
+                public boolean isDebugEnabled() {
+                    return true;
+                }
+
+                @Override
+                public void debug(final String message) {
+                    l.debug("  [{}] {}", clazz.getSimpleName(), message);
+                }
+
+                @Override
+                public void info(final String message) {
+                    l.info("  [{}] {}", clazz.getSimpleName(), message);
+                }
+
+                @Override
+                public void warn(final String message) {
+                    l.warn("  [{}] {}", clazz.getSimpleName(), message);
+                }
+
+                @Override
+                public void error(final String message) {
+                    l.error("  [{}] {}", clazz.getSimpleName(), message);
+                }
+
+                @Override
+                public void error(final String message, final Exception e) {
+                    l.error("  [{}] {}", clazz.getSimpleName(), message, e);
+                }
+
+                @Override
+                public void notice(final String message) {
+                    l.info("  [{}] (Notice) {}", clazz.getSimpleName(), message);
+                }
+            };
+        }
     }
 
 }

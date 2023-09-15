@@ -105,7 +105,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final Logger logger,
         final Injector injector
     ) throws IOException {
-        logger.info("Initializing " + configManager.primaryConfig().storageType() + " storage manager.");
+        logger.info("Initializing " + configManager.primaryConfig().storageType() + " storage manager...");
 
         return switch (configManager.primaryConfig().storageType()) {
             case MYSQL -> injector.getInstance(DatabaseUserManager.Factory.class).create(

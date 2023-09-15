@@ -45,10 +45,8 @@ import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.UpdateChecker;
-import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -174,10 +172,6 @@ public abstract class CarbonChatInternal implements CarbonChat {
     @Override
     public CarbonChannelRegistry channelRegistry() {
         return this.channelRegistry;
-    }
-
-    public @Nullable PacketService packetService() {
-        return this.messagingManager.get().packetService();
     }
 
     public boolean isProxy() {
