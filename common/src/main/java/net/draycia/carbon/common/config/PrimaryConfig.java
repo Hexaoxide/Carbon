@@ -93,6 +93,12 @@ public class PrimaryConfig {
     @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
     private boolean useCarbonNicknames = true;
 
+    @Comment("Minimum number of characters in nickname.")
+    private int nicknameMinLimit = 3;
+
+    @Comment("Maximum number of characters in nickname.")
+    private int nicknameMaxLimit = 16;
+
     @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
     private boolean updateChecker = true;
 
@@ -174,6 +180,14 @@ public class PrimaryConfig {
 
     public boolean useCarbonNicknames() {
         return this.useCarbonNicknames;
+    }
+
+    public int nicknameMinLimit() {
+        return this.nicknameMinLimit;
+    }
+
+    public int nicknameMaxLimit() {
+        return this.nicknameMaxLimit;
     }
 
     public boolean updateChecker() {

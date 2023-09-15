@@ -180,6 +180,14 @@ public interface CarbonMessages {
     @Message("nickname.set.others")
     void nicknameSetOthers(final Audience audience, final String target, final Component nickname);
 
+    @Message("nickname.error.character_limit")
+    void nicknameErrorCharacterLimit(
+        final Audience audience,
+        final Component nickname,
+        @Placeholder("min_limit") final int minLimit,
+        @Placeholder("max_limit") final int maxLimit
+    );
+
     @Message("nickname.show.others")
     void nicknameShowOthers(final Audience audience, final String target, final Component nickname);
 
