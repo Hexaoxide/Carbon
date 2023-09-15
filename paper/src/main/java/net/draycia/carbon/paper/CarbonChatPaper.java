@@ -112,6 +112,8 @@ public final class CarbonChatPaper extends CarbonChatInternal {
 
         final Metrics metrics = new Metrics(this.plugin, BSTATS_PLUGIN_ID);
         metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector().getInstance(ConfigManager.class).primaryConfig().storageType().name()));
+
+        this.checkVersion();
     }
 
     private void discoverDiscordHooks() {

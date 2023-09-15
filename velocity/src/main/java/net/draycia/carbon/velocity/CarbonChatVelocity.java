@@ -100,6 +100,8 @@ public class CarbonChatVelocity extends CarbonChatInternal {
         for (final Class<? extends VelocityListener<?>> clazz : LISTENER_CLASSES) {
             this.injector().getInstance(clazz).register(this.proxyServer.getEventManager(), carbonVelocityBootstrap);
         }
+
+        this.checkVersion();
     }
 
     public void onShutdown() {

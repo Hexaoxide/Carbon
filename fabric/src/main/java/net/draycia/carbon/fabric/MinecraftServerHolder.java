@@ -32,7 +32,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public final class MinecraftServerHolder {
 
-    private @Nullable MinecraftServer server;
+    private volatile @Nullable MinecraftServer server;
 
     @Inject
     private MinecraftServerHolder() {

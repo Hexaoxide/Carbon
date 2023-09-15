@@ -127,12 +127,16 @@ public abstract class CarbonChatInternal implements CarbonChat {
         this.channelRegistry().loadConfigChannels(this.carbonMessages);
 
         this.messagingManager.get();
+    }
 
-        CompletableFuture.runAsync(() -> {
-            if (!this.injector.getInstance(ConfigManager.class).primaryConfig().updateChecker()) {
-                return;
+    protected final void checkVersion() {
+        if (!this.injector.getInstance(ConfigManager.class).primaryConfig().updateChecker()) {
+            return;
+        }
+        CompletableFuture.runAsync(() -> new UpdateChecker(this.logger).checkVersion()).whenComplete(($, thr) -> {
+            if (thr != null) {
+                this.logger.warn("Exception fetching version information", thr);
             }
-            new UpdateChecker(this.logger).checkVersion();
         });
     }
 
