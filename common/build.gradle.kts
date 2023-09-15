@@ -67,7 +67,3 @@ dependencies {
   // Plugins
   compileOnly(libs.miniplaceholders)
 }
-
-license {
-  exclude("**/net/draycia/carbon/common/messaging/RedisMessagingService.java")
-}
