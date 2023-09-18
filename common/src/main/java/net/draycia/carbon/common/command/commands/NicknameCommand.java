@@ -23,9 +23,7 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
-import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
-import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -126,29 +124,27 @@ public final class NicknameCommand extends CarbonCommand {
     }
 
     private void applyNickname(final Commander sender, final CarbonPlayer target, final String nick) {
-
-        // Lazy since the sender might not have permission to set the nickname
-        final Supplier<Component> parsedNick = Suppliers.memoize(() -> parseNickname(sender, nick));
+        final Component parsedNick = parseNickname(sender, nick);
 
         // If the nickname is caught in the character limit, return without setting a nickname.
-        final int nickNameLength = PlainTextComponentSerializer.plainText().serialize(parsedNick.get()).length();
+        final int nickNameLength = PlainTextComponentSerializer.plainText().serialize(parsedNick).length();
         final int minLength = this.config.primaryConfig().nickname().minLength();
         final int maxLength = this.config.primaryConfig().nickname().maxLength();
         if (nickNameLength < minLength || maxLength < nickNameLength) {
-            this.carbonMessages.nicknameErrorCharacterLimit(sender, parsedNick.get(), minLength, maxLength);
+            this.carbonMessages.nicknameErrorCharacterLimit(sender, parsedNick, minLength, maxLength);
             return;
         }
 
-        target.nickname(parsedNick.get());
+        target.nickname(parsedNick);
 
         if (sender instanceof PlayerCommander playerCommander
             && playerCommander.carbonPlayer().uuid().equals(target.uuid())) {
             // Setting own nickname
-            this.carbonMessages.nicknameSet(sender, parsedNick.get());
+            this.carbonMessages.nicknameSet(sender, parsedNick);
         } else {
             // Setting other player's nickname
-            this.carbonMessages.nicknameSet(target, parsedNick.get());
-            this.carbonMessages.nicknameSetOthers(sender, target.username(), parsedNick.get());
+            this.carbonMessages.nicknameSet(target, parsedNick);
+            this.carbonMessages.nicknameSetOthers(sender, target.username(), parsedNick);
         }
     }
 
