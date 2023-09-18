@@ -48,6 +48,7 @@ import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.SQLDrivers;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -128,9 +129,9 @@ public final class DatabaseUserManager extends CachingUserManager {
     @Override
     public void saveSync(final CarbonPlayerCommon player) {
         this.jdbi.useTransaction(handle -> {
-            final int inserted = bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();
+            final int inserted = this.bindPlayerArguments(handle.createUpdate(this.locator.query("insert-player")), player).execute();
             if (inserted != 1) {
-                bindPlayerArguments(handle.createUpdate(this.locator.query("update-player")), player).execute();
+                this.bindPlayerArguments(handle.createUpdate(this.locator.query("update-player")), player).execute();
             }
 
             handle.createUpdate(this.locator.query("clear-ignores"))
@@ -166,12 +167,18 @@ public final class DatabaseUserManager extends CachingUserManager {
         this.dataSource.close();
     }
 
-    private static Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
+    private Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
+        final @Nullable Component nickname = player.nicknameRaw();
+        @Nullable String nicknameJson = GsonComponentSerializer.gson().serializeOrNull(nickname);
+        if (nicknameJson != null && nicknameJson.length() > 8192) {
+            this.logger.error("Serialized nickname for player {} was too long ({}>8192), it cannot be saved: {}", player.uuid(), nicknameJson.length(), nicknameJson);
+            nicknameJson = null;
+        }
         return update.bind("id", player.uuid())
             .bind("muted", player.muted())
             .bind("deafened", player.deafened())
             .bind("selectedchannel", player.selectedChannelKey())
-            .bind("displayname", player.displayNameRaw())
+            .bind("displayname", nicknameJson)
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying())

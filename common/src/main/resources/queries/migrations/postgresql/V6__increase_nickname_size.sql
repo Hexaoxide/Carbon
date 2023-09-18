@@ -1,0 +1,1 @@
+ALTER TABLE carbon_users ALTER COLUMN displayname TYPE VARCHAR(8192);

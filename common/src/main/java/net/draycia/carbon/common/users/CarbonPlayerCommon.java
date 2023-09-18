@@ -178,7 +178,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return this.displayName.orNull();
     }
 
-    public @Nullable Component displayNameRaw() {
+    public @Nullable Component nicknameRaw() {
         return this.displayName.orNull();
     }
 
