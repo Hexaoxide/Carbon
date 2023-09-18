@@ -44,7 +44,7 @@ public class ComponentPlaceholderResolver<R> implements IPlaceholderResolver<R, 
         final Method method,
         final @Nullable Object[] parameters
     ) {
-        return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(Tag.inserting(value))));
+        return Map.of(placeholderName, Either.left(ConclusionValue.conclusionValue(Tag.selfClosingInserting(value))));
     }
 
 }
