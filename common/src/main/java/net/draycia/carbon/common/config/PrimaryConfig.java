@@ -220,7 +220,7 @@ public class PrimaryConfig {
         private boolean useCarbonNicknames = true;
 
         @Comment("Format used when displaying nicknames.")
-        public String format = "<hover:show_text:'Username: <username>'><gray>~</gray><nickname></hover>";
+        public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
 
         @Comment("Whether to skip applying 'format' when a nickname matches a players username, only differing in decoration.")
         public boolean skipFormatWhenNameMatches = true;
