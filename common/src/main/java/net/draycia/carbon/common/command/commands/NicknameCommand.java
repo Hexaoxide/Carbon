@@ -39,6 +39,7 @@ import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -125,8 +126,19 @@ public final class NicknameCommand extends CarbonCommand {
     }
 
     private void applyNickname(final Commander sender, final CarbonPlayer target, final String nick) {
+
         // Lazy since the sender might not have permission to set the nickname
         final Supplier<Component> parsedNick = Suppliers.memoize(() -> parseNickname(sender, nick));
+
+        // If the nickname is caught in the character limit, return without setting a nickname.
+        final int nickNameLength = PlainTextComponentSerializer.plainText().serialize(parsedNick.get()).length();
+        final int minLength = this.config.primaryConfig().nicknameMinLength();
+        final int maxLength = this.config.primaryConfig().nicknameMaxLength();
+        if (nickNameLength < minLength || maxLength < nickNameLength) {
+            this.carbonMessages.nicknameErrorCharacterLimit(sender, parsedNick.get(), minLength, maxLength);
+            return;
+        }
+
         target.nickname(parsedNick.get());
 
         if (sender instanceof PlayerCommander playerCommander
