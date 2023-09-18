@@ -25,14 +25,20 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.mojang.brigadier.tree.CommandNode;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
+import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -42,8 +48,11 @@ import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.draycia.carbon.fabric.users.FabricProfileResolver;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.kyori.adventure.key.Key;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +79,19 @@ public final class CarbonChatFabricModule extends AbstractModule {
         final Provider<CarbonChatFabric> carbonChat,
         final CarbonMessages carbonMessages
     ) {
+        // Remove vanilla commands matching our commands or aliases
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            final Map<Key, CommandSettings> settings = carbonChat.get().injector().getInstance(ConfigManager.class).loadCommandSettings();
+            final Iterator<CommandNode<CommandSourceStack>> it = dispatcher.getRoot().getChildren().iterator();
+            while (it.hasNext()) {
+                final CommandNode<CommandSourceStack> next = it.next();
+                final String name = next.getName();
+                if (settings.values().stream().anyMatch(s -> s.name().equals(name) || Arrays.asList(s.aliases()).contains(name))) {
+                    it.remove();
+                }
+            }
+        });
+
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
             executionCoordinatorHolder.executionCoordinator(),
             commandSourceStack -> {
