@@ -31,12 +31,15 @@ import java.util.function.Predicate;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
+import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.messages.SourcedAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -229,7 +232,26 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     public Component displayName() {
         final @Nullable Component nick = this.nickname();
         if (nick != null) {
-            return nick;
+            final PrimaryConfig.NicknameSettings nicknames = this.carbonPlayerCommon.configManager().primaryConfig().nickname();
+
+            if (nicknames.skipFormatWhenNameMatches) {
+                final String plainNick = PlainTextComponentSerializer.plainText().serialize(nick);
+                if (plainNick.equals(this.username())) {
+                    return nick;
+                }
+            }
+
+            try {
+                return this.carbonPlayerCommon.messageRenderer().render(
+                    SourcedAudience.of(this, this),
+                    nicknames.format,
+                    Map.of("username", Tag.preProcessParsed(this.username()), "nickname", Tag.selfClosingInserting(nick)),
+                    null,
+                    null
+                );
+            } catch (final StackOverflowError overflow) {
+                throw new RuntimeException("Invalid nickname format '%s'. Makes circular reference to CarbonPlayer#displayName().".formatted(nicknames.format), overflow);
+            }
         }
         return this.platformDisplayName().orElseGet(() -> Component.text(this.username()));
     }

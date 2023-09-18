@@ -35,6 +35,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -54,6 +55,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private transient @MonotonicNonNull @Inject ProfileResolver profileResolver;
     private transient @MonotonicNonNull @Inject PlatformScheduler scheduler;
     private transient @MonotonicNonNull @Inject ConfigManager config;
+    private transient @MonotonicNonNull @Inject CarbonMessageRenderer messageRenderer;
     private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
@@ -441,6 +443,14 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             return false;
         }
         return this.displayName.hasValue();
+    }
+
+    public ConfigManager configManager() {
+        return this.config;
+    }
+
+    public CarbonMessageRenderer messageRenderer() {
+        return this.messageRenderer;
     }
 
     @Override

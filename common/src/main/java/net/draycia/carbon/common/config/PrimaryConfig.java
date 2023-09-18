@@ -219,6 +219,12 @@ public class PrimaryConfig {
         @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
         private boolean useCarbonNicknames = true;
 
+        @Comment("Format used when displaying nicknames.")
+        public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
+
+        @Comment("Whether to skip applying 'format' when a nickname matches a players username, only differing in decoration.")
+        public boolean skipFormatWhenNameMatches = true;
+
         public boolean useCarbonNicknames() {
             return this.useCarbonNicknames;
         }
