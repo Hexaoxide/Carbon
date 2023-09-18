@@ -93,3 +93,7 @@ carbonPermission.permissions.get().forEach {
 modrinth {
   loaders.addAll("paper", "folia")
 }
+
+configurations.runtimeDownload {
+  exclude("org.checkerframework", "checker-qual")
+}

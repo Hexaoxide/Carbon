@@ -45,6 +45,7 @@ dependencies {
   runtimeDownload(libs.guice) {
     exclude("com.google.guava")
   }
+  runtimeDownload(libs.checkerQual)
 }
 
 carbonPlatform {
@@ -57,10 +58,12 @@ tasks {
     relocateDependency("cloud.commandframework.minecraft.extras")
     standardRuntimeRelocations()
     relocateGuice()
+    relocateDependency("org.checkerframework")
   }
   writeDependencies {
     standardRuntimeRelocations()
     relocateGuice()
+    relocateDependency("org.checkerframework")
   }
   processResources {
     replace("fabric.mod.json", mapOf(

@@ -55,3 +55,7 @@ tasks {
 modrinth {
   optional.project("unsignedvelocity")
 }
+
+configurations.runtimeDownload {
+  exclude("org.checkerframework", "checker-qual")
+}
