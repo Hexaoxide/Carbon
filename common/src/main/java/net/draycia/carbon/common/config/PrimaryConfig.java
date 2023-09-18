@@ -22,13 +22,19 @@ package net.draycia.carbon.common.config;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import net.draycia.carbon.common.util.Exceptions;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
@@ -38,34 +44,34 @@ public class PrimaryConfig {
     private Locale defaultLocale = Locale.US;
 
     @Comment("""
-    The default channel that new players will be in when they join.
-    If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.
-    """)
+        The default channel that new players will be in when they join.
+        If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.
+        """)
     private Key defaultChannel = Key.key("carbon", "global");
 
     @Comment("""
-    The service that will be used to store and load player information.
-    One of: JSON, H2, MYSQL, PSQL
-    Note: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!
-    """)
+        The service that will be used to store and load player information.
+        One of: JSON, H2, MYSQL, PSQL
+        Note: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!
+        """)
     private StorageType storageType = StorageType.JSON;
 
     @Comment("""
-    When "storage-type" is set to MYSQL or PSQL, this section configures the database connection.
-    If JSON or H2 storage is used, this section can be ignored.
-    """)
+        When "storage-type" is set to MYSQL or PSQL, this section configures the database connection.
+        If JSON or H2 storage is used, this section can be ignored.
+        """)
     private DatabaseSettings databaseSettings = new DatabaseSettings();
 
     @Comment("Various ClearChat command settings.")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
     @Comment("""
-    Plugin-wide custom placeholders.
-    These will be parsed in all messages rendered and sent by Carbon.
-    This includes chat, command feedback, and others.
-    Make sure to close your tags so they do not bleed into other formats.
-    Only a single pass is done so custom placeholders will not work within each other.
-    """)
+        Plugin-wide custom placeholders.
+        These will be parsed in all messages rendered and sent by Carbon.
+        This includes chat, command feedback, and others.
+        Make sure to close your tags so they do not bleed into other formats.
+        Only a single pass is done so custom placeholders will not work within each other.
+        """)
     private Map<String, String> customPlaceholders = Map.of();
 
     @Comment("The suggestions shown when using the TAB key in chat.")
@@ -89,15 +95,11 @@ public class PrimaryConfig {
     );
 
     private MessagingSettings messagingSettings = new MessagingSettings();
+    private NicknameSettings nicknameSettings = new NicknameSettings();
 
-    @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
-    private boolean useCarbonNicknames = true;
-
-    @Comment("Minimum number of characters in nickname.")
-    private int nicknameMinLength = 3;
-
-    @Comment("Maximum number of characters in nickname.")
-    private int nicknameMaxLength = 16;
+    public NicknameSettings nickname() {
+        return this.nicknameSettings;
+    }
 
     @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
     private boolean updateChecker = true;
@@ -178,20 +180,56 @@ public class PrimaryConfig {
         return this.messageSound;
     }
 
-    public boolean useCarbonNicknames() {
-        return this.useCarbonNicknames;
-    }
-
-    public int nicknameMinLength() {
-        return this.nicknameMinLength;
-    }
-
-    public int nicknameMaxLength() {
-        return this.nicknameMaxLength;
-    }
-
     public boolean updateChecker() {
         return this.updateChecker;
+    }
+
+    @SuppressWarnings("unused")
+    public static void upgrade(final ConfigurationNode node) {
+        final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
+            .versionKey("config-version");
+        final ConfigurationTransformation initial = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
+            .build();
+        builder.addVersion(0, initial);
+        final ConfigurationTransformation.Versioned upgrader = builder.build();
+        final int from = upgrader.version(node);
+        try {
+            upgrader.apply(node);
+        } catch (final ConfigurateException e) {
+            Exceptions.rethrow(e);
+        }
+        if (from == ConfigurationTransformation.Versioned.VERSION_UNKNOWN) {
+            final ConfigurationNode versionNode = node.node(upgrader.versionKey());
+            if (versionNode instanceof CommentedConfigurationNode commented) {
+                commented.comment("Used internally to track changes to the config. Do not edit manually!");
+            }
+        }
+    }
+
+    @ConfigSerializable
+    public static final class NicknameSettings {
+
+        @Comment("Minimum number of characters in nickname (excluding formatting).")
+        private int minLength = 3;
+
+        @Comment("Maximum number of characters in nickname (excluding formatting).")
+        private int maxLength = 16;
+
+        @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
+        private boolean useCarbonNicknames = true;
+
+        public boolean useCarbonNicknames() {
+            return this.useCarbonNicknames;
+        }
+
+        public int minLength() {
+            return this.minLength;
+        }
+
+        public int maxLength() {
+            return this.maxLength;
+        }
     }
 
     public enum StorageType {

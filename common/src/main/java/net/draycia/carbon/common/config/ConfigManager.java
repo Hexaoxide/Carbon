@@ -39,6 +39,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 
@@ -133,6 +134,10 @@ public final class ConfigManager {
 
         try {
             final var node = loader.load();
+            try {
+                clazz.getDeclaredMethod("upgrade", ConfigurationNode.class).invoke(null, node);
+            } catch (final NoSuchMethodException ignore) {
+            }
             final @Nullable T config = node.get(clazz);
             if (config == null) {
                 throw new ConfigurateException(node, "Failed to deserialize " + clazz.getName() + " from node");
@@ -140,7 +145,7 @@ public final class ConfigManager {
             node.set(clazz, config);
             loader.save(node);
             return config;
-        } catch (final ConfigurateException exception) {
+        } catch (final ConfigurateException | ReflectiveOperationException exception) {
             this.logger.error("Failed to load config '{}'", file, exception);
             return null;
         }

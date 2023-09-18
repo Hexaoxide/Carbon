@@ -170,7 +170,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable Component nickname() {
-        if (!this.config.primaryConfig().useCarbonNicknames()) {
+        if (!this.config.primaryConfig().nickname().useCarbonNicknames()) {
             return null;
         }
         return this.displayName.orNull();
@@ -437,7 +437,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean hasNickname() {
-        if (!this.config.primaryConfig().useCarbonNicknames()) {
+        if (!this.config.primaryConfig().nickname().useCarbonNicknames()) {
             return false;
         }
         return this.displayName.hasValue();

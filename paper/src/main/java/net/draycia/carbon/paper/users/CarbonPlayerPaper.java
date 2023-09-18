@@ -55,7 +55,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     ) {
         super(carbonPlayerCommon);
 
-        if (config.primaryConfig().useCarbonNicknames()) {
+        if (config.primaryConfig().nickname().useCarbonNicknames()) {
             this.player().ifPresent(this.applyDisplayNameToBukkit(carbonPlayerCommon.nickname()));
         }
     }

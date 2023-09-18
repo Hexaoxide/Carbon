@@ -271,6 +271,8 @@ public final class DatabaseUserManager extends CachingUserManager {
     }
 
     private record CarbonLogCreator(Logger logger) implements LogCreator {
+
+        @Override
         public Log createLogger(final Class<?> clazz) {
             final Logger l = this.logger;
             return new Log() {
