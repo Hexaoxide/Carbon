@@ -184,8 +184,8 @@ public interface CarbonMessages {
     void nicknameErrorCharacterLimit(
         final Audience audience,
         final Component nickname,
-        @Placeholder("min_limit") final int minLimit,
-        @Placeholder("max_limit") final int maxLimit
+        final int minLength,
+        final int maxLength
     );
 
     @Message("nickname.show.others")

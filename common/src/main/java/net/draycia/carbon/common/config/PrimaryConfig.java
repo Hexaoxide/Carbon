@@ -94,10 +94,10 @@ public class PrimaryConfig {
     private boolean useCarbonNicknames = true;
 
     @Comment("Minimum number of characters in nickname.")
-    private int nicknameMinLimit = 3;
+    private int nicknameMinLength = 3;
 
     @Comment("Maximum number of characters in nickname.")
-    private int nicknameMaxLimit = 16;
+    private int nicknameMaxLength = 16;
 
     @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
     private boolean updateChecker = true;
@@ -182,12 +182,12 @@ public class PrimaryConfig {
         return this.useCarbonNicknames;
     }
 
-    public int nicknameMinLimit() {
-        return this.nicknameMinLimit;
+    public int nicknameMinLength() {
+        return this.nicknameMinLength;
     }
 
-    public int nicknameMaxLimit() {
-        return this.nicknameMaxLimit;
+    public int nicknameMaxLength() {
+        return this.nicknameMaxLength;
     }
 
     public boolean updateChecker() {

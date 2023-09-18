@@ -132,10 +132,10 @@ public final class NicknameCommand extends CarbonCommand {
 
         // If the nickname is caught in the character limit, return without setting a nickname.
         final int nickNameLength = PlainTextComponentSerializer.plainText().serialize(parsedNick.get()).length();
-        final int minLimit = this.config.primaryConfig().nicknameMinLimit();
-        final int maxLimit = this.config.primaryConfig().nicknameMaxLimit();
-        if (nickNameLength < minLimit || maxLimit < nickNameLength) {
-            this.carbonMessages.nicknameErrorCharacterLimit(sender, parsedNick.get(), minLimit, maxLimit);
+        final int minLength = this.config.primaryConfig().nicknameMinLength();
+        final int maxLength = this.config.primaryConfig().nicknameMaxLength();
+        if (nickNameLength < minLength || maxLength < nickNameLength) {
+            this.carbonMessages.nicknameErrorCharacterLimit(sender, parsedNick.get(), minLength, maxLength);
             return;
         }
 
