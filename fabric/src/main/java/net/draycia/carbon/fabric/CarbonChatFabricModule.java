@@ -79,7 +79,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
         final Provider<CarbonChatFabric> carbonChat,
         final CarbonMessages carbonMessages
     ) {
-        // Remove vanilla commands matching our commands or aliases
+        // Remove existing commands matching our commands or aliases
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             final Map<Key, CommandSettings> settings = carbonChat.get().injector().getInstance(ConfigManager.class).loadCommandSettings();
             final Iterator<CommandNode<CommandSourceStack>> it = dispatcher.getRoot().getChildren().iterator();
