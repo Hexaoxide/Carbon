@@ -39,8 +39,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -288,25 +286,12 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final ChatChannel channel,
         final String plainMessage
     ) {
-        final List<Audience> recipients = CarbonChatProvider.carbonChat().server().players()
-            .stream().filter(player -> channel.hearingPermitted(player).permitted())
-            .collect(Collectors.toList());
-
-        this.sendMessageInChannel(new ConsoleCarbonPlayer(sender), channel, recipients, plainMessage);
-    }
-
-    private void sendMessageInChannelAsPlayer(
-        final CarbonPlayer sender,
-        final ChatChannel channel,
-        final String plainMessage
-    ) {
-        this.sendMessageInChannel(sender, channel, channel.recipients(sender), plainMessage);
+        this.sendMessageInChannel(new ConsoleCarbonPlayer(sender), channel, plainMessage);
     }
 
     private void sendMessageInChannel(
         final CarbonPlayer sender,
         final ChatChannel channel,
-        final List<Audience> recipients,
         final String plainMessage
     ) {
         final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
@@ -315,7 +300,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             return;
         }
 
-        for (final Audience recipient : recipients) {
+        for (final Audience recipient : chatEvent.recipients()) {
             recipient.sendMessage(chatEvent.renderFor(recipient));
         }
     }
@@ -374,7 +359,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                     final String message = handler.get("message");
 
                     // TODO: trigger platform events related to chat
-                    this.sendMessageInChannelAsPlayer(player, chatChannel, message);
+                    this.sendMessageInChannel(player, chatChannel, message);
                 } else {
                     player.selectedChannel(chatChannel);
                     this.carbonMessages.changedChannels(player, channelKey.value());
