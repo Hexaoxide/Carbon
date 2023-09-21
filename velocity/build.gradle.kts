@@ -39,7 +39,10 @@ tasks {
     relocateDependency("io.leangen.geantyref")
   }
   runVelocity {
-      velocityVersion(libs.versions.velocityApi.get())
+    velocityVersion(libs.versions.velocityApi.get())
+    downloadPlugins {
+      url("https://download.luckperms.net/1515/velocity/LuckPerms-Velocity-5.4.102.jar")
+    }
   }
   processResources {
     replace("velocity-plugin.json", mapOf(

@@ -40,6 +40,9 @@ tasks {
   }
   runServer {
     version.set(libs.versions.minecraft)
+    downloadPlugins {
+      url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
+    }
   }
   register<RunServer>("runServer2") {
     version.set(libs.versions.minecraft)
