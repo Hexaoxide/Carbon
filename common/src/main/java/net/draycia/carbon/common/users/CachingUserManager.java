@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
@@ -99,6 +100,11 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 packetService.flushQueue();
             });
         }, this.executor);
+    }
+
+    @Override
+    public Party createParty(final String name) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

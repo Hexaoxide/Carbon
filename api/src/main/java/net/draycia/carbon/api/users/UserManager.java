@@ -45,4 +45,6 @@ public interface UserManager<C extends CarbonPlayer> {
      */
     CompletableFuture<C> user(UUID uuid);
 
+    Party createParty(String name);
+
 }

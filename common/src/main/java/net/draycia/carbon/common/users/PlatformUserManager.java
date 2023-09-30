@@ -25,6 +25,7 @@ import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -53,6 +54,11 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
             common.markTransientLoaded(!wrapped.online());
             return wrapped;
         });
+    }
+
+    @Override
+    public Party createParty(final String name) {
+        return PartyImpl.create(name, this);
     }
 
     @Override

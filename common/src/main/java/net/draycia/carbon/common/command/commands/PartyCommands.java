@@ -28,13 +28,13 @@ import com.google.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
-import net.draycia.carbon.common.users.PartyImpl;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.audience.Audience;
@@ -45,7 +45,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-// TODO auto create party channel/config and add toggle for party feature
 @DefaultQualifier(NonNull.class)
 public final class PartyCommands extends CarbonCommand {
 
@@ -121,7 +120,7 @@ public final class PartyCommands extends CarbonCommand {
     private void info(final CommandContext<Commander> ctx) {
         final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable UUID pid = player.party();
-        final @Nullable PartyImpl party = pid != null ? this.userManager.party(pid).join() : null;
+        final @Nullable Party party = pid != null ? this.userManager.party(pid).join() : null;
         if (party == null) {
             player.sendMessage(Component.text("You are not in a party.", NamedTextColor.RED));
         } else {
@@ -132,7 +131,7 @@ public final class PartyCommands extends CarbonCommand {
     private void createParty(final CommandContext<Commander> ctx) {
         final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable UUID oldId = player.party();
-        final @Nullable PartyImpl oldParty = oldId != null ? this.userManager.party(oldId).join() : null;
+        final @Nullable Party oldParty = oldId != null ? this.userManager.party(oldId).join() : null;
         if (oldParty != null) {
             player.sendMessage(Component.text("You must leave your current party first.", NamedTextColor.RED));
             return;
@@ -142,7 +141,7 @@ public final class PartyCommands extends CarbonCommand {
             player.sendMessage(Component.text("Party name is too long.", NamedTextColor.RED));
             return;
         }
-        final PartyImpl party = PartyImpl.create(name, this.userManager);
+        final Party party = this.userManager.createParty(name);
         party.addMember(player.uuid());
     }
 
@@ -154,7 +153,7 @@ public final class PartyCommands extends CarbonCommand {
             mustBeInParty(player);
             return;
         }
-        final @Nullable PartyImpl party = this.userManager.party(partyId).join();
+        final @Nullable Party party = this.userManager.party(partyId).join();
         if (party == null) {
             mustBeInParty(player);
             return;
@@ -187,14 +186,14 @@ public final class PartyCommands extends CarbonCommand {
             player.sendMessage(Component.text("You do not have a pending party invite.", NamedTextColor.RED));
             return;
         }
-        final @Nullable PartyImpl party = this.userManager.party(inv.getSecond()).join();
+        final @Nullable Party party = this.userManager.party(inv.getSecond()).join();
         if (party == null) {
             player.sendMessage(Component.text("You do not have a pending party invite.", NamedTextColor.RED));
             return;
         }
         final @Nullable UUID oldPartyId = player.party();
         if (oldPartyId != null) {
-            final @Nullable PartyImpl old = this.userManager.party(oldPartyId).join();
+            final @Nullable Party old = this.userManager.party(oldPartyId).join();
             if (old != null) {
                 player.sendMessage(Component.text("You must leave your current party first.", NamedTextColor.RED));
                 return;
@@ -209,7 +208,7 @@ public final class PartyCommands extends CarbonCommand {
         final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable UUID partyId = player.party();
         if (partyId != null) {
-            final @Nullable PartyImpl old = this.userManager.party(partyId).join();
+            final @Nullable Party old = this.userManager.party(partyId).join();
             if (old == null) {
                 mustBeInParty(player);
                 return;
@@ -230,7 +229,7 @@ public final class PartyCommands extends CarbonCommand {
         final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable UUID partyId = player.party();
         if (partyId != null) {
-            final @Nullable PartyImpl old = this.userManager.party(partyId).join();
+            final @Nullable Party old = this.userManager.party(partyId).join();
             if (old == null) {
                 mustBeInParty(player);
                 return;
