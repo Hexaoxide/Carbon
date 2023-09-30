@@ -40,9 +40,9 @@ public final class PartyImpl implements Party {
     private final String name;
     private final UUID id;
     private final Set<UUID> members;
-    private final Map<UUID, ChangeType> changes;
-    private @MonotonicNonNull @Inject UserManagerInternal<?> userManager;
-    private volatile boolean disbanded = false;
+    private transient final Map<UUID, ChangeType> changes;
+    private transient @MonotonicNonNull @Inject UserManagerInternal<?> userManager;
+    private transient volatile boolean disbanded = false;
 
     // must call Injector#injectMembers on new object if userManager is null
     private PartyImpl(

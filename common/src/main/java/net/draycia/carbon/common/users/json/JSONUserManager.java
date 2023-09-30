@@ -22,7 +22,7 @@ package net.draycia.carbon.common.users.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
-import com.google.inject.MembersInjector;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
 import java.io.IOException;
 import java.io.Reader;
@@ -64,7 +64,7 @@ public class JSONUserManager extends CachingUserManager {
         final @DataDirectory Path dataDirectory,
         final Logger logger,
         final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final Injector injector,
         final ChatChannelSerializerGson channelSerializer,
         final UUIDSerializerGson uuidSerializer,
         final Provider<MessagingManager> messagingManager,
@@ -74,7 +74,7 @@ public class JSONUserManager extends CachingUserManager {
         super(
             logger,
             profileResolver,
-            playerInjector,
+            injector,
             messagingManager,
             packetFactory
         );
