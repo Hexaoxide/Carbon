@@ -76,7 +76,8 @@ public final class PartyCommands extends CarbonCommand {
             return;
         }
 
-        final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases());
+        final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .permission("carbon.parties");
         this.commandManager.command(root.handler(this::info));
         this.commandManager.command(
             root.literal("create")
