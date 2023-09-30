@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users;
 
+import com.google.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -39,37 +41,38 @@ public final class PartyImpl implements Party {
     private final UUID id;
     private final Set<UUID> members;
     private final Map<UUID, ChangeType> changes;
-    private final UserManagerInternal<?> userManager;
+    private @MonotonicNonNull @Inject UserManagerInternal<?> userManager;
     private volatile boolean disbanded = false;
 
-    public PartyImpl(
+    // must call Injector#injectMembers on new object if userManager is null
+    private PartyImpl(
         final String name,
         final UUID id,
-        final Set<UUID> members,
-        final Map<UUID, ChangeType> changes,
         final @Nullable UserManagerInternal<?> userManager
-    ) {
-        this.name = name;
-        this.id = id;
-        this.members = members;
-        this.changes = changes;
-
-        // todo
-        if (userManager == null) {
-            this.userManager = (UserManagerInternal<?>) CarbonChatProvider.carbonChat().userManager();
-        } else {
-            this.userManager = userManager;
-        }
-    }
-
-    public static PartyImpl create(
-        final String name,
-        final UserManagerInternal<?> userManager
     ) {
         if (name.toCharArray().length > 256) {
             throw new IllegalArgumentException("Party name is too long: '%s', %s > 256".formatted(name, name.toCharArray().length));
         }
-        return new PartyImpl(name, UUID.randomUUID(), ConcurrentHashMap.newKeySet(), new ConcurrentHashMap<>(), userManager);
+        this.name = name;
+        this.id = id;
+        this.members = ConcurrentHashMap.newKeySet();
+        this.changes = new ConcurrentHashMap<>();
+        this.userManager = userManager;
+    }
+
+    public static PartyImpl create(
+        final String name,
+        final @Nullable UserManagerInternal<?> userManager
+    ) {
+        return create(name, UUID.randomUUID(), userManager);
+    }
+
+    public static PartyImpl create(
+        final String name,
+        final UUID id,
+        final @Nullable UserManagerInternal<?> userManager
+    ) {
+        return new PartyImpl(name, id, userManager);
     }
 
     @Override

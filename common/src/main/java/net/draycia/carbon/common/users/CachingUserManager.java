@@ -21,7 +21,7 @@ package net.draycia.carbon.common.users;
 
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.inject.MembersInjector;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
 import java.time.Duration;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected final Logger logger;
     protected final ProfileResolver profileResolver;
     private final ExecutorService executor;
-    private final MembersInjector<CarbonPlayerCommon> playerInjector;
+    private final Injector injector;
     private final Provider<MessagingManager> messagingManager;
     private final PacketFactory packetFactory;
     private final ReentrantLock cacheLock;
@@ -64,7 +64,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected CachingUserManager(
         final Logger logger,
         final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final Injector injector,
         final Provider<MessagingManager> messagingManager,
         final PacketFactory packetFactory
     ) {
@@ -74,7 +74,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
             .expireAfterAccess(Duration.ofMinutes(5))
             .buildAsync();
         this.profileResolver = profileResolver;
-        this.playerInjector = playerInjector;
+        this.injector = injector;
         this.messagingManager = messagingManager;
         this.packetFactory = packetFactory;
         this.cacheLock = new ReentrantLock();
@@ -132,7 +132,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
             return this.cache.computeIfAbsent(uuid, $ -> {
                 final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
                     final CarbonPlayerCommon player = this.loadOrCreate(uuid);
-                    this.playerInjector.injectMembers(player);
+                    this.injector.injectMembers(player);
                     if (this instanceof DatabaseUserManager) {
                         player.registerPropertyUpdateListener(() ->
                             this.save(player).exceptionally(saveExceptionHandler(this.logger, player.username, uuid)));
@@ -220,9 +220,13 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     @Override
     public CompletableFuture<@Nullable PartyImpl> party(final UUID id) {
-        return this.partyCache.get(id, (uuid, cacheExecutor) -> {
-            return CompletableFuture.supplyAsync(() -> this.loadParty(uuid), this.executor);
-        });
+        return this.partyCache.get(id, (uuid, cacheExecutor) -> CompletableFuture.supplyAsync(() -> {
+            final @Nullable PartyImpl party = this.loadParty(uuid);
+            if (party != null) {
+                this.injector.injectMembers(party);
+            }
+            return party;
+        }, this.executor));
     }
 
     @Override

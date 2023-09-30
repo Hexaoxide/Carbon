@@ -20,7 +20,7 @@
 package net.draycia.carbon.common.users.db;
 
 import com.google.inject.Inject;
-import com.google.inject.MembersInjector;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -80,7 +80,7 @@ public final class DatabaseUserManager extends CachingUserManager {
         final QueriesLocator locator,
         final Logger logger,
         final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final Injector injector,
         final Provider<MessagingManager> messagingManager,
         final PacketFactory packetFactory,
         final ChannelRegistry channelRegistry
@@ -88,7 +88,7 @@ public final class DatabaseUserManager extends CachingUserManager {
         super(
             logger,
             profileResolver,
-            playerInjector,
+            injector,
             messagingManager,
             packetFactory
         );
@@ -271,7 +271,7 @@ public final class DatabaseUserManager extends CachingUserManager {
         private final ConfigManager configManager;
         private final Logger logger;
         private final ProfileResolver profileResolver;
-        private final MembersInjector<CarbonPlayerCommon> playerInjector;
+        private final Injector injector;
         private final Provider<MessagingManager> messagingManager;
         private final PacketFactory packetFactory;
 
@@ -281,7 +281,7 @@ public final class DatabaseUserManager extends CachingUserManager {
             final ConfigManager configManager,
             final Logger logger,
             final ProfileResolver profileResolver,
-            final MembersInjector<CarbonPlayerCommon> playerInjector,
+            final Injector injector,
             final Provider<MessagingManager> messagingManager,
             final PacketFactory packetFactory
         ) {
@@ -289,7 +289,7 @@ public final class DatabaseUserManager extends CachingUserManager {
             this.configManager = configManager;
             this.logger = logger;
             this.profileResolver = profileResolver;
-            this.playerInjector = playerInjector;
+            this.injector = injector;
             this.messagingManager = messagingManager;
             this.packetFactory = packetFactory;
         }
@@ -336,7 +336,7 @@ public final class DatabaseUserManager extends CachingUserManager {
                 .registerArgument(new ComponentArgumentFactory())
                 .registerArgument(new KeyArgumentFactory())
                 .registerRowMapper(CarbonPlayerCommon.class, new PlayerRowMapper())
-                .registerRowMapper(PartyImpl.class, new PartyRowMapper())
+                .registerRowMapper(PartyImpl.class, new PartyRowMapper(this.injector))
                 .registerColumnMapper(Key.class, new KeyColumnMapper())
                 .registerColumnMapper(Component.class, new ComponentColumnMapper())
                 .installPlugin(new SqlObjectPlugin());
@@ -349,7 +349,7 @@ public final class DatabaseUserManager extends CachingUserManager {
                 new QueriesLocator(this.configManager.primaryConfig().storageType()),
                 this.logger,
                 this.profileResolver,
-                this.playerInjector,
+                this.injector,
                 this.messagingManager,
                 this.packetFactory,
                 this.channelRegistry
