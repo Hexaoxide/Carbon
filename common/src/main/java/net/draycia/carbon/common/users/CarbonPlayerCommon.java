@@ -499,7 +499,6 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         return this.users.party(id);
     }
 
-    @Override
     public void party(final @Nullable Party party) {
         this.party.set(party == null ? null : party.id());
     }

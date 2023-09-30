@@ -407,6 +407,4 @@ public interface CarbonPlayer extends Audience, Identified {
 
     CompletableFuture<@Nullable Party> party();
 
-    void party(@Nullable Party party);
-
 }

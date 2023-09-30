@@ -439,7 +439,6 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return this.carbonPlayerCommon.party();
     }
 
-    @Override
     public void party(final @Nullable Party party) {
         this.carbonPlayerCommon.party(party);
     }
