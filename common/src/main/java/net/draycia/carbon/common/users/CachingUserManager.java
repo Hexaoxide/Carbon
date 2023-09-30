@@ -59,7 +59,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     private final PacketFactory packetFactory;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
-    private final AsyncCache<UUID, PartyImpl> partyCache;
+    private final AsyncCache<UUID, Party> partyCache;
 
     protected CachingUserManager(
         final Logger logger,
@@ -219,7 +219,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     }
 
     @Override
-    public CompletableFuture<@Nullable PartyImpl> party(final UUID id) {
+    public CompletableFuture<@Nullable Party> party(final UUID id) {
         return this.partyCache.get(id, (uuid, cacheExecutor) -> CompletableFuture.supplyAsync(() -> {
             final @Nullable PartyImpl party = this.loadParty(uuid);
             if (party != null) {
@@ -252,14 +252,17 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     @Override
     public void partyChangeMessageReceived(final PartyChangePacket pkt) {
-        final @Nullable CompletableFuture<PartyImpl> future = this.partyCache.getIfPresent(pkt.partyId());
+        final @Nullable CompletableFuture<Party> future = this.partyCache.getIfPresent(pkt.partyId());
         if (future != null) {
-            future.thenAccept(party -> pkt.changes().forEach((id, type) -> {
-                switch (type) {
-                    case ADD -> party.rawMembers().add(id);
-                    case REMOVE -> party.rawMembers().remove(id);
-                }
-            })).exceptionally(thr -> {
+            future.thenAccept(party -> {
+                final PartyImpl impl = (PartyImpl) party;
+                pkt.changes().forEach((id, type) -> {
+                    switch (type) {
+                        case ADD -> impl.rawMembers().add(id);
+                        case REMOVE -> impl.rawMembers().remove(id);
+                    }
+                });
+            }).exceptionally(thr -> {
                 thr.printStackTrace(); // todo
                 return null;
             });

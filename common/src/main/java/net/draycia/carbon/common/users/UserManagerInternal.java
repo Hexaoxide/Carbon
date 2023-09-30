@@ -25,7 +25,6 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -40,8 +39,6 @@ public interface UserManagerInternal<C extends CarbonPlayer> extends UserManager
     void saveCompleteMessageReceived(UUID playerId);
 
     void cleanup();
-
-    CompletableFuture<@Nullable PartyImpl> party(UUID id);
 
     CompletableFuture<Void> saveParty(PartyImpl info);
 

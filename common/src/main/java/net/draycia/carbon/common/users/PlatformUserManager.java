@@ -87,7 +87,7 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
     }
 
     @Override
-    public CompletableFuture<@Nullable PartyImpl> party(final UUID id) {
+    public CompletableFuture<@Nullable Party> party(final UUID id) {
         return this.backingManager.party(id);
     }
 
