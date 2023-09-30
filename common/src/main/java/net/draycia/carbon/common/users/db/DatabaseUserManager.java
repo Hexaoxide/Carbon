@@ -336,7 +336,7 @@ public final class DatabaseUserManager extends CachingUserManager {
                 .registerArgument(new ComponentArgumentFactory())
                 .registerArgument(new KeyArgumentFactory())
                 .registerRowMapper(CarbonPlayerCommon.class, new PlayerRowMapper())
-                .registerRowMapper(PartyImpl.class, new PartyRowMapper(this.injector))
+                .registerRowMapper(PartyImpl.class, new PartyRowMapper())
                 .registerColumnMapper(Key.class, new KeyColumnMapper())
                 .registerColumnMapper(Component.class, new ComponentColumnMapper())
                 .installPlugin(new SqlObjectPlugin());

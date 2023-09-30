@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.channels;
 
 import com.google.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,6 +35,7 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -78,7 +80,10 @@ public class PartyChatChannel extends ConfigChatChannel {
         final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) sender;
         final @Nullable UUID party = wrapped.partyId();
         if (party == null) {
-            throw new IllegalStateException();
+            if (sender.online()) {
+                sender.sendMessage(Component.text("You must join a party to use this channel.", NamedTextColor.RED));
+            }
+            return new ArrayList<>();
         }
         final List<Audience> recipients = super.recipients(sender);
         recipients.removeIf(r -> r instanceof WrappedCarbonPlayer p && !Objects.equals(p.partyId(), party));

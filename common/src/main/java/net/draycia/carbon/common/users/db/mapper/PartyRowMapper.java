@@ -19,7 +19,6 @@
  */
 package net.draycia.carbon.common.users.db.mapper;
 
-import com.google.inject.Injector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -33,21 +32,13 @@ import org.jdbi.v3.core.statement.StatementContext;
 @DefaultQualifier(NonNull.class)
 public final class PartyRowMapper implements RowMapper<PartyImpl> {
 
-    private final Injector injector;
-
-    public PartyRowMapper(final Injector injector) {
-        this.injector = injector;
-    }
-
     @Override
     public PartyImpl map(final ResultSet rs, final StatementContext ctx) throws SQLException {
         final ColumnMapper<UUID> uuid = ctx.findColumnMapperFor(UUID.class).orElseThrow();
-        final PartyImpl party = PartyImpl.create(
+        return PartyImpl.create(
             rs.getString("name"),
             uuid.map(rs, "partyid", ctx)
         );
-        this.injector.injectMembers(party);
-        return party;
     }
 
 }
