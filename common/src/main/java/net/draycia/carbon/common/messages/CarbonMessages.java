@@ -469,6 +469,9 @@ public interface CarbonMessages {
     @Message("command.party.cannot_invite_self")
     void cannotInviteSelf(Audience audience);
 
+    @Message("command.party.already_in_party")
+    void alreadyInParty(Audience audience, Component displayName);
+
     @Message("command.party.description")
     Component partyDesc();
 

@@ -172,6 +172,11 @@ public final class PartyCommands extends CarbonCommand {
             this.messages.mustBeInParty(player);
             return;
         }
+        final @Nullable Party recipientParty = recipient.party().join();
+        if (recipientParty != null && recipientParty.id().equals(party.id())) {
+            this.messages.alreadyInParty(player, recipient.displayName());
+            return;
+        }
         this.partyInvites.sendInvite(player.uuid(), recipient.uuid(), party.id());
         this.messages.receivedPartyInvite(recipient, player.displayName(), party.name());
     }
