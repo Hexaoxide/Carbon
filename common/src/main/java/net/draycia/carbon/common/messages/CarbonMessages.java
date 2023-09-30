@@ -466,6 +466,24 @@ public interface CarbonMessages {
     @Message("command.party.must_be_in_party")
     void mustBeInParty(Audience audience);
 
+    @Message("command.party.description")
+    Component partyDesc();
+
+    @Message("command.party.create.description")
+    Component partyCreateDesc();
+
+    @Message("command.party.invite.description")
+    Component partyInviteDesc();
+
+    @Message("command.party.accept.description")
+    Component partyAcceptDesc();
+
+    @Message("command.party.leave.description")
+    Component partyLeaveDesc();
+
+    @Message("command.party.disband.description")
+    Component partyDisbandDesc();
+
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();
 

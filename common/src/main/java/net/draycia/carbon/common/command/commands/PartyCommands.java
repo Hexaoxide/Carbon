@@ -22,6 +22,7 @@ package net.draycia.carbon.common.command.commands;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.types.tuples.Pair;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.inject.Inject;
@@ -80,32 +81,40 @@ public final class PartyCommands extends CarbonCommand {
 
         final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.parties");
-        this.commandManager.command(root.handler(this::info));
+        this.commandManager.command(
+            root.meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDesc())
+                .handler(this::info)
+        );
         this.commandManager.command(
             root.literal("create")
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyCreateDesc())
                 .argument(StringArgument.<Commander>builder("name").greedy().asOptional())
                 .senderType(PlayerCommander.class)
                 .handler(this::createParty)
         );
         this.commandManager.command(
             root.literal("invite")
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyInviteDesc())
                 .senderType(PlayerCommander.class)
                 .argument(this.argumentFactory.carbonPlayer("player"))
                 .handler(this::invitePlayer)
         );
         this.commandManager.command(
             root.literal("accept")
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyAcceptDesc())
                 .senderType(PlayerCommander.class)
                 .argument(this.argumentFactory.carbonPlayer("sender").asOptional())
                 .handler(this::acceptInvite)
         );
         this.commandManager.command(
             root.literal("leave")
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyLeaveDesc())
                 .senderType(PlayerCommander.class)
                 .handler(this::leaveParty)
         );
         this.commandManager.command(
             root.literal("disband")
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDisbandDesc())
                 .senderType(PlayerCommander.class)
                 .handler(this::disbandParty)
         );
