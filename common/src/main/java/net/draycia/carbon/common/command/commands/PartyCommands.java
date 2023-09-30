@@ -163,6 +163,10 @@ public final class PartyCommands extends CarbonCommand {
     private void invitePlayer(final CommandContext<Commander> ctx) {
         final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final CarbonPlayer recipient = ctx.get("player");
+        if (recipient.uuid().equals(player.uuid())) {
+            this.messages.cannotInviteSelf(player);
+            return;
+        }
         final @Nullable Party party = player.party().join();
         if (party == null) {
             this.messages.mustBeInParty(player);
