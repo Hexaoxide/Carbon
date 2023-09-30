@@ -55,4 +55,6 @@ public interface PacketFactory {
 
     PartyInvitePacket partyInvite(@Assisted("from") UUID from, @Assisted("to") UUID to, @Assisted("party") UUID party);
 
+    PartyInvitePacket invalidatePartyInvite(@Assisted("from") UUID from, @Assisted("to") UUID to);
+
 }

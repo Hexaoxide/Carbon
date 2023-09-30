@@ -31,6 +31,7 @@ import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.draycia.carbon.common.messaging.packets.InvalidatePartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
@@ -86,6 +87,9 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             this.userManager.partyChangeMessageReceived(pkt);
             return true;
         } else if (packet instanceof PartyInvitePacket pkt) {
+            this.partyInvites.handle(pkt);
+            return true;
+        } else if (packet instanceof InvalidatePartyInvitePacket pkt) {
             this.partyInvites.handle(pkt);
             return true;
         } else if (packet instanceof ChatMessagePacket messagePacket) {

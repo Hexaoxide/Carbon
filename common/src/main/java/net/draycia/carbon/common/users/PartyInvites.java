@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.InvalidatePartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
 import net.kyori.adventure.text.Component;
@@ -66,8 +67,16 @@ public final class PartyInvites {
         });
     }
 
-    // TODO invalidate cross-server
     public void invalidateInvite(final UUID from, final UUID to) {
+        this.invalidateInvite_(from, to);
+
+        this.messaging.get().withPacketService(service -> {
+            service.queuePacket(this.packetFactory.invalidatePartyInvite(from, to));
+            service.flushQueue();
+        });
+    }
+
+    private void invalidateInvite_(final UUID from, final UUID to) {
         final @Nullable Cache<UUID, UUID> cache = this.invitesFor(to);
         if (cache != null) {
             cache.invalidate(from);
@@ -84,6 +93,11 @@ public final class PartyInvites {
 
     private static Cache<UUID, UUID> makeCache() {
         return Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(30)).build();
+    }
+
+    public void handle(final InvalidatePartyInvitePacket pkt) {
+        this.invalidateInvite_(pkt.from(), pkt.to());
+        this.pendingInvites.values().removeIf(it -> it.asMap().size() == 0);
     }
 
     public void handle(final PartyInvitePacket pkt) {

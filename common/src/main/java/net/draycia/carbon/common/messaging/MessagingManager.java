@@ -40,6 +40,7 @@ import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
+import net.draycia.carbon.common.messaging.packets.InvalidatePartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
@@ -130,6 +131,7 @@ public class MessagingManager {
         PacketManager.register(WhisperPacket.class, WhisperPacket::new);
         PacketManager.register(PartyChangePacket.class, PartyChangePacket::new);
         PacketManager.register(PartyInvitePacket.class, PartyInvitePacket::new);
+        PacketManager.register(InvalidatePartyInvitePacket.class, InvalidatePartyInvitePacket::new);
 
         this.packetService = new PacketService(4, false, protocolVersion);
         this.scheduledExecutor = new ExceptionLoggingScheduledThreadPoolExecutor(4,
