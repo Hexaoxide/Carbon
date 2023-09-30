@@ -28,6 +28,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.event.events.PartyJoinEvent;
+import net.draycia.carbon.api.event.events.PartyLeaveEvent;
 import net.draycia.carbon.api.users.Party;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -48,6 +51,7 @@ public final class PartyImpl implements Party {
     private transient @MonotonicNonNull @Inject UserManagerInternal<?> userManager;
     private transient @MonotonicNonNull @Inject CarbonServer server;
     private transient @MonotonicNonNull @Inject Logger logger;
+    private transient @MonotonicNonNull @Inject CarbonEventHandler events;
     private transient volatile boolean disbanded = false;
 
     private PartyImpl(
@@ -88,8 +92,8 @@ public final class PartyImpl implements Party {
         if (this.disbanded) {
             throw new IllegalStateException("This party was disbanded.");
         }
-        this.members.add(id);
         this.changes().put(id, ChangeType.ADD);
+        this.addMemberRaw(id);
         final BiConsumer<Void, @Nullable Throwable> exceptionHandler = ($, thr) -> {
             if (thr != null) {
                 this.logger.warn("Exception adding member {} to group {}", id, this.id(), thr);
@@ -116,8 +120,8 @@ public final class PartyImpl implements Party {
         if (this.disbanded) {
             throw new IllegalStateException("This party was disbanded.");
         }
-        this.members.remove(id);
         this.changes().put(id, ChangeType.REMOVE);
+        this.removeMemberRaw(id);
         final BiConsumer<Void, @Nullable Throwable> exceptionHandler = ($, thr) -> {
             if (thr != null) {
                 this.logger.warn("Exception removing member {} from group {}", id, this.id(), thr);
@@ -152,6 +156,40 @@ public final class PartyImpl implements Party {
 
     public Set<UUID> rawMembers() {
         return this.members;
+    }
+
+    public void addMemberRaw(final UUID id) {
+        this.members.add(id);
+
+        this.events.emit(new PartyJoinEvent() {
+
+            @Override
+            public UUID playerId() {
+                return id;
+            }
+
+            @Override
+            public Party party() {
+                return PartyImpl.this;
+            }
+        });
+    }
+
+    public void removeMemberRaw(final UUID id) {
+        this.members.remove(id);
+
+        this.events.emit(new PartyLeaveEvent() {
+
+            @Override
+            public UUID playerId() {
+                return id;
+            }
+
+            @Override
+            public Party party() {
+                return PartyImpl.this;
+            }
+        });
     }
 
     public Map<UUID, ChangeType> pollChanges() {

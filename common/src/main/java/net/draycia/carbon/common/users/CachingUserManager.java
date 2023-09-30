@@ -259,8 +259,8 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 final PartyImpl impl = (PartyImpl) party;
                 pkt.changes().forEach((id, type) -> {
                     switch (type) {
-                        case ADD -> impl.rawMembers().add(id);
-                        case REMOVE -> impl.rawMembers().remove(id);
+                        case ADD -> impl.addMemberRaw(id);
+                        case REMOVE -> impl.removeMemberRaw(id);
                     }
                 });
             }).whenComplete(($, thr) -> {
