@@ -43,8 +43,8 @@ public final class PartyImpl implements Party {
     private final Component name;
     private final UUID id;
     private final Set<UUID> members;
-    private transient final String serializedName;
-    private transient final Map<UUID, ChangeType> changes;
+    private transient final @Nullable String serializedName;
+    private transient volatile @MonotonicNonNull Map<UUID, ChangeType> changes;
     private transient @MonotonicNonNull @Inject UserManagerInternal<?> userManager;
     private transient @MonotonicNonNull @Inject CarbonServer server;
     private transient @MonotonicNonNull @Inject Logger logger;
@@ -72,13 +72,24 @@ public final class PartyImpl implements Party {
         return new PartyImpl(name, id);
     }
 
+    private Map<UUID, ChangeType> changes() {
+        if (this.changes == null) {
+            synchronized (this) {
+                if (this.changes == null) {
+                    this.changes = new ConcurrentHashMap<>();
+                }
+            }
+        }
+        return this.changes;
+    }
+
     @Override
     public void addMember(final UUID id) {
         if (this.disbanded) {
             throw new IllegalStateException("This party was disbanded.");
         }
         this.members.add(id);
-        this.changes.put(id, ChangeType.ADD);
+        this.changes().put(id, ChangeType.ADD);
         final BiConsumer<Void, @Nullable Throwable> exceptionHandler = ($, thr) -> {
             if (thr != null) {
                 this.logger.warn("Exception adding member {} to group {}", id, this.id(), thr);
@@ -106,7 +117,7 @@ public final class PartyImpl implements Party {
             throw new IllegalStateException("This party was disbanded.");
         }
         this.members.remove(id);
-        this.changes.put(id, ChangeType.REMOVE);
+        this.changes().put(id, ChangeType.REMOVE);
         final BiConsumer<Void, @Nullable Throwable> exceptionHandler = ($, thr) -> {
             if (thr != null) {
                 this.logger.warn("Exception removing member {} from group {}", id, this.id(), thr);
@@ -144,8 +155,8 @@ public final class PartyImpl implements Party {
     }
 
     public Map<UUID, ChangeType> pollChanges() {
-        final Map<UUID, ChangeType> ret = Map.copyOf(this.changes);
-        ret.forEach((id, t) -> this.changes.remove(id));
+        final Map<UUID, ChangeType> ret = Map.copyOf(this.changes());
+        ret.forEach((id, t) -> this.changes().remove(id));
         return ret;
     }
 
@@ -155,7 +166,7 @@ public final class PartyImpl implements Party {
     }
 
     public String serializedName() {
-        return this.serializedName;
+        return Objects.requireNonNullElseGet(this.serializedName, () -> GsonComponentSerializer.gson().serialize(this.name));
     }
 
     @Override
