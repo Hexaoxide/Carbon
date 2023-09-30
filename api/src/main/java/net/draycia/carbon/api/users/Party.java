@@ -25,17 +25,61 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+/**
+ * Reference to a chat party.
+ *
+ * @see UserManager#createParty(Component)
+ * @see UserManager#party(UUID)
+ * @since 2.1.0
+ */
 @DefaultQualifier(NonNull.class)
 public interface Party {
+
+    /**
+     * Get the name of this party.
+     *
+     * @return party name
+     * @since 2.1.0
+     */
     Component name();
 
+    /**
+     * Get the unique id of this party.
+     *
+     * @return party id
+     * @since 2.1.0
+     */
     UUID id();
 
+    /**
+     * Get a snapshot of the current party members.
+     *
+     * @return party members
+     * @since 2.1.0
+     */
     Set<UUID> members();
 
+    /**
+     * Add a user to this party. They will automatically be removed from their previous party if necessary.
+     *
+     * @param id user id
+     * @since 2.1.0
+     */
     void addMember(UUID id);
 
+    /**
+     * Remove a user from this party.
+     *
+     * @param id user id
+     * @since 2.1.0
+     */
     void removeMember(UUID id);
 
+    /**
+     * Disband this party. Will remove all members and delete persistent data.
+     *
+     * @since 2.1.0
+     */
     void disband();
+
 }

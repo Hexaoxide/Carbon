@@ -405,6 +405,12 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void leaveChannel(ChatChannel channel);
 
+    /**
+     * Get this player's current {@link Party}.
+     *
+     * @return party future
+     * @since 2.1.0
+     */
     CompletableFuture<@Nullable Party> party();
 
 }
