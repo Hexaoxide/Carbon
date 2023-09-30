@@ -27,12 +27,15 @@ import com.google.inject.Singleton;
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.InvalidatePartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
-import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -47,18 +50,21 @@ public final class PartyInvites {
     private final PacketFactory packetFactory;
     private final UserManagerInternal<?> users;
     private final Logger logger;
+    private final CarbonMessages messages;
 
     @Inject
     private PartyInvites(
         final Provider<MessagingManager> messaging,
         final PacketFactory packetFactory,
         final UserManagerInternal<?> users,
-        final Logger logger
+        final Logger logger,
+        final CarbonMessages messages
     ) {
         this.messaging = messaging;
         this.packetFactory = packetFactory;
         this.users = users;
         this.logger = logger;
+        this.messages = messages;
     }
 
     public void sendInvite(final UUID from, final UUID to, final UUID party) {
@@ -108,9 +114,14 @@ public final class PartyInvites {
         final @Nullable Cache<UUID, UUID> cache = this.orCreateInvitesFor(pkt.to());
         cache.put(pkt.from(), pkt.party());
         this.pendingInvites.values().removeIf(it -> it.asMap().size() == 0);
-        this.users.user(pkt.to()).thenAccept(u -> {
-            if (u.online()) {
-                u.sendMessage(Component.text("u got an invite"));
+
+        final CompletableFuture<? extends CarbonPlayer> to = this.users.user(pkt.to());
+        final CompletableFuture<? extends CarbonPlayer> from = this.users.user(pkt.to());
+        final CompletableFuture<Party> party = this.users.party(pkt.party());
+
+        CompletableFuture.allOf(to, from, party).thenRun(() -> {
+            if (to.join().online()) {
+                this.messages.receivedPartyInvite(to.join(), from.join().displayName(), party.join().name());
             }
         }).whenComplete(($, thr) -> {
             if (thr != null) {

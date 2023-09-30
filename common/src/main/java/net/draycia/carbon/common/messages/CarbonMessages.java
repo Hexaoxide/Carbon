@@ -427,6 +427,45 @@ public interface CarbonMessages {
     @Message("command.updateusername.updated")
     void usernameUpdated(final Audience audience, @Placeholder("newname") final String newName);
 
+    @Message("command.party.created")
+    void partyCreated(Audience audience, Component partyName);
+
+    @Message("command.party.not_in_party")
+    void notInParty(Audience audience);
+
+    @Message("command.party.current_party")
+    void currentParty(Audience audience, Component partyName);
+
+    @Message("command.party.must_leave_current_first")
+    void mustLeavePartyFirst(Audience audience);
+
+    @Message("command.party.name_too_long")
+    void partyNameTooLong(Audience audience);
+
+    @Message("command.party.received_invite")
+    void receivedPartyInvite(Audience audience, Component senderDisplayName, Component partyName);
+
+    @Message("command.party.must_specify_invite")
+    void mustSpecifyPartyInvite(Audience audience);
+
+    @Message("command.party.no_pending_invites")
+    void noPendingPartyInvites(Audience audience);
+
+    @Message("command.party.joined_party")
+    void joinedParty(Audience audience, Component partyName);
+
+    @Message("command.party.left_party")
+    void leftParty(Audience audience, Component partyName);
+
+    @Message("command.party.disbanded")
+    void disbandedParty(Audience audience, Component partyName);
+
+    @Message("command.party.cannot_disband_multiple_members")
+    void cannotDisbandParty(Audience audience, Component partyName);
+
+    @Message("command.party.must_be_in_party")
+    void mustBeInParty(Audience audience);
+
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();
 
