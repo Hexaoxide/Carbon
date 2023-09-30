@@ -22,6 +22,7 @@ package net.draycia.carbon.paper.hooks;
 import com.google.inject.Inject;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -64,17 +65,35 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onRequest(final OfflinePlayer player, final String params) {
-        final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
-
-        final Component nickname = carbonPlayer.displayName();
-
-        if (params.endsWith("nickname")) {
-            return MiniMessage.miniMessage().serialize(nickname);
+        if (params.endsWith("party")) {
+            return mm(this.partyName(player));
+        } else if (params.endsWith("party_l")) {
+            return legacy(this.partyName(player));
+        } else if (params.endsWith("nickname")) {
+            return mm(this.displayName(player));
         } else if (params.endsWith("nickname_l")) {
-            return LegacyComponentSerializer.legacySection().serialize(nickname);
+            return legacy(this.displayName(player));
         }
 
         return null;
+    }
+
+    private static String mm(final Component in) {
+        return MiniMessage.miniMessage().serialize(in);
+    }
+
+    private static String legacy(final Component in) {
+        return LegacyComponentSerializer.legacySection().serialize(in);
+    }
+
+    private Component partyName(final OfflinePlayer player) {
+        final @Nullable Party party = this.userManager.user(player.getUniqueId()).thenCompose(CarbonPlayer::party).join();
+        return party == null ? Component.empty() : party.name();
+    }
+
+    private Component displayName(final OfflinePlayer player) {
+        final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
+        return carbonPlayer.displayName();
     }
 
 }
