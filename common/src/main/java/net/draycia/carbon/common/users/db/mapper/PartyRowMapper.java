@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 import net.draycia.carbon.common.users.PartyImpl;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.mapper.ColumnMapper;
@@ -34,9 +35,10 @@ public final class PartyRowMapper implements RowMapper<PartyImpl> {
 
     @Override
     public PartyImpl map(final ResultSet rs, final StatementContext ctx) throws SQLException {
+        final ColumnMapper<Component> component = ctx.findColumnMapperFor(Component.class).orElseThrow();
         final ColumnMapper<UUID> uuid = ctx.findColumnMapperFor(UUID.class).orElseThrow();
         return PartyImpl.create(
-            rs.getString("name"),
+            component.map(rs, "name", ctx),
             uuid.map(rs, "partyid", ctx)
         );
     }

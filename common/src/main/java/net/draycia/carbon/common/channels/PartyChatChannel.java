@@ -19,7 +19,6 @@
  */
 package net.draycia.carbon.common.channels;
 
-import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,13 +29,11 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.SourcedAudience;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -46,8 +43,6 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
 public class PartyChatChannel extends ConfigChatChannel {
-
-    private transient @MonotonicNonNull @Inject UserManagerInternal<?> users;
 
     public PartyChatChannel() {
         this.key = Key.key("carbon", "partychat");
@@ -105,7 +100,7 @@ public class PartyChatChannel extends ConfigChatChannel {
             sender.displayName(),
             sender.username(),
             message,
-            party == null ? "null" : party.name()
+            party == null ? Component.text("null") : party.name()
         );
     }
 }

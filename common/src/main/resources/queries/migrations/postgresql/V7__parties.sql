@@ -6,7 +6,7 @@ CREATE TABLE carbon_party_members (
 
 CREATE TABLE carbon_parties (
     partyid UUID NOT NULL PRIMARY KEY,
-    name VARCHAR(256)
+    name VARCHAR(8192)
 );
 
 ALTER TABLE carbon_users ADD COLUMN party UUID;

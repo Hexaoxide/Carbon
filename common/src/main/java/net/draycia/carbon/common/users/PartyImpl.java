@@ -29,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.Party;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -38,9 +40,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class PartyImpl implements Party {
 
-    private final String name;
+    private final Component name;
     private final UUID id;
     private final Set<UUID> members;
+    private transient final String serializedName;
     private transient final Map<UUID, ChangeType> changes;
     private transient @MonotonicNonNull @Inject UserManagerInternal<?> userManager;
     private transient @MonotonicNonNull @Inject CarbonServer server;
@@ -48,11 +51,12 @@ public final class PartyImpl implements Party {
     private transient volatile boolean disbanded = false;
 
     private PartyImpl(
-        final String name,
+        final Component name,
         final UUID id
     ) {
-        if (name.toCharArray().length > 256) {
-            throw new IllegalArgumentException("Party name is too long: '%s', %s > 256".formatted(name, name.toCharArray().length));
+        this.serializedName = GsonComponentSerializer.gson().serialize(name);
+        if (this.serializedName.toCharArray().length > 8192) {
+            throw new IllegalArgumentException("Serialized party name is too long: '%s', %s > 8192".formatted(name, this.serializedName.toCharArray().length));
         }
         this.name = name;
         this.id = id;
@@ -60,11 +64,11 @@ public final class PartyImpl implements Party {
         this.changes = new ConcurrentHashMap<>();
     }
 
-    public static PartyImpl create(final String name) {
+    public static PartyImpl create(final Component name) {
         return create(name, UUID.randomUUID());
     }
 
-    public static PartyImpl create(final String name, final UUID id) {
+    public static PartyImpl create(final Component name, final UUID id) {
         return new PartyImpl(name, id);
     }
 
@@ -146,8 +150,12 @@ public final class PartyImpl implements Party {
     }
 
     @Override
-    public String name() {
+    public Component name() {
         return this.name;
+    }
+
+    public String serializedName() {
+        return this.serializedName;
     }
 
     @Override

@@ -199,7 +199,7 @@ public final class DatabaseUserManager extends CachingUserManager {
             if (existing == null) {
                 handle.createUpdate(this.locator.query("insert-party"))
                     .bind("partyid", party.id())
-                    .bind("name", party.name())
+                    .bind("name", party.serializedName())
                     .execute();
             }
 

@@ -41,6 +41,7 @@ import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -103,7 +104,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     }
 
     @Override
-    public Party createParty(final String name) {
+    public Party createParty(final Component name) {
         throw new UnsupportedOperationException();
     }
 

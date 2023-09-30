@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -61,7 +62,7 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
     }
 
     @Override
-    public Party createParty(final String name) {
+    public Party createParty(final Component name) {
         final PartyImpl party = PartyImpl.create(name);
         this.injector.injectMembers(party);
         return party;

@@ -37,6 +37,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -123,7 +124,7 @@ public final class PartyCommands extends CarbonCommand {
         if (party == null) {
             player.sendMessage(Component.text("You are not in a party.", NamedTextColor.RED));
         } else {
-            player.sendMessage(Component.text("You are in the party '" + party.name() + "'"));
+            player.sendMessage(Component.text("You are in the party ").append(party.name()));
         }
     }
 
@@ -135,11 +136,14 @@ public final class PartyCommands extends CarbonCommand {
             return;
         }
         final String name = ctx.getOrDefault("name", player.username() + "'s party");
-        if (name.toCharArray().length > 256) {
+        final Component component = ((WrappedCarbonPlayer) player).parseMessageTags(name);
+        final Party party;
+        try {
+            party = this.userManager.createParty(component);
+        } catch (final IllegalArgumentException e) {
             player.sendMessage(Component.text("Party name is too long.", NamedTextColor.RED));
             return;
         }
-        final Party party = this.userManager.createParty(name);
         party.addMember(player.uuid());
     }
 
@@ -152,7 +156,7 @@ public final class PartyCommands extends CarbonCommand {
             return;
         }
         this.partyInvites.sendInvite(player.uuid(), recipient.uuid(), party.id());
-        recipient.sendMessage(Component.text("u got invited to " + party.name()));
+        recipient.sendMessage(Component.text("u got invited to ").append(party.name()));
     }
 
     private void acceptInvite(final CommandContext<Commander> ctx) {
@@ -191,7 +195,7 @@ public final class PartyCommands extends CarbonCommand {
         }
         this.partyInvites.invalidateInvite(inv.getFirst(), player.uuid());
         party.addMember(player.uuid());
-        player.sendMessage(Component.text("u joined " + party.name()));
+        player.sendMessage(Component.text("u joined ").append(party.name()));
     }
 
     private void leaveParty(final CommandContext<Commander> ctx) {

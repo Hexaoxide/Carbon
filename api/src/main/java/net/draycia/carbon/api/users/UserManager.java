@@ -21,6 +21,7 @@ package net.draycia.carbon.api.users;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -46,7 +47,7 @@ public interface UserManager<C extends CarbonPlayer> {
      */
     CompletableFuture<C> user(UUID uuid);
 
-    Party createParty(String name);
+    Party createParty(Component name);
 
     CompletableFuture<@Nullable Party> party(UUID id);
 

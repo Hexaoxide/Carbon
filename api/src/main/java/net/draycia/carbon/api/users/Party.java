@@ -21,12 +21,13 @@ package net.draycia.carbon.api.users;
 
 import java.util.Set;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public interface Party {
-    String name();
+    Component name();
 
     UUID id();
 

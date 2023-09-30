@@ -40,7 +40,7 @@ public interface ConfigChannelMessages {
         @Placeholder("display_name") Component displayName,
         @Placeholder String username,
         @Placeholder Component message,
-        @Placeholder("party_name") String partyName
+        @Placeholder("party_name") Component partyName
     );
 
 }

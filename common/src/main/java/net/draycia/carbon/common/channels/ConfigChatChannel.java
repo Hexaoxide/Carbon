@@ -152,7 +152,7 @@ public class ConfigChatChannel implements ChatChannel {
             sender.displayName(),
             sender.username(),
             message,
-            "null"
+            Component.text("null")
         );
     }
 
