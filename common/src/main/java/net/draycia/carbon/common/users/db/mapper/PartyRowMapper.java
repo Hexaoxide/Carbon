@@ -19,12 +19,14 @@
  */
 package net.draycia.carbon.common.users.db.mapper;
 
+import com.google.common.base.Suppliers;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import io.leangen.geantyref.TypeToken;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.function.Supplier;
 import net.draycia.carbon.common.users.PartyImpl;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -36,10 +38,10 @@ import org.jdbi.v3.core.statement.StatementContext;
 @DefaultQualifier(NonNull.class)
 public final class PartyRowMapper implements RowMapper<PartyImpl> {
 
-    private final Injector injector;
+    private final Supplier<UserManagerInternal<?>> users;
 
     public PartyRowMapper(final Injector injector) {
-        this.injector = injector;
+        this.users = Suppliers.memoize(() -> (UserManagerInternal<?>) injector.getInstance(Key.get(new TypeToken<UserManagerInternal<?>>() {}.getType())));
     }
 
     @Override
@@ -48,7 +50,7 @@ public final class PartyRowMapper implements RowMapper<PartyImpl> {
         return PartyImpl.create(
             rs.getString("name"),
             uuid.map(rs, "partyid", ctx),
-            (UserManagerInternal<?>) this.injector.getInstance(Key.get(new TypeToken<UserManagerInternal<?>>() {}.getType()))
+            this.users.get()
         );
     }
 
