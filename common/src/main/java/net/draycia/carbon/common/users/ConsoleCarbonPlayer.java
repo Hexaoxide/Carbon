@@ -247,6 +247,16 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
+    public @Nullable UUID party() {
+        return null;
+    }
+
+    @Override
+    public void party(final @Nullable UUID id) {
+
+    }
+
+    @Override
     public @NotNull Identity identity() {
         return Identity.nil();
     }

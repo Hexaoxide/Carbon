@@ -64,7 +64,7 @@ import static net.kyori.adventure.text.Component.text;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
-public final class ConfigChatChannel implements ChatChannel {
+public class ConfigChatChannel implements ChatChannel {
 
     private transient @MonotonicNonNull @Inject CarbonServer server;
     private transient @MonotonicNonNull @Inject CarbonMessageRenderer renderer;
@@ -74,7 +74,7 @@ public final class ConfigChatChannel implements ChatChannel {
         You only need to change the second part of the key. "global" by default.
         The value is what's used in commands, this is probably what you want to change.
         """)
-    private @Nullable Key key = Key.key("carbon", "global");
+    protected @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
         The permission required to use the /channel <channelname> and /<channelname> commands.
@@ -87,7 +87,7 @@ public final class ConfigChatChannel implements ChatChannel {
 
     @Setting("format")
     @Comment("The chat formats for this channel.")
-    private @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
+    protected @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
     @Comment("Messages will be sent in this channel if they start with this prefix.")
     private @Nullable String quickPrefix = null;
@@ -151,7 +151,8 @@ public final class ConfigChatChannel implements ChatChannel {
             this.key(),
             sender.displayName(),
             sender.username(),
-            message
+            message,
+            "null"
         );
     }
 
@@ -219,7 +220,7 @@ public final class ConfigChatChannel implements ChatChannel {
         }
     }
 
-    private ConfigChannelMessages carbonMessages() {
+    protected ConfigChannelMessages carbonMessages() {
         if (this.carbonMessages == null) {
             this.carbonMessages = this.loadMessages();
         }

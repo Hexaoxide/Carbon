@@ -6,5 +6,6 @@ UPDATE carbon_users SET
     lastwhispertarget = :lastwhispertarget,
     whisperreplytarget = :whisperreplytarget,
     spying = :spying,
-    ignoringdms = :ignoringdms
+    ignoringdms = :ignoringdms,
+    party = :party
 WHERE (id = :id);

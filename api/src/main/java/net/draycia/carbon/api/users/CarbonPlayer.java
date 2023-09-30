@@ -404,4 +404,10 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void leaveChannel(ChatChannel channel);
 
+    // TODO use Party type for public API
+
+    @Nullable UUID party();
+
+    void party(@Nullable UUID id);
+
 }

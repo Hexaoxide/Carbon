@@ -19,8 +19,11 @@
  */
 package net.draycia.carbon.common.users;
 
+import com.github.benmanes.caffeine.cache.AsyncCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
+import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +58,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     private final PacketFactory packetFactory;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
+    private final AsyncCache<UUID, PartyImpl> partyCache;
 
     protected CachingUserManager(
         final Logger logger,
@@ -64,6 +69,9 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     ) {
         this.logger = logger;
         this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, this.getClass().getSimpleName()));
+        this.partyCache = Caffeine.newBuilder()
+            .expireAfterAccess(Duration.ofMinutes(5))
+            .buildAsync();
         this.profileResolver = profileResolver;
         this.playerInjector = playerInjector;
         this.messagingManager = messagingManager;
@@ -75,6 +83,12 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected abstract CarbonPlayerCommon loadOrCreate(UUID uuid);
 
     protected abstract void saveSync(CarbonPlayerCommon player);
+
+    protected abstract @Nullable PartyImpl loadParty(UUID uuid);
+
+    protected abstract void saveSync(PartyImpl info, Map<UUID, PartyImpl.ChangeType> polledChanges);
+
+    protected abstract void disbandSync(UUID id);
 
     private CompletableFuture<Void> save(final CarbonPlayerCommon player) {
         return CompletableFuture.runAsync(() -> {
@@ -198,4 +212,47 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         });
     }
 
+    @Override
+    public CompletableFuture<@Nullable PartyImpl> party(final UUID id) {
+        return this.partyCache.get(id, (uuid, cacheExecutor) -> {
+            return CompletableFuture.supplyAsync(() -> this.loadParty(uuid), this.executor);
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveParty(final PartyImpl info) {
+        return CompletableFuture.runAsync(() -> {
+            final Map<UUID, PartyImpl.ChangeType> changes = info.pollChanges();
+            if (changes.isEmpty()) {
+                return;
+            }
+            this.saveSync(info, changes);
+            this.messagingManager.get().withPacketService(service -> {
+                service.queuePacket(this.packetFactory.partyChange(info.id(), changes));
+                service.flushQueue();
+            });
+        }, this.executor);
+    }
+
+    @Override
+    public final void disbandParty(final UUID id) {
+        this.partyCache.synchronous().invalidate(id);
+        this.executor.execute(() -> this.disbandSync(id));
+    }
+
+    @Override
+    public void partyChangeMessageReceived(final PartyChangePacket pkt) {
+        final @Nullable CompletableFuture<PartyImpl> future = this.partyCache.getIfPresent(pkt.partyId());
+        if (future != null) {
+            future.thenAccept(party -> pkt.changes().forEach((id, type) -> {
+                switch (type) {
+                    case ADD -> party.rawMembers().add(id);
+                    case REMOVE -> party.rawMembers().remove(id);
+                }
+            })).exceptionally(thr -> {
+                thr.printStackTrace(); // todo
+                return null;
+            });
+        }
+    }
 }

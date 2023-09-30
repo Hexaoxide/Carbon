@@ -17,30 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.channels.messages;
+package net.draycia.carbon.api.users;
 
+import java.util.Set;
 import java.util.UUID;
-import net.draycia.carbon.common.messages.SourcedAudience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.annotation.Message;
-import net.kyori.moonshine.annotation.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface ConfigChannelMessages {
+public interface Party {
+    String name();
 
-    // TODO: locale placeholders?
-    @Message("channel.format")
-    Component chatFormat(
-        SourcedAudience audience,
-        @Placeholder UUID uuid,
-        @Placeholder Key channel,
-        @Placeholder("display_name") Component displayName,
-        @Placeholder String username,
-        @Placeholder Component message,
-        @Placeholder("party_name") String partyName
-    );
+    UUID id();
 
+    Set<UUID> members();
+
+    void addMember(UUID id);
+
+    void removeMember(UUID id);
+
+    void disband();
 }

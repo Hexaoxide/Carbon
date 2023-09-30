@@ -22,6 +22,7 @@ package net.draycia.carbon.common.messaging.packets;
 import com.google.inject.assistedinject.Assisted;
 import java.util.Map;
 import java.util.UUID;
+import net.draycia.carbon.common.users.PartyImpl;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -49,5 +50,9 @@ public interface PacketFactory {
     }
 
     WhisperPacket whisperPacket(@Assisted("from") UUID from, @Assisted("to") UUID to, Component msg);
+
+    PartyChangePacket partyChange(UUID partyId, Map<UUID, PartyImpl.ChangeType> changes);
+
+    PartyInvitePacket partyInvite(@Assisted("from") UUID from, @Assisted("to") UUID to, @Assisted("party") UUID party);
 
 }

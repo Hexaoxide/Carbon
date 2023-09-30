@@ -22,9 +22,8 @@ package net.draycia.carbon.common.users.db.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
+import java.util.concurrent.ConcurrentHashMap;
+import net.draycia.carbon.common.users.PartyImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.mapper.ColumnMapper;
@@ -32,23 +31,17 @@ import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
 @DefaultQualifier(NonNull.class)
-public final class PlayerRowMapper implements RowMapper<CarbonPlayerCommon> {
+public final class PartyRowMapper implements RowMapper<PartyImpl> {
 
     @Override
-    public CarbonPlayerCommon map(final ResultSet rs, final StatementContext ctx) throws SQLException {
+    public PartyImpl map(final ResultSet rs, final StatementContext ctx) throws SQLException {
         final ColumnMapper<UUID> uuid = ctx.findColumnMapperFor(UUID.class).orElseThrow();
-        return new CarbonPlayerCommon(
-            rs.getBoolean("muted"),
-            rs.getBoolean("deafened"),
-            ctx.findColumnMapperFor(Key.class).orElseThrow().map(rs, "selectedchannel", ctx),
-            null,
-            uuid.map(rs, "id", ctx),
-            ctx.findColumnMapperFor(Component.class).orElseThrow().map(rs, "displayname", ctx),
-            uuid.map(rs, "lastwhispertarget", ctx),
-            uuid.map(rs, "whisperreplytarget", ctx),
-            rs.getBoolean("spying"),
-            rs.getBoolean("ignoringdms"),
-            uuid.map(rs, "party", ctx)
+        return new PartyImpl(
+            rs.getString("name"),
+            uuid.map(rs, "partyid", ctx),
+            ConcurrentHashMap.newKeySet(),
+            new ConcurrentHashMap<>(),
+            null
         );
     }
 

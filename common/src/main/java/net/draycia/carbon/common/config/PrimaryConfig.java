@@ -97,6 +97,13 @@ public class PrimaryConfig {
     private MessagingSettings messagingSettings = new MessagingSettings();
     private NicknameSettings nicknameSettings = new NicknameSettings();
 
+    @Comment("Enable and disable party chat.")
+    private boolean partyChat = true;
+
+    public boolean partyChat() {
+        return this.partyChat;
+    }
+
     public NicknameSettings nickname() {
         return this.nicknameSettings;
     }

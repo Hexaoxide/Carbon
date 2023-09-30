@@ -428,4 +428,14 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return this.carbonPlayerCommon.hashCode();
     }
 
+    @Override
+    public @Nullable UUID party() {
+        return this.carbonPlayerCommon.party();
+    }
+
+    @Override
+    public void party(final @Nullable UUID id) {
+        this.carbonPlayerCommon.party(id);
+    }
+
 }

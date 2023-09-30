@@ -43,9 +43,12 @@ import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
+import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
+import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.messaging.packets.WhisperPacket;
 import net.draycia.carbon.common.users.NetworkUsers;
+import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
@@ -95,7 +98,8 @@ public class MessagingManager {
         final UserManagerInternal<?> userManager,
         final NetworkUsers networkUsers,
         final WhisperCommand.WhisperHandler whisper,
-        final PacketFactory packetFactory
+        final PacketFactory packetFactory,
+        final PartyInvites partyInvites
     ) {
         this.serverId = serverId;
         this.logger = logger;
@@ -124,6 +128,8 @@ public class MessagingManager {
         PacketManager.register(LocalPlayersPacket.class, LocalPlayersPacket::new);
         PacketManager.register(LocalPlayerChangePacket.class, LocalPlayerChangePacket::new);
         PacketManager.register(WhisperPacket.class, WhisperPacket::new);
+        PacketManager.register(PartyChangePacket.class, PartyChangePacket::new);
+        PacketManager.register(PartyInvitePacket.class, PartyInvitePacket::new);
 
         this.packetService = new PacketService(4, false, protocolVersion);
         this.scheduledExecutor = new ExceptionLoggingScheduledThreadPoolExecutor(4,
@@ -131,7 +137,7 @@ public class MessagingManager {
 
         final MessagingHandlerImpl handlerImpl = new MessagingHandlerImpl(this.packetService);
         handlerImpl.addHandler(new CarbonServerHandler(server, serverId, this.packetService, handlerImpl, packetFactory));
-        handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager, networkUsers, whisper));
+        handlerImpl.addHandler(new CarbonChatPacketHandler(carbonChat, this, userManager, networkUsers, whisper, partyInvites));
 
         try {
             this.messagingService = this.initMessagingService(

@@ -25,6 +25,7 @@ import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -38,11 +39,13 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.PartyImpl;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.users.db.argument.ComponentArgumentFactory;
 import net.draycia.carbon.common.users.db.argument.KeyArgumentFactory;
 import net.draycia.carbon.common.users.db.mapper.ComponentColumnMapper;
 import net.draycia.carbon.common.users.db.mapper.KeyColumnMapper;
+import net.draycia.carbon.common.users.db.mapper.PartyRowMapper;
 import net.draycia.carbon.common.users.db.mapper.PlayerRowMapper;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.SQLDrivers;
@@ -57,6 +60,7 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.logging.LogCreator;
 import org.flywaydb.core.api.logging.LogFactory;
+import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
@@ -162,6 +166,81 @@ public final class DatabaseUserManager extends CachingUserManager {
     }
 
     @Override
+    protected @Nullable PartyImpl loadParty(final UUID uuid) {
+        return this.jdbi.withHandle(handle -> {
+            final @Nullable PartyImpl party = this.selectParty(handle, uuid);
+            if (party == null) {
+                return null;
+            }
+
+            final List<UUID> members = handle.createQuery(this.locator.query("select-party-members"))
+                .bind("partyid", uuid)
+                .mapTo(UUID.class)
+                .list();
+
+            party.rawMembers().addAll(members);
+
+            return party;
+        });
+    }
+
+    private @Nullable PartyImpl selectParty(final Handle handle, final UUID uuid) {
+        return handle.createQuery(this.locator.query("select-party"))
+            .bind("partyid", uuid)
+            .mapTo(PartyImpl.class)
+            .findOne()
+            .orElse(null);
+    }
+
+    @Override
+    protected void saveSync(final PartyImpl party, final Map<UUID, PartyImpl.ChangeType> changes) {
+        this.jdbi.useTransaction(handle -> {
+            final @Nullable PartyImpl existing = this.selectParty(handle, party.id());
+            if (existing == null) {
+                handle.createUpdate(this.locator.query("insert-party"))
+                    .bind("partyid", party.id())
+                    .bind("name", party.name())
+                    .execute();
+            }
+
+            @Nullable PreparedBatch add = null;
+            @Nullable PreparedBatch remove = null;
+            for (final Map.Entry<UUID, PartyImpl.ChangeType> entry : changes.entrySet()) {
+                final UUID id = entry.getKey();
+                final PartyImpl.ChangeType type = entry.getValue();
+                switch (type) {
+                    case ADD -> {
+                        if (add == null) {
+                            add = handle.prepareBatch(this.locator.query("insert-party-member"));
+                        }
+                        add.bind("partyid", party.id()).bind("playerid", id).add();
+                    }
+                    case REMOVE -> {
+                        if (remove == null) {
+                            remove = handle.prepareBatch(this.locator.query("drop-party-member"));
+                        }
+                        remove.bind("playerid", id).add();
+                    }
+                }
+            }
+            if (add != null) {
+                add.execute();
+            }
+            if (remove != null) {
+                remove.execute();
+            }
+        });
+    }
+
+    @Override
+    public void disbandSync(final UUID id) {
+        this.jdbi.useHandle(handle -> {
+            handle.createUpdate(this.locator.query("drop-party")).bind("partyid", id).execute();
+            handle.createUpdate(this.locator.query("clear-party-members")).bind("partyid", id).execute();
+        });
+    }
+
+    @Override
     public void shutdown() {
         super.shutdown();
         this.dataSource.close();
@@ -170,7 +249,7 @@ public final class DatabaseUserManager extends CachingUserManager {
     private Update bindPlayerArguments(final Update update, final CarbonPlayerCommon player) {
         final @Nullable Component nickname = player.nicknameRaw();
         @Nullable String nicknameJson = GsonComponentSerializer.gson().serializeOrNull(nickname);
-        if (nicknameJson != null && nicknameJson.length() > 8192) {
+        if (nicknameJson != null && nicknameJson.toCharArray().length > 8192) {
             this.logger.error("Serialized nickname for player {} was too long ({}>8192), it cannot be saved: {}", player.uuid(), nicknameJson.length(), nicknameJson);
             nicknameJson = null;
         }
@@ -182,7 +261,8 @@ public final class DatabaseUserManager extends CachingUserManager {
             .bind("lastwhispertarget", player.lastWhisperTarget())
             .bind("whisperreplytarget", player.whisperReplyTarget())
             .bind("spying", player.spying())
-            .bind("ignoringdms", player.ignoringDirectMessages());
+            .bind("ignoringdms", player.ignoringDirectMessages())
+            .bind("party", player.party());
     }
 
     public static final class Factory {
@@ -256,6 +336,7 @@ public final class DatabaseUserManager extends CachingUserManager {
                 .registerArgument(new ComponentArgumentFactory())
                 .registerArgument(new KeyArgumentFactory())
                 .registerRowMapper(CarbonPlayerCommon.class, new PlayerRowMapper())
+                .registerRowMapper(PartyImpl.class, new PartyRowMapper())
                 .registerColumnMapper(Key.class, new KeyColumnMapper())
                 .registerColumnMapper(Component.class, new ComponentColumnMapper())
                 .installPlugin(new SqlObjectPlugin());

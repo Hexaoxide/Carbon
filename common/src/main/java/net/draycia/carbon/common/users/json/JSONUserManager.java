@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -39,8 +40,10 @@ import net.draycia.carbon.common.serialisation.gson.ChatChannelSerializerGson;
 import net.draycia.carbon.common.serialisation.gson.UUIDSerializerGson;
 import net.draycia.carbon.common.users.CachingUserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
+import net.draycia.carbon.common.users.PartyImpl;
 import net.draycia.carbon.common.users.PersistentUserProperty;
 import net.draycia.carbon.common.users.ProfileResolver;
+import net.draycia.carbon.common.util.Exceptions;
 import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
@@ -53,6 +56,7 @@ public class JSONUserManager extends CachingUserManager {
 
     private final Gson serializer;
     private final Path userDirectory;
+    private final Path partyDirectory;
     private final ChannelRegistry channelRegistry;
 
     @Inject
@@ -75,9 +79,11 @@ public class JSONUserManager extends CachingUserManager {
             packetFactory
         );
         this.userDirectory = dataDirectory.resolve("users");
+        this.partyDirectory = dataDirectory.resolve("party");
         this.channelRegistry = channelRegistry;
 
         Files.createDirectories(this.userDirectory);
+        Files.createDirectories(this.partyDirectory);
 
         this.serializer = GsonComponentSerializer.gson().populator()
             .apply(new GsonBuilder())
@@ -121,6 +127,10 @@ public class JSONUserManager extends CachingUserManager {
         return this.userDirectory.resolve(id + ".json");
     }
 
+    private Path partyFile(final UUID id) {
+        return this.partyDirectory.resolve(id + ".json");
+    }
+
     @Override
     public void saveSync(final CarbonPlayerCommon player) {
         final Path userFile = this.userFile(player.uuid());
@@ -138,4 +148,53 @@ public class JSONUserManager extends CachingUserManager {
         }
     }
 
+    @Override
+    protected @Nullable PartyImpl loadParty(final UUID uuid) {
+        final Path partyFile = this.partyFile(uuid);
+
+        if (Files.exists(partyFile)) {
+            try {
+                final @Nullable PartyImpl party;
+                try (final Reader reader = Files.newBufferedReader(partyFile)) {
+                    party = this.serializer.<@Nullable PartyImpl>fromJson(reader, PartyImpl.class);
+                }
+
+                if (party == null) {
+                    throw new IllegalStateException("Party file found but was empty.");
+                }
+
+                return party;
+            } catch (final IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void saveSync(final PartyImpl party, final Map<UUID, PartyImpl.ChangeType> changes) {
+        final Path partyFile = this.partyFile(party.id());
+
+        try {
+            final String json = this.serializer.toJson(party);
+
+            if (json == null || json.isBlank()) {
+                throw new IllegalStateException("No data to save - toJson returned null or blank.");
+            }
+
+            Files.writeString(FileUtil.mkParentDirs(partyFile), json);
+        } catch (final IOException exception) {
+            throw new RuntimeException("Exception while saving data for party " + party, exception);
+        }
+    }
+
+    @Override
+    public void disbandSync(final UUID id) {
+        try {
+            Files.deleteIfExists(this.partyFile(id));
+        } catch (final IOException ex) {
+            Exceptions.rethrow(ex);
+        }
+    }
 }

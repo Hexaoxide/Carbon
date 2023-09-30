@@ -33,9 +33,12 @@ import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.messaging.packets.ChatMessagePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
+import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
+import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.messaging.packets.WhisperPacket;
 import net.draycia.carbon.common.users.NetworkUsers;
+import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -44,7 +47,6 @@ import ninja.egg82.messenger.packets.Packet;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
@@ -55,13 +57,15 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
     private final UserManagerInternal<?> userManager;
     private final NetworkUsers networkUsers;
     private final WhisperCommand.WhisperHandler whisper;
+    private final PartyInvites partyInvites;
 
     CarbonChatPacketHandler(
         final CarbonChat carbonChat,
         final MessagingManager messagingManager,
         final UserManagerInternal<?> userManager,
         final NetworkUsers networkUsers,
-        final WhisperCommand.WhisperHandler whisper
+        final WhisperCommand.WhisperHandler whisper,
+        final PartyInvites partyInvites
     ) {
         super(messagingManager.requirePacketService());
         this.events = carbonChat.eventHandler();
@@ -70,12 +74,19 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         this.userManager = userManager;
         this.networkUsers = networkUsers;
         this.whisper = whisper;
+        this.partyInvites = partyInvites;
     }
 
     @Override
-    protected boolean handlePacket(final @NotNull Packet packet) {
+    protected boolean handlePacket(final Packet packet) {
         if (packet instanceof SaveCompletedPacket statePacket) {
             this.userManager.saveCompleteMessageReceived(statePacket.playerId());
+            return true;
+        } else if (packet instanceof PartyChangePacket pkt) {
+            this.userManager.partyChangeMessageReceived(pkt);
+            return true;
+        } else if (packet instanceof PartyInvitePacket pkt) {
+            this.partyInvites.handle(pkt);
             return true;
         } else if (packet instanceof ChatMessagePacket messagePacket) {
             return this.handleMessagePacket(messagePacket);

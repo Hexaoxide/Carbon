@@ -25,7 +25,9 @@ import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
@@ -76,6 +78,26 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
     @Override
     public void cleanup() {
         this.backingManager.cleanup();
+    }
+
+    @Override
+    public CompletableFuture<@Nullable PartyImpl> party(final UUID id) {
+        return this.backingManager.party(id);
+    }
+
+    @Override
+    public CompletableFuture<Void> saveParty(final PartyImpl info) {
+        return this.backingManager.saveParty(info);
+    }
+
+    @Override
+    public void disbandParty(final UUID id) {
+        this.backingManager.disbandParty(id);
+    }
+
+    @Override
+    public void partyChangeMessageReceived(final PartyChangePacket pkt) {
+        this.backingManager.partyChangeMessageReceived(pkt);
     }
 
     public interface PlayerFactory {
