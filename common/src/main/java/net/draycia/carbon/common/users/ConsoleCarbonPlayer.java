@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -247,12 +249,12 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
-    public @Nullable UUID party() {
-        return null;
+    public CompletableFuture<@Nullable Party> party() {
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void party(final @Nullable UUID id) {
+    public void party(final @Nullable Party party) {
 
     }
 

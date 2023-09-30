@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.kyori.adventure.audience.Audience;
@@ -248,7 +249,7 @@ public interface CarbonPlayer extends Audience, Identified {
     /**
      * Adds the player to and removes the player from the ignore list.
      *
-     * @param player the player to be added/removed
+     * @param player      the player to be added/removed
      * @param nowIgnoring if the player should be ignored
      * @since 2.0.0
      */
@@ -257,7 +258,7 @@ public interface CarbonPlayer extends Audience, Identified {
     /**
      * Adds the player to and removes the player from the ignore list.
      *
-     * @param player the player to be added/removed
+     * @param player      the player to be added/removed
      * @param nowIgnoring if the player should be ignored
      * @since 2.0.0
      */
@@ -404,10 +405,8 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     void leaveChannel(ChatChannel channel);
 
-    // TODO use Party type for public API
+    CompletableFuture<@Nullable Party> party();
 
-    @Nullable UUID party();
-
-    void party(@Nullable UUID id);
+    void party(@Nullable Party party);
 
 }

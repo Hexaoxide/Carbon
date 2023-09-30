@@ -28,10 +28,12 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.config.ConfigManager;
@@ -56,6 +58,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private transient @MonotonicNonNull @Inject PlatformScheduler scheduler;
     private transient @MonotonicNonNull @Inject ConfigManager config;
     private transient @MonotonicNonNull @Inject CarbonMessageRenderer messageRenderer;
+    private transient @MonotonicNonNull @Inject UserManagerInternal<?> users;
     private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
@@ -483,14 +486,21 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.properties().forEach(PersistentUserProperty::saved);
     }
 
-    @Override
-    public @Nullable UUID party() {
+    public @Nullable UUID partyId() {
         return this.party.orNull();
     }
 
     @Override
-    public void party(final @Nullable UUID id) {
-        this.party.set(id);
+    public CompletableFuture<@Nullable Party> party() {
+        final @Nullable UUID id = this.party.orNull();
+        if (id == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return this.users.party(id);
     }
 
+    @Override
+    public void party(final @Nullable Party party) {
+        this.party.set(party == null ? null : party.id());
+    }
 }

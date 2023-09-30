@@ -82,8 +82,9 @@ public final class PartyImpl implements Party {
         };
         this.userManager.saveParty(this).whenComplete(exceptionHandler);
         this.userManager.user(id).thenCompose(user -> {
-            final @Nullable UUID oldPartyId = user.party();
-            user.party(this.id);
+            final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) user;
+            final @Nullable UUID oldPartyId = wrapped.partyId();
+            user.party(this);
             if (oldPartyId != null) {
                 return this.userManager.party(oldPartyId).thenAccept(old -> {
                     if (old != null) {
@@ -109,7 +110,8 @@ public final class PartyImpl implements Party {
         };
         this.userManager.saveParty(this).whenComplete(exceptionHandler);
         this.userManager.user(id).thenAccept(user -> {
-            if (Objects.equals(user.party(), this.id)) {
+            final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) user;
+            if (Objects.equals(wrapped.partyId(), this.id)) {
                 user.party(null);
             }
         }).whenComplete(exceptionHandler);

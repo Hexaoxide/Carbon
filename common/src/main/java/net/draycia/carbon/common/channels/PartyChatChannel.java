@@ -30,6 +30,7 @@ import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -60,26 +61,27 @@ public class PartyChatChannel extends ConfigChatChannel {
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return player.party() != null
+        return player.party().join() != null
             ? ChannelPermissionResult.allowed()
             : ChannelPermissionResult.denied(Component.empty());
     }
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return player.party() != null
+        return player.party().join() != null
             ? ChannelPermissionResult.allowed()
             : ChannelPermissionResult.denied(Component.empty());
     }
 
     @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
-        final @Nullable UUID party = sender.party();
+        final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) sender;
+        final @Nullable UUID party = wrapped.partyId();
         if (party == null) {
             throw new IllegalStateException();
         }
         final List<Audience> recipients = super.recipients(sender);
-        recipients.removeIf(r -> r instanceof CarbonPlayer p && !Objects.equals(p.party(), party));
+        recipients.removeIf(r -> r instanceof WrappedCarbonPlayer p && !Objects.equals(p.partyId(), party));
         return recipients;
     }
 
@@ -90,8 +92,7 @@ public class PartyChatChannel extends ConfigChatChannel {
         final Component message,
         final Component originalMessage
     ) {
-        final @Nullable UUID pid = sender.party();
-        final @Nullable Party party = pid == null ? null : this.users.party(pid).join();
+        final @Nullable Party party = sender.party().join();
         return this.carbonMessages().chatFormat(
             SourcedAudience.of(sender, recipient),
             sender.uuid(),

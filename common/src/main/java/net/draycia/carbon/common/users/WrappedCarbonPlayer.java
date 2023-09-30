@@ -27,9 +27,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.SourcedAudience;
@@ -428,14 +430,18 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return this.carbonPlayerCommon.hashCode();
     }
 
+    public @Nullable UUID partyId() {
+        return this.carbonPlayerCommon.partyId();
+    }
+
     @Override
-    public @Nullable UUID party() {
+    public CompletableFuture<@Nullable Party> party() {
         return this.carbonPlayerCommon.party();
     }
 
     @Override
-    public void party(final @Nullable UUID id) {
-        this.carbonPlayerCommon.party(id);
+    public void party(final @Nullable Party party) {
+        this.carbonPlayerCommon.party(party);
     }
 
 }
