@@ -79,4 +79,14 @@ public final class PartyInvitePacket extends CarbonPacket {
         this.writeUUID(this.party, buffer);
     }
 
+    @Override
+    public String toString() {
+        return "PartyInvitePacket{" +
+            "from=" + this.from +
+            ", to=" + this.to +
+            ", party=" + this.party +
+            ", sender=" + this.sender +
+            '}';
+    }
+
 }

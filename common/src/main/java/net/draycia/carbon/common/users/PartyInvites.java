@@ -33,6 +33,7 @@ import net.draycia.carbon.common.messaging.packets.InvalidatePartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -45,16 +46,19 @@ public final class PartyInvites {
     private final Provider<MessagingManager> messaging;
     private final PacketFactory packetFactory;
     private final UserManagerInternal<?> users;
+    private final Logger logger;
 
     @Inject
     private PartyInvites(
         final Provider<MessagingManager> messaging,
         final PacketFactory packetFactory,
-        final UserManagerInternal<?> users
+        final UserManagerInternal<?> users,
+        final Logger logger
     ) {
         this.messaging = messaging;
         this.packetFactory = packetFactory;
         this.users = users;
+        this.logger = logger;
     }
 
     public void sendInvite(final UUID from, final UUID to, final UUID party) {
@@ -108,10 +112,10 @@ public final class PartyInvites {
             if (u.online()) {
                 u.sendMessage(Component.text("u got an invite"));
             }
-        }).exceptionally(thr -> {
-            // todo
-            thr.printStackTrace();
-            return null;
+        }).whenComplete(($, thr) -> {
+            if (thr != null) {
+                this.logger.warn("Exception handling {}", pkt, thr);
+            }
         });
     }
 }
