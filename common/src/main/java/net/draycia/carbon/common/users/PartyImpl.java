@@ -20,15 +20,16 @@
 package net.draycia.carbon.common.users;
 
 import com.google.inject.Inject;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.users.CarbonPlayer;
+import java.util.function.BiConsumer;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.Party;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -42,13 +43,13 @@ public final class PartyImpl implements Party {
     private final Set<UUID> members;
     private transient final Map<UUID, ChangeType> changes;
     private transient @MonotonicNonNull @Inject UserManagerInternal<?> userManager;
+    private transient @MonotonicNonNull @Inject CarbonServer server;
+    private transient @MonotonicNonNull @Inject Logger logger;
     private transient volatile boolean disbanded = false;
 
-    // must call Injector#injectMembers on new object if userManager is null
     private PartyImpl(
         final String name,
-        final UUID id,
-        final @Nullable UserManagerInternal<?> userManager
+        final UUID id
     ) {
         if (name.toCharArray().length > 256) {
             throw new IllegalArgumentException("Party name is too long: '%s', %s > 256".formatted(name, name.toCharArray().length));
@@ -57,22 +58,14 @@ public final class PartyImpl implements Party {
         this.id = id;
         this.members = ConcurrentHashMap.newKeySet();
         this.changes = new ConcurrentHashMap<>();
-        this.userManager = userManager;
     }
 
-    public static PartyImpl create(
-        final String name,
-        final @Nullable UserManagerInternal<?> userManager
-    ) {
-        return create(name, UUID.randomUUID(), userManager);
+    public static PartyImpl create(final String name) {
+        return create(name, UUID.randomUUID());
     }
 
-    public static PartyImpl create(
-        final String name,
-        final UUID id,
-        final @Nullable UserManagerInternal<?> userManager
-    ) {
-        return new PartyImpl(name, id, userManager);
+    public static PartyImpl create(final String name, final UUID id) {
+        return new PartyImpl(name, id);
     }
 
     @Override
@@ -82,24 +75,24 @@ public final class PartyImpl implements Party {
         }
         this.members.add(id);
         this.changes.put(id, ChangeType.ADD);
-        this.userManager.saveParty(this);
-        this.userManager.user(id)
-            .thenAccept(user -> {
-                final @Nullable UUID oldPartyId = user.party();
-                user.party(this.id);
-                if (oldPartyId != null) {
-                    this.userManager.party(oldPartyId).thenAccept(old -> {
-                        if (old != null) {
-                            old.removeMember(user.uuid());
-                        }
-                    });
-                }
-            })
-            // todo
-            .exceptionally(ex -> {
-                ex.printStackTrace();
-                return null;
-            });
+        final BiConsumer<Void, @Nullable Throwable> exceptionHandler = ($, thr) -> {
+            if (thr != null) {
+                this.logger.warn("Exception adding member {} to group {}", id, this.id(), thr);
+            }
+        };
+        this.userManager.saveParty(this).whenComplete(exceptionHandler);
+        this.userManager.user(id).thenCompose(user -> {
+            final @Nullable UUID oldPartyId = user.party();
+            user.party(this.id);
+            if (oldPartyId != null) {
+                return this.userManager.party(oldPartyId).thenAccept(old -> {
+                    if (old != null) {
+                        old.removeMember(user.uuid());
+                    }
+                });
+            }
+            return CompletableFuture.completedFuture(null);
+        }).whenComplete(exceptionHandler);
     }
 
     @Override
@@ -109,18 +102,17 @@ public final class PartyImpl implements Party {
         }
         this.members.remove(id);
         this.changes.put(id, ChangeType.REMOVE);
-        this.userManager.saveParty(this);
-        this.userManager.user(id)
-            .thenAccept(user -> {
-                if (Objects.equals(user.party(), this.id)) {
-                    user.party(null);
-                }
-            })
-            // todo
-            .exceptionally(ex -> {
-                ex.printStackTrace();
-                return null;
-            });
+        final BiConsumer<Void, @Nullable Throwable> exceptionHandler = ($, thr) -> {
+            if (thr != null) {
+                this.logger.warn("Exception removing member {} from group {}", id, this.id(), thr);
+            }
+        };
+        this.userManager.saveParty(this).whenComplete(exceptionHandler);
+        this.userManager.user(id).thenAccept(user -> {
+            if (Objects.equals(user.party(), this.id)) {
+                user.party(null);
+            }
+        }).whenComplete(exceptionHandler);
     }
 
     @Override
@@ -136,8 +128,7 @@ public final class PartyImpl implements Party {
         if (this.disbanded) {
             throw new IllegalStateException("This party is already disbanded.");
         }
-        final List<? extends CarbonPlayer> players = CarbonChatProvider.carbonChat().server().players(); // todo
-        players.stream().filter(p -> this.members.contains(p.uuid())).forEach(p -> p.party(null));
+        this.server.players().stream().filter(p -> this.members.contains(p.uuid())).forEach(p -> p.party(null));
         this.userManager.disbandParty(this.id);
         this.disbanded = true;
     }

@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.users;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -37,14 +38,17 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
 
     private final UserManagerInternal<CarbonPlayerCommon> backingManager;
     private final PlayerFactory playerFactory;
+    private final Injector injector;
 
     @Inject
     private PlatformUserManager(
         final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager,
-        final PlayerFactory playerFactory
+        final PlayerFactory playerFactory,
+        final Injector injector
     ) {
         this.backingManager = backingManager;
         this.playerFactory = playerFactory;
+        this.injector = injector;
     }
 
     @Override
@@ -58,7 +62,9 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
 
     @Override
     public Party createParty(final String name) {
-        return PartyImpl.create(name, this);
+        final PartyImpl party = PartyImpl.create(name);
+        this.injector.injectMembers(party);
+        return party;
     }
 
     @Override

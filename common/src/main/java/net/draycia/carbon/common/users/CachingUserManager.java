@@ -262,9 +262,10 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                         case REMOVE -> impl.rawMembers().remove(id);
                     }
                 });
-            }).exceptionally(thr -> {
-                thr.printStackTrace(); // todo
-                return null;
+            }).whenComplete(($, thr) -> {
+                if (thr != null) {
+                    this.logger.warn("Exception handling party change packet {}", pkt, thr);
+                }
             });
         }
     }

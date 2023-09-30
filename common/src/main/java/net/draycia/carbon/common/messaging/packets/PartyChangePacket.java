@@ -71,4 +71,14 @@ public final class PartyChangePacket extends CarbonPacket {
         this.writeUUID(this.partyId, buffer);
         this.writeMap(this.changes, this::writeUUID, this::writeEnum, buffer);
     }
+
+    @Override
+    public String toString() {
+        return "PartyChangePacket{" +
+            "partyId=" + this.partyId +
+            ", changes=" + this.changes +
+            ", sender=" + this.sender +
+            '}';
+    }
+
 }

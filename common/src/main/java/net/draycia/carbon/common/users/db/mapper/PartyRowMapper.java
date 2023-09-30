@@ -19,16 +19,11 @@
  */
 package net.draycia.carbon.common.users.db.mapper;
 
-import com.google.common.base.Suppliers;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import io.leangen.geantyref.TypeToken;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.function.Supplier;
 import net.draycia.carbon.common.users.PartyImpl;
-import net.draycia.carbon.common.users.UserManagerInternal;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.mapper.ColumnMapper;
@@ -38,20 +33,21 @@ import org.jdbi.v3.core.statement.StatementContext;
 @DefaultQualifier(NonNull.class)
 public final class PartyRowMapper implements RowMapper<PartyImpl> {
 
-    private final Supplier<UserManagerInternal<?>> users;
+    private final Injector injector;
 
     public PartyRowMapper(final Injector injector) {
-        this.users = Suppliers.memoize(() -> (UserManagerInternal<?>) injector.getInstance(Key.get(new TypeToken<UserManagerInternal<?>>() {}.getType())));
+        this.injector = injector;
     }
 
     @Override
     public PartyImpl map(final ResultSet rs, final StatementContext ctx) throws SQLException {
         final ColumnMapper<UUID> uuid = ctx.findColumnMapperFor(UUID.class).orElseThrow();
-        return PartyImpl.create(
+        final PartyImpl party = PartyImpl.create(
             rs.getString("name"),
-            uuid.map(rs, "partyid", ctx),
-            this.users.get()
+            uuid.map(rs, "partyid", ctx)
         );
+        this.injector.injectMembers(party);
+        return party;
     }
 
 }
