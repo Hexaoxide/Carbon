@@ -20,28 +20,28 @@
 package net.draycia.carbon.sponge;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
-import cloud.commandframework.sponge.argument.SinglePlayerSelectorArgument;
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
+import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.util.Component;
-import net.draycia.carbon.api.util.SourcedAudience;
 import net.draycia.carbon.common.CarbonCommonModule;
-import net.draycia.carbon.common.ForCarbon;
+import net.draycia.carbon.common.DataDirectory;
+import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.PlatformUserManager;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.sponge.command.SpongeCommander;
 import net.draycia.carbon.sponge.command.SpongePlayerCommander;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
+import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
+import net.draycia.carbon.sponge.users.SpongeProfileResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -50,63 +50,56 @@ import org.spongepowered.plugin.PluginContainer;
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatSpongeModule extends AbstractModule {
 
-    private final CarbonChatSponge carbonChat;
     private final Path configDir;
     private final PluginContainer pluginContainer;
 
     public CarbonChatSpongeModule(
-        final CarbonChatSponge carbonChat,
         final Path configDir,
         final PluginContainer pluginContainer
     ) {
-        this.carbonChat = carbonChat;
         this.configDir = configDir;
         this.pluginContainer = pluginContainer;
     }
 
     @Provides
     @Singleton
-    public CommandManager<Commander> commandManager() {
+    public CommandManager<Commander> commandManager(
+        final ExecutionCoordinatorHolder executionCoordinatorHolder,
+        final Provider<CarbonChatSponge> carbonChat,
+        final CarbonMessages carbonMessages
+    ) {
         final SpongeCommandManager<Commander> commandManager = new SpongeCommandManager<>(
             this.pluginContainer,
-            AsynchronousCommandExecutionCoordinator.<Commander>builder().build(),
+            executionCoordinatorHolder.executionCoordinator(),
             commander -> ((SpongeCommander) commander).commandCause(),
             commandCause -> {
                 if (commandCause.subject() instanceof ServerPlayer player) {
-                    return new SpongePlayerCommander(this.carbonChat, player, commandCause);
+                    return new SpongePlayerCommander(carbonChat.get(), player, commandCause);
                 }
 
                 return SpongeCommander.from(commandCause);
             }
         );
 
-        CloudUtils.decorateCommandManager(commandManager, this.carbonChat.carbonMessages());
+        CloudUtils.decorateCommandManager(commandManager, carbonMessages);
 
         commandManager.parserMapper().cloudNumberSuggestions(true);
 
         return commandManager;
     }
 
-    @Provides
-    @Singleton
-    public IMessageRenderer<Audience, String, Component, Component> messageRenderer(final Injector injector) {
-        return injector.getInstance(SpongeMessageRenderer.class);
-    }
-
-    @Provides
-    @Singleton
-    public IMessageRenderer<SourcedAudience, String, Component, Component> sourcedRenderer(final Injector injector) {
-        return injector.getInstance(SpongeMessageRenderer.class);
-    }
-
     @Override
     public void configure() {
         this.install(new CarbonCommonModule());
 
-        this.bind(Path.class).annotatedWith(ForCarbon.class).toInstance(this.configDir);
-        this.bind(CarbonChat.class).toInstance(this.carbonChat);
+        this.bind(CarbonChat.class).to(CarbonChatSponge.class);
+        this.bind(Path.class).annotatedWith(DataDirectory.class).toInstance(this.configDir);
         this.bind(CarbonServer.class).to(CarbonServerSponge.class);
-        this.bind(PlayerSuggestions.class).toInstance(new SinglePlayerSelectorArgument.Parser<Commander>()::suggestions);
+        this.bind(CarbonMessageRenderer.class).to(SpongeMessageRenderer.class);
+        this.bind(ProfileResolver.class).to(SpongeProfileResolver.class);
+        this.bind(PlatformScheduler.class).to(SpongeScheduler.class);
+        this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerSponge.class));
+        this.bind(CarbonMessageRenderer.class).to(SpongeMessageRenderer.class);
     }
 
 }

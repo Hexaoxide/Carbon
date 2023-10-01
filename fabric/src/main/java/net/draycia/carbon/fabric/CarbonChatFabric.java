@@ -60,13 +60,14 @@ public final class CarbonChatFabric extends CarbonChatInternal {
         final @PeriodicTasks ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final CarbonMessages carbonMessages,
         final PlatformUserManager userManager,
         final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServer carbonServer,
+        final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,
         final CarbonChannelRegistry channelRegistry,
         final Provider<MessagingManager> messagingManagerProvider,
+
         @SuppressWarnings("unused") // Make sure it initializes now
         final MinecraftServerHolder minecraftServerHolder
     ) {

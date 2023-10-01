@@ -64,18 +64,18 @@ public final class CarbonChatPaper extends CarbonChatInternal {
 
     @Inject
     private CarbonChatPaper(
-        final Injector injector,
         final JavaPlugin plugin,
-        final CarbonMessages carbonMessages,
-        final CarbonEventHandler eventHandler,
-        final CarbonChannelRegistry channelRegistry,
-        final Provider<MessagingManager> messagingManager,
-        final CarbonServer carbonServer,
-        final PlatformUserManager userManager,
+        final Injector injector,
         @PeriodicTasks final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final ExecutionCoordinatorHolder commandExecutor
+        final PlatformUserManager userManager,
+        final ExecutionCoordinatorHolder commandExecutor,
+        final CarbonServer carbonServer,
+        final CarbonMessages carbonMessages,
+        final CarbonEventHandler eventHandler,
+        final CarbonChannelRegistry channelRegistry,
+        final Provider<MessagingManager> messagingManager
     ) {
         super(
             injector,

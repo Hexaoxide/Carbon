@@ -21,36 +21,30 @@ package net.draycia.carbon.sponge;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.users.ComponentPlayerResult;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.profile.ProfileNotFoundException;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
 public final class CarbonServerSponge implements CarbonServer, ForwardingAudience.Single {
 
     private final Game game;
-    private final UserManager<CarbonPlayerSponge> userManager;
+    private final UserManager<?> userManager;
 
     @Inject
-    private CarbonServerSponge(final UserManager<CarbonPlayerCommon> userManager, final Game game) {
+    private CarbonServerSponge(final Game game, final UserManagerInternal<?> userManager) {
         this.game = game;
-        this.userManager = new SpongeUserManager(userManager);
+        this.userManager = userManager;
     }
 
     @Override
@@ -64,45 +58,11 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public List<CarbonPlayerSponge> players() {
-        final var players = new ArrayList<CarbonPlayerSponge>();
-
-        for (final var player : Sponge.server().onlinePlayers()) {
-            final ComponentPlayerResult<CarbonPlayerSponge> result = this.userManager.carbonPlayer(player.uniqueId()).join();
-
-            if (result.player() != null) {
-                players.add(result.player());
-            }
-        }
-
-        return players;
-    }
-
-    @Override
-    public UserManager<CarbonPlayerSponge> userManager() {
-        return this.userManager;
-    }
-
-    @Override
-    public CompletableFuture<@Nullable UUID> resolveUUID(final String username) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return Sponge.server().gameProfileManager().basicProfile(username).join().uuid();
-            } catch (final ProfileNotFoundException exception) {
-                return null;
-            }
-        });
-    }
-
-    @Override
-    public CompletableFuture<@Nullable String> resolveName(final UUID uuid) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return Sponge.server().gameProfileManager().basicProfile(uuid).join().name().orElse(null);
-            } catch (final ProfileNotFoundException exception) {
-                return null;
-            }
-        });
+    public List<? extends CarbonPlayer> players() {
+        return this.game.server().onlinePlayers().stream()
+            .map(sponge -> this.userManager.user(sponge.uniqueId()).getNow(null))
+            .filter(Objects::nonNull)
+            .toList();
     }
 
 }

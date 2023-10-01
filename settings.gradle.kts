@@ -70,7 +70,7 @@ sequenceOf(
   "api",
   "common",
   "paper",
-  // "sponge", // TODO API 10
+  "sponge",
   "fabric",
   "velocity"
 ).forEach {

@@ -27,7 +27,7 @@ tasks {
 
 sponge {
   injectRepositories(false) // We specify repositories in settings.gradle.kts
-  apiVersion("10.0.0-SNAPSHOT")
+  apiVersion("11.0.0-SNAPSHOT")
   plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
     loader {
       name(PluginLoaders.JAVA_PLAIN)
@@ -55,6 +55,16 @@ sponge {
     dependency("luckperms") {
       version(">=5.0.0")
       optional(true)
+    }
+  }
+}
+
+configurations.spongeRuntime {
+  resolutionStrategy {
+    eachDependency {
+      if (target.name == "spongevanilla") {
+        useVersion("1.20.1-11.0.0-RC1356")
+      }
     }
   }
 }

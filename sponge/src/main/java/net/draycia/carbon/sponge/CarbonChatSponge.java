@@ -21,45 +21,32 @@ package net.draycia.carbon.sponge;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
-import java.nio.file.Path;
+import com.google.inject.Provider;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import net.draycia.carbon.api.CarbonChat;
-import net.draycia.carbon.api.CarbonChatProvider;
-import net.draycia.carbon.api.channels.ChannelRegistry;
-import net.draycia.carbon.api.events.CarbonEventHandler;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.api.util.Component;
+import java.util.concurrent.ScheduledExecutorService;
+import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.common.CarbonChatInternal;
+import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
-import net.draycia.carbon.common.users.CarbonPlayerCommon;
-import net.draycia.carbon.common.util.CloudUtils;
-import net.draycia.carbon.common.util.ListenerUtils;
-import net.draycia.carbon.common.util.PlayerUtils;
+import net.draycia.carbon.common.users.PlatformUserManager;
+import net.draycia.carbon.common.users.ProfileCache;
+import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.sponge.listeners.SpongeChatListener;
 import net.draycia.carbon.sponge.listeners.SpongePlayerJoinListener;
 import net.draycia.carbon.sponge.listeners.SpongeReloadListener;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.moonshine.message.IMessageRenderer;
-import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.plugin.PluginContainer;
@@ -67,58 +54,61 @@ import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 @Plugin("carbonchat")
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatSponge implements CarbonChat {
+public final class CarbonChatSponge extends CarbonChatInternal {
 
     private static final Set<Class<?>> LISTENER_CLASSES = Set.of(SpongeChatListener.class,
         SpongePlayerJoinListener.class, SpongeReloadListener.class);
 
     private static final int BSTATS_PLUGIN_ID = 11279;
 
-    private final CarbonMessages carbonMessages;
-    private final CarbonServerSponge carbonServerSponge;
-    private final ChannelRegistry channelRegistry;
-    private final Injector injector;
-    private final Logger logger;
-    private final Path dataDirectory;
     private final PluginContainer pluginContainer;
-    private final UserManager<CarbonPlayerCommon> userManager;
-    private final CarbonEventHandler eventHandler = new CarbonEventHandler();
-    private final UUID serverId = UUID.randomUUID();
-
-    private @MonotonicNonNull MessagingManager messagingManager = null;
 
     @Inject
     public CarbonChatSponge(
         //final Metrics.Factory metricsFactory,
-        final Game game,
         final PluginContainer pluginContainer,
         final Injector injector,
         final Logger logger,
-        @ConfigDir(sharedRoot = false) final Path dataDirectory
+        @PeriodicTasks final ScheduledExecutorService periodicTasks,
+        final ProfileCache profileCache,
+        final ProfileResolver profileResolver,
+        final PlatformUserManager userManager,
+        final ExecutionCoordinatorHolder commandExecutor,
+        final CarbonServer carbonServer,
+        final CarbonMessages carbonMessages,
+        final CarbonEventHandler eventHandler,
+        final CarbonChannelRegistry channelRegistry,
+        final Provider<MessagingManager> messagingManager
     ) {
-        CarbonChatProvider.register(this);
-
+        super(
+            injector,
+            logger,
+            periodicTasks,
+            profileCache,
+            profileResolver,
+            userManager,
+            commandExecutor,
+            carbonServer,
+            carbonMessages,
+            eventHandler,
+            channelRegistry,
+            messagingManager
+        );
         this.pluginContainer = pluginContainer;
+    }
 
-        this.injector = injector.createChildInjector(new CarbonChatSpongeModule(this, dataDirectory, pluginContainer));
-        this.logger = logger;
-        this.carbonMessages = this.injector.getInstance(CarbonMessages.class);
-        this.channelRegistry = this.injector.getInstance(ChannelRegistry.class);
-        this.carbonServerSponge = this.injector.getInstance(CarbonServerSponge.class);
-        this.userManager = this.injector.getInstance(com.google.inject.Key.get(new TypeLiteral<UserManager<CarbonPlayerCommon>>() {}));
-        this.dataDirectory = dataDirectory;
+    @Listener
+    public void onInitialize(final StartingEngineEvent<Server> event) {
+        this.init();
 
         for (final Class<?> clazz : LISTENER_CLASSES) {
-            game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(clazz));
+            event.game().eventManager().registerListeners(this.pluginContainer, this.injector().getInstance(clazz));
         }
 
+        // TODO: metrics
         //metricsFactory.make(BSTATS_PLUGIN_ID);
 
-        // Listeners
-        ListenerUtils.registerCommonListeners(this.injector);
-
-        // Load channels
-        ((CarbonChannelRegistry) this.channelRegistry()).loadConfigChannels(this.carbonMessages);
+        this.checkVersion();
 
         // TODO: Register these in a central location, pull from that in this and plugin.yml
         Sponge.serviceProvider().provide(PermissionService.class).ifPresent(permissionService -> {
@@ -220,74 +210,11 @@ public final class CarbonChatSponge implements CarbonChat {
                 .description(Component.text("Allows the player to send messages to vanished players."))
                 .register();
         });
-
-        // Commands
-        CloudUtils.loadCommands(this.injector);
-        final var commandSettings = CloudUtils.loadCommandSettings(this.injector);
-        CloudUtils.registerCommands(commandSettings);
-    }
-
-    @Override
-    public UUID serverId() {
-        return this.serverId;
-    }
-
-    @Override
-    public @Nullable PacketService packetService() {
-        if (this.messagingManager == null) {
-            this.messagingManager = this.injector.getInstance(MessagingManager.class);
-        }
-
-        return this.messagingManager.packetService();
-    }
-
-    @Listener
-    public void onInitialize(final StartingEngineEvent<Server> event) {
-        // Player data saving
-        Sponge.asyncScheduler().submit(Task.builder()
-            .interval(5, TimeUnit.MINUTES)
-            .plugin(this.pluginContainer)
-            .execute(() -> PlayerUtils.saveLoggedInPlayers(this.carbonServerSponge, this.userManager))
-            .build());
     }
 
     @Listener
     public void onDisable(final StoppingEngineEvent<Server> event) {
-        PlayerUtils.saveLoggedInPlayers(this.carbonServerSponge, this.userManager).forEach(CompletableFuture::join);
-    }
-
-    @Override
-    public Logger logger() {
-        return this.logger;
-    }
-
-    @Override
-    public Path dataDirectory() {
-        return this.dataDirectory;
-    }
-
-    @Override
-    public CarbonServerSponge server() {
-        return this.carbonServerSponge;
-    }
-
-    @Override
-    public ChannelRegistry channelRegistry() {
-        return this.channelRegistry;
-    }
-
-    @Override
-    public <T extends Audience> IMessageRenderer<T, String, Component, Component> messageRenderer() {
-        return this.injector.getInstance(SpongeMessageRenderer.class);
-    }
-
-    public CarbonMessages carbonMessages() {
-        return this.carbonMessages;
-    }
-
-    @Override
-    public @NonNull CarbonEventHandler eventHandler() {
-        return this.eventHandler;
+        this.shutdown();
     }
 
 }

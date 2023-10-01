@@ -52,17 +52,18 @@ public class CarbonChatVelocity extends CarbonChatInternal {
     private final ProxyServer proxyServer;
 
     @Inject
+    // TODO: this is public and paper/fabric's are private, does this have to be public and do the others have to be private?
     public CarbonChatVelocity(
         final ProxyServer proxyServer,
-        final Injector injector,
         final PluginContainer pluginContainer,
+        final Injector injector,
         @PeriodicTasks final ScheduledExecutorService periodicTasks,
         final ProfileCache profileCache,
         final ProfileResolver profileResolver,
-        final ExecutionCoordinatorHolder commandExecutor,
-        final CarbonMessages carbonMessages,
         final PlatformUserManager userManager,
+        final ExecutionCoordinatorHolder commandExecutor,
         final CarbonServerVelocity carbonServer,
+        final CarbonMessages carbonMessages,
         final CarbonEventHandler eventHandler,
         final CarbonChannelRegistry channelRegistry,
         final Provider<MessagingManager> messagingManager
@@ -83,7 +84,7 @@ public class CarbonChatVelocity extends CarbonChatInternal {
         );
         this.proxyServer = proxyServer;
 
-        CarbonChatProvider.register(this);
+        CarbonChatProvider.register(this); // TODO: move to bootstrap?
     }
 
     public void onInitialization(final CarbonVelocityBootstrap carbonVelocityBootstrap) {
