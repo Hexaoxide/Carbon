@@ -70,6 +70,7 @@ public final class PartyInvites {
     public void sendInvite(final UUID from, final UUID to, final UUID party) {
         final Cache<UUID, UUID> cache = this.orCreateInvitesFor(to);
         cache.put(from, party);
+        this.clean();
 
         this.messaging.get().withPacketService(service -> {
             service.queuePacket(this.packetFactory.partyInvite(from, to, party));
@@ -91,6 +92,7 @@ public final class PartyInvites {
         if (cache != null) {
             cache.invalidate(from);
         }
+        this.clean();
     }
 
     public @Nullable Cache<UUID, UUID> invitesFor(final UUID recipient) {
@@ -107,13 +109,17 @@ public final class PartyInvites {
 
     public void handle(final InvalidatePartyInvitePacket pkt) {
         this.invalidateInvite_(pkt.from(), pkt.to());
+        this.clean();
+    }
+
+    private void clean() {
         this.pendingInvites.values().removeIf(it -> it.asMap().size() == 0);
     }
 
     public void handle(final PartyInvitePacket pkt) {
         final @Nullable Cache<UUID, UUID> cache = this.orCreateInvitesFor(pkt.to());
         cache.put(pkt.from(), pkt.party());
-        this.pendingInvites.values().removeIf(it -> it.asMap().size() == 0);
+        this.clean();
 
         final CompletableFuture<? extends CarbonPlayer> to = this.users.user(pkt.to());
         final CompletableFuture<? extends CarbonPlayer> from = this.users.user(pkt.to());
