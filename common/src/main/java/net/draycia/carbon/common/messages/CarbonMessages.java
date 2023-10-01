@@ -445,11 +445,17 @@ public interface CarbonMessages {
     @Message("command.party.received_invite")
     void receivedPartyInvite(Audience audience, Component senderDisplayName, Component partyName);
 
+    @Message("command.party.sent_invite")
+    void sentPartyInvite(Audience audience, Component recipientDisplayName, Component partyName);
+
     @Message("command.party.must_specify_invite")
     void mustSpecifyPartyInvite(Audience audience);
 
     @Message("command.party.no_pending_invites")
     void noPendingPartyInvites(Audience audience);
+
+    @Message("command.party.no_invite_from")
+    void noPartyInviteFrom(Audience audience, Component senderDisplayName);
 
     @Message("command.party.joined_party")
     void joinedParty(Audience audience, Component partyName);

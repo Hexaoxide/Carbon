@@ -23,10 +23,10 @@ import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import cloud.commandframework.types.tuples.Pair;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.inject.Inject;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
@@ -179,35 +179,14 @@ public final class PartyCommands extends CarbonCommand {
         }
         this.partyInvites.sendInvite(player.uuid(), recipient.uuid(), party.id());
         this.messages.receivedPartyInvite(recipient, player.displayName(), party.name());
+        this.messages.sentPartyInvite(player, recipient.displayName(), party.name());
     }
 
     private void acceptInvite(final CommandContext<Commander> ctx) {
         final @Nullable CarbonPlayer sender = ctx.getOrDefault("sender", null);
         final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
-        final @Nullable Cache<UUID, UUID> cache = this.partyInvites.invitesFor(player.uuid());
-        final @Nullable Pair<UUID, UUID> inv;
-        if (cache == null) {
-            inv = null;
-        } else if (sender != null) {
-            final @Nullable UUID i = cache.getIfPresent(sender.uuid());
-            inv = i == null ? null : Pair.of(sender.uuid(), i);
-        } else {
-            final Map<UUID, UUID> map = Map.copyOf(cache.asMap());
-            if (map.size() == 1) {
-                final Map.Entry<UUID, UUID> e = map.entrySet().iterator().next();
-                inv = Pair.of(e.getKey(), e.getValue());
-            } else {
-                this.messages.mustSpecifyPartyInvite(player);
-                return;
-            }
-        }
-        if (inv == null) {
-            this.messages.noPendingPartyInvites(player);
-            return;
-        }
-        final @Nullable Party party = this.userManager.party(inv.getSecond()).join();
-        if (party == null) {
-            this.messages.noPendingPartyInvites(player);
+        final @Nullable Invite invite = this.findInvite(player, sender);
+        if (invite == null) {
             return;
         }
         final @Nullable Party old = player.party().join();
@@ -215,9 +194,9 @@ public final class PartyCommands extends CarbonCommand {
             this.messages.mustLeavePartyFirst(player);
             return;
         }
-        this.partyInvites.invalidateInvite(inv.getFirst(), player.uuid());
-        party.addMember(player.uuid());
-        this.messages.joinedParty(player, party.name());
+        this.partyInvites.invalidateInvite(invite.sender(), player.uuid());
+        invite.party().addMember(player.uuid());
+        this.messages.joinedParty(player, invite.party().name());
     }
 
     private void leaveParty(final CommandContext<Commander> ctx) {
@@ -249,5 +228,39 @@ public final class PartyCommands extends CarbonCommand {
         old.disband();
         this.messages.disbandedParty(player, old.name());
     }
+
+    private @Nullable Invite findInvite(final CarbonPlayer player, final @Nullable CarbonPlayer sender) {
+        final @Nullable Cache<UUID, UUID> cache = this.partyInvites.invitesFor(player.uuid());
+        final @Nullable Map<UUID, UUID> map = cache != null ? Map.copyOf(cache.asMap()) : null;
+
+        if (map == null || map.isEmpty()) {
+            this.messages.noPendingPartyInvites(player);
+            return null;
+        } else if (sender != null) {
+            final @Nullable Party p = Optional.ofNullable(map.get(sender.uuid()))
+                .map(id -> this.userManager.party(id).join())
+                .orElse(null);
+            if (p == null) {
+                this.messages.noPartyInviteFrom(player, sender.displayName());
+                return null;
+            }
+            return new Invite(sender.uuid(), p);
+        }
+
+        if (map.size() == 1) {
+            final Map.Entry<UUID, UUID> e = map.entrySet().iterator().next();
+            final @Nullable Party p = this.userManager.party(e.getValue()).join();
+            if (p == null) {
+                this.messages.noPendingPartyInvites(player);
+                return null;
+            }
+            return new Invite(e.getKey(), p);
+        }
+
+        this.messages.mustSpecifyPartyInvite(player);
+        return null;
+    }
+
+    private record Invite(UUID sender, Party party) {}
 
 }
