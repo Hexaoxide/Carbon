@@ -35,6 +35,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
@@ -58,6 +60,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     private final Injector injector;
     private final Provider<MessagingManager> messagingManager;
     private final PacketFactory packetFactory;
+    private final CarbonServer server;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
     private final AsyncCache<UUID, Party> partyCache;
@@ -67,7 +70,8 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         final ProfileResolver profileResolver,
         final Injector injector,
         final Provider<MessagingManager> messagingManager,
-        final PacketFactory packetFactory
+        final PacketFactory packetFactory,
+        final CarbonServer server
     ) {
         this.logger = logger;
         this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, this.getClass().getSimpleName()));
@@ -78,6 +82,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         this.injector = injector;
         this.messagingManager = messagingManager;
         this.packetFactory = packetFactory;
+        this.server = server;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
     }
@@ -253,21 +258,33 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     @Override
     public void partyChangeMessageReceived(final PartyChangePacket pkt) {
-        final @Nullable CompletableFuture<Party> future = this.partyCache.getIfPresent(pkt.partyId());
-        if (future != null) {
-            future.thenAccept(party -> {
-                final PartyImpl impl = (PartyImpl) party;
-                pkt.changes().forEach((id, type) -> {
-                    switch (type) {
-                        case ADD -> impl.addMemberRaw(id);
-                        case REMOVE -> impl.removeMemberRaw(id);
-                    }
-                });
-            }).whenComplete(($, thr) -> {
-                if (thr != null) {
-                    this.logger.warn("Exception handling party change packet {}", pkt, thr);
+        @Nullable CompletableFuture<@Nullable Party> future = this.partyCache.getIfPresent(pkt.partyId());
+        if (future == null) {
+            // we want to notify any online members even if the party isn't loaded locally yet
+            for (final CarbonPlayer player : this.server.players()) {
+                if (pkt.partyId().equals(((WrappedCarbonPlayer) player).partyId())) {
+                    future = this.party(pkt.partyId());
+                }
+            }
+        }
+        if (future == null) {
+            return;
+        }
+        future.thenAccept(party -> {
+            if (party == null) {
+                return;
+            }
+            final PartyImpl impl = (PartyImpl) party;
+            pkt.changes().forEach((id, type) -> {
+                switch (type) {
+                    case ADD -> impl.addMemberRaw(id);
+                    case REMOVE -> impl.removeMemberRaw(id);
                 }
             });
-        }
+        }).whenComplete(($, thr) -> {
+            if (thr != null) {
+                this.logger.warn("Exception handling party change packet {}", pkt, thr);
+            }
+        });
     }
 }

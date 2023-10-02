@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.DataDirectory;
@@ -69,14 +70,16 @@ public class JSONUserManager extends CachingUserManager {
         final UUIDSerializerGson uuidSerializer,
         final Provider<MessagingManager> messagingManager,
         final PacketFactory packetFactory,
-        final CarbonChannelRegistry channelRegistry
+        final CarbonChannelRegistry channelRegistry,
+        final CarbonServer server
     ) throws IOException {
         super(
             logger,
             profileResolver,
             injector,
             messagingManager,
-            packetFactory
+            packetFactory,
+            server
         );
         this.userDirectory = dataDirectory.resolve("users");
         this.partyDirectory = dataDirectory.resolve("party");

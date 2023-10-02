@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.common.config.ConfigManager;
@@ -83,14 +84,16 @@ public final class DatabaseUserManager extends CachingUserManager {
         final Injector injector,
         final Provider<MessagingManager> messagingManager,
         final PacketFactory packetFactory,
-        final ChannelRegistry channelRegistry
+        final ChannelRegistry channelRegistry,
+        final CarbonServer server
     ) {
         super(
             logger,
             profileResolver,
             injector,
             messagingManager,
-            packetFactory
+            packetFactory,
+            server
         );
         this.jdbi = jdbi;
         this.dataSource = dataSource;
@@ -274,6 +277,7 @@ public final class DatabaseUserManager extends CachingUserManager {
         private final Injector injector;
         private final Provider<MessagingManager> messagingManager;
         private final PacketFactory packetFactory;
+        private final CarbonServer server;
 
         @Inject
         private Factory(
@@ -283,7 +287,8 @@ public final class DatabaseUserManager extends CachingUserManager {
             final ProfileResolver profileResolver,
             final Injector injector,
             final Provider<MessagingManager> messagingManager,
-            final PacketFactory packetFactory
+            final PacketFactory packetFactory,
+            final CarbonServer server
         ) {
             this.channelRegistry = channelRegistry;
             this.configManager = configManager;
@@ -292,6 +297,7 @@ public final class DatabaseUserManager extends CachingUserManager {
             this.injector = injector;
             this.messagingManager = messagingManager;
             this.packetFactory = packetFactory;
+            this.server = server;
         }
 
         public DatabaseUserManager create(final String migrationsLocation, final Consumer<Jdbi> configureJdbi) {
@@ -352,7 +358,8 @@ public final class DatabaseUserManager extends CachingUserManager {
                 this.injector,
                 this.messagingManager,
                 this.packetFactory,
-                this.channelRegistry
+                this.channelRegistry,
+                this.server
             );
         }
 

@@ -496,6 +496,12 @@ public interface CarbonMessages {
     @Message("command.party.disband.description")
     Component partyDisbandDesc();
 
+    @Message("party.player_joined")
+    void playerJoinedParty(Audience audience, Component partyName, Component displayName);
+
+    @Message("party.player_left")
+    void playerLeftParty(Audience audience, Component partyName, Component displayName);
+
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();
 

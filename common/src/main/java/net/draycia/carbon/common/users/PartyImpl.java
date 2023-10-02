@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users;
 
+import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
 import java.util.Map;
 import java.util.Objects;
@@ -27,11 +28,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.PartyJoinEvent;
 import net.draycia.carbon.api.event.events.PartyLeaveEvent;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +56,7 @@ public final class PartyImpl implements Party {
     private transient @MonotonicNonNull @Inject CarbonServer server;
     private transient @MonotonicNonNull @Inject Logger logger;
     private transient @MonotonicNonNull @Inject CarbonEventHandler events;
+    private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private transient volatile boolean disbanded = false;
 
     private PartyImpl(
@@ -173,6 +178,8 @@ public final class PartyImpl implements Party {
                 return PartyImpl.this;
             }
         });
+
+        this.notifyJoin(id);
     }
 
     public void removeMemberRaw(final UUID id) {
@@ -190,6 +197,8 @@ public final class PartyImpl implements Party {
                 return PartyImpl.this;
             }
         });
+
+        this.notifyLeave(id);
     }
 
     public Map<UUID, ChangeType> pollChanges() {
@@ -210,6 +219,42 @@ public final class PartyImpl implements Party {
     @Override
     public UUID id() {
         return this.id;
+    }
+
+    private void notifyJoin(final UUID joined) {
+        this.notifyMembersChanged(joined, (p, party, member) -> {
+            this.messages.playerJoinedParty(member, party.name(), p.displayName());
+        });
+    }
+
+    private void notifyLeave(final UUID left) {
+        this.notifyMembersChanged(left, (p, party, member) -> {
+            this.messages.playerLeftParty(member, party.name(), p.displayName());
+        });
+    }
+
+    private void notifyMembersChanged(final UUID changed, final ChangeNotifier notify) {
+        final Supplier<CompletableFuture<? extends CarbonPlayer>> changedPlayer = Suppliers.memoize(() -> this.userManager.user(changed));
+        for (final CarbonPlayer player : this.server.players()) {
+            if (player.uuid().equals(changed)) {
+                continue;
+            }
+            final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) player;
+            if (this.id().equals(wrapped.partyId())) {
+                changedPlayer.get().thenAccept(p -> {
+                    notify.notify(p, this, wrapped);
+                }).whenComplete(($, thr) -> {
+                    this.logger.warn("Exception notifying members of party change", thr);
+                });
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface ChangeNotifier {
+
+        void notify(CarbonPlayer changed, Party party, CarbonPlayer member);
+
     }
 
     @Override
