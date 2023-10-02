@@ -19,8 +19,11 @@
  */
 package net.draycia.carbon.common.users;
 
-import com.google.inject.MembersInjector;
+import com.github.benmanes.caffeine.cache.AsyncCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +35,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
+import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -49,25 +57,32 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected final Logger logger;
     protected final ProfileResolver profileResolver;
     private final ExecutorService executor;
-    private final MembersInjector<CarbonPlayerCommon> playerInjector;
+    private final Injector injector;
     private final Provider<MessagingManager> messagingManager;
     private final PacketFactory packetFactory;
+    private final CarbonServer server;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
+    private final AsyncCache<UUID, Party> partyCache;
 
     protected CachingUserManager(
         final Logger logger,
         final ProfileResolver profileResolver,
-        final MembersInjector<CarbonPlayerCommon> playerInjector,
+        final Injector injector,
         final Provider<MessagingManager> messagingManager,
-        final PacketFactory packetFactory
+        final PacketFactory packetFactory,
+        final CarbonServer server
     ) {
         this.logger = logger;
         this.executor = Executors.newSingleThreadExecutor(ConcurrentUtil.carbonThreadFactory(logger, this.getClass().getSimpleName()));
+        this.partyCache = Caffeine.newBuilder()
+            .expireAfterAccess(Duration.ofMinutes(5))
+            .buildAsync();
         this.profileResolver = profileResolver;
-        this.playerInjector = playerInjector;
+        this.injector = injector;
         this.messagingManager = messagingManager;
         this.packetFactory = packetFactory;
+        this.server = server;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
     }
@@ -75,6 +90,12 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     protected abstract CarbonPlayerCommon loadOrCreate(UUID uuid);
 
     protected abstract void saveSync(CarbonPlayerCommon player);
+
+    protected abstract @Nullable PartyImpl loadParty(UUID uuid);
+
+    protected abstract void saveSync(PartyImpl info, Map<UUID, PartyImpl.ChangeType> polledChanges);
+
+    protected abstract void disbandSync(UUID id);
 
     private CompletableFuture<Void> save(final CarbonPlayerCommon player) {
         return CompletableFuture.runAsync(() -> {
@@ -85,6 +106,11 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 packetService.flushQueue();
             });
         }, this.executor);
+    }
+
+    @Override
+    public Party createParty(final Component name) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -112,7 +138,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
             return this.cache.computeIfAbsent(uuid, $ -> {
                 final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
                     final CarbonPlayerCommon player = this.loadOrCreate(uuid);
-                    this.playerInjector.injectMembers(player);
+                    this.injector.injectMembers(player);
                     if (this instanceof DatabaseUserManager) {
                         player.registerPropertyUpdateListener(() ->
                             this.save(player).exceptionally(saveExceptionHandler(this.logger, player.username, uuid)));
@@ -198,4 +224,67 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         });
     }
 
+    @Override
+    public CompletableFuture<@Nullable Party> party(final UUID id) {
+        return this.partyCache.get(id, (uuid, cacheExecutor) -> CompletableFuture.supplyAsync(() -> {
+            final @Nullable PartyImpl party = this.loadParty(uuid);
+            if (party != null) {
+                this.injector.injectMembers(party);
+            }
+            return party;
+        }, this.executor));
+    }
+
+    @Override
+    public CompletableFuture<Void> saveParty(final PartyImpl info) {
+        return CompletableFuture.runAsync(() -> {
+            final Map<UUID, PartyImpl.ChangeType> changes = info.pollChanges();
+            if (changes.isEmpty()) {
+                return;
+            }
+            this.saveSync(info, changes);
+            this.messagingManager.get().withPacketService(service -> {
+                service.queuePacket(this.packetFactory.partyChange(info.id(), changes));
+                service.flushQueue();
+            });
+        }, this.executor);
+    }
+
+    @Override
+    public final void disbandParty(final UUID id) {
+        this.partyCache.synchronous().invalidate(id);
+        this.executor.execute(() -> this.disbandSync(id));
+    }
+
+    @Override
+    public void partyChangeMessageReceived(final PartyChangePacket pkt) {
+        @Nullable CompletableFuture<@Nullable Party> future = this.partyCache.getIfPresent(pkt.partyId());
+        if (future == null) {
+            // we want to notify any online members even if the party isn't loaded locally yet
+            for (final CarbonPlayer player : this.server.players()) {
+                if (pkt.partyId().equals(((WrappedCarbonPlayer) player).partyId())) {
+                    future = this.party(pkt.partyId());
+                }
+            }
+        }
+        if (future == null) {
+            return;
+        }
+        future.thenAccept(party -> {
+            if (party == null) {
+                return;
+            }
+            final PartyImpl impl = (PartyImpl) party;
+            pkt.changes().forEach((id, type) -> {
+                switch (type) {
+                    case ADD -> impl.addMemberRaw(id);
+                    case REMOVE -> impl.removeMemberRaw(id);
+                }
+            });
+        }).whenComplete(($, thr) -> {
+            if (thr != null) {
+                this.logger.warn("Exception handling party change packet {}", pkt, thr);
+            }
+        });
+    }
 }

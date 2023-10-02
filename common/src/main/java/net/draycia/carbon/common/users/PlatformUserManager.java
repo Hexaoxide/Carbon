@@ -20,12 +20,17 @@
 package net.draycia.carbon.common.users;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.draycia.carbon.api.users.Party;
+import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @Singleton
@@ -34,14 +39,17 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
 
     private final UserManagerInternal<CarbonPlayerCommon> backingManager;
     private final PlayerFactory playerFactory;
+    private final Injector injector;
 
     @Inject
     private PlatformUserManager(
         final @Backing UserManagerInternal<CarbonPlayerCommon> backingManager,
-        final PlayerFactory playerFactory
+        final PlayerFactory playerFactory,
+        final Injector injector
     ) {
         this.backingManager = backingManager;
         this.playerFactory = playerFactory;
+        this.injector = injector;
     }
 
     @Override
@@ -51,6 +59,13 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
             common.markTransientLoaded(!wrapped.online());
             return wrapped;
         });
+    }
+
+    @Override
+    public Party createParty(final Component name) {
+        final PartyImpl party = PartyImpl.create(name);
+        this.injector.injectMembers(party);
+        return party;
     }
 
     @Override
@@ -76,6 +91,26 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
     @Override
     public void cleanup() {
         this.backingManager.cleanup();
+    }
+
+    @Override
+    public CompletableFuture<@Nullable Party> party(final UUID id) {
+        return this.backingManager.party(id);
+    }
+
+    @Override
+    public CompletableFuture<Void> saveParty(final PartyImpl info) {
+        return this.backingManager.saveParty(info);
+    }
+
+    @Override
+    public void disbandParty(final UUID id) {
+        this.backingManager.disbandParty(id);
+    }
+
+    @Override
+    public void partyChangeMessageReceived(final PartyChangePacket pkt) {
+        this.backingManager.partyChangeMessageReceived(pkt);
     }
 
     public interface PlayerFactory {

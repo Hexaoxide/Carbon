@@ -87,4 +87,12 @@ public abstract class CarbonPacket extends AbstractPacket {
         return map;
     }
 
+    protected final <E extends Enum<E>> void writeEnum(final E value, final ByteBuf buf) {
+        this.writeString(value.name(), buf);
+    }
+
+    protected final <E extends Enum<E>> E readEnum(final ByteBuf buf, final Class<E> cls) {
+        return Enum.valueOf(cls, this.readString(buf));
+    }
+
 }

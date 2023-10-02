@@ -17,32 +17,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users;
+package net.draycia.carbon.api.event.events;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
+import net.draycia.carbon.api.users.Party;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+/**
+ * Called when a player is removed from a {@link Party}.
+ *
+ * @since 2.1.0
+ */
 @DefaultQualifier(NonNull.class)
-public interface UserManagerInternal<C extends CarbonPlayer> extends UserManager<C> {
+public interface PartyLeaveEvent extends CarbonEvent {
 
-    void shutdown();
+    /**
+     * ID of the player leaving a party.
+     *
+     * <p>The player's {@link CarbonPlayer#party()} field is not guaranteed to be updated immediately,
+     * especially if the change needs to propagate cross-server.</p>
+     *
+     * @return player id
+     * @since 2.1.0
+     */
+    UUID playerId();
 
-    CompletableFuture<Void> saveIfNeeded(C player);
+    /**
+     * The party being left.
+     *
+     * <p>{@link Party#members()} will reflect the removed member.</p>
+     *
+     * @return party
+     * @since 2.1.0
+     */
+    Party party();
 
-    CompletableFuture<Void> loggedOut(UUID uuid);
-
-    void saveCompleteMessageReceived(UUID playerId);
-
-    void cleanup();
-
-    CompletableFuture<Void> saveParty(PartyImpl info);
-
-    void disbandParty(UUID id);
-
-    void partyChangeMessageReceived(PartyChangePacket pkt);
 }

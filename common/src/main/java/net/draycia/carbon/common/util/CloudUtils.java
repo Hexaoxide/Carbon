@@ -51,6 +51,7 @@ import net.draycia.carbon.common.command.commands.LeaveCommand;
 import net.draycia.carbon.common.command.commands.MuteCommand;
 import net.draycia.carbon.common.command.commands.MuteInfoCommand;
 import net.draycia.carbon.common.command.commands.NicknameCommand;
+import net.draycia.carbon.common.command.commands.PartyCommands;
 import net.draycia.carbon.common.command.commands.ReloadCommand;
 import net.draycia.carbon.common.command.commands.ReplyCommand;
 import net.draycia.carbon.common.command.commands.ToggleMessagesCommand;
@@ -78,7 +79,7 @@ public final class CloudUtils {
         ContinueCommand.class, DebugCommand.class, HelpCommand.class, IgnoreCommand.class, MuteCommand.class,
         MuteInfoCommand.class, NicknameCommand.class, ReloadCommand.class, ReplyCommand.class, ToggleMessagesCommand.class,
         UnignoreCommand.class, UnmuteCommand.class, UpdateUsernameCommand.class, WhisperCommand.class, JoinCommand.class, LeaveCommand.class,
-        IgnoreListCommand.class);
+        IgnoreListCommand.class, PartyCommands.class);
 
     private static final List<CarbonCommand> CONSTRUCTED_COMMANDS = new ArrayList<>();
 

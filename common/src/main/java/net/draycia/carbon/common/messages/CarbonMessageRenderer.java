@@ -19,15 +19,29 @@
  */
 package net.draycia.carbon.common.messages;
 
+import java.util.Map;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 
 @FunctionalInterface
-public interface CarbonMessageRenderer extends IMessageRenderer<Audience, String, Component, Tag> {
+public interface CarbonMessageRenderer extends IMessageRenderer<Audience, String, Component, Object> {
 
-    default IMessageRenderer<SourcedAudience, String, Component, Tag> asSourced() {
+    static void addResolved(final TagResolver.Builder tagResolver, final Map<String, ?> resolvedPlaceholders) {
+        for (final var entry : resolvedPlaceholders.entrySet()) {
+            if (entry.getValue() instanceof Tag tag) {
+                tagResolver.tag(entry.getKey(), tag);
+            } else if (entry.getValue() instanceof TagResolver resolver) {
+                tagResolver.resolver(resolver);
+            } else {
+                throw new IllegalArgumentException(entry.getValue().toString());
+            }
+        }
+    }
+
+    default IMessageRenderer<SourcedAudience, String, Component, Object> asSourced() {
         return this::render;
     }
 

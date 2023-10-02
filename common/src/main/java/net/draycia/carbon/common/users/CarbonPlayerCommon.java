@@ -28,10 +28,12 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.config.ConfigManager;
@@ -56,6 +58,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private transient @MonotonicNonNull @Inject PlatformScheduler scheduler;
     private transient @MonotonicNonNull @Inject ConfigManager config;
     private transient @MonotonicNonNull @Inject CarbonMessageRenderer messageRenderer;
+    private transient @MonotonicNonNull @Inject UserManagerInternal<?> users;
     private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
@@ -82,6 +85,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     protected final PersistentUserProperty<Set<Key>> leftChannels;
 
+    protected final PersistentUserProperty<UUID> party;
+
     public CarbonPlayerCommon(
         final boolean muted,
         final boolean deafened,
@@ -92,7 +97,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final @Nullable UUID lastWhisperTarget,
         final @Nullable UUID whisperReplyTarget,
         final boolean spying,
-        final boolean ignoreDirectMessages
+        final boolean ignoreDirectMessages,
+        final @Nullable UUID party
     ) {
         this.muted = PersistentUserProperty.of(muted);
         this.deafened = PersistentUserProperty.of(deafened);
@@ -106,6 +112,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(ignoreDirectMessages);
+        this.party = PersistentUserProperty.of(party);
     }
 
     public CarbonPlayerCommon(
@@ -122,6 +129,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.username = username;
         this.uuid = uuid;
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
+        this.party = PersistentUserProperty.empty();
     }
 
     public CarbonPlayerCommon() {
@@ -133,6 +141,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
+        this.party = PersistentUserProperty.empty();
     }
 
     public boolean needsSave() {
@@ -148,7 +157,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             this.spying,
             this.ignoredPlayers,
             this.leftChannels,
-            this.ignoringDirectMessages
+            this.ignoringDirectMessages,
+            this.party
         );
     }
 
@@ -476,4 +486,20 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.properties().forEach(PersistentUserProperty::saved);
     }
 
+    public @Nullable UUID partyId() {
+        return this.party.orNull();
+    }
+
+    @Override
+    public CompletableFuture<@Nullable Party> party() {
+        final @Nullable UUID id = this.party.orNull();
+        if (id == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return this.users.party(id);
+    }
+
+    public void party(final @Nullable Party party) {
+        this.party.set(party == null ? null : party.id());
+    }
 }

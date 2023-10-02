@@ -34,12 +34,13 @@ public interface ConfigChannelMessages {
     // TODO: locale placeholders?
     @Message("channel.format")
     Component chatFormat(
-        final SourcedAudience audience,
+        SourcedAudience audience,
         @Placeholder UUID uuid,
         @Placeholder Key channel,
         @Placeholder("display_name") Component displayName,
         @Placeholder String username,
-        @Placeholder Component message
+        @Placeholder Component message,
+        @Placeholder("party_name") Component partyName
     );
 
 }

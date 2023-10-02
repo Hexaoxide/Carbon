@@ -318,7 +318,6 @@ public interface CarbonMessages {
     @Message("command.ignorelist.pagination_header")
     Component commandIgnoreListPaginationHeader(int page, int pages);
 
-    // todo make username placeholder work in click event commands (change placeholder type to TagResolver)
     @Message("command.ignorelist.pagination_element")
     Component commandIgnoreListPaginationElement(Component displayName, String username);
 
@@ -426,6 +425,87 @@ public interface CarbonMessages {
 
     @Message("command.updateusername.updated")
     void usernameUpdated(final Audience audience, @Placeholder("newname") final String newName);
+
+    @Message("command.party.pagination_header")
+    Component commandPartyPaginationHeader(Component partyName);
+
+    @Message("command.party.pagination_element")
+    Component commandPartyPaginationElement(Component displayName, String username, Option online);
+
+    @Message("command.party.created")
+    void partyCreated(Audience audience, Component partyName);
+
+    @Message("command.party.not_in_party")
+    void notInParty(Audience audience);
+
+    @Message("command.party.current_party")
+    void currentParty(Audience audience, Component partyName);
+
+    @Message("command.party.must_leave_current_first")
+    void mustLeavePartyFirst(Audience audience);
+
+    @Message("command.party.name_too_long")
+    void partyNameTooLong(Audience audience);
+
+    @Message("command.party.received_invite")
+    void receivedPartyInvite(Audience audience, Component senderDisplayName, Component partyName);
+
+    @Message("command.party.sent_invite")
+    void sentPartyInvite(Audience audience, Component recipientDisplayName, Component partyName);
+
+    @Message("command.party.must_specify_invite")
+    void mustSpecifyPartyInvite(Audience audience);
+
+    @Message("command.party.no_pending_invites")
+    void noPendingPartyInvites(Audience audience);
+
+    @Message("command.party.no_invite_from")
+    void noPartyInviteFrom(Audience audience, Component senderDisplayName);
+
+    @Message("command.party.joined_party")
+    void joinedParty(Audience audience, Component partyName);
+
+    @Message("command.party.left_party")
+    void leftParty(Audience audience, Component partyName);
+
+    @Message("command.party.disbanded")
+    void disbandedParty(Audience audience, Component partyName);
+
+    @Message("command.party.cannot_disband_multiple_members")
+    void cannotDisbandParty(Audience audience, Component partyName);
+
+    @Message("command.party.must_be_in_party")
+    void mustBeInParty(Audience audience);
+
+    @Message("command.party.cannot_invite_self")
+    void cannotInviteSelf(Audience audience);
+
+    @Message("command.party.already_in_party")
+    void alreadyInParty(Audience audience, Component displayName);
+
+    @Message("command.party.description")
+    Component partyDesc();
+
+    @Message("command.party.create.description")
+    Component partyCreateDesc();
+
+    @Message("command.party.invite.description")
+    Component partyInviteDesc();
+
+    @Message("command.party.accept.description")
+    Component partyAcceptDesc();
+
+    @Message("command.party.leave.description")
+    Component partyLeaveDesc();
+
+    @Message("command.party.disband.description")
+    Component partyDisbandDesc();
+
+    @Message("party.player_joined")
+    void playerJoinedParty(Audience audience, Component partyName, Component displayName);
+
+    @Message("party.player_left")
+    void playerLeftParty(Audience audience, Component partyName, Component displayName);
 
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();

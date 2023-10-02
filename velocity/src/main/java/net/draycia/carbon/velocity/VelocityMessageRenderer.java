@@ -34,7 +34,6 @@ import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -56,15 +55,13 @@ public class VelocityMessageRenderer implements CarbonMessageRenderer {
     public Component render(
         final Audience receiver,
         final String intermediateMessage,
-        final Map<String, ? extends Tag> resolvedPlaceholders,
+        final Map<String, ?> resolvedPlaceholders,
         final Method method,
         final Type owner
     ) {
         final TagResolver.Builder tagResolver = TagResolver.builder();
 
-        for (final var entry : resolvedPlaceholders.entrySet()) {
-            tagResolver.tag(entry.getKey(), entry.getValue());
-        }
+        CarbonMessageRenderer.addResolved(tagResolver, resolvedPlaceholders);
 
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 

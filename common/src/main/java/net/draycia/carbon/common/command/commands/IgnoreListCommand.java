@@ -24,7 +24,6 @@ import cloud.commandframework.arguments.standard.IntegerArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
-import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
@@ -34,17 +33,10 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.Pagination;
+import net.draycia.carbon.common.util.PaginationHelper;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import static net.kyori.adventure.text.Component.empty;
-import static net.kyori.adventure.text.Component.space;
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 
 @DefaultQualifier(NonNull.class)
 public final class IgnoreListCommand extends CarbonCommand {
@@ -52,16 +44,19 @@ public final class IgnoreListCommand extends CarbonCommand {
     private final UserManager<?> users;
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages messages;
+    private final PaginationHelper pagination;
 
     @Inject
     public IgnoreListCommand(
         final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
-        final CarbonMessages messages
+        final CarbonMessages messages,
+        final PaginationHelper pagination
     ) {
         this.users = userManager;
         this.commandManager = commandManager;
         this.messages = messages;
+        this.pagination = pagination;
     }
 
     @Override
@@ -105,48 +100,13 @@ public final class IgnoreListCommand extends CarbonCommand {
                 final CarbonPlayer p = e.get();
                 return this.messages.commandIgnoreListPaginationElement(p.displayName(), p.username());
             })
-            .footer(this.footerRenderer(p -> "/" + this.commandSettings().name() + " " + p))
+            .footer(this.pagination.footerRenderer(p -> "/" + this.commandSettings().name() + " " + p))
             .pageOutOfRange(this.messages::paginationOutOfRange)
             .build();
 
         final int page = ctx.get("page");
 
         pagination.render(elements, page, 6).forEach(sender::sendMessage);
-    }
-
-    private Pagination.BiIntFunction<ComponentLike> footerRenderer(final IntFunction<String> commandFunction) {
-        return (currentPage, pages) -> {
-            if (pages == 1) {
-                return empty(); // we don't need to see 'Page 1/1'
-            }
-            final TextComponent.Builder buttons = text();
-            if (currentPage > 1) {
-                buttons.append(this.previousPageButton(currentPage, commandFunction));
-            }
-            if (currentPage > 1 && currentPage < pages) {
-                buttons.append(space());
-            }
-            if (currentPage < pages) {
-                buttons.append(this.nextPageButton(currentPage, commandFunction));
-            }
-            return this.messages.paginationFooter(currentPage, pages, buttons.build());
-        };
-    }
-
-    private Component previousPageButton(final int currentPage, final IntFunction<String> commandFunction) {
-        return text()
-            .content("←")
-            .clickEvent(runCommand(commandFunction.apply(currentPage - 1)))
-            .hoverEvent(this.messages.paginationClickForPreviousPage())
-            .build();
-    }
-
-    private Component nextPageButton(final int currentPage, final IntFunction<String> commandFunction) {
-        return text()
-            .content("→")
-            .clickEvent(runCommand(commandFunction.apply(currentPage + 1)))
-            .hoverEvent(this.messages.paginationClickForNextPage())
-            .build();
     }
 
 }

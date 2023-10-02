@@ -17,32 +17,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.users;
+package net.draycia.carbon.common.users.db.mapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
+import net.draycia.carbon.common.users.PartyImpl;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jdbi.v3.core.mapper.ColumnMapper;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
 @DefaultQualifier(NonNull.class)
-public interface UserManagerInternal<C extends CarbonPlayer> extends UserManager<C> {
+public final class PartyRowMapper implements RowMapper<PartyImpl> {
 
-    void shutdown();
+    @Override
+    public PartyImpl map(final ResultSet rs, final StatementContext ctx) throws SQLException {
+        final ColumnMapper<Component> component = ctx.findColumnMapperFor(Component.class).orElseThrow();
+        final ColumnMapper<UUID> uuid = ctx.findColumnMapperFor(UUID.class).orElseThrow();
+        return PartyImpl.create(
+            component.map(rs, "name", ctx),
+            uuid.map(rs, "partyid", ctx)
+        );
+    }
 
-    CompletableFuture<Void> saveIfNeeded(C player);
-
-    CompletableFuture<Void> loggedOut(UUID uuid);
-
-    void saveCompleteMessageReceived(UUID playerId);
-
-    void cleanup();
-
-    CompletableFuture<Void> saveParty(PartyImpl info);
-
-    void disbandParty(UUID id);
-
-    void partyChangeMessageReceived(PartyChangePacket pkt);
 }

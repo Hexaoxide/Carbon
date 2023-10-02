@@ -29,6 +29,7 @@ import com.google.inject.TypeLiteral;
 import com.seiama.registry.Holder;
 import com.seiama.registry.Registry;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,11 +76,14 @@ import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 @DefaultQualifier(NonNull.class)
 public class CarbonChannelRegistry extends ChatListenerInternal implements ChannelRegistry {
 
+    private static final String PARTYCHAT_CONF = "partychat.conf";
     private static @MonotonicNonNull ObjectMapper<ConfigChatChannel> MAPPER;
+    private static @MonotonicNonNull ObjectMapper<PartyChatChannel> PARTY_MAPPER;
 
     static {
         try {
             MAPPER = ObjectMapper.factory().get(ConfigChatChannel.class);
+            PARTY_MAPPER = ObjectMapper.factory().get(PartyChatChannel.class);
         } catch (final SerializationException e) {
             e.printStackTrace();
         }
@@ -88,7 +92,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private final Path configChannelDir;
     private final Injector injector;
     private final Logger logger;
-    private final ConfigManager configManager;
+    private final ConfigManager config;
     private @MonotonicNonNull Key defaultKey;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
@@ -103,15 +107,15 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         @DataDirectory final Path dataDirectory,
         final Injector injector,
         final Logger logger,
-        final ConfigManager configManager,
+        final ConfigManager config,
         final CarbonMessages carbonMessages,
         final CarbonEventHandler events
     ) {
-        super(events, carbonMessages, configManager);
+        super(events, carbonMessages, config);
         this.configChannelDir = dataDirectory.resolve("channels");
         this.injector = injector;
         this.logger = logger;
-        this.configManager = configManager;
+        this.config = config;
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
 
@@ -211,10 +215,16 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
     private void loadConfigChannels_(final CarbonMessages messages) {
         this.logger.info("Loading config channels...");
-        this.defaultKey = this.configManager.primaryConfig().defaultChannel();
+        this.defaultKey = this.config.primaryConfig().defaultChannel();
+
+        final boolean party = this.config.primaryConfig().partyChat();
+        if (party) {
+            this.saveDefaultPartyConfig();
+        }
 
         List<Path> channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
-        if (channelConfigs.isEmpty()) {
+        if (channelConfigs.isEmpty() ||
+            party && channelConfigs.size() == 1 && channelConfigs.get(0).getFileName().toString().equals(PARTYCHAT_CONF)) {
             this.saveDefaultChannelConfig();
             channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
         }
@@ -258,7 +268,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         try {
             final Path configFile = this.configChannelDir.resolve("global.conf");
             final ConfigChatChannel configChannel = this.injector.getInstance(ConfigChatChannel.class);
-            final ConfigurationLoader<?> loader = this.configManager.configurationLoader(FileUtil.mkParentDirs(configFile));
+            final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile));
             final ConfigurationNode node = loader.createNode();
             node.set(ConfigChatChannel.class, configChannel);
             loader.save(node);
@@ -267,13 +277,29 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
     }
 
+    private void saveDefaultPartyConfig() {
+        final Path configFile = this.configChannelDir.resolve(PARTYCHAT_CONF);
+        if (Files.isRegularFile(configFile)) {
+            return;
+        }
+        try {
+            final ConfigChatChannel configChannel = this.injector.getInstance(PartyChatChannel.class);
+            final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile));
+            final ConfigurationNode node = loader.createNode();
+            node.set(PartyChatChannel.class, configChannel);
+            loader.save(node);
+        } catch (final IOException exception) {
+            throw Exceptions.rethrow(exception);
+        }
+    }
+
     private @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.configManager.configurationLoader(channelFile);
+        final ConfigurationLoader<?> loader = this.config.configurationLoader(channelFile);
 
         try {
             final ConfigurationNode loaded = updateNode(loader.load());
             loader.save(loaded);
-            return MAPPER.load(loaded);
+            return (this.config.primaryConfig().partyChat() && channelFile.getFileName().toString().equals(PARTYCHAT_CONF) ? PARTY_MAPPER : MAPPER).load(loaded);
         } catch (final ConfigurateException exception) {
             this.logger.warn("Failed to load channel from file '{}'", channelFile, exception);
         }

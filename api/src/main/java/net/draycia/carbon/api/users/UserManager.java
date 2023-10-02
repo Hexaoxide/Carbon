@@ -21,7 +21,9 @@ package net.draycia.carbon.api.users;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -44,5 +46,30 @@ public interface UserManager<C extends CarbonPlayer> {
      * @since 2.1.0
      */
     CompletableFuture<C> user(UUID uuid);
+
+    /**
+     * Create a new {@link Party} with the specified name.
+     *
+     * <p>Parties with no users will not be saved. Use {@link Party#disband()} to discard.</p>
+     * <p>The returned reference will expire after one minute, store {@link Party#id()} rather than the instance and use {@link #party(UUID)} to retrieve.</p>
+     *
+     * @param name party name
+     * @return new party
+     * @since 2.1.0
+     */
+    Party createParty(Component name);
+
+    /**
+     * Look up an existing party by its id.
+     *
+     * <p>As parties that have never had a user are not saved, they are not retrievable here.</p>
+     * <p>The returned reference will expire after one minute, do not cache it. The implementation handles caching as is appropriate.</p>
+     *
+     * @param id party id
+     * @return existing party
+     * @see #createParty(Component)
+     * @since 2.1.0
+     */
+    CompletableFuture<@Nullable Party> party(UUID id);
 
 }
