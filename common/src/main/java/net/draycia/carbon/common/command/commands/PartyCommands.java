@@ -26,6 +26,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.inject.Inject;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +40,8 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messages.Option;
+import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
@@ -60,6 +63,7 @@ public final class PartyCommands extends CarbonCommand {
     private final ConfigManager config;
     private final CarbonMessages messages;
     private final PaginationHelper pagination;
+    private final NetworkUsers network;
 
     @Inject
     public PartyCommands(
@@ -69,7 +73,8 @@ public final class PartyCommands extends CarbonCommand {
         final PartyInvites partyInvites,
         final ConfigManager config,
         final CarbonMessages messages,
-        final PaginationHelper pagination
+        final PaginationHelper pagination,
+        final NetworkUsers network
     ) {
         this.commandManager = commandManager;
         this.argumentFactory = argumentFactory;
@@ -78,6 +83,7 @@ public final class PartyCommands extends CarbonCommand {
         this.config = config;
         this.messages = messages;
         this.pagination = pagination;
+        this.network = network;
     }
 
     @Override
@@ -148,7 +154,7 @@ public final class PartyCommands extends CarbonCommand {
         this.messages.currentParty(player, party.name());
 
         final var elements = party.members().stream()
-            .sorted() // this way page numbers make sense
+            .sorted(Comparator.<UUID, Boolean>comparing(this.network::online).reversed().thenComparing(UUID::compareTo))
             .map(id -> (Supplier<CarbonPlayer>) () -> this.userManager.user(id).join())
             .toList();
 
@@ -160,7 +166,7 @@ public final class PartyCommands extends CarbonCommand {
             .header((page, pages) -> this.messages.commandPartyPaginationHeader(party.name()))
             .item((e, lastOfPage) -> {
                 final CarbonPlayer p = e.get();
-                return this.messages.commandPartyPaginationElement(p.displayName(), p.username());
+                return this.messages.commandPartyPaginationElement(p.displayName(), p.username(), new Option(this.network.online(p)));
             })
             .footer(this.pagination.footerRenderer(p -> "/" + this.commandSettings().name() + " page " + p))
             .pageOutOfRange(this.messages::paginationOutOfRange)

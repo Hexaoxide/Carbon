@@ -58,12 +58,14 @@ import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messages.Option;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.StandardPlaceholderResolverStrategyButDifferent;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.IntPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.OptionPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.messaging.ServerId;
@@ -160,6 +162,7 @@ public final class CarbonCommonModule extends AbstractModule {
             .weightedPlaceholderResolver(Integer.class, intPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
+            .weightedPlaceholderResolver(Option.class, new OptionPlaceholderResolver<>(), 0)
             .create(this.getClass().getClassLoader());
     }
 

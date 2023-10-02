@@ -430,7 +430,7 @@ public interface CarbonMessages {
     Component commandPartyPaginationHeader(Component partyName);
 
     @Message("command.party.pagination_element")
-    Component commandPartyPaginationElement(Component displayName, String username);
+    Component commandPartyPaginationElement(Component displayName, String username, Option online);
 
     @Message("command.party.created")
     void partyCreated(Audience audience, Component partyName);

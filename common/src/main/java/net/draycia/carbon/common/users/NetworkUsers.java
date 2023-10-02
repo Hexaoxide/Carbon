@@ -41,6 +41,7 @@ import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
 import net.draycia.carbon.common.util.Exceptions;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -136,6 +137,14 @@ public final class NetworkUsers implements PlayerSuggestions {
             return true;
         }
         return this.map.values().stream().anyMatch(server -> server.containsKey(player.uuid()));
+    }
+
+    public boolean online(final UUID uuid) {
+        final @Nullable CarbonPlayer player = this.server.players().stream()
+            .filter(it -> it.uuid().equals(uuid))
+            .findFirst()
+            .orElse(null);
+        return player != null || this.map.values().stream().anyMatch(server -> server.containsKey(uuid));
     }
 
 }
