@@ -239,10 +239,9 @@ public final class PartyImpl implements Party {
             if (player.uuid().equals(changed)) {
                 continue;
             }
-            final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) player;
-            if (this.id().equals(wrapped.partyId())) {
+            if (this.members.contains(player.uuid())) {
                 changedPlayer.get().thenAccept(p -> {
-                    notify.notify(p, this, wrapped);
+                    notify.notify(p, this, player);
                 }).whenComplete(($, thr) -> {
                     this.logger.warn("Exception notifying members of party change", thr);
                 });
