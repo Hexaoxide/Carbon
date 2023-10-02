@@ -162,7 +162,7 @@ public final class PartyCommands extends CarbonCommand {
                 final CarbonPlayer p = e.get();
                 return this.messages.commandPartyPaginationElement(p.displayName(), p.username());
             })
-            .footer(this.pagination.footerRenderer(p -> "/" + this.commandSettings().name() + " " + p))
+            .footer(this.pagination.footerRenderer(p -> "/" + this.commandSettings().name() + " page " + p))
             .pageOutOfRange(this.messages::paginationOutOfRange)
             .build();
 
