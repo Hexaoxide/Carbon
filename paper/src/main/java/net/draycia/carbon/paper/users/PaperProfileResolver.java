@@ -47,6 +47,7 @@ public final class PaperProfileResolver implements ProfileResolver {
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
         final @Nullable Player online = this.server.getPlayer(username);
+
         if (online != null) {
             return CompletableFuture.completedFuture(online.getUniqueId());
         }
