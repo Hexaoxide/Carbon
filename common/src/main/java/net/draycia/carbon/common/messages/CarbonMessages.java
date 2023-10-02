@@ -318,7 +318,6 @@ public interface CarbonMessages {
     @Message("command.ignorelist.pagination_header")
     Component commandIgnoreListPaginationHeader(int page, int pages);
 
-    // todo make username placeholder work in click event commands (change placeholder type to TagResolver)
     @Message("command.ignorelist.pagination_element")
     Component commandIgnoreListPaginationElement(Component displayName, String username);
 
@@ -426,6 +425,12 @@ public interface CarbonMessages {
 
     @Message("command.updateusername.updated")
     void usernameUpdated(final Audience audience, @Placeholder("newname") final String newName);
+
+    @Message("command.party.pagination_header")
+    Component commandPartyPaginationHeader(Component partyName);
+
+    @Message("command.party.pagination_element")
+    Component commandPartyPaginationElement(Component displayName, String username);
 
     @Message("command.party.created")
     void partyCreated(Audience audience, Component partyName);

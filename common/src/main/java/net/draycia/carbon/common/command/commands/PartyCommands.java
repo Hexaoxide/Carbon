@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.command.commands;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.IntegerArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
@@ -28,6 +29,7 @@ import com.google.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.command.ArgumentFactory;
@@ -40,6 +42,8 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import net.draycia.carbon.common.util.Pagination;
+import net.draycia.carbon.common.util.PaginationHelper;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -55,6 +59,7 @@ public final class PartyCommands extends CarbonCommand {
     private final PartyInvites partyInvites;
     private final ConfigManager config;
     private final CarbonMessages messages;
+    private final PaginationHelper pagination;
 
     @Inject
     public PartyCommands(
@@ -63,7 +68,8 @@ public final class PartyCommands extends CarbonCommand {
         final UserManagerInternal<?> userManager,
         final PartyInvites partyInvites,
         final ConfigManager config,
-        final CarbonMessages messages
+        final CarbonMessages messages,
+        final PaginationHelper pagination
     ) {
         this.commandManager = commandManager;
         this.argumentFactory = argumentFactory;
@@ -71,6 +77,7 @@ public final class PartyCommands extends CarbonCommand {
         this.partyInvites = partyInvites;
         this.config = config;
         this.messages = messages;
+        this.pagination = pagination;
     }
 
     @Override
@@ -81,10 +88,10 @@ public final class PartyCommands extends CarbonCommand {
 
         final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.parties");
-        this.commandManager.command(
-            root.meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDesc())
-                .handler(this::info)
-        );
+        final var info = root.meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDesc()).handler(this::info);
+        this.commandManager.command(info);
+        this.commandManager.command(info.literal("page")
+            .argument(IntegerArgument.<Commander>builder("page").withMin(1).asOptionalWithDefault(1)));
         this.commandManager.command(
             root.literal("create")
                 .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyCreateDesc())
@@ -135,9 +142,33 @@ public final class PartyCommands extends CarbonCommand {
         final @Nullable Party party = player.party().join();
         if (party == null) {
             this.messages.notInParty(player);
-        } else {
-            this.messages.currentParty(player, party.name());
+            return;
         }
+
+        this.messages.currentParty(player, party.name());
+
+        final var elements = party.members().stream()
+            .sorted() // this way page numbers make sense
+            .map(id -> (Supplier<CarbonPlayer>) () -> this.userManager.user(id).join())
+            .toList();
+
+        if (elements.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
+        final Pagination<Supplier<CarbonPlayer>> pagination = Pagination.<Supplier<CarbonPlayer>>builder()
+            .header((page, pages) -> this.messages.commandPartyPaginationHeader(party.name()))
+            .item((e, lastOfPage) -> {
+                final CarbonPlayer p = e.get();
+                return this.messages.commandPartyPaginationElement(p.displayName(), p.username());
+            })
+            .footer(this.pagination.footerRenderer(p -> "/" + this.commandSettings().name() + " " + p))
+            .pageOutOfRange(this.messages::paginationOutOfRange)
+            .build();
+
+        final int page = ctx.getOrDefault("page", 1);
+
+        pagination.render(elements, page, 6).forEach(player::sendMessage);
     }
 
     private void createParty(final CommandContext<Commander> ctx) {
