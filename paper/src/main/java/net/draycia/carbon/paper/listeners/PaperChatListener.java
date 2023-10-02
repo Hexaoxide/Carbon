@@ -41,7 +41,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class PaperChatListener extends ChatListenerInternal implements Listener {
 
     private final CarbonChat carbonChat;
-    final ConfigManager configManager;
 
     @Inject
     public PaperChatListener(
@@ -51,7 +50,6 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     ) {
         super(carbonChat.eventHandler(), carbonMessages, configManager);
         this.carbonChat = carbonChat;
-        this.configManager = configManager;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

@@ -25,16 +25,14 @@ public class SpongeProfileResolver implements ProfileResolver {
 
     @Override
     public CompletableFuture<@Nullable UUID> resolveUUID(final String username, final boolean cacheOnly) {
-        // TODO: handle profile lookup failure
-        // TODO: do we need the mojang profile resolver here? Sponge's profile manager automatically caches and uses its own version
-        return Sponge.server().gameProfileManager().basicProfile(username).thenApply(GameProfile::uuid);
+        return Sponge.server().gameProfileManager().basicProfile(username).thenApply(GameProfile::uuid).exceptionallyCompose(throwable ->
+            this.mojang.resolveUUID(username, cacheOnly));
     }
 
     @Override
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
-        // TODO: handle profile lookup failure
-        // TODO: do we need the mojang profile resolver here? Sponge's profile manager automatically caches and uses its own version
-        return Sponge.server().gameProfileManager().basicProfile(uuid).thenApply(profile -> profile.name().orElse(null));
+        return Sponge.server().gameProfileManager().basicProfile(uuid).thenApply(profile -> profile.name().orElseThrow()).exceptionallyCompose(throwable ->
+            this.mojang.resolveName(uuid, cacheOnly));
     }
 
     @Override

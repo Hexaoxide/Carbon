@@ -47,10 +47,8 @@ import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
-    private final CarbonPlayerCommon carbonPlayerCommon;
-
     public CarbonPlayerSponge(final CarbonPlayerCommon carbonPlayerCommon) {
-        this.carbonPlayerCommon = carbonPlayerCommon;
+        super(carbonPlayerCommon);
     }
 
     @Override
@@ -61,8 +59,12 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public CarbonPlayerCommon carbonPlayerCommon() {
-        return this.carbonPlayerCommon;
+    protected Optional<Component> platformDisplayName() {
+        if (this.player().isEmpty()) {
+            return Optional.empty();
+        }
+
+        return this.player().get().get(Keys.CUSTOM_NAME);
     }
 
     private Optional<ServerPlayer> player() {
@@ -118,11 +120,6 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
         }
 
         return player.get().world().equals(otherPlayer.get().world());
-    }
-
-    @Override
-    public void displayName(final @Nullable Component displayName) {
-        this.carbonPlayerCommon.displayName(displayName);
     }
 
     @Override

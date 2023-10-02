@@ -51,7 +51,6 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
     private final Logger logger;
     private final AtomicInteger timesWarned = new AtomicInteger(0);
     private final Supplier<Boolean> signedSupplier;
-    final ConfigManager configManager;
 
     @Inject
     private VelocityChatListener(
@@ -65,7 +64,6 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         super(carbonChat.eventHandler(), carbonMessages, configManager);
         this.userManager = userManager;
         this.logger = logger;
-        this.configManager = configManager;
         this.signedSupplier = Suppliers.memoize(
             () -> pluginManager.isLoaded("unsignedvelocity")
                 || pluginManager.isLoaded("signedvelocity")

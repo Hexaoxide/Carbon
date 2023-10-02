@@ -22,25 +22,25 @@ package net.draycia.carbon.sponge.listeners;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.config.ConfigFactory;
-import net.draycia.carbon.common.event.CarbonReloadEvent;
+import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.RefreshGameEvent;
 
 public class SpongeReloadListener {
 
     final CarbonChat carbonChat;
-    final ConfigFactory configFactory;
+    final ConfigManager configManager;
     final CarbonChannelRegistry channelRegistry;
 
     @Inject
     public SpongeReloadListener(
         final CarbonChat carbonChat,
-        final ConfigFactory configFactory,
+        final ConfigManager configManager,
         final CarbonChannelRegistry channelRegistry
     ) {
         this.carbonChat = carbonChat;
-        this.configFactory = configFactory;
+        this.configManager = configManager;
         this.channelRegistry = channelRegistry;
     }
 
