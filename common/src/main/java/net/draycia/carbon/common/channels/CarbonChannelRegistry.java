@@ -420,7 +420,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
     @Override
     public @Nullable ChatChannel channel(final Key key) {
-        final @Nullable Holder<ChatChannel> holder = this.channelRegistry.getHolder(key);
+        final @Nullable Holder<Key, ChatChannel> holder = this.channelRegistry.getHolder(key);
         return holder == null ? null : holder.value();
     }
 
