@@ -43,7 +43,7 @@ abstract class ServerGamePacketListenerImplMixin extends ServerCommonPacketListe
 
     @Shadow public ServerPlayer player;
 
-    public ServerGamePacketListenerImplMixin(final MinecraftServer minecraftServer, final Connection connection, final CommonListenerCookie commonListenerCookie) {
+    ServerGamePacketListenerImplMixin(final MinecraftServer minecraftServer, final Connection connection, final CommonListenerCookie commonListenerCookie) {
         super(minecraftServer, connection, commonListenerCookie);
     }
 
