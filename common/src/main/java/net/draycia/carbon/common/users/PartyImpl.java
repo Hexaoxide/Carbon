@@ -243,7 +243,9 @@ public final class PartyImpl implements Party {
                 changedPlayer.get().thenAccept(p -> {
                     notify.notify(p, this, player);
                 }).whenComplete(($, thr) -> {
-                    this.logger.warn("Exception notifying members of party change", thr);
+                    if (thr != null) {
+                        this.logger.warn("Exception notifying members of party change", thr);
+                    }
                 });
             }
         }
