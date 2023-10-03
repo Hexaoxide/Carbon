@@ -21,28 +21,34 @@ package net.draycia.carbon.fabric.mixin;
 
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ServerGamePacketListenerImpl.class)
-abstract class ServerGamePacketListenerImplMixin implements ServerGamePacketListener {
+abstract class ServerGamePacketListenerImplMixin extends ServerCommonPacketListenerImpl implements ServerGamePacketListener {
 
-    @Shadow @Final private MinecraftServer server;
+    //@Shadow @Final private MinecraftServer server;
 
     @Shadow public ServerPlayer player;
 
+    public ServerGamePacketListenerImplMixin(final MinecraftServer minecraftServer, final Connection connection, final CommonListenerCookie commonListenerCookie) {
+        super(minecraftServer, connection, commonListenerCookie);
+    }
+
     @Redirect(
-        method = "onDisconnect(Lnet/minecraft/network/chat/Component;)V",
+        method = "removePlayerFromWorld()V",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"

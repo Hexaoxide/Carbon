@@ -29,6 +29,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.players.PlayerList;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -52,7 +53,7 @@ abstract class PlayerListMixin {
     public Map<Thread, Pair<Component, Boolean>> carbon$joinMsg = new ConcurrentHashMap<>();
 
     @Redirect(
-        method = "placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V",
+        method = "placeNewPlayer",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"
@@ -64,10 +65,10 @@ abstract class PlayerListMixin {
     }
 
     @Inject(
-        method = "placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V",
+        method = "placeNewPlayer",
         at = @At("RETURN")
     )
-    public void injectJoin(final Connection connection, final ServerPlayer serverPlayer, final CallbackInfo ci) {
+    public void injectJoin(final Connection connection, final ServerPlayer serverPlayer, final CommonListenerCookie cookie, final CallbackInfo ci) {
         final @Nullable Pair<Component, Boolean> remove = this.carbon$joinMsg.remove(Thread.currentThread());
         if (remove != null) {
             final PlayerStatusMessageEvents.MessageEvent event = PlayerStatusMessageEvents.MessageEvent.of(
