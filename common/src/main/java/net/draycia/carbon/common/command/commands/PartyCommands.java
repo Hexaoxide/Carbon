@@ -93,6 +93,7 @@ public final class PartyCommands extends CarbonCommand {
         }
 
         final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+            .senderType(PlayerCommander.class)
             .permission("carbon.parties");
         final var info = root.meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDesc()).handler(this::info);
         this.commandManager.command(info);
@@ -102,33 +103,28 @@ public final class PartyCommands extends CarbonCommand {
             root.literal("create")
                 .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyCreateDesc())
                 .argument(StringArgument.<Commander>builder("name").greedy().asOptional())
-                .senderType(PlayerCommander.class)
                 .handler(this::createParty)
         );
         this.commandManager.command(
             root.literal("invite")
                 .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyInviteDesc())
-                .senderType(PlayerCommander.class)
                 .argument(this.argumentFactory.carbonPlayer("player"))
                 .handler(this::invitePlayer)
         );
         this.commandManager.command(
             root.literal("accept")
                 .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyAcceptDesc())
-                .senderType(PlayerCommander.class)
                 .argument(this.argumentFactory.carbonPlayer("sender").asOptional())
                 .handler(this::acceptInvite)
         );
         this.commandManager.command(
             root.literal("leave")
                 .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyLeaveDesc())
-                .senderType(PlayerCommander.class)
                 .handler(this::leaveParty)
         );
         this.commandManager.command(
             root.literal("disband")
                 .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDisbandDesc())
-                .senderType(PlayerCommander.class)
                 .handler(this::disbandParty)
         );
     }
