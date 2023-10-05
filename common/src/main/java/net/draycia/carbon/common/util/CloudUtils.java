@@ -43,6 +43,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.commands.ClearChatCommand;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
 import net.draycia.carbon.common.command.commands.DebugCommand;
+import net.draycia.carbon.common.command.commands.DeleteMessageCommand;
 import net.draycia.carbon.common.command.commands.HelpCommand;
 import net.draycia.carbon.common.command.commands.IgnoreCommand;
 import net.draycia.carbon.common.command.commands.IgnoreListCommand;
@@ -76,7 +77,7 @@ public final class CloudUtils {
     private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
 
     public static final List<Class<? extends CarbonCommand>> COMMAND_CLASSES = List.of(ClearChatCommand.class,
-        ContinueCommand.class, DebugCommand.class, HelpCommand.class, IgnoreCommand.class, MuteCommand.class,
+        ContinueCommand.class, DebugCommand.class, DeleteMessageCommand.class, HelpCommand.class, IgnoreCommand.class, MuteCommand.class,
         MuteInfoCommand.class, NicknameCommand.class, ReloadCommand.class, ReplyCommand.class, ToggleMessagesCommand.class,
         UnignoreCommand.class, UnmuteCommand.class, UpdateUsernameCommand.class, WhisperCommand.class, JoinCommand.class, LeaveCommand.class,
         IgnoreListCommand.class, PartyCommands.class);

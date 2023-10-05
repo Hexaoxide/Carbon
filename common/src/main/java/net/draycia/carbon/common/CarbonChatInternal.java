@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.event.CarbonEventHandler;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
@@ -45,6 +46,8 @@ import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.UpdateChecker;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.chat.SignedMessage;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -148,6 +151,12 @@ public abstract class CarbonChatInternal implements CarbonChat {
         this.profileResolver.shutdown();
         this.userManager.shutdown();
         this.commandExecutor.shutdown();
+    }
+
+    protected void deleteMessage(final SignedMessage.Signature signature) {
+        for (final CarbonPlayer player : this.carbonServer.players()) {
+            player.deleteMessage(signature);
+        }
     }
 
     public Logger logger() {

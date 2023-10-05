@@ -294,6 +294,9 @@ public interface CarbonMessages {
     @Message("command.debug.description")
     Component commandDebugDescription();
 
+    @Message("command.deletemessage.description")
+    Component commandDeleteDescription();
+
     @Message("command.help.argument.query")
     Component commandHelpArgumentQuery();
 

@@ -50,9 +50,9 @@ public interface CarbonChatEvent extends CarbonEvent, Cancellable {
     List<KeyedRenderer> renderers();
 
     /**
-     * If the message is being previewed by the player.
+     * The message's signature
      *
-     * @return if the message is being previewed
+     * @return the signed message, or null if the message isn't signed
      * @since 2.1.0
      */
     @MonotonicNonNull SignedMessage signedMessage();
