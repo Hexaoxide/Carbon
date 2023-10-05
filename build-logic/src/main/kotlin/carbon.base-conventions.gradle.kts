@@ -2,7 +2,7 @@ plugins {
   id("net.kyori.indra")
   id("net.kyori.indra.git")
   id("net.kyori.indra.checkstyle")
-  id("net.kyori.indra.license-header")
+  id("net.kyori.indra.licenser.spotless")
 }
 
 version = rootProject.version
@@ -17,11 +17,18 @@ indra {
   github(GITHUB_ORGANIZATION, GITHUB_REPO)
 }
 
-license {
-  header.set(resources.text.fromFile(rootProject.file("LICENSE_HEADER")))
-  exclude("net/draycia/carbon/common/messages/PrefixedDelegateIterator.java")
-  exclude("net/draycia/carbon/common/messages/StandardPlaceholderResolverStrategyButDifferent.java")
-  exclude("com/google/inject/assistedinject")
+spotless {
+  java {
+    targetExclude(
+      "src/main/java/net/draycia/carbon/common/messages/PrefixedDelegateIterator.java",
+      "src/main/java/net/draycia/carbon/common/messages/StandardPlaceholderResolverStrategyButDifferent.java",
+      "src/main/java/com/google/inject/assistedinject/**"
+    )
+  }
+}
+
+indraSpotlessLicenser {
+  licenseHeaderFile(rootProject.file("LICENSE_HEADER"))
 }
 
 tasks {

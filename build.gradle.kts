@@ -11,8 +11,7 @@ version = projectVersion
 
 hangarPublish.publications.register("plugin") {
   version.set(projectVersion)
-  owner.set("Vicarious")
-  slug.set("Carbon")
+  id.set("Carbon")
   channel.set(if (projectVersion.contains("-beta.")) "Beta" else "Release")
   changelog.set(releaseNotes)
   apiKey.set(providers.environmentVariable("HANGAR_UPLOAD_KEY"))
@@ -21,7 +20,7 @@ hangarPublish.publications.register("plugin") {
     platformVersions.add("1.19.4-1.20.1")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
-      hangar("EssentialsX", "Essentials") {
+      hangar("Essentials") {
         required.set(false)
       }
       url("DiscordSRV", "https://www.spigotmc.org/resources/discordsrv.18494/") {
@@ -30,7 +29,7 @@ hangarPublish.publications.register("plugin") {
       url("PlaceholderAPI", "https://www.spigotmc.org/resources/placeholderapi.6245/") {
         required.set(false)
       }
-      hangar("MiniPlaceholders", "MiniPlaceholders") {
+      hangar("MiniPlaceholders") {
         required.set(false)
       }
     }
@@ -40,10 +39,10 @@ hangarPublish.publications.register("plugin") {
     platformVersions.add("3.2")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
-      hangar("MiniPlaceholders", "MiniPlaceholders") {
+      hangar("MiniPlaceholders") {
         required.set(false)
       }
-      hangar("4drian3d", "UnSignedVelocity") {
+      hangar("UnSignedVelocity") {
         required.set(false)
       }
     }
