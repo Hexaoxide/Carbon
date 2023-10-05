@@ -211,7 +211,7 @@ public final class PartyCommands extends CarbonCommand {
             return;
         }
         this.partyInvites.sendInvite(player.uuid(), recipient.uuid(), party.id());
-        this.messages.receivedPartyInvite(recipient, player.displayName(), party.name());
+        this.messages.receivedPartyInvite(recipient, player.displayName(), player.username(), party.name());
         this.messages.sentPartyInvite(player, recipient.displayName(), party.name());
     }
 

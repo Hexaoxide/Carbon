@@ -127,7 +127,7 @@ public final class PartyInvites {
 
         CompletableFuture.allOf(to, from, party).thenRun(() -> {
             if (to.join().online()) {
-                this.messages.receivedPartyInvite(to.join(), from.join().displayName(), party.join().name());
+                this.messages.receivedPartyInvite(to.join(), from.join().displayName(), from.join().username(), party.join().name());
             }
         }).whenComplete(($, thr) -> {
             if (thr != null) {

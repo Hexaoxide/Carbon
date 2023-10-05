@@ -448,7 +448,7 @@ public interface CarbonMessages {
     void partyNameTooLong(Audience audience);
 
     @Message("command.party.received_invite")
-    void receivedPartyInvite(Audience audience, Component senderDisplayName, Component partyName);
+    void receivedPartyInvite(Audience audience, Component senderDisplayName, String senderUsername, Component partyName);
 
     @Message("command.party.sent_invite")
     void sentPartyInvite(Audience audience, Component recipientDisplayName, Component partyName);
