@@ -38,7 +38,6 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.PlatformUserManager;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
-import net.draycia.carbon.fabric.command.DeleteMessageCommand;
 import net.draycia.carbon.fabric.listeners.FabricChatHandler;
 import net.draycia.carbon.fabric.listeners.FabricJoinQuitListener;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -100,8 +99,6 @@ public final class CarbonChatFabric extends CarbonChatInternal {
         this.registerChatListener();
         this.registerServerLifecycleListeners();
         this.registerPlayerStatusListeners();
-
-        this.injector().getInstance(DeleteMessageCommand.class).init();
 
         this.loadAddonEntrypoints();
     }
