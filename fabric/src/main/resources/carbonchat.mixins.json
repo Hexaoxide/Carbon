@@ -6,7 +6,6 @@
   "mixins": [
     "MessageSignatureCacheAccessor",
     "PlayerListMixin",
-    "RegistryDataLoaderMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin"
   ],

@@ -39,8 +39,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ServerGamePacketListenerImpl.class)
 abstract class ServerGamePacketListenerImplMixin extends ServerCommonPacketListenerImpl implements ServerGamePacketListener {
 
-    //@Shadow @Final private MinecraftServer server;
-
     @Shadow public ServerPlayer player;
 
     ServerGamePacketListenerImplMixin(final MinecraftServer minecraftServer, final Connection connection, final CommonListenerCookie commonListenerCookie) {

@@ -20,7 +20,6 @@
 package net.draycia.carbon.fabric.mixin;
 
 import cloud.commandframework.types.tuples.Pair;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
@@ -35,6 +34,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -48,9 +48,7 @@ abstract class PlayerListMixin {
     @Shadow
     public abstract void broadcastSystemMessage(Component component, boolean bool);
 
-    @Shadow @Final private List<ServerPlayer> players;
-
-    public Map<Thread, Pair<Component, Boolean>> carbon$joinMsg = new ConcurrentHashMap<>();
+    @Unique private Map<Thread, Pair<Component, Boolean>> joinMsg = new ConcurrentHashMap<>();
 
     @Redirect(
         method = "placeNewPlayer",
@@ -61,7 +59,7 @@ abstract class PlayerListMixin {
     )
     public void redirectJoinMessage(final PlayerList instance, final Component component, final boolean bool) {
         // move to after player is added to playerlist and world
-        this.carbon$joinMsg.put(Thread.currentThread(), Pair.of(component, bool));
+        this.joinMsg.put(Thread.currentThread(), Pair.of(component, bool));
     }
 
     @Inject(
@@ -69,7 +67,7 @@ abstract class PlayerListMixin {
         at = @At("RETURN")
     )
     public void injectJoin(final Connection connection, final ServerPlayer serverPlayer, final CommonListenerCookie cookie, final CallbackInfo ci) {
-        final @Nullable Pair<Component, Boolean> remove = this.carbon$joinMsg.remove(Thread.currentThread());
+        final @Nullable Pair<Component, Boolean> remove = this.joinMsg.remove(Thread.currentThread());
         if (remove != null) {
             final PlayerStatusMessageEvents.MessageEvent event = PlayerStatusMessageEvents.MessageEvent.of(
                 serverPlayer, remove.getFirst().asComponent()
