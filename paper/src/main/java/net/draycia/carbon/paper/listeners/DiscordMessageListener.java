@@ -80,7 +80,7 @@ public final class DiscordMessageListener implements Listener {
         final @Nullable DiscordService discord = Bukkit.getServicesManager().load(DiscordService.class);
 
         if (discord != null) {
-            this.carbonChat.channelRegistry().keys().forEach(key -> {
+            this.carbonChat.channelRegistry().allKeys(key -> {
                 final MessageType channelMessageType = new MessageType(key.value());
                 discord.registerMessageType(this.plugin, channelMessageType);
                 this.channelMessageTypes.put(key, channelMessageType);
