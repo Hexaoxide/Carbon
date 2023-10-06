@@ -26,7 +26,6 @@ import github.scarsz.discordsrv.Debug;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.api.Subscribe;
 import github.scarsz.discordsrv.api.events.GameChatMessagePreProcessEvent;
-import github.scarsz.discordsrv.dependencies.kyori.adventure.text.minimessage.MiniMessage;
 import github.scarsz.discordsrv.hooks.chat.ChatHook;
 import java.time.Duration;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -39,6 +38,7 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.ChannelUtils;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.Logger;
@@ -95,10 +95,9 @@ public final class DSRVChatHook implements ChatHook {
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");
 
             final @Nullable Player player = ((CarbonPlayerPaper) carbonPlayer).bukkitPlayer();
-            final String message = PlainTextComponentSerializer.plainText().serialize(eventMessage);
 
             if (player != null) {
-                DiscordSRV.getPlugin().processChatMessage(player, message, chatChannel.commandName(), event.cancelled());
+                DiscordSRV.getPlugin().processChatMessage(player, toDsrv(eventMessage), chatChannel.commandName(), event.cancelled(), null);
             }
         });
 
@@ -116,19 +115,30 @@ public final class DSRVChatHook implements ChatHook {
 
     @Override
     public void broadcastMessageToChannel(final String channel, final github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component message) {
-        final String mmFormattedMessage = MiniMessage.miniMessage().serialize(message);
-        final ChatChannel chatChannel = this.channelRegistry.channelByValue(channel);
+        final @Nullable ChatChannel chatChannel = this.channelRegistry.channelByValue(channel);
 
         if (chatChannel == null) {
             this.plugin.getLogger().warning("Error sending message from Discord to Minecraft, no matching channel found for [" + channel + "]");
         } else {
-            ChannelUtils.broadcastMessageToChannel(mmFormattedMessage, chatChannel);
+            ChannelUtils.broadcastMessageToChannel(fromDsrv(message), chatChannel);
         }
     }
 
     @Override
     public Plugin getPlugin() {
         return this.plugin;
+    }
+
+    private static github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component toDsrv(final Component component) {
+        return github.scarsz.discordsrv.dependencies.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(
+            GsonComponentSerializer.gson().serialize(component)
+        );
+    }
+
+    private static Component fromDsrv(final github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component component) {
+        return GsonComponentSerializer.gson().deserialize(
+            github.scarsz.discordsrv.dependencies.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().serialize(component)
+        );
     }
 
 }

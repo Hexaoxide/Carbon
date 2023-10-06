@@ -23,7 +23,6 @@ import net.draycia.carbon.api.CarbonChatProvider;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public final class ChannelUtils {
 
@@ -31,14 +30,13 @@ public final class ChannelUtils {
 
     }
 
-    public static void broadcastMessageToChannel(final String mmFormattedMessage, final ChatChannel channel) {
-        final Component originalMessage = MiniMessage.miniMessage().deserialize(mmFormattedMessage);
+    public static void broadcastMessageToChannel(final Component msg, final ChatChannel channel) {
 
         // TODO: Emit events
 
         for (final CarbonPlayer recipient : CarbonChatProvider.carbonChat().server().players()) {
             if (channel.hearingPermitted(recipient).permitted()) {
-                recipient.sendMessage(originalMessage);
+                recipient.sendMessage(msg);
             }
         }
     }
