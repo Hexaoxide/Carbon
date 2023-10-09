@@ -96,11 +96,9 @@ public class PrimaryConfig {
 
     private MessagingSettings messagingSettings = new MessagingSettings();
     private NicknameSettings nicknameSettings = new NicknameSettings();
+    private PartySettings partyChat = new PartySettings();
 
-    @Comment("Enable and disable party chat.")
-    private boolean partyChat = true;
-
-    public boolean partyChat() {
+    public PartySettings partyChat() {
         return this.partyChat;
     }
 
@@ -199,6 +197,10 @@ public class PrimaryConfig {
             .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
             .build();
         builder.addVersion(0, initial);
+        final ConfigurationTransformation one = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
+            .build();
+        builder.addVersion(1, one);
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
         try {
@@ -243,6 +245,14 @@ public class PrimaryConfig {
         public int maxLength() {
             return this.maxLength;
         }
+    }
+
+    @ConfigSerializable
+    public static final class PartySettings {
+
+        public boolean enabled = true;
+
+        public int expireInvitesAfterSeconds = 30;
     }
 
     public enum StorageType {

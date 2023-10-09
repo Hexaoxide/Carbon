@@ -31,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.InvalidatePartyInvitePacket;
@@ -51,6 +52,7 @@ public final class PartyInvites {
     private final UserManagerInternal<?> users;
     private final Logger logger;
     private final CarbonMessages messages;
+    private final ConfigManager config;
 
     @Inject
     private PartyInvites(
@@ -58,13 +60,15 @@ public final class PartyInvites {
         final PacketFactory packetFactory,
         final UserManagerInternal<?> users,
         final Logger logger,
-        final CarbonMessages messages
+        final CarbonMessages messages,
+        final ConfigManager config
     ) {
         this.messaging = messaging;
         this.packetFactory = packetFactory;
         this.users = users;
         this.logger = logger;
         this.messages = messages;
+        this.config = config;
     }
 
     public void sendInvite(final UUID from, final UUID to, final UUID party) {
@@ -100,11 +104,11 @@ public final class PartyInvites {
     }
 
     private Cache<UUID, UUID> orCreateInvitesFor(final UUID recipient) {
-        return this.pendingInvites.computeIfAbsent(recipient, $ -> makeCache());
+        return this.pendingInvites.computeIfAbsent(recipient, $ -> this.makeCache());
     }
 
-    private static Cache<UUID, UUID> makeCache() {
-        return Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(30)).build();
+    private Cache<UUID, UUID> makeCache() {
+        return Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(this.config.primaryConfig().partyChat().expireInvitesAfterSeconds)).build();
     }
 
     public void handle(final InvalidatePartyInvitePacket pkt) {

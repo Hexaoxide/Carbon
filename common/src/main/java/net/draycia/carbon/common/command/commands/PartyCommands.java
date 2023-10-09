@@ -88,7 +88,7 @@ public final class PartyCommands extends CarbonCommand {
 
     @Override
     public void init() {
-        if (!this.config.primaryConfig().partyChat()) {
+        if (!this.config.primaryConfig().partyChat().enabled) {
             return;
         }
 

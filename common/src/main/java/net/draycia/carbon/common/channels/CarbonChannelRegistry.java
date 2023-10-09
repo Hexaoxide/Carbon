@@ -217,7 +217,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.logger.info("Loading config channels...");
         this.defaultKey = this.config.primaryConfig().defaultChannel();
 
-        final boolean party = this.config.primaryConfig().partyChat();
+        final boolean party = this.config.primaryConfig().partyChat().enabled;
         if (party) {
             this.saveDefaultPartyConfig();
         }
@@ -299,7 +299,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         try {
             final ConfigurationNode loaded = updateNode(loader.load());
             loader.save(loaded);
-            return (this.config.primaryConfig().partyChat() && channelFile.getFileName().toString().equals(PARTYCHAT_CONF) ? PARTY_MAPPER : MAPPER).load(loaded);
+            return (this.config.primaryConfig().partyChat().enabled && channelFile.getFileName().toString().equals(PARTYCHAT_CONF) ? PARTY_MAPPER : MAPPER).load(loaded);
         } catch (final ConfigurateException exception) {
             this.logger.warn("Failed to load channel from file '{}'", channelFile, exception);
         }
