@@ -258,6 +258,7 @@ public final class PartyCommands extends CarbonCommand {
             this.messages.cannotDisbandParty(player, old.name());
             return;
         }
+        old.removeMember(player.uuid());
         old.disband();
         this.messages.disbandedParty(player, old.name());
     }
