@@ -11,6 +11,8 @@ carbon.ignore: "Ignores the player, hiding messages they send in chat and in whi
 carbon.ignore.exempt: "Prevents the player from being ignored."
 carbon.ignore.unignore: "Removes the player from the sender's ignore list."
 carbon.itemlink: "Shows the player's held or equipped item in chat."
+carbon.crossserver: "Allows cross server messages to be seen by the player."
+carbon.parties: "Allows the creation and use of the parties."
 carbon.mute: "Mutes the player, preventing them from sending messages or whispers."
 carbon.mute.exempt: "Prevents the player from being muted."
 carbon.mute.info: "Shows if the player is muted or now."
