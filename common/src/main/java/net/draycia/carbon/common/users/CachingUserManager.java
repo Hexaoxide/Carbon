@@ -342,7 +342,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
             this.partyCache.synchronous().invalidate(pkt.partyId());
         }).whenComplete(($, thr) -> {
             if (thr != null) {
-                this.logger.warn("Exception handling party change packet {}", pkt, thr);
+                this.logger.warn("Exception handling party disband packet {}", pkt, thr);
             }
         });
     }
