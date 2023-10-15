@@ -28,22 +28,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.messages.SourcedAudience;
+import net.draycia.carbon.common.messages.TagPermissions;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -57,22 +54,6 @@ import static java.util.Objects.requireNonNullElse;
 
 @DefaultQualifier(NonNull.class)
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
-
-    public static final Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
-        Map.entry("hover", StandardTags.hoverEvent()),
-        Map.entry("click", StandardTags.clickEvent()),
-        Map.entry("color", StandardTags.color()),
-        Map.entry("keybind", StandardTags.keybind()),
-        Map.entry("translatable", StandardTags.translatable()),
-        Map.entry("insertion", StandardTags.insertion()),
-        Map.entry("font", StandardTags.font()),
-        // Decoration tags are handled separately
-        //Map.entry("decoration", StandardTags.decoration()),
-        Map.entry("gradient", StandardTags.gradient()),
-        Map.entry("rainbow", StandardTags.rainbow()),
-        Map.entry("reset", StandardTags.reset()),
-        Map.entry("newline", StandardTags.newline())
-    );
 
     protected final CarbonPlayerCommon carbonPlayerCommon;
 
@@ -107,35 +88,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
             resolver.resolver(MiniPlaceholders.getAudiencePlaceholders(this));
         }
 
-        return parseMessageTags(message, this::hasPermission, resolver);
-    }
-
-    protected static Component parseMessageTags(final String message, final Predicate<String> permission, final TagResolver.Builder resolver) {
-        if (!permission.test("carbon.messagetags")) {
-            return Component.text(message);
-        }
-
-        for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
-            if (permission.test("carbon.messagetags." + entry.getKey())) {
-                resolver.resolver(entry.getValue());
-            }
-        }
-
-        for (final TextDecoration decoration : TextDecoration.values()) {
-            if (!permission.test("carbon.messagetags." + decoration.name())) {
-                continue;
-            }
-
-            resolver.resolver(StandardTags.decorations(decoration));
-        }
-
-        final MiniMessage miniMessage = MiniMessage.builder().tags(resolver.build()).build();
-
-        return miniMessage.deserialize(message);
-    }
-
-    public static Component parseMessageTags(final String message, final Predicate<String> permission) {
-        return parseMessageTags(message, permission, TagResolver.builder());
+        return TagPermissions.parseTags(TagPermissions.MESSAGE, message, this::hasPermission, resolver);
     }
 
     @Override

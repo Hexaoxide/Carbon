@@ -41,10 +41,10 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.Option;
+import net.draycia.carbon.common.messages.TagPermissions;
 import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
-import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.Pagination;
 import net.draycia.carbon.common.util.PaginationHelper;
 import net.kyori.adventure.key.Key;
@@ -181,7 +181,7 @@ public final class PartyCommands extends CarbonCommand {
             return;
         }
         final String name = ctx.getOrDefault("name", player.username() + "'s party");
-        final Component component = ((WrappedCarbonPlayer) player).parseMessageTags(name);
+        final Component component = TagPermissions.parseTags(TagPermissions.PARTY_NAME, name, player::hasPermission);
         final Party party;
         try {
             party = this.userManager.createParty(component);

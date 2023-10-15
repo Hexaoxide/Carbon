@@ -33,6 +33,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.messages.TagPermissions;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.ChannelUtils;
@@ -89,7 +90,7 @@ public final class DSRVChatHook implements ChatHook {
             if (carbonPlayer instanceof WrappedCarbonPlayer wrapped) {
                 eventMessage = wrapped.parseMessageTags(messageContents);
             } else {
-                eventMessage = WrappedCarbonPlayer.parseMessageTags(messageContents, carbonPlayer::hasPermission);
+                eventMessage = TagPermissions.parseTags(TagPermissions.MESSAGE, messageContents, carbonPlayer::hasPermission);
             }
 
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");

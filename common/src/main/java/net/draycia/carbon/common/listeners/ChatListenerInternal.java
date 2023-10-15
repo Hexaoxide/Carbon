@@ -30,6 +30,7 @@ import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.messages.TagPermissions;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
@@ -81,7 +82,7 @@ public abstract class ChatListenerInternal {
         if (sender instanceof WrappedCarbonPlayer wrapped) {
             message = wrapped.parseMessageTags(content);
         } else {
-            message = WrappedCarbonPlayer.parseMessageTags(content, sender::hasPermission);
+            message = TagPermissions.parseTags(TagPermissions.MESSAGE, content, sender::hasPermission);
         }
         if (probablyBlank(message)) {
             return null;

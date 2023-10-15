@@ -32,7 +32,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.users.WrappedCarbonPlayer;
+import net.draycia.carbon.common.messages.TagPermissions;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -166,7 +166,7 @@ public final class NicknameCommand extends CarbonCommand {
 
     private static Component parseNickname(final Commander sender, final String nick) {
         // trim one level of quotes, to allow for nicknames which collide with command literals
-        return WrappedCarbonPlayer.parseMessageTags(trimQuotes(nick), sender::hasPermission);
+        return TagPermissions.parseTags(TagPermissions.NICKNAME, trimQuotes(nick), sender::hasPermission);
     }
 
     private static String trimQuotes(final String string) {
