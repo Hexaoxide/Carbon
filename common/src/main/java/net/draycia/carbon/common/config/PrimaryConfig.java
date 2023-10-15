@@ -252,7 +252,7 @@ public class PrimaryConfig {
 
         public boolean enabled = true;
 
-        public int expireInvitesAfterSeconds = 30;
+        public int expireInvitesAfterSeconds = 45;
     }
 
     public enum StorageType {
