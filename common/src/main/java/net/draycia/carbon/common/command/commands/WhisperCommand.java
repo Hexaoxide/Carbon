@@ -224,9 +224,7 @@ public final class WhisperCommand extends CarbonCommand {
             if (localRecipient) {
                 recipient.whisperReplyTarget(sender.uuid());
             } else {
-                this.messaging.get().withPacketService(packetService -> {
-                    packetService.queuePacket(this.packetFactory.whisperPacket(sender.uuid(), recipient.uuid(), privateChatEvent.message()));
-                });
+                this.messaging.get().queuePacket(() -> this.packetFactory.whisperPacket(sender.uuid(), recipient.uuid(), privateChatEvent.message()));
             }
         }
 

@@ -69,9 +69,7 @@ public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, 
     @Override
     public void onPlayReady(final ServerGamePacketListenerImpl handler, final PacketSender sender, final MinecraftServer server) {
         this.profileCache.cache(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName());
-        this.messaging.get().withPacketService(packetService -> {
-            packetService.queuePacket(this.packetFactory.addLocalPlayerPacket(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName()));
-        });
+        this.messaging.get().queuePacket(() -> this.packetFactory.addLocalPlayerPacket(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().getName()));
 
         final @Nullable List<String> suggestions = this.configManager.primaryConfig().customChatSuggestions();
 

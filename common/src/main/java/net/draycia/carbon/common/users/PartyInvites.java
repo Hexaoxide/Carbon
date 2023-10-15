@@ -76,19 +76,13 @@ public final class PartyInvites {
         cache.put(from, party);
         this.clean();
 
-        this.messaging.get().withPacketService(service -> {
-            service.queuePacket(this.packetFactory.partyInvite(from, to, party));
-            service.flushQueue();
-        });
+        this.messaging.get().queuePacket(() -> this.packetFactory.partyInvite(from, to, party));
     }
 
     public void invalidateInvite(final UUID from, final UUID to) {
         this.invalidateInvite_(from, to);
 
-        this.messaging.get().withPacketService(service -> {
-            service.queuePacket(this.packetFactory.invalidatePartyInvite(from, to));
-            service.flushQueue();
-        });
+        this.messaging.get().queuePacket(() -> this.packetFactory.invalidatePartyInvite(from, to));
     }
 
     private void invalidateInvite_(final UUID from, final UUID to) {

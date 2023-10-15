@@ -139,9 +139,7 @@ public abstract class CarbonChatInternal implements CarbonChat {
     }
 
     protected void shutdown() {
-        this.messagingManager.get().withPacketService(packetService -> {
-            packetService.queuePacket(this.injector.getInstance(PacketFactory.class).clearLocalPlayersPacket());
-        });
+        this.messagingManager.get().queuePacket(() -> this.injector.getInstance(PacketFactory.class).clearLocalPlayersPacket());
         this.messagingManager.get().onShutdown();
         ConcurrentUtil.shutdownExecutor(this.periodicTasks, TimeUnit.MILLISECONDS, 500);
         this.profileCache.save();

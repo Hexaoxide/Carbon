@@ -51,12 +51,12 @@ public class MessagePacketHandler implements Listener {
                 return;
             }
 
-            messaging.get().withPacketService(packetService -> {
+            messaging.get().queuePacket(() -> {
                 final CarbonPlayer sender = event.sender();
                 final Component networkMessage = e.renderFor(sender);
 
-                packetService.queuePacket(new ChatMessagePacket(serverId, sender.uuid(),
-                    event.chatChannel().permission(), event.chatChannel().key(), sender.username(), networkMessage));
+                return new ChatMessagePacket(serverId, sender.uuid(),
+                    event.chatChannel().permission(), event.chatChannel().key(), sender.username(), networkMessage);
             });
         });
     }

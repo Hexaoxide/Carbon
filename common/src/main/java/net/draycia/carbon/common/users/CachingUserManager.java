@@ -112,10 +112,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         return CompletableFuture.runAsync(() -> {
             this.saveSync(player);
             player.saved();
-            this.messagingManager.get().withPacketService(packetService -> {
-                packetService.queuePacket(this.packetFactory.saveCompletedPacket(player.uuid()));
-                packetService.flushQueue();
-            });
+            this.messagingManager.get().queuePacketAndFlush(() -> this.packetFactory.saveCompletedPacket(player.uuid()));
         }, this.executor);
     }
 
@@ -188,9 +185,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     @Override
     public CompletableFuture<Void> loggedOut(final UUID uuid) {
-        this.messagingManager.get().withPacketService(packetService -> {
-            packetService.queuePacket(this.packetFactory.removeLocalPlayerPacket(uuid));
-        });
+        this.messagingManager.get().queuePacket(() -> this.packetFactory.removeLocalPlayerPacket(uuid));
         this.cacheLock.lock();
         try {
             final @Nullable CompletableFuture<CarbonPlayerCommon> remove = this.cache.remove(uuid);
@@ -261,10 +256,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 return;
             }
             this.saveSync(info, changes);
-            this.messagingManager.get().withPacketService(service -> {
-                service.queuePacket(this.packetFactory.partyChange(info.id(), changes));
-                service.flushQueue();
-            });
+            this.messagingManager.get().queuePacketAndFlush(() -> this.packetFactory.partyChange(info.id(), changes));
         }, this.executor);
     }
 
@@ -284,10 +276,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         this.recentDisbands.put(id, new Object());
         // delay deletion so other servers can post leave events
         CompletableFuture.delayedExecutor(DISBAND_DELAY, TimeUnit.SECONDS, this.executor).execute(task);
-        this.messagingManager.get().withPacketService(service -> {
-            service.queuePacket(this.packetFactory.disbandParty(id));
-            service.flushQueue();
-        });
+        this.messagingManager.get().queuePacketAndFlush(() -> this.packetFactory.disbandParty(id));
     }
 
     @Override
