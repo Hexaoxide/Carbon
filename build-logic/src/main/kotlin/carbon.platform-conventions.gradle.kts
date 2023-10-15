@@ -73,7 +73,7 @@ modrinth {
   token.set(providers.environmentVariable("MODRINTH_TOKEN"))
   required.project("luckperms")
   optional.project("miniplaceholders")
-  gameVersions.addAll("1.19.4", "1.20.1")
+  gameVersions.addAll("1.19.4", "1.20.2")
 }
 
 val writeDeps = tasks.register("writeDependencies", WriteDependencies::class) {
