@@ -27,6 +27,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.api.users.Party;
+import net.draycia.carbon.common.messaging.packets.DisbandPartyPacket;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -111,6 +112,11 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
     @Override
     public void partyChangeMessageReceived(final PartyChangePacket pkt) {
         this.backingManager.partyChangeMessageReceived(pkt);
+    }
+
+    @Override
+    public void disbandPartyMessageReceived(final DisbandPartyPacket pkt) {
+        this.backingManager.disbandPartyMessageReceived(pkt);
     }
 
     public interface PlayerFactory {

@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.users;
 
 import com.github.benmanes.caffeine.cache.AsyncCache;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
@@ -29,9 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,6 +43,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.packets.DisbandPartyPacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.draycia.carbon.common.users.db.DatabaseUserManager;
@@ -54,6 +59,8 @@ import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 @DefaultQualifier(NonNull.class)
 public abstract class CachingUserManager implements UserManagerInternal<CarbonPlayerCommon> {
 
+    private static final int DISBAND_DELAY = 10;
+
     protected final Logger logger;
     protected final ProfileResolver profileResolver;
     private final ExecutorService executor;
@@ -64,6 +71,10 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
     private final AsyncCache<UUID, Party> partyCache;
+    private final List<Runnable> queuedDisbands = new CopyOnWriteArrayList<>();
+    private final Cache<UUID, Object> recentDisbands = Caffeine.newBuilder()
+        .expireAfterWrite(DISBAND_DELAY + 10, TimeUnit.SECONDS)
+        .build();
 
     protected CachingUserManager(
         final Logger logger,
@@ -156,6 +167,9 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     @Override
     public void shutdown() {
         this.cacheLock.lock();
+        for (final Runnable task : this.queuedDisbands) {
+            task.run();
+        }
         try {
             final Map<UUID, CompletableFuture<Void>> collect = List.copyOf(this.cache.keySet()).stream()
                 .collect(Collectors.toMap(Function.identity(), this::loggedOut));
@@ -226,6 +240,10 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
 
     @Override
     public CompletableFuture<@Nullable Party> party(final UUID id) {
+        // we delay party deletion for cross-server purposes, so ignore present data when we know it was recently disbanded
+        if (this.recentDisbands.getIfPresent(id) != null) {
+            return CompletableFuture.completedFuture(null);
+        }
         return this.partyCache.get(id, (uuid, cacheExecutor) -> CompletableFuture.supplyAsync(() -> {
             final @Nullable PartyImpl party = this.loadParty(uuid);
             if (party != null) {
@@ -253,20 +271,28 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     @Override
     public final void disbandParty(final UUID id) {
         this.partyCache.synchronous().invalidate(id);
-        this.executor.execute(() -> this.disbandSync(id));
+        final AtomicBoolean ran = new AtomicBoolean(false);
+        final AtomicReference<Runnable> taskRef = new AtomicReference<>();
+        final Runnable task = () -> {
+            if (ran.compareAndSet(false, true)) {
+                this.disbandSync(id);
+                this.queuedDisbands.remove(taskRef.get());
+            }
+        };
+        taskRef.set(task);
+        this.queuedDisbands.add(task);
+        this.recentDisbands.put(id, new Object());
+        // delay deletion so other servers can post leave events
+        CompletableFuture.delayedExecutor(DISBAND_DELAY, TimeUnit.SECONDS, this.executor).execute(task);
+        this.messagingManager.get().withPacketService(service -> {
+            service.queuePacket(this.packetFactory.disbandParty(id));
+            service.flushQueue();
+        });
     }
 
     @Override
     public void partyChangeMessageReceived(final PartyChangePacket pkt) {
-        @Nullable CompletableFuture<@Nullable Party> future = this.partyCache.getIfPresent(pkt.partyId());
-        if (future == null) {
-            // we want to notify any online members even if the party isn't loaded locally yet
-            for (final CarbonPlayer player : this.server.players()) {
-                if (pkt.partyId().equals(((WrappedCarbonPlayer) player).partyId())) {
-                    future = this.party(pkt.partyId());
-                }
-            }
-        }
+        final @Nullable CompletableFuture<@Nullable Party> future = this.partyIfMemberOnline(pkt.partyId());
         if (future == null) {
             return;
         }
@@ -281,6 +307,39 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                     case REMOVE -> impl.removeMemberRaw(id);
                 }
             });
+        }).whenComplete(($, thr) -> {
+            if (thr != null) {
+                this.logger.warn("Exception handling party change packet {}", pkt, thr);
+            }
+        });
+    }
+
+    private @Nullable CompletableFuture<@Nullable Party> partyIfMemberOnline(final UUID partyId) {
+        @Nullable CompletableFuture<@Nullable Party> future = this.partyCache.getIfPresent(partyId);
+        if (future == null) {
+            // we want to notify any online members even if the party isn't loaded locally yet
+            for (final CarbonPlayer player : this.server.players()) {
+                if (partyId.equals(((WrappedCarbonPlayer) player).partyId())) {
+                    future = this.party(partyId);
+                }
+            }
+        }
+        return future;
+    }
+
+    @Override
+    public void disbandPartyMessageReceived(final DisbandPartyPacket pkt) {
+        final @Nullable CompletableFuture<@Nullable Party> future = this.partyIfMemberOnline(pkt.partyId());
+        this.recentDisbands.put(pkt.partyId(), new Object());
+        if (future == null) {
+            return;
+        }
+        future.thenAccept(party -> {
+            if (party == null) {
+                return;
+            }
+            ((PartyImpl) party).disbandRaw();
+            this.partyCache.synchronous().invalidate(pkt.partyId());
         }).whenComplete(($, thr) -> {
             if (thr != null) {
                 this.logger.warn("Exception handling party change packet {}", pkt, thr);
