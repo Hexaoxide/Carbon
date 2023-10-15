@@ -54,10 +54,6 @@ public final class TagPermissions {
     }
 
     public static Component parseTags(final String basePermission, final String message, final Predicate<String> permission, final TagResolver.Builder resolver) {
-        if (!permission.test(basePermission)) {
-            return Component.text(message);
-        }
-
         boolean hasAllDecorations = false;
         for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
             if (permission.test(basePermission + '.' + entry.getKey())) {
