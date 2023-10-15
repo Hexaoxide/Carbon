@@ -88,11 +88,11 @@ public abstract class CarbonPacket extends AbstractPacket {
     }
 
     protected final <E extends Enum<E>> void writeEnum(final E value, final ByteBuf buf) {
-        this.writeString(value.name(), buf);
+        this.writeVarInt(value.ordinal(), buf);
     }
 
     protected final <E extends Enum<E>> E readEnum(final ByteBuf buf, final Class<E> cls) {
-        return Enum.valueOf(cls, this.readString(buf));
+        return cls.getEnumConstants()[this.readVarInt(buf)];
     }
 
 }
