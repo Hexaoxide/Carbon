@@ -62,17 +62,19 @@ paper {
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
   apiVersion = "1.19"
   author = "Draycia"
-  loadAfter += PaperPluginDescription.LoadInfo("LuckPerms")
-  loadAfter += PaperPluginDescription.LoadInfo("EssentialsDiscord")
-  loadAfter += PaperPluginDescription.LoadInfo("DiscordSRV")
-  loadAfter += PaperPluginDescription.LoadInfo("PlaceholderAPI")
-  dependencies += PaperPluginDescription.Dependency("LuckPerms", true)
-  dependencies += PaperPluginDescription.Dependency("PlaceholderAPI", false)
-  dependencies += PaperPluginDescription.Dependency("EssentialsDiscord", false)
-  dependencies += PaperPluginDescription.Dependency("DiscordSRV", false)
-  dependencies += PaperPluginDescription.Dependency("MiniPlaceholders", false)
   website = GITHUB_REPO_URL
   foliaSupported = true
+
+  loadAfter("LuckPerms")
+  loadAfter("EssentialsDiscord")
+  loadAfter("DiscordSRV")
+  loadAfter("PlaceholderAPI")
+
+  dependency("LuckPerms", true)
+  dependency("PlaceholderAPI", false)
+  dependency("EssentialsDiscord", false)
+  dependency("DiscordSRV", false)
+  dependency("MiniPlaceholders", false)
 }
 
 bukkit {

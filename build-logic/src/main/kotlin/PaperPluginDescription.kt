@@ -76,6 +76,18 @@ class PaperPluginDescription(project: Project) : PluginDescription {
   @JsonProperty("load-before")
   val loadBefore: MutableList<LoadInfo> = mutableListOf()
 
+  fun dependency(name: String, required: Boolean = true, bootstrap: Boolean = false) {
+    dependencies.add(Dependency(name, required, bootstrap))
+  }
+
+  fun loadAfter(name: String, bootstrap: Boolean = false) {
+    loadAfter.add(LoadInfo(name, bootstrap))
+  }
+
+  fun loadBefore(name: String, bootstrap: Boolean = false) {
+    loadBefore.add(LoadInfo(name, bootstrap))
+  }
+
   data class Dependency(@Input val name: String, @Input val required: Boolean = true, @Input val bootstrap: Boolean = false)
 
   data class LoadInfo(@Input val name: String, @Input val bootstrap: Boolean = false)

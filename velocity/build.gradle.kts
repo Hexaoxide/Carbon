@@ -19,8 +19,8 @@ dependencies {
 
 configurations.runtimeClasspath {
   resolutionStrategy.force(
-    "org.ow2.asm:asm:9.5",
-    "org.ow2.asm:asm-commons:9.5",
+    "org.ow2.asm:asm:9.6",
+    "org.ow2.asm:asm-commons:9.6",
   )
 }
 
