@@ -210,14 +210,15 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
     }
 
     private String forPlayer(final String key, final CarbonPlayer player) {
-        if (player.locale() != null) {
-            final var properties = this.locales.get(player.locale());
+        final @Nullable Locale locale = player.locale();
+        if (locale != null) {
+            final var properties = this.locales.get(locale);
 
             if (properties != null) {
                 final var message = properties.getProperty(key);
 
                 if (message != null) {
-                    return message;
+                    return fixCrowdin(message);
                 }
             }
         }
@@ -236,7 +237,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
                 return key;
             }
 
-            return value;
+            return fixCrowdin(value);
         }
 
         return key;
@@ -310,6 +311,13 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
         localeString = localeString.replace("nb_NO", "no_NO");
 
         return Translator.parseLocale(localeString);
+    }
+
+    // Crowdin exports single quotes as double quotes
+    private static String fixCrowdin(final String s) {
+        return s.replace("\\''", "$$$$$")
+            .replace("''", "'")
+            .replace("$$$$$", "''");
     }
 
 }
