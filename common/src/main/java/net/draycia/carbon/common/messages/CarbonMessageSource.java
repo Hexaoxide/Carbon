@@ -315,9 +315,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
 
     // Crowdin exports single quotes as double quotes
     private static String fixCrowdin(final String s) {
-        return s.replace("\\''", "$$$$$")
-            .replace("''", "'")
-            .replace("$$$$$", "''");
+        return s.replace("''", "'");
     }
 
 }
