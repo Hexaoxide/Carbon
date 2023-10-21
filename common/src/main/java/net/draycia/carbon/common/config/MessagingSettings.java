@@ -30,6 +30,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 @ConfigSerializable
 public class MessagingSettings {
 
+    @Comment("Whether cross-server messaging is enabled")
     private boolean enabled = false;
 
     @Comment("One of: RABBITMQ, NATS, REDIS")
