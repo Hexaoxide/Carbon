@@ -70,8 +70,12 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
         } else if (params.endsWith("party_l")) {
             return legacy(this.partyName(player));
         } else if (params.endsWith("nickname")) {
-            return mm(this.displayName(player));
+            return mm(this.nickname(player));
         } else if (params.endsWith("nickname_l")) {
+            return legacy(this.nickname(player));
+        } else if (params.endsWith("displayname")) {
+            return mm(this.displayName(player));
+        } else if (params.endsWith("displayname_l")) {
             return legacy(this.displayName(player));
         }
 
@@ -94,6 +98,12 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
     private Component displayName(final OfflinePlayer player) {
         final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
         return carbonPlayer.displayName();
+    }
+
+    private Component nickname(final OfflinePlayer player) {
+        final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
+        final @Nullable Component nickname = carbonPlayer.nickname();
+        return nickname == null ? Component.text(carbonPlayer.username()) : nickname;
     }
 
 }
