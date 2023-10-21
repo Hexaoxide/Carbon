@@ -110,7 +110,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     public void nickname(final @Nullable Component nickname) {
         super.nickname(nickname);
 
-        this.player().ifPresent(this.applyDisplayNameToBukkit(nickname));
+        this.player().ifPresent(this.applyDisplayNameToBukkit(nickname == null ? null : this.displayName()));
     }
 
     private Consumer<Player> applyDisplayNameToBukkit(final @Nullable Component displayName) {
