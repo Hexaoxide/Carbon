@@ -29,6 +29,7 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.util.CarbonDependencies;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
@@ -73,6 +74,13 @@ public final class CarbonVelocityBootstrap {
 
         final Metrics metrics = this.metricsFactory.make(this, BSTATS_PLUGIN_ID);
         metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector.getInstance(ConfigManager.class).primaryConfig().storageType().name()));
+        metrics.addCustomChart(new SimplePie("messaging", () -> {
+            final MessagingSettings settings = this.injector.getInstance(ConfigManager.class).primaryConfig().messagingSettings();
+            if (!settings.enabled()) {
+                return "disabled";
+            }
+            return settings.brokerType().name();
+        }));
     }
 
     @Subscribe

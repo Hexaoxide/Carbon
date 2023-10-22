@@ -33,6 +33,7 @@ import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -111,6 +112,13 @@ public final class CarbonChatPaper extends CarbonChatInternal {
 
         final Metrics metrics = new Metrics(this.plugin, BSTATS_PLUGIN_ID);
         metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector().getInstance(ConfigManager.class).primaryConfig().storageType().name()));
+        metrics.addCustomChart(new SimplePie("messaging", () -> {
+            final MessagingSettings settings = this.injector().getInstance(ConfigManager.class).primaryConfig().messagingSettings();
+            if (!settings.enabled()) {
+                return "disabled";
+            }
+            return settings.brokerType().name();
+        }));
 
         this.checkVersion();
     }
