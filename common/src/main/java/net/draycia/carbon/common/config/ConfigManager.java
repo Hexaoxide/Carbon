@@ -38,10 +38,14 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.CommentedConfigurationNodeIntermediary;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.objectmapping.ObjectMapper;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Processor;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -112,13 +116,24 @@ public final class ConfigManager {
                 final ConfigurateComponentSerializer serializer =
                     ConfigurateComponentSerializer.configurate();
 
-                return opts.shouldCopyDefaults(true).serializers(serializerBuilder ->
-                    serializerBuilder.registerAll(serializer.serializers())
-                        .register(Locale.class, this.locale)
-                );
+                return opts.shouldCopyDefaults(true)
+                    .serializers(serializerBuilder ->
+                        serializerBuilder.registerAll(serializer.serializers())
+                            .register(Locale.class, this.locale)
+                            .registerAnnotatedObjects(ObjectMapper.factoryBuilder()
+                                .addProcessor(Comment.class, overrideComments())
+                                .build()));
             })
             .path(file)
             .build();
+    }
+
+    private static Processor.Factory<Comment, Object> overrideComments() {
+        return (data, fieldType) -> (value, destination) -> {
+            if (destination instanceof final CommentedConfigurationNodeIntermediary<?> commented) {
+                commented.comment(data.value());
+            }
+        };
     }
 
     public <T> @Nullable T load(final Class<T> clazz, final String fileName) {

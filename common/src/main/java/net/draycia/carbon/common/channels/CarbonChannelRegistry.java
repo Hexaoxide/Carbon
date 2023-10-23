@@ -68,8 +68,6 @@ import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
-import org.spongepowered.configurate.objectmapping.ObjectMapper;
-import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 @Singleton
@@ -77,17 +75,6 @@ import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 public class CarbonChannelRegistry extends ChatListenerInternal implements ChannelRegistry {
 
     private static final String PARTYCHAT_CONF = "partychat.conf";
-    private static @MonotonicNonNull ObjectMapper<ConfigChatChannel> MAPPER;
-    private static @MonotonicNonNull ObjectMapper<PartyChatChannel> PARTY_MAPPER;
-
-    static {
-        try {
-            MAPPER = ObjectMapper.factory().get(ConfigChatChannel.class);
-            PARTY_MAPPER = ObjectMapper.factory().get(PartyChatChannel.class);
-        } catch (final SerializationException e) {
-            e.printStackTrace();
-        }
-    }
 
     private final Path configChannelDir;
     private final Injector injector;
@@ -297,9 +284,21 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final ConfigurationLoader<?> loader = this.config.configurationLoader(channelFile);
 
         try {
+            final Class<? extends ConfigChatChannel> type = this.config.primaryConfig().partyChat().enabled && channelFile.getFileName().toString().equals(PARTYCHAT_CONF)
+                ? PartyChatChannel.class
+                : ConfigChatChannel.class;
+
             final ConfigurationNode loaded = updateNode(loader.load());
-            loader.save(loaded);
-            return (this.config.primaryConfig().partyChat().enabled && channelFile.getFileName().toString().equals(PARTYCHAT_CONF) ? PARTY_MAPPER : MAPPER).load(loaded);
+            final @Nullable ConfigChatChannel channel = loaded.get(type);
+            if (channel == null) {
+                throw new ConfigurateException("Config deserialized to null.");
+            }
+
+            final ConfigurationNode newNode = loader.createNode();
+            newNode.set(type, channel);
+            loader.save(newNode);
+
+            return channel;
         } catch (final ConfigurateException exception) {
             this.logger.warn("Failed to load channel from file '{}'", channelFile, exception);
         }
