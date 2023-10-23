@@ -89,8 +89,8 @@ public class ConfigChatChannel implements ChatChannel {
     @Comment("The chat formats for this channel.")
     protected @Nullable ConfigChannelMessageSource messageSource = new ConfigChannelMessageSource();
 
-    @Comment("Messages will be sent in this channel if they start with this prefix.")
-    private @Nullable String quickPrefix = null;
+    @Comment("Messages will be sent in this channel if they start with this prefix. (Leave empty/blank to disable quick prefix for this channel)")
+    private @Nullable String quickPrefix = "";
 
     private @Nullable Boolean shouldRegisterCommands = true;
 
