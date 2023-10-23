@@ -171,9 +171,10 @@ public final class WhisperCommand extends CarbonCommand {
                 return;
             }
 
+            final String recipientUsername = recipient.username();
             if (!this.network.online(recipient) || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                 final var exception = new CarbonPlayerArgument.ParseException(
-                    recipientInputString == null ? recipient.username() : recipientInputString,
+                    recipientInputString == null ? recipientUsername : recipientInputString,
                     this.messages
                 );
                 this.messages.errorCommandArgumentParsing(sender, CloudUtils.message(exception));
@@ -197,8 +198,8 @@ public final class WhisperCommand extends CarbonCommand {
                 return;
             }
 
-            final Component senderName = sender.displayName();
-            final Component recipientName = recipient.displayName();
+            final Component senderDisplayName = sender.displayName();
+            final Component recipientDisplayName = recipient.displayName();
 
             final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEventImpl(sender, recipient, Component.text(message));
             this.events.emit(privateChatEvent);
@@ -208,11 +209,12 @@ public final class WhisperCommand extends CarbonCommand {
                 return;
             }
 
-            this.messages.whisperSender(SourcedAudience.of(sender, sender), senderName, recipientName, privateChatEvent.message());
+            final String senderUsername = sender.username();
+            this.messages.whisperSender(SourcedAudience.of(sender, sender), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
             if (localRecipient) {
-                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderName, recipientName, privateChatEvent.message());
+                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
             }
-            this.messages.whisperConsoleLog(this.server.console(), senderName, recipientName, privateChatEvent.message());
+            this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
 
             final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
             if (localRecipient && messageSound != null) {
@@ -237,12 +239,14 @@ public final class WhisperCommand extends CarbonCommand {
                 return;
             }
             this.userManager.user(packet.from()).thenAccept(sender -> {
-                final Component senderName = sender.displayName();
-                final Component recipientName = recipient.displayName();
+                final String senderUsername = sender.username();
+                final Component senderDisplayName = sender.displayName();
+                final String recipientUsername = recipient.username();
+                final Component recipientDisplayName = recipient.displayName();
 
                 recipient.whisperReplyTarget(sender.uuid());
-                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderName, recipientName, packet.message());
-                this.messages.whisperConsoleLog(this.server.console(), senderName, recipientName, packet.message());
+                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
+                this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
                 final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
                 if (messageSound != null) {
                     recipient.playSound(messageSound);

@@ -109,26 +109,32 @@ public interface CarbonMessages {
 
     @Message("whisper.to")
     void whisperSender(
-        final SourcedAudience audience,
-        @Placeholder("sender_display_name") final Component senderDisplayName,
-        @Placeholder("recipient_display_name") final Component recipientDisplayName,
-        final Component message
+        SourcedAudience audience,
+        String senderUsername,
+        Component senderDisplayName,
+        String recipientUsername,
+        Component recipientDisplayName,
+        Component message
     );
 
     @Message("whisper.from")
     void whisperRecipient(
-        final SourcedAudience audience,
-        @Placeholder("sender_display_name") final Component senderDisplayName,
-        @Placeholder("recipient_display_name") final Component recipientDisplayName,
-        final Component message
+        SourcedAudience audience,
+        String senderUsername,
+        Component senderDisplayName,
+        String recipientUsername,
+        Component recipientDisplayName,
+        Component message
     );
 
     @Message("whisper.console")
     void whisperConsoleLog(
-        final Audience audience,
-        @Placeholder("sender_display_name") final Component senderDisplayName,
-        @Placeholder("recipient_display_name") final Component recipientDisplayName,
-        final Component message
+        Audience audience,
+        String senderUsername,
+        Component senderDisplayName,
+        String recipientUsername,
+        Component recipientDisplayName,
+        Component message
     );
 
     @Message("whisper.error")
