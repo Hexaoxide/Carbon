@@ -24,6 +24,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -40,8 +41,28 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ArgumentFactory;
+import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
+import net.draycia.carbon.common.command.commands.ClearChatCommand;
+import net.draycia.carbon.common.command.commands.ContinueCommand;
+import net.draycia.carbon.common.command.commands.DebugCommand;
+import net.draycia.carbon.common.command.commands.HelpCommand;
+import net.draycia.carbon.common.command.commands.IgnoreCommand;
+import net.draycia.carbon.common.command.commands.IgnoreListCommand;
+import net.draycia.carbon.common.command.commands.JoinCommand;
+import net.draycia.carbon.common.command.commands.LeaveCommand;
+import net.draycia.carbon.common.command.commands.MuteCommand;
+import net.draycia.carbon.common.command.commands.MuteInfoCommand;
+import net.draycia.carbon.common.command.commands.NicknameCommand;
+import net.draycia.carbon.common.command.commands.PartyCommands;
+import net.draycia.carbon.common.command.commands.ReloadCommand;
+import net.draycia.carbon.common.command.commands.ReplyCommand;
+import net.draycia.carbon.common.command.commands.ToggleMessagesCommand;
+import net.draycia.carbon.common.command.commands.UnignoreCommand;
+import net.draycia.carbon.common.command.commands.UnmuteCommand;
+import net.draycia.carbon.common.command.commands.UpdateUsernameCommand;
+import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
@@ -80,6 +101,7 @@ import net.draycia.carbon.common.users.db.argument.BinaryUUIDArgumentFactory;
 import net.draycia.carbon.common.users.db.mapper.BinaryUUIDColumnMapper;
 import net.draycia.carbon.common.users.db.mapper.NativeUUIDColumnMapper;
 import net.draycia.carbon.common.users.json.JSONUserManager;
+import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.Exceptions;
 import net.draycia.carbon.common.util.FileUtil;
@@ -183,6 +205,11 @@ public final class CarbonCommonModule extends AbstractModule {
         this.bind(new TypeLiteral<UserManager<?>>() {}).to(PlatformUserManager.class);
         this.bind(new TypeLiteral<UserManagerInternal<?>>() {}).to(PlatformUserManager.class);
 
+        this.configureListeners();
+        this.configureCommands();
+    }
+
+    private void configureListeners() {
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(DeafenHandler.class);
         listeners.addBinding().to(HyperlinkHandler.class);
@@ -192,6 +219,31 @@ public final class CarbonCommonModule extends AbstractModule {
         listeners.addBinding().to(MuteHandler.class);
         listeners.addBinding().to(PingHandler.class);
         listeners.addBinding().to(RadiusListener.class);
+    }
+
+    private void configureCommands() {
+        this.requestStaticInjection(CloudUtils.class);
+
+        final Multibinder<CarbonCommand> commands = Multibinder.newSetBinder(this.binder(), CarbonCommand.class);
+        commands.addBinding().to(ClearChatCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(ContinueCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(DebugCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(HelpCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(IgnoreCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(MuteCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(MuteInfoCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(NicknameCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(ReloadCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(ReplyCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(ToggleMessagesCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(UnignoreCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(UnmuteCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(UpdateUsernameCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(WhisperCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(JoinCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(LeaveCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(IgnoreListCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(PartyCommands.class).in(Scopes.SINGLETON);
     }
 
     // Helper to create a FactoryProvider3 module

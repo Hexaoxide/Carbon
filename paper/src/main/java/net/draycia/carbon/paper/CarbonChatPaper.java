@@ -21,8 +21,10 @@ package net.draycia.carbon.paper;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import github.scarsz.discordsrv.DiscordSRV;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,8 +45,6 @@ import net.draycia.carbon.paper.hooks.CarbonPAPIPlaceholders;
 import net.draycia.carbon.paper.hooks.DSRVChatHook;
 import net.draycia.carbon.paper.hooks.PAPIChatHook;
 import net.draycia.carbon.paper.listeners.DiscordMessageListener;
-import net.draycia.carbon.paper.listeners.PaperChatListener;
-import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -58,10 +58,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public final class CarbonChatPaper extends CarbonChatInternal {
 
-    private static final Set<Class<? extends Listener>> LISTENER_CLASSES = Set.of(
-        PaperChatListener.class,
-        PaperPlayerJoinListener.class
-    );
     private static final int BSTATS_PLUGIN_ID = 8720;
 
     private final JavaPlugin plugin;
@@ -101,9 +97,10 @@ public final class CarbonChatPaper extends CarbonChatInternal {
     void onEnable() {
         this.init();
 
-        for (final Class<? extends Listener> listenerClass : LISTENER_CLASSES) {
+        final Set<Listener> listeners = this.injector().getInstance(Key.get(new TypeLiteral<Set<Listener>>() {}));
+        for (final Listener listener : listeners) {
             this.plugin.getServer().getPluginManager().registerEvents(
-                this.injector().getInstance(listenerClass),
+                listener,
                 this.plugin
             );
         }

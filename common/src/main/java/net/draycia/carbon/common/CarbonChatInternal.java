@@ -32,6 +32,7 @@ import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.listeners.Listener;
@@ -99,8 +100,8 @@ public abstract class CarbonChatInternal implements CarbonChat {
 
         // Commands
         // This is a bit awkward looking
-        CloudUtils.loadCommands(this.injector);
-        CloudUtils.registerCommands(this.injector.getInstance(ConfigManager.class).loadCommandSettings());
+        final Set<CarbonCommand> commands = this.injector.getInstance(Key.get(new TypeLiteral<Set<CarbonCommand>>() {}));
+        CloudUtils.registerCommands(commands, this.injector.getInstance(ConfigManager.class).loadCommandSettings());
 
         this.periodicTasks.scheduleAtFixedRate(
             () -> PlayerUtils.saveLoggedInPlayers(this.carbonServer, this.userManager, this.logger),

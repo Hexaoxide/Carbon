@@ -24,6 +24,8 @@ import cloud.commandframework.velocity.VelocityCommandManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
+import com.google.inject.multibindings.Multibinder;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -43,6 +45,10 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.velocity.command.VelocityCommander;
 import net.draycia.carbon.velocity.command.VelocityPlayerCommander;
+import net.draycia.carbon.velocity.listeners.VelocityChatListener;
+import net.draycia.carbon.velocity.listeners.VelocityListener;
+import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
+import net.draycia.carbon.velocity.listeners.VelocityPlayerLeaveListener;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.draycia.carbon.velocity.users.VelocityProfileResolver;
 import org.apache.logging.log4j.LogManager;
@@ -108,6 +114,13 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerVelocity.class));
         this.bind(CarbonMessageRenderer.class).to(VelocityMessageRenderer.class);
+    }
+
+    private void configureListeners() {
+        final Multibinder<VelocityListener<?>> listeners = Multibinder.newSetBinder(this.binder(), new TypeLiteral<VelocityListener<?>>() {});
+        listeners.addBinding().to(VelocityChatListener.class);
+        listeners.addBinding().to(VelocityPlayerJoinListener.class);
+        listeners.addBinding().to(VelocityPlayerLeaveListener.class);
     }
 
 }
