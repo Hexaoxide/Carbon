@@ -12,16 +12,11 @@ dependencies {
   implementation(libs.cloudVelocity)
   compileOnly(libs.miniplaceholders)
 
-  runtimeOnly(libs.jarRelocator)
-
   runtimeDownload(libs.mysql)
 }
 
-configurations.runtimeClasspath {
-  resolutionStrategy.force(
-    "org.ow2.asm:asm:9.6",
-    "org.ow2.asm:asm-commons:9.6",
-  )
+gremlin {
+  defaultJarRelocatorDependencies.set(true)
 }
 
 tasks {
@@ -30,8 +25,6 @@ tasks {
     standardRuntimeRelocations()
     relocateDependency("com.google.inject.assistedinject")
     relocateDependency("io.leangen.geantyref")
-    relocateDependency("me.lucko.jarrelocator")
-    relocateDependency("org.objectweb.asm")
   }
   writeDependencies {
     standardRuntimeRelocations()

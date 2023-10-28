@@ -21,19 +21,18 @@ package net.draycia.carbon.paper;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
-import io.papermc.paper.plugin.loader.library.impl.JarLibrary;
 import net.draycia.carbon.common.util.CarbonDependencies;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.springframework.lang.NonNull;
+import xyz.jpenilla.gremlin.runtime.platformsupport.PaperClasspathAppender;
 
 @DefaultQualifier(NonNull.class)
 public class CarbonPaperLoader implements PluginLoader {
 
     @Override
     public void classloader(final PluginClasspathBuilder classpathBuilder) {
-        CarbonDependencies.load(
-            classpathBuilder.getContext().getDataDirectory().resolve("libraries"),
-            path -> classpathBuilder.addLibrary(new JarLibrary(path))
+        new PaperClasspathAppender(classpathBuilder).append(
+            CarbonDependencies.resolve(classpathBuilder.getContext().getDataDirectory().resolve("libraries"))
         );
     }
 

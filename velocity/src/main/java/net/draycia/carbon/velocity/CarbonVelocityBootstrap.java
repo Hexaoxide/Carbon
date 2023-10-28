@@ -34,6 +34,7 @@ import net.draycia.carbon.common.util.CarbonDependencies;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import xyz.jpenilla.gremlin.runtime.platformsupport.VelocityClasspathAppender;
 
 public final class CarbonVelocityBootstrap {
 
@@ -63,9 +64,8 @@ public final class CarbonVelocityBootstrap {
 
     @Subscribe
     public void onProxyInitialize(final ProxyInitializeEvent event) {
-        CarbonDependencies.load(
-            this.dataDirectory.resolve("libraries"),
-            path -> this.proxy.getPluginManager().addToClasspath(this, path)
+        new VelocityClasspathAppender(this.proxy, this).append(
+            CarbonDependencies.resolve(this.dataDirectory.resolve("libraries"))
         );
 
         this.injector = this.parentInjector.createChildInjector(

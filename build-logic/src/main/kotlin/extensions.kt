@@ -9,6 +9,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.filter
 import org.gradle.kotlin.dsl.the
 import org.gradle.language.jvm.tasks.ProcessResources
+import xyz.jpenilla.gremlin.gradle.ShadowGremlin
 
 fun ProcessResources.replace(
   pattern: String,
@@ -27,23 +28,11 @@ fun ProcessResources.replace(
 val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")
 
-fun Task.relocateDependency(pkg: String) {
-  when (this) {
-    is ShadowJar -> relocateDependency(pkg)
-    is WriteDependencies -> relocateDependency(pkg)
-    else -> error("relocateDependency must be called on a ShadowJar or WriteDependencies task, not ${this.javaClass.name}")
-  }
-}
-
 /**
  * Relocate a package into the `carbonchat.libs.` namespace.
  */
-fun ShadowJar.relocateDependency(pkg: String) {
-  relocate(pkg, "carbonchat.libs.$pkg")
-}
-
-fun WriteDependencies.relocateDependency(pkg: String) {
-  relocate(pkg, "carbonchat.libs.$pkg")
+fun Task.relocateDependency(pkg: String) {
+  ShadowGremlin.relocate(this, pkg, "carbonchat.libs.$pkg")
 }
 
 fun Task.standardRuntimeRelocations() {
@@ -81,6 +70,7 @@ fun Task.standardRelocations() {
   relocateDependency("ninja.egg82.messenger")
   relocateDependency("org.antlr")
   relocateDependency("com.electronwill")
+  relocateDependency("xyz.jpenilla.gremlin")
 }
 
 fun Task.relocateCloud() {

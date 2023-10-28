@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
   api(projects.carbonchatApi)
+  api(libs.gremlin.runtime)
   compileOnlyApi(platform(libs.log4jBom))
   compileOnlyApi(libs.log4jApi)
 
@@ -58,7 +59,6 @@ dependencies {
   api(libs.kyoriMoonshineCore)
   api(libs.kyoriMoonshineStandard)
 
-  compileOnlyApi(libs.jarRelocator)
   compileOnlyApi(libs.caffeine)
 
   // we shade and relocate a newer version than minecraft provides
