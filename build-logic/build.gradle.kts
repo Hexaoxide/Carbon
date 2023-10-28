@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.pluginYml)
   implementation(libs.minotaur)
   implementation(libs.configurateYaml)
+  implementation(libs.gremlin.gradle)
   compileOnly("com.fasterxml.jackson.core:jackson-core:2.14.0")
   compileOnly("com.fasterxml.jackson.core:jackson-annotations:2.14.0")
 

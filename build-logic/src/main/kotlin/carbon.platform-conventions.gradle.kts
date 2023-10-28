@@ -1,17 +1,12 @@
 plugins {
   id("carbon.base-conventions")
   id("com.modrinth.minotaur")
+  id("xyz.jpenilla.gremlin-gradle")
 }
 
 decorateVersion()
 
-val runtimeDownload: Configuration by configurations.creating {
-  isCanBeResolved = true
-  isCanBeConsumed = false
-  attributes {
-    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-  }
-
+configurations.runtimeDownload {
   exclude("org.slf4j", "slf4j-api")
   exclude("com.google.errorprone", "error_prone_annotations")
   exclude("io.leangen.geantyref", "geantyref")
@@ -76,19 +71,15 @@ modrinth {
   gameVersions.addAll("1.19.4", "1.20.2")
 }
 
-val writeDeps = tasks.register("writeDependencies", WriteDependencies::class) {
-  tree.set(runtimeDownload.incoming.resolutionResult.rootComponent)
-  files.from(runtimeDownload)
-  outputFileName.set("carbon-dependencies.list")
-  outputDir.set(layout.buildDirectory.dir("generated/dependencyList"))
+tasks.writeDependencies {
+  outputFileName.set("carbon-dependencies.txt")
   repos.add("https://repo.papermc.io/repository/maven-public/")
   repos.add("https://repo.maven.apache.org/maven2/")
 }
 
-sourceSets.main {
-  resources {
-    srcDir(writeDeps)
-  }
+gremlin {
+  defaultJarRelocatorDependencies.set(false)
+  defaultGremlinRuntimeDependency.set(false)
 }
 
 //val projectVersion = version as String

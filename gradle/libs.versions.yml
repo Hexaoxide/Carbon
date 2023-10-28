@@ -58,6 +58,7 @@ versions:
   pluginYml: 0.5.3
   minotaur: 2.7.5
   h2: 2.2.224
+  gremlin: 0.0.2
 
 dependencies:
   adventureBom:
@@ -345,6 +346,15 @@ dependencies:
     group: com.modrinth.minotaur
     name: Minotaur
     version: { ref: minotaur }
+  gremlin-gradle:
+    group: xyz.jpenilla
+    name: gremlin-gradle
+    version: { ref: gremlin }
+
+  gremlin-runtime:
+    group: xyz.jpenilla
+    name: gremlin-runtime
+    version: { ref: gremlin }
 
   luckPermsApi:
     group: net.luckperms

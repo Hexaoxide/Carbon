@@ -19,14 +19,15 @@
  */
 package net.draycia.carbon.common.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.Set;
-import org.apache.logging.log4j.LogManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import xyz.jpenilla.gremlin.runtime.DependencyCache;
+import xyz.jpenilla.gremlin.runtime.DependencyResolver;
+import xyz.jpenilla.gremlin.runtime.DependencySet;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonDependencies {
@@ -34,35 +35,17 @@ public final class CarbonDependencies {
     private CarbonDependencies() {
     }
 
-    public static void load(
-        final Path cacheDir,
-        final Exceptions.CheckedConsumer<Path, Throwable> addToClasspath
-    ) {
-        final DependencyDownloader downloader = new DependencyDownloader(
-            LogManager.getLogger(CarbonDependencies.class.getSimpleName()),
-            cacheDir
-        );
-
-        try (final InputStream stream = Objects.requireNonNull(
-            CarbonDependencies.class.getClassLoader().getResourceAsStream("carbon-dependencies.list"),
-            "Could not get InputStream for carbon-dependencies.list"
-        )) {
-            downloader.load(stream);
-        } catch (final IOException ex) {
-            throw new RuntimeException("Failed to load dependency list", ex);
+    public static Set<Path> resolve(final Path cacheDir) {
+        final DependencySet deps = DependencySet.readFromClasspathResource(
+            CarbonDependencies.class.getClassLoader(), "carbon-dependencies.txt");
+        final DependencyCache cache = new DependencyCache(cacheDir);
+        final Logger logger = LoggerFactory.getLogger(CarbonDependencies.class.getSimpleName());
+        final Set<Path> files;
+        try (final DependencyResolver downloader = new DependencyResolver(logger)) {
+            files = downloader.resolve(deps, cache).jarFiles();
         }
-
-        final Set<Path> resolved = downloader.resolve();
-
-        try {
-            for (final Path dep : resolved) {
-                addToClasspath.accept(dep);
-            }
-        } catch (final Error e) {
-            throw e;
-        } catch (final Throwable thr) {
-            throw new RuntimeException("Failed to add dependencies to classpath", thr);
-        }
+        cache.cleanup();
+        return files;
     }
 
 }
