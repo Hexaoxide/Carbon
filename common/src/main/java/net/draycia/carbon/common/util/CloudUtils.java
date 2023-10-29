@@ -27,6 +27,7 @@ import cloud.commandframework.exceptions.InvalidSyntaxException;
 import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public final class CloudUtils {
     private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
 
     @Inject
-    private static Set<CarbonCommand> commands;
+    private static Provider<Set<CarbonCommand>> commands;
 
     private CloudUtils() {
 
@@ -65,7 +66,7 @@ public final class CloudUtils {
     public static Map<Key, CommandSettings> defaultCommandSettings() {
         final Map<Key, CommandSettings> settings = new HashMap<>();
 
-        for (final var command : commands) {
+        for (final var command : commands.get()) {
             settings.put(command.key(), command.commandSettings());
         }
 
