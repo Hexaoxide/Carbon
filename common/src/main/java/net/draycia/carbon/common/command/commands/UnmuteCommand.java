@@ -62,7 +62,7 @@ public final class UnmuteCommand extends CarbonCommand {
     }
 
     @Override
-    protected CommandSettings _commandSettings() {
+    public CommandSettings defaultCommandSettings() {
         return new CommandSettings("unmute");
     }
 

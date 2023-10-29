@@ -65,7 +65,7 @@ public final class HelpCommand extends CarbonCommand {
     }
 
     @Override
-    protected CommandSettings _commandSettings() {
+    public CommandSettings defaultCommandSettings() {
         return new CommandSettings("carbon");
     }
 

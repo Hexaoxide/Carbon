@@ -75,7 +75,7 @@ public final class WhisperCommand extends CarbonCommand {
     }
 
     @Override
-    protected CommandSettings _commandSettings() {
+    public CommandSettings defaultCommandSettings() {
         return new CommandSettings("whisper", "w", "message", "msg", "m", "tell");
     }
 

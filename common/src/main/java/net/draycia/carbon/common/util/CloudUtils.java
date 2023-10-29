@@ -67,7 +67,7 @@ public final class CloudUtils {
         final Map<Key, CommandSettings> settings = new HashMap<>();
 
         for (final var command : commands.get()) {
-            settings.put(command.key(), command.commandSettings());
+            settings.put(command.key(), command.defaultCommandSettings());
         }
 
         return settings;

@@ -58,7 +58,7 @@ public final class IgnoreCommand extends CarbonCommand {
     }
 
     @Override
-    protected CommandSettings _commandSettings() {
+    public CommandSettings defaultCommandSettings() {
         return new CommandSettings("ignore", "block");
     }
 

@@ -31,7 +31,7 @@ public abstract class CarbonCommand {
     private @Nullable CommandSettings commandSettings = null;
 
     public CommandSettings commandSettings() {
-        return Objects.requireNonNullElseGet(this.commandSettings, this::_commandSettings);
+        return Objects.requireNonNullElseGet(this.commandSettings, this::defaultCommandSettings);
     }
 
     public void commandSettings(final @NonNull CommandSettings commandSettings) {
@@ -40,7 +40,7 @@ public abstract class CarbonCommand {
 
     public abstract void init();
 
-    protected abstract CommandSettings _commandSettings();
+    public abstract CommandSettings defaultCommandSettings();
 
     public abstract Key key();
 
