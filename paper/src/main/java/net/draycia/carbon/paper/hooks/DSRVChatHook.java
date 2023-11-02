@@ -68,7 +68,7 @@ public final class DSRVChatHook implements ChatHook {
             .expireAfterWrite(Duration.ofMillis(25))
             .build();
 
-        events.subscribe(CarbonChatEvent.class, event -> {
+        events.subscribe(CarbonChatEvent.class, 100, false, event -> {
             final ChatChannel chatChannel = event.chatChannel();
             final CarbonPlayer carbonPlayer = event.sender();
 
