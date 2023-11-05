@@ -19,7 +19,7 @@
  */
 package net.draycia.carbon.paper.integration.towny;
 
-import com.palmergames.bukkit.towny.object.ResidentList;
+import com.palmergames.bukkit.towny.object.Town;
 import java.util.List;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.key.Key;
@@ -30,7 +30,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class TownChannel extends ResidentListChannel {
+public class TownChannel extends ResidentListChannel<Town> {
 
     public static final String FILE_NAME = "townchat.conf";
 
@@ -44,7 +44,7 @@ public class TownChannel extends ResidentListChannel {
     }
 
     @Override
-    protected @Nullable ResidentList residentList(final CarbonPlayer player) {
+    protected @Nullable Town residentList(final CarbonPlayer player) {
         return TOWNY_API.getTown(player.uuid());
     }
 }

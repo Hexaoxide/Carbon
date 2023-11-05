@@ -38,13 +38,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-abstract class ResidentListChannel extends ConfigChatChannel {
+abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatChannel {
 
     protected final static TownyAPI TOWNY_API = TownyAPI.getInstance();
 
     private transient @MonotonicNonNull @Inject CarbonServer server;
 
-    protected abstract @Nullable ResidentList residentList(final CarbonPlayer player);
+    protected abstract @Nullable T residentList(final CarbonPlayer player);
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
@@ -62,24 +62,28 @@ abstract class ResidentListChannel extends ConfigChatChannel {
 
     @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
-        @Nullable final ResidentList residentList = TOWNY_API.getTown(sender.uuid());
+        final @Nullable T residentList = this.residentList(sender);
 
         if (residentList == null) {
             if (sender.online()) {
+                //todo: change message according to weather town/nation/alliance
                 sender.sendMessage(Component.text("You must join a town to use this channel.", NamedTextColor.RED));
             }
 
             return Collections.emptyList();
         }
 
-        final List<Player> onlinePlayersInResidentList = TOWNY_API.getOnlinePlayers(residentList);
-
+        final List<Player> onlinePlayersInResidentList = this.onlinePlayers(residentList);
         final List<Audience> recipients = new ArrayList<>();
 
         recipients.addAll(onlinePlayersInResidentList);
         recipients.add(this.server.console());
 
         return recipients;
+    }
+
+    protected List<Player> onlinePlayers(final T residentList) {
+        return TOWNY_API.getOnlinePlayers(residentList);
     }
 
 }
