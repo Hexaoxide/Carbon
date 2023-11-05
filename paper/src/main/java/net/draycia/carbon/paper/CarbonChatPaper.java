@@ -44,7 +44,6 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.paper.hooks.CarbonPAPIPlaceholders;
 import net.draycia.carbon.paper.hooks.DSRVChatHook;
 import net.draycia.carbon.paper.hooks.PAPIChatHook;
-import net.draycia.carbon.paper.integration.Integration;
 import net.draycia.carbon.paper.listeners.DiscordMessageListener;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
@@ -96,16 +95,6 @@ public final class CarbonChatPaper extends CarbonChatInternal {
     }
 
     void onEnable() {
-        final Set<Integration> integrations = this.injector().getInstance(Key.get(new TypeLiteral<>() {}));
-
-        for (final Integration integration : integrations) {
-            if (!integration.eligible()) {
-                continue;
-            }
-
-            integration.register();
-        }
-
         this.init();
 
         final Set<Listener> listeners = this.injector().getInstance(Key.get(new TypeLiteral<Set<Listener>>() {}));
