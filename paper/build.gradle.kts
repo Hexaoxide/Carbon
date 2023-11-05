@@ -26,6 +26,7 @@ dependencies {
   compileOnly(libs.miniplaceholders)
   compileOnly(libs.essentialsXDiscord)
   compileOnly(libs.discordsrv)
+  compileOnly(libs.towny)
 
   runtimeDownload(libs.guice) {
     exclude("com.google.guava")

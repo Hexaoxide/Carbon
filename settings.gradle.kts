@@ -45,6 +45,10 @@ dependencyResolutionManagement {
     maven("https://nexus.scarsz.me/content/groups/public/")
     // Libby (AlessioDP's fork)
     maven("https://repo.alessiodp.com/releases/")
+    // Glare's repo for Towny
+    maven("https://repo.glaremasters.me/repository/towny/") {
+      content { includeGroup("com.palmergames.bukkit.towny") }
+    }
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
