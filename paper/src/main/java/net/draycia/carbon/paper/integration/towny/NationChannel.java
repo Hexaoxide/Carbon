@@ -21,7 +21,10 @@ package net.draycia.carbon.paper.integration.towny;
 
 import com.palmergames.bukkit.towny.object.Nation;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -36,6 +39,15 @@ public class NationChannel extends ResidentListChannel<Nation> {
 
     public NationChannel() {
         this.key = Key.key("carbon", "nationchat");
+
+        this.messageSource = new ConfigChannelMessageSource();
+        this.messageSource.defaults = Map.of(
+            "default_format", "(nation: <nation_name>) <display_name>: <message>",
+            "console", "[nation: <nation_name>] <username> - <uuid>: <message>"
+        );
+        this.messageSource.locales = Map.of(
+            Locale.US, Map.of("default_format", "(nation: <nation_name>) <display_name>: <message>")
+        );
     }
 
     @Override

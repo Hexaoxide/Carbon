@@ -125,7 +125,6 @@ public class ConfigChatChannel implements ChatChannel {
     @Override
     public boolean shouldRegisterCommands() {
         return Objects.requireNonNullElse(this.shouldRegisterCommands, true);
-
     }
 
     @Override
