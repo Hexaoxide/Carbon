@@ -59,6 +59,7 @@ versions:
   minotaur: 2.7.5
   h2: 2.2.224
   gremlin: 0.0.2
+  towny: 0.100.0.0
 
 dependencies:
   adventureBom:
@@ -378,5 +379,9 @@ dependencies:
     group: io.github.miniplaceholders
     name: miniplaceholders-api
     version: { ref: miniplaceholders }
+  towny:
+    group: com.palmergames.bukkit.towny
+    name: towny
+    version: { ref: towny }
 
 bundles:
