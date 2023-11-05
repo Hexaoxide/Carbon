@@ -21,30 +21,25 @@ package net.draycia.carbon.paper.integration.towny;
 
 import com.palmergames.bukkit.towny.object.Nation;
 import java.util.List;
-import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.key.Key;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class NationChannel extends ResidentListChannel<Nation> {
+public class AllianceChannel extends NationChannel {
 
-    public static final String FILE_NAME = "nationchat.conf";
+    public static final String FILE_NAME = "alliancechat.conf";
 
-    public NationChannel() {
-        this.key = Key.key("carbon", "nationchat");
+    public AllianceChannel() {
+        this.key = Key.key("carbon", "alliancechat");
     }
 
     @Override
-    public List<String> commandAliases() {
-        return List.of("nc");
+    protected List<Player> onlinePlayers(final Nation residentList) {
+        return TOWNY_API.getOnlinePlayersAlliance(residentList);
     }
 
-    @Override
-    protected @Nullable Nation residentList(final CarbonPlayer player) {
-        return TOWNY_API.getNation(player.uuid());
-    }
 }

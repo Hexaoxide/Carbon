@@ -59,6 +59,11 @@ public final class TownyIntegration implements Integration {
             NationChannel.FILE_NAME,
             new SpecialHandler<>(NationChannel.class, () -> this.injector.getInstance(NationChannel.class))
         );
+
+        this.channelRegistry.registerSpecialConfigChannel(
+            AllianceChannel.FILE_NAME,
+            new SpecialHandler<>(AllianceChannel.class, () -> this.injector.getInstance(AllianceChannel.class))
+        );
     }
 
 }
