@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.paper.hooks.towny;
+package net.draycia.carbon.paper.integration.towny;
 
 import com.google.inject.Inject;
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -42,8 +42,7 @@ abstract class ResidentListChannel extends ConfigChatChannel {
 
     protected final static TownyAPI TOWNY_API = TownyAPI.getInstance();
 
-    private transient @MonotonicNonNull
-    @Inject CarbonServer server;
+    private transient @MonotonicNonNull @Inject CarbonServer server;
 
     protected abstract @Nullable ResidentList residentList(final CarbonPlayer player);
 
