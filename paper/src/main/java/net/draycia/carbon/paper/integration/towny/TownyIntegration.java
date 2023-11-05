@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry.SpecialHandler;
-import net.draycia.carbon.paper.integration.Integration;
+import net.draycia.carbon.common.integration.Integration;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;

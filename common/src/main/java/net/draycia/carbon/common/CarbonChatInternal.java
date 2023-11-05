@@ -35,6 +35,7 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
@@ -121,6 +122,17 @@ public abstract class CarbonChatInternal implements CarbonChat {
             30,
             TimeUnit.SECONDS
         );
+
+        // Integration
+        final Set<Integration> integrations = this.injector().getInstance(Key.get(new TypeLiteral<>() {}));
+
+        for (final Integration integration : integrations) {
+            if (!integration.eligible()) {
+                continue;
+            }
+
+            integration.register();
+        }
 
         // Load channels
         this.channelRegistry().loadConfigChannels(this.carbonMessages);
