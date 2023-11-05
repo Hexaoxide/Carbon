@@ -42,6 +42,8 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
+import net.draycia.carbon.paper.integration.Integration;
+import net.draycia.carbon.paper.integration.towny.TownyIntegration;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
@@ -120,12 +122,18 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
 
         this.configureListeners();
+        this.configureIntegrations();
     }
 
     private void configureListeners() {
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(PaperChatListener.class);
         listeners.addBinding().to(PaperPlayerJoinListener.class);
+    }
+
+    private void configureIntegrations() {
+        final Multibinder<Integration> integrations = Multibinder.newSetBinder(this.binder(), Integration.class);
+        integrations.addBinding().to(TownyIntegration.class);
     }
 
 }

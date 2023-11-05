@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.paper.hooks.towny;
+package net.draycia.carbon.paper.integration.towny;
 
 import com.palmergames.bukkit.towny.object.ResidentList;
 import java.util.List;
@@ -30,22 +30,21 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class NationChannel extends ResidentListChannel {
+public class TownChannel extends ResidentListChannel {
 
-    private final Key key = Key.key("carbon", "nationchat");
+    public static final String FILE_NAME = "townchat.conf";
 
-    @Override
-    public Key key() {
-        return this.key;
+    public TownChannel() {
+        this.key = Key.key("carbon", "townchat");
     }
 
     @Override
     public List<String> commandAliases() {
-        return List.of("nc");
+        return List.of("tc");
     }
 
     @Override
     protected @Nullable ResidentList residentList(final CarbonPlayer player) {
-        return TOWNY_API.getNation(player.uuid());
+        return TOWNY_API.getTown(player.uuid());
     }
 }
