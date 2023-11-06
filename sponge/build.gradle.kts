@@ -1,10 +1,9 @@
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
-import java.util.*
 
 plugins {
   id("carbon.shadow-platform")
-  id("org.spongepowered.gradle.plugin")
+  alias(libs.plugins.sponge.gradle)
 }
 
 dependencies {
@@ -28,7 +27,7 @@ tasks {
 sponge {
   injectRepositories(false) // We specify repositories in settings.gradle.kts
   apiVersion("11.0.0-SNAPSHOT")
-  plugin(rootProject.name.toLowerCase(Locale.ROOT)) {
+  plugin(rootProject.name.lowercase()) {
     loader {
       name(PluginLoaders.JAVA_PLAIN)
       version("1.0")
@@ -63,7 +62,7 @@ configurations.spongeRuntime {
   resolutionStrategy {
     eachDependency {
       if (target.name == "spongevanilla") {
-        useVersion("1.20.1-11.0.0-RC1356")
+        useVersion("1.20.+")
       }
     }
   }
