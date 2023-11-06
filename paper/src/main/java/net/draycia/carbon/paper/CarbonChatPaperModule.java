@@ -133,7 +133,10 @@ public final class CarbonChatPaperModule extends AbstractModule {
 
     private void configureIntegrations() {
         final Multibinder<Integration> integrations = Multibinder.newSetBinder(this.binder(), Integration.class);
+        final Multibinder<Integration.ConfigMeta> configs = Multibinder.newSetBinder(this.binder(), Integration.ConfigMeta.class);
+
         integrations.addBinding().to(TownyIntegration.class);
+        configs.addBinding().toInstance(TownyIntegration.configMeta());
     }
 
 }
