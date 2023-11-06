@@ -53,7 +53,7 @@ netty = "4.1.68.Final"
 zstdjni = "1.5.5-5"
 jedis = "5.0.2"
 postgresql = "42.6.0"
-rabbitmq = "5.18.0"
+rabbitmq = "5.20.0"
 nats = "2.16.14"
 h2 = "2.2.224"
 
