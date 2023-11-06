@@ -1,0 +1,137 @@
+[plugins]
+sponge-gradle = { id = "org.spongepowered.gradle.plugin", version = "2.2.0" }
+runPaper = { id = "xyz.jpenilla.run-paper", version.ref = "runTask" }
+runVelocity = { id = "xyz.jpenilla.run-velocity", version.ref = "runTask" }
+hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.0" }
+indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
+
+[versions]
+indra = "3.1.3"
+shadow = "8.1.1"
+pluginYml = "0.5.3"
+minotaur = "2.7.5"
+gremlin = "0.0.2"
+runTask = "2.2.0"
+
+adventure = "4.14.0"
+cloud = "1.8.4"
+cloudSponge = "1.8.0-SNAPSHOT"
+configurate = "4.1.2"
+typesafeConfig = "1.4.1"
+checkerQual = "3.39.0"
+stylecheck = "0.1"
+gson = "2.1"
+guava = "30.1-jre"
+bstats = "3.0.2"
+paperApi = "1.19.4-R0.1-SNAPSHOT"
+paperTrail = "0.0.1-SNAPSHOT"
+foliaApi = "1.19.4-R0.1-SNAPSHOT"
+event = "1.0.0-SNAPSHOT"
+registry = "1.0.0-SNAPSHOT"
+kyoriMoonshine = "2.0.4"
+log4j = "2.17.2"
+guice = "5.1.0"
+velocityApi = "3.2.0-SNAPSHOT"
+geantyref = "1.3.11"
+minecraft = "1.20.2"
+fabricLoader = "0.14.22"
+adventurePlatformFabric = "5.10.0"
+luckPermsApi = "5.3"
+essentialsx = "2.19.3"
+discordsrv = "1.26.0"
+placeholderapi = "2.10.9"
+miniplaceholders = "2.2.0"
+jdbi = "3.41.3"
+hikari = "5.0.1"
+mysql = "8.0.33"
+protobuf = "3.21.9"
+flyway = "9.22.3"
+caffeine = "3.1.8"
+mariadb = "3.2.0"
+messenger = "1.1.0-SNAPSHOT"
+netty = "4.1.68.Final"
+zstdjni = "1.5.5-5"
+jedis = "5.0.1"
+postgresql = "42.6.0"
+rabbitmq = "5.18.0"
+nats = "2.16.14"
+h2 = "2.2.224"
+
+[libraries]
+indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
+indraLicenseHeader = { group = "net.kyori", name = "indra-licenser-spotless", version.ref = "indra" }
+shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
+pluginYml = { group = "net.minecrell", name = "plugin-yml", version.ref = "pluginYml" }
+minotaur = { group = "com.modrinth.minotaur", name = "Minotaur", version.ref = "minotaur" }
+gremlin-gradle = { group = "xyz.jpenilla", name = "gremlin-gradle", version.ref = "gremlin" }
+
+adventureBom = { group = "net.kyori", name = "adventure-bom", version.ref = "adventure" }
+adventureApi = { group = "net.kyori", name = "adventure-api" }
+adventureTextSerializerGson = { group = "net.kyori", name = "adventure-text-serializer-gson" }
+adventureTextSerializerPlain = { group = "net.kyori", name = "adventure-text-serializer-plain" }
+adventureTextSerializerLegacy = { group = "net.kyori", name = "adventure-text-serializer-legacy" }
+adventureSerializerConfigurate4 = { group = "net.kyori", name = "adventure-serializer-configurate4", version.ref = "adventure" }
+minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
+adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformFabric" }
+geantyref = { group = "io.leangen.geantyref", name = "geantyref", version.ref = "geantyref" }
+log4jBom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j" }
+log4jApi = { group = "org.apache.logging.log4j", name = "log4j-api" }
+event = { group = "com.seiama", name = "event-api", version.ref = "event" }
+registry = { group = "com.seiama", name = "registry", version.ref = "registry" }
+kyoriMoonshine = { group = "net.kyori.moonshine", name = "moonshine", version.ref = "kyoriMoonshine" }
+kyoriMoonshineCore = { group = "net.kyori.moonshine", name = "moonshine-core", version.ref = "kyoriMoonshine" }
+kyoriMoonshineStandard = { group = "net.kyori.moonshine", name = "moonshine-standard", version.ref = "kyoriMoonshine" }
+cloudBom = { group = "cloud.commandframework", name = "cloud-bom", version.ref = "cloud" }
+cloudCore = { group = "cloud.commandframework", name = "cloud-core" }
+cloudMinecraftExtras = { group = "cloud.commandframework", name = "cloud-minecraft-extras" }
+cloudPaper = { group = "cloud.commandframework", name = "cloud-paper" }
+cloudSponge = { group = "cloud.commandframework", name = "cloud-sponge", version.ref = "cloudSponge" }
+cloudVelocity = { group = "cloud.commandframework", name = "cloud-velocity" }
+cloudFabric = { group = "cloud.commandframework", name = "cloud-fabric", version.ref = "cloud" }
+configurateCore = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
+configurateHocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
+configurateYaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
+typesafeConfig = { group = "com.typesafe", name = "config", version.ref = "typesafeConfig" }
+checkerQual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerQual" }
+stylecheck = { group = "ca.stellardrift", name = "stylecheck", version.ref = "stylecheck" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+bstatsBukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }
+bstatsVelocity = { group = "org.bstats", name = "bstats-velocity", version.ref = "bstats" }
+bstatsSponge = { group = "org.bstats", name = "bstats-sponge", version.ref = "bstats" }
+guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
+assistedInject = { group = "com.google.inject.extensions", name = "guice-assistedinject", version.ref = "guice" }
+jdbiCore = { group = "org.jdbi", name = "jdbi3-core", version.ref = "jdbi" }
+jdbiObject = { group = "org.jdbi", name = "jdbi3-sqlobject", version.ref = "jdbi" }
+jdbiPostgres = { group = "org.jdbi", name = "jdbi3-postgres", version.ref = "jdbi" }
+hikariCP = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
+flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
+flywayMysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway" }
+mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql" }
+protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
+caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb" }
+h2 = { group = "com.h2database", name = "h2", version.ref = "h2" }
+jarRelocator = { group = "me.lucko", name = "jar-relocator", version = "1.7" }
+messenger = { group = "de.hexaoxi", name = "messenger-api", version.ref = "messenger" }
+messengerNats = { group = "de.hexaoxi", name = "messenger-nats", version.ref = "messenger" }
+messengerRabbitmq = { group = "de.hexaoxi", name = "messenger-rabbitmq", version.ref = "messenger" }
+messengerRedis = { group = "de.hexaoxi", name = "messenger-redis", version.ref = "messenger" }
+netty = { group = "io.netty", name = "netty-all", version.ref = "netty" }
+zstdjni = { group = "com.github.luben", name = "zstd-jni", version.ref = "zstdjni" }
+jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
+rabbitmq = { group = "com.rabbitmq", name = "amqp-client", version.ref = "rabbitmq" }
+nats = { group = "io.nats", name = "jnats", version.ref = "nats" }
+paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi" }
+paperTrail = { group = "io.papermc", name = "paper-trail", version.ref = "paperTrail" }
+foliaApi = { group = "dev.folia", name = "folia-api", version.ref = "foliaApi" }
+velocityApi = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocityApi" }
+fabricMinecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
+fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabricLoader" }
+gremlin-runtime = { group = "xyz.jpenilla", name = "gremlin-runtime", version.ref = "gremlin" }
+luckPermsApi = { group = "net.luckperms", name = "api", version.ref = "luckPermsApi" }
+essentialsXDiscord = { group = "net.essentialsx", name = "EssentialsXDiscord", version.ref = "essentialsx" }
+discordsrv = { group = "com.discordsrv", name = "discordsrv", version.ref = "discordsrv" }
+placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
+miniplaceholders = { group = "io.github.miniplaceholders", name = "miniplaceholders-api", version.ref = "miniplaceholders" }

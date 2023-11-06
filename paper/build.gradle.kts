@@ -4,7 +4,7 @@ plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
   id("paper-plugin-yml")
-  id("xyz.jpenilla.run-paper")
+  alias(libs.plugins.runPaper)
   id("carbon.permissions")
 }
 

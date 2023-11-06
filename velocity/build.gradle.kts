@@ -1,6 +1,6 @@
 plugins {
   id("carbon.shadow-platform")
-  id("xyz.jpenilla.run-velocity")
+  alias(libs.plugins.runVelocity)
 }
 
 dependencies {

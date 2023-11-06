@@ -2,8 +2,8 @@ import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
   id("carbon.build-logic")
-  id("io.papermc.hangar-publish-plugin")
-  id("net.kyori.indra.publishing.sonatype")
+  alias(libs.plugins.hangar.publish)
+  alias(libs.plugins.indra.publishing.sonatype)
 }
 
 val projectVersion: String by project // get from gradle.properties
