@@ -30,7 +30,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  *
  * @see UserManager#createParty(Component)
  * @see UserManager#party(UUID)
- * @since 2.1.0
+ * @since 3.0.0
  */
 @DefaultQualifier(NonNull.class)
 public interface Party {
@@ -39,7 +39,7 @@ public interface Party {
      * Get the name of this party.
      *
      * @return party name
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Component name();
 
@@ -47,7 +47,7 @@ public interface Party {
      * Get the unique id of this party.
      *
      * @return party id
-     * @since 2.1.0
+     * @since 3.0.0
      */
     UUID id();
 
@@ -55,7 +55,7 @@ public interface Party {
      * Get a snapshot of the current party members.
      *
      * @return party members
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Set<UUID> members();
 
@@ -63,7 +63,7 @@ public interface Party {
      * Add a user to this party. They will automatically be removed from their previous party if necessary.
      *
      * @param id user id
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void addMember(UUID id);
 
@@ -71,14 +71,14 @@ public interface Party {
      * Remove a user from this party.
      *
      * @param id user id
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void removeMember(UUID id);
 
     /**
      * Disband this party. Will remove all members and delete persistent data.
      *
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void disband();
 

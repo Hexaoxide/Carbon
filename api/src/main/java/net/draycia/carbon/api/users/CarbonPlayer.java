@@ -47,7 +47,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @param other the other player
      * @return the distance from the other player, or -1
-     * @since 2.1.0
+     * @since 3.0.0
      */
     double distanceSquaredFrom(CarbonPlayer other);
 
@@ -56,7 +56,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @param other the other player
      * @return if both players are in the same world/server
-     * @since 2.1.0
+     * @since 3.0.0
      */
     boolean sameWorldAs(CarbonPlayer other);
 
@@ -77,7 +77,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * the player's name may be returned.</p>
      *
      * @return the player's display name
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Component displayName();
 
@@ -89,7 +89,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @return if the player has a nickname set
      * @see #nickname()
      * @see #nickname(Component)
-     * @since 2.1.0
+     * @since 3.0.0
      */
     boolean hasNickname();
 
@@ -102,7 +102,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @see #hasNickname()
      * @see #nickname(Component)
      * @see #displayName()
-     * @since 2.1.0
+     * @since 3.0.0
      */
     @Nullable Component nickname();
 
@@ -116,7 +116,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * @see #hasNickname()
      * @see #nickname()
      * @see #displayName()
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void nickname(@Nullable Component nickname);
 
@@ -166,7 +166,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @param message the message to be sent
      * @return the channel and message
-     * @since 2.1.0
+     * @since 3.0.0
      */
     ChannelMessage channelForMessage(Component message);
 
@@ -175,7 +175,7 @@ public interface CarbonPlayer extends Audience, Identified {
      *
      * @param message The channel message without any prefixes
      * @param channel The channel the message should be sent to
-     * @since 2.1.0
+     * @since 3.0.0
      */
     record ChannelMessage(Component message, ChatChannel channel) {}
 
@@ -224,7 +224,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * Gets the ids of the players this player is currently ignoring.
      *
      * @return the players currently ignored
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Set<UUID> ignoring();
 
@@ -298,7 +298,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * Controls if the player should receive direct messages or if they should be hidden.
      *
      * @return if the player is ignoring direct messages
-     * @since 2.1.0
+     * @since 3.0.0
      */
     boolean ignoringDirectMessages();
 
@@ -306,7 +306,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * Sets whether the player should receive direct messages or if they should be hidden.
      *
      * @param ignoring if the player is ignoring direct messages
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void ignoringDirectMessages(boolean ignoring);
 
@@ -385,7 +385,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * {@link #joinChannel(ChatChannel)} and {@link #leaveChannel(ChatChannel)} to mutate.</p>
      *
      * @return a list of the channels.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     List<Key> leftChannels();
 
@@ -393,7 +393,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * Join a channel for this player if they have left it.
      *
      * @param channel the channel to join.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void joinChannel(ChatChannel channel);
 
@@ -401,7 +401,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * Leave a channel for this player.
      *
      * @param channel the channel to leave.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void leaveChannel(ChatChannel channel);
 
@@ -409,7 +409,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * Get this player's current {@link Party}.
      *
      * @return party future
-     * @since 2.1.0
+     * @since 3.0.0
      */
     CompletableFuture<@Nullable Party> party();
 

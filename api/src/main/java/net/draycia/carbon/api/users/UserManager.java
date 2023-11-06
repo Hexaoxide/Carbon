@@ -43,7 +43,7 @@ public interface UserManager<C extends CarbonPlayer> {
      *
      * @param uuid the player's id
      * @return the player
-     * @since 2.1.0
+     * @since 3.0.0
      */
     CompletableFuture<C> user(UUID uuid);
 
@@ -55,7 +55,7 @@ public interface UserManager<C extends CarbonPlayer> {
      *
      * @param name party name
      * @return new party
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Party createParty(Component name);
 
@@ -68,7 +68,7 @@ public interface UserManager<C extends CarbonPlayer> {
      * @param id party id
      * @return existing party
      * @see #createParty(Component)
-     * @since 2.1.0
+     * @since 3.0.0
      */
     CompletableFuture<@Nullable Party> party(UUID id);
 

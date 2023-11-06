@@ -116,7 +116,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * Return of '-1' means there is no radius.
      *
      * @return the channel radius
-     * @since 2.1.0
+     * @since 3.0.0
      */
     double radius();
 
@@ -124,7 +124,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * If the empty receipt message should be sent to the sender.
      *
      * @return Returns true if the channel should display a message when a player is out of range.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     boolean emptyRadiusRecipientsMessage();
 

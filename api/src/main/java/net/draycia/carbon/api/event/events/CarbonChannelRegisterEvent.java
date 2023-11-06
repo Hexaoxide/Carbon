@@ -35,7 +35,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * is provided as a helper for when knowledge of all registered channels
  * is needed.</p>
  *
- * @since 2.1.0
+ * @since 3.0.0
  */
 @DefaultQualifier(NonNull.class)
 public interface CarbonChannelRegisterEvent extends CarbonEvent {
@@ -44,7 +44,7 @@ public interface CarbonChannelRegisterEvent extends CarbonEvent {
      * Gets the channel registry.
      *
      * @return the channel registry
-     * @since 2.1.0
+     * @since 3.0.0
      */
     ChannelRegistry channelRegistry();
 
@@ -52,7 +52,7 @@ public interface CarbonChannelRegisterEvent extends CarbonEvent {
      * Gets the key(s) that were registered to trigger this event.
      *
      * @return key(s) registered
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Set<Key> registered();
 

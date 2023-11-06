@@ -61,7 +61,7 @@ public interface CarbonChat {
      * The user manager.
      *
      * @return the user manager
-     * @since 2.1.0
+     * @since 3.0.0
      */
     UserManager<?> userManager();
 

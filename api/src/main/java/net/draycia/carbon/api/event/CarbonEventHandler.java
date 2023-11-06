@@ -26,7 +26,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * The {@link CarbonEventHandler} is responsible for managing {@link CarbonEventSubscription event subscriptions}
  * and emitting {@link CarbonEvent events}.
  *
- * @since 2.1.0
+ * @since 3.0.0
  */
 @DefaultQualifier(NonNull.class)
 public interface CarbonEventHandler {

@@ -22,7 +22,7 @@ package net.draycia.carbon.api.event;
 /**
  * Marks an event as cancellable.
  *
- * @since 2.1.0
+ * @since 3.0.0
  */
 public interface Cancellable {
 
@@ -30,7 +30,7 @@ public interface Cancellable {
      * Gets if the event is cancelled.
      *
      * @return if the event is cancelled
-     * @since 2.1.0
+     * @since 3.0.0
      */
     boolean cancelled();
 
@@ -38,7 +38,7 @@ public interface Cancellable {
      * Sets the cancelled state.
      *
      * @param cancelled new cancelled state
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void cancelled(boolean cancelled);
 

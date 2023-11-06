@@ -26,7 +26,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * A subscription to a specific event type.
  *
  * @param <T> event type
- * @since 2.1.0
+ * @since 3.0.0
  */
 @DefaultQualifier(NonNull.class)
 public interface CarbonEventSubscription<T extends CarbonEvent> {
@@ -35,7 +35,7 @@ public interface CarbonEventSubscription<T extends CarbonEvent> {
      * Gets the event type.
      *
      * @return the event type
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Class<T> event();
 
@@ -43,7 +43,7 @@ public interface CarbonEventSubscription<T extends CarbonEvent> {
      * Gets the {@link CarbonEventSubscriber subscriber}.
      *
      * @return the subscriber
-     * @since 2.1.0
+     * @since 3.0.0
      */
     CarbonEventSubscriber<T> subscriber();
 
@@ -52,7 +52,7 @@ public interface CarbonEventSubscription<T extends CarbonEvent> {
      *
      * <p>The subscriber held by this subscription will no longer receive events.</p>
      *
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void dispose();
 

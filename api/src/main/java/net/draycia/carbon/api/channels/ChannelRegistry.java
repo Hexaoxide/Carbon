@@ -39,7 +39,7 @@ public interface ChannelRegistry {
      * <p>Registrations will persist when reloading Carbon's configuration.</p>
      *
      * @param channel the channel to register
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void register(ChatChannel channel);
 
@@ -49,7 +49,7 @@ public interface ChannelRegistry {
      *
      * @param key the channel's key
      * @return the channel
-     * @since 2.1.0
+     * @since 3.0.0
      */
     @Nullable ChatChannel channel(Key key);
 
@@ -57,7 +57,7 @@ public interface ChannelRegistry {
      * Gets the key for the default channel.
      *
      * @return the default key
-     * @since 2.1.0
+     * @since 3.0.0
      */
     @NonNull Key defaultKey();
 
@@ -65,7 +65,7 @@ public interface ChannelRegistry {
      * Gets the default channel.
      *
      * @return the default value
-     * @since 2.1.0
+     * @since 3.0.0
      */
     @NonNull ChatChannel defaultChannel();
 
@@ -73,7 +73,7 @@ public interface ChannelRegistry {
      * Gets the list of registered channel keys.
      *
      * @return the registered channel keys
-     * @since 2.1.0
+     * @since 3.0.0
      */
     @NonNull Set<Key> keys();
 
@@ -83,7 +83,7 @@ public interface ChannelRegistry {
      *
      * @param key the channel key
      * @return the channel, or the default one
-     * @since 2.1.0
+     * @since 3.0.0
      */
     ChatChannel channelOrDefault(Key key);
 
@@ -94,7 +94,7 @@ public interface ChannelRegistry {
      * @param key channel key
      * @return channel
      * @throws NoSuchElementException when no matching channel is found
-     * @since 2.1.0
+     * @since 3.0.0
      */
     ChatChannel channelOrThrow(Key key);
 
@@ -105,7 +105,7 @@ public interface ChannelRegistry {
      * <p>When new channels are registered, the action will be invoked again for each new channel.</p>
      *
      * @param action action
-     * @since 2.1.0
+     * @since 3.0.0
      */
     void allKeys(Consumer<Key> action);
 

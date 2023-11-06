@@ -29,7 +29,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 /**
  * Called when a player is added to a {@link Party}.
  *
- * @since 2.1.0
+ * @since 3.0.0
  */
 @DefaultQualifier(NonNull.class)
 public interface PartyJoinEvent extends CarbonEvent {
@@ -41,7 +41,7 @@ public interface PartyJoinEvent extends CarbonEvent {
      * especially if the change needs to propagate cross-server.</p>
      *
      * @return player id
-     * @since 2.1.0
+     * @since 3.0.0
      */
     UUID playerId();
 
@@ -51,7 +51,7 @@ public interface PartyJoinEvent extends CarbonEvent {
      * <p>{@link Party#members()} will reflect the new member.</p>
      *
      * @return party
-     * @since 2.1.0
+     * @since 3.0.0
      */
     Party party();
 
