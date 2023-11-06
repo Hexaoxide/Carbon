@@ -12,11 +12,6 @@
     ],
     "packageRules": [
         {
-            "matchUpdateTypes": ["patch"],
-            "excludePackageNames": ["gradle"],
-            "groupName": "patch-release dependency changes"
-        },
-        {
             "description": "Correct Guava version handling",
             "matchPackagePrefixes": ["com.google.guava:"],
             "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(-(?<compatibility>.*))?$"
