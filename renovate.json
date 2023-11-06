@@ -17,6 +17,16 @@
             "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(-(?<compatibility>.*))?$"
         },
         {
+            "description": "Correct Fabric API version handling",
+            "matchPackageNames": ["net.fabricmc.fabric-api:fabric-api"],
+            "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
+        },
+        {
+            "description": "Correct Deprecated Fabric API version handling",
+            "matchPackageNames": ["net.fabricmc.fabric-api:fabric-api-deprecated"],
+            "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
+        },
+        {
             "matchManagers": ["github-actions", "gradle-wrapper"],
             "groupName": "gradle and github actions"
         },
