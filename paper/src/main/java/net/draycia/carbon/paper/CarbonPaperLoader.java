@@ -22,8 +22,8 @@ package net.draycia.carbon.paper;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import net.draycia.carbon.common.util.CarbonDependencies;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.springframework.lang.NonNull;
 import xyz.jpenilla.gremlin.runtime.platformsupport.PaperClasspathAppender;
 
 @DefaultQualifier(NonNull.class)
