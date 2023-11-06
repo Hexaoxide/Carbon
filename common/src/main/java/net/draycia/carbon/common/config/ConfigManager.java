@@ -25,10 +25,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
+import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.serialisation.gson.LocaleSerializerConfigurate;
 import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.key.Key;
@@ -57,6 +59,7 @@ public final class ConfigManager {
     private final Path dataDirectory;
     private final LocaleSerializerConfigurate locale;
     private final Logger logger;
+    private final Set<Integration.ConfigMeta> integrations;
 
     private volatile @MonotonicNonNull PrimaryConfig primaryConfig = null;
 
@@ -65,11 +68,13 @@ public final class ConfigManager {
         final CarbonEventHandler events,
         @DataDirectory final Path dataDirectory,
         final LocaleSerializerConfigurate locale,
-        final Logger logger
+        final Logger logger,
+        final Set<Integration.ConfigMeta> integrations
     ) {
         this.dataDirectory = dataDirectory;
         this.locale = locale;
         this.logger = logger;
+        this.integrations = integrations;
 
         events.subscribe(CarbonReloadEvent.class, -100, true, event -> this.reloadPrimaryConfig());
     }
@@ -120,6 +125,7 @@ public final class ConfigManager {
                     .serializers(serializerBuilder ->
                         serializerBuilder.registerAll(serializer.serializers())
                             .register(Locale.class, this.locale)
+                            .register(IntegrationConfigContainer.class, new IntegrationConfigContainer.Serializer(this.integrations))
                             .registerAnnotatedObjects(ObjectMapper.factoryBuilder()
                                 .addProcessor(Comment.class, overrideComments())
                                 .build()));

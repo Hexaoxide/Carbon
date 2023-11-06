@@ -19,10 +19,29 @@
  */
 package net.draycia.carbon.common.integration;
 
+import java.lang.reflect.Type;
+import net.draycia.carbon.common.config.ConfigManager;
+
 public interface Integration {
 
     boolean eligible();
-    
+
     void register();
+
+    interface ConfigMeta {
+        Type type();
+
+        String name();
+
+        record ConfigMetaRecord(Type type, String name) implements ConfigMeta {}
+    }
+
+    static ConfigMeta configMeta(final String name, final Type type) {
+        return new ConfigMeta.ConfigMetaRecord(type, name);
+    }
+
+    default <C> C config(final ConfigManager configManager, final ConfigMeta meta) {
+        return configManager.primaryConfig().integrations().config(meta);
+    }
 
 }

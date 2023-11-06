@@ -97,9 +97,14 @@ public class PrimaryConfig {
     private MessagingSettings messagingSettings = new MessagingSettings();
     private NicknameSettings nicknameSettings = new NicknameSettings();
     private PartySettings partyChat = new PartySettings();
+    private IntegrationConfigContainer integrations;
 
     public PartySettings partyChat() {
         return this.partyChat;
+    }
+
+    public IntegrationConfigContainer integrations() {
+        return this.integrations;
     }
 
     public NicknameSettings nickname() {
