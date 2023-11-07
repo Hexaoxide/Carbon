@@ -20,9 +20,7 @@
 package net.draycia.carbon.paper.integration.towny;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.channels.CarbonChannelRegistry.SpecialHandler;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.integration.Integration;
 import org.bukkit.Bukkit;
@@ -33,17 +31,14 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 @DefaultQualifier(NonNull.class)
 public final class TownyIntegration implements Integration {
 
-    private final Injector injector;
     private final CarbonChannelRegistry channelRegistry;
     private final Config config;
 
     @Inject
     public TownyIntegration(
-        final Injector injector,
         final CarbonChannelRegistry channelRegistry,
         final ConfigManager configManager
     ) {
-        this.injector = injector;
         this.channelRegistry = channelRegistry;
         this.config = this.config(configManager, configMeta());
     }
@@ -56,24 +51,15 @@ public final class TownyIntegration implements Integration {
     @Override
     public void register() {
         if (this.config.townChannel) {
-            this.channelRegistry.registerSpecialConfigChannel(
-                TownChannel.FILE_NAME,
-                new SpecialHandler<>(TownChannel.class, () -> this.injector.getInstance(TownChannel.class))
-            );
+            this.channelRegistry.registerSpecialConfigChannel(TownChannel.FILE_NAME, TownChannel.class);
         }
 
         if (this.config.nationChannel) {
-            this.channelRegistry.registerSpecialConfigChannel(
-                NationChannel.FILE_NAME,
-                new SpecialHandler<>(NationChannel.class, () -> this.injector.getInstance(NationChannel.class))
-            );
+            this.channelRegistry.registerSpecialConfigChannel(NationChannel.FILE_NAME, NationChannel.class);
         }
 
         if (this.config.allianceChannel) {
-            this.channelRegistry.registerSpecialConfigChannel(
-                AllianceChannel.FILE_NAME,
-                new SpecialHandler<>(AllianceChannel.class, () -> this.injector.getInstance(AllianceChannel.class))
-            );
+            this.channelRegistry.registerSpecialConfigChannel(AllianceChannel.FILE_NAME, AllianceChannel.class);
         }
     }
 

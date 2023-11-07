@@ -44,6 +44,8 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 @DefaultQualifier(NonNull.class)
 public class PartyChatChannel extends ConfigChatChannel {
 
+    public static final String FILE_NAME = "partychat.conf";
+
     public PartyChatChannel() {
         this.key = Key.key("carbon", "partychat");
         this.messageSource = new ConfigChannelMessageSource();

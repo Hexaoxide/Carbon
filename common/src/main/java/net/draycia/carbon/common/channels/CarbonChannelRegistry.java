@@ -86,10 +86,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private final CarbonEventHandler eventHandler;
     private final Map<String, SpecialHandler<?>> handlers = new HashMap<>();
 
-    public record SpecialHandler<T extends ConfigChatChannel>(Class<T> cls, Supplier<T> defaultSupplier) {}
+    private record SpecialHandler<T extends ConfigChatChannel>(Class<T> cls, Supplier<T> defaultSupplier) {}
 
-    public <T extends ConfigChatChannel> void registerSpecialConfigChannel(final String fileName, final SpecialHandler<T> handler) {
-        this.handlers.put(fileName, handler);
+    public <T extends ConfigChatChannel> void registerSpecialConfigChannel(final String fileName, final Class<T> type) {
+        this.handlers.put(fileName, new SpecialHandler<>(type, () -> this.injector.getInstance(type)));
     }
 
     private volatile Registry<Key, ChatChannel> channelRegistry = Registry.create();
@@ -115,9 +115,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.eventHandler = events;
 
         if (config.primaryConfig().partyChat().enabled) {
-            this.registerSpecialConfigChannel("partychat.conf", new SpecialHandler<>(PartyChatChannel.class, () -> {
-                return this.injector.getInstance(PartyChatChannel.class);
-            }));
+            this.registerSpecialConfigChannel(PartyChatChannel.FILE_NAME, PartyChatChannel.class);
         }
 
         events.subscribe(CarbonReloadEvent.class, -99, true, event -> this.reloadConfigChannels());
