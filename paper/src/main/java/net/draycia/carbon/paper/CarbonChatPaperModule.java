@@ -22,7 +22,6 @@ package net.draycia.carbon.paper;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.paper.PaperCommandManager;
-import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
@@ -128,7 +127,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     }
 
     @Override
-    protected void configureIntegrations(Multibinder<Integration> integrations, Multibinder<Integration.ConfigMeta> configs) {
+    protected void configureIntegrations(final Multibinder<Integration> integrations, final Multibinder<Integration.ConfigMeta> configs) {
         integrations.addBinding().to(TownyIntegration.class);
         configs.addBinding().toInstance(TownyIntegration.configMeta());
     }
