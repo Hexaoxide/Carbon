@@ -43,8 +43,6 @@ dependencyResolutionManagement {
     // DiscordSRV
     maven("https://m2.dv8tion.net/releases")
     maven("https://nexus.scarsz.me/content/groups/public/")
-    // Libby (AlessioDP's fork)
-    maven("https://repo.alessiodp.com/releases/")
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
