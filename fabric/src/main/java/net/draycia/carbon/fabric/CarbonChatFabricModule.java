@@ -115,6 +115,8 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
 
     @Override
     public void configure() {
+        super.configure();
+        
         this.install(new CarbonCommonModule());
 
         this.bind(ModContainer.class).toInstance(this.modContainer);
@@ -126,8 +128,6 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(FabricScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerFabric.class));
         this.bind(CarbonMessageRenderer.class).to(FabricMessageRenderer.class);
-
-        super.configure();
     }
 
 }

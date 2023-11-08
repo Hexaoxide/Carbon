@@ -109,6 +109,8 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
 
     @Override
     public void configure() {
+        super.configure();
+
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).to(CarbonChatPaper.class);
@@ -123,8 +125,6 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
 
         this.configureListeners();
-
-        super.configure();
     }
 
     @Override

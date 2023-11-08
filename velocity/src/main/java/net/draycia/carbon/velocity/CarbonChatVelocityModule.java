@@ -104,6 +104,8 @@ public final class CarbonChatVelocityModule extends AbstractModule {
 
     @Override
     public void configure() {
+        super.configure();
+
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).to(CarbonChatVelocity.class);
@@ -114,8 +116,6 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerVelocity.class));
         this.bind(CarbonMessageRenderer.class).to(VelocityMessageRenderer.class);
-
-        super.configure();
     }
 
     private void configureListeners() {
