@@ -116,6 +116,8 @@ public final class CarbonChatVelocityModule extends AbstractModule {
         this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerVelocity.class));
         this.bind(CarbonMessageRenderer.class).to(VelocityMessageRenderer.class);
+
+        this.configureListeners();
     }
 
     private void configureListeners() {
