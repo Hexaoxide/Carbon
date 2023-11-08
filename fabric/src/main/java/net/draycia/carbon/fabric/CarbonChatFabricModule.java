@@ -25,6 +25,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.multibindings.Multibinder;
 import com.mojang.brigadier.tree.CommandNode;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -33,12 +34,14 @@ import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
+import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -60,7 +63,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatFabricModule extends AbstractModule {
+public final class CarbonChatFabricModule extends CarbonPlatformModule {
 
     private final Logger logger;
     private final ModContainer modContainer;
@@ -123,6 +126,8 @@ public final class CarbonChatFabricModule extends AbstractModule {
         this.bind(PlatformScheduler.class).to(FabricScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerFabric.class));
         this.bind(CarbonMessageRenderer.class).to(FabricMessageRenderer.class);
+
+        super.configure();
     }
 
 }

@@ -31,6 +31,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonCommonModule;
+import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
@@ -60,7 +61,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatPaperModule extends AbstractModule {
+public final class CarbonChatPaperModule extends CarbonPlatformModule {
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonPaperBootstrap bootstrap;
@@ -122,21 +123,20 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
 
         this.configureListeners();
-        this.configureIntegrations();
+
+        super.configure();
+    }
+
+    @Override
+    protected void configureIntegrations(Multibinder<Integration> integrations, Multibinder<Integration.ConfigMeta> configs) {
+        integrations.addBinding().to(TownyIntegration.class);
+        configs.addBinding().toInstance(TownyIntegration.configMeta());
     }
 
     private void configureListeners() {
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(PaperChatListener.class);
         listeners.addBinding().to(PaperPlayerJoinListener.class);
-    }
-
-    private void configureIntegrations() {
-        final Multibinder<Integration> integrations = Multibinder.newSetBinder(this.binder(), Integration.class);
-        final Multibinder<Integration.ConfigMeta> configs = Multibinder.newSetBinder(this.binder(), Integration.ConfigMeta.class);
-
-        integrations.addBinding().to(TownyIntegration.class);
-        configs.addBinding().toInstance(TownyIntegration.configMeta());
     }
 
 }
