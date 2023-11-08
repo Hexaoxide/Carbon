@@ -41,6 +41,5 @@ public abstract class CarbonPlatformModule extends AbstractModule {
         final Multibinder<Integration.ConfigMeta> configs
     ) {
     }
-
-
+    
 }
