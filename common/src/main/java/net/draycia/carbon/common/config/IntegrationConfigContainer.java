@@ -67,7 +67,11 @@ public final class IntegrationConfigContainer {
         @Override
         public void serialize(final Type type, final @Nullable IntegrationConfigContainer obj, final ConfigurationNode node) throws SerializationException {
             Objects.requireNonNull(obj);
-            node.set(null);
+
+            for (final Object key : node.childrenMap().keySet()) {
+                node.removeChild(key);
+            }
+
             for (final Map.Entry<String, Type> entry : this.sections.entrySet()) {
                 node.node(entry.getKey()).set(entry.getValue(), obj.map.get(entry.getKey()));
             }
