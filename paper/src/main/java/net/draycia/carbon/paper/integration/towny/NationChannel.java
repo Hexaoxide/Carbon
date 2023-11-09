@@ -61,7 +61,8 @@ public class NationChannel extends ResidentListChannel<Nation> {
     }
 
     @Override
-    protected String identifier() {
-        return "nation";
+    protected void cannotUseChannel(final CarbonPlayer player) {
+        this.messages.cannotUseNationChannel(player);
     }
+
 }

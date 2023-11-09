@@ -528,4 +528,19 @@ public interface CarbonMessages {
     @Message("pagination.footer")
     Component paginationFooter(int page, int pages, Component buttons);
 
+    /*
+     * =============================================================
+     * ======================= Integrations ========================
+     * =============================================================
+     */
+
+    @Message("integrations.towny.cannot_use_alliance_channel")
+    void cannotUseAllianceChannel(Audience audience);
+
+    @Message("integrations.towny.cannot_use_nation_channel")
+    void cannotUseNationChannel(Audience audience);
+
+    @Message("integrations.towny.cannot_use_town_channel")
+    void cannotUseTownChannel(Audience audience);
+
 }

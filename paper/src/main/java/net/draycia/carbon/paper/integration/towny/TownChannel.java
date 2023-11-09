@@ -61,7 +61,8 @@ public class TownChannel extends ResidentListChannel<Town> {
     }
 
     @Override
-    protected String identifier() {
-        return "town";
+    protected void cannotUseChannel(final CarbonPlayer player) {
+        this.messages.cannotUseTownChannel(player);
     }
+
 }

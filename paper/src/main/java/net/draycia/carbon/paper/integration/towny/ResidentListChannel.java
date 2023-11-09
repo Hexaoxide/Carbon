@@ -25,12 +25,11 @@ import com.palmergames.bukkit.towny.object.ResidentList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -42,9 +41,9 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
 
     protected final static TownyAPI TOWNY_API = TownyAPI.getInstance();
 
-    private transient @MonotonicNonNull @Inject CarbonServer server;
+    protected transient @MonotonicNonNull @Inject CarbonMessages messages;
 
-    protected abstract @Nullable T residentList(final CarbonPlayer player);
+    protected abstract @Nullable T residentList(CarbonPlayer player);
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
@@ -66,16 +65,15 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
 
         if (residentList == null) {
             if (sender.online()) {
-                sender.sendMessage(Component.text("You must join a " + this.identifier() + " to use this channel.", NamedTextColor.RED));
+                this.cannotUseChannel(sender);
             }
 
             return Collections.emptyList();
         }
 
         final List<Player> onlinePlayersInResidentList = this.onlinePlayers(residentList);
-        final List<Audience> recipients = new ArrayList<>();
 
-        recipients.addAll(onlinePlayersInResidentList);
+        final List<Audience> recipients = new ArrayList<>(onlinePlayersInResidentList);
         recipients.add(this.server.console());
 
         return recipients;
@@ -85,6 +83,6 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
         return TOWNY_API.getOnlinePlayers(residentList);
     }
 
-    protected abstract String identifier();
+    protected abstract void cannotUseChannel(CarbonPlayer player);
 
 }

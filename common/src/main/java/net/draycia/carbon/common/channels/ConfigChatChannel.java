@@ -66,7 +66,7 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public class ConfigChatChannel implements ChatChannel {
 
-    private transient @MonotonicNonNull @Inject CarbonServer server;
+    protected transient @MonotonicNonNull @Inject CarbonServer server;
     private transient @MonotonicNonNull @Inject CarbonMessageRenderer renderer;
 
     @Comment("""

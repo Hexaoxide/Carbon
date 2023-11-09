@@ -23,6 +23,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
@@ -55,7 +56,8 @@ public class AllianceChannel extends NationChannel {
     }
 
     @Override
-    protected String identifier() {
-        return "alliance";
+    protected void cannotUseChannel(final CarbonPlayer player) {
+        this.messages.cannotUseAllianceChannel(player);
     }
+
 }
