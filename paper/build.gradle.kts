@@ -38,14 +38,14 @@ tasks {
     relocateDependency("io.leangen.geantyref")
     relocateCloud()
   }
-  runServer {
+  withType(RunServer::class).configureEach {
     version.set(libs.versions.minecraft)
     downloadPlugins {
       url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
+      github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
     }
   }
   register<RunServer>("runServer2") {
-    version.set(libs.versions.minecraft)
     pluginJars.from(shadowJar.flatMap { it.archiveFile })
     runDirectory.set(layout.projectDirectory.dir("run2"))
   }
@@ -65,16 +65,11 @@ paper {
   website = GITHUB_REPO_URL
   foliaSupported = true
 
-  loadAfter("LuckPerms")
-  loadAfter("EssentialsDiscord")
-  loadAfter("DiscordSRV")
-  loadAfter("PlaceholderAPI")
-
-  dependency("LuckPerms", true)
-  dependency("PlaceholderAPI", false)
-  dependency("EssentialsDiscord", false)
-  dependency("DiscordSRV", false)
-  dependency("MiniPlaceholders", false)
+  dependency("LuckPerms", PaperPluginDescription.Load.BEFORE, true)
+  dependency("PlaceholderAPI", PaperPluginDescription.Load.BEFORE, false)
+  dependency("EssentialsDiscord", PaperPluginDescription.Load.BEFORE, false)
+  dependency("DiscordSRV", PaperPluginDescription.Load.BEFORE, false)
+  dependency("MiniPlaceholders", PaperPluginDescription.Load.BEFORE, false)
 }
 
 bukkit {
