@@ -21,7 +21,6 @@ package net.draycia.carbon.velocity;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.velocity.VelocityCommandManager;
-import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -34,6 +33,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonCommonModule;
+import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
@@ -57,7 +57,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatVelocityModule extends AbstractModule {
+public final class CarbonChatVelocityModule extends CarbonPlatformModule {
 
     private final Logger logger = LogManager.getLogger("carbonchat");
     private final PluginContainer pluginContainer;
@@ -103,9 +103,7 @@ public final class CarbonChatVelocityModule extends AbstractModule {
     }
 
     @Override
-    public void configure() {
-        super.configure();
-
+    protected void configurePlatform() {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).to(CarbonChatVelocity.class);

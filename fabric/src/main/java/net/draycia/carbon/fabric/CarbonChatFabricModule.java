@@ -111,9 +111,7 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
     }
 
     @Override
-    public void configure() {
-        super.configure();
-
+    protected void configurePlatform() {
         this.install(new CarbonCommonModule());
 
         this.bind(ModContainer.class).toInstance(this.modContainer);

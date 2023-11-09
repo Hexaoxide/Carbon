@@ -107,9 +107,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     }
 
     @Override
-    public void configure() {
-        super.configure();
-
+    protected void configurePlatform() {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).to(CarbonChatPaper.class);

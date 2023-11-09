@@ -30,11 +30,15 @@ public abstract class CarbonPlatformModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        this.configurePlatform();
+
         this.configureIntegrations(
             Multibinder.newSetBinder(this.binder(), Integration.class),
             Multibinder.newSetBinder(this.binder(), Integration.ConfigMeta.class)
         );
     }
+
+    protected abstract void configurePlatform();
 
     protected void configureIntegrations(
         final Multibinder<Integration> integrations,
