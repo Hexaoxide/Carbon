@@ -59,4 +59,9 @@ public class NationChannel extends ResidentListChannel<Nation> {
     protected @Nullable Nation residentList(final CarbonPlayer player) {
         return TOWNY_API.getNation(player.uuid());
     }
+
+    @Override
+    protected String identifier() {
+        return "nation";
+    }
 }

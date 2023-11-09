@@ -59,4 +59,9 @@ public class TownChannel extends ResidentListChannel<Town> {
     protected @Nullable Town residentList(final CarbonPlayer player) {
         return TOWNY_API.getTown(player.uuid());
     }
+
+    @Override
+    protected String identifier() {
+        return "town";
+    }
 }

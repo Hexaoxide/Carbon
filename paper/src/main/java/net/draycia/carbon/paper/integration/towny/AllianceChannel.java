@@ -54,4 +54,8 @@ public class AllianceChannel extends NationChannel {
         return TOWNY_API.getOnlinePlayersAlliance(residentList);
     }
 
+    @Override
+    protected String identifier() {
+        return "alliance";
+    }
 }

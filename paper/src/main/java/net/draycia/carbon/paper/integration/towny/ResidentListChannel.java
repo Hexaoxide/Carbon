@@ -66,8 +66,7 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
 
         if (residentList == null) {
             if (sender.online()) {
-                //todo: change message according to weather town/nation/alliance
-                sender.sendMessage(Component.text("You must join a town to use this channel.", NamedTextColor.RED));
+                sender.sendMessage(Component.text("You must join a " + this.identifier() + " to use this channel.", NamedTextColor.RED));
             }
 
             return Collections.emptyList();
@@ -85,5 +84,7 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
     protected List<Player> onlinePlayers(final T residentList) {
         return TOWNY_API.getOnlinePlayers(residentList);
     }
+
+    protected abstract String identifier();
 
 }
