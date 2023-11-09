@@ -22,7 +22,8 @@
  * THE SOFTWARE.
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 import groovy.lang.Closure
 import net.minecrell.pluginyml.PluginDescription
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
@@ -32,11 +33,11 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 
+@JsonNaming(PropertyNamingStrategies.KebabCaseStrategy::class)
 class PaperPluginDescription(project: Project) : PluginDescription {
 
   @Input
   @Optional
-  @JsonProperty("api-version")
   var apiVersion: String? = null
   @Input
   var name: String? = null
@@ -63,34 +64,30 @@ class PaperPluginDescription(project: Project) : PluginDescription {
   var prefix: String? = null
   @Input
   @Optional
-  @JsonProperty("default-permission")
   var defaultPermission: BukkitPluginDescription.Permission.Default? = null
-  @Input @Optional @JsonProperty("folia-supported") var foliaSupported: Boolean? = null
+  @Input @Optional var foliaSupported: Boolean? = null
+  @Nested var dependencies: Dependencies = Dependencies()
 
-  @Nested
-  val dependencies: MutableList<Dependency> = mutableListOf()
-  @Nested
-  @JsonProperty("load-after")
-  val loadAfter: MutableList<LoadInfo> = mutableListOf()
-  @Nested
-  @JsonProperty("load-before")
-  val loadBefore: MutableList<LoadInfo> = mutableListOf()
-
-  fun dependency(name: String, required: Boolean = true, bootstrap: Boolean = false) {
-    dependencies.add(Dependency(name, required, bootstrap))
+  fun bootstrapDependency(name: String, load: Load = Load.OMIT, required: Boolean = true, joinClasspath: Boolean = true) {
+    dependencies.bootstrap[name] = Dependency(load, required, joinClasspath)
   }
 
-  fun loadAfter(name: String, bootstrap: Boolean = false) {
-    loadAfter.add(LoadInfo(name, bootstrap))
+  fun dependency(name: String, load: Load = Load.OMIT, required: Boolean = true, joinClasspath: Boolean = true) {
+    dependencies.server[name] = Dependency(load, required, joinClasspath)
   }
 
-  fun loadBefore(name: String, bootstrap: Boolean = false) {
-    loadBefore.add(LoadInfo(name, bootstrap))
+  enum class Load {
+    BEFORE, AFTER, OMIT
   }
 
-  data class Dependency(@Input val name: String, @Input val required: Boolean = true, @Input val bootstrap: Boolean = false)
+  data class Dependencies(
+    @Nested
+    val bootstrap: MutableMap<String, Dependency> = mutableMapOf(),
+    @Nested
+    val server: MutableMap<String, Dependency> = mutableMapOf()
+  )
 
-  data class LoadInfo(@Input val name: String, @Input val bootstrap: Boolean = false)
+  data class Dependency(@Input val load: Load = Load.OMIT, @Input val required: Boolean = true, @Input val joinClasspath: Boolean = true)
 
   @Nested
   val permissions: NamedDomainObjectContainer<BukkitPluginDescription.Permission> = project.container(BukkitPluginDescription.Permission::class.java)
