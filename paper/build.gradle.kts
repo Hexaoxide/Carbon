@@ -71,6 +71,7 @@ paper {
   dependency("EssentialsDiscord", PaperPluginDescription.Load.BEFORE, false)
   dependency("DiscordSRV", PaperPluginDescription.Load.BEFORE, false)
   dependency("MiniPlaceholders", PaperPluginDescription.Load.BEFORE, false)
+  dependency("Towny", PaperPluginDescription.Load.BEFORE, false)
 }
 
 bukkit {
