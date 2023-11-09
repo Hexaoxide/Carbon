@@ -513,6 +513,9 @@ public interface CarbonMessages {
     @Message("party.player_left")
     void playerLeftParty(Audience audience, Component partyName, Component displayName);
 
+    @Message("party.cannot_use_channel")
+    void cannotUsePartyChannel(Audience audience);
+
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();
 
