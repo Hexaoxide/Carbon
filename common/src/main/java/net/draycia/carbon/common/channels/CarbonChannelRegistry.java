@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -219,7 +220,16 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.saveSpecialDefaults();
 
         List<Path> channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
-        if (channelConfigs.size() == this.handlers.size()) {
+
+        final Set<String> channelConfigFileNames = channelConfigs
+            .stream()
+            .map(Path::getFileName)
+            .map(Path::toString)
+            .collect(Collectors.toSet());
+
+        final Set<String> expectedHandlerFileNames = this.handlers.keySet();
+
+        if (channelConfigFileNames.containsAll(expectedHandlerFileNames)) {
             this.saveDefaultChannelConfig();
             channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
         }
