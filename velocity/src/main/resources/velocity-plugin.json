@@ -5,7 +5,8 @@
     "description": "${description}",
     "url": "${url}",
     "authors": [
-        "Draycia"
+        "Draycia",
+        "jmp"
     ],
     "dependencies": [
         {

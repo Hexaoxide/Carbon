@@ -18,6 +18,10 @@ indra {
           id.set("Vicarious")
           name.set("Josua Parks")
         }
+        developer {
+          id.set("jmp")
+          name.set("Jason Penilla")
+        }
       }
     }
   }

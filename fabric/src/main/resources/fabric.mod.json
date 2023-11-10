@@ -5,7 +5,8 @@
     "name": "${name}",
     "description": "${description}",
     "authors": [
-        "Draycia"
+        "Draycia",
+        "jmp"
     ],
     "contact": {
         "homepage": "${github_url}",

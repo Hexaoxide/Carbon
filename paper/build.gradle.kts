@@ -81,7 +81,7 @@ bukkit {
   version = project.version as String
   main = "net.draycia.carbon.libs.io.papermc.papertrail.RequiresPaperPlugins"
   apiVersion = "1.19"
-  author = "Draycia"
+  authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
 }
 

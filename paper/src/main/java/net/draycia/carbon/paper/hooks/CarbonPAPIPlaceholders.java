@@ -28,6 +28,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -36,26 +37,28 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     private final UserManager<?> userManager;
+    private final JavaPlugin plugin;
 
     @Inject
-    public CarbonPAPIPlaceholders(final UserManager<?> userManager) {
+    public CarbonPAPIPlaceholders(final UserManager<?> userManager, final JavaPlugin plugin) {
         this.userManager = userManager;
+        this.plugin = plugin;
         this.register();
     }
 
     @Override
     public String getIdentifier() {
-        return "carbonchat";
+        return this.plugin.getName();
     }
 
     @Override
     public String getAuthor() {
-        return "Draycia";
+        return "[" + String.join(", ", this.plugin.getPluginMeta().getAuthors()) + "]";
     }
 
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return this.plugin.getPluginMeta().getVersion();
     }
 
     @Override
