@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
@@ -34,7 +35,6 @@ import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -42,6 +42,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+
+import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
@@ -69,16 +71,18 @@ public class McmmoPartyChannel extends ConfigChatChannel {
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return this.party(player) != null
-            ? ChannelPermissionResult.allowed()
-            : ChannelPermissionResult.denied(Component.empty());
+        return channelPermissionResult(
+            this.party(player) != null,
+            () -> this.messages.cannotUsePartyChannel(player)
+        );
     }
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return this.party(player) != null
-            ? ChannelPermissionResult.allowed()
-            : ChannelPermissionResult.denied(Component.empty());
+        return channelPermissionResult(
+            this.party(player) != null,
+            () -> this.messages.cannotUsePartyChannel(player)
+        );
     }
 
     @Override
