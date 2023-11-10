@@ -44,11 +44,11 @@ public class NationChannel extends ResidentListChannel<Nation> {
 
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
-            "default_format", "(nation: <nation_name>) <display_name>: <message>",
-            "console", "[nation: <nation_name>] <username> - <uuid>: <message>"
+            "default_format", "(nation: %townyadvanced_nation_unformatted%) <display_name>: <message>",
+            "console", "[nation: %townyadvanced_nation_unformatted%] <username> - <uuid>: <message>"
         );
         this.messageSource.locales = Map.of(
-            Locale.US, Map.of("default_format", "(nation: <nation_name>) <display_name>: <message>")
+            Locale.US, Map.of("default_format", "(nation: %townyadvanced_nation_unformatted%) <display_name>: <message>")
         );
     }
 
