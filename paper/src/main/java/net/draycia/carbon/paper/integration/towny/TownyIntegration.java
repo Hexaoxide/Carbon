@@ -72,7 +72,7 @@ public final class TownyIntegration implements Integration {
         boolean enabled = true;
         boolean townChannel = true;
         boolean nationChannel = true;
-        boolean allianceChannel = true;
+        boolean allianceChannel = false;
     }
 
 }
