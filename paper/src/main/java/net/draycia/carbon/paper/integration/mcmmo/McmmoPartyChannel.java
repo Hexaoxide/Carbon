@@ -41,8 +41,10 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @DefaultQualifier(NonNull.class)
+@ConfigSerializable
 public class McmmoPartyChannel extends ConfigChatChannel {
 
     public static final String FILE_NAME = "mcmmochat.conf";
