@@ -25,10 +25,10 @@ import com.palmergames.bukkit.towny.object.ResidentList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
-import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -36,6 +36,8 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+
+import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @DefaultQualifier(NonNull.class)
 abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatChannel {
@@ -46,23 +48,24 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
         """;
     protected final static TownyAPI TOWNY_API = TownyAPI.getInstance();
 
-    protected transient @MonotonicNonNull @Inject CarbonMessages messages;
     protected transient @MonotonicNonNull @Inject UserManager<?> users;
 
     protected abstract @Nullable T residentList(CarbonPlayer player);
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return this.residentList(player) != null
-            ? ChannelPermissionResult.allowed()
-            : ChannelPermissionResult.denied(Component.empty());
+        return channelPermissionResult(
+            this.residentList(player) != null,
+            () -> this.cannotUseChannel(player)
+        );
     }
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return this.residentList(player) != null
-            ? ChannelPermissionResult.allowed()
-            : ChannelPermissionResult.denied(Component.empty());
+        return channelPermissionResult(
+            this.residentList(player) != null,
+            () -> this.cannotUseChannel(player)
+        );
     }
 
     @Override
@@ -71,7 +74,7 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
 
         if (residentList == null) {
             if (sender.online()) {
-                this.cannotUseChannel(sender);
+                sender.sendMessage(this.cannotUseChannel(sender));
             }
 
             return Collections.emptyList();
@@ -94,6 +97,6 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
         return TOWNY_API.getOnlinePlayers(residentList);
     }
 
-    protected abstract void cannotUseChannel(CarbonPlayer player);
+    protected abstract Component cannotUseChannel(CarbonPlayer player);
 
 }

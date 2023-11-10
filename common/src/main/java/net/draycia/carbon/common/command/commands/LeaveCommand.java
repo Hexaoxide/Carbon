@@ -24,6 +24,7 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
@@ -86,8 +87,9 @@ public final class LeaveCommand extends CarbonCommand {
                     this.carbonMessages.channelNotFound(sender);
                     return;
                 }
-                if (!channel.speechPermitted(sender).permitted()) {
-                    this.carbonMessages.channelNoPermission(sender);
+                final ChannelPermissionResult permitted = channel.speechPermitted(sender);
+                if (!permitted.permitted()) {
+                    sender.sendMessage(permitted.reason());
                     return;
                 }
                 if (sender.leftChannels().contains(channel.key())) {

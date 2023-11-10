@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.annotation.Placeholder;
 import net.kyori.moonshine.annotation.meta.ThreadSafe;
@@ -79,7 +80,8 @@ public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> impl
 
             final Parameter parameter = methodParameters[idx];
             final @Nullable Object value = parameters[idx];
-            if (value == null) {
+            //  Don't resolve Audiences for now
+            if (value == null || parameter.getType() == Audience.class) {
                 // Nothing to resolve with.
                 continue;
             }

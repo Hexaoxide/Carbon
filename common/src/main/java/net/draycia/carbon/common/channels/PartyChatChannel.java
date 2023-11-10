@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
@@ -41,6 +42,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+
+import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
@@ -64,16 +67,18 @@ public class PartyChatChannel extends ConfigChatChannel {
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return player.party().join() != null
-            ? ChannelPermissionResult.allowed()
-            : ChannelPermissionResult.denied(Component.empty());
+        return channelPermissionResult(
+            player.party().join() != null,
+            () -> this.messages.cannotUsePartyChannel(player)
+        );
     }
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return player.party().join() != null
-            ? ChannelPermissionResult.allowed()
-            : ChannelPermissionResult.denied(Component.empty());
+        return channelPermissionResult(
+            player.party().join() != null,
+            () -> this.messages.cannotUsePartyChannel(player)
+        );
     }
 
     @Override
@@ -82,7 +87,7 @@ public class PartyChatChannel extends ConfigChatChannel {
         final @Nullable UUID party = wrapped.partyId();
         if (party == null) {
             if (sender.online()) {
-                this.messages.cannotUsePartyChannel(sender);
+                sender.sendMessage(this.messages.cannotUsePartyChannel(sender));
             }
             return new ArrayList<>();
         }

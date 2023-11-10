@@ -27,6 +27,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.config.ConfigHeader;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -59,8 +60,8 @@ public class AllianceChannel extends NationChannel {
     }
 
     @Override
-    protected void cannotUseChannel(final CarbonPlayer player) {
-        this.messages.cannotUseAllianceChannel(player);
+    protected Component cannotUseChannel(final CarbonPlayer player) {
+        return this.messages.cannotUseAllianceChannel(player);
     }
 
 }
