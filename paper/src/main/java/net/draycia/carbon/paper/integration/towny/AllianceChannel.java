@@ -39,6 +39,7 @@ public class AllianceChannel extends NationChannel {
 
     public AllianceChannel() {
         this.key = Key.key("carbon", "alliancechat");
+        this.commandAliases = List.of();
 
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(

@@ -39,6 +39,7 @@ public class NationChannel extends ResidentListChannel<Nation> {
 
     public NationChannel() {
         this.key = Key.key("carbon", "nationchat");
+        this.commandAliases = List.of("nc");
 
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
@@ -48,11 +49,6 @@ public class NationChannel extends ResidentListChannel<Nation> {
         this.messageSource.locales = Map.of(
             Locale.US, Map.of("default_format", "(nation: <nation_name>) <display_name>: <message>")
         );
-    }
-
-    @Override
-    public List<String> commandAliases() {
-        return List.of("nc");
     }
 
     @Override

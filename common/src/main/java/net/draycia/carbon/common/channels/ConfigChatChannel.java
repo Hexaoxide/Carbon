@@ -96,7 +96,7 @@ public class ConfigChatChannel implements ChatChannel {
 
     private @Nullable String commandName = null;
 
-    private @Nullable List<String> commandAliases = Collections.emptyList();
+    protected @Nullable List<String> commandAliases = Collections.emptyList();
 
     private transient @Nullable ConfigChannelMessages carbonMessages = null;
 
