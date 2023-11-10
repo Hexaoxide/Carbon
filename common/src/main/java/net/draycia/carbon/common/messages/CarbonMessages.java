@@ -48,7 +48,7 @@ public interface CarbonMessages {
     void channelAlreadyLeft(final Audience audience);
 
     @Message("channel.no_permission")
-    void channelNoPermission(final Audience audience);
+    Component channelNoPermission(Audience audience);
 
     @Message("channel.left")
     void channelLeft(final Audience audience);
@@ -514,7 +514,7 @@ public interface CarbonMessages {
     void playerLeftParty(Audience audience, Component partyName, Component displayName);
 
     @Message("party.cannot_use_channel")
-    void cannotUsePartyChannel(Audience audience);
+    Component cannotUsePartyChannel(Audience audience);
 
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();
@@ -538,12 +538,12 @@ public interface CarbonMessages {
      */
 
     @Message("integrations.towny.cannot_use_alliance_channel")
-    void cannotUseAllianceChannel(Audience audience);
+    Component cannotUseAllianceChannel(Audience audience);
 
     @Message("integrations.towny.cannot_use_nation_channel")
-    void cannotUseNationChannel(Audience audience);
+    Component cannotUseNationChannel(Audience audience);
 
     @Message("integrations.towny.cannot_use_town_channel")
-    void cannotUseTownChannel(Audience audience);
+    Component cannotUseTownChannel(Audience audience);
 
 }

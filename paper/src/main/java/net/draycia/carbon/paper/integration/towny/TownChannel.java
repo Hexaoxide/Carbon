@@ -28,6 +28,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.config.ConfigHeader;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -64,8 +65,8 @@ public class TownChannel extends ResidentListChannel<Town> {
     }
 
     @Override
-    protected void cannotUseChannel(final CarbonPlayer player) {
-        this.messages.cannotUseTownChannel(player);
+    protected Component cannotUseChannel(final CarbonPlayer player) {
+        return this.messages.cannotUseTownChannel(player);
     }
 
 }

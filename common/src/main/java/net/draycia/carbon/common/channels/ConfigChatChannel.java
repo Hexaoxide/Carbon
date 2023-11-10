@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.messages.SourcedMessageSender;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
@@ -59,8 +61,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import static java.util.Objects.requireNonNull;
-import static net.kyori.adventure.text.Component.empty;
-import static net.kyori.adventure.text.Component.text;
+import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
@@ -68,6 +69,7 @@ public class ConfigChatChannel implements ChatChannel {
 
     protected transient @MonotonicNonNull @Inject CarbonServer server;
     private transient @MonotonicNonNull @Inject CarbonMessageRenderer renderer;
+    protected transient @MonotonicNonNull @Inject CarbonMessages messages;
 
     @Comment("""
         The channel's key, used to track the channel.
@@ -156,14 +158,19 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public ChannelPermissionResult speechPermitted(final CarbonPlayer carbonPlayer) {
-        return ChannelPermissionResult.allowedIf(text("Insufficient permissions!"), () ->
-            carbonPlayer.hasPermission(this.permission() + ".speak")); // carbon.channels.local.speak
+    public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            player.hasPermission(this.permission() + ".speak"),
+            () -> this.messages.channelNoPermission(player)
+        );
     }
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return ChannelPermissionResult.allowedIf(empty(), () -> player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this.key));
+        return channelPermissionResult(
+            player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this.key),
+            () -> this.messages.channelNoPermission(player)
+        );
     }
 
     @Override

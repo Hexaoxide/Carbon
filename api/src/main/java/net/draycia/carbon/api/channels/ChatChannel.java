@@ -20,18 +20,14 @@
 package net.draycia.carbon.api.channels;
 
 import java.util.List;
-import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import static net.kyori.adventure.text.Component.empty;
 
 /**
  * ChatChannel interface, supplies a formatter and filters recipients.<br>
@@ -47,7 +43,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      *
      * @param carbonPlayer the player attempting to speak
      * @return if the player may speak
-     * @since 2.0.0
+     * @since 3.0.0
      */
     ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer);
 
@@ -56,7 +52,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      *
      * @param player the player that's receiving messages
      * @return if the player may receive messages
-     * @since 2.0.0
+     * @since 3.0.0
      */
     ChannelPermissionResult hearingPermitted(CarbonPlayer player);
 
@@ -127,57 +123,5 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 3.0.0
      */
     boolean emptyRadiusRecipientsMessage();
-
-    /**
-     * Represents the result of a channel permission check.
-     *
-     * @since 2.0.0
-     */
-    record ChannelPermissionResult(boolean permitted, Component reason) {
-
-        private static final ChannelPermissionResult ALLOWED =
-            new ChannelPermissionResult(true, empty());
-
-        /**
-         * Returns a result denoting that the player is permitted for the action.
-         *
-         * @return that the action is allowed
-         * @since 2.0.0
-         */
-        public static ChannelPermissionResult allowed() {
-            return ALLOWED;
-        }
-
-        /**
-         * Returns a result denoting that the action is denied for the player.
-         *
-         * @param reason the reason the action was denied
-         * @return that the action is denied
-         * @since 2.0.0
-         */
-        public static ChannelPermissionResult denied(final Component reason) {
-            return new ChannelPermissionResult(false, reason);
-        }
-
-        /**
-         * If True is supplied, returns a result denoting that the action was allowed. Otherwise, a result denoting that the action was denied.
-         *
-         * @param reason the reason, if any, that the action was allowed
-         * @param supplier the supplier to check
-         * @return an allowed result if true, otherwise a denied result
-         * @since 2.0.0
-         */
-        public static ChannelPermissionResult allowedIf(
-            final Component reason,
-            final Supplier<Boolean> supplier
-        ) {
-            if (supplier.get()) {
-                return ALLOWED;
-            } else {
-                return denied(reason);
-            }
-        }
-
-    }
 
 }
