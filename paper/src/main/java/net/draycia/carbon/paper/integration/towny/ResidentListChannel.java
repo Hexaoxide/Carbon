@@ -39,6 +39,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatChannel {
 
+    protected static final String TOWNY_CHANNEL_HEADER = """
+        See the Towny Wiki at https://github.com/TownyAdvanced/Towny/wiki/Placeholders
+        for placeholders Towny provides to PlaceholderAPI.
+        """;
     protected final static TownyAPI TOWNY_API = TownyAPI.getInstance();
 
     protected transient @MonotonicNonNull @Inject CarbonMessages messages;

@@ -21,7 +21,9 @@ package net.draycia.carbon.common.config;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.leangen.geantyref.GenericTypeReflector;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
@@ -79,6 +81,18 @@ public final class ConfigManager {
         events.subscribe(CarbonReloadEvent.class, -100, true, event -> this.reloadPrimaryConfig());
     }
 
+    public static @Nullable String extractHeader(final Type type) {
+        if (type instanceof Class<?> cls) {
+            final @Nullable ConfigHeader h = cls.getAnnotation(ConfigHeader.class);
+            if (h == null) {
+                return null;
+            }
+            return h.value();
+        } else {
+            return extractHeader(GenericTypeReflector.erase(type));
+        }
+    }
+
     public void reloadPrimaryConfig() {
         this.logger.info("Reloading configuration....");
         final @Nullable PrimaryConfig load = this.load(PrimaryConfig.class, PRIMARY_CONFIG_FILE_NAME);
@@ -114,7 +128,7 @@ public final class ConfigManager {
         return load.settings();
     }
 
-    public ConfigurationLoader<?> configurationLoader(final Path file) {
+    public ConfigurationLoader<?> configurationLoader(final Path file, final @Nullable String header) {
         return HoconConfigurationLoader.builder()
             .prettyPrinting(true)
             .defaultOptions(opts -> {
@@ -122,6 +136,7 @@ public final class ConfigManager {
                     ConfigurateComponentSerializer.configurate();
 
                 return opts.shouldCopyDefaults(true)
+                    .header(header)
                     .serializers(serializerBuilder ->
                         serializerBuilder.registerAll(serializer.serializers())
                             .register(Locale.class, this.locale)
@@ -151,7 +166,7 @@ public final class ConfigManager {
             return null;
         }
 
-        final var loader = this.configurationLoader(file);
+        final var loader = this.configurationLoader(file, extractHeader(clazz));
 
         try {
             final var node = loader.load();

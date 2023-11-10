@@ -267,7 +267,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             }
             try {
                 final ConfigChatChannel configChannel = e.getValue().defaultSupplier().get();
-                final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile));
+                final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile), ConfigManager.extractHeader(e.getValue().cls()));
                 final ConfigurationNode node = loader.createNode();
                 node.set(e.getValue().cls(), configChannel);
                 loader.save(node);
@@ -281,7 +281,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         try {
             final Path configFile = this.configChannelDir.resolve("global.conf");
             final ConfigChatChannel configChannel = this.injector.getInstance(ConfigChatChannel.class);
-            final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile));
+            final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile), ConfigManager.extractHeader(ConfigChatChannel.class));
             final ConfigurationNode node = loader.createNode();
             node.set(ConfigChatChannel.class, configChannel);
             loader.save(node);
@@ -291,12 +291,11 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     }
 
     private @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.config.configurationLoader(channelFile);
-
         try {
             final @Nullable SpecialHandler<?> special = this.handlers.get(channelFile.getFileName().toString());
             final Class<? extends ConfigChatChannel> type = special == null ? ConfigChatChannel.class : special.cls();
 
+            final ConfigurationLoader<?> loader = this.config.configurationLoader(channelFile, ConfigManager.extractHeader(type));
             final ConfigurationNode loaded = updateNode(loader.load());
             final @Nullable ConfigChatChannel channel = loaded.get(type);
             if (channel == null) {

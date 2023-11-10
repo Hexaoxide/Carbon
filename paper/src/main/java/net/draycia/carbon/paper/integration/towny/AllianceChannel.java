@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
+import net.draycia.carbon.common.config.ConfigHeader;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,6 +34,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
+@ConfigHeader(ResidentListChannel.TOWNY_CHANNEL_HEADER)
 public class AllianceChannel extends NationChannel {
 
     public static final String FILE_NAME = "alliancechat.conf";
