@@ -20,11 +20,12 @@
 package net.draycia.carbon.common.config;
 
 import java.lang.reflect.Type;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.util.Exceptions;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -47,19 +48,21 @@ public final class IntegrationConfigContainer {
     }
 
     public static final class Serializer implements TypeSerializer<IntegrationConfigContainer> {
-        private final Map<String, Type> sections;
+        private final List<Integration.ConfigMeta> sections;
 
         public Serializer(final Set<Integration.ConfigMeta> integrations) {
-            this.sections = integrations.stream().collect(Collectors.toMap(Integration.ConfigMeta::name, Integration.ConfigMeta::type));
+            this.sections = integrations.stream()
+                .sorted(Comparator.comparing(Integration.ConfigMeta::name))
+                .toList();
         }
 
         @Override
         public IntegrationConfigContainer deserialize(final Type type, final ConfigurationNode node) throws SerializationException {
             final IntegrationConfigContainer container = new IntegrationConfigContainer();
-            for (final Map.Entry<String, Type> entry : this.sections.entrySet()) {
-                final @Nullable Object value = node.node(entry.getKey()).get(entry.getValue());
+            for (final Integration.ConfigMeta section : this.sections) {
+                final @Nullable Object value = node.node(section.name()).get(section.type());
                 Objects.requireNonNull(value);
-                container.map.put(entry.getKey(), value);
+                container.map.put(section.name(), value);
             }
             return container;
         }
@@ -72,24 +75,24 @@ public final class IntegrationConfigContainer {
                 node.removeChild(key);
             }
 
-            for (final Map.Entry<String, Type> entry : this.sections.entrySet()) {
-                node.node(entry.getKey()).set(entry.getValue(), obj.map.get(entry.getKey()));
+            for (final Integration.ConfigMeta section : this.sections) {
+                node.node(section.name()).set(section.type(), obj.map.get(section.name()));
             }
         }
 
         @Override
         public IntegrationConfigContainer emptyValue(final Type specificType, final ConfigurationOptions options) {
             final IntegrationConfigContainer container = new IntegrationConfigContainer();
-            for (final Map.Entry<String, Type> entry : this.sections.entrySet()) {
+            for (final Integration.ConfigMeta section : this.sections) {
                 final @Nullable Object value;
                 try {
-                    value = options.serializers().get(entry.getValue())
-                        .deserialize(entry.getValue(), BasicConfigurationNode.root());
+                    value = options.serializers().get(section.type())
+                        .deserialize(section.type(), BasicConfigurationNode.root());
                 } catch (final Exception e) {
                     throw Exceptions.rethrow(e);
                 }
                 Objects.requireNonNull(value);
-                container.map.put(entry.getKey(), value);
+                container.map.put(section.name(), value);
             }
             return container;
         }
