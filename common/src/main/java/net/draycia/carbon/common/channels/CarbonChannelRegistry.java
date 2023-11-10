@@ -33,13 +33,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -74,8 +77,6 @@ import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 @DefaultQualifier(NonNull.class)
 public class CarbonChannelRegistry extends ChatListenerInternal implements ChannelRegistry {
 
-    private static final String PARTYCHAT_CONF = "partychat.conf";
-
     private final Path configChannelDir;
     private final Injector injector;
     private final Logger logger;
@@ -83,6 +84,13 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private @MonotonicNonNull Key defaultKey;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
+    private final Map<String, SpecialHandler<?>> handlers = new HashMap<>();
+
+    private record SpecialHandler<T extends ConfigChatChannel>(Class<T> cls, Supplier<T> defaultSupplier) {}
+
+    public <T extends ConfigChatChannel> void registerSpecialConfigChannel(final String fileName, final Class<T> type) {
+        this.handlers.put(fileName, new SpecialHandler<>(type, () -> this.injector.getInstance(type)));
+    }
 
     private volatile Registry<Key, ChatChannel> channelRegistry = Registry.create();
     private final Set<Key> configChannels = ConcurrentHashMap.newKeySet();
@@ -105,6 +113,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.config = config;
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
+
+        if (config.primaryConfig().partyChat().enabled) {
+            this.registerSpecialConfigChannel(PartyChatChannel.FILE_NAME, PartyChatChannel.class);
+        }
 
         events.subscribe(CarbonReloadEvent.class, -99, true, event -> this.reloadConfigChannels());
     }
@@ -204,14 +216,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.logger.info("Loading config channels...");
         this.defaultKey = this.config.primaryConfig().defaultChannel();
 
-        final boolean party = this.config.primaryConfig().partyChat().enabled;
-        if (party) {
-            this.saveDefaultPartyConfig();
-        }
+        this.saveSpecialDefaults();
 
         List<Path> channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
-        if (channelConfigs.isEmpty() ||
-            party && channelConfigs.size() == 1 && channelConfigs.get(0).getFileName().toString().equals(PARTYCHAT_CONF)) {
+        if (channelConfigs.size() == this.handlers.size()) {
             this.saveDefaultChannelConfig();
             channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
         }
@@ -251,11 +259,29 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.logger.info("Registered channels: [" + channels + "]");
     }
 
+    private void saveSpecialDefaults() {
+        for (final Map.Entry<String, SpecialHandler<?>> e : this.handlers.entrySet()) {
+            final Path configFile = this.configChannelDir.resolve(e.getKey());
+            if (Files.isRegularFile(configFile)) {
+                continue;
+            }
+            try {
+                final ConfigChatChannel configChannel = e.getValue().defaultSupplier().get();
+                final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile), ConfigManager.extractHeader(e.getValue().cls()));
+                final ConfigurationNode node = loader.createNode();
+                node.set(e.getValue().cls(), configChannel);
+                loader.save(node);
+            } catch (final IOException exception) {
+                throw Exceptions.rethrow(exception);
+            }
+        }
+    }
+
     private void saveDefaultChannelConfig() {
         try {
             final Path configFile = this.configChannelDir.resolve("global.conf");
             final ConfigChatChannel configChannel = this.injector.getInstance(ConfigChatChannel.class);
-            final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile));
+            final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile), ConfigManager.extractHeader(ConfigChatChannel.class));
             final ConfigurationNode node = loader.createNode();
             node.set(ConfigChatChannel.class, configChannel);
             loader.save(node);
@@ -264,30 +290,12 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
     }
 
-    private void saveDefaultPartyConfig() {
-        final Path configFile = this.configChannelDir.resolve(PARTYCHAT_CONF);
-        if (Files.isRegularFile(configFile)) {
-            return;
-        }
-        try {
-            final ConfigChatChannel configChannel = this.injector.getInstance(PartyChatChannel.class);
-            final ConfigurationLoader<?> loader = this.config.configurationLoader(FileUtil.mkParentDirs(configFile));
-            final ConfigurationNode node = loader.createNode();
-            node.set(PartyChatChannel.class, configChannel);
-            loader.save(node);
-        } catch (final IOException exception) {
-            throw Exceptions.rethrow(exception);
-        }
-    }
-
     private @Nullable ChatChannel loadChannel(final Path channelFile) {
-        final ConfigurationLoader<?> loader = this.config.configurationLoader(channelFile);
-
         try {
-            final Class<? extends ConfigChatChannel> type = this.config.primaryConfig().partyChat().enabled && channelFile.getFileName().toString().equals(PARTYCHAT_CONF)
-                ? PartyChatChannel.class
-                : ConfigChatChannel.class;
+            final @Nullable SpecialHandler<?> special = this.handlers.get(channelFile.getFileName().toString());
+            final Class<? extends ConfigChatChannel> type = special == null ? ConfigChatChannel.class : special.cls();
 
+            final ConfigurationLoader<?> loader = this.config.configurationLoader(channelFile, ConfigManager.extractHeader(type));
             final ConfigurationNode loaded = updateNode(loader.load());
             final @Nullable ConfigChatChannel channel = loaded.get(type);
             if (channel == null) {

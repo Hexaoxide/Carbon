@@ -66,7 +66,7 @@ import static net.kyori.adventure.text.Component.text;
 @DefaultQualifier(NonNull.class)
 public class ConfigChatChannel implements ChatChannel {
 
-    private transient @MonotonicNonNull @Inject CarbonServer server;
+    protected transient @MonotonicNonNull @Inject CarbonServer server;
     private transient @MonotonicNonNull @Inject CarbonMessageRenderer renderer;
 
     @Comment("""
@@ -96,7 +96,7 @@ public class ConfigChatChannel implements ChatChannel {
 
     private @Nullable String commandName = null;
 
-    private @Nullable List<String> commandAliases = Collections.emptyList();
+    protected @Nullable List<String> commandAliases = Collections.emptyList();
 
     private transient @Nullable ConfigChannelMessages carbonMessages = null;
 
@@ -125,7 +125,6 @@ public class ConfigChatChannel implements ChatChannel {
     @Override
     public boolean shouldRegisterCommands() {
         return Objects.requireNonNullElse(this.shouldRegisterCommands, true);
-
     }
 
     @Override

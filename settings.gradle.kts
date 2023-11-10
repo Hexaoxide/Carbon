@@ -43,6 +43,10 @@ dependencyResolutionManagement {
     // DiscordSRV
     maven("https://m2.dv8tion.net/releases")
     maven("https://nexus.scarsz.me/content/groups/public/")
+    // Glare's repo for Towny
+    maven("https://repo.glaremasters.me/repository/towny/") {
+      content { includeGroup("com.palmergames.bukkit.towny") }
+    }
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }

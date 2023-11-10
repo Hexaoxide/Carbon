@@ -58,6 +58,7 @@ postgresql = "42.6.0"
 rabbitmq = "5.20.0"
 nats = "2.16.14"
 h2 = "2.2.224"
+towny = "0.100.0.0"
 
 [libraries]
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
@@ -140,3 +141,4 @@ essentialsXDiscord = { group = "net.essentialsx", name = "EssentialsXDiscord", v
 discordsrv = { group = "com.discordsrv", name = "discordsrv", version.ref = "discordsrv" }
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
 miniplaceholders = { group = "io.github.miniplaceholders", name = "miniplaceholders-api", version.ref = "miniplaceholders" }
+towny = { group = "com.palmergames.bukkit.towny", name = "towny", version.ref = "towny" }

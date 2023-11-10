@@ -26,6 +26,7 @@ dependencies {
   compileOnly(libs.miniplaceholders)
   compileOnly(libs.essentialsXDiscord)
   compileOnly(libs.discordsrv)
+  compileOnly(libs.towny)
 
   runtimeDownload(libs.guice) {
     exclude("com.google.guava")
@@ -43,6 +44,8 @@ tasks {
     downloadPlugins {
       url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
+      github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
+      hangar("PlaceholderAPI", "2.11.5")
     }
   }
   register<RunServer>("runServer2") {
@@ -70,6 +73,7 @@ paper {
   dependency("EssentialsDiscord", PaperPluginDescription.Load.BEFORE, false)
   dependency("DiscordSRV", PaperPluginDescription.Load.BEFORE, false)
   dependency("MiniPlaceholders", PaperPluginDescription.Load.BEFORE, false)
+  dependency("Towny", PaperPluginDescription.Load.BEFORE, false)
 }
 
 bukkit {

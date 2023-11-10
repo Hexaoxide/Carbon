@@ -98,16 +98,23 @@ public class PrimaryConfig {
     private NicknameSettings nicknameSettings = new NicknameSettings();
     private PartySettings partyChat = new PartySettings();
 
+    @Comment("Settings for integrations with other plugins/mods")
+    private IntegrationConfigContainer integrations;
+
+    @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
+    private boolean updateChecker = true;
+
     public PartySettings partyChat() {
         return this.partyChat;
+    }
+
+    public IntegrationConfigContainer integrations() {
+        return this.integrations;
     }
 
     public NicknameSettings nickname() {
         return this.nicknameSettings;
     }
-
-    @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
-    private boolean updateChecker = true;
 
     public Locale defaultLocale() {
         return this.defaultLocale;

@@ -22,7 +22,6 @@ package net.draycia.carbon.paper;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.paper.PaperCommandManager;
-import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
@@ -31,10 +30,12 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.CarbonCommonModule;
+import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -42,6 +43,7 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
+import net.draycia.carbon.paper.integration.towny.TownyIntegration;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
@@ -58,7 +60,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatPaperModule extends AbstractModule {
+public final class CarbonChatPaperModule extends CarbonPlatformModule {
 
     private final Logger logger = LogManager.getLogger("CarbonChat");
     private final CarbonPaperBootstrap bootstrap;
@@ -105,7 +107,7 @@ public final class CarbonChatPaperModule extends AbstractModule {
     }
 
     @Override
-    public void configure() {
+    protected void configurePlatform() {
         this.install(new CarbonCommonModule());
 
         this.bind(CarbonChat.class).to(CarbonChatPaper.class);
@@ -120,6 +122,12 @@ public final class CarbonChatPaperModule extends AbstractModule {
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
 
         this.configureListeners();
+    }
+
+    @Override
+    protected void configureIntegrations(final Multibinder<Integration> integrations, final Multibinder<Integration.ConfigMeta> configs) {
+        integrations.addBinding().to(TownyIntegration.class);
+        configs.addBinding().toInstance(TownyIntegration.configMeta());
     }
 
     private void configureListeners() {

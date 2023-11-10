@@ -21,7 +21,6 @@ package net.draycia.carbon.fabric;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.fabric.FabricServerCommandManager;
-import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -33,6 +32,7 @@ import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.CarbonCommonModule;
+import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -60,7 +60,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class CarbonChatFabricModule extends AbstractModule {
+public final class CarbonChatFabricModule extends CarbonPlatformModule {
 
     private final Logger logger;
     private final ModContainer modContainer;
@@ -111,7 +111,7 @@ public final class CarbonChatFabricModule extends AbstractModule {
     }
 
     @Override
-    public void configure() {
+    protected void configurePlatform() {
         this.install(new CarbonCommonModule());
 
         this.bind(ModContainer.class).toInstance(this.modContainer);
