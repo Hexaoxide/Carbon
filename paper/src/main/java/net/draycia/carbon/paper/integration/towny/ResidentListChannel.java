@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
@@ -46,6 +47,7 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
     protected final static TownyAPI TOWNY_API = TownyAPI.getInstance();
 
     protected transient @MonotonicNonNull @Inject CarbonMessages messages;
+    protected transient @MonotonicNonNull @Inject UserManager<?> users;
 
     protected abstract @Nullable T residentList(CarbonPlayer player);
 
@@ -75,9 +77,14 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
             return Collections.emptyList();
         }
 
-        final List<Player> onlinePlayersInResidentList = this.onlinePlayers(residentList);
+        final List<Audience> recipients = new ArrayList<>();
+        for (final Player player : this.onlinePlayers(residentList)) {
+            final @Nullable CarbonPlayer carbon = this.users.user(player.getUniqueId()).getNow(null);
+            if (carbon != null) {
+                recipients.add(carbon);
+            }
+        }
 
-        final List<Audience> recipients = new ArrayList<>(onlinePlayersInResidentList);
         recipients.add(this.server.console());
 
         return recipients;
