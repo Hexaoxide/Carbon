@@ -20,6 +20,7 @@
 package net.draycia.carbon.paper.integration.towny;
 
 import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,7 +54,11 @@ public class NationChannel extends ResidentListChannel<Nation> {
 
     @Override
     protected @Nullable Nation residentList(final CarbonPlayer player) {
-        return TOWNY_API.getNation(player.uuid());
+        final @Nullable Resident resident = TOWNY_API.getResident(player.uuid());
+        if (resident == null) {
+            return null;
+        }
+        return TOWNY_API.getResidentNationOrNull(resident);
     }
 
     @Override
