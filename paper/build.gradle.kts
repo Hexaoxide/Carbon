@@ -32,6 +32,9 @@ dependencies {
     isTransitive = false
   }
   compileOnly(libs.towny)
+  compileOnly(libs.mcmmo) {
+    isTransitive = false
+  }
 
   runtimeDownload(libs.guice) {
     exclude("com.google.guava")
