@@ -6,20 +6,24 @@ import xyz.jpenilla.runtask.task.RunWithPlugins
 val ext = extensions.create("configurablePlugins", ConfigurablePluginsExt::class.java)
 
 afterEvaluate {
-  ext.gradleDependencyBased.get().forEach { entry ->
+  val configs = ext.gradleDependencyBased.get().map { entry ->
     val c = configurations.register(entry.name + "Plugin") {
       isTransitive = false
     }
     dependencies {
       c.name(entry.dep) { entry.op?.execute(this) }
     }
-    tasks.withType(RunWithPlugins::class).configureEach {
-      val cfg = readConfig()
+    entry to c
+  }
+
+  tasks.withType(RunWithPlugins::class).configureEach {
+    val cfg = readConfig()
+    configs.forEach { (entry, configuration) ->
       val enabled = cfg.taskOverrides[name]?.get(entry.name)
         ?: cfg.defaults[entry.name]
         ?: false
       if (enabled) {
-        pluginJars.from(c)
+        pluginJars.from(configuration)
       }
     }
   }
@@ -39,9 +43,7 @@ fun readConfig(): Config {
     .file(file("run-plugins.yml"))
     .nodeStyle(NodeStyle.BLOCK)
     .defaultOptions {
-      it.header("""
-        Enable and disable optional plugins for run tasks in this project
-      """.trimIndent())
+      it.header("Enable and disable optional plugins for run tasks in this project")
     }
     .build()
   val n = loader.load()
