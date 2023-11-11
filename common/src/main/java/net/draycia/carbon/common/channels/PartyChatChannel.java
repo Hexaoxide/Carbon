@@ -58,7 +58,7 @@ public class PartyChatChannel extends ConfigChatChannel {
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
             "default_format", "(party: <party_name>) <display_name>: <message>",
-            "console", "[party: <party_name>] <username> - <uuid>: <message>"
+            "console", "[party: <party_name>] <username>: <message>"
         );
         this.messageSource.locales = Map.of(
             Locale.US, Map.of("default_format", "(party: <party_name>) <display_name>: <message>")

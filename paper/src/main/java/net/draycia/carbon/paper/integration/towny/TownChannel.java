@@ -48,7 +48,7 @@ public class TownChannel extends ResidentListChannel<Town> {
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
             "default_format", "(town: %townyadvanced_town_unformatted%) <display_name>: <message>",
-            "console", "[town: %townyadvanced_town_unformatted%] <username> - <uuid>: <message>"
+            "console", "[town: %townyadvanced_town_unformatted%] <username>: <message>"
         );
         this.messageSource.locales = Map.of(
             Locale.US, Map.of("default_format", "(town: %townyadvanced_town_unformatted%) <display_name>: <message>")
