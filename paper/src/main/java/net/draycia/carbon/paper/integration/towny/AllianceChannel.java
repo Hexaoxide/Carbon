@@ -21,7 +21,6 @@ package net.draycia.carbon.paper.integration.towny;
 
 import com.palmergames.bukkit.towny.object.Nation;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
@@ -48,9 +47,6 @@ public class AllianceChannel extends NationChannel {
         this.messageSource.defaults = Map.of(
             "default_format", "(alliance) <display_name>: <message>",
             "console", "[alliance] <username>: <message>"
-        );
-        this.messageSource.locales = Map.of(
-            Locale.US, Map.of("default_format", "(alliance) <display_name>: <message>")
         );
     }
 

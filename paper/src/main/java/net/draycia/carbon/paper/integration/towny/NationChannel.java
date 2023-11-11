@@ -22,7 +22,6 @@ package net.draycia.carbon.paper.integration.towny;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
@@ -49,9 +48,6 @@ public class NationChannel extends ResidentListChannel<Nation> {
         this.messageSource.defaults = Map.of(
             "default_format", "(nation: %townyadvanced_nation_unformatted%) <display_name>: <message>",
             "console", "[nation: %townyadvanced_nation_unformatted%] <username>: <message>"
-        );
-        this.messageSource.locales = Map.of(
-            Locale.US, Map.of("default_format", "(nation: %townyadvanced_nation_unformatted%) <display_name>: <message>")
         );
     }
 

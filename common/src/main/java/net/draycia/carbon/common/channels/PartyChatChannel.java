@@ -22,7 +22,6 @@ package net.draycia.carbon.common.channels;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -59,9 +58,6 @@ public class PartyChatChannel extends ConfigChatChannel {
         this.messageSource.defaults = Map.of(
             "default_format", "(party: <party_name>) <display_name>: <message>",
             "console", "[party: <party_name>] <username>: <message>"
-        );
-        this.messageSource.locales = Map.of(
-            Locale.US, Map.of("default_format", "(party: <party_name>) <display_name>: <message>")
         );
     }
 

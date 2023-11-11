@@ -63,15 +63,13 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         "discord", "<message>"
     );
 
-    // TODO: Move the default to the advanced config?
     @Comment("""
         Per-Language chat formats.
-        You can safely delete this section if you don't want to use this feature.
-        Will fall back to the defaults section if no format was found for the player.
+        You can safely leave this section empty if you don't want to use this feature.
+        Each locale section can be configured in the same way as the above 'basic' section.
+        Will fall back to the 'basic' section if no format was found for the player's locale.
         """)
-    public Map<Locale, Map<String, String>> locales = Map.of(
-        Locale.US, Map.of("default_format", "<display_name>: <message>")
-    );
+    public Map<Locale, Map<String, String>> locales = Map.of(Locale.getDefault(), Map.of());
 
     private static final String FALLBACK_FORMAT = "<red><</red><username><red>></red> <message>";
 
