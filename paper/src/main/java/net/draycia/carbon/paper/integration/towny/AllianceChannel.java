@@ -47,7 +47,7 @@ public class AllianceChannel extends NationChannel {
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
             "default_format", "(alliance) <display_name>: <message>",
-            "console", "[alliance] <username> - <uuid>: <message>"
+            "console", "[alliance] <username>: <message>"
         );
         this.messageSource.locales = Map.of(
             Locale.US, Map.of("default_format", "(alliance) <display_name>: <message>")

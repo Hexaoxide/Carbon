@@ -59,7 +59,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         """)
     public Map<String, String> defaults = Map.of(
         "default_format", "<display_name>: <message>",
-        "console", "[<channel>] <username> - <uuid>: <message>",
+        "console", "[<channel>] <username>: <message>",
         "discord", "<message>"
     );
 
