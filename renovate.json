@@ -5,25 +5,19 @@
     ],
     "ignoreDeps": [
         "quiet-fabric-loom",
-        "com.mojang:minecraft"
+        "com.mojang:minecraft",
+        "com.google.code.gson:gson",
+        "com.google.guava:guava",
+        "io.netty:netty-all",
+        "org.apache.logging.log4j:log4j-bom"
     ],
     "labels": [
         "dependencies"
     ],
     "packageRules": [
         {
-            "description": "Correct Guava version handling",
-            "matchPackagePrefixes": ["com.google.guava:"],
-            "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(-(?<compatibility>.*))?$"
-        },
-        {
             "description": "Correct Fabric API version handling",
-            "matchPackageNames": ["net.fabricmc.fabric-api:fabric-api"],
-            "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
-        },
-        {
-            "description": "Correct Deprecated Fabric API version handling",
-            "matchPackageNames": ["net.fabricmc.fabric-api:fabric-api-deprecated"],
+            "matchPackageNames": ["net.fabricmc.fabric-api:fabric-api", "net.fabricmc.fabric-api:fabric-api-deprecated"],
             "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
         },
         {
