@@ -67,8 +67,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
         Per-Language chat formats.
         You can safely leave this section empty if you don't want to use this feature.
         Each locale section can be configured in the same way as the above 'basic' section.
-        Will fall back to the 'basic' section if no format was found for the player's locale.
-        """)
+        Will fall back to the 'basic' section if no format was found for the player's locale.""")
     public Map<Locale, Map<String, String>> locales = Map.of(Locale.getDefault(), Map.of());
 
     private static final String FALLBACK_FORMAT = "<red><</red><username><red>></red> <message>";
