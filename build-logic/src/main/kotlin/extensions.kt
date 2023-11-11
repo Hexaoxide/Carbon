@@ -64,7 +64,6 @@ fun Task.standardRelocations() {
   relocateDependency("net.kyori.moonshine")
   relocateDependency("com.seiama.registry")
   relocateDependency("org.spongepowered.configurate")
-  relocateDependency("com.typesafe.config")
   relocateDependency("com.google.thirdparty.publicsuffix")
   relocateDependency("com.zaxxer.hikari")
   relocateDependency("ninja.egg82.messenger")

@@ -13,7 +13,6 @@ dependencies {
   api(libs.adventureSerializerConfigurate4) {
     isTransitive = false
   }
-  //api(libs.typesafeConfig)
 
   // Cloud
   api(platform(libs.cloudBom))
