@@ -40,6 +40,12 @@ dependencyResolutionManagement {
         includeGroup("net.essentialsx")
       }
     }
+    // CodeMC (Minecraft Open Source)
+    maven("https://repo.codemc.io") {
+      mavenContent {
+        includeGroup("com.gmail.nossr50.mcMMO")
+      }
+    }
     // DiscordSRV
     maven("https://m2.dv8tion.net/releases")
     maven("https://nexus.scarsz.me/content/groups/public/")
