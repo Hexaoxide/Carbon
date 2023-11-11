@@ -55,9 +55,8 @@ public class McmmoPartyChannel extends ConfigChatChannel {
     private transient @MonotonicNonNull @Inject UserManager<?> users;
 
     public McmmoPartyChannel() {
-        // TODO: log warning if normal party chat is also enabled
-        this.key = Key.key("carbon", "party");
-        this.commandAliases = List.of("pc", "partychat");
+        this.key = Key.key("carbon", "partychat");
+        this.commandAliases = List.of("pc");
 
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(

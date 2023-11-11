@@ -249,6 +249,16 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                 this.logger.info("Default channel is [" + channelKey + "]");
             }
 
+            if (this.configChannels.contains(channelKey)) {
+                this.logger.warn("Channel with key [" + channelConfigFile + "] has already been registered, skipping");
+
+                if ("partychat".equals(channelKey.value())) {
+                    this.logger.warn("Two party channels are being loaded, if you are using the mcmmo integration ensure Carbons included party feature is disabled!");
+                }
+
+                continue;
+            }
+
             this.injector.injectMembers(chatChannel);
             this.configChannels.add(chatChannel.key());
             this.register(chatChannel, false);
