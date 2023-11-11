@@ -25,7 +25,9 @@ dependencies {
   // Plugins
   compileOnly(libs.placeholderapi)
   compileOnly(libs.miniplaceholders)
-  compileOnly(libs.essentialsXDiscord)
+  compileOnly(libs.essentialsXDiscord) {
+    exclude("org.spigotmc", "spigot-api")
+  }
   compileOnly(libs.discordsrv) {
     isTransitive = false
   }

@@ -4,8 +4,9 @@ plugins {
 
 repositories {
   gradlePluginPortal()
-  mavenCentral()
-  maven("https://repo.stellardrift.ca/repository/snapshots/")
+  maven("https://oss.sonatype.org/content/repositories/snapshots/") {
+    mavenContent { snapshotsOnly() }
+  }
 }
 
 dependencies {

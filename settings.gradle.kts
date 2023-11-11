@@ -24,9 +24,6 @@ dependencyResolutionManagement {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
       content { includeGroup("me.clip") }
     }
-    maven("https://jitpack.io") {
-      content { includeGroupByRegex("com\\.github\\..*") }
-    }
     // EssentialsDiscord
     maven("https://repo.essentialsx.net/releases/") {
       mavenContent {
@@ -63,9 +60,13 @@ dependencyResolutionManagement {
 pluginManagement {
   repositories {
     gradlePluginPortal()
+    maven("https://oss.sonatype.org/content/repositories/snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
     maven("https://maven.fabricmc.net/")
-    maven("https://repo.jpenilla.xyz/snapshots/")
-    maven("https://repo.stellardrift.ca/repository/snapshots/")
+    maven("https://repo.jpenilla.xyz/snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
   }
   includeBuild("build-logic")
 }
