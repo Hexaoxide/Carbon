@@ -7,7 +7,7 @@ indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", versio
 indra = "3.1.3"
 shadow = "8.1.1"
 pluginYml = "0.5.3"
-minotaur = "2.7.5"
+minotaur = "2.8.4"
 gremlin = "0.0.3"
 runTask = "2.2.0"
 
