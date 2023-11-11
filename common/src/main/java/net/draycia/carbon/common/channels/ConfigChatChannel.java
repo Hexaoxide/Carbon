@@ -74,8 +74,7 @@ public class ConfigChatChannel implements ChatChannel {
     @Comment("""
         The channel's key, used to track the channel.
         You only need to change the second part of the key. "global" by default.
-        The value is what's used in commands, this is probably what you want to change.
-        """)
+        The value is what's used in commands, this is probably what you want to change.""")
     protected @Nullable Key key = Key.key("carbon", "global");
 
     @Comment("""
@@ -83,8 +82,7 @@ public class ConfigChatChannel implements ChatChannel {
         
         Assuming permission = "carbon.channel.global"
         To read messages you must have the permission carbon.channel.global.see
-        To send messages you must have the permission carbon.channel.global.speak
-        """)
+        To send messages you must have the permission carbon.channel.global.speak""")
     private @Nullable String permission = null;
 
     @Setting("format")
@@ -105,14 +103,12 @@ public class ConfigChatChannel implements ChatChannel {
     @Comment("""
         The distance players must be within to see each other's messages.
         A value of '0' requires that both players are in the same world.
-        On velocity, '0' requires that both players are in the same server.
-        """)
+        On velocity, '0' requires that both players are in the same server.""")
     private int radius = -1;
 
     @Comment("""
         If true, players will be able to see if they're not sending messages to anyone
-        because they're out of range from the radius.
-        """)
+        because they're out of range from the radius.""")
     private boolean emptyRadiusRecipientsMessage = true;
 
     @Override

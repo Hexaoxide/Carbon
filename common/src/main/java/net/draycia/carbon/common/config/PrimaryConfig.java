@@ -45,21 +45,18 @@ public class PrimaryConfig {
 
     @Comment("""
         The default channel that new players will be in when they join.
-        If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.
-        """)
+        If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.""")
     private Key defaultChannel = Key.key("carbon", "global");
 
     @Comment("""
         The service that will be used to store and load player information.
         One of: JSON, H2, MYSQL, PSQL
-        Note: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!
-        """)
+        Note: If you choose MYSQL or PSQL make sure you configure the "database-settings" section of this file!""")
     private StorageType storageType = StorageType.JSON;
 
     @Comment("""
         When "storage-type" is set to MYSQL or PSQL, this section configures the database connection.
-        If JSON or H2 storage is used, this section can be ignored.
-        """)
+        If JSON or H2 storage is used, this section can be ignored.""")
     private DatabaseSettings databaseSettings = new DatabaseSettings();
 
     @Comment("Settings for cross-server messaging")
@@ -72,8 +69,7 @@ public class PrimaryConfig {
         These will be parsed in all messages rendered and sent by Carbon.
         This includes chat, command feedback, and others.
         Make sure to close your tags so they do not bleed into other formats.
-        Only a single pass is done so custom placeholders will not work within each other.
-        """)
+        Only a single pass is done so custom placeholders will not work within each other.""")
     private Map<String, String> customPlaceholders = Map.of();
 
     @Comment("The suggestions shown when using the TAB key in chat.")

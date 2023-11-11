@@ -42,8 +42,7 @@ public class DatabaseSettings {
         JDBC URL. Suggested defaults for each DB:
         MySQL: jdbc:mysql://host:3306/DB
         MariaDB: jdbc:mariadb://host:3306/DB
-        PostgreSQL: jdbc:postgresql://host:5432/database
-        """)
+        PostgreSQL: jdbc:postgresql://host:5432/database""")
     private String url = "jdbc:mysql://localhost:3306/carbon";
 
     @Comment("The connection username.")
