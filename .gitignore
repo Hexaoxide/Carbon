@@ -84,4 +84,4 @@ gradle-app.setting
 **/run/
 **/run2/
 
-**/run-plugins.properties
+**/run-plugins.yml
