@@ -29,7 +29,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public abstract class CarbonPlatformModule extends AbstractModule {
 
     @Override
-    protected void configure() {
+    protected final void configure() {
         this.configurePlatform();
 
         this.configureIntegrations(
@@ -45,5 +45,5 @@ public abstract class CarbonPlatformModule extends AbstractModule {
         final Multibinder<Integration.ConfigMeta> configs
     ) {
     }
-    
+
 }
