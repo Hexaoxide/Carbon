@@ -62,8 +62,10 @@ public class PrimaryConfig {
         """)
     private DatabaseSettings databaseSettings = new DatabaseSettings();
 
-    @Comment("Various ClearChat command settings.")
-    private ClearChatSettings clearChatSettings = new ClearChatSettings();
+    @Comment("Settings for cross-server messaging")
+    private MessagingSettings messagingSettings = new MessagingSettings();
+
+    private NicknameSettings nicknameSettings = new NicknameSettings();
 
     @Comment("""
         Plugin-wide custom placeholders.
@@ -86,7 +88,9 @@ public class PrimaryConfig {
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
 
-    @Comment("Various sound settings for messages.")
+    private PartySettings partyChat = new PartySettings();
+
+    @Comment("Sound for receiving a direct message") // TODO migrate to a field name that makes more sense
     private @Nullable Sound messageSound = Sound.sound(
         Key.key("entity.experience_orb.pickup"),
         Sound.Source.MASTER,
@@ -94,23 +98,14 @@ public class PrimaryConfig {
         1.0F
     );
 
-    private MessagingSettings messagingSettings = new MessagingSettings();
-    private NicknameSettings nicknameSettings = new NicknameSettings();
-    private PartySettings partyChat = new PartySettings();
+    @Comment("Settings for the clear chat command")
+    private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
     @Comment("Settings for integrations with other plugins/mods")
     private IntegrationConfigContainer integrations;
 
     @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
     private boolean updateChecker = true;
-
-    public PartySettings partyChat() {
-        return this.partyChat;
-    }
-
-    public IntegrationConfigContainer integrations() {
-        return this.integrations;
-    }
 
     public NicknameSettings nickname() {
         return this.nicknameSettings;
@@ -132,17 +127,13 @@ public class PrimaryConfig {
         return this.databaseSettings;
     }
 
-    public ClearChatSettings clearChatSettings() {
-        return this.clearChatSettings;
-    }
-
-    public Map<String, String> customPlaceholders() {
-        return this.customPlaceholders;
+    public MessagingSettings messagingSettings() {
+        return this.messagingSettings;
     }
 
     public String applyCustomPlaceholders(final String string) {
         String placeholderResolvedMessage = string;
-        for (final var entry : this.customPlaceholders().entrySet()) {
+        for (final var entry : this.customPlaceholders.entrySet()) {
             placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }
@@ -153,27 +144,19 @@ public class PrimaryConfig {
         return this.customChatSuggestions;
     }
 
-    public Map<String, String> chatPlaceholders() {
-        return this.chatPlaceholders;
-    }
-
     public String applyChatPlaceholders(final String string) {
         String placeholderResolvedMessage = string;
-        for (final var entry : this.chatPlaceholders().entrySet()) {
+        for (final var entry : this.chatPlaceholders.entrySet()) {
             placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }
         return placeholderResolvedMessage;
     }
 
-    public Map<String, String> chatFilters() {
-        return this.chatFilter;
-    }
-
     public String applyChatFilters(final String string) {
         String filteredMessage = string;
 
-        for (final Map.Entry<String, String> entry : this.chatFilters().entrySet()) {
+        for (final Map.Entry<String, String> entry : this.chatFilter.entrySet()) {
             filteredMessage = filteredMessage.replaceAll(entry.getKey(), entry.getValue());
         }
 
@@ -184,12 +167,20 @@ public class PrimaryConfig {
         return this.pingSettings;
     }
 
-    public MessagingSettings messagingSettings() {
-        return this.messagingSettings;
+    public PartySettings partyChat() {
+        return this.partyChat;
     }
 
     public @Nullable Sound messageSound() {
         return this.messageSound;
+    }
+
+    public ClearChatSettings clearChatSettings() {
+        return this.clearChatSettings;
+    }
+
+    public IntegrationConfigContainer integrations() {
+        return this.integrations;
     }
 
     public boolean updateChecker() {
@@ -226,14 +217,14 @@ public class PrimaryConfig {
     @ConfigSerializable
     public static final class NicknameSettings {
 
+        @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
+        private boolean useCarbonNicknames = true;
+
         @Comment("Minimum number of characters in nickname (excluding formatting).")
         private int minLength = 3;
 
         @Comment("Maximum number of characters in nickname (excluding formatting).")
         private int maxLength = 16;
-
-        @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
-        private boolean useCarbonNicknames = true;
 
         @Comment("Format used when displaying nicknames.")
         public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
@@ -257,6 +248,7 @@ public class PrimaryConfig {
     @ConfigSerializable
     public static final class PartySettings {
 
+        @Comment("Whether party chat is enabled")
         public boolean enabled = true;
 
         public int expireInvitesAfterSeconds = 45;
