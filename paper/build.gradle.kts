@@ -26,7 +26,9 @@ dependencies {
   compileOnly(libs.placeholderapi)
   compileOnly(libs.miniplaceholders)
   compileOnly(libs.essentialsXDiscord)
-  compileOnly(libs.discordsrv)
+  compileOnly(libs.discordsrv) {
+    isTransitive = false
+  }
   compileOnly(libs.towny)
 
   runtimeDownload(libs.guice) {
