@@ -229,7 +229,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         final Set<String> expectedHandlerFileNames = this.handlers.keySet();
 
-        if (channelConfigFileNames.containsAll(expectedHandlerFileNames)) {
+        if (channelConfigs.size() == this.handlers.size() && channelConfigFileNames.containsAll(expectedHandlerFileNames)) {
             this.saveDefaultChannelConfig();
             channelConfigs = FileUtil.listDirectoryEntries(this.configChannelDir, "*.conf");
         }
