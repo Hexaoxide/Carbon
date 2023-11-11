@@ -4,8 +4,9 @@ plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
   id("paper-plugin-yml")
-  alias(libs.plugins.runPaper)
+  id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
+  id("carbon.configurable-plugins")
 }
 
 dependencies {
@@ -33,6 +34,8 @@ dependencies {
   }
 }
 
+configurablePlugins.dependency(libs.towny)
+
 tasks {
   shadowJar {
     relocateDependency("io.papermc.papertrail")
@@ -42,17 +45,15 @@ tasks {
   withType(RunServer::class).configureEach {
     version.set(libs.versions.minecraft)
     downloadPlugins {
-      url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
+      url("https://download.luckperms.net/1521/bukkit/loader/LuckPerms-Bukkit-5.4.108.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
-      hangar("PlaceholderAPI", "2.11.5")
+      hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
     }
   }
   register<RunServer>("runServer2") {
     pluginJars.from(shadowJar.flatMap { it.archiveFile })
     runDirectory.set(layout.projectDirectory.dir("run2"))
-  }
-  writeDependencies {
   }
 }
 

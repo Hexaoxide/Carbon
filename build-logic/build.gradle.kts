@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.minotaur)
   implementation(libs.configurateYaml)
   implementation(libs.gremlin.gradle)
+  implementation(libs.run.task)
 
   implementation(libs.pluginYml)
   // Implementation dependencies of plugin-yml

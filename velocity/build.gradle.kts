@@ -1,6 +1,6 @@
 plugins {
   id("carbon.shadow-platform")
-  alias(libs.plugins.runVelocity)
+  id("xyz.jpenilla.run-velocity")
 }
 
 dependencies {
@@ -34,7 +34,8 @@ tasks {
   runVelocity {
     velocityVersion(libs.versions.velocityApi.get())
     downloadPlugins {
-      url("https://download.luckperms.net/1515/velocity/LuckPerms-Velocity-5.4.102.jar")
+      url("https://download.luckperms.net/1521/velocity/LuckPerms-Velocity-5.4.108.jar")
+      github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Velocity-${libs.versions.miniplaceholders.get()}.jar")
     }
   }
   processResources {

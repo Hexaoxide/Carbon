@@ -1,7 +1,5 @@
 [plugins]
 sponge-gradle = { id = "org.spongepowered.gradle.plugin", version = "2.2.0" }
-runPaper = { id = "xyz.jpenilla.run-paper", version.ref = "runTask" }
-runVelocity = { id = "xyz.jpenilla.run-velocity", version.ref = "runTask" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.0" }
 indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
 
@@ -40,7 +38,7 @@ adventurePlatformFabric = "5.10.0"
 luckPermsApi = "5.4"
 essentialsx = "2.19.3"
 discordsrv = "1.26.0"
-placeholderapi = "2.10.9"
+placeholderapi = "2.11.5"
 miniplaceholders = "2.2.2"
 jdbi = "3.41.3"
 hikari = "5.1.0"
@@ -57,7 +55,7 @@ postgresql = "42.6.0"
 rabbitmq = "5.20.0"
 nats = "2.16.14"
 h2 = "2.2.224"
-towny = "0.100.0.0"
+towny = "0.100.0.2"
 
 [libraries]
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
@@ -66,6 +64,7 @@ shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "s
 pluginYml = { group = "net.minecrell", name = "plugin-yml", version.ref = "pluginYml" }
 minotaur = { group = "com.modrinth.minotaur", name = "Minotaur", version.ref = "minotaur" }
 gremlin-gradle = { group = "xyz.jpenilla", name = "gremlin-gradle", version.ref = "gremlin" }
+run-task = { module = "xyz.jpenilla:run-task", version.ref = "runTask" }
 
 adventureBom = { group = "net.kyori", name = "adventure-bom", version.ref = "adventure" }
 adventureApi = { group = "net.kyori", name = "adventure-api" }
