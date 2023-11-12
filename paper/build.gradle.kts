@@ -32,6 +32,9 @@ dependencies {
     isTransitive = false
   }
   compileOnly(libs.towny)
+  compileOnly(libs.mcmmo) {
+    isTransitive = false
+  }
 
   runtimeDownload(libs.guice) {
     exclude("com.google.guava")
@@ -39,6 +42,7 @@ dependencies {
 }
 
 configurablePlugins.dependency(libs.towny)
+configurablePlugins.dependency(libs.mcmmo)
 
 tasks {
   shadowJar {
@@ -78,7 +82,10 @@ paper {
   dependency("EssentialsDiscord", PaperPluginDescription.Load.BEFORE, false)
   dependency("DiscordSRV", PaperPluginDescription.Load.BEFORE, false)
   dependency("MiniPlaceholders", PaperPluginDescription.Load.BEFORE, false)
+
+  // Integrations
   dependency("Towny", PaperPluginDescription.Load.BEFORE, false)
+  dependency("mcMMO", PaperPluginDescription.Load.BEFORE, false)
 }
 
 bukkit {

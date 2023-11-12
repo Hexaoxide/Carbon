@@ -546,4 +546,7 @@ public interface CarbonMessages {
     @Message("integrations.towny.cannot_use_town_channel")
     Component cannotUseTownChannel(Audience audience);
 
+    @Message("integrations.mcmmo.cannot_use_party_channel")
+    Component cannotUseMcmmoPartyChannel(Audience audience);
+
 }

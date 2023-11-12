@@ -38,7 +38,7 @@ dependencyResolutionManagement {
       }
     }
     // CodeMC (Minecraft Open Source)
-    maven("https://repo.codemc.io") {
+    maven("https://repo.codemc.io/repository/maven-public/") {
       mavenContent {
         includeGroup("com.gmail.nossr50.mcMMO")
       }

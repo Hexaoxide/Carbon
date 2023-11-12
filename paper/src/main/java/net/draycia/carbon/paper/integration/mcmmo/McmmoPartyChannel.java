@@ -17,98 +17,100 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.channels;
+package net.draycia.carbon.paper.integration.mcmmo;
 
+import com.gmail.nossr50.datatypes.party.Party;
+import com.gmail.nossr50.party.PartyManager;
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.Party;
+import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
-import net.draycia.carbon.common.messages.SourcedAudience;
-import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
-@ConfigSerializable
 @DefaultQualifier(NonNull.class)
-public class PartyChatChannel extends ConfigChatChannel {
+@ConfigSerializable
+public class McmmoPartyChannel extends ConfigChatChannel {
 
-    public static final String FILE_NAME = "partychat.conf";
+    public static final String FILE_NAME = "mcmmo-party.conf";
 
     private transient @MonotonicNonNull @Inject CarbonMessages messages;
+    private transient @MonotonicNonNull @Inject UserManager<?> users;
 
-    public PartyChatChannel() {
+    public McmmoPartyChannel() {
         this.key = Key.key("carbon", "partychat");
         this.commandAliases = List.of("pc");
+
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
-            "default_format", "(party: <party_name>) <display_name>: <message>",
-            "console", "[party: <party_name>] <username>: <message>"
+            "default_format", "(party: %mcmmo_party_name%) <display_name>: <message>",
+            "console", "[party: %mcmmo_party_name%] <username> - <uuid>: <message>"
+        );
+        this.messageSource.locales = Map.of(
+            Locale.US, Map.of("default_format", "(party: %mcmmo_party_name%) <display_name>: <message>")
         );
     }
 
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
-            player.party().join() != null,
-            () -> this.messages.cannotUsePartyChannel(player)
+            this.party(player) != null,
+            () -> this.messages.cannotUseMcmmoPartyChannel(player)
         );
     }
 
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
-            player.party().join() != null,
-            () -> this.messages.cannotUsePartyChannel(player)
+            this.party(player) != null,
+            () -> this.messages.cannotUseMcmmoPartyChannel(player)
         );
     }
 
     @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
-        final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) sender;
-        final @Nullable UUID party = wrapped.partyId();
+        final @Nullable Party party = this.party(sender);
+
         if (party == null) {
             if (sender.online()) {
-                sender.sendMessage(this.messages.cannotUsePartyChannel(sender));
+                sender.sendMessage(this.messages.cannotUseMcmmoPartyChannel(sender));
             }
-            return new ArrayList<>();
+
+            return Collections.emptyList();
         }
-        final List<Audience> recipients = super.recipients(sender);
-        recipients.removeIf(r -> r instanceof WrappedCarbonPlayer p && !Objects.equals(p.partyId(), party));
+
+        final List<Audience> recipients = new ArrayList<>();
+        for (final Player player : party.getOnlineMembers()) {
+            final @Nullable CarbonPlayer carbon = this.users.user(player.getUniqueId()).getNow(null);
+            if (carbon != null) {
+                recipients.add(carbon);
+            }
+        }
+
+        recipients.add(this.server.console());
+
         return recipients;
     }
 
-    @Override
-    public @NotNull Component render(
-        final CarbonPlayer sender,
-        final Audience recipient,
-        final Component message,
-        final Component originalMessage
-    ) {
-        final @Nullable Party party = sender.party().join();
-        return this.carbonMessages().chatFormat(
-            SourcedAudience.of(sender, recipient),
-            sender.uuid(),
-            this.key(),
-            sender.displayName(),
-            sender.username(),
-            message,
-            party == null ? Component.text("null") : party.name()
-        );
+    private @Nullable Party party(final CarbonPlayer player) {
+        return PartyManager.getParty(Bukkit.getPlayer(player.uuid()));
     }
+
 }

@@ -43,6 +43,7 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
+import net.draycia.carbon.paper.integration.mcmmo.McmmoIntegration;
 import net.draycia.carbon.paper.integration.towny.TownyIntegration;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
@@ -128,6 +129,9 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     protected void configureIntegrations(final Multibinder<Integration> integrations, final Multibinder<Integration.ConfigMeta> configs) {
         integrations.addBinding().to(TownyIntegration.class);
         configs.addBinding().toInstance(TownyIntegration.configMeta());
+
+        integrations.addBinding().to(McmmoIntegration.class);
+        configs.addBinding().toInstance(McmmoIntegration.configMeta());
     }
 
     private void configureListeners() {
