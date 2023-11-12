@@ -87,6 +87,7 @@ class PaperPluginDescription(project: Project) : PluginDescription {
     val server: MutableMap<String, Dependency> = mutableMapOf()
   )
 
+  @JsonNaming(PropertyNamingStrategies.KebabCaseStrategy::class)
   data class Dependency(@Input val load: Load = Load.OMIT, @Input val required: Boolean = true, @Input val joinClasspath: Boolean = true)
 
   @Nested
