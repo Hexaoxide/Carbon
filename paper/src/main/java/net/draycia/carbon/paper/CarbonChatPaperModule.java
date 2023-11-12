@@ -19,9 +19,6 @@
  */
 package net.draycia.carbon.paper;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.brigadier.CloudBrigadierManager;
-import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
@@ -60,6 +57,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.brigadier.CloudBrigadierManager;
+import org.incendo.cloud.paper.PaperCommandManager;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPaperModule extends CarbonPlatformModule {
@@ -81,13 +82,15 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
             commandManager = new PaperCommandManager<>(
                 this.bootstrap,
                 executionCoordinatorHolder.executionCoordinator(),
-                commandSender -> {
-                    if (commandSender instanceof Player player) {
-                        return new PaperPlayerCommander(userManager, player);
-                    }
-                    return PaperCommander.from(commandSender);
-                },
-                commander -> ((PaperCommander) commander).commandSender()
+                SenderMapper.create(
+                    commandSender -> {
+                        if (commandSender instanceof Player player) {
+                            return new PaperPlayerCommander(userManager, player);
+                        }
+                        return PaperCommander.from(commandSender);
+                    },
+                    commander -> ((PaperCommander) commander).commandSender()
+                )
             );
         } catch (final Exception ex) {
             throw new RuntimeException("Failed to initialize command manager.", ex);

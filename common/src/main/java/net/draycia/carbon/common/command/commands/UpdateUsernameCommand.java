@@ -19,10 +19,6 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.UUIDArgument;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -39,6 +35,10 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.parser.standard.UUIDParser.uuidParser;
 
 @DefaultQualifier(NonNull.class)
 public final class UpdateUsernameCommand extends CarbonCommand {
@@ -77,18 +77,18 @@ public final class UpdateUsernameCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
-                RichDescription.of(this.messageService.commandUpdateUsernameArgumentPlayer()))
+            .optional("player", this.argumentFactory.carbonPlayer(),
+                richDescription(this.messageService.commandUpdateUsernameArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.messageService.commandUpdateUsernameArgumentUUID()))
-                .withArgument(UUIDArgument.optional("uuid"))
+                .withDescription(richDescription(this.messageService.commandUpdateUsernameArgumentUUID()))
+                .withComponent(uuidParser())
             )
             .permission("carbon.updateusername")
             .senderType(Commander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandUpdateUsernameDescription())
+            .commandDescription(richDescription(this.messageService.commandUpdateUsernameDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.sender()).carbonPlayer();
                 CarbonPlayer target;
 
                 if (handler.contains("player")) {
