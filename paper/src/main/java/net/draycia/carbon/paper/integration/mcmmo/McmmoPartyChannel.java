@@ -61,10 +61,7 @@ public class McmmoPartyChannel extends ConfigChatChannel {
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
             "default_format", "(party: %mcmmo_party_name%) <display_name>: <message>",
-            "console", "[party: %mcmmo_party_name%] <username> - <uuid>: <message>"
-        );
-        this.messageSource.locales = Map.of(
-            Locale.US, Map.of("default_format", "(party: %mcmmo_party_name%) <display_name>: <message>")
+            "console", "[party: %mcmmo_party_name%] <username>: <message>"
         );
     }
 
