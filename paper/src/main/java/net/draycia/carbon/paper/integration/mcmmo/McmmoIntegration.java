@@ -23,23 +23,30 @@ import com.google.inject.Inject;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.integration.Integration;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
 
 @DefaultQualifier(NonNull.class)
 public final class McmmoIntegration implements Integration {
 
     private final CarbonChannelRegistry channelRegistry;
+    private final ConfigManager configManager;
+    private final Logger logger;
     private final Config config;
 
     @Inject
     public McmmoIntegration(
         final CarbonChannelRegistry channelRegistry,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final Logger logger
     ) {
         this.channelRegistry = channelRegistry;
+        this.configManager = configManager;
+        this.logger = logger;
         this.config = this.config(configManager, configMeta());
     }
 
@@ -50,7 +57,13 @@ public final class McmmoIntegration implements Integration {
 
     @Override
     public void register() {
-        this.channelRegistry.registerSpecialConfigChannel(McmmoPartyChannel.FILE_NAME, McmmoPartyChannel.class);
+        if (this.config.partyChannel) {
+            if (this.configManager.primaryConfig().partyChat().enabled) {
+                this.logger.warn("Both CarbonChat parties and the mcMMO party chat channel are enabled!");
+                this.logger.warn("Usually, you want one or the other enabled. Additionally, their default channel configs will conflict.");
+            }
+            this.channelRegistry.registerSpecialConfigChannel(McmmoPartyChannel.FILE_NAME, McmmoPartyChannel.class);
+        }
     }
 
     public static ConfigMeta configMeta() {
@@ -59,7 +72,12 @@ public final class McmmoIntegration implements Integration {
 
     @ConfigSerializable
     public static final class Config {
-        boolean enabled = false;
+
+        boolean enabled = true;
+
+        @Comment("You will likely want to disable Carbon's built-in party system above when using mcMMO party chat.")
+        boolean partyChannel = true;
+
     }
 
 }

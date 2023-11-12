@@ -54,6 +54,7 @@ public class PartyChatChannel extends ConfigChatChannel {
 
     public PartyChatChannel() {
         this.key = Key.key("carbon", "partychat");
+        this.commandAliases = List.of("pc");
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
             "default_format", "(party: <party_name>) <display_name>: <message>",

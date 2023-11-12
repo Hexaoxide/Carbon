@@ -90,6 +90,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private record SpecialHandler<T extends ConfigChatChannel>(Class<T> cls, Supplier<T> defaultSupplier) {}
 
     public <T extends ConfigChatChannel> void registerSpecialConfigChannel(final String fileName, final Class<T> type) {
+        if (this.handlers.containsKey(fileName)) {
+            throw new IllegalStateException("Attempting to register duplicate entry (existing: " + this.handlers.get(fileName)
+                + ", new: " + type + ") for key " + fileName);
+        }
         this.handlers.put(fileName, new SpecialHandler<>(type, () -> this.injector.getInstance(type)));
     }
 
@@ -246,16 +250,11 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             }
             final Key channelKey = chatChannel.key();
             if (this.defaultKey.equals(channelKey)) {
-                this.logger.info("Default channel is [" + channelKey + "]");
+                this.logger.info("Default channel is [{}]", channelKey);
             }
 
-            if (this.configChannels.contains(channelKey)) {
-                this.logger.warn("Channel with key [" + channelConfigFile + "] has already been registered, skipping");
-
-                if ("partychat".equals(channelKey.value())) {
-                    this.logger.warn("Two party channels are being loaded, if you are using the mcmmo integration ensure Carbons included party feature is disabled!");
-                }
-
+            if (this.channelRegistry.keys().contains(channelKey)) {
+                this.logger.warn("Channel with key [{}] has already been registered, skipping {}", channelKey, channelConfigFile);
                 continue;
             }
 
@@ -265,7 +264,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
 
         if (this.channel(this.defaultKey) == null) {
-            this.logger.warn("No default channel found! Default channel key: [" + this.defaultKey().asString() + "]");
+            this.logger.warn("No default channel found! Default channel key: [{}]", this.defaultKey());
         }
 
         final List<String> channelList = new ArrayList<>();
@@ -276,7 +275,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         final String channels = String.join(", ", channelList);
 
-        this.logger.info("Registered channels: [" + channels + "]");
+        this.logger.info("Registered channels: [{}]", channels);
     }
 
     private void saveSpecialDefaults() {

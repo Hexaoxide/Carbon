@@ -49,7 +49,7 @@ import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPer
 @ConfigSerializable
 public class McmmoPartyChannel extends ConfigChatChannel {
 
-    public static final String FILE_NAME = "mcmmochat.conf";
+    public static final String FILE_NAME = "mcmmo-party.conf";
 
     private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private transient @MonotonicNonNull @Inject UserManager<?> users;

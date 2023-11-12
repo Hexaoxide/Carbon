@@ -97,7 +97,7 @@ public class PrimaryConfig {
     @Comment("Settings for the clear chat command")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
-    @Comment("Settings for integrations with other plugins/mods")
+    @Comment("Settings for integrations with other plugins/mods. Settings only apply when the relevant plugin/mod is present.")
     private IntegrationConfigContainer integrations;
 
     @Comment("Whether Carbon should check for updates using the GitHub API on startup.")
