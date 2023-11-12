@@ -72,7 +72,7 @@ public class McmmoPartyChannel extends ConfigChatChannel {
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             this.party(player) != null,
-            () -> this.messages.cannotUsePartyChannel(player)
+            () -> this.messages.cannotUseMcmmoPartyChannel(player)
         );
     }
 
@@ -80,7 +80,7 @@ public class McmmoPartyChannel extends ConfigChatChannel {
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             this.party(player) != null,
-            () -> this.messages.cannotUsePartyChannel(player)
+            () -> this.messages.cannotUseMcmmoPartyChannel(player)
         );
     }
 
@@ -90,7 +90,7 @@ public class McmmoPartyChannel extends ConfigChatChannel {
 
         if (party == null) {
             if (sender.online()) {
-                this.messages.cannotUseMcmmoPartyChannel(sender);
+                sender.sendMessage(this.messages.cannotUseMcmmoPartyChannel(sender));
             }
 
             return Collections.emptyList();
