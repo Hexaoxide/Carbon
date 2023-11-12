@@ -128,8 +128,9 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     @Override
     protected void configureIntegrations(final Multibinder<Integration> integrations, final Multibinder<Integration.ConfigMeta> configs) {
         integrations.addBinding().to(TownyIntegration.class);
-        integrations.addBinding().to(McmmoIntegration.class);
         configs.addBinding().toInstance(TownyIntegration.configMeta());
+        
+        integrations.addBinding().to(McmmoIntegration.class);
         configs.addBinding().toInstance(McmmoIntegration.configMeta());
     }
 

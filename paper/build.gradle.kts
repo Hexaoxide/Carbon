@@ -42,6 +42,7 @@ dependencies {
 }
 
 configurablePlugins.dependency(libs.towny)
+configurablePlugins.dependency(libs.mcmmo)
 
 tasks {
   shadowJar {
