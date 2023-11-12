@@ -19,7 +19,6 @@
  */
 package net.draycia.carbon.common.users;
 
-import cloud.commandframework.context.CommandContext;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
@@ -28,8 +27,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -39,10 +36,12 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
-import net.draycia.carbon.common.util.Exceptions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.context.CommandContext;
+import org.incendo.cloud.context.CommandInput;
+import org.incendo.cloud.suggestion.Suggestion;
 
 /**
  * Eventually consistent store of who is on each server in the network (besides self).
@@ -97,15 +96,18 @@ public final class NetworkUsers implements PlayerSuggestions {
 
     // PlayerSuggestions impl
     @Override
-    public List<String> apply(final CommandContext<Commander> ctx, final String input) {
-        final Commander commander = ctx.getSender();
+    public CompletableFuture<Iterable<Suggestion>> suggestionsFuture(final CommandContext<Commander> ctx, final CommandInput input) {
+        final Commander commander = ctx.sender();
 
         final List<? extends CarbonPlayer> local = this.server.players();
 
         if (!(commander instanceof PlayerCommander player)) {
-            return Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()))
-                .distinct()
-                .toList();
+            return CompletableFuture.completedFuture(
+                Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()))
+                    .map(Suggestion::simple)
+                    .distinct()
+                    .toList()
+            );
         }
         final CarbonPlayer carbonPlayer = player.carbonPlayer();
 
@@ -114,22 +116,18 @@ public final class NetworkUsers implements PlayerSuggestions {
                 .flatMap(m -> m.keySet().stream())
                 .map(this.userManager::user)
                 .toList(); // collect to ensure we request all futures before waiting
-        final CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(remotePlayerFutures.toArray(CompletableFuture[]::new));
-        try {
-            combinedFuture.get(50, TimeUnit.MILLISECONDS);
-        } catch (final TimeoutException ignore) {
-        } catch (final Exception e) {
-            throw Exceptions.rethrow(e);
-        }
-        final Stream<? extends CarbonPlayer> remote = remotePlayerFutures.stream()
-            .map(future -> future.getNow(null))
-            .filter(Objects::nonNull);
+        return CompletableFuture.allOf(remotePlayerFutures.toArray(CompletableFuture[]::new)).thenApply(result -> {
+            final Stream<? extends CarbonPlayer> remote = remotePlayerFutures.stream()
+                .map(future -> future.getNow(null))
+                .filter(Objects::nonNull);
 
-        return Stream.concat(local.stream(), remote)
-            .filter(carbonPlayer::awareOf)
-            .map(CarbonPlayer::username)
-            .distinct()
-            .toList();
+            return Stream.concat(local.stream(), remote)
+                .filter(carbonPlayer::awareOf)
+                .map(CarbonPlayer::username)
+                .map(Suggestion::simple)
+                .distinct()
+                .toList();
+        });
     }
 
     public boolean online(final CarbonPlayer player) {

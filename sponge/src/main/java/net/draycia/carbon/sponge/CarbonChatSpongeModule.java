@@ -19,10 +19,10 @@
  */
 package net.draycia.carbon.sponge;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.sponge.SpongeCommandManager;
-import cloud.commandframework.sponge.argument.SinglePlayerSelectorArgument;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.execution.AsynchronousCommandExecutionCoordinator;
+import org.incendo.cloud.sponge.SpongeCommandManager;
+import org.incendo.cloud.sponge.argument.SinglePlayerSelectorArgument;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;

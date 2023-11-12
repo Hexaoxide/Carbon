@@ -19,8 +19,6 @@
  */
 package net.draycia.carbon.fabric;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.fabric.FabricServerCommandManager;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -58,6 +56,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.fabric.FabricServerCommandManager;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatFabricModule extends CarbonPlatformModule {
@@ -94,13 +95,15 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
 
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
             executionCoordinatorHolder.executionCoordinator(),
-            commandSourceStack -> {
-                if (commandSourceStack.getEntity() instanceof ServerPlayer) {
-                    return new FabricPlayerCommander(carbonChat.get(), commandSourceStack);
-                }
-                return FabricCommander.from(commandSourceStack);
-            },
-            commander -> ((FabricCommander) commander).commandSourceStack()
+            SenderMapper.create(
+                commandSourceStack -> {
+                    if (commandSourceStack.getEntity() instanceof ServerPlayer) {
+                        return new FabricPlayerCommander(carbonChat.get(), commandSourceStack);
+                    }
+                    return FabricCommander.from(commandSourceStack);
+                },
+                commander -> ((FabricCommander) commander).commandSourceStack()
+            )
         );
 
         CloudUtils.decorateCommandManager(commandManager, carbonMessages);

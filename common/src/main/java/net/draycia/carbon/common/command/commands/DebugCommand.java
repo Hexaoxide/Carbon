@@ -19,9 +19,6 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -37,6 +34,9 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 @DefaultQualifier(NonNull.class)
 public final class DebugCommand extends CarbonCommand {
@@ -69,13 +69,13 @@ public final class DebugCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
-                RichDescription.of(this.carbonMessages.commandDebugArgumentPlayer()))
+            .optional("player", this.argumentFactory.carbonPlayer(),
+                richDescription(this.carbonMessages.commandDebugArgumentPlayer()))
             .permission("carbon.debug")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandDebugDescription())
+            .commandDescription(richDescription(this.carbonMessages.commandDebugDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = handler.sender().carbonPlayer();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {

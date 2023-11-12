@@ -19,13 +19,6 @@
  */
 package net.draycia.carbon.common.util;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.exceptions.ArgumentParseException;
-import cloud.commandframework.exceptions.CommandExecutionException;
-import cloud.commandframework.exceptions.InvalidCommandSenderException;
-import cloud.commandframework.exceptions.InvalidSyntaxException;
-import cloud.commandframework.exceptions.NoPermissionException;
-import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.io.PrintWriter;
@@ -49,6 +42,13 @@ import net.kyori.adventure.util.ComponentMessageThrowable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.exception.ArgumentParseException;
+import org.incendo.cloud.exception.CommandExecutionException;
+import org.incendo.cloud.exception.InvalidCommandSenderException;
+import org.incendo.cloud.exception.InvalidSyntaxException;
+import org.incendo.cloud.exception.NoPermissionException;
+import org.incendo.cloud.util.TypeUtils;
 
 @DefaultQualifier(NonNull.class)
 public final class CloudUtils {
@@ -103,12 +103,6 @@ public final class CloudUtils {
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages
     ) {
-        commandManager.commandSuggestionProcessor(
-            new FilteringCommandSuggestionProcessor<>(
-                FilteringCommandSuggestionProcessor.Filter.<Commander>contains(true).andTrimBeforeLastSpace()
-            )
-        );
-
         registerExceptionHandlers(commandManager, carbonMessages);
     }
 
@@ -116,34 +110,23 @@ public final class CloudUtils {
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages
     ) {
-        commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, exception) -> {
-            final var throwableMessage = CloudUtils.message(exception.getCause());
-
-            carbonMessages.errorCommandArgumentParsing(sender, throwableMessage);
-        });
-        commandManager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, exception) -> {
-            final var senderType = exception.getRequiredSender().getSimpleName();
-
-            carbonMessages.errorCommandInvalidSender(sender, senderType);
-        });
-        commandManager.registerExceptionHandler(InvalidSyntaxException.class, (sender, exception) -> {
-            final var syntax =
-                Component.text(exception.getCorrectSyntax()).replaceText(
-                    config -> config.match(SPECIAL_CHARACTERS_PATTERN)
-                        .replacement(match -> match.color(NamedTextColor.WHITE)));
-
-            carbonMessages.errorCommandInvalidSyntax(sender, syntax);
-        });
-        commandManager.registerExceptionHandler(NoPermissionException.class, (sender, exception) -> {
-            carbonMessages.errorCommandNoPermission(sender);
-        });
-        commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
-            final Throwable cause = exception.getCause();
+        commandManager.exceptionController().registerHandler(ArgumentParseException.class, ctx ->
+            carbonMessages.errorCommandArgumentParsing(ctx.context().sender(), CloudUtils.message(ctx.exception().getCause()))
+        ).registerHandler(InvalidCommandSenderException.class, ctx ->
+            carbonMessages.errorCommandInvalidSender(ctx.context().sender(), TypeUtils.simpleName(ctx.exception().requiredSender()))
+        ).registerHandler(InvalidSyntaxException.class, ctx ->
+            carbonMessages.errorCommandInvalidSyntax(ctx.context().sender(), Component.text(ctx.exception().correctSyntax()).replaceText(
+                config -> config.match(SPECIAL_CHARACTERS_PATTERN)
+                    .replacement(match -> match.color(NamedTextColor.WHITE))))
+        ).registerHandler(NoPermissionException.class, ctx ->
+            carbonMessages.errorCommandNoPermission(ctx.context().sender())
+        ).registerHandler(CommandExecutionException.class, ctx -> {
+            final Throwable cause = ctx.exception().getCause();
 
             if (cause instanceof CommandCompleted completed) {
                 final @Nullable Component msg = completed.componentMessage();
                 if (msg != null) {
-                    sender.sendMessage(msg);
+                    ctx.context().sender().sendMessage(msg);
                 }
                 return;
             }
@@ -155,7 +138,7 @@ public final class CloudUtils {
             final String stackTrace = writer.toString().replaceAll("\t", "    ");
             final @Nullable Component throwableMessage = CloudUtils.message(cause);
 
-            carbonMessages.errorCommandCommandExecution(sender, throwableMessage, stackTrace);
+            carbonMessages.errorCommandCommandExecution(ctx.context().sender(), throwableMessage, stackTrace);
         });
     }
 
