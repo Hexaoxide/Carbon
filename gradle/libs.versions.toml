@@ -26,7 +26,6 @@ registry = "1.0.0-SNAPSHOT"
 kyoriMoonshine = "2.0.4"
 guice = "5.1.0"
 velocityApi = "3.2.0-SNAPSHOT"
-geantyref = "1.3.11"
 minecraft = "1.20.2"
 fabricLoader = "0.14.24"
 fabricApi = "0.90.7+1.20.2"
@@ -76,7 +75,6 @@ adventureTextSerializerLegacy = { group = "net.kyori", name = "adventure-text-se
 adventureSerializerConfigurate4 = { group = "net.kyori", name = "adventure-serializer-configurate4", version.ref = "adventure" }
 minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
 adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformFabric" }
-geantyref = { group = "io.leangen.geantyref", name = "geantyref", version.ref = "geantyref" }
 log4jBom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j" }
 log4jApi = { group = "org.apache.logging.log4j", name = "log4j-api" }
 event = { group = "com.seiama", name = "event-api", version.ref = "event" }
