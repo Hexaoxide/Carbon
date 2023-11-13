@@ -23,14 +23,16 @@ dependencies {
   runtimeDownload(libs.jdbiObject)
   runtimeDownload(libs.jdbiPostgres)
   runtimeDownload(libs.caffeine)
-  runtimeDownload(libs.jedis)
+  runtimeDownload(libs.jedis) {
+    exclude("com.google.code.gson", "gson")
+  }
   runtimeDownload(libs.rabbitmq)
   runtimeDownload(libs.nats)
   runtimeDownload(libs.assistedInject) {
     isTransitive = false
   }
   runtimeDownload(libs.flyway) {
-    exclude("com.google", "gson")
+    exclude("com.google.code.gson", "gson")
   }
   runtimeDownload(libs.flywayMysql) {
     isTransitive = false

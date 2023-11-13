@@ -40,7 +40,6 @@ miniplaceholders = "2.2.2"
 jdbi = "3.41.3"
 hikari = "5.1.0"
 mysql = "8.0.33"
-protobuf = "3.21.9"
 flyway = "10.0.0"
 caffeine = "3.1.8"
 mariadb = "3.3.0"
@@ -111,7 +110,6 @@ hikariCP = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
 flywayMysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway" }
 mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql" }
-protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
 mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "mariadb" }

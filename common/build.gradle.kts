@@ -37,7 +37,7 @@ dependencies {
   compileOnlyApi(libs.jdbiPostgres)
   api(libs.hikariCP)
   compileOnlyApi(libs.flyway) {
-    exclude("com.google", "gson")
+    exclude("com.google.code.gson", "gson")
   }
   compileOnlyApi(libs.flywayMysql) {
     isTransitive = false
