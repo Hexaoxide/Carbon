@@ -22,6 +22,7 @@ package net.draycia.carbon.paper.integration.fuuid;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.perms.Relation;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -39,6 +40,12 @@ abstract class AbstractFactionsChannel extends ConfigChatChannel {
         }
 
         return fPlayer.getFaction();
+    }
+
+    protected final boolean hasRelations(final CarbonPlayer player, final Relation relation) {
+        final @Nullable Faction faction = this.faction(player);
+
+        return faction != null && faction.getRelationCount(relation) > 0;
     }
 
 }

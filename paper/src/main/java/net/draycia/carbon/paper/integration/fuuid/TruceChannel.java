@@ -67,7 +67,7 @@ public class TruceChannel extends AbstractFactionsChannel {
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
-            this.faction(player) != null,
+            this.hasRelations(player, Relation.TRUCE),
             () -> this.messages.cannotUseTruceChannel(player)
         );
     }
@@ -75,16 +75,14 @@ public class TruceChannel extends AbstractFactionsChannel {
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
-            this.faction(player) != null,
+            this.hasRelations(player, Relation.TRUCE),
             () -> this.messages.cannotUseTruceChannel(player)
         );
     }
 
     @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
-        final @Nullable Faction faction = this.faction(sender);
-
-        if (faction == null) {
+        if (!this.hasRelations(sender, Relation.TRUCE)) {
             if (sender.online()) {
                 sender.sendMessage(this.messages.cannotUseTruceChannel(sender));
             }

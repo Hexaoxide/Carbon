@@ -67,7 +67,7 @@ public class AllianceChannel extends AbstractFactionsChannel {
     @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
-            this.hasAllies(player),
+            this.hasRelations(player, Relation.ALLY),
             () -> this.messages.cannotUseFactionAllianceChannel(player)
         );
     }
@@ -75,14 +75,14 @@ public class AllianceChannel extends AbstractFactionsChannel {
     @Override
     public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
-            this.hasAllies(player),
+            this.hasRelations(player, Relation.ALLY),
             () -> this.messages.cannotUseFactionAllianceChannel(player)
         );
     }
 
     @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
-        if (!this.hasAllies(sender)) {
+        if (!this.hasRelations(sender, Relation.ALLY)) {
             if (sender.online()) {
                 sender.sendMessage(this.messages.cannotUseFactionAllianceChannel(sender));
             }
@@ -122,12 +122,6 @@ public class AllianceChannel extends AbstractFactionsChannel {
         }
 
         return alliedPlayers;
-    }
-
-    private boolean hasAllies(final CarbonPlayer player) {
-        final @Nullable Faction faction = this.faction(player);
-
-        return faction != null && faction.getRelationCount(Relation.ALLY) > 0;
     }
 
 }
