@@ -31,7 +31,6 @@ import java.util.Map;
 import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
@@ -47,15 +46,15 @@ import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPer
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class AllianceChannel extends ConfigChatChannel {
+public class AllianceChannel extends AbstractFactionsChannel {
 
-    public static final String FILE_NAME = "alliance.conf";
+    public static final String FILE_NAME = "factionsuuid-alliancechat.conf";
 
     private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private transient @MonotonicNonNull @Inject UserManager<?> users;
 
     public AllianceChannel() {
-        this.key = Key.key("carbon", "alliance");
+        this.key = Key.key("carbon", "alliancechat");
         this.commandAliases = List.of("ac");
 
         this.messageSource = new ConfigChannelMessageSource();
@@ -104,16 +103,6 @@ public class AllianceChannel extends ConfigChatChannel {
         recipients.add(this.server.console());
 
         return recipients;
-    }
-
-    private @Nullable Faction faction(final CarbonPlayer player) {
-        final FPlayer fPlayer = FPlayers.getInstance().getById(player.uuid().toString());
-
-        if (fPlayer == null || !fPlayer.hasFaction()) {
-            return null;
-        }
-
-        return fPlayer.getFaction();
     }
 
     private List<Player> alliedPlayersTo(final CarbonPlayer player) {

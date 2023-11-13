@@ -31,7 +31,6 @@ dependencies {
   compileOnly(libs.discordsrv) {
     isTransitive = false
   }
-
   compileOnly(libs.towny)
   compileOnly(libs.mcmmo) {
     isTransitive = false
@@ -45,6 +44,7 @@ dependencies {
 
 configurablePlugins.dependency(libs.towny)
 configurablePlugins.dependency(libs.mcmmo)
+configurablePlugins.dependency(libs.factionsUuid)
 
 tasks {
   shadowJar {

@@ -20,8 +20,6 @@
 package net.draycia.carbon.paper.integration.fuuid;
 
 import com.google.inject.Inject;
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +28,6 @@ import java.util.Map;
 import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
@@ -46,15 +43,15 @@ import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPer
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class FactionChannel extends ConfigChatChannel {
+public class FactionChannel extends AbstractFactionsChannel {
 
-    public static final String FILE_NAME = "faction.conf";
+    public static final String FILE_NAME = "factionsuuid-factionchat.conf";
 
     private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private transient @MonotonicNonNull @Inject UserManager<?> users;
 
     public FactionChannel() {
-        this.key = Key.key("carbon", "faction");
+        this.key = Key.key("carbon", "factionchat");
         this.commandAliases = List.of("fc");
 
         this.messageSource = new ConfigChannelMessageSource();
@@ -103,16 +100,6 @@ public class FactionChannel extends ConfigChatChannel {
         recipients.add(this.server.console());
 
         return recipients;
-    }
-
-    private @Nullable Faction faction(final CarbonPlayer player) {
-        final FPlayer fPlayer = FPlayers.getInstance().getById(player.uuid().toString());
-
-        if (fPlayer == null || !fPlayer.hasFaction()) {
-            return null;
-        }
-
-        return fPlayer.getFaction();
     }
 
 }

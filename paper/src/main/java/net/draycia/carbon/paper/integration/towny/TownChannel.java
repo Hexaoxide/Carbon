@@ -38,7 +38,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 @ConfigHeader(ResidentListChannel.TOWNY_CHANNEL_HEADER)
 public class TownChannel extends ResidentListChannel<Town> {
 
-    public static final String FILE_NAME = "townchat.conf";
+    public static final String FILE_NAME = "towny-townchat.conf";
 
     public TownChannel() {
         this.key = Key.key("carbon", "townchat");

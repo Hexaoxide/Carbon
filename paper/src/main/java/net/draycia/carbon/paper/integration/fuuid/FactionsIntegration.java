@@ -62,7 +62,7 @@ public final class FactionsIntegration implements Integration {
     }
 
     public static ConfigMeta configMeta() {
-        return Integration.configMeta("factions", FactionsIntegration.Config.class);
+        return Integration.configMeta("factionsuuid", FactionsIntegration.Config.class);
     }
 
     @ConfigSerializable

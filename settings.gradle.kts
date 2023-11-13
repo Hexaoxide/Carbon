@@ -82,7 +82,7 @@ plugins {
 
 rootProject.name = "CarbonChat"
 
-sequenceOf(
+listOf(
   "api",
   "common",
   "paper",
