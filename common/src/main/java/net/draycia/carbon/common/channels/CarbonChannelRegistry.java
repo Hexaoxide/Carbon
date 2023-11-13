@@ -70,7 +70,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
@@ -126,44 +125,32 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         events.subscribe(CarbonReloadEvent.class, -99, true, event -> this.reloadConfigChannels());
     }
 
-    public static ConfigurationTransformation.Versioned versioned() {
+    public static ConfigurationTransformation.Versioned configChatChannelUpgrader() {
+        // final ConfigurationTransformation initial;
+
         return ConfigurationTransformation.versionedBuilder()
-            .addVersion(0, initialTransform())
+            .versionKey(ConfigManager.CONFIG_VERSION_KEY)
+            // .addVersion(0, initial)
             .build();
     }
 
-    private static ConfigurationTransformation initialTransform() {
-        return ConfigurationTransformation.builder()
-            .addAction(NodePath.path(), (path, value) -> {
-                value.node("radius").set(-1);
+    public static <N extends ConfigurationNode> N upgradeConfigChatChannelNode(final N node) throws ConfigurateException {
+        if (true) {
+            // No transformations yet!
+            return node;
+        }
 
-                return null;
-            })
-            .build();
-    }
-
-    // https://github.com/SpongePowered/Configurate/blob/1ec74f6474237585aee858b636d9761d237839d5/examples/src/main/java/org/spongepowered/configurate/examples/Transformations.java#L107
-
-    /**
-     * Apply the transformations to a node.
-     *
-     * <p>This method also prints information about the version update that
-     * occurred</p>
-     *
-     * @param node the node to transform
-     * @param <N>  node type
-     * @return provided node, after transformation
-     */
-    public static <N extends ConfigurationNode> N updateNode(final N node) throws ConfigurateException {
         if (!node.virtual()) { // we only want to migrate existing data
-            final ConfigurationTransformation.Versioned trans = versioned();
-            final int startVersion = trans.version(node);
-            trans.apply(node);
-            final int endVersion = trans.version(node);
+            final ConfigurationTransformation.Versioned upgrader = configChatChannelUpgrader();
+            final int from = upgrader.version(node);
+            upgrader.apply(node);
+            final int to = upgrader.version(node);
 
-            if (startVersion != endVersion) { // we might not have made any changes
+            ConfigManager.configVersionComment(node, upgrader);
+
+            if (from != to) { // we might not have made any changes
                 // TODO: use logger
-                //CarbonChatProvider.carbonChat().logger().info("Updated config schema from " + startVersion + " to " + endVersion);
+                //CarbonChatProvider.carbonChat().logger().info("Updated config schema from " + from + " to " + to);
             }
         }
 
@@ -315,15 +302,14 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
             final Class<? extends ConfigChatChannel> type = special == null ? ConfigChatChannel.class : special.cls();
 
             final ConfigurationLoader<?> loader = this.config.configurationLoader(channelFile, ConfigManager.extractHeader(type));
-            final ConfigurationNode loaded = updateNode(loader.load());
+            final ConfigurationNode loaded = upgradeConfigChatChannelNode(loader.load());
             final @Nullable ConfigChatChannel channel = loaded.get(type);
             if (channel == null) {
                 throw new ConfigurateException("Config deserialized to null.");
             }
 
-            final ConfigurationNode newNode = loader.createNode();
-            newNode.set(type, channel);
-            loader.save(newNode);
+            loaded.set(type, channel);
+            loader.save(loaded);
 
             return channel;
         } catch (final ConfigurateException exception) {

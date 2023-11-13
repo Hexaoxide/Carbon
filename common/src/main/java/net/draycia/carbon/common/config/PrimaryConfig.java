@@ -28,7 +28,6 @@ import net.kyori.adventure.sound.Sound;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
@@ -186,7 +185,7 @@ public class PrimaryConfig {
     @SuppressWarnings("unused")
     public static void upgrade(final ConfigurationNode node) {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
-            .versionKey("config-version");
+            .versionKey(ConfigManager.CONFIG_VERSION_KEY);
         final ConfigurationTransformation initial = ConfigurationTransformation.builder()
             .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
             .build();
@@ -202,12 +201,8 @@ public class PrimaryConfig {
         } catch (final ConfigurateException e) {
             Exceptions.rethrow(e);
         }
-        if (from == ConfigurationTransformation.Versioned.VERSION_UNKNOWN) {
-            final ConfigurationNode versionNode = node.node(upgrader.versionKey());
-            if (versionNode instanceof CommentedConfigurationNode commented) {
-                commented.comment("Used internally to track changes to the config. Do not edit manually!");
-            }
-        }
+
+        ConfigManager.configVersionComment(node, upgrader);
     }
 
     @ConfigSerializable

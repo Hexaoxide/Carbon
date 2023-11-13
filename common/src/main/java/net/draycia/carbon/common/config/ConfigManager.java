@@ -42,6 +42,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.CommentedConfigurationNodeIntermediary;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -50,11 +51,13 @@ import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Processor;
+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class ConfigManager {
 
+    public static final String CONFIG_VERSION_KEY = "config-version";
     private static final String PRIMARY_CONFIG_FILE_NAME = "config.conf";
     private static final String COMMAND_SETTINGS_FILE_NAME = "command-settings.conf";
 
@@ -184,6 +187,16 @@ public final class ConfigManager {
         } catch (final ConfigurateException | ReflectiveOperationException exception) {
             this.logger.error("Failed to load config '{}'", file, exception);
             return null;
+        }
+    }
+
+    public static <N extends ConfigurationNode> void configVersionComment(
+        final N rootNode,
+        final ConfigurationTransformation.Versioned versionedTransformation
+    ) {
+        final ConfigurationNode versionNode = rootNode.node(versionedTransformation.versionKey());
+        if (!versionNode.virtual() && versionNode instanceof CommentedConfigurationNode commented) {
+            commented.comment("Used internally to track changes to the config. Do not edit manually!");
         }
     }
 
