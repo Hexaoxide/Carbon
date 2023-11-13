@@ -31,10 +31,12 @@ dependencies {
   compileOnly(libs.discordsrv) {
     isTransitive = false
   }
+
   compileOnly(libs.towny)
   compileOnly(libs.mcmmo) {
     isTransitive = false
   }
+  compileOnly(libs.factionsUuid)
 
   runtimeDownload(libs.guice) {
     exclude("com.google.guava")
@@ -86,6 +88,7 @@ paper {
   // Integrations
   dependency("Towny", PaperPluginDescription.Load.BEFORE, false)
   dependency("mcMMO", PaperPluginDescription.Load.BEFORE, false)
+  dependency("Factions", PaperPluginDescription.Load.BEFORE, false)
 }
 
 bukkit {
