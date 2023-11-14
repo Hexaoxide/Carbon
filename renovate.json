@@ -21,6 +21,11 @@
             "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
         },
         {
+            "description": "Correct FactionsUUID version handling",
+            "matchPackageNames": ["com.massivecraft:Factions"],
+            "versioning": "regex:^1\\.6\\.9\\.5\\-U(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?$"
+        },
+        {
             "matchManagers": ["github-actions", "gradle-wrapper"],
             "groupName": "gradle and github actions"
         },
