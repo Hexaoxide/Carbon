@@ -91,7 +91,7 @@ tasks {
   }
 }
 
-modrinth {
-  gameVersions.set(listOf(libs.versions.minecraft.get()))
-  loaders.addAll("fabric")
+publishMods.modrinth {
+  minecraftVersions.set(listOf(libs.versions.minecraft.get()))
+  modLoaders.addAll("fabric")
 }

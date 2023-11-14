@@ -73,7 +73,7 @@ jobs:
             build/libs/carbonchat-fabric-*.jar
       - name: Publish (Pre-)Release to Modrinth
         if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-        run: ./gradlew :carbonchat-paper:modrinth :carbonchat-velocity:modrinth :carbonchat-fabric:modrinth
+        run: ./gradlew :carbonchat-paper:publishModrinth :carbonchat-velocity:publishModrinth :carbonchat-fabric:publishModrinth
         env:
           MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"

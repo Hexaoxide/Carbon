@@ -13,7 +13,7 @@ dependencies {
   implementation(libs.shadow)
   implementation(libs.indraCommon)
   implementation(libs.indraLicenseHeader)
-  implementation(libs.minotaur)
+  implementation(libs.mod.publish.plugin)
   implementation(libs.configurateYaml)
   implementation(libs.gremlin.gradle)
   implementation(libs.run.task)
