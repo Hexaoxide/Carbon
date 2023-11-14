@@ -1,6 +1,8 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
   id("carbon.base-conventions")
-  id("com.modrinth.minotaur")
+  id("me.modmuss50.mod-publish-plugin")
   id("xyz.jpenilla.gremlin-gradle")
 }
 
@@ -62,15 +64,20 @@ tasks {
 
 val projectVersion = project.version as String
 
-modrinth {
-  projectId.set("QzooIsZI")
-  versionType.set(if (projectVersion.contains("-beta.")) "beta" else "release")
-  file.set(platformExtension.jarTask.flatMap { it.archiveFile })
-  changelog.set(releaseNotes)
-  token.set(providers.environmentVariable("MODRINTH_TOKEN"))
-  required.project("luckperms")
-  optional.project("miniplaceholders")
-  gameVersions.addAll("1.19.4", "1.20.2")
+publishMods.modrinth {
+  projectId = "QzooIsZI"
+  type = if (projectVersion.contains("-beta.")) ReleaseType.BETA else ReleaseType.STABLE
+  file = platformExtension.jarTask.flatMap { it.archiveFile }
+  changelog = releaseNotes
+  accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+  requires(
+    "luckperms",
+    "miniplaceholders",
+  )
+  minecraftVersions.addAll(
+    "1.19.4",
+    "1.20.2",
+  )
 }
 
 tasks.writeDependencies {

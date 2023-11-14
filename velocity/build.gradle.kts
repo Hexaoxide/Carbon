@@ -49,8 +49,10 @@ tasks {
   }
 }
 
-modrinth {
-  optional.project("unsignedvelocity")
+publishMods.modrinth {
+  optional {
+    slug = "unsignedvelocity"
+  }
 }
 
 configurations.runtimeDownload {

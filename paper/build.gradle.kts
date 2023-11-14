@@ -106,8 +106,8 @@ carbonPermission.permissions.get().forEach {
   }
 }
 
-modrinth {
-  loaders.addAll("paper", "folia")
+publishMods.modrinth {
+  modLoaders.addAll("paper", "folia")
 }
 
 configurations.runtimeDownload {

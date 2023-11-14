@@ -7,7 +7,7 @@ indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", versio
 indra = "3.1.3"
 shadow = "8.1.1"
 pluginYml = "0.5.3"
-minotaur = "2.7.5"
+mod-publish-plugin = "0.4.5"
 gremlin = "0.0.3"
 runTask = "2.2.0"
 
@@ -63,7 +63,7 @@ indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra
 indraLicenseHeader = { group = "net.kyori", name = "indra-licenser-spotless", version.ref = "indra" }
 shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
 pluginYml = { group = "net.minecrell", name = "plugin-yml", version.ref = "pluginYml" }
-minotaur = { group = "com.modrinth.minotaur", name = "Minotaur", version.ref = "minotaur" }
+mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 gremlin-gradle = { group = "xyz.jpenilla", name = "gremlin-gradle", version.ref = "gremlin" }
 run-task = { module = "xyz.jpenilla:run-task", version.ref = "runTask" }
 
