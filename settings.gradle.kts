@@ -53,6 +53,10 @@ dependencyResolutionManagement {
     maven("https://repo.glaremasters.me/repository/towny/") {
       content { includeGroup("com.palmergames.bukkit.towny") }
     }
+    // FactionsUUID
+    maven("https://ci.ender.zone/plugin/repository/everything/") {
+      content { includeGroup("com.massivecraft") }
+    }
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -78,7 +82,7 @@ plugins {
 
 rootProject.name = "CarbonChat"
 
-sequenceOf(
+listOf(
   "api",
   "common",
   "paper",

@@ -51,6 +51,7 @@ nats = "2.16.14"
 h2 = "2.2.224"
 towny = "0.100.0.2"
 mcmmo = "2.1.225"
+fuuid = "1.6.9.5-U0.6.33"
 
 # synced with version used by lowest supported mc (currently 1.19.4 on paper)
 gson = "2.10"
@@ -139,3 +140,4 @@ placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "pl
 miniplaceholders = { group = "io.github.miniplaceholders", name = "miniplaceholders-api", version.ref = "miniplaceholders" }
 towny = { group = "com.palmergames.bukkit.towny", name = "towny", version.ref = "towny" }
 mcmmo = { group = "com.gmail.nossr50.mcMMO", name = "mcMMO", version.ref = "mcmmo" }
+factionsUuid = { group = "com.massivecraft", name = "Factions", version.ref = "fuuid" }
