@@ -115,8 +115,7 @@ public class AllianceChannel extends AbstractFactionsChannel {
         for (final FPlayer onlinePlayer : FPlayers.getInstance().getOnlinePlayers()) {
             final Relation relation = faction.getRelationTo(onlinePlayer);
 
-            // Not sure if checking MEMBER is required, or if we only need to check ALLY
-            if (relation == Relation.MEMBER || relation == Relation.ALLY) {
+            if (relation.isAtLeast(Relation.ALLY)) {
                 alliedPlayers.add(onlinePlayer.getPlayer());
             }
         }
