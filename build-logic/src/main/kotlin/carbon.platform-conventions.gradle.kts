@@ -70,10 +70,8 @@ publishMods.modrinth {
   file = platformExtension.jarTask.flatMap { it.archiveFile }
   changelog = releaseNotes
   accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-  requires(
-    "luckperms",
-    "miniplaceholders",
-  )
+  requires("luckperms")
+  optional("miniplaceholders")
   minecraftVersions.addAll(
     "1.19.4",
     "1.20.2",

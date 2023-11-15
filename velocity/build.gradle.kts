@@ -50,6 +50,7 @@ tasks {
 }
 
 publishMods.modrinth {
+  modLoaders.addAll("velocity")
   optional {
     slug = "unsignedvelocity"
   }
