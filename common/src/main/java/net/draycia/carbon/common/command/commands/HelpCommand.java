@@ -125,8 +125,8 @@ public final class HelpCommand extends CarbonCommand {
             // Total hack but works for now
             if (args.length == 2) {
                 tagResolver
-                    .tag("page", Tag.inserting(text(args[0])))
-                    .tag("max_pages", Tag.inserting(text(args[1]))
+                    .tag("page", Tag.selfClosingInserting(text(args[0])))
+                    .tag("max_pages", Tag.selfClosingInserting(text(args[1]))
                 );
             }
 

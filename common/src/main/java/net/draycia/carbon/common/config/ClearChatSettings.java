@@ -60,8 +60,8 @@ public class ClearChatSettings {
     public Component broadcast(final Component displayName, final String username) {
         return MiniMessage.miniMessage().deserialize(this.broadcast,
             TagResolver.builder()
-                .tag("display_name", Tag.inserting(displayName))
-                .tag("username", Tag.inserting(Component.text(username)))
+                .tag("display_name", Tag.selfClosingInserting(displayName))
+                .tag("username", Tag.selfClosingInserting(Component.text(username)))
                 .build());
     }
 
