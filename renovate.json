@@ -38,6 +38,9 @@
             "groupName": "gradle and github actions"
         }
     ],
+    "schedule": [
+        "before 4am on Monday"
+    ],
     "semanticCommitType": "build",
     "commitMessagePrefix": "chore(deps): "
 }
