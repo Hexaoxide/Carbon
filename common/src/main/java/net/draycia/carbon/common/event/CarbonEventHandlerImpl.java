@@ -56,7 +56,7 @@ public final class CarbonEventHandlerImpl implements CarbonEventHandler {
     private final EventRegistry<CarbonEvent> eventRegistry = new SimpleEventRegistry<>(CarbonEvent.class);
     private final EventBus<CarbonEvent> eventBus = new SimpleEventBus<>(this.eventRegistry, this::onException);
 
-    private <E> void onException(final EventSubscription<E> subscription, final E event, final Throwable throwable) {
+    private <E> void onException(final EventBus<? super E> eventBus, final EventSubscription<? super E> subscription, final E event, final Throwable throwable) {
         final Object subscriber = subscription.subscriber() instanceof SubscriberWrapper<?> wrapped
             ? wrapped.carbon
             : subscription.subscriber();
