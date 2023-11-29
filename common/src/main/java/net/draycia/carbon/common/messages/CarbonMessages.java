@@ -194,6 +194,9 @@ public interface CarbonMessages {
         final int maxLength
     );
 
+    @Message("nickname.error.blacklist")
+    void nicknameErrorBlackList(final Audience audience, final Component nickname);
+
     @Message("nickname.show.others")
     void nicknameShowOthers(final Audience audience, final String target, final Component nickname);
 
@@ -557,5 +560,4 @@ public interface CarbonMessages {
 
     @Message("integrations.fuuid.cannot_use_truce_channel")
     Component cannotUseTruceChannel(Audience audience);
-
 }
