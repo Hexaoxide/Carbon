@@ -217,6 +217,8 @@ public class PrimaryConfig {
         @Comment("Maximum number of characters in nickname (excluding formatting).")
         private int maxLength = 16;
 
+        private List<String> blackList = List.of("notch", "admin");
+
         @Comment("Format used when displaying nicknames.")
         public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
 
@@ -225,6 +227,10 @@ public class PrimaryConfig {
 
         public boolean useCarbonNicknames() {
             return this.useCarbonNicknames;
+        }
+
+        public List<String> blackList() {
+            return this.blackList;
         }
 
         public int minLength() {
