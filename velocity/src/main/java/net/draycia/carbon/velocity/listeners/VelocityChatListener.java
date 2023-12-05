@@ -74,7 +74,7 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
 
     @Override
     public void register(final EventManager eventManager, final CarbonVelocityBootstrap bootstrap) {
-        eventManager.register(bootstrap, PlayerChatEvent.class, PostOrder.LAST, this);
+        eventManager.register(bootstrap, PlayerChatEvent.class, PostOrder.LATE, this);
     }
 
     @Override
@@ -100,7 +100,7 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
                     where this function is not supported.
                     
                     If you want to keep this function working,
-                    install UnSignedVelocity.
+                    install SignedVelocity.
                     ==================================================
                     """, player.getUsername()
                 );
