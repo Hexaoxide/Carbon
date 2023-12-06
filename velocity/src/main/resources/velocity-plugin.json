@@ -18,7 +18,7 @@
             "optional": true
         },
         {
-            "id": "unsignedvelocity",
+            "id": "signedvelocity",
             "optional": true
         }
     ],
