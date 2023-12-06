@@ -42,7 +42,7 @@ hangarPublish.publications.register("plugin") {
       hangar("MiniPlaceholders") {
         required.set(false)
       }
-      hangar("UnSignedVelocity") {
+      hangar("SignedVelocity") {
         required.set(false)
       }
     }
