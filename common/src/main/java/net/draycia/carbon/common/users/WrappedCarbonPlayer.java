@@ -33,6 +33,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.config.PrimaryConfig;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersExpansion;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.messages.TagPermissions;
 import net.kyori.adventure.identity.Identity;
@@ -69,21 +70,10 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         return LuckPermsProvider.get().getUserManager().getUser(this.uuid());
     }
 
-    // TODO: replace this with something cleaner
-    private boolean miniPlaceholdersLoaded() {
-        try {
-            Class.forName("io.github.miniplaceholders.api.MiniPlaceholders");
-            return true;
-        } catch (final ClassNotFoundException ignored) {
-        }
-
-        return false;
-    }
-
     public Component parseMessageTags(final String message) {
         final TagResolver.Builder resolver = TagResolver.builder();
 
-        if (this.miniPlaceholdersLoaded() && this.hasPermission("carbon.chatplaceholders")) {
+        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded() && this.hasPermission("carbon.chatplaceholders")) {
             resolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
             resolver.resolver(MiniPlaceholders.getAudiencePlaceholders(this));
         }

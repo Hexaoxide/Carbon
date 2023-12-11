@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersExpansion;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
@@ -80,7 +81,7 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
 
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
-        if (CarbonChatPaper.miniPlaceholdersLoaded()) {
+        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {
             tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
         }
 
@@ -99,7 +100,7 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
 
         final Player senderBukkitPlayer = requireNonNull(Bukkit.getPlayer(sender.uuid()));
 
-        if (CarbonChatPaper.miniPlaceholdersLoaded()) {
+        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {
             tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(senderBukkitPlayer));
         }
 
@@ -120,7 +121,7 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
             return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
         }
 
-        if (CarbonChatPaper.miniPlaceholdersLoaded()) {
+        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {
             tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
                 senderBukkitPlayer,
                 recipientBukkitPlayer
