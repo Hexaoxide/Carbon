@@ -40,7 +40,7 @@ tasks.withType<Javadoc> {
   val options = options as StandardJavadocDocletOptions
   options.links(
     "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/",
-    "https://checkerframework.org/api/",
+    "https://javadoc.io/doc/org.checkerframework/checker-qual/${libs.versions.checkerQual.get()}/",
   )
   inputs.files(docs).ignoreEmptyDirectories().withPropertyName(docs.name + "-configuration")
   doFirst {
