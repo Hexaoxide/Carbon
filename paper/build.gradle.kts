@@ -42,9 +42,11 @@ dependencies {
   }
 }
 
-configurablePlugins.dependency(libs.towny)
-configurablePlugins.dependency(libs.mcmmo)
-configurablePlugins.dependency(libs.factionsUuid)
+configurablePlugins {
+  dependency(libs.towny)
+  dependency(libs.mcmmo)
+  dependency(libs.factionsUuid)
+}
 
 tasks {
   shadowJar {

@@ -20,7 +20,11 @@
 package net.draycia.carbon.paper.hooks;
 
 import com.google.inject.Inject;
+import java.util.Map;
+import java.util.function.Function;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.draycia.carbon.api.channels.ChannelRegistry;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.users.UserManager;
@@ -37,12 +41,28 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     private final UserManager<?> userManager;
+    private final ChannelRegistry channels;
     private final JavaPlugin plugin;
+    private final Map<String, Function<OfflinePlayer, Component>> componentResolvers;
+    private final Map<String, Function<OfflinePlayer, String>> stringResolvers;
 
     @Inject
-    public CarbonPAPIPlaceholders(final UserManager<?> userManager, final JavaPlugin plugin) {
+    public CarbonPAPIPlaceholders(
+        final UserManager<?> userManager,
+        final ChannelRegistry channels,
+        final JavaPlugin plugin
+    ) {
         this.userManager = userManager;
+        this.channels = channels;
         this.plugin = plugin;
+        this.componentResolvers = Map.of(
+            "party", this::partyName,
+            "nickname", this::nickname,
+            "displayname", this::displayName
+        );
+        this.stringResolvers = Map.of(
+            "channel_key", this::selectedChannelKey
+        );
         this.register();
     }
 
@@ -68,18 +88,18 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onRequest(final OfflinePlayer player, final String params) {
-        if (params.endsWith("party")) {
-            return mm(this.partyName(player));
-        } else if (params.endsWith("party_l")) {
-            return legacy(this.partyName(player));
-        } else if (params.endsWith("nickname")) {
-            return mm(this.nickname(player));
-        } else if (params.endsWith("nickname_l")) {
-            return legacy(this.nickname(player));
-        } else if (params.endsWith("displayname")) {
-            return mm(this.displayName(player));
-        } else if (params.endsWith("displayname_l")) {
-            return legacy(this.displayName(player));
+        for (final Map.Entry<String, Function<OfflinePlayer, Component>> entry : this.componentResolvers.entrySet()) {
+            if (params.endsWith(entry.getKey())) {
+                return mm(entry.getValue().apply(player));
+            } else if (params.endsWith(entry.getKey() + "_l")) {
+                return legacy(entry.getValue().apply(player));
+            }
+        }
+
+        for (final Map.Entry<String, Function<OfflinePlayer, String>> entry : this.stringResolvers.entrySet()) {
+            if (params.endsWith(entry.getKey())) {
+                return entry.getValue().apply(player);
+            }
         }
 
         return null;
@@ -107,6 +127,15 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
         final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
         final @Nullable Component nickname = carbonPlayer.nickname();
         return nickname == null ? Component.text(carbonPlayer.username()) : nickname;
+    }
+
+    private String selectedChannelKey(final OfflinePlayer player) {
+        final CarbonPlayer carbonPlayer = this.userManager.user(player.getUniqueId()).join();
+        final @Nullable ChatChannel selected = carbonPlayer.selectedChannel();
+        if (selected != null) {
+            return selected.key().asString();
+        }
+        return this.channels.defaultKey().asString();
     }
 
 }
