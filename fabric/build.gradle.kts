@@ -5,10 +5,10 @@ plugins {
   id("quiet-fabric-loom")
 }
 
-val carbon: Configuration by configurations.creating
+val shade: Configuration by configurations.creating
 
 configurations.implementation {
-  extendsFrom(carbon)
+  extendsFrom(shade)
 }
 
 dependencies {
@@ -18,7 +18,7 @@ dependencies {
   modImplementation(libs.fabricApi)
   modImplementation(libs.fabricApiDeprecated) // LuckPerms needs to work at dev time
 
-  carbon(projects.carbonchatCommon) {
+  shade(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
     exclude("net.kyori", "adventure-text-serializer-gson")
     exclude("net.kyori", "adventure-text-serializer-plain")
@@ -54,7 +54,7 @@ carbonPlatform {
 
 tasks {
   shadowJar {
-    configurations = arrayListOf(carbon) as List<FileCollection>
+    configurations = listOf(shade)
     relocateDependency("cloud.commandframework.minecraft.extras")
     standardRuntimeRelocations()
     relocateGuice()

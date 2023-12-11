@@ -3,10 +3,10 @@ import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import xyz.jpenilla.runtask.task.RunWithPlugins
 
-val ext = extensions.create("configurablePlugins", ConfigurablePluginsExt::class.java)
+val pluginsExt = extensions.create("configurablePlugins", ConfigurablePluginsExt::class.java)
 
 afterEvaluate {
-  val configs = ext.gradleDependencyBased.get().map { entry ->
+  val configs = pluginsExt.gradleDependencyBased.get().map { entry ->
     val c = configurations.register(entry.name + "Plugin") {
       isTransitive = false
     }
@@ -49,7 +49,7 @@ fun readConfig(): Config {
   val n = loader.load()
   val c = n.get(Config::class.java) as Config
   var write = false
-  for (e in ext.gradleDependencyBased.get()) {
+  for (e in pluginsExt.gradleDependencyBased.get()) {
     if (!c.defaults.containsKey(e.name)) {
       write = true
       c.defaults[e.name] = e.defaultEnabled
