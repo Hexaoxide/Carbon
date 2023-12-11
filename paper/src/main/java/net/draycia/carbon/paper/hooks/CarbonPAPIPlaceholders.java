@@ -20,6 +20,7 @@
 package net.draycia.carbon.paper.hooks;
 
 import com.google.inject.Inject;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -68,7 +69,7 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     @Override
     public String getIdentifier() {
-        return this.plugin.getName();
+        return this.plugin.getName().toLowerCase(Locale.ROOT);
     }
 
     @Override
