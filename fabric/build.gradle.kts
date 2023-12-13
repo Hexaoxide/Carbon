@@ -49,7 +49,7 @@ dependencies {
 }
 
 carbonPlatform {
-  jarTask.set(tasks.remapJar)
+  productionJar = tasks.remapJar.flatMap { it.archiveFile }
 }
 
 tasks {

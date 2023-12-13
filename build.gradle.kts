@@ -8,7 +8,7 @@ val projectVersion: String by project // get from gradle.properties
 version = projectVersion
 
 fun Project.platformJar(): Provider<RegularFile> =
-  extensions.getByType<CarbonPlatformExtension>().jarTask.flatMap { it.archiveFile }
+  extensions.getByType<CarbonPlatformExtension>().productionJar
 
 hangarPublish.publications.register("plugin") {
   version = projectVersion

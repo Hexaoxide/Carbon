@@ -52,10 +52,10 @@ tasks {
     }
   }
   val copyJar = register<FileCopyTask>("copyJar") {
-    fileToCopy.set(platformExtension.jarTask.flatMap { it.archiveFile })
-    destination.set(rootProject.layout.buildDirectory.dir("libs").flatMap {
+    fileToCopy = platformExtension.productionJar
+    destination = rootProject.layout.buildDirectory.dir("libs").flatMap {
       it.file(fileToCopy.map { file -> file.asFile.name })
-    })
+    }
   }
   build {
     dependsOn(copyJar)
@@ -67,7 +67,7 @@ val projectVersion = project.version as String
 publishMods.modrinth {
   projectId = "QzooIsZI"
   type = if (projectVersion.contains("-beta.")) ReleaseType.BETA else ReleaseType.STABLE
-  file = platformExtension.jarTask.flatMap { it.archiveFile }
+  file = platformExtension.productionJar
   changelog = releaseNotes
   accessToken = providers.environmentVariable("MODRINTH_TOKEN")
   requires("luckperms")
@@ -79,14 +79,14 @@ publishMods.modrinth {
 }
 
 tasks.writeDependencies {
-  outputFileName.set("carbon-dependencies.txt")
+  outputFileName = "carbon-dependencies.txt"
   repos.add("https://repo.papermc.io/repository/maven-public/")
   repos.add("https://repo.maven.apache.org/maven2/")
 }
 
 gremlin {
-  defaultJarRelocatorDependencies.set(false)
-  defaultGremlinRuntimeDependency.set(false)
+  defaultJarRelocatorDependencies = false
+  defaultGremlinRuntimeDependency = false
 }
 
 //val projectVersion = version as String
