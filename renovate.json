@@ -26,6 +26,12 @@
             "versioning": "regex:^1\\.6\\.9\\.5\\-U(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?$"
         },
         {
+            "description": "Towny version handling",
+            "matchPackageNames": ["com.palmergames.bukkit.towny:towny"],
+            "versioning": "regex:^0\\.(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?$",
+            "matchUpdateTypes": ["major", "minor"]
+        },
+        {
             "matchManagers": ["github-actions", "gradle-wrapper"],
             "groupName": "gradle and github actions"
         },
