@@ -28,8 +28,13 @@
         {
             "description": "Towny version handling",
             "matchPackageNames": ["com.palmergames.bukkit.towny:towny"],
-            "versioning": "regex:^0\\.(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?$",
-            "matchUpdateTypes": ["major", "minor"]
+            "versioning": "regex:^0\\.(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?$"
+        },
+        {
+            "description": "Ignore Towny patch updates",
+            "matchPackageNames": ["com.palmergames.bukkit.towny:towny"],
+            "matchUpdateTypes": "patch",
+            "enabled": false
         },
         {
             "matchManagers": ["github-actions", "gradle-wrapper"],
