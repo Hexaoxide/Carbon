@@ -39,6 +39,9 @@ dependencies {
   runtimeDownload(libs.flywayMysql) {
     isTransitive = false
   }
+  runtimeDownload(libs.flywayPostgres) {
+    isTransitive = false
+  }
 }
 
 tasks {

@@ -108,6 +108,7 @@ jdbiPostgres = { group = "org.jdbi", name = "jdbi3-postgres", version.ref = "jdb
 hikariCP = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 flyway = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
 flywayMysql = { group = "org.flywaydb", name = "flyway-mysql", version.ref = "flyway" }
+flywayPostgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql" }
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }

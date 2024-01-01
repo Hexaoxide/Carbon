@@ -42,6 +42,9 @@ dependencies {
   compileOnlyApi(libs.flywayMysql) {
     isTransitive = false
   }
+  compileOnlyApi(libs.flywayPostgres) {
+    isTransitive = false
+  }
 
   // Messaging
   api(libs.messenger)
