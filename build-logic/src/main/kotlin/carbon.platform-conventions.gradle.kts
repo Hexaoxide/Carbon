@@ -77,7 +77,7 @@ publishMods.modrinth {
   optional("miniplaceholders")
   minecraftVersions.addAll(
     "1.19.4",
-    "1.20.2",
+    "1.20.4",
   )
 }
 
