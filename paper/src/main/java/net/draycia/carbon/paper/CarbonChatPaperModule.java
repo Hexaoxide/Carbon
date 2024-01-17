@@ -22,6 +22,7 @@ package net.draycia.carbon.paper;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
+import io.leangen.geantyref.TypeToken;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
@@ -41,6 +42,7 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
+import net.draycia.carbon.paper.command.PaperSignedMapper;
 import net.draycia.carbon.paper.integration.fuuid.FactionsIntegration;
 import net.draycia.carbon.paper.integration.mcmmo.McmmoIntegration;
 import net.draycia.carbon.paper.integration.towny.TownyIntegration;
@@ -59,6 +61,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.bukkit.internal.BukkitBrigadierMapper;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 @DefaultQualifier(NonNull.class)
@@ -93,6 +96,9 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
 
         commandManager.registerBrigadier();
 
+        final var mapper = new BukkitBrigadierMapper<>(commandManager, commandManager.brigadierManager());
+        mapper.mapSimpleNMS(TypeToken.get(SignedGreedyStringParser.class), "message", true);
+
         return commandManager;
     }
 
@@ -110,7 +116,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerPaper.class));
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
-        this.bind(SignedGreedyStringParser.Mapper.class).to(SignedGreedyStringParser.NonSignedMapper.class);
+        this.bind(SignedGreedyStringParser.Mapper.class).to(PaperSignedMapper.class);
 
         this.configureListeners();
     }
