@@ -23,6 +23,7 @@ import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.mojang.brigadier.tree.CommandNode;
+import io.leangen.geantyref.TypeToken;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -36,6 +37,7 @@ import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.argument.SignedGreedyStringParser;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -44,6 +46,7 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
+import net.draycia.carbon.fabric.command.FabricSignedMapper;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.draycia.carbon.fabric.users.FabricProfileResolver;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -51,6 +54,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.key.Key;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,6 +112,12 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
 
         CloudUtils.decorateCommandManager(commandManager, carbonMessages, this.logger);
 
+        // TODO register mapping on other platforms
+        commandManager.brigadierManager().registerMapping(TypeToken.get(SignedGreedyStringParser.class), builder -> {
+            builder.toConstant(MessageArgument.message());
+            builder.cloudSuggestions();
+        });
+
         return commandManager;
     }
 
@@ -124,6 +134,7 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(FabricScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerFabric.class));
         this.bind(CarbonMessageRenderer.class).to(FabricMessageRenderer.class);
+        this.bind(SignedGreedyStringParser.Mapper.class).to(FabricSignedMapper.class);
     }
 
 }

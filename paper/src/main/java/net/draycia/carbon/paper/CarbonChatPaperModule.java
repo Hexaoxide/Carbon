@@ -32,6 +32,7 @@ import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.argument.SignedGreedyStringParser;
 import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -109,6 +110,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerPaper.class));
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
+        this.bind(SignedGreedyStringParser.Mapper.class).to(SignedGreedyStringParser.NonSignedMapper.class);
 
         this.configureListeners();
     }
