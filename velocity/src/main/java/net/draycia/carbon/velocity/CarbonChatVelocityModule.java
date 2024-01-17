@@ -26,6 +26,7 @@ import com.google.inject.multibindings.Multibinder;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import io.leangen.geantyref.TypeToken;
 import java.nio.file.Path;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.CarbonServer;
@@ -57,6 +58,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
 import org.incendo.cloud.velocity.VelocityCommandManager;
+
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatVelocityModule extends CarbonPlatformModule {
@@ -100,6 +103,11 @@ public final class CarbonChatVelocityModule extends CarbonPlatformModule {
         );
 
         CloudUtils.decorateCommandManager(commandManager, messages, this.logger);
+
+        commandManager.brigadierManager().registerMapping(
+            TypeToken.get(SignedGreedyStringParser.class),
+            builder -> builder.toConstant(greedyString()).cloudSuggestions()
+        );
 
         return commandManager;
     }

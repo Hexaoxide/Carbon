@@ -89,9 +89,11 @@ kyoriMoonshineStandard = { group = "net.kyori.moonshine", name = "moonshine-stan
 
 cloudBom = { module = "org.incendo:cloud-bom", version.ref = "cloud" }
 cloudCore = { group = "org.incendo", name = "cloud-core", version.ref = "cloud" }
+brigadier = "com.mojang:brigadier:1.0.18"
 cloudMinecraftBom = { module = "org.incendo:cloud-minecraft-bom", version.ref = "cloudMinecraft" }
 cloudMinecraftExtras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloudMinecraft" }
 cloudPaper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloudMinecraft" }
+reflectionRemapper = "xyz.jpenilla:reflection-remapper:0.1.0"
 cloudSponge = { group = "org.incendo", name = "cloud-sponge", version.ref = "cloudSponge" }
 cloudVelocity = { group = "org.incendo", name = "cloud-velocity", version.ref = "cloudMinecraft" }
 cloudFabric = { group = "org.incendo", name = "cloud-fabric", version.ref = "cloudModded"}

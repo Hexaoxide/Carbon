@@ -40,6 +40,10 @@ dependencies {
   runtimeDownload(libs.guice) {
     exclude("com.google.guava")
   }
+
+  compileOnly(libs.brigadier)
+  implementation(libs.reflectionRemapper)
+  runtimeDownload(libs.reflectionRemapper)
 }
 
 configurablePlugins {

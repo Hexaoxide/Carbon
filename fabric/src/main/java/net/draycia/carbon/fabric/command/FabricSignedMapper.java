@@ -41,6 +41,7 @@ import org.incendo.cloud.parser.ArgumentParseResult;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricSignedMapper implements SignedGreedyStringParser.Mapper {
+
     private final MinecraftServerHolder serverHolder;
 
     @Inject
@@ -54,7 +55,14 @@ public final class FabricSignedMapper implements SignedGreedyStringParser.Mapper
         final String str
     ) {
         final CommandSourceStack stack = ctx.get(WrappedBrigadierParser.COMMAND_CONTEXT_BRIGADIER_NATIVE_SENDER);
-        final Map<String, PlayerChatMessage> signedArgs = ((CommandSigningContext.SignedArguments) stack.getSigningContext()).arguments();
+        final Map<String, PlayerChatMessage> signedArgs;
+        if (stack.getSigningContext() instanceof CommandSigningContext.SignedArguments) {
+            signedArgs = ((CommandSigningContext.SignedArguments) stack.getSigningContext()).arguments();
+        } else {
+            return ArgumentParseResult.successFuture(
+                new SignedGreedyStringParser.NonSignedString(str)
+            );
+        }
         if (signedArgs.size() != 1) {
             throw new IllegalStateException();
         }

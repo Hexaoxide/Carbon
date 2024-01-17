@@ -112,7 +112,6 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
 
         CloudUtils.decorateCommandManager(commandManager, carbonMessages, this.logger);
 
-        // TODO register mapping on other platforms
         commandManager.brigadierManager().registerMapping(TypeToken.get(SignedGreedyStringParser.class), builder -> {
             builder.toConstant(MessageArgument.message());
             builder.cloudSuggestions();
