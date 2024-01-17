@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.command;
 
 import net.draycia.carbon.common.command.argument.CarbonPlayerParser;
+import net.draycia.carbon.common.command.argument.SignedGreedyStringParser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -27,5 +28,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public interface ParserFactory {
 
     CarbonPlayerParser carbonPlayer();
+
+    SignedGreedyStringParser signedGreedyStringParser();
 
 }

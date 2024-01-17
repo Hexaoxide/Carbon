@@ -36,6 +36,7 @@ import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.argument.SignedGreedyStringParser;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -115,6 +116,7 @@ public final class CarbonChatVelocityModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerVelocity.class));
         this.bind(CarbonMessageRenderer.class).to(VelocityMessageRenderer.class);
+        this.bind(SignedGreedyStringParser.Mapper.class).to(SignedGreedyStringParser.NonSignedMapper.class);
 
         this.configureListeners();
     }

@@ -49,7 +49,9 @@ import net.draycia.carbon.api.event.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
+import net.draycia.carbon.common.command.argument.SignedGreedyStringParser;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
@@ -74,8 +76,6 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
-import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
-
 @Singleton
 @DefaultQualifier(NonNull.class)
 public class CarbonChannelRegistry extends ChatListenerInternal implements ChannelRegistry {
@@ -87,6 +87,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private @MonotonicNonNull Key defaultKey;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
+    private final ParserFactory parserFactory;
     private final Map<String, SpecialHandler<?>> handlers = new HashMap<>();
 
     private record SpecialHandler<T extends ConfigChatChannel>(Class<T> cls, Supplier<T> defaultSupplier) {}
@@ -111,7 +112,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final Logger logger,
         final ConfigManager config,
         final CarbonMessages carbonMessages,
-        final CarbonEventHandler events
+        final CarbonEventHandler events,
+        final ParserFactory parserFactory
     ) {
         super(events, carbonMessages, config);
         this.configChannelDir = dataDirectory.resolve("channels");
@@ -120,6 +122,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.config = config;
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
+        this.parserFactory = parserFactory;
 
         if (config.primaryConfig().partyChat().enabled) {
             this.registerSpecialConfigChannel(PartyChatChannel.FILE_NAME, PartyChatChannel.class);
@@ -327,22 +330,22 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final ChatChannel channel,
         final String plainMessage
     ) {
-        this.sendMessageInChannel(new ConsoleCarbonPlayer(sender), channel, plainMessage);
+        this.sendMessageInChannel(new ConsoleCarbonPlayer(sender), channel, new SignedGreedyStringParser.NonSignedString(plainMessage));
     }
 
     private void sendMessageInChannel(
         final CarbonPlayer sender,
         final ChatChannel channel,
-        final String plainMessage
+        final SignedGreedyStringParser.SignedString message
     ) {
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, plainMessage, null, channel);
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message.string(), message.signedMessage(), channel);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return;
         }
 
         for (final Audience recipient : chatEvent.recipients()) {
-            recipient.sendMessage(chatEvent.renderFor(recipient));
+            message.sendMessage(recipient, chatEvent.renderFor(recipient));
         }
     }
 
@@ -355,7 +358,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         Command.Builder<Commander> builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
-            .optional("message", greedyStringParser());
+            .optional("message", this.parserFactory.signedGreedyStringParser());
 
         if (channel.permission() != null) {
             builder = builder.permission(channel.permission());
@@ -377,10 +380,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
                 if (!(commander instanceof PlayerCommander playerCommander)) {
                     if (chatChannel != null && handler.contains("message")) {
-                        final String message = handler.get("message");
+                        final SignedGreedyStringParser.SignedString message = handler.get("message");
 
                         // TODO: trigger platform events related to chat
-                        this.sendMessageInChannelAsConsole(commander, chatChannel, message);
+                        this.sendMessageInChannelAsConsole(commander, chatChannel, message.string());
                     }
 
                     return;
@@ -397,7 +400,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                     this.carbonMessages.channelJoined(player);
                 }
                 if (handler.contains("message")) {
-                    final String message = handler.get("message");
+                    final SignedGreedyStringParser.SignedString message = handler.get("message");
 
                     // TODO: trigger platform events related to chat
                     this.sendMessageInChannel(player, chatChannel, message);

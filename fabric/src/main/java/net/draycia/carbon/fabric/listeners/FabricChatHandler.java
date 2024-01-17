@@ -47,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class FabricChatHandler extends ChatListenerInternal implements ServerMessageEvents.AllowChatMessage {
 
-    private static final ResourceLocation CHAT_TYPE_KEY = new ResourceLocation("carbonchat", "chat");
+    public static final ResourceLocation CHAT_TYPE_KEY = new ResourceLocation("carbonchat", "chat");
 
     private final CarbonChatFabric carbonChat;
     private @MonotonicNonNull ResourceKey<ChatType> chatTypeResourceKey;
