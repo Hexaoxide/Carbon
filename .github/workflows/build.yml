@@ -20,14 +20,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v2
       - name: JDK ${{ matrix.java }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         # gradle build action can't handle project dir local caches
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             .gradle/loom-cache
@@ -84,7 +84,7 @@ jobs:
           HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Jars
           path: build/libs/*.jar
