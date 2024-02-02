@@ -9,7 +9,7 @@ shadow = "8.1.1"
 pluginYml = "0.5.3"
 mod-publish-plugin = "0.4.5"
 gremlin = "0.0.3"
-runTask = "2.2.2"
+runTask = "2.2.3"
 
 adventure = "4.15.0"
 cloud = "1.8.4"
