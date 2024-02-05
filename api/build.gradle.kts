@@ -1,6 +1,6 @@
 plugins {
   id("carbon.publishing-conventions")
-  id("org.incendo.cloud-build-logic.javadoc-links") version "0.0.10"
+  id("org.incendo.cloud-build-logic.javadoc-links") version "0.0.12"
 }
 
 description = "API for interfacing with the CarbonChat Minecraft mod/plugin"
