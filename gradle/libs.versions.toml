@@ -8,7 +8,7 @@ indra = "3.1.3"
 shadow = "8.1.1"
 pluginYml = "0.5.3"
 mod-publish-plugin = "0.4.5"
-gremlin = "0.0.4"
+gremlin = "0.0.5"
 runTask = "2.2.3"
 
 adventure = "4.15.0"
