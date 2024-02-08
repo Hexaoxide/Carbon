@@ -76,7 +76,6 @@ publishMods.modrinth {
   requires("luckperms")
   optional("miniplaceholders")
   minecraftVersions.addAll(
-    "1.19.4",
     "1.20.4",
   )
 }
