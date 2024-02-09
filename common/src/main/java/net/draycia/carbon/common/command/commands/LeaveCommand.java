@@ -71,7 +71,7 @@ public final class LeaveCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .required("channel", greedyStringParser(), richDescription(this.carbonMessages.commandLeaveDescription()), SuggestionProvider.blocking((context, s) -> {
+            .required("channel", greedyStringParser(), SuggestionProvider.blocking((context, s) -> {
                 final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
                 return this.channelRegistry.keys().stream()
                     .map(this.channelRegistry::channel)
