@@ -24,7 +24,6 @@ import com.google.inject.Provider;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -86,17 +85,6 @@ public final class CloudUtils {
     public static Component message(final Throwable throwable) {
         final @Nullable Component msg = ComponentMessageThrowable.getOrConvertMessage(throwable);
         return msg == null ? NULL : msg;
-    }
-
-    public static String rawInputByMatchingName(
-        final LinkedList<String> rawInput,
-        final CarbonPlayer recipient
-    ) {
-        return rawInput
-            .stream()
-            .filter(it -> it.equalsIgnoreCase(recipient.username()))
-            .findFirst()
-            .orElse(recipient.username());
     }
 
     public static void decorateCommandManager(
