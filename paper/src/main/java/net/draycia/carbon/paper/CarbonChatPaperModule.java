@@ -55,11 +55,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
-import org.incendo.cloud.brigadier.CloudBrigadierManager;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 @DefaultQualifier(NonNull.class)
@@ -92,15 +90,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
 
         CloudUtils.decorateCommandManager(commandManager, messages);
 
-        commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
-
-        final @Nullable CloudBrigadierManager<Commander, ?> brigadierManager =
-            commandManager.brigadierManager();
-
-        if (brigadierManager != null) {
-            brigadierManager.setNativeNumberSuggestions(false);
-        }
 
         return commandManager;
     }
