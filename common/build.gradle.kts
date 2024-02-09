@@ -15,8 +15,9 @@ dependencies {
   }
 
   // Cloud
-  // api(platform(libs.cloudBom))
+  api(platform(libs.cloudBom))
   api(libs.cloudCore)
+  api(platform(libs.cloudMinecraftBom))
   api(libs.cloudMinecraftExtras) {
     isTransitive = false
   }

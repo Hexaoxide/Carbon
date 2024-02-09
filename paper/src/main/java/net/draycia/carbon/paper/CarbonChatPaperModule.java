@@ -76,25 +76,19 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     @Singleton
     @SuppressWarnings("unused")
     public CommandManager<Commander> commandManager(final UserManager<?> userManager, final CarbonMessages messages, final ExecutionCoordinatorHolder executionCoordinatorHolder) {
-        final PaperCommandManager<Commander> commandManager;
-
-        try {
-            commandManager = new PaperCommandManager<>(
-                this.bootstrap,
-                executionCoordinatorHolder.executionCoordinator(),
-                SenderMapper.create(
-                    commandSender -> {
-                        if (commandSender instanceof Player player) {
-                            return new PaperPlayerCommander(userManager, player);
-                        }
-                        return PaperCommander.from(commandSender);
-                    },
-                    commander -> ((PaperCommander) commander).commandSender()
-                )
-            );
-        } catch (final Exception ex) {
-            throw new RuntimeException("Failed to initialize command manager.", ex);
-        }
+        final PaperCommandManager<Commander> commandManager = new PaperCommandManager<>(
+            this.bootstrap,
+            executionCoordinatorHolder.executionCoordinator(),
+            SenderMapper.create(
+                commandSender -> {
+                    if (commandSender instanceof Player player) {
+                        return new PaperPlayerCommander(userManager, player);
+                    }
+                    return PaperCommander.from(commandSender);
+                },
+                commander -> ((PaperCommander) commander).commandSender()
+            )
+        );
 
         CloudUtils.decorateCommandManager(commandManager, messages);
 
