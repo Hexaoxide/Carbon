@@ -71,7 +71,7 @@ public final class JoinCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .required("channel", greedyStringParser(), richDescription(this.carbonMessages.commandJoinDescription()), SuggestionProvider.blocking(
+            .required("channel", greedyStringParser(), SuggestionProvider.blocking(
                 (context, s) -> {
                     final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
                     return sender.leftChannels().stream().map(Key::value).map(Suggestion::simple).toList();
