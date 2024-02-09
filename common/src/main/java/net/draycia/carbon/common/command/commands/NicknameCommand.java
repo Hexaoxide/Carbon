@@ -21,10 +21,10 @@ package net.draycia.carbon.common.command.commands;
 
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -46,19 +46,19 @@ public final class NicknameCommand extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
-    private final ArgumentFactory argumentFactory;
+    private final ParserFactory parserFactory;
     private final ConfigManager config;
 
     @Inject
     public NicknameCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final ArgumentFactory argumentFactory,
+        final ParserFactory parserFactory,
         final ConfigManager config
     ) {
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.argumentFactory = argumentFactory;
+        this.parserFactory = parserFactory;
         this.config = config;
     }
 
@@ -81,7 +81,7 @@ public final class NicknameCommand extends CarbonCommand {
         // TODO: Allow UUID input for target player
         final var selfRoot = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases());
         final var othersRoot = selfRoot.literal("player")
-            .required("player", this.argumentFactory.carbonPlayer(), richDescription(this.carbonMessages.commandNicknameArgumentPlayer()));
+            .required("player", this.parserFactory.carbonPlayer(), richDescription(this.carbonMessages.commandNicknameArgumentPlayer()));
 
         // Check nickname
         this.commandManager.command(selfRoot.permission("carbon.nickname")
