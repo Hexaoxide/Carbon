@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -36,6 +38,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
+import net.draycia.carbon.common.util.Exceptions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -104,8 +107,8 @@ public final class NetworkUsers implements PlayerSuggestions {
         if (!(commander instanceof PlayerCommander player)) {
             return CompletableFuture.completedFuture(
                 Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()))
-                    .map(Suggestion::simple)
                     .distinct()
+                    .map(Suggestion::simple)
                     .toList()
             );
         }
@@ -116,18 +119,25 @@ public final class NetworkUsers implements PlayerSuggestions {
                 .flatMap(m -> m.keySet().stream())
                 .map(this.userManager::user)
                 .toList(); // collect to ensure we request all futures before waiting
-        return CompletableFuture.allOf(remotePlayerFutures.toArray(CompletableFuture[]::new)).thenApply(result -> {
-            final Stream<? extends CarbonPlayer> remote = remotePlayerFutures.stream()
-                .map(future -> future.getNow(null))
-                .filter(Objects::nonNull);
+        final CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(remotePlayerFutures.toArray(CompletableFuture[]::new));
+        try {
+            combinedFuture.get(50, TimeUnit.MILLISECONDS);
+        } catch (final TimeoutException ignore) {
+        } catch (final Exception e) {
+            throw Exceptions.rethrow(e);
+        }
+        final Stream<? extends CarbonPlayer> remote = remotePlayerFutures.stream()
+            .map(future -> future.getNow(null))
+            .filter(Objects::nonNull);
 
-            return Stream.concat(local.stream(), remote)
+        return CompletableFuture.completedFuture(
+            Stream.concat(local.stream(), remote)
                 .filter(carbonPlayer::awareOf)
                 .map(CarbonPlayer::username)
-                .map(Suggestion::simple)
                 .distinct()
-                .toList();
-        });
+                .map(Suggestion::simple)
+                .toList()
+        );
     }
 
     public boolean online(final CarbonPlayer player) {
