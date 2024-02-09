@@ -33,7 +33,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 
-import static org.incendo.cloud.description.CommandDescription.commandDescription;
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.UUIDParser.uuidParser;
 
@@ -79,7 +78,7 @@ public final class IgnoreCommand extends CarbonCommand {
             )
             .permission("carbon.ignore")
             .senderType(PlayerCommander.class)
-            .commandDescription(commandDescription(richDescription(this.carbonMessages.commandIgnoreDescription())))
+            .commandDescription(richDescription(this.carbonMessages.commandIgnoreDescription()))
             .handler(handler -> {
                 final CarbonPlayer sender = handler.sender().carbonPlayer();
                 final CarbonPlayer target;
