@@ -28,10 +28,10 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -59,7 +59,7 @@ import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 public final class PartyCommands extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;
-    private final ArgumentFactory argumentFactory;
+    private final ParserFactory parserFactory;
     private final UserManagerInternal<?> userManager;
     private final PartyInvites partyInvites;
     private final ConfigManager config;
@@ -70,7 +70,7 @@ public final class PartyCommands extends CarbonCommand {
     @Inject
     public PartyCommands(
         final CommandManager<Commander> commandManager,
-        final ArgumentFactory argumentFactory,
+        final ParserFactory parserFactory,
         final UserManagerInternal<?> userManager,
         final PartyInvites partyInvites,
         final ConfigManager config,
@@ -79,7 +79,7 @@ public final class PartyCommands extends CarbonCommand {
         final NetworkUsers network
     ) {
         this.commandManager = commandManager;
-        this.argumentFactory = argumentFactory;
+        this.parserFactory = parserFactory;
         this.userManager = userManager;
         this.partyInvites = partyInvites;
         this.config = config;
@@ -111,13 +111,13 @@ public final class PartyCommands extends CarbonCommand {
         this.commandManager.command(
             root.literal("invite")
                 .commandDescription(richDescription(this.messages.partyInviteDesc()))
-                .required("player", this.argumentFactory.carbonPlayer())
+                .required("player", this.parserFactory.carbonPlayer())
                 .handler(this::invitePlayer)
         );
         this.commandManager.command(
             root.literal("accept")
                 .commandDescription(richDescription(this.messages.partyAcceptDesc()))
-                .optional("sender", this.argumentFactory.carbonPlayer())
+                .optional("sender", this.parserFactory.carbonPlayer())
                 .handler(this::acceptInvite)
         );
         this.commandManager.command(

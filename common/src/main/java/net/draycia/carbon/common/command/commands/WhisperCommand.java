@@ -26,10 +26,10 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.CarbonPlayerParser;
 import net.draycia.carbon.common.config.ConfigManager;
@@ -58,19 +58,19 @@ public final class WhisperCommand extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
-    private final ArgumentFactory argumentFactory;
+    private final ParserFactory parserFactory;
     private final WhisperHandler whisper;
 
     @Inject
     public WhisperCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final ArgumentFactory argumentFactory,
+        final ParserFactory parserFactory,
         final WhisperHandler whisper
     ) {
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.argumentFactory = argumentFactory;
+        this.parserFactory = parserFactory;
         this.whisper = whisper;
     }
 
@@ -87,7 +87,7 @@ public final class WhisperCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .required("player", this.argumentFactory.carbonPlayer(), richDescription(this.carbonMessages.commandWhisperArgumentPlayer()))
+            .required("player", this.parserFactory.carbonPlayer(), richDescription(this.carbonMessages.commandWhisperArgumentPlayer()))
             .required("message", greedyStringParser(), richDescription(this.carbonMessages.commandWhisperArgumentMessage()))
             .permission("carbon.whisper.message")
             .senderType(PlayerCommander.class)

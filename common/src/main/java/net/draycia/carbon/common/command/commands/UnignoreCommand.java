@@ -22,10 +22,10 @@ package net.draycia.carbon.common.command.commands;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
@@ -42,19 +42,19 @@ public final class UnignoreCommand extends CarbonCommand {
     private final UserManager<?> users;
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
-    private final ArgumentFactory argumentFactory;
+    private final ParserFactory parserFactory;
 
     @Inject
     public UnignoreCommand(
         final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final ArgumentFactory argumentFactory
+        final ParserFactory parserFactory
     ) {
         this.users = userManager;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.argumentFactory = argumentFactory;
+        this.parserFactory = parserFactory;
     }
 
     @Override
@@ -71,7 +71,7 @@ public final class UnignoreCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             // TODO: Filter, and only show muted players, but allow inputting any player name.
-            .optional("player", this.argumentFactory.carbonPlayer(),
+            .optional("player", this.parserFactory.carbonPlayer(),
                 richDescription(this.carbonMessages.commandUnignoreArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
