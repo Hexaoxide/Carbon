@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.command.commands;
 
 import com.google.inject.Inject;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
@@ -28,7 +29,7 @@ import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -39,12 +40,13 @@ import org.incendo.cloud.help.result.CommandEntry;
 import org.incendo.cloud.minecraft.extras.AudienceProvider;
 import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.suggestion.Suggestion;
+import org.intellij.lang.annotations.Subst;
 
-import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.TextColor.color;
+import static org.incendo.cloud.minecraft.extras.MinecraftHelp.helpColors;
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
@@ -105,28 +107,25 @@ public final class HelpCommand extends CarbonCommand {
             .commandManager(manager)
             .audienceProvider(AudienceProvider.nativeAudience())
             .commandPrefix("/carbon help")
-            .colors(
-                MinecraftHelp.helpColors(
-                    color(0xE099FF),
-                    WHITE,
-                    color(0xDD1BC4),
-                    GRAY,
-                    DARK_GRAY
-                )
-            ).messageProvider((sender, key, args) -> {
-                    final String messageKey = "command.help.misc." + key;
-                    final TagResolver.Builder tagResolver = TagResolver.builder();
+            .colors(helpColors(
+                color(0xE099FF),
+                WHITE,
+                color(0xDD1BC4),
+                GRAY,
+                DARK_GRAY
+            ))
+            .messageProvider((sender, key, args) -> {
+                final String messageKey = "command.help.misc." + key;
+                final TagResolver.Builder tagResolver = TagResolver.builder();
 
-                    // Total hack but works for now
-                    if (args.size() == 2) {
-                        tagResolver
-                            .tag("page", Tag.selfClosingInserting(text(args.get("page"))))
-                            .tag("max_pages", Tag.selfClosingInserting(text(args.get("max_pages"))));
-                    }
-
-                    return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), tagResolver.build());
+                for (final Map.Entry<String, String> entry : args.entrySet()) {
+                    @Subst("key") final String k = entry.getKey();
+                    tagResolver.resolver(Placeholder.parsed(k, entry.getValue()));
                 }
-            ).build();
+
+                return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), tagResolver.build());
+            })
+            .build();
     }
 
 }

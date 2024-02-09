@@ -55,7 +55,7 @@ carbonPlatform {
 tasks {
   shadowJar {
     configurations = listOf(shade)
-    relocateDependency("org.incendo.minecraft.extras")
+    relocateDependency("org.incendo.cloud.minecraft.extras")
     standardRuntimeRelocations()
     relocateGuice()
     relocateDependency("org.checkerframework")
