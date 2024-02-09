@@ -32,7 +32,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
-import org.incendo.cloud.key.CloudKey;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
@@ -40,9 +39,6 @@ import org.incendo.cloud.suggestion.SuggestionProvider;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonPlayerParser implements ArgumentParser.FutureArgumentParser<Commander, CarbonPlayer>, ParserDescriptor<Commander, CarbonPlayer> {
-
-    // This hack only works properly when there is 0 or 1 CarbonPlayerArguments in a chain, since we don't use the arg name
-    public static CloudKey<String> INPUT_STRING = CloudKey.of(CarbonPlayerParser.class.getSimpleName() + "-input", TypeToken.get(String.class));
 
     private final PlayerSuggestions suggestions;
     private final UserManager<?> userManager;
@@ -72,7 +68,6 @@ public final class CarbonPlayerParser implements ArgumentParser.FutureArgumentPa
             if (uuid == null) {
                 return ArgumentParseResult.failureFuture(new ParseException(input, this.messages));
             }
-            commandContext.store(INPUT_STRING, input);
             return this.userManager.user(uuid).thenCompose(ArgumentParseResult::successFuture);
         });
     }
