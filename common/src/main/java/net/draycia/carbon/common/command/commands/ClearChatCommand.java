@@ -70,7 +70,6 @@ public final class ClearChatCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.clearchat.clear")
-            .senderType(PlayerCommander.class)
             .commandDescription(richDescription(this.carbonMessages.commandClearChatDescription()))
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
@@ -83,8 +82,16 @@ public final class ClearChatCommand extends CarbonCommand {
                     }
                 }
 
-                final Component senderName = handler.sender().carbonPlayer().displayName();
-                final String username = handler.sender().carbonPlayer().username();
+                final Component senderName;
+                final String username;
+
+                if (handler.sender() instanceof PlayerCommander player) {
+                    senderName = player.carbonPlayer().displayName();
+                    username = player.carbonPlayer().username();
+                } else {
+                    senderName = Component.text("Console");
+                    username = "Console";
+                }
 
                 this.server.sendMessage(this.configManager.primaryConfig().clearChatSettings()
                     .broadcast(senderName, username));
