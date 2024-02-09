@@ -103,7 +103,7 @@ public final class WhisperCommand extends CarbonCommand {
                 final String message = ctx.get("message");
                 final CarbonPlayer recipient = ctx.get("player");
 
-                this.whisper.whisper(sender, recipient, message, ctx.getOrDefault(CarbonPlayerParser.INPUT_STRING, null));
+                this.whisper.whisper(sender, recipient, message, ctx.parsingContext("player").consumedInput());
             })
             .build();
 
