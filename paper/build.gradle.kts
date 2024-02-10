@@ -97,7 +97,7 @@ bukkit {
   name = rootProject.name
   version = project.version as String
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
-  apiVersion = "1.19"
+  apiVersion = "1.20"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
 }
