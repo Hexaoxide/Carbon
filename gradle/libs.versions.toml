@@ -53,11 +53,11 @@ towny = "0.100.0.9"
 mcmmo = "2.1.225"
 fuuid = "1.6.9.5-U0.6.33"
 
-# synced with version used by lowest supported mc (currently 1.19.4 on paper)
-gson = "2.10"
-guava = "31.1-jre"
+# synced with version used by lowest supported mc (currently 1.20.4 on paper)
+gson = "2.10.1"
+guava = "32.1.2-jre"
 log4j = "2.19.0"
-netty = "4.1.82.Final"
+netty = "4.1.97.Final"
 
 [libraries]
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
