@@ -103,7 +103,7 @@ public final class DatabaseUserManager extends CachingUserManager {
 
     @Override
     public CarbonPlayerCommon loadOrCreate(final UUID uuid) {
-        return this.jdbi.withHandle(handle -> {
+        return this.jdbi.inTransaction(handle -> {
             final @Nullable CarbonPlayerCommon carbonPlayerCommon = handle.createQuery(this.locator.query("select-player"))
                 .bind("id", uuid)
                 .mapTo(CarbonPlayerCommon.class)
@@ -170,7 +170,7 @@ public final class DatabaseUserManager extends CachingUserManager {
 
     @Override
     protected @Nullable PartyImpl loadParty(final UUID uuid) {
-        return this.jdbi.withHandle(handle -> {
+        return this.jdbi.inTransaction(handle -> {
             final @Nullable PartyImpl party = this.selectParty(handle, uuid);
             if (party == null) {
                 return null;
@@ -239,7 +239,6 @@ public final class DatabaseUserManager extends CachingUserManager {
     public void disbandSync(final UUID id) {
         this.jdbi.useHandle(handle -> {
             handle.createUpdate(this.locator.query("drop-party")).bind("partyid", id).execute();
-            handle.createUpdate(this.locator.query("clear-party-members")).bind("partyid", id).execute();
         });
     }
 
