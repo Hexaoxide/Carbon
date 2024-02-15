@@ -419,7 +419,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         if (this.username == null) {
             this.username = Objects.requireNonNull(
                 this.profileResolver.resolveName(this.uuid).join(),
-                "name"
+                () -> "Failed to resolve username for player with UUID " + this.uuid + " (null result)"
             );
         }
 
