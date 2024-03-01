@@ -502,4 +502,5 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     public void party(final @Nullable Party party) {
         this.party.set(party == null ? null : party.id());
     }
+
 }

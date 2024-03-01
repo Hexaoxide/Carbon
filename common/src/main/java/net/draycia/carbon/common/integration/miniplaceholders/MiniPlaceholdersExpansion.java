@@ -117,4 +117,5 @@ public final class MiniPlaceholdersExpansion {
         }
         return this.channels.defaultKey().asString();
     }
+
 }
