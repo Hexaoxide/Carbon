@@ -23,10 +23,13 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import java.util.List;
+import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static net.draycia.carbon.common.users.PlayerUtils.joinExceptionHandler;
@@ -34,14 +37,17 @@ import static net.draycia.carbon.common.users.PlayerUtils.joinExceptionHandler;
 @DefaultQualifier(NonNull.class)
 public class VelocityPlayerJoinListener implements VelocityListener<LoginEvent> {
 
+    private final ConfigManager configManager;
     private final UserManagerInternal<?> userManager;
     private final Logger logger;
 
     @Inject
     public VelocityPlayerJoinListener(
+        final ConfigManager configManager,
         final UserManagerInternal<?> userManager,
         final Logger logger
     ) {
+        this.configManager = configManager;
         this.userManager = userManager;
         this.logger = logger;
     }
@@ -54,7 +60,17 @@ public class VelocityPlayerJoinListener implements VelocityListener<LoginEvent> 
     @Override
     public EventTask executeAsync(final LoginEvent event) {
         return EventTask.async(
-            () -> this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger, event.getPlayer().getUsername(), event.getPlayer().getUniqueId()))
+            () -> {
+                this.userManager.user(event.getPlayer().getUniqueId()).exceptionally(joinExceptionHandler(this.logger, event.getPlayer().getUsername(), event.getPlayer().getUniqueId()));
+
+                final @Nullable List<String> suggestions = this.configManager.primaryConfig().customChatSuggestions();
+
+                if (suggestions == null || suggestions.isEmpty()) {
+                    return;
+                }
+
+                event.getPlayer().addCustomChatCompletions(suggestions);
+            }
         );
     }
 
