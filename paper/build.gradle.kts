@@ -3,7 +3,7 @@ import xyz.jpenilla.runpaper.task.RunServer
 plugins {
   id("carbon.shadow-platform")
   id("net.minecrell.plugin-yml.bukkit")
-  id("paper-plugin-yml")
+  id("net.minecrell.plugin-yml.paper")
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
   id("carbon.configurable-plugins")
@@ -81,16 +81,19 @@ paper {
   website = GITHUB_REPO_URL
   foliaSupported = true
 
-  dependency("LuckPerms", PaperPluginDescription.Load.BEFORE, true)
-  dependency("PlaceholderAPI", PaperPluginDescription.Load.BEFORE, false)
-  dependency("EssentialsDiscord", PaperPluginDescription.Load.BEFORE, false)
-  dependency("DiscordSRV", PaperPluginDescription.Load.BEFORE, false)
-  dependency("MiniPlaceholders", PaperPluginDescription.Load.BEFORE, false)
+  serverDependencies {
+    register("LuckPerms") {
+      required = true;
+    }
+    register("PlaceholderAPI")
+    register("EssentialsDiscord")
+    register("DiscordSRV")
+    register("MiniPlaceholders")
 
-  // Integrations
-  dependency("Towny", PaperPluginDescription.Load.BEFORE, false)
-  dependency("mcMMO", PaperPluginDescription.Load.BEFORE, false)
-  dependency("Factions", PaperPluginDescription.Load.BEFORE, false)
+    register("Towny")
+    register("mcMMO")
+    register("Factions")
+  }
 }
 
 bukkit {
