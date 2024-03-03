@@ -2,7 +2,7 @@
 sponge-gradle = { id = "org.spongepowered.gradle.plugin", version = "2.2.0" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.2" }
 indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
-javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.12" }
+javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.13" }
 
 [versions]
 indra = "3.1.3"
