@@ -82,4 +82,5 @@ public final class TagPermissions {
     public static Component parseTags(final String basePermission, final String message, final Predicate<String> permission) {
         return parseTags(basePermission, message, permission, TagResolver.builder());
     }
+
 }

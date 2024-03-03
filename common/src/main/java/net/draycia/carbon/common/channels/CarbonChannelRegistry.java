@@ -48,6 +48,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
+import net.draycia.carbon.api.event.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.command.Commander;
@@ -56,6 +57,7 @@ import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
+import net.draycia.carbon.common.event.events.ChannelSwitchEventImpl;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
@@ -399,7 +401,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                     // TODO: trigger platform events related to chat
                     this.sendMessageInChannel(player, chatChannel, message);
                 } else {
-                    player.selectedChannel(chatChannel);
+                    final ChannelSwitchEvent switchEvent = new ChannelSwitchEventImpl(player, chatChannel);
+                    this.eventHandler.emit(switchEvent);
+
+                    player.selectedChannel(switchEvent.channel());
                     this.carbonMessages.changedChannels(player, channelKey.value());
                 }
             })
