@@ -7,7 +7,7 @@ dependencyResolutionManagement {
       mavenContent {
         snapshotsOnly()
         includeModuleByRegex("de\\.hexaoxi", "messenger-.*")
-        includeModule("cloud.commandframework", "cloud-sponge")
+        includeModule("org.incendo", "cloud-sponge")
       }
     }
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {

@@ -19,15 +19,9 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandHelpHandler;
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.StringArgument;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.minecraft.extras.AudienceProvider;
-import cloud.commandframework.minecraft.extras.MinecraftHelp;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -35,16 +29,26 @@ import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.context.CommandContext;
+import org.incendo.cloud.context.CommandInput;
+import org.incendo.cloud.help.result.CommandEntry;
+import org.incendo.cloud.minecraft.extras.AudienceProvider;
+import org.incendo.cloud.minecraft.extras.MinecraftHelp;
+import org.incendo.cloud.suggestion.Suggestion;
+import org.intellij.lang.annotations.Subst;
 
-import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.TextColor.color;
+import static org.incendo.cloud.minecraft.extras.MinecraftHelp.helpColors;
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
 @DefaultQualifier(NonNull.class)
 public final class HelpCommand extends CarbonCommand {
@@ -77,12 +81,10 @@ public final class HelpCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .literal("help",
-                RichDescription.of(this.carbonMessages.commandHelpDescription()))
-            .argument(StringArgument.<Commander>builder("query")
-                    .greedy().withSuggestionsProvider(this::suggestQueries).asOptional(),
-                RichDescription.of(this.carbonMessages.commandHelpArgumentQuery()))
+            .literal("help")
+            .optional("query", greedyStringParser(), richDescription(this.carbonMessages.commandHelpArgumentQuery()), this::suggestQueries)
             .permission("carbon.help")
+            .commandDescription(richDescription(this.carbonMessages.commandHelpDescription()))
             .handler(this::execute)
             .build();
 
@@ -90,50 +92,41 @@ public final class HelpCommand extends CarbonCommand {
     }
 
     private void execute(final CommandContext<Commander> ctx) {
-        this.minecraftHelp.queryCommands(ctx.getOrDefault("query", ""), ctx.getSender());
+        this.minecraftHelp.queryCommands(ctx.getOrDefault("query", ""), ctx.sender());
     }
 
-    private List<String> suggestQueries(final CommandContext<Commander> ctx, final String input) {
-        final var topic = this.commandManager.createCommandHelpHandler().queryRootIndex(ctx.getSender());
-        return topic.getEntries().stream().map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString).toList();
+    private CompletableFuture<Iterable<Suggestion>> suggestQueries(final CommandContext<Commander> ctx, final CommandInput input) {
+        final var result = this.commandManager.createHelpHandler().queryRootIndex(ctx.sender());
+        return CompletableFuture.completedFuture(result.entries().stream().map(CommandEntry::syntax).map(Suggestion::simple).toList());
     }
 
     private static MinecraftHelp<Commander> createHelp(
         final CommandManager<Commander> manager,
         final CarbonMessageSource messageSource
     ) {
-        final MinecraftHelp<Commander> help = new MinecraftHelp<>(
-            "/carbon help",
-            AudienceProvider.nativeAudience(),
-            manager
-        );
-
-        help.setHelpColors(
-            MinecraftHelp.HelpColors.of(
+        return MinecraftHelp.<Commander>builder()
+            .commandManager(manager)
+            .audienceProvider(AudienceProvider.nativeAudience())
+            .commandPrefix("/carbon help")
+            .colors(helpColors(
                 color(0xE099FF),
                 WHITE,
                 color(0xDD1BC4),
                 GRAY,
                 DARK_GRAY
-            )
-        );
+            ))
+            .messageProvider((sender, key, args) -> {
+                final String messageKey = "command.help.misc." + key;
+                final TagResolver.Builder tagResolver = TagResolver.builder();
 
-        help.messageProvider((sender, key, args) -> {
-            final String messageKey = "command.help.misc." + key;
-            final TagResolver.Builder tagResolver = TagResolver.builder();
+                for (final Map.Entry<String, String> entry : args.entrySet()) {
+                    @Subst("key") final String k = entry.getKey();
+                    tagResolver.resolver(Placeholder.parsed(k, entry.getValue()));
+                }
 
-            // Total hack but works for now
-            if (args.length == 2) {
-                tagResolver
-                    .tag("page", Tag.selfClosingInserting(text(args[0])))
-                    .tag("max_pages", Tag.selfClosingInserting(text(args[1]))
-                );
-            }
-
-            return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), tagResolver.build());
-        });
-
-        return help;
+                return MiniMessage.miniMessage().deserialize(messageSource.messageOf(sender, messageKey), tagResolver.build());
+            })
+            .build();
     }
 
 }

@@ -19,8 +19,6 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -33,6 +31,9 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 @DefaultQualifier(NonNull.class)
 public final class ClearChatCommand extends CarbonCommand {
@@ -69,8 +70,7 @@ public final class ClearChatCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.clearchat.clear")
-            .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandClearChatDescription())
+            .commandDescription(richDescription(this.carbonMessages.commandClearChatDescription()))
             .handler(handler -> {
                 // Not fond of having to send 50 messages to each player
                 // Are we not able to just paste in 50 newlines and call it a day?
@@ -85,7 +85,7 @@ public final class ClearChatCommand extends CarbonCommand {
                 final Component senderName;
                 final String username;
 
-                if (handler.getSender() instanceof PlayerCommander player) {
+                if (handler.sender() instanceof PlayerCommander player) {
                     senderName = player.carbonPlayer().displayName();
                     username = player.carbonPlayer().username();
                 } else {
