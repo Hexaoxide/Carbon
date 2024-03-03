@@ -20,7 +20,6 @@
 package net.draycia.carbon.api.event.events;
 
 import net.draycia.carbon.api.channels.ChatChannel;
-import net.draycia.carbon.api.event.Cancellable;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;

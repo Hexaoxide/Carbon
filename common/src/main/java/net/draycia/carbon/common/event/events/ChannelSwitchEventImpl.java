@@ -30,10 +30,12 @@ public class ChannelSwitchEventImpl implements ChannelSwitchEvent {
 
     private final CarbonPlayer player;
     private ChatChannel chatChannel;
+
     public ChannelSwitchEventImpl(final CarbonPlayer player, final ChatChannel chatChannel) {
         this.player = player;
         this.chatChannel = chatChannel;
     }
+
     @Override
     public CarbonPlayer player() {
         return this.player;
