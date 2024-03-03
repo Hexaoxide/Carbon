@@ -97,7 +97,8 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             this.userManager.disbandPartyMessageReceived(pkt);
             return true;
         } else if (packet instanceof ChatMessagePacket messagePacket) {
-            return this.handleMessagePacket(messagePacket);
+            this.handleMessagePacket(messagePacket);
+            return true; // Don't log an error when the channel doesn't exist
         } else if (packet instanceof LocalPlayersPacket playersPacket) {
             this.networkUsers.handlePacket(playersPacket);
             return true;
