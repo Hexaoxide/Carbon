@@ -30,23 +30,10 @@ public class ChannelSwitchEventImpl implements ChannelSwitchEvent {
 
     private final CarbonPlayer player;
     private ChatChannel chatChannel;
-    private boolean cancelled = false;
-
     public ChannelSwitchEventImpl(final CarbonPlayer player, final ChatChannel chatChannel) {
         this.player = player;
         this.chatChannel = chatChannel;
     }
-
-    @Override
-    public boolean cancelled() {
-        return this.cancelled;
-    }
-
-    @Override
-    public void cancelled(final boolean cancelled) {
-        this.cancelled = cancelled;
-    }
-
     @Override
     public CarbonPlayer player() {
         return this.player;

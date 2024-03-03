@@ -404,10 +404,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                     final ChannelSwitchEvent switchEvent = new ChannelSwitchEventImpl(player, chatChannel);
                     this.eventHandler.emit(switchEvent);
 
-                    if (!switchEvent.cancelled()) {
-                        player.selectedChannel(switchEvent.channel());
-                        this.carbonMessages.changedChannels(player, channelKey.value());
-                    }
+                    player.selectedChannel(switchEvent.channel());
+                    this.carbonMessages.changedChannels(player, channelKey.value());
                 }
             })
             .build();

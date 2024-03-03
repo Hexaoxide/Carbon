@@ -32,7 +32,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @since 3.0.0
  */
 @DefaultQualifier(NonNull.class)
-public interface ChannelSwitchEvent extends CarbonEvent, Cancellable {
+public interface ChannelSwitchEvent extends CarbonEvent {
 
     /**
      * The player switching channels.
