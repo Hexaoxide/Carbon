@@ -1,0 +1,1 @@
+plugins.apply(PaperPlugin::class)
