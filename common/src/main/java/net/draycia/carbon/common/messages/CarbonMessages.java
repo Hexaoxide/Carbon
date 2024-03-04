@@ -256,6 +256,18 @@ public interface CarbonMessages {
 
     /*
      * =============================================================
+     * ========================== Spying ===========================
+     * =============================================================
+     */
+
+    @Message("command.spy.toggled")
+    void commandSpyToggled(final Audience audience, final String enabled);
+
+    @Message("command.spy.description")
+    Component commandSpyDescription();
+
+    /*
+     * =============================================================
      * ====================== Cloud Messages =======================
      * =============================================================
      */

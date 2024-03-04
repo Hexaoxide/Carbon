@@ -58,6 +58,7 @@ import net.draycia.carbon.common.command.commands.NicknameCommand;
 import net.draycia.carbon.common.command.commands.PartyCommands;
 import net.draycia.carbon.common.command.commands.ReloadCommand;
 import net.draycia.carbon.common.command.commands.ReplyCommand;
+import net.draycia.carbon.common.command.commands.SpyCommand;
 import net.draycia.carbon.common.command.commands.ToggleMessagesCommand;
 import net.draycia.carbon.common.command.commands.UnignoreCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
@@ -235,6 +236,7 @@ public final class CarbonCommonModule extends AbstractModule {
         commands.addBinding().to(NicknameCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(ReloadCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(ReplyCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(SpyCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(ToggleMessagesCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(UnignoreCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(UnmuteCommand.class).in(Scopes.SINGLETON);
