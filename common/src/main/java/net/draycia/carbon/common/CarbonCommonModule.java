@@ -40,9 +40,9 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
-import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ClearChatCommand;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
@@ -196,7 +196,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        this.install(new FactoryModuleBuilder().build(ParserFactory.class));
+        this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
         this.install(factoryModule(PacketFactory.class));
         this.bind(ServerId.KEY).toInstance(UUID.randomUUID());
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);

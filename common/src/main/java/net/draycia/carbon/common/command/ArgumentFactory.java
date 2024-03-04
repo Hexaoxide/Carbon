@@ -19,13 +19,13 @@
  */
 package net.draycia.carbon.common.command;
 
-import net.draycia.carbon.common.command.argument.CarbonPlayerParser;
+import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface ParserFactory {
+public interface ArgumentFactory {
 
-    CarbonPlayerParser carbonPlayer();
+    CarbonPlayerArgument.Builder carbonPlayer(String name);
 
 }

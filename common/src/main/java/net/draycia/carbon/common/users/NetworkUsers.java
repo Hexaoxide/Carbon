@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.users;
 
+import cloud.commandframework.context.CommandContext;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
@@ -42,9 +43,6 @@ import net.draycia.carbon.common.util.Exceptions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.context.CommandContext;
-import org.incendo.cloud.context.CommandInput;
-import org.incendo.cloud.suggestion.Suggestion;
 
 /**
  * Eventually consistent store of who is on each server in the network (besides self).
@@ -99,18 +97,15 @@ public final class NetworkUsers implements PlayerSuggestions {
 
     // PlayerSuggestions impl
     @Override
-    public CompletableFuture<Iterable<Suggestion>> suggestionsFuture(final CommandContext<Commander> ctx, final CommandInput input) {
-        final Commander commander = ctx.sender();
+    public List<String> apply(final CommandContext<Commander> ctx, final String input) {
+        final Commander commander = ctx.getSender();
 
         final List<? extends CarbonPlayer> local = this.server.players();
 
         if (!(commander instanceof PlayerCommander player)) {
-            return CompletableFuture.completedFuture(
-                Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()))
-                    .distinct()
-                    .map(Suggestion::simple)
-                    .toList()
-            );
+            return Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()))
+                .distinct()
+                .toList();
         }
         final CarbonPlayer carbonPlayer = player.carbonPlayer();
 
@@ -130,14 +125,11 @@ public final class NetworkUsers implements PlayerSuggestions {
             .map(future -> future.getNow(null))
             .filter(Objects::nonNull);
 
-        return CompletableFuture.completedFuture(
-            Stream.concat(local.stream(), remote)
-                .filter(carbonPlayer::awareOf)
-                .map(CarbonPlayer::username)
-                .distinct()
-                .map(Suggestion::simple)
-                .toList()
-        );
+        return Stream.concat(local.stream(), remote)
+            .filter(carbonPlayer::awareOf)
+            .map(CarbonPlayer::username)
+            .distinct()
+            .toList();
     }
 
     public boolean online(final CarbonPlayer player) {

@@ -19,18 +19,21 @@
  */
 package net.draycia.carbon.common.command;
 
+import cloud.commandframework.CommandTree;
+import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
+import cloud.commandframework.execution.CommandExecutionCoordinator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.execution.ExecutionCoordinator;
 
 @DefaultQualifier(NonNull.class)
 public record ExecutionCoordinatorHolder(
-    ExecutionCoordinator<Commander> executionCoordinator,
+    Function<CommandTree<Commander>, CommandExecutionCoordinator<Commander>> executionCoordinator,
     ExecutorService executorService
 ) {
 
@@ -41,7 +44,9 @@ public record ExecutionCoordinatorHolder(
     public static ExecutionCoordinatorHolder create(final Logger logger) {
         final ExecutorService executorService = Executors.newFixedThreadPool(4, ConcurrentUtil.carbonThreadFactory(logger, "Commands"));
         return new ExecutionCoordinatorHolder(
-            ExecutionCoordinator.coordinatorFor(executorService),
+            AsynchronousCommandExecutionCoordinator.<Commander>builder()
+                .withExecutor(executorService)
+                .build(),
             executorService
         );
     }

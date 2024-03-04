@@ -19,6 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.UUID;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -33,10 +37,6 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.CommandManager;
-
-import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
-import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
 @DefaultQualifier(NonNull.class)
 public final class ReplyCommand extends CarbonCommand {
@@ -72,12 +72,13 @@ public final class ReplyCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .required("message", greedyStringParser(), richDescription(this.messages.commandReplyArgumentMessage()))
+            .argument(StringArgument.greedy("message"),
+                RichDescription.of(this.messages.commandReplyArgumentMessage()))
             .permission("carbon.whisper.reply")
             .senderType(PlayerCommander.class)
-            .commandDescription(richDescription(this.messages.commandReplyDescription()))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.commandReplyDescription())
             .handler(ctx -> {
-                final CarbonPlayer sender = ctx.sender().carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) ctx.getSender()).carbonPlayer();
 
                 if (sender.muted()) {
                     this.messages.muteCannotSpeak(sender);

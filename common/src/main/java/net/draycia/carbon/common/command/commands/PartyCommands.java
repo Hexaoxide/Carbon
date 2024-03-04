@@ -19,6 +19,11 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.IntegerArgument;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.inject.Inject;
 import java.util.Comparator;
@@ -28,10 +33,10 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -47,19 +52,12 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.CommandManager;
-import org.incendo.cloud.component.DefaultValue;
-import org.incendo.cloud.context.CommandContext;
-
-import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
-import static org.incendo.cloud.parser.standard.IntegerParser.integerParser;
-import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
 @DefaultQualifier(NonNull.class)
 public final class PartyCommands extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;
-    private final ParserFactory parserFactory;
+    private final ArgumentFactory argumentFactory;
     private final UserManagerInternal<?> userManager;
     private final PartyInvites partyInvites;
     private final ConfigManager config;
@@ -70,7 +68,7 @@ public final class PartyCommands extends CarbonCommand {
     @Inject
     public PartyCommands(
         final CommandManager<Commander> commandManager,
-        final ParserFactory parserFactory,
+        final ArgumentFactory argumentFactory,
         final UserManagerInternal<?> userManager,
         final PartyInvites partyInvites,
         final ConfigManager config,
@@ -79,7 +77,7 @@ public final class PartyCommands extends CarbonCommand {
         final NetworkUsers network
     ) {
         this.commandManager = commandManager;
-        this.parserFactory = parserFactory;
+        this.argumentFactory = argumentFactory;
         this.userManager = userManager;
         this.partyInvites = partyInvites;
         this.config = config;
@@ -97,37 +95,36 @@ public final class PartyCommands extends CarbonCommand {
         final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .senderType(PlayerCommander.class)
             .permission("carbon.parties");
-        final var info = root.commandDescription(richDescription(this.messages.partyDesc())).handler(this::info);
-
+        final var info = root.meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDesc()).handler(this::info);
         this.commandManager.command(info);
         this.commandManager.command(info.literal("page")
-            .optional("page", integerParser(1), DefaultValue.constant(1)));
+            .argument(IntegerArgument.<Commander>builder("page").withMin(1).asOptionalWithDefault(1)));
         this.commandManager.command(
             root.literal("create")
-                .commandDescription(richDescription(this.messages.partyCreateDesc()))
-                .optional("name", greedyStringParser())
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyCreateDesc())
+                .argument(StringArgument.<Commander>builder("name").greedy().asOptional())
                 .handler(this::createParty)
         );
         this.commandManager.command(
             root.literal("invite")
-                .commandDescription(richDescription(this.messages.partyInviteDesc()))
-                .required("player", this.parserFactory.carbonPlayer())
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyInviteDesc())
+                .argument(this.argumentFactory.carbonPlayer("player"))
                 .handler(this::invitePlayer)
         );
         this.commandManager.command(
             root.literal("accept")
-                .commandDescription(richDescription(this.messages.partyAcceptDesc()))
-                .optional("sender", this.parserFactory.carbonPlayer())
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyAcceptDesc())
+                .argument(this.argumentFactory.carbonPlayer("sender").asOptional())
                 .handler(this::acceptInvite)
         );
         this.commandManager.command(
             root.literal("leave")
-                .commandDescription(richDescription(this.messages.partyLeaveDesc()))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyLeaveDesc())
                 .handler(this::leaveParty)
         );
         this.commandManager.command(
             root.literal("disband")
-                .commandDescription(richDescription(this.messages.partyDisbandDesc()))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.partyDisbandDesc())
                 .handler(this::disbandParty)
         );
     }
@@ -142,8 +139,8 @@ public final class PartyCommands extends CarbonCommand {
         return Key.key("carbon", "party");
     }
 
-    private void info(final CommandContext<PlayerCommander> ctx) {
-        final CarbonPlayer player = ctx.sender().carbonPlayer();
+    private void info(final CommandContext<Commander> ctx) {
+        final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable Party party = player.party().join();
         if (party == null) {
             this.messages.notInParty(player);
@@ -176,8 +173,8 @@ public final class PartyCommands extends CarbonCommand {
         pagination.render(elements, page, 6).forEach(player::sendMessage);
     }
 
-    private void createParty(final CommandContext<PlayerCommander> ctx) {
-        final CarbonPlayer player = ctx.sender().carbonPlayer();
+    private void createParty(final CommandContext<Commander> ctx) {
+        final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable Party oldParty = player.party().join();
         if (oldParty != null) {
             this.messages.mustLeavePartyFirst(player);
@@ -196,8 +193,8 @@ public final class PartyCommands extends CarbonCommand {
         this.messages.partyCreated(player, party.name());
     }
 
-    private void invitePlayer(final CommandContext<PlayerCommander> ctx) {
-        final CarbonPlayer player = ctx.sender().carbonPlayer();
+    private void invitePlayer(final CommandContext<Commander> ctx) {
+        final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final CarbonPlayer recipient = ctx.get("player");
         if (recipient.uuid().equals(player.uuid())) {
             this.messages.cannotInviteSelf(player);
@@ -218,9 +215,9 @@ public final class PartyCommands extends CarbonCommand {
         this.messages.sentPartyInvite(player, recipient.displayName(), party.name());
     }
 
-    private void acceptInvite(final CommandContext<PlayerCommander> ctx) {
+    private void acceptInvite(final CommandContext<Commander> ctx) {
         final @Nullable CarbonPlayer sender = ctx.getOrDefault("sender", null);
-        final CarbonPlayer player = ctx.sender().carbonPlayer();
+        final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable Invite invite = this.findInvite(player, sender);
         if (invite == null) {
             return;
@@ -235,8 +232,8 @@ public final class PartyCommands extends CarbonCommand {
         this.messages.joinedParty(player, invite.party().name());
     }
 
-    private void leaveParty(final CommandContext<PlayerCommander> ctx) {
-        final CarbonPlayer player = ctx.sender().carbonPlayer();
+    private void leaveParty(final CommandContext<Commander> ctx) {
+        final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable Party old = player.party().join();
         if (old == null) {
             this.messages.mustBeInParty(player);
@@ -250,8 +247,8 @@ public final class PartyCommands extends CarbonCommand {
         this.messages.leftParty(player, old.name());
     }
 
-    private void disbandParty(final CommandContext<PlayerCommander> ctx) {
-        final CarbonPlayer player = ctx.sender().carbonPlayer();
+    private void disbandParty(final CommandContext<Commander> ctx) {
+        final CarbonPlayer player = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final @Nullable Party old = player.party().join();
         if (old == null) {
             this.messages.mustBeInParty(player);

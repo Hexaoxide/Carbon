@@ -13,10 +13,8 @@ gremlin = "0.0.6"
 runTask = "2.2.3"
 
 adventure = "4.16.0"
-cloud = "2.0.0-beta.2"
-cloudMinecraft = "2.0.0-beta.2"
-cloudModded = "2.0.0-beta.2"
-cloudSponge = "2.0.0-SNAPSHOT"
+cloud = "1.8.4"
+cloudSponge = "1.8.0-SNAPSHOT"
 configurate = "4.2.0-SNAPSHOT"
 checkerQual = "3.42.0"
 stylecheck = "0.2.1"
@@ -86,20 +84,16 @@ registry = { group = "com.seiama", name = "registry", version.ref = "registry" }
 kyoriMoonshine = { group = "net.kyori.moonshine", name = "moonshine", version.ref = "kyoriMoonshine" }
 kyoriMoonshineCore = { group = "net.kyori.moonshine", name = "moonshine-core", version.ref = "kyoriMoonshine" }
 kyoriMoonshineStandard = { group = "net.kyori.moonshine", name = "moonshine-standard", version.ref = "kyoriMoonshine" }
-
-cloudBom = { module = "org.incendo:cloud-bom", version.ref = "cloud" }
-cloudCore = { group = "org.incendo", name = "cloud-core", version.ref = "cloud" }
-cloudMinecraftBom = { module = "org.incendo:cloud-minecraft-bom", version.ref = "cloudMinecraft" }
-cloudMinecraftExtras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloudMinecraft" }
-cloudPaper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloudMinecraft" }
-cloudSponge = { group = "org.incendo", name = "cloud-sponge", version.ref = "cloudSponge" }
-cloudVelocity = { group = "org.incendo", name = "cloud-velocity", version.ref = "cloudMinecraft" }
-cloudFabric = { group = "org.incendo", name = "cloud-fabric", version.ref = "cloudModded"}
-
+cloudBom = { group = "cloud.commandframework", name = "cloud-bom", version.ref = "cloud" }
+cloudCore = { group = "cloud.commandframework", name = "cloud-core" }
+cloudMinecraftExtras = { group = "cloud.commandframework", name = "cloud-minecraft-extras" }
+cloudPaper = { group = "cloud.commandframework", name = "cloud-paper" }
+cloudSponge = { group = "cloud.commandframework", name = "cloud-sponge", version.ref = "cloudSponge" }
+cloudVelocity = { group = "cloud.commandframework", name = "cloud-velocity" }
+cloudFabric = { group = "cloud.commandframework", name = "cloud-fabric", version.ref = "cloud" }
 configurateCore = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
 configurateHocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
 configurateYaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
-
 checkerQual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerQual" }
 stylecheck = { group = "ca.stellardrift", name = "stylecheck", version.ref = "stylecheck" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }

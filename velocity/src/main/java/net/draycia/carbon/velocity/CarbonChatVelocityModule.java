@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.velocity;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.velocity.VelocityCommandManager;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -53,9 +55,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.CommandManager;
-import org.incendo.cloud.SenderMapper;
-import org.incendo.cloud.velocity.VelocityCommandManager;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatVelocityModule extends CarbonPlatformModule {
@@ -86,16 +85,14 @@ public final class CarbonChatVelocityModule extends CarbonPlatformModule {
             this.pluginContainer,
             this.proxyServer,
             executionCoordinatorHolder.executionCoordinator(),
-            SenderMapper.create(
-                commandSender -> {
-                    if (commandSender instanceof Player player) {
-                        return new VelocityPlayerCommander(userManager, player);
-                    }
+            commandSender -> {
+                if (commandSender instanceof Player player) {
+                    return new VelocityPlayerCommander(userManager, player);
+                }
 
-                    return VelocityCommander.from(commandSender);
-                },
-                commander -> ((VelocityCommander) commander).commandSource()
-            )
+                return VelocityCommander.from(commandSender);
+            },
+            commander -> ((VelocityCommander) commander).commandSource()
         );
 
         CloudUtils.decorateCommandManager(commandManager, messages);

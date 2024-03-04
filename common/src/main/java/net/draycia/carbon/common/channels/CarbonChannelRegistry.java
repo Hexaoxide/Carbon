@@ -19,6 +19,9 @@
  */
 package net.draycia.carbon.common.channels;
 
+import cloud.commandframework.Command;
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.StringArgument;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -67,14 +70,10 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.Command;
-import org.incendo.cloud.CommandManager;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
-
-import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
@@ -355,7 +354,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         Command.Builder<Commander> builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
-            .optional("message", greedyStringParser());
+            .argument(StringArgument.<Commander>builder("message").greedy().asOptional().build());
 
         if (channel.permission() != null) {
             builder = builder.permission(channel.permission());
@@ -372,7 +371,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         final Command<Commander> command = builder.senderType(Commander.class)
             .handler(handler -> {
-                final Commander commander = handler.sender();
+                final Commander commander = handler.getSender();
                 final @Nullable ChatChannel chatChannel = this.channel(channelKey);
 
                 if (!(commander instanceof PlayerCommander playerCommander)) {

@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -27,9 +29,6 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
-import org.incendo.cloud.CommandManager;
-
-import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 public class ToggleMessagesCommand extends CarbonCommand {
 
@@ -60,9 +59,9 @@ public class ToggleMessagesCommand extends CarbonCommand {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.togglemsg")
             .senderType(PlayerCommander.class)
-            .commandDescription(richDescription(this.carbonMessages.commandToggleMsgDescription()))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandToggleMsgDescription())
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final boolean nowIgnoring = !sender.ignoringDirectMessages();
                 sender.ignoringDirectMessages(nowIgnoring);
 
@@ -80,9 +79,9 @@ public class ToggleMessagesCommand extends CarbonCommand {
             .permission("carbon.togglemsg")
             .literal("on", "allow")
             .senderType(PlayerCommander.class)
-            .commandDescription(richDescription(this.carbonMessages.commandToggleMsgDescription()))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandToggleMsgDescription())
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 sender.ignoringDirectMessages(false);
                 this.carbonMessages.whispersToggledOn(sender);
             })
@@ -94,9 +93,9 @@ public class ToggleMessagesCommand extends CarbonCommand {
             .permission("carbon.togglemsg")
             .literal("off", "ignore")
             .senderType(PlayerCommander.class)
-            .commandDescription(richDescription(this.carbonMessages.commandToggleMsgDescription()))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandToggleMsgDescription())
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 sender.ignoringDirectMessages(true);
                 this.carbonMessages.whispersToggledOff(sender);
             })

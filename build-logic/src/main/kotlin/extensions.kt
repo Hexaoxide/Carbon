@@ -73,7 +73,7 @@ fun Task.standardRelocations() {
 }
 
 fun Task.relocateCloud() {
-  relocateDependency("org.incendo.cloud")
+  relocateDependency("cloud.commandframework")
 }
 
 fun Task.relocateGuice() {

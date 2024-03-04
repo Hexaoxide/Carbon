@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.fabric.mixin;
 
+import cloud.commandframework.types.tuples.Pair;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.fabric.callback.PlayerStatusMessageEvents;
@@ -30,7 +31,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.players.PlayerList;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.incendo.cloud.type.tuple.Pair;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -70,12 +70,12 @@ abstract class PlayerListMixin {
         final @Nullable Pair<Component, Boolean> remove = this.joinMsg.remove(Thread.currentThread());
         if (remove != null) {
             final PlayerStatusMessageEvents.MessageEvent event = PlayerStatusMessageEvents.MessageEvent.of(
-                serverPlayer, remove.first().asComponent()
+                serverPlayer, remove.getFirst().asComponent()
             );
             PlayerStatusMessageEvents.JOIN_MESSAGE.invoker().onMessage(event);
             final net.kyori.adventure.text.@Nullable Component message = event.message();
             if (message != null) {
-                this.broadcastSystemMessage(FabricServerAudiences.of(this.server).toNative(message), remove.second());
+                this.broadcastSystemMessage(FabricServerAudiences.of(this.server).toNative(message), remove.getSecond());
             }
         }
     }

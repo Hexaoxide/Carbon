@@ -19,6 +19,10 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.IntegerArgument;
+import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -33,12 +37,6 @@ import net.draycia.carbon.common.util.PaginationHelper;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.CommandManager;
-import org.incendo.cloud.component.DefaultValue;
-import org.incendo.cloud.context.CommandContext;
-
-import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
-import static org.incendo.cloud.parser.standard.IntegerParser.integerParser;
 
 @DefaultQualifier(NonNull.class)
 public final class IgnoreListCommand extends CarbonCommand {
@@ -76,16 +74,16 @@ public final class IgnoreListCommand extends CarbonCommand {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .permission("carbon.ignore")
             .senderType(PlayerCommander.class)
-            .optional("page", integerParser(1), DefaultValue.constant(1))
-            .commandDescription(richDescription(this.messages.commandIgnoreListDescription()))
+            .argument(IntegerArgument.<Commander>builder("page").withMin(1).asOptionalWithDefault(1))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messages.commandIgnoreListDescription())
             .handler(this::execute)
             .build();
 
         this.commandManager.command(command);
     }
 
-    private void execute(final CommandContext<PlayerCommander> ctx) {
-        final CarbonPlayer sender = ctx.sender().carbonPlayer();
+    private void execute(final CommandContext<Commander> ctx) {
+        final CarbonPlayer sender = ((PlayerCommander) ctx.getSender()).carbonPlayer();
         final var elements = sender.ignoring().stream()
             .sorted() // this way page numbers make sense
             .map(id -> (Supplier<CarbonPlayer>) () -> this.users.user(id).join())

@@ -19,22 +19,22 @@
  */
 package net.draycia.carbon.common.command.commands;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.standard.UUIDArgument;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.CommandManager;
-
-import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
-import static org.incendo.cloud.parser.standard.UUIDParser.uuidParser;
 
 @DefaultQualifier(NonNull.class)
 public final class UnignoreCommand extends CarbonCommand {
@@ -42,19 +42,19 @@ public final class UnignoreCommand extends CarbonCommand {
     private final UserManager<?> users;
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
-    private final ParserFactory parserFactory;
+    private final ArgumentFactory argumentFactory;
 
     @Inject
     public UnignoreCommand(
         final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final ParserFactory parserFactory
+        final ArgumentFactory argumentFactory
     ) {
         this.users = userManager;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.parserFactory = parserFactory;
+        this.argumentFactory = argumentFactory;
     }
 
     @Override
@@ -71,18 +71,18 @@ public final class UnignoreCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             // TODO: Filter, and only show muted players, but allow inputting any player name.
-            .optional("player", this.parserFactory.carbonPlayer(),
-                richDescription(this.carbonMessages.commandUnignoreArgumentPlayer()))
+            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
+                RichDescription.of(this.carbonMessages.commandUnignoreArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(richDescription(this.carbonMessages.commandUnignoreArgumentUUID()))
-                .withComponent(uuidParser())
+                .withDescription(RichDescription.of(this.carbonMessages.commandUnignoreArgumentUUID()))
+                .withArgument(UUIDArgument.optional("uuid"))
             )
             .permission("carbon.ignore.unignore")
             .senderType(PlayerCommander.class)
-            .commandDescription(richDescription(this.carbonMessages.commandUnignoreDescription()))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandUnignoreDescription())
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {
