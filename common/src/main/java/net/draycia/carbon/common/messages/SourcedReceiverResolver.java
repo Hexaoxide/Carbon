@@ -19,9 +19,9 @@
  */
 package net.draycia.carbon.common.messages;
 
+import com.google.inject.Singleton;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import javax.inject.Singleton;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.receiver.IReceiverLocator;
 import net.kyori.moonshine.receiver.IReceiverLocatorResolver;
