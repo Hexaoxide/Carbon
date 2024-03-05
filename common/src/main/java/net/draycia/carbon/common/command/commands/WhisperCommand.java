@@ -221,7 +221,7 @@ public final class WhisperCommand extends CarbonCommand {
 
             sender.lastWhisperTarget(recipient.uuid());
             sender.whisperReplyTarget(recipient.uuid());
-            if (localRecipient) {
+            if (localRecipient && !this.configManager.primaryConfig().replyLastMessaged()) {
                 recipient.whisperReplyTarget(sender.uuid());
             } else {
                 this.messaging.get().queuePacket(() -> this.packetFactory.whisperPacket(sender.uuid(), recipient.uuid(), privateChatEvent.message()));
@@ -242,7 +242,9 @@ public final class WhisperCommand extends CarbonCommand {
                 final String recipientUsername = recipient.username();
                 final Component recipientDisplayName = recipient.displayName();
 
-                recipient.whisperReplyTarget(sender.uuid());
+                if (!this.configManager.primaryConfig().replyLastMessaged()) {
+                    recipient.whisperReplyTarget(sender.uuid());
+                }
                 this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
                 this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
                 final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();

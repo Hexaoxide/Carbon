@@ -96,6 +96,9 @@ public class PrimaryConfig {
     @Comment("Settings for the clear chat command")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
+    @Comment("If true, /r will reply to the last person you messaged, instead of the last person to message you.")
+    private boolean replyLastMessaged = false;
+
     @Comment("Settings for integrations with other plugins/mods. Settings only apply when the relevant plugin/mod is present.")
     private IntegrationConfigContainer integrations;
 
@@ -174,6 +177,10 @@ public class PrimaryConfig {
         return this.clearChatSettings;
     }
 
+    public boolean replyLastMessaged() {
+        return this.replyLastMessaged;
+    }
+
     public IntegrationConfigContainer integrations() {
         return this.integrations;
     }
@@ -186,14 +193,22 @@ public class PrimaryConfig {
     public static void upgrade(final ConfigurationNode node) {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
+
         final ConfigurationTransformation initial = ConfigurationTransformation.builder()
             .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
             .build();
         builder.addVersion(0, initial);
+
         final ConfigurationTransformation one = ConfigurationTransformation.builder()
             .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
             .build();
         builder.addVersion(1, one);
+
+        final ConfigurationTransformation two = ConfigurationTransformation.builder()
+            .addAction(NodePath.path(), (path, value) -> new Object[]{"reply-last-messaged", "false"})
+            .build();
+        builder.addVersion(2, two);
+
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
         try {
