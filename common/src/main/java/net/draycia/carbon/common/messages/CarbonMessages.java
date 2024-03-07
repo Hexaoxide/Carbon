@@ -127,6 +127,16 @@ public interface CarbonMessages {
         Component message
     );
 
+    @Message("whisper.from.spy")
+    void whisperRecipientSpy(
+        Audience audience,
+        String senderUsername,
+        Component senderDisplayName,
+        String recipientUsername,
+        Component recipientDisplayName,
+        Component message
+    );
+
     @Message("whisper.console")
     void whisperConsoleLog(
         Audience audience,
