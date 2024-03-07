@@ -12,7 +12,7 @@ mod-publish-plugin = "0.5.1"
 gremlin = "0.0.6"
 runTask = "2.2.3"
 
-adventure = "4.15.0"
+adventure = "4.16.0"
 cloud = "1.8.4"
 cloudSponge = "1.8.0-SNAPSHOT"
 configurate = "4.2.0-SNAPSHOT"
