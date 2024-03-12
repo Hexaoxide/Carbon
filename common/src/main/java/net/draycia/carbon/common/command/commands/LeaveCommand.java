@@ -77,7 +77,7 @@ public final class LeaveCommand extends CarbonCommand {
                     .map(this.channelRegistry::channel)
                     .filter(x -> !sender.leftChannels().contains(x.key()) && x.speechPermitted(sender).permitted())
                     .map(x -> x.key().value())
-                    .map(Suggestion::simple)
+                    .map(Suggestion::suggestion)
                     .toList();
             }))
             .permission("carbon.join")

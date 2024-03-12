@@ -74,7 +74,7 @@ public final class JoinCommand extends CarbonCommand {
             .required("channel", greedyStringParser(), SuggestionProvider.blocking(
                 (context, s) -> {
                     final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
-                    return sender.leftChannels().stream().map(Key::value).map(Suggestion::simple).toList();
+                    return sender.leftChannels().stream().map(Key::value).map(Suggestion::suggestion).toList();
                 }
             ))
             .permission("carbon.join")

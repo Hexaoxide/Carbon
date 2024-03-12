@@ -97,7 +97,7 @@ public final class HelpCommand extends CarbonCommand {
 
     private CompletableFuture<Iterable<Suggestion>> suggestQueries(final CommandContext<Commander> ctx, final CommandInput input) {
         final var result = this.commandManager.createHelpHandler().queryRootIndex(ctx.sender());
-        return CompletableFuture.completedFuture(result.entries().stream().map(CommandEntry::syntax).map(Suggestion::simple).toList());
+        return CompletableFuture.completedFuture(result.entries().stream().map(CommandEntry::syntax).map(Suggestion::suggestion).toList());
     }
 
     private static MinecraftHelp<Commander> createHelp(

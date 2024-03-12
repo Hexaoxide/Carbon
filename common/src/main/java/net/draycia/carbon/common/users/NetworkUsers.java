@@ -108,7 +108,7 @@ public final class NetworkUsers implements PlayerSuggestions {
             return CompletableFuture.completedFuture(
                 Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()))
                     .distinct()
-                    .map(Suggestion::simple)
+                    .map(Suggestion::suggestion)
                     .toList()
             );
         }
@@ -135,7 +135,7 @@ public final class NetworkUsers implements PlayerSuggestions {
                 .filter(carbonPlayer::awareOf)
                 .map(CarbonPlayer::username)
                 .distinct()
-                .map(Suggestion::simple)
+                .map(Suggestion::suggestion)
                 .toList()
         );
     }
