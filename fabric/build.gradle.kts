@@ -22,9 +22,9 @@ dependencies {
     exclude("net.kyori", "adventure-api")
     exclude("net.kyori", "adventure-text-serializer-gson")
     exclude("net.kyori", "adventure-text-serializer-plain")
-    exclude("cloud.commandframework", "cloud-core")
-    exclude("cloud.commandframework", "cloud-services")
-    exclude("cloud.commandframework", "cloud-brigadier")
+    exclude("org.incendo", "cloud-core")
+    exclude("org.incendo", "cloud-services")
+    exclude("org.incendo", "cloud-brigadier")
     exclude("io.leangen.geantyref")
   }
 
@@ -55,7 +55,7 @@ carbonPlatform {
 tasks {
   shadowJar {
     configurations = listOf(shade)
-    relocateDependency("cloud.commandframework.minecraft.extras")
+    relocateDependency("org.incendo.cloud.minecraft.extras")
     standardRuntimeRelocations()
     relocateGuice()
     relocateDependency("org.checkerframework")

@@ -19,9 +19,6 @@
  */
 package net.draycia.carbon.paper;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.brigadier.CloudBrigadierManager;
-import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
@@ -58,8 +55,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.paper.PaperCommandManager;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPaperModule extends CarbonPlatformModule {
@@ -75,12 +74,10 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     @Singleton
     @SuppressWarnings("unused")
     public CommandManager<Commander> commandManager(final UserManager<?> userManager, final CarbonMessages messages, final ExecutionCoordinatorHolder executionCoordinatorHolder) {
-        final PaperCommandManager<Commander> commandManager;
-
-        try {
-            commandManager = new PaperCommandManager<>(
-                this.bootstrap,
-                executionCoordinatorHolder.executionCoordinator(),
+        final PaperCommandManager<Commander> commandManager = new PaperCommandManager<>(
+            this.bootstrap,
+            executionCoordinatorHolder.executionCoordinator(),
+            SenderMapper.create(
                 commandSender -> {
                     if (commandSender instanceof Player player) {
                         return new PaperPlayerCommander(userManager, player);
@@ -88,22 +85,12 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
                     return PaperCommander.from(commandSender);
                 },
                 commander -> ((PaperCommander) commander).commandSender()
-            );
-        } catch (final Exception ex) {
-            throw new RuntimeException("Failed to initialize command manager.", ex);
-        }
+            )
+        );
 
-        CloudUtils.decorateCommandManager(commandManager, messages);
+        CloudUtils.decorateCommandManager(commandManager, messages, this.logger);
 
-        commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
-
-        final @Nullable CloudBrigadierManager<Commander, ?> brigadierManager =
-            commandManager.brigadierManager();
-
-        if (brigadierManager != null) {
-            brigadierManager.setNativeNumberSuggestions(false);
-        }
 
         return commandManager;
     }

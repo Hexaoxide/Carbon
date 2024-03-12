@@ -19,8 +19,6 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -31,6 +29,9 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 @DefaultQualifier(NonNull.class)
 public final class ReloadCommand extends CarbonCommand {
@@ -66,11 +67,11 @@ public final class ReloadCommand extends CarbonCommand {
             .literal("reload")
             .permission("carbon.reload")
             .senderType(Commander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandReloadDescription())
+            .commandDescription(richDescription(this.carbonMessages.commandReloadDescription()))
             .handler(handler -> {
                 // TODO: Check if all listeners succeeded
                 this.events.emit(new CarbonReloadEvent());
-                this.carbonMessages.configReloaded(handler.getSender());
+                this.carbonMessages.configReloaded(handler.sender());
             })
             .build();
 

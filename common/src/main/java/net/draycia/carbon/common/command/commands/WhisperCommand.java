@@ -19,10 +19,6 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.StringArgument;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import net.draycia.carbon.api.CarbonServer;
@@ -30,12 +26,12 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.CarbonPlayerArgument;
+import net.draycia.carbon.common.command.argument.CarbonPlayerParser;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonPrivateChatEventImpl;
 import net.draycia.carbon.common.messages.CarbonMessages;
@@ -52,25 +48,29 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
 @DefaultQualifier(NonNull.class)
 public final class WhisperCommand extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
-    private final ArgumentFactory argumentFactory;
+    private final ParserFactory parserFactory;
     private final WhisperHandler whisper;
 
     @Inject
     public WhisperCommand(
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final ArgumentFactory argumentFactory,
+        final ParserFactory parserFactory,
         final WhisperHandler whisper
     ) {
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.argumentFactory = argumentFactory;
+        this.parserFactory = parserFactory;
         this.whisper = whisper;
     }
 
@@ -87,15 +87,13 @@ public final class WhisperCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(this.argumentFactory.carbonPlayer("player"),
-                RichDescription.of(this.carbonMessages.commandWhisperArgumentPlayer()))
-            .argument(StringArgument.greedy("message"),
-                RichDescription.of(this.carbonMessages.commandWhisperArgumentMessage()))
+            .required("player", this.parserFactory.carbonPlayer(), richDescription(this.carbonMessages.commandWhisperArgumentPlayer()))
+            .required("message", greedyStringParser(), richDescription(this.carbonMessages.commandWhisperArgumentMessage()))
             .permission("carbon.whisper.message")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandWhisperDescription())
+            .commandDescription(richDescription(this.carbonMessages.commandWhisperDescription()))
             .handler(ctx -> {
-                final CarbonPlayer sender = ((PlayerCommander) ctx.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ctx.sender().carbonPlayer();
 
                 if (sender.muted()) {
                     this.carbonMessages.muteCannotSpeak(sender);
@@ -105,7 +103,7 @@ public final class WhisperCommand extends CarbonCommand {
                 final String message = ctx.get("message");
                 final CarbonPlayer recipient = ctx.get("player");
 
-                this.whisper.whisper(sender, recipient, message, ctx.getOrDefault(CarbonPlayerArgument.Parser.INPUT_STRING, null));
+                this.whisper.whisper(sender, recipient, message, ctx.parsingContext("player").consumedInput());
             })
             .build();
 
@@ -173,7 +171,7 @@ public final class WhisperCommand extends CarbonCommand {
 
             final String recipientUsername = recipient.username();
             if (!this.network.online(recipient) || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
-                final var exception = new CarbonPlayerArgument.ParseException(
+                final var exception = new CarbonPlayerParser.ParseException(
                     recipientInputString == null ? recipientUsername : recipientInputString,
                     this.messages
                 );
