@@ -68,7 +68,7 @@ public final class CarbonPlayerParser implements ArgumentParser.FutureArgumentPa
             if (uuid == null) {
                 return ArgumentParseResult.failureFuture(new ParseException(input, this.messages));
             }
-            return this.userManager.user(uuid).thenCompose(ArgumentParseResult::successFuture);
+            return this.userManager.user(uuid).thenApply(ArgumentParseResult::success);
         });
     }
 
