@@ -106,7 +106,7 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
             )
         );
 
-        CloudUtils.decorateCommandManager(commandManager, carbonMessages);
+        CloudUtils.decorateCommandManager(commandManager, carbonMessages, this.logger);
 
         commandManager.brigadierManager().setNativeNumberSuggestions(false);
 

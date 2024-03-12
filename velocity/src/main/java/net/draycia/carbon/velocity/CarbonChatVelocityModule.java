@@ -98,7 +98,7 @@ public final class CarbonChatVelocityModule extends CarbonPlatformModule {
             )
         );
 
-        CloudUtils.decorateCommandManager(commandManager, messages);
+        CloudUtils.decorateCommandManager(commandManager, messages, this.logger);
         final var brigadierManager = commandManager.brigadierManager();
         brigadierManager.setNativeNumberSuggestions(false);
 

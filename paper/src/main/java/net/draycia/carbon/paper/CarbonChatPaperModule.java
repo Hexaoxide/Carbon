@@ -88,7 +88,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
             )
         );
 
-        CloudUtils.decorateCommandManager(commandManager, messages);
+        CloudUtils.decorateCommandManager(commandManager, messages, this.logger);
 
         commandManager.registerBrigadier();
 
