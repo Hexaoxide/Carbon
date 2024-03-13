@@ -48,10 +48,9 @@ import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
 import net.draycia.carbon.api.event.events.ChannelSwitchEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.DataDirectory;
+import net.draycia.carbon.common.RawChat;
 import net.draycia.carbon.common.command.Commander;
-import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
-import net.draycia.carbon.common.command.argument.SignedGreedyStringParser;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
@@ -63,6 +62,7 @@ import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.util.Exceptions;
 import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -71,10 +71,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.minecraft.signed.SignedString;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
+
+import static org.incendo.cloud.minecraft.signed.SignedGreedyStringParser.signedGreedyStringParser;
 
 @Singleton
 @DefaultQualifier(NonNull.class)
@@ -87,7 +90,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
     private @MonotonicNonNull Key defaultKey;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler eventHandler;
-    private final ParserFactory parserFactory;
+    private final Key rawChatKey;
     private final Map<String, SpecialHandler<?>> handlers = new HashMap<>();
 
     private record SpecialHandler<T extends ConfigChatChannel>(Class<T> cls, Supplier<T> defaultSupplier) {}
@@ -113,7 +116,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final ConfigManager config,
         final CarbonMessages carbonMessages,
         final CarbonEventHandler events,
-        final ParserFactory parserFactory
+        @RawChat final Key rawChatKey
     ) {
         super(events, carbonMessages, config);
         this.configChannelDir = dataDirectory.resolve("channels");
@@ -122,7 +125,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         this.config = config;
         this.carbonMessages = carbonMessages;
         this.eventHandler = events;
-        this.parserFactory = parserFactory;
+        this.rawChatKey = rawChatKey;
 
         if (config.primaryConfig().partyChat().enabled) {
             this.registerSpecialConfigChannel(PartyChatChannel.FILE_NAME, PartyChatChannel.class);
@@ -330,13 +333,13 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final ChatChannel channel,
         final String plainMessage
     ) {
-        this.sendMessageInChannel(new ConsoleCarbonPlayer(sender), channel, new SignedGreedyStringParser.NonSignedString(plainMessage));
+        this.sendMessageInChannel(new ConsoleCarbonPlayer(sender), channel, SignedString.unsigned(plainMessage));
     }
 
     private void sendMessageInChannel(
         final CarbonPlayer sender,
         final ChatChannel channel,
-        final SignedGreedyStringParser.SignedString message
+        final SignedString message
     ) {
         final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message.string(), message.signedMessage(), channel);
 
@@ -345,7 +348,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         }
 
         for (final Audience recipient : chatEvent.recipients()) {
-            message.sendMessage(recipient, chatEvent.renderFor(recipient));
+            message.sendMessage(recipient, ChatType.chatType(this.rawChatKey), chatEvent.renderFor(recipient));
         }
     }
 
@@ -358,7 +361,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         Command.Builder<Commander> builder = commandManager.commandBuilder(channel.commandName(),
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
-            .optional("message", this.parserFactory.signedGreedyStringParser());
+            .optional("message", signedGreedyStringParser());
 
         if (channel.permission() != null) {
             builder = builder.permission(channel.permission());
@@ -380,7 +383,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
                 if (!(commander instanceof PlayerCommander playerCommander)) {
                     if (chatChannel != null && handler.contains("message")) {
-                        final SignedGreedyStringParser.SignedString message = handler.get("message");
+                        final SignedString message = handler.get("message");
 
                         // TODO: trigger platform events related to chat
                         this.sendMessageInChannelAsConsole(commander, chatChannel, message.string());
@@ -400,7 +403,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                     this.carbonMessages.channelJoined(player);
                 }
                 if (handler.contains("message")) {
-                    final SignedGreedyStringParser.SignedString message = handler.get("message");
+                    final SignedString message = handler.get("message");
 
                     // TODO: trigger platform events related to chat
                     this.sendMessageInChannel(player, chatChannel, message);

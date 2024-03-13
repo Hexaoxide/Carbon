@@ -21,6 +21,7 @@ dependencies {
   api(libs.cloudMinecraftExtras) {
     isTransitive = false
   }
+  api(libs.cloudSigned)
 
   // Other
   compileOnlyApi(libs.guice) {
