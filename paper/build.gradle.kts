@@ -55,6 +55,8 @@ tasks {
   shadowJar {
     relocateDependency("io.papermc.papertrail")
     relocateDependency("io.leangen.geantyref")
+    relocateDependency("xyz.jpenilla.reflectionremapper")
+    relocateDependency("net.fabricmc.mappingio")
     relocateCloud()
   }
   withType(RunServer::class).configureEach {
