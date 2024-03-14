@@ -25,11 +25,14 @@ dependencies {
     exclude("org.incendo", "cloud-core")
     exclude("org.incendo", "cloud-services")
     exclude("org.incendo", "cloud-brigadier")
+    exclude("org.incendo", "cloud-minecraft-signed-arguments")
     exclude("io.leangen.geantyref")
   }
 
   modImplementation(libs.cloudFabric)
   include(libs.cloudFabric)
+  implementation(libs.cloudSigned)
+  include(libs.cloudSigned)
   modImplementation(libs.fabricPermissionsApi)
 
   modImplementation(libs.adventurePlatformFabric)
