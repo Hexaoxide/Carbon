@@ -270,8 +270,11 @@ public interface CarbonMessages {
      * =============================================================
      */
 
-    @Message("command.spy.toggled")
-    void commandSpyToggled(final Audience audience, final String enabled);
+    @Message("command.spy.enabled")
+    void commandSpyEnabled(final Audience audience);
+
+    @Message("command.spy.disabled")
+    void commandSpyDisabled(final Audience audience);
 
     @Message("command.spy.description")
     Component commandSpyDescription();

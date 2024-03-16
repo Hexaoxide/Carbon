@@ -76,7 +76,11 @@ public final class SpyCommand extends CarbonCommand {
                 }
 
                 sender.spying(enabled);
-                this.carbonMessages.commandSpyToggled(sender, enabled ? "enabled" : "disabled");
+                if (enabled) {
+                    this.carbonMessages.commandSpyEnabled(sender);
+                } else {
+                    this.carbonMessages.commandSpyDisabled(sender);
+                }
             })
             .build();
 
