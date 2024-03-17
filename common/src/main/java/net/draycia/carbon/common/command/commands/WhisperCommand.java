@@ -286,7 +286,7 @@ public final class WhisperCommand extends CarbonCommand {
         final Component message
     ) {
         for (final CarbonPlayer player : server.players()) {
-            if (player.spying()) {
+            if (player.spying() && !player.username().equals(senderUsername) && !player.username().equals(recipientUsername)) {
                 messages.whisperRecipientSpy(player, senderUsername,
                     senderDisplayName, recipientUsername, recipientDisplayName, message);
             }
