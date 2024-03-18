@@ -547,6 +547,9 @@ public interface CarbonMessages {
     @Message("party.cannot_use_channel")
     Component cannotUsePartyChannel(Audience audience);
 
+    @Message("party.spy")
+    void partySpy(Audience audience, Component message);
+
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();
 
