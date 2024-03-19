@@ -38,6 +38,9 @@ public interface CarbonMessages {
     @Message("channel.radius.empty_recipients")
     void emptyRecipients(final Audience audience);
 
+    @Message("channel.radius.spy")
+    void radiusSpy(Audience audience, Component message);
+
     @Message("channel.not_found")
     void channelNotFound(final Audience audience);
 
