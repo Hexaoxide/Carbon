@@ -1,9 +1,11 @@
+import resourcegenerator.PaperPluginYml.Load
+import resourcegenerator.bukkitPluginYml
+import resourcegenerator.paperPluginYml
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
   id("carbon.shadow-platform")
-  id("net.minecrell.plugin-yml.bukkit")
-  id("paper-plugin-yml")
+  id("resource-generator")
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
   id("carbon.configurable-plugins")
@@ -71,7 +73,7 @@ tasks {
 
 runPaper.folia.registerTask()
 
-paper {
+val paperYml = paperPluginYml {
   name = rootProject.name
   version = project.version as String
   loader = "net.draycia.carbon.paper.CarbonPaperLoader"
@@ -81,19 +83,19 @@ paper {
   website = GITHUB_REPO_URL
   foliaSupported = true
 
-  dependency("LuckPerms", PaperPluginDescription.Load.BEFORE, true)
-  dependency("PlaceholderAPI", PaperPluginDescription.Load.BEFORE, false)
-  dependency("EssentialsDiscord", PaperPluginDescription.Load.BEFORE, false)
-  dependency("DiscordSRV", PaperPluginDescription.Load.BEFORE, false)
-  dependency("MiniPlaceholders", PaperPluginDescription.Load.BEFORE, false)
+  dependency("LuckPerms", Load.BEFORE, true)
+  dependency("PlaceholderAPI", Load.BEFORE, false)
+  dependency("EssentialsDiscord", Load.BEFORE, false)
+  dependency("DiscordSRV", Load.BEFORE, false)
+  dependency("MiniPlaceholders", Load.BEFORE, false)
 
   // Integrations
-  dependency("Towny", PaperPluginDescription.Load.BEFORE, false)
-  dependency("mcMMO", PaperPluginDescription.Load.BEFORE, false)
-  dependency("Factions", PaperPluginDescription.Load.BEFORE, false)
+  dependency("Towny", Load.BEFORE, false)
+  dependency("mcMMO", Load.BEFORE, false)
+  dependency("Factions", Load.BEFORE, false)
 }
 
-bukkit {
+val bukkitYml = bukkitPluginYml {
   name = rootProject.name
   version = project.version as String
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
@@ -102,8 +104,14 @@ bukkit {
   website = GITHUB_REPO_URL
 }
 
+sourceSets.main {
+  resourceGenerator {
+    generators(paperYml.generator(), bukkitYml.generator())
+  }
+}
+
 carbonPermission.permissions.get().forEach {
-  setOf(bukkit.permissions, paper.permissions).forEach { container ->
+  setOf(bukkitYml.permissions, paperYml.permissions).forEach { container ->
     container.register(it.string) {
       description = it.description
       childrenMap = it.children
