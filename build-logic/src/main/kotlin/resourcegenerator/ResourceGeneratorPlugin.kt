@@ -25,7 +25,7 @@ abstract class ResourceGeneratorPlugin : Plugin<Project> {
         extensions.add("resourceGenerator", genExt)
 
         val task = target.tasks.register("${setName}GenerateResources", GenerateResources::class) {
-          outputDir.set(target.layout.buildDirectory.dir("tmp/generateResources/$setName"))
+          outputDir.set(target.layout.buildDirectory.dir("generated/generateResources/$setName"))
           generators.set(genExt.generators)
         }
 
