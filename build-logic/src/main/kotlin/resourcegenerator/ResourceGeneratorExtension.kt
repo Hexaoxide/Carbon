@@ -18,6 +18,13 @@ abstract class ResourceGeneratorExtension @Inject constructor(
     return config
   }
 
+  fun bukkitPluginYml(op: BukkitPluginYml.() -> Unit): BukkitPluginYml {
+    val config = BukkitPluginYml(objects)
+    config.op()
+    generator(config.generator())
+    return config
+  }
+
   fun <T : ResourceGenerator> generator(
     generatorType: KClass<T>,
     vararg params: Any,
