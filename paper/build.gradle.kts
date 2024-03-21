@@ -1,9 +1,11 @@
+import xyz.jpenilla.resourcefactory.bukkit.bukkitPluginYml
+import xyz.jpenilla.resourcefactory.paper.PaperPluginYml.Load
+import xyz.jpenilla.resourcefactory.paper.paperPluginYml
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
   id("carbon.shadow-platform")
-  id("net.minecrell.plugin-yml.bukkit")
-  id("paper-plugin-yml")
+  id("xyz.jpenilla.resource-factory") version "0.0.1"
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
   id("carbon.configurable-plugins")
@@ -71,39 +73,45 @@ tasks {
 
 runPaper.folia.registerTask()
 
-paper {
+val paperYml = paperPluginYml {
   name = rootProject.name
-  version = project.version as String
   loader = "net.draycia.carbon.paper.CarbonPaperLoader"
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
-  apiVersion = "1.19"
+  apiVersion = "1.20"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
   foliaSupported = true
 
-  dependency("LuckPerms", PaperPluginDescription.Load.BEFORE, true)
-  dependency("PlaceholderAPI", PaperPluginDescription.Load.BEFORE, false)
-  dependency("EssentialsDiscord", PaperPluginDescription.Load.BEFORE, false)
-  dependency("DiscordSRV", PaperPluginDescription.Load.BEFORE, false)
-  dependency("MiniPlaceholders", PaperPluginDescription.Load.BEFORE, false)
+  dependencies {
+    server("LuckPerms", Load.BEFORE, true)
+    server("PlaceholderAPI", Load.BEFORE, false)
+    server("EssentialsDiscord", Load.BEFORE, false)
+    server("DiscordSRV", Load.BEFORE, false)
+    server("MiniPlaceholders", Load.BEFORE, false)
 
-  // Integrations
-  dependency("Towny", PaperPluginDescription.Load.BEFORE, false)
-  dependency("mcMMO", PaperPluginDescription.Load.BEFORE, false)
-  dependency("Factions", PaperPluginDescription.Load.BEFORE, false)
+    // Integrations
+    server("Towny", Load.BEFORE, false)
+    server("mcMMO", Load.BEFORE, false)
+    server("Factions", Load.BEFORE, false)
+  }
 }
 
-bukkit {
+val bukkitYml = bukkitPluginYml {
   name = rootProject.name
-  version = project.version as String
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
   apiVersion = "1.20"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
 }
 
+sourceSets.main {
+  resourceFactory {
+    factories(paperYml.resourceFactory(), bukkitYml.resourceFactory())
+  }
+}
+
 carbonPermission.permissions.get().forEach {
-  setOf(bukkit.permissions, paper.permissions).forEach { container ->
+  setOf(bukkitYml.permissions, paperYml.permissions).forEach { container ->
     container.register(it.string) {
       description = it.description
       childrenMap = it.children
