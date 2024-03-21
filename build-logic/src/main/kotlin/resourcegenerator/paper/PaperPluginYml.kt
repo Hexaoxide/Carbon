@@ -1,19 +1,24 @@
-package resourcegenerator
+package resourcegenerator.paper
 
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.kotlin.dsl.domainObjectContainer
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
+import resourcegenerator.ConfigurateSingleFileResourceGenerator
+import resourcegenerator.ResourceGenerator
+import resourcegenerator.bukkit.Permission
 import java.nio.file.Path
 import javax.inject.Inject
 
@@ -28,58 +33,74 @@ class PaperPluginYml constructor(
   private val objects: ObjectFactory
 ) : ConfigurateSingleFileResourceGenerator.ObjectMapper.ValueProvider {
 
-  @Input
-  @Optional
-  var apiVersion: String? = null
+  @get:Input
+  @get:Optional
+  val apiVersion: Property<String> = objects.property()
 
-  @Input
-  var name: String? = null
+  @get:Input
+  val name: Property<String> = objects.property()
 
-  @Input
-  var version: String? = null
+  @get:Input
+  val version: Property<String> = objects.property()
 
-  @Input
-  var main: String? = null
+  @get:Input
+  val main: Property<String> = objects.property()
 
-  @Input
-  var loader: String? = null
+  @get:Input
+  @get:Optional
+  val loader: Property<String> = objects.property()
 
-  @Input
-  @Optional
-  var description: String? = null
+  @get:Input
+  @get:Optional
+  val bootstrapper: Property<String> = objects.property()
 
-  @Input
-  @Optional
-  var author: String? = null
+  @get:Input
+  @get:Optional
+  val description: Property<String> = objects.property()
 
-  @Input
-  @Optional
-  var authors: List<String>? = null
+  @get:Input
+  @get:Optional
+  val author: Property<String> = objects.property()
 
-  @Input
-  @Optional
-  var website: String? = null
+  @get:Input
+  @get:Optional
+  val authors: ListProperty<String> = objects.listProperty()
 
-  @Input
-  @Optional
-  var prefix: String? = null
+  @get:Input
+  @get:Optional
+  val website: Property<String> = objects.property()
 
-  @Input
-  @Optional
-  var defaultPermission: Permission.Default? = null
+  @get:Input
+  @get:Optional
+  val prefix: Property<String> = objects.property()
 
-  @Input
-  @Optional
-  var foliaSupported: Boolean? = null
+  @get:Input
+  @get:Optional
+  val defaultPermission: Property<Permission.Default> = objects.property()
 
-  @Nested
+  @get:Input
+  @get:Optional
+  val foliaSupported: Property<Boolean> = objects.property()
+
+  @get:Nested
   var dependencies: Dependencies = objects.newInstance(Dependencies::class)
 
-  @Nested
+  @get:Nested
   val permissions: NamedDomainObjectContainer<Permission> = objects.domainObjectContainer(Permission::class) { Permission(it) }
 
   fun dependencies(op: Dependencies.() -> Unit) {
     dependencies.op()
+  }
+
+  /**
+   * Copy the name, version, and description from the provided project.
+   *
+   * [project] project
+   */
+  fun copyProjectMeta(project: Project) {
+    name.convention(project.name)
+    version.convention(project.version as String?)
+    description.convention(project.description)
   }
 
   enum class Load {
@@ -158,18 +179,19 @@ class PaperPluginYml constructor(
 
   @ConfigSerializable
   class Serializable(yml: PaperPluginYml) {
-    val apiVersion = yml.apiVersion
-    val name = yml.name
-    val version = yml.version
-    val main = yml.main
-    val loader = yml.loader
-    val description = yml.description
-    val author = yml.author
-    val authors = yml.authors?.toList()
-    val website = yml.website
-    val prefix = yml.prefix
-    val defaultPermission = yml.defaultPermission
-    val foliaSupported = yml.foliaSupported
+    val apiVersion = yml.apiVersion.orNull
+    val name = yml.name.get()
+    val version = yml.version.get()
+    val main = yml.main.get()
+    val loader = yml.loader.orNull
+    val bootstrapper = yml.bootstrapper.orNull
+    val description = yml.description.orNull
+    val author = yml.author.orNull
+    val authors = yml.authors.orNull?.toList()
+    val website = yml.website.orNull
+    val prefix = yml.prefix.orNull
+    val defaultPermission = yml.defaultPermission.orNull
+    val foliaSupported = yml.foliaSupported.orNull
     val dependencies = SerializableDependencies.from(yml.dependencies)
     val permissions = yml.permissions.asMap.toMap()
   }

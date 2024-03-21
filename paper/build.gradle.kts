@@ -1,6 +1,6 @@
-import resourcegenerator.PaperPluginYml.Load
-import resourcegenerator.bukkitPluginYml
-import resourcegenerator.paperPluginYml
+import resourcegenerator.bukkit.bukkitPluginYml
+import resourcegenerator.paper.PaperPluginYml.Load
+import resourcegenerator.paper.paperPluginYml
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
@@ -74,11 +74,12 @@ tasks {
 runPaper.folia.registerTask()
 
 val paperYml = paperPluginYml {
+  copyProjectMeta(project)
+
   name = rootProject.name
-  version = project.version as String
   loader = "net.draycia.carbon.paper.CarbonPaperLoader"
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
-  apiVersion = "1.19"
+  apiVersion = "1.20"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
   foliaSupported = true
@@ -98,8 +99,9 @@ val paperYml = paperPluginYml {
 }
 
 val bukkitYml = bukkitPluginYml {
+  copyProjectMeta(project)
+
   name = rootProject.name
-  version = project.version as String
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
   apiVersion = "1.20"
   authors = listOf("Draycia", "jmp")
