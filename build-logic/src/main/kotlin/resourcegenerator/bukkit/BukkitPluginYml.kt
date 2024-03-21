@@ -20,6 +20,7 @@ import java.nio.file.Path
 
 fun Project.bukkitPluginYml(op: BukkitPluginYml.() -> Unit = {}): BukkitPluginYml {
   val yml = BukkitPluginYml(objects)
+  yml.copyProjectMeta(this)
   yml.op()
   return yml
 }

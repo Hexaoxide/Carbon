@@ -25,6 +25,7 @@ import javax.inject.Inject
 
 fun Project.paperPluginYml(op: PaperPluginYml.() -> Unit = {}): PaperPluginYml {
   val yml = PaperPluginYml(objects)
+  yml.copyProjectMeta(this)
   yml.op()
   return yml
 }

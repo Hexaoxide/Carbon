@@ -74,8 +74,6 @@ tasks {
 runPaper.folia.registerTask()
 
 val paperYml = paperPluginYml {
-  copyProjectMeta(project)
-
   name = rootProject.name
   loader = "net.draycia.carbon.paper.CarbonPaperLoader"
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
@@ -99,8 +97,6 @@ val paperYml = paperPluginYml {
 }
 
 val bukkitYml = bukkitPluginYml {
-  copyProjectMeta(project)
-
   name = rootProject.name
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
   apiVersion = "1.20"

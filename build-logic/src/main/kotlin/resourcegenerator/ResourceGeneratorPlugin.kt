@@ -21,7 +21,7 @@ abstract class ResourceGeneratorPlugin : Plugin<Project> {
       sourceSets.all {
         val setName = name
 
-        val genExt = objects.newInstance(ResourceGeneratorExtension::class)
+        val genExt = objects.newInstance(ResourceGeneratorExtension::class, target)
         extensions.add("resourceGenerator", genExt)
 
         val task = target.tasks.register("${setName}GenerateResources", GenerateResources::class) {
