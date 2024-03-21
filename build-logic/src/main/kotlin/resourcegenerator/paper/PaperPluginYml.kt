@@ -19,6 +19,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import resourcegenerator.ConfigurateSingleFileResourceGenerator
 import resourcegenerator.ResourceGenerator
 import resourcegenerator.bukkit.Permission
+import resourcegenerator.nullIfEmpty
 import java.nio.file.Path
 import javax.inject.Inject
 
@@ -187,7 +188,7 @@ class PaperPluginYml constructor(
     val bootstrapper = yml.bootstrapper.orNull
     val description = yml.description.orNull
     val author = yml.author.orNull
-    val authors = yml.authors.orNull?.toList()
+    val authors = yml.authors.nullIfEmpty()
     val website = yml.website.orNull
     val prefix = yml.prefix.orNull
     val defaultPermission = yml.defaultPermission.orNull

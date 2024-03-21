@@ -15,6 +15,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import resourcegenerator.ConfigurateSingleFileResourceGenerator
 import resourcegenerator.ResourceGenerator
+import resourcegenerator.nullIfEmpty
 import java.nio.file.Path
 
 fun Project.bukkitPluginYml(op: BukkitPluginYml.() -> Unit = {}): BukkitPluginYml {
@@ -173,15 +174,15 @@ class BukkitPluginYml(
     var description = yml.description.orNull
     var load = yml.load.orNull
     var author = yml.author.orNull
-    var authors = yml.authors.orNull?.toList()
+    var authors = yml.authors.nullIfEmpty()
     var website = yml.website.orNull
-    var depend = yml.depend.orNull?.toList()
-    var softDepend = yml.softDepend.orNull?.toList()
-    var loadBefore = yml.loadBefore.orNull?.toList()
+    var depend = yml.depend.nullIfEmpty()
+    var softDepend = yml.softDepend.nullIfEmpty()
+    var loadBefore = yml.loadBefore.nullIfEmpty()
     var prefix = yml.prefix.orNull
     var defaultPermission = yml.defaultPermission.orNull
-    var provides = yml.provides.orNull?.toList()
-    var libraries = yml.libraries.orNull?.toList()
+    var provides = yml.provides.nullIfEmpty()
+    var libraries = yml.libraries.nullIfEmpty()
     val commands = yml.commands.asMap.toMap()
     val permissions = yml.permissions.asMap.toMap()
     val foliaSupported = yml.foliaSupported.orNull
