@@ -1,6 +1,5 @@
 package resourcegenerator
 
-import groovy.lang.Closure
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
@@ -89,10 +88,6 @@ class BukkitPluginYml(
 
   @Nested
   val permissions: NamedDomainObjectContainer<Permission> = objects.domainObjectContainer(Permission::class.java) { Permission(it) }
-
-  // For Groovy DSL
-  fun commands(closure: Closure<Unit>) = commands.configure(closure)
-  fun permissions(closure: Closure<Unit>) = permissions.configure(closure)
 
   enum class PluginLoadOrder {
     STARTUP,

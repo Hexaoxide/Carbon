@@ -83,16 +83,18 @@ val paperYml = paperPluginYml {
   website = GITHUB_REPO_URL
   foliaSupported = true
 
-  dependency("LuckPerms", Load.BEFORE, true)
-  dependency("PlaceholderAPI", Load.BEFORE, false)
-  dependency("EssentialsDiscord", Load.BEFORE, false)
-  dependency("DiscordSRV", Load.BEFORE, false)
-  dependency("MiniPlaceholders", Load.BEFORE, false)
+  dependencies {
+    server("LuckPerms", Load.BEFORE, true)
+    server("PlaceholderAPI", Load.BEFORE, false)
+    server("EssentialsDiscord", Load.BEFORE, false)
+    server("DiscordSRV", Load.BEFORE, false)
+    server("MiniPlaceholders", Load.BEFORE, false)
 
-  // Integrations
-  dependency("Towny", Load.BEFORE, false)
-  dependency("mcMMO", Load.BEFORE, false)
-  dependency("Factions", Load.BEFORE, false)
+    // Integrations
+    server("Towny", Load.BEFORE, false)
+    server("mcMMO", Load.BEFORE, false)
+    server("Factions", Load.BEFORE, false)
+  }
 }
 
 val bukkitYml = bukkitPluginYml {

@@ -1,17 +1,21 @@
 package resourcegenerator
 
-import groovy.lang.Closure
 import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.kotlin.dsl.domainObjectContainer
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.property
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.nio.file.Path
+import javax.inject.Inject
 
 fun Project.paperPluginYml(op: PaperPluginYml.() -> Unit = {}): PaperPluginYml {
   val yml = PaperPluginYml(objects)
@@ -69,17 +73,13 @@ class PaperPluginYml constructor(
   var foliaSupported: Boolean? = null
 
   @Nested
-  var dependencies: Dependencies = Dependencies()
+  var dependencies: Dependencies = objects.newInstance(Dependencies::class)
 
   @Nested
   val permissions: NamedDomainObjectContainer<Permission> = objects.domainObjectContainer(Permission::class) { Permission(it) }
 
-  fun bootstrapDependency(name: String, load: Load = Load.OMIT, required: Boolean = true, joinClasspath: Boolean = true) {
-    dependencies.bootstrap[name] = Dependency(load, required, joinClasspath)
-  }
-
-  fun dependency(name: String, load: Load = Load.OMIT, required: Boolean = true, joinClasspath: Boolean = true) {
-    dependencies.server[name] = Dependency(load, required, joinClasspath)
+  fun dependencies(op: Dependencies.() -> Unit) {
+    dependencies.op()
   }
 
   enum class Load {
@@ -88,23 +88,50 @@ class PaperPluginYml constructor(
     OMIT
   }
 
-  @ConfigSerializable
-  data class Dependencies(
-    @Nested
-    val bootstrap: MutableMap<String, Dependency> = mutableMapOf(),
-    @Nested
-    val server: MutableMap<String, Dependency> = mutableMapOf()
-  )
+  abstract class Dependencies @Inject constructor(objects: ObjectFactory) {
+    @get:Nested
+    val bootstrap: NamedDomainObjectContainer<Dependency> = objects.domainObjectContainer(Dependency::class) { Dependency(objects, it) }
 
-  @ConfigSerializable
-  data class Dependency(
-    @Input val load: Load = Load.OMIT,
-    @Input val required: Boolean = true,
-    @Input val joinClasspath: Boolean = true
-  )
+    @get:Nested
+    val server: NamedDomainObjectContainer<Dependency> = objects.domainObjectContainer(Dependency::class) { Dependency(objects, it) }
 
-  // For Groovy DSL
-  fun permissions(closure: Closure<Unit>) = permissions.configure(closure)
+    fun bootstrap(
+      name: String,
+      load: Load = Load.OMIT,
+      required: Boolean = true,
+      joinClasspath: Boolean = true
+    ): NamedDomainObjectProvider<Dependency> = bootstrap.register(name) {
+      this.load.set(load)
+      this.required.set(required)
+      this.joinClasspath.set(joinClasspath)
+    }
+
+    fun server(
+      name: String,
+      load: Load = Load.OMIT,
+      required: Boolean = true,
+      joinClasspath: Boolean = true
+    ): NamedDomainObjectProvider<Dependency> = server.register(name) {
+      this.load.set(load)
+      this.required.set(required)
+      this.joinClasspath.set(joinClasspath)
+    }
+  }
+
+  class Dependency(
+    objects: ObjectFactory,
+    @get:Internal
+    val name: String
+  ) {
+    @get:Input
+    val load: Property<Load> = objects.property<Load>().convention(Load.OMIT)
+
+    @get:Input
+    val required: Property<Boolean> = objects.property<Boolean>().convention(true)
+
+    @get:Input
+    val joinClasspath: Property<Boolean> = objects.property<Boolean>().convention(true)
+  }
 
   fun generator(): ResourceGenerator {
     val gen = objects.newInstance(
@@ -143,10 +170,27 @@ class PaperPluginYml constructor(
     val prefix = yml.prefix
     val defaultPermission = yml.defaultPermission
     val foliaSupported = yml.foliaSupported
-    val dependencies = yml.dependencies.copy(
-      bootstrap = yml.dependencies.bootstrap.toMutableMap(),
-      server = yml.dependencies.server.toMutableMap()
-    )
+    val dependencies = SerializableDependencies.from(yml.dependencies)
     val permissions = yml.permissions.asMap.toMap()
+  }
+
+  @ConfigSerializable
+  data class SerializableDependency(val load: Load, val required: Boolean, val joinClasspath: Boolean) {
+    companion object {
+      fun from(dep: Dependency) = SerializableDependency(dep.load.get(), dep.required.get(), dep.joinClasspath.get())
+    }
+  }
+
+  @ConfigSerializable
+  data class SerializableDependencies(
+    val bootstrap: Map<String, SerializableDependency>,
+    val server: Map<String, SerializableDependency>
+  ) {
+    companion object {
+      fun from(deps: Dependencies) = SerializableDependencies(
+        deps.bootstrap.asMap.mapValues { SerializableDependency.from(it.value) },
+        deps.server.asMap.mapValues { SerializableDependency.from(it.value) }
+      )
+    }
   }
 }
