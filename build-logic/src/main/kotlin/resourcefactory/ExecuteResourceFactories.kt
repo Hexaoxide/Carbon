@@ -1,4 +1,4 @@
-package resourcegenerator
+package resourcefactory
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
@@ -10,9 +10,9 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 import kotlin.io.path.createDirectories
 
-abstract class GenerateResources : DefaultTask() {
+abstract class ExecuteResourceFactories : DefaultTask() {
   @get:Nested
-  abstract val generators: ListProperty<ResourceGenerator>
+  abstract val factories: ListProperty<ResourceFactory>
 
   @get:OutputDirectory
   abstract val outputDir: DirectoryProperty
@@ -29,7 +29,7 @@ abstract class GenerateResources : DefaultTask() {
 
     dir.createDirectories()
 
-    for (generator in generators.get()) {
+    for (generator in factories.get()) {
       generator.generate(dir)
     }
   }

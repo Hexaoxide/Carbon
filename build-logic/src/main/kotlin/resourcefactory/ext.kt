@@ -1,4 +1,4 @@
-package resourcegenerator
+package resourcefactory
 
 import org.gradle.api.provider.ListProperty
 

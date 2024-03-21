@@ -1,10 +1,10 @@
-package resourcegenerator
+package resourcefactory
 
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import java.nio.file.Path
 
-abstract class SingleFileResourceGenerator : ResourceGenerator {
+abstract class SingleFileResourceFactory : ResourceFactory {
   @get:Input
   abstract val path: Property<String>
 

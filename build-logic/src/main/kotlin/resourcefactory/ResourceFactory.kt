@@ -1,7 +1,7 @@
-package resourcegenerator
+package resourcefactory
 
 import java.nio.file.Path
 
-interface ResourceGenerator {
+interface ResourceFactory {
   fun generate(outputDir: Path)
 }

@@ -1,4 +1,4 @@
-package resourcegenerator.paper
+package resourcefactory.paper
 
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
@@ -16,10 +16,10 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
-import resourcegenerator.ConfigurateSingleFileResourceGenerator
-import resourcegenerator.ResourceGenerator
-import resourcegenerator.bukkit.Permission
-import resourcegenerator.nullIfEmpty
+import resourcefactory.ConfigurateSingleFileResourceFactory
+import resourcefactory.ResourceFactory
+import resourcefactory.bukkit.Permission
+import resourcefactory.nullIfEmpty
 import java.nio.file.Path
 import javax.inject.Inject
 
@@ -33,7 +33,7 @@ fun Project.paperPluginYml(op: PaperPluginYml.() -> Unit = {}): PaperPluginYml {
 class PaperPluginYml constructor(
   @Transient
   private val objects: ObjectFactory
-) : ConfigurateSingleFileResourceGenerator.ObjectMapper.ValueProvider {
+) : ConfigurateSingleFileResourceFactory.ObjectMapper.ValueProvider {
 
   @get:Input
   @get:Optional
@@ -156,9 +156,9 @@ class PaperPluginYml constructor(
     val joinClasspath: Property<Boolean> = objects.property<Boolean>().convention(true)
   }
 
-  fun generator(): ResourceGenerator {
+  fun generator(): ResourceFactory {
     val gen = objects.newInstance(
-      ConfigurateSingleFileResourceGenerator.ObjectMapper::class,
+      ConfigurateSingleFileResourceFactory.ObjectMapper::class,
       { path: Path ->
         YamlConfigurationLoader.builder()
           .defaultOptions {

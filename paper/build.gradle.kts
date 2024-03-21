@@ -1,11 +1,11 @@
-import resourcegenerator.bukkit.bukkitPluginYml
-import resourcegenerator.paper.PaperPluginYml.Load
-import resourcegenerator.paper.paperPluginYml
+import resourcefactory.bukkit.bukkitPluginYml
+import resourcefactory.paper.PaperPluginYml.Load
+import resourcefactory.paper.paperPluginYml
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
   id("carbon.shadow-platform")
-  id("resource-generator")
+  id("resource-factory")
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
   id("carbon.configurable-plugins")
@@ -105,8 +105,8 @@ val bukkitYml = bukkitPluginYml {
 }
 
 sourceSets.main {
-  resourceGenerator {
-    generators(paperYml.generator(), bukkitYml.generator())
+  resourceFactory {
+    factories(paperYml.generator(), bukkitYml.generator())
   }
 }
 

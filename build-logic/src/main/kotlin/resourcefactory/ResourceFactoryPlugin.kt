@@ -1,4 +1,4 @@
-package resourcegenerator
+package resourcefactory
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import javax.inject.Inject
 
-abstract class ResourceGeneratorPlugin : Plugin<Project> {
+abstract class ResourceFactoryPlugin : Plugin<Project> {
   @get:Inject
   abstract val objects: ObjectFactory
 
@@ -21,12 +21,12 @@ abstract class ResourceGeneratorPlugin : Plugin<Project> {
       sourceSets.all {
         val setName = name
 
-        val genExt = objects.newInstance(ResourceGeneratorExtension::class, target)
-        extensions.add("resourceGenerator", genExt)
+        val genExt = objects.newInstance(ResourceFactoryExtension::class, target)
+        extensions.add("resourceFactory", genExt)
 
-        val task = target.tasks.register("${setName}GenerateResources", GenerateResources::class) {
-          outputDir.set(target.layout.buildDirectory.dir("generated/generateResources/$setName"))
-          generators.set(genExt.generators)
+        val task = target.tasks.register("${setName}ResourceFactory", ExecuteResourceFactories::class) {
+          outputDir.set(target.layout.buildDirectory.dir("generated/resourceFactory/$setName"))
+          factories.set(genExt.factories)
         }
 
         resources.srcDir(task.flatMap { it.outputDir })

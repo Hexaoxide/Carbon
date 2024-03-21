@@ -1,4 +1,4 @@
-package resourcegenerator.bukkit
+package resourcefactory.bukkit
 
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -13,9 +13,9 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
-import resourcegenerator.ConfigurateSingleFileResourceGenerator
-import resourcegenerator.ResourceGenerator
-import resourcegenerator.nullIfEmpty
+import resourcefactory.ConfigurateSingleFileResourceFactory
+import resourcefactory.ResourceFactory
+import resourcefactory.nullIfEmpty
 import java.nio.file.Path
 
 fun Project.bukkitPluginYml(op: BukkitPluginYml.() -> Unit = {}): BukkitPluginYml {
@@ -28,7 +28,7 @@ fun Project.bukkitPluginYml(op: BukkitPluginYml.() -> Unit = {}): BukkitPluginYm
 class BukkitPluginYml(
   @Transient
   private val objects: ObjectFactory
-) : ConfigurateSingleFileResourceGenerator.ObjectMapper.ValueProvider {
+) : ConfigurateSingleFileResourceFactory.ObjectMapper.ValueProvider {
 
   @get:Input
   @get:Optional
@@ -143,9 +143,9 @@ class BukkitPluginYml(
     var usage: String? = null
   }
 
-  fun generator(): ResourceGenerator {
+  fun generator(): ResourceFactory {
     val gen = objects.newInstance(
-      ConfigurateSingleFileResourceGenerator.ObjectMapper::class,
+      ConfigurateSingleFileResourceFactory.ObjectMapper::class,
       { path: Path ->
         YamlConfigurationLoader.builder()
           .defaultOptions {
