@@ -208,10 +208,13 @@ public final class WhisperCommand extends CarbonCommand {
             }
 
             final String senderUsername = sender.username();
+
             this.messages.whisperSender(SourcedAudience.of(sender, sender), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
             if (localRecipient) {
                 this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
             }
+            WhisperCommand.broadcastWhisperSpy(this.server, this.messages, senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
+
             this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
 
             final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
@@ -244,7 +247,10 @@ public final class WhisperCommand extends CarbonCommand {
 
                 recipient.whisperReplyTarget(sender.uuid());
                 this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
+
+                WhisperCommand.broadcastWhisperSpy(this.server, this.messages, senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
                 this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
+
                 final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
                 if (messageSound != null) {
                     recipient.playSound(messageSound);
@@ -253,6 +259,23 @@ public final class WhisperCommand extends CarbonCommand {
                 this.logger.warn("Failed to handle whisper packet {}", packet, ex);
                 return null;
             });
+        }
+    }
+
+    public static void broadcastWhisperSpy(
+        final CarbonServer server,
+        final CarbonMessages messages,
+        final String senderUsername,
+        final Component senderDisplayName,
+        final String recipientUsername,
+        final Component recipientDisplayName,
+        final Component message
+    ) {
+        for (final CarbonPlayer player : server.players()) {
+            if (player.spying() && !player.username().equals(senderUsername) && !player.username().equals(recipientUsername)) {
+                messages.whisperRecipientSpy(player, senderUsername,
+                    senderDisplayName, recipientUsername, recipientDisplayName, message);
+            }
         }
     }
 

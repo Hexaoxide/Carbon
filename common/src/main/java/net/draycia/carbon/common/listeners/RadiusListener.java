@@ -20,6 +20,8 @@
 package net.draycia.carbon.common.listeners;
 
 import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -46,6 +48,8 @@ public class RadiusListener implements Listener {
                 return;
             }
 
+            final List<CarbonPlayer> spyingPlayers = new ArrayList<>();
+
             if (radius == 0) {
                 event.recipients().removeIf(audience -> {
                     if (audience.equals(event.sender())) {
@@ -53,7 +57,13 @@ public class RadiusListener implements Listener {
                     }
 
                     if (audience instanceof CarbonPlayer carbonPlayer) {
-                        return !carbonPlayer.sameWorldAs(event.sender());
+                        final boolean sameWorld = carbonPlayer.sameWorldAs(event.sender());
+
+                        if (!sameWorld && carbonPlayer.spying()) {
+                            spyingPlayers.add(carbonPlayer);
+                        }
+
+                        return !sameWorld;
                     }
 
                     return false;
@@ -66,11 +76,20 @@ public class RadiusListener implements Listener {
 
                     if (audience instanceof CarbonPlayer carbonPlayer) {
                         if (!event.sender().sameWorldAs(carbonPlayer)) {
+                            if (carbonPlayer.spying()) {
+                                spyingPlayers.add(carbonPlayer);
+                            }
                             return true;
                         }
 
                         final double distance = carbonPlayer.distanceSquaredFrom(event.sender());
-                        return distance > (radius * radius);
+                        final boolean outOfRange = distance > (radius * radius);
+
+                        if (outOfRange && carbonPlayer.spying()) {
+                            spyingPlayers.add(carbonPlayer);
+                        }
+
+                        return outOfRange;
                     }
 
                     return false;
@@ -78,6 +97,11 @@ public class RadiusListener implements Listener {
             }
             if (event.recipients().size() <= 2 && event.chatChannel().emptyRadiusRecipientsMessage()) { // the player and cosole
                 carbonMessages.emptyRecipients(event.sender());
+                return;
+            }
+
+            for (final CarbonPlayer player : spyingPlayers) {
+                carbonMessages.radiusSpy(player, event.message());
             }
         });
     }
