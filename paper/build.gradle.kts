@@ -1,11 +1,11 @@
-import xyz.jpenilla.resourcefactory.paper.PaperPluginYml.Load
+import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml.Load
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
   id("carbon.shadow-platform")
-  id("xyz.jpenilla.resource-factory") version "0.0.6"
-  id("xyz.jpenilla.resource-factory-paper-convention") version "0.0.6"
-  id("xyz.jpenilla.resource-factory-bukkit-convention") version "0.0.6"
+  id("xyz.jpenilla.resource-factory") version "0.0.8"
+  id("xyz.jpenilla.resource-factory-paper-convention") version "0.0.8"
+  id("xyz.jpenilla.resource-factory-bukkit-convention") version "0.0.8"
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
   id("carbon.configurable-plugins")
@@ -73,7 +73,7 @@ tasks {
 
 runPaper.folia.registerTask()
 
-paperPluginYml {
+paperPluginYaml {
   name = rootProject.name
   loader = "net.draycia.carbon.paper.CarbonPaperLoader"
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
@@ -96,7 +96,7 @@ paperPluginYml {
   }
 }
 
-bukkitPluginYml {
+bukkitPluginYaml {
   name = rootProject.name
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
   apiVersion = "1.20"
@@ -105,7 +105,7 @@ bukkitPluginYml {
 }
 
 carbonPermission.permissions.get().forEach {
-  setOf(bukkitPluginYml.permissions, paperPluginYml.permissions).forEach { container ->
+  setOf(bukkitPluginYaml.permissions, paperPluginYaml.permissions).forEach { container ->
     container.register(it.string) {
       description = it.description
       it.children?.let { children.putAll(it) }
