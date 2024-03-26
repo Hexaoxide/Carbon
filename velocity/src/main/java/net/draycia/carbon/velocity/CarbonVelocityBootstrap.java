@@ -19,7 +19,7 @@
  */
 package net.draycia.carbon.velocity;
 
-import com.google.inject.Inject;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -28,6 +28,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
+import javax.inject.Inject;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.util.CarbonDependencies;
@@ -40,52 +41,71 @@ public final class CarbonVelocityBootstrap {
 
     private static final int BSTATS_PLUGIN_ID = 19505;
 
-    private final Injector parentInjector;
     private final PluginContainer pluginContainer;
     private final ProxyServer proxy;
     private final Path dataDirectory;
     private final Metrics.Factory metricsFactory;
-    private @MonotonicNonNull Injector injector;
+    private final Inner inner;
 
-    @Inject
+    @Inject // use javax.inject, so it doesn't get relocated - we use Guice 7 and Velocity uses Guice 6.
     public CarbonVelocityBootstrap(
-        final Injector injector,
         final ProxyServer proxyServer,
         final PluginContainer pluginContainer,
         @DataDirectory final Path dataDirectory,
         final Metrics.Factory metricsFactory
     ) {
         this.proxy = proxyServer;
-        this.parentInjector = injector;
         this.pluginContainer = pluginContainer;
         this.dataDirectory = dataDirectory;
         this.metricsFactory = metricsFactory;
+
+        this.inner = new Inner();
     }
 
     @Subscribe
     public void onProxyInitialize(final ProxyInitializeEvent event) {
-        new VelocityClasspathAppender(this.proxy, this).append(
-            CarbonDependencies.resolve(this.dataDirectory.resolve("libraries"))
-        );
-
-        this.injector = this.parentInjector.createChildInjector(
-            new CarbonChatVelocityModule(this.pluginContainer, this.proxy, this.dataDirectory));
-        this.injector.getInstance(CarbonChatVelocity.class).onInitialization(this);
-
-        final Metrics metrics = this.metricsFactory.make(this, BSTATS_PLUGIN_ID);
-        metrics.addCustomChart(new SimplePie("user_manager_type", () -> this.injector.getInstance(ConfigManager.class).primaryConfig().storageType().name()));
-        metrics.addCustomChart(new SimplePie("messaging", () -> {
-            final MessagingSettings settings = this.injector.getInstance(ConfigManager.class).primaryConfig().messagingSettings();
-            if (!settings.enabled()) {
-                return "disabled";
-            }
-            return settings.brokerType().name();
-        }));
+        this.inner.onProxyInitialize(event);
     }
 
     @Subscribe
     public void onProxyShutdown(final ProxyShutdownEvent event) {
-        this.injector.getInstance(CarbonChatVelocity.class).onShutdown();
+        this.inner.onProxyShutdown(event);
+    }
+
+    // Inner class to avoid classloading issues with guice
+    private final class Inner {
+        private @MonotonicNonNull Injector injector;
+
+        void onProxyInitialize(final ProxyInitializeEvent event) {
+            new VelocityClasspathAppender(CarbonVelocityBootstrap.this.proxy, CarbonVelocityBootstrap.this).append(
+                CarbonDependencies.resolve(CarbonVelocityBootstrap.this.dataDirectory.resolve("libraries"))
+            );
+
+            this.injector = Guice.createInjector(
+                new CarbonChatVelocityModule(
+                    CarbonVelocityBootstrap.this,
+                    CarbonVelocityBootstrap.this.pluginContainer,
+                    CarbonVelocityBootstrap.this.proxy,
+                    CarbonVelocityBootstrap.this.dataDirectory
+                )
+            );
+            final Injector injector = this.injector;
+            injector.getInstance(CarbonChatVelocity.class).onInitialization(CarbonVelocityBootstrap.this);
+
+            final Metrics metrics = CarbonVelocityBootstrap.this.metricsFactory.make(CarbonVelocityBootstrap.this, BSTATS_PLUGIN_ID);
+            metrics.addCustomChart(new SimplePie("user_manager_type", () -> injector.getInstance(ConfigManager.class).primaryConfig().storageType().name()));
+            metrics.addCustomChart(new SimplePie("messaging", () -> {
+                final MessagingSettings settings = injector.getInstance(ConfigManager.class).primaryConfig().messagingSettings();
+                if (!settings.enabled()) {
+                    return "disabled";
+                }
+                return settings.brokerType().name();
+            }));
+        }
+
+        void onProxyShutdown(final ProxyShutdownEvent event) {
+            this.injector.getInstance(CarbonChatVelocity.class).onShutdown();
+        }
     }
 
 }

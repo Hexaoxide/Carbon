@@ -30,6 +30,9 @@ dependencies {
   }
   runtimeDownload(libs.rabbitmq)
   runtimeDownload(libs.nats)
+  runtimeDownload(libs.guice) {
+    exclude("com.google.guava")
+  }
   runtimeDownload(libs.assistedInject) {
     isTransitive = false
   }
