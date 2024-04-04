@@ -19,6 +19,8 @@
  */
 package net.draycia.carbon.common.messages;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Map;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -26,10 +28,42 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
 
-@FunctionalInterface
-public interface CarbonMessageRenderer extends IMessageRenderer<Audience, String, Component, Object> {
+public abstract class CarbonMessageRenderer implements IMessageRenderer<Audience, String, Component, Object> {
 
-    static void addResolved(final TagResolver.Builder tagResolver, final Map<String, ?> resolvedPlaceholders) {
+    private final RenderForTagResolver.Factory renderForTagResolver;
+
+    protected CarbonMessageRenderer(final RenderForTagResolver.Factory renderForTagResolver) {
+        this.renderForTagResolver = renderForTagResolver;
+    }
+
+    public final IMessageRenderer<SourcedAudience, String, Component, Object> asSourced() {
+        return this::render;
+    }
+
+    @Override
+    public final Component render(
+        final Audience receiver,
+        final String intermediateMessage,
+        final Map<String, ?> resolvedPlaceholders,
+        final Method method,
+        final Type owner
+    ) {
+        final TagResolver.Builder builder = TagResolver.builder();
+        addResolved(builder, resolvedPlaceholders);
+        builder.resolver(this.renderForTagResolver.create(resolvedPlaceholders));
+        return this.render(receiver, intermediateMessage, method, owner, builder);
+    }
+
+    protected abstract Component render(
+        Audience receiver,
+        String intermediateMessage,
+        Method method,
+        Type owner,
+        TagResolver.Builder resolverBuilder
+    );
+
+    @SuppressWarnings("PatternValidation")
+    private static void addResolved(final TagResolver.Builder tagResolver, final Map<String, ?> resolvedPlaceholders) {
         for (final var entry : resolvedPlaceholders.entrySet()) {
             if (entry.getValue() instanceof Tag tag) {
                 tagResolver.tag(entry.getKey(), tag);
@@ -39,10 +73,6 @@ public interface CarbonMessageRenderer extends IMessageRenderer<Audience, String
                 throw new IllegalArgumentException(entry.getValue().toString());
             }
         }
-    }
-
-    default IMessageRenderer<SourcedAudience, String, Component, Object> asSourced() {
-        return this::render;
     }
 
 }
