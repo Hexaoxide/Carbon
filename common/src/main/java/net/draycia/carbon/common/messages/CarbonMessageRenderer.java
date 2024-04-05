@@ -27,7 +27,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public abstract class CarbonMessageRenderer implements IMessageRenderer<Audience, String, Component, Object> {
 
     private final RenderForTagResolver.Factory renderForTagResolver;
@@ -45,20 +49,18 @@ public abstract class CarbonMessageRenderer implements IMessageRenderer<Audience
         final Audience receiver,
         final String intermediateMessage,
         final Map<String, ?> resolvedPlaceholders,
-        final Method method,
-        final Type owner
+        final @Nullable Method method,
+        final @Nullable Type owner
     ) {
         final TagResolver.Builder builder = TagResolver.builder();
         addResolved(builder, resolvedPlaceholders);
         builder.resolver(this.renderForTagResolver.create(resolvedPlaceholders));
-        return this.render(receiver, intermediateMessage, method, owner, builder);
+        return this.render(receiver, intermediateMessage, builder);
     }
 
     protected abstract Component render(
         Audience receiver,
         String intermediateMessage,
-        Method method,
-        Type owner,
         TagResolver.Builder resolverBuilder
     );
 

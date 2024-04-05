@@ -22,8 +22,6 @@ package net.draycia.carbon.fabric;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.miniplaceholders.api.MiniPlaceholders;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.RenderForTagResolver;
@@ -54,8 +52,6 @@ public class FabricMessageRenderer extends CarbonMessageRenderer {
     public Component render(
         final Audience receiver,
         final String intermediateMessage,
-        final Method method,
-        final Type owner,
         final TagResolver.Builder tagResolver
     ) {
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);

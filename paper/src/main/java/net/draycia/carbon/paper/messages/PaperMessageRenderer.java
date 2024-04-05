@@ -23,8 +23,6 @@ import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.miniplaceholders.api.MiniPlaceholders;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
@@ -71,8 +69,6 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
     public Component render(
         final Audience receiver,
         final String intermediateMessage,
-        final Method method,
-        final Type owner,
         final TagResolver.Builder tagResolver
     ) {
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
