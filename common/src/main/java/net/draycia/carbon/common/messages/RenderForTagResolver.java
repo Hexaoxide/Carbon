@@ -74,7 +74,7 @@ public final class RenderForTagResolver implements TagResolver {
         }
 
         final String renderFor = arguments.popOr("Missing username or UUID to render for").value();
-        CompletableFuture<? extends CarbonPlayer> playerFuture;
+        CompletableFuture<@Nullable ? extends CarbonPlayer> playerFuture;
         try {
             final UUID uuid = UUID.fromString(renderFor);
             playerFuture = this.users.user(uuid);
@@ -87,9 +87,12 @@ public final class RenderForTagResolver implements TagResolver {
             });
         }
 
-        final CarbonPlayer player;
+        final @Nullable CarbonPlayer player;
         try {
             player = playerFuture.join();
+            if (player == null) {
+                return null;
+            }
         } catch (final CompletionException | CancellationException ignore) {
             return null;
         }
