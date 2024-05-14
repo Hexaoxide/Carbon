@@ -73,7 +73,7 @@ public final class PlaceholderAPIMiniMessageParser {
     public Component parseRelational(final Player one, final Player two, final String input, final TagResolver tagResolver) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
-            match -> PlaceholderAPI.setPlaceholders(one, PlaceholderAPI.setRelationalPlaceholders(one, two, match)),
+            match -> PlaceholderAPI.setPlaceholders(one, PlaceholderAPI.setRelationalPlaceholders(two, one, match)),
             input,
             tagResolver
         );
