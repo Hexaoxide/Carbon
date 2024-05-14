@@ -22,6 +22,7 @@ package net.draycia.carbon.common.listeners;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
