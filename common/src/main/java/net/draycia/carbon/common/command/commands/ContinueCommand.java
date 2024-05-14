@@ -34,9 +34,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.minecraft.signed.SignedString;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
-import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
+import static org.incendo.cloud.minecraft.signed.SignedGreedyStringParser.signedGreedyStringParser;
 
 @DefaultQualifier(NonNull.class)
 public final class ContinueCommand extends CarbonCommand {
@@ -72,7 +73,7 @@ public final class ContinueCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .required("message", greedyStringParser(), richDescription(this.messages.commandContinueArgumentMessage()))
+            .required("message", signedGreedyStringParser(), richDescription(this.messages.commandContinueArgumentMessage()))
             .permission("carbon.whisper.continue")
             .senderType(PlayerCommander.class)
             .commandDescription(richDescription(this.messages.commandContinueDescription()))
@@ -84,7 +85,7 @@ public final class ContinueCommand extends CarbonCommand {
                     return;
                 }
 
-                final String message = ctx.get("message");
+                final SignedString message = ctx.get("message");
                 final @Nullable UUID whisperTarget = sender.lastWhisperTarget();
 
                 if (whisperTarget == null) {

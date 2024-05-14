@@ -26,6 +26,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.RawChat;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
@@ -41,6 +42,7 @@ import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.WhisperPacket;
 import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.util.CloudUtils;
+import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -49,9 +51,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.minecraft.signed.SignedString;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
-import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
+import static org.incendo.cloud.minecraft.signed.SignedGreedyStringParser.signedGreedyStringParser;
 
 @DefaultQualifier(NonNull.class)
 public final class WhisperCommand extends CarbonCommand {
@@ -88,7 +91,7 @@ public final class WhisperCommand extends CarbonCommand {
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
             .required("player", this.parserFactory.carbonPlayer(), richDescription(this.carbonMessages.commandWhisperArgumentPlayer()))
-            .required("message", greedyStringParser(), richDescription(this.carbonMessages.commandWhisperArgumentMessage()))
+            .required("message", signedGreedyStringParser(), richDescription(this.carbonMessages.commandWhisperArgumentMessage()))
             .permission("carbon.whisper.message")
             .senderType(PlayerCommander.class)
             .commandDescription(richDescription(this.carbonMessages.commandWhisperDescription()))
@@ -100,7 +103,7 @@ public final class WhisperCommand extends CarbonCommand {
                     return;
                 }
 
-                final String message = ctx.get("message");
+                final SignedString message = ctx.get("message");
                 final CarbonPlayer recipient = ctx.get("player");
 
                 this.whisper.whisper(sender, recipient, message, ctx.parsingContext("player").consumedInput());
@@ -121,6 +124,7 @@ public final class WhisperCommand extends CarbonCommand {
         private final CarbonServer server;
         private final CarbonEventHandler events;
         private final NetworkUsers network;
+        private final Key rawChatKey;
 
         @Inject
         private WhisperHandler(
@@ -132,7 +136,8 @@ public final class WhisperCommand extends CarbonCommand {
             final UserManager<?> userManager,
             final CarbonServer server,
             final CarbonEventHandler events,
-            final NetworkUsers network
+            final NetworkUsers network,
+            @RawChat final Key rawChatKey
         ) {
             this.logger = logger;
             this.messages = messages;
@@ -143,12 +148,13 @@ public final class WhisperCommand extends CarbonCommand {
             this.server = server;
             this.events = events;
             this.network = network;
+            this.rawChatKey = rawChatKey;
         }
 
         public void whisper(
             final CarbonPlayer sender,
             final CarbonPlayer recipient,
-            final String message
+            final SignedString message
         ) {
             this.whisper(sender, recipient, message, null);
         }
@@ -156,7 +162,7 @@ public final class WhisperCommand extends CarbonCommand {
         public void whisper(
             final CarbonPlayer sender,
             final CarbonPlayer recipient,
-            final String message,
+            final SignedString message,
             final @Nullable String recipientInputString
         ) {
             if (sender.equals(recipient)) {
@@ -199,7 +205,7 @@ public final class WhisperCommand extends CarbonCommand {
             final Component senderDisplayName = sender.displayName();
             final Component recipientDisplayName = recipient.displayName();
 
-            final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEventImpl(sender, recipient, Component.text(message));
+            final CarbonPrivateChatEvent privateChatEvent = new CarbonPrivateChatEventImpl(sender, recipient, Component.text(message.string()));
             this.events.emit(privateChatEvent);
 
             if (privateChatEvent.cancelled()) {
@@ -208,9 +214,17 @@ public final class WhisperCommand extends CarbonCommand {
             }
 
             final String senderUsername = sender.username();
-            this.messages.whisperSender(SourcedAudience.of(sender, sender), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
+            message.sendMessage(
+                sender,
+                ChatType.chatType(this.rawChatKey),
+                this.messages.whisperSender(SourcedAudience.of(sender, sender), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message())
+            );
             if (localRecipient) {
-                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
+                message.sendMessage(
+                    recipient,
+                    ChatType.chatType(this.rawChatKey),
+                    this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message())
+                );
             }
             this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
 
@@ -243,7 +257,9 @@ public final class WhisperCommand extends CarbonCommand {
                 final Component recipientDisplayName = recipient.displayName();
 
                 recipient.whisperReplyTarget(sender.uuid());
-                this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
+                SourcedAudience.of(sender, recipient).sendMessage(
+                    this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message())
+                );
                 this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
                 final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
                 if (messageSound != null) {

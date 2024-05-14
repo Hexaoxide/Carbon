@@ -81,7 +81,7 @@ public final class StandardPlaceholderResolverStrategyButDifferent<R, I, F> impl
             final Parameter parameter = methodParameters[idx];
             final @Nullable Object value = parameters[idx];
             //  Don't resolve Audiences for now
-            if (value == null || parameter.getType() == Audience.class) {
+            if (value == null || parameter.getType() == Audience.class || parameter.getAnnotation(NotPlaceholder.class) != null) {
                 // Nothing to resolve with.
                 continue;
             }

@@ -30,6 +30,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
+import net.draycia.carbon.common.RawChat;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.integration.Integration;
@@ -48,6 +49,7 @@ import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.draycia.carbon.paper.users.PaperProfileResolver;
+import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Server;
@@ -109,6 +111,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerPaper.class));
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
+        this.bind(Key.class).annotatedWith(RawChat.class).toInstance(Key.key("paper:raw"));
 
         this.configureListeners();
     }

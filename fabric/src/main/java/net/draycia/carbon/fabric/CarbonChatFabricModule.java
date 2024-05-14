@@ -33,6 +33,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
+import net.draycia.carbon.common.RawChat;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
@@ -44,6 +45,7 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
+import net.draycia.carbon.fabric.listeners.FabricChatHandler;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.draycia.carbon.fabric.users.FabricProfileResolver;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -124,6 +126,7 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(FabricScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerFabric.class));
         this.bind(CarbonMessageRenderer.class).to(FabricMessageRenderer.class);
+        this.bind(Key.class).annotatedWith(RawChat.class).toProvider(() -> FabricChatHandler.CHAT_TYPE_KEY);
     }
 
 }

@@ -34,6 +34,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
+import net.draycia.carbon.common.RawChat;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
@@ -49,6 +50,7 @@ import net.draycia.carbon.velocity.listeners.VelocityPlayerJoinListener;
 import net.draycia.carbon.velocity.listeners.VelocityPlayerLeaveListener;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.draycia.carbon.velocity.users.VelocityProfileResolver;
+import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -115,6 +117,7 @@ public final class CarbonChatVelocityModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(PlatformScheduler.RunImmediately.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerVelocity.class));
         this.bind(CarbonMessageRenderer.class).to(VelocityMessageRenderer.class);
+        this.bind(Key.class).annotatedWith(RawChat.class).toInstance(Key.key("unused:unused"));
 
         this.configureListeners();
     }

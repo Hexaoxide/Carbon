@@ -108,8 +108,8 @@ public interface CarbonMessages {
      */
 
     @Message("whisper.to")
-    void whisperSender(
-        SourcedAudience audience,
+    Component whisperSender(
+        @NotPlaceholder SourcedAudience audience,
         String senderUsername,
         Component senderDisplayName,
         String recipientUsername,
@@ -118,8 +118,8 @@ public interface CarbonMessages {
     );
 
     @Message("whisper.from")
-    void whisperRecipient(
-        SourcedAudience audience,
+    Component whisperRecipient(
+        @NotPlaceholder SourcedAudience audience,
         String senderUsername,
         Component senderDisplayName,
         String recipientUsername,
