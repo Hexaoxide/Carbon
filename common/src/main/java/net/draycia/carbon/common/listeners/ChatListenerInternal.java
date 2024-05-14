@@ -22,6 +22,7 @@ package net.draycia.carbon.common.listeners;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -69,6 +70,12 @@ public abstract class ChatListenerInternal {
     }
 
     protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
+        final ChannelPermissionResult permitted = channel.speechPermitted(sender);
+        if (!permitted.permitted()) {
+            sender.sendMessage(permitted.reason());
+            return null;
+        }
+        
         String content = this.configManager.primaryConfig().applyChatPlaceholders(messageContent);
         content = this.configManager.primaryConfig().applyChatFilters(content);
 
