@@ -228,7 +228,7 @@ public class PrimaryConfig {
         private List<String> blackList = List.of("notch", "admin");
 
         @Comment("Regex pattern nicknames must match in order to be applied, can be bypassed with the permission 'carbon.nickname.filter'.")
-        private String filter = "[a-zA-Z0-9]";
+        private String filter = "^[a-zA-Z0-9_]*$";
 
         @Comment("Format used when displaying nicknames.")
         public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
