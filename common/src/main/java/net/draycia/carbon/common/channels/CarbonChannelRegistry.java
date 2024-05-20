@@ -379,7 +379,7 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final Command<Commander> command = builder.senderType(Commander.class)
             .handler(handler -> {
                 final Commander commander = handler.sender();
-                final @Nullable ChatChannel chatChannel = this.channel(channelKey);
+                @Nullable ChatChannel chatChannel = this.channel(channelKey);
 
                 if (!(commander instanceof PlayerCommander playerCommander)) {
                     if (chatChannel != null && handler.contains("message")) {
@@ -408,11 +408,15 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                     // TODO: trigger platform events related to chat
                     this.sendMessageInChannel(player, chatChannel, message);
                 } else {
+                    if (this.config.primaryConfig().returnToDefaultChannel() && player.selectedChannel().key().equals(channelKey)) {
+                        chatChannel = this.defaultChannel();
+                    }
+
                     final ChannelSwitchEvent switchEvent = new ChannelSwitchEventImpl(player, chatChannel);
                     this.eventHandler.emit(switchEvent);
 
                     player.selectedChannel(switchEvent.channel());
-                    this.carbonMessages.changedChannels(player, channelKey.value());
+                    this.carbonMessages.changedChannels(player, chatChannel.key().value());
                 }
             })
             .build();

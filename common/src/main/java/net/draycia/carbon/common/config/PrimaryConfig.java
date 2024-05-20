@@ -47,6 +47,9 @@ public class PrimaryConfig {
         If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.""")
     private Key defaultChannel = Key.key("carbon", "global");
 
+    @Comment("Returns you to the default channel when you use a channel's command while you have that channel active.")
+    private boolean returnToDefaultChannel = false;
+
     @Comment("""
         The service that will be used to store and load player information.
         One of: JSON, H2, MYSQL, PSQL
@@ -112,6 +115,10 @@ public class PrimaryConfig {
 
     public Key defaultChannel() {
         return this.defaultChannel;
+    }
+
+    public boolean returnToDefaultChannel() {
+        return this.returnToDefaultChannel;
     }
 
     public StorageType storageType() {
@@ -186,14 +193,14 @@ public class PrimaryConfig {
     public static void upgrade(final ConfigurationNode node) {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
-        final ConfigurationTransformation initial = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
-            .build();
-        builder.addVersion(0, initial);
-        final ConfigurationTransformation one = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
-            .build();
-        builder.addVersion(1, one);
+
+        insertAddition(builder, "use-carbon-nicknames", "nickname-settings", "use-carbon-nicknames");
+        // This looks confusing, wouldn't this add "party-chat.party-chat = enabled"?
+        // Should produce "party-chat.enabled = true"
+        insertAddition(builder, "party-chat", "party-chat", "enabled");
+        // TODO: make sure this is working
+        insertAddition(builder, "return-to-default-channel", "return-to-default-channel", false);
+
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
         try {
@@ -203,6 +210,20 @@ public class PrimaryConfig {
         }
 
         ConfigManager.configVersionComment(node, upgrader);
+    }
+
+    private static int upgradeIndex = 0;
+
+    private static void addUpgradeVersion(final ConfigurationTransformation.VersionedBuilder builder, final ConfigurationTransformation transformation) {
+        builder.addVersion(upgradeIndex++, transformation);
+    }
+
+    private static void insertAddition(final ConfigurationTransformation.VersionedBuilder builder, final String path, final Object key, final Object value) {
+        final ConfigurationTransformation transformation = ConfigurationTransformation.builder()
+            .addAction(NodePath.path(path), ($, $$) -> new Object[]{key, value})
+            .build();
+
+        addUpgradeVersion(builder, transformation);
     }
 
     @ConfigSerializable
