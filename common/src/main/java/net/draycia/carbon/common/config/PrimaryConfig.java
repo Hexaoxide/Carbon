@@ -200,6 +200,7 @@ public class PrimaryConfig {
         insertAddition(builder, "party-chat", "party-chat", "enabled");
         // TODO: make sure this is working
         insertAddition(builder, "return-to-default-channel", "return-to-default-channel", false);
+        insertAddition(builder, "nickname-settings", "filter", ".*");
 
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
@@ -240,6 +241,9 @@ public class PrimaryConfig {
 
         private List<String> blackList = List.of("notch", "admin");
 
+        @Comment("Regex pattern nicknames must match in order to be applied, can be bypassed with the permission 'carbon.nickname.filter'.")
+        private String filter = "^[a-zA-Z0-9_]*$";
+
         @Comment("Format used when displaying nicknames.")
         public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
 
@@ -252,6 +256,10 @@ public class PrimaryConfig {
 
         public List<String> blackList() {
             return this.blackList;
+        }
+
+        public String filter() {
+            return this.filter;
         }
 
         public int minLength() {
