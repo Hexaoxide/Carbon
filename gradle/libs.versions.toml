@@ -88,7 +88,7 @@ kyoriMoonshineStandard = { group = "net.kyori.moonshine", name = "moonshine-stan
 
 cloudBom = { module = "org.incendo:cloud-bom", version.ref = "cloud" }
 cloudCore = { group = "org.incendo", name = "cloud-core", version.ref = "cloud" }
-brigadier = "com.mojang:brigadier:1.0.18"
+brigadier = "com.mojang:brigadier:1.0.500"
 cloudMinecraftBom = { module = "org.incendo:cloud-minecraft-bom", version.ref = "cloudMinecraft" }
 cloudMinecraftExtras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloudMinecraft" }
 cloudPaper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloudMinecraft" }
