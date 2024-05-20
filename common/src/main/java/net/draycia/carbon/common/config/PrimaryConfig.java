@@ -186,14 +186,22 @@ public class PrimaryConfig {
     public static void upgrade(final ConfigurationNode node) {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
+
         final ConfigurationTransformation initial = ConfigurationTransformation.builder()
             .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
             .build();
         builder.addVersion(0, initial);
+
         final ConfigurationTransformation one = ConfigurationTransformation.builder()
             .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
             .build();
         builder.addVersion(1, one);
+
+        final ConfigurationTransformation two = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("nickname-settings"), (path, value) -> new Object[]{"filter", ".*"})
+            .build();
+        builder.addVersion(2, two);
+
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
         try {
@@ -219,6 +227,9 @@ public class PrimaryConfig {
 
         private List<String> blackList = List.of("notch", "admin");
 
+        @Comment("Regex pattern nicknames must match in order to be applied, can be bypassed with the permission 'carbon.nickname.filter'.")
+        private String filter = "[a-zA-Z0-9]";
+
         @Comment("Format used when displaying nicknames.")
         public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
 
@@ -231,6 +242,10 @@ public class PrimaryConfig {
 
         public List<String> blackList() {
             return this.blackList;
+        }
+
+        public String filter() {
+            return this.filter;
         }
 
         public int minLength() {
