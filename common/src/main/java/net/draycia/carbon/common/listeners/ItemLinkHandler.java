@@ -33,11 +33,11 @@ public class ItemLinkHandler implements Listener {
     @Inject
     public ItemLinkHandler(final CarbonEventHandler events) {
         events.subscribe(CarbonChatEvent.class, 2, false, event -> {
-            event.message(handleChatEvent(event.sender(), event.message()));
+            event.message(this.handleChatEvent(event.sender(), event.message()));
         });
 
         events.subscribe(CarbonPrivateChatEvent.class, 2, false, event -> {
-            event.message(handleChatEvent(event.sender(), event.message()));
+            event.message(this.handleChatEvent(event.sender(), event.message()));
         });
     }
 
