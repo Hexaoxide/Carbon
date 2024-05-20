@@ -141,6 +141,11 @@ public final class NicknameCommand extends CarbonCommand {
             return;
         }
 
+        if (!sender.hasPermission("carbon.nickname.filter") && !plainNick.matches(this.config.primaryConfig().nickname().filter())) {
+            this.carbonMessages.nicknameErrorFilter(sender, parsedNick);
+            return;
+        }
+
         target.nickname(parsedNick);
 
         if (sender instanceof PlayerCommander playerCommander
