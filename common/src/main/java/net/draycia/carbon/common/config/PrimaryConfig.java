@@ -194,13 +194,10 @@ public class PrimaryConfig {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
 
-        insertAddition(builder, "use-carbon-nicknames", "nickname-settings", "use-carbon-nicknames");
-        // This looks confusing, wouldn't this add "party-chat.party-chat = enabled"?
-        // Should produce "party-chat.enabled = true"
-        insertAddition(builder, "party-chat", "party-chat", "enabled");
-        // TODO: make sure this is working
-        insertAddition(builder, "return-to-default-channel", "return-to-default-channel", false);
-        insertAddition(builder, "nickname-settings", "filter", ".*");
+        builder.addVersion(0, insertAddition("use-carbon-nicknames", "nickname-settings", "use-carbon-nicknames"));
+        builder.addVersion(1, insertAddition("party-chat", "party-chat", "enabled"));
+        builder.addVersion(2, insertAddition("nickname-settings", "filter", ".*"));
+        builder.addVersion(3, insertAddition("return-to-default-channel", "return-to-default-channel", false));
 
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
@@ -213,18 +210,10 @@ public class PrimaryConfig {
         ConfigManager.configVersionComment(node, upgrader);
     }
 
-    private static int upgradeIndex = 0;
-
-    private static void addUpgradeVersion(final ConfigurationTransformation.VersionedBuilder builder, final ConfigurationTransformation transformation) {
-        builder.addVersion(upgradeIndex++, transformation);
-    }
-
-    private static void insertAddition(final ConfigurationTransformation.VersionedBuilder builder, final String path, final Object key, final Object value) {
-        final ConfigurationTransformation transformation = ConfigurationTransformation.builder()
+    private static ConfigurationTransformation insertAddition(final String path, final Object key, final Object value) {
+        return ConfigurationTransformation.builder()
             .addAction(NodePath.path(path), ($, $$) -> new Object[]{key, value})
             .build();
-
-        addUpgradeVersion(builder, transformation);
     }
 
     @ConfigSerializable
