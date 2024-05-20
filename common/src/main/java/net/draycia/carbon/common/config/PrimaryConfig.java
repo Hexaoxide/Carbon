@@ -47,6 +47,9 @@ public class PrimaryConfig {
         If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.""")
     private Key defaultChannel = Key.key("carbon", "global");
 
+    @Comment("Returns you to the default channel when you use a channel's command while you have that channel active.")
+    private boolean returnToDefaultChannel = false;
+
     @Comment("""
         The service that will be used to store and load player information.
         One of: JSON, H2, MYSQL, PSQL
@@ -112,6 +115,10 @@ public class PrimaryConfig {
 
     public Key defaultChannel() {
         return this.defaultChannel;
+    }
+
+    public boolean returnToDefaultChannel() {
+        return this.returnToDefaultChannel;
     }
 
     public StorageType storageType() {
@@ -187,20 +194,10 @@ public class PrimaryConfig {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
 
-        final ConfigurationTransformation initial = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
-            .build();
-        builder.addVersion(0, initial);
-
-        final ConfigurationTransformation one = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
-            .build();
-        builder.addVersion(1, one);
-
-        final ConfigurationTransformation two = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("nickname-settings"), (path, value) -> new Object[]{"filter", ".*"})
-            .build();
-        builder.addVersion(2, two);
+        builder.addVersion(0, insertAddition("use-carbon-nicknames", "nickname-settings", "use-carbon-nicknames"));
+        builder.addVersion(1, insertAddition("party-chat", "party-chat", "enabled"));
+        builder.addVersion(2, insertAddition("nickname-settings", "filter", ".*"));
+        builder.addVersion(3, insertAddition("return-to-default-channel", "return-to-default-channel", false));
 
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
@@ -211,6 +208,12 @@ public class PrimaryConfig {
         }
 
         ConfigManager.configVersionComment(node, upgrader);
+    }
+
+    private static ConfigurationTransformation insertAddition(final String path, final Object key, final Object value) {
+        return ConfigurationTransformation.builder()
+            .addAction(NodePath.path(path), ($, $$) -> new Object[]{key, value})
+            .build();
     }
 
     @ConfigSerializable
