@@ -77,7 +77,7 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-  id("quiet-fabric-loom") version "1.6-SNAPSHOT"
+  id("quiet-fabric-loom") version "1.6.281"
 }
 
 rootProject.name = "CarbonChat"
