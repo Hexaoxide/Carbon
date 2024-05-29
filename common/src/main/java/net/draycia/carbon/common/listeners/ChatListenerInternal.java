@@ -76,7 +76,7 @@ public abstract class ChatListenerInternal {
             return null;
         }
 
-        if (channel.cooldown() > 0) {
+        if (!sender.hasPermission("carbon.cooldown.exempt") && channel.cooldown() > 0) {
             final long currentMillis = System.currentTimeMillis();
             final long expiresAt = channel.playerCooldown(sender);
 
