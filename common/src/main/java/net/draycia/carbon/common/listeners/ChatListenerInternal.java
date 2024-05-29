@@ -75,6 +75,20 @@ public abstract class ChatListenerInternal {
             sender.sendMessage(permitted.reason());
             return null;
         }
+
+        if (channel.cooldown() > 0) {
+            final long currentMillis = System.currentTimeMillis();
+            final long expiresAt = channel.playerCooldown(sender);
+
+            if (currentMillis < expiresAt) {
+                // Round up, or the player can be told they have 0 seconds remaining
+                final long remaining = (long) Math.ceil((double) (expiresAt - currentMillis) / 1000);
+                this.carbonMessages.channelCooldown(sender, remaining);
+                return null;
+            }
+
+            channel.startCooldown(sender);
+        }
         
         String content = this.configManager.primaryConfig().applyChatPlaceholders(messageContent);
         content = this.configManager.primaryConfig().applyChatFilters(content);

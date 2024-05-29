@@ -56,6 +56,9 @@ public interface CarbonMessages {
     @Message("channel.joined")
     void channelJoined(final Audience audience);
 
+    @Message("channel.cooldown")
+    void channelCooldown(final Audience audience, long remaining);
+
     /*
      * =============================================================
      * =========================== Mutes ===========================

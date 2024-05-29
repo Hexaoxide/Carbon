@@ -124,4 +124,10 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      */
     boolean emptyRadiusRecipientsMessage();
 
+    long cooldown();
+
+    long playerCooldown(CarbonPlayer player);
+
+    long startCooldown(CarbonPlayer player);
+
 }
