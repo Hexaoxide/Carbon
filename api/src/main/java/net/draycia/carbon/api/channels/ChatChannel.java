@@ -124,10 +124,32 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      */
     boolean emptyRadiusRecipientsMessage();
 
+    /**
+     * The time in milliseconds between player messages.
+     * -1 and 0 disable the cooldown for this channel.
+     *
+     * @return The message cooldown in millis.
+     * @since 3.0.0
+     */
     long cooldown();
 
+    /**
+     * The epoch time (millis) when the player's cooldown expires.
+     *
+     * @param player The player
+     * @return The epoch time (millis) when the player's cooldown expires.
+     * @since 3.0.0
+     */
     long playerCooldown(CarbonPlayer player);
 
+    /**
+     * Starts the cooldown timer for the specified player. Duration will be the channel cooldown.
+     * Returns the player's old cooldown time, if they have one.
+     *
+     * @param player The player
+     * @return The player's old cooldown, or 0 if they don't have one.
+     * @since 3.0.0
+     */
     long startCooldown(CarbonPlayer player);
 
 }
