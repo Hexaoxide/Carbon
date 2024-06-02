@@ -70,17 +70,17 @@ public final class PlaceholderAPIMiniMessageParser {
         return this.parse(player, input, TagResolver.empty());
     }
 
-    public Component parseRelational(final Player one, final Player two, final String input, final TagResolver tagResolver) {
+    public Component parseRelational(final Player recipient, final Player sender, final String input, final TagResolver tagResolver) {
         return this.parse(
             PlaceholderAPI.getPlaceholderPattern(),
-            match -> PlaceholderAPI.setPlaceholders(one, PlaceholderAPI.setRelationalPlaceholders(two, one, match)),
+            match -> PlaceholderAPI.setPlaceholders(sender, PlaceholderAPI.setRelationalPlaceholders(recipient, sender, match)),
             input,
             tagResolver
         );
     }
 
-    public Component parseRelational(final Player one, final Player two, final String input) {
-        return this.parseRelational(one, two, input, TagResolver.empty());
+    public Component parseRelational(final Player recipient, final Player sender, final String input) {
+        return this.parseRelational(recipient, sender, input, TagResolver.empty());
     }
 
     private Component parse(
