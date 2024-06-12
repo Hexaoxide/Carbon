@@ -198,6 +198,7 @@ public class PrimaryConfig {
         builder.addVersion(1, insertAddition("party-chat", "party-chat", "enabled"));
         builder.addVersion(2, insertAddition("nickname-settings", "filter", ".*"));
         builder.addVersion(3, insertAddition("return-to-default-channel", "return-to-default-channel", false));
+        builder.addVersion(4, insertAddition("nickname-settings", "update-tab-list", true));
 
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
@@ -222,6 +223,9 @@ public class PrimaryConfig {
         @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
         private boolean useCarbonNicknames = true;
 
+        @Comment("Paper only. Updates the player's display name in the tab list to match their nickname.")
+        private boolean updateTabList = true;
+
         @Comment("Minimum number of characters in nickname (excluding formatting).")
         private int minLength = 3;
 
@@ -241,6 +245,10 @@ public class PrimaryConfig {
 
         public boolean useCarbonNicknames() {
             return this.useCarbonNicknames;
+        }
+
+        public boolean updateTabList() {
+            return this.updateTabList;
         }
 
         public List<String> blackList() {
