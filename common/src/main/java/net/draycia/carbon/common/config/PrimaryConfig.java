@@ -223,6 +223,7 @@ public class PrimaryConfig {
         @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
         private boolean useCarbonNicknames = true;
 
+        @Comment("Paper only. Updates the player's display name in the tab list to match their nickname.")
         private boolean updateTabList = true;
 
         @Comment("Minimum number of characters in nickname (excluding formatting).")
