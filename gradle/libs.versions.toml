@@ -53,7 +53,7 @@ rabbitmq = "5.21.0"
 nats = "2.17.6"
 h2 = "2.2.224"
 towny = "0.100.3.0"
-mcmmo = "2.1.225"
+mcmmo = "2.1.227"
 fuuid = "1.6.9.5-U0.6.35"
 
 # synced with version used by lowest supported mc (currently 1.20.4 on paper)
