@@ -79,7 +79,7 @@ fun Task.relocateCloud() {
 fun Task.relocateGuice() {
   relocateDependency("com.google.inject")
   relocateDependency("org.aopalliance")
-  relocateDependency("javax.inject")
+  relocateDependency("jakarta.inject")
 }
 
 fun ShadowJar.configureShadowJar() {

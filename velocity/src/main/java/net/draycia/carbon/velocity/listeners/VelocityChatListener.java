@@ -39,10 +39,10 @@ import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import net.kyori.adventure.audience.Audience;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.slf4j.Logger;
 
 @DefaultQualifier(NonNull.class)
 public final class VelocityChatListener extends ChatListenerInternal implements VelocityListener<PlayerChatEvent> {

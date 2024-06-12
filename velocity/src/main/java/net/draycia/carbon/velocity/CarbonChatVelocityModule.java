@@ -24,6 +24,7 @@ import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.velocitypowered.api.plugin.PluginContainer;
+import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
@@ -63,15 +64,18 @@ import org.incendo.cloud.velocity.VelocityCommandManager;
 public final class CarbonChatVelocityModule extends CarbonPlatformModule {
 
     private final Logger logger = LogManager.getLogger("carbonchat");
+    private final CarbonVelocityBootstrap bootstrap;
     private final PluginContainer pluginContainer;
     private final ProxyServer proxyServer;
     private final Path dataDirectory;
 
     CarbonChatVelocityModule(
+        final CarbonVelocityBootstrap bootstrap,
         final PluginContainer pluginContainer,
         final ProxyServer proxyServer,
         final Path dataDirectory
     ) {
+        this.bootstrap = bootstrap;
         this.pluginContainer = pluginContainer;
         this.proxyServer = proxyServer;
         this.dataDirectory = dataDirectory;
@@ -108,6 +112,11 @@ public final class CarbonChatVelocityModule extends CarbonPlatformModule {
     @Override
     protected void configurePlatform() {
         this.install(new CarbonCommonModule());
+
+        this.bind(CarbonVelocityBootstrap.class).toInstance(this.bootstrap);
+        this.bind(PluginContainer.class).toInstance(this.pluginContainer);
+        this.bind(ProxyServer.class).toInstance(this.proxyServer);
+        this.bind(PluginManager.class).toInstance(this.proxyServer.getPluginManager());
 
         this.bind(CarbonChat.class).to(CarbonChatVelocity.class);
         this.bind(CarbonServer.class).to(CarbonServerVelocity.class);

@@ -39,10 +39,6 @@ dependencies {
     isTransitive = false
   }
   compileOnly(libs.factionsUuid)
-
-  runtimeDownload(libs.guice) {
-    exclude("com.google.guava")
-  }
 }
 
 configurablePlugins {
