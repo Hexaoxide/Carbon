@@ -70,7 +70,7 @@ public class FabricMessageRenderer implements CarbonMessageRenderer {
                 if (sourced.sender() instanceof CarbonPlayerFabric sender) {
                     tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender));
                     if (sourced.recipient() instanceof CarbonPlayerFabric recipient && recipient.online()) {
-                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(sender, recipient));
+                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(recipient, sender));
                     }
                 } else if (sourced.sender() instanceof ConsoleCarbonPlayer console) {
                     // I don't know if this will ever actually resolve anything, or if anything supports console audience

@@ -33,8 +33,8 @@ indraSpotlessLicenser {
 
 tasks {
   withType<JavaCompile> {
-    // disable 'warning: No processor claimed any of these annotations' spam
-    options.compilerArgs.add("-Xlint:-processing")
+    // disable unclaimed annotation and missing annotation warnings
+    options.compilerArgs.add("-Xlint:-processing,-classfile")
     options.compilerArgs.add("-parameters")
   }
 }

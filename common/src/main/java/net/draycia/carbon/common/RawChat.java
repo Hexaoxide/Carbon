@@ -17,13 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.common.command.argument;
+package net.draycia.carbon.common;
 
-import net.draycia.carbon.common.command.Commander;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.suggestion.SuggestionProvider;
+import com.google.inject.BindingAnnotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@DefaultQualifier(NonNull.class)
-public interface PlayerSuggestions extends SuggestionProvider<Commander> {
+/**
+ * Injection binding annotation for the raw chat type key.
+ */
+@BindingAnnotation
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
+public @interface RawChat {
 }

@@ -19,9 +19,6 @@
  */
 package net.draycia.carbon.paper;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.brigadier.CloudBrigadierManager;
-import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
@@ -33,6 +30,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
+import net.draycia.carbon.common.RawChat;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.integration.Integration;
@@ -51,6 +49,7 @@ import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.draycia.carbon.paper.users.PaperProfileResolver;
+import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Server;
@@ -58,8 +57,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.paper.PaperCommandManager;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPaperModule extends CarbonPlatformModule {
@@ -75,12 +76,10 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     @Singleton
     @SuppressWarnings("unused")
     public CommandManager<Commander> commandManager(final UserManager<?> userManager, final CarbonMessages messages, final ExecutionCoordinatorHolder executionCoordinatorHolder) {
-        final PaperCommandManager<Commander> commandManager;
-
-        try {
-            commandManager = new PaperCommandManager<>(
-                this.bootstrap,
-                executionCoordinatorHolder.executionCoordinator(),
+        final PaperCommandManager<Commander> commandManager = new PaperCommandManager<>(
+            this.bootstrap,
+            executionCoordinatorHolder.executionCoordinator(),
+            SenderMapper.create(
                 commandSender -> {
                     if (commandSender instanceof Player player) {
                         return new PaperPlayerCommander(userManager, player);
@@ -88,22 +87,12 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
                     return PaperCommander.from(commandSender);
                 },
                 commander -> ((PaperCommander) commander).commandSender()
-            );
-        } catch (final Exception ex) {
-            throw new RuntimeException("Failed to initialize command manager.", ex);
-        }
+            )
+        );
 
-        CloudUtils.decorateCommandManager(commandManager, messages);
+        CloudUtils.decorateCommandManager(commandManager, messages, this.logger);
 
-        commandManager.registerAsynchronousCompletions();
         commandManager.registerBrigadier();
-
-        final @Nullable CloudBrigadierManager<Commander, ?> brigadierManager =
-            commandManager.brigadierManager();
-
-        if (brigadierManager != null) {
-            brigadierManager.setNativeNumberSuggestions(false);
-        }
 
         return commandManager;
     }
@@ -122,6 +111,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(PaperScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerPaper.class));
         this.bind(CarbonMessageRenderer.class).to(PaperMessageRenderer.class);
+        this.bind(Key.class).annotatedWith(RawChat.class).toInstance(Key.key("paper:raw"));
 
         this.configureListeners();
     }

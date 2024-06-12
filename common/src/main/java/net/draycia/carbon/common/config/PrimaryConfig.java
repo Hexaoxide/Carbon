@@ -47,6 +47,9 @@ public class PrimaryConfig {
         If the channel is not found or the player cannot use the channel, they will speak in basic non-channel chat.""")
     private Key defaultChannel = Key.key("carbon", "global");
 
+    @Comment("Returns you to the default channel when you use a channel's command while you have that channel active.")
+    private boolean returnToDefaultChannel = false;
+
     @Comment("""
         The service that will be used to store and load player information.
         One of: JSON, H2, MYSQL, PSQL
@@ -112,6 +115,10 @@ public class PrimaryConfig {
 
     public Key defaultChannel() {
         return this.defaultChannel;
+    }
+
+    public boolean returnToDefaultChannel() {
+        return this.returnToDefaultChannel;
     }
 
     public StorageType storageType() {
@@ -186,14 +193,13 @@ public class PrimaryConfig {
     public static void upgrade(final ConfigurationNode node) {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
-        final ConfigurationTransformation initial = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
-            .build();
-        builder.addVersion(0, initial);
-        final ConfigurationTransformation one = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
-            .build();
-        builder.addVersion(1, one);
+
+        builder.addVersion(0, insertAddition("use-carbon-nicknames", "nickname-settings", "use-carbon-nicknames"));
+        builder.addVersion(1, insertAddition("party-chat", "party-chat", "enabled"));
+        builder.addVersion(2, insertAddition("nickname-settings", "filter", ".*"));
+        builder.addVersion(3, insertAddition("return-to-default-channel", "return-to-default-channel", false));
+        builder.addVersion(4, insertAddition("nickname-settings", "update-tab-list", true));
+
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
         try {
@@ -205,11 +211,20 @@ public class PrimaryConfig {
         ConfigManager.configVersionComment(node, upgrader);
     }
 
+    private static ConfigurationTransformation insertAddition(final String path, final Object key, final Object value) {
+        return ConfigurationTransformation.builder()
+            .addAction(NodePath.path(path), ($, $$) -> new Object[]{key, value})
+            .build();
+    }
+
     @ConfigSerializable
     public static final class NicknameSettings {
 
         @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
         private boolean useCarbonNicknames = true;
+
+        @Comment("Paper only. Updates the player's display name in the tab list to match their nickname.")
+        private boolean updateTabList = true;
 
         @Comment("Minimum number of characters in nickname (excluding formatting).")
         private int minLength = 3;
@@ -218,6 +233,9 @@ public class PrimaryConfig {
         private int maxLength = 16;
 
         private List<String> blackList = List.of("notch", "admin");
+
+        @Comment("Regex pattern nicknames must match in order to be applied, can be bypassed with the permission 'carbon.nickname.filter'.")
+        private String filter = "^[a-zA-Z0-9_]*$";
 
         @Comment("Format used when displaying nicknames.")
         public String format = "<hover:show_text:'<gray>@</gray><username>'><gray>~</gray><nickname></hover>";
@@ -229,8 +247,16 @@ public class PrimaryConfig {
             return this.useCarbonNicknames;
         }
 
+        public boolean updateTabList() {
+            return this.updateTabList;
+        }
+
         public List<String> blackList() {
             return this.blackList;
+        }
+
+        public String filter() {
+            return this.filter;
         }
 
         public int minLength() {

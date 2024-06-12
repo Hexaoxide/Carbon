@@ -22,6 +22,7 @@ package net.draycia.carbon.common.listeners;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -69,6 +70,26 @@ public abstract class ChatListenerInternal {
     }
 
     protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
+        final ChannelPermissionResult permitted = channel.speechPermitted(sender);
+        if (!permitted.permitted()) {
+            sender.sendMessage(permitted.reason());
+            return null;
+        }
+
+        if (!sender.hasPermission("carbon.cooldown.exempt") && channel.cooldown() > 0) {
+            final long currentMillis = System.currentTimeMillis();
+            final long expiresAt = channel.playerCooldown(sender);
+
+            if (currentMillis < expiresAt) {
+                // Round up, or the player can be told they have 0 seconds remaining
+                final long remaining = (long) Math.ceil((double) (expiresAt - currentMillis) / 1000);
+                this.carbonMessages.channelCooldown(sender, remaining);
+                return null;
+            }
+
+            channel.startCooldown(sender);
+        }
+        
         String content = this.configManager.primaryConfig().applyChatPlaceholders(messageContent);
         content = this.configManager.primaryConfig().applyChatFilters(content);
 

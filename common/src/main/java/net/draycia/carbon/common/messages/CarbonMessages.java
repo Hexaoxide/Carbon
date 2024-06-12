@@ -56,6 +56,9 @@ public interface CarbonMessages {
     @Message("channel.joined")
     void channelJoined(final Audience audience);
 
+    @Message("channel.cooldown")
+    void channelCooldown(final Audience audience, long remaining);
+
     /*
      * =============================================================
      * =========================== Mutes ===========================
@@ -108,8 +111,8 @@ public interface CarbonMessages {
      */
 
     @Message("whisper.to")
-    void whisperSender(
-        SourcedAudience audience,
+    Component whisperSender(
+        @NotPlaceholder SourcedAudience audience,
         String senderUsername,
         Component senderDisplayName,
         String recipientUsername,
@@ -118,8 +121,8 @@ public interface CarbonMessages {
     );
 
     @Message("whisper.from")
-    void whisperRecipient(
-        SourcedAudience audience,
+    Component whisperRecipient(
+        @NotPlaceholder SourcedAudience audience,
         String senderUsername,
         Component senderDisplayName,
         String recipientUsername,
@@ -196,6 +199,9 @@ public interface CarbonMessages {
 
     @Message("nickname.error.blacklist")
     void nicknameErrorBlackList(final Audience audience, final Component nickname);
+
+    @Message("nickname.error.filter")
+    void nicknameErrorFilter(final Audience audience, final Component nickname);
 
     @Message("nickname.show.others")
     void nicknameShowOthers(final Audience audience, final String target, final Component nickname);

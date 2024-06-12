@@ -40,9 +40,9 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ClearChatCommand;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
@@ -86,6 +86,7 @@ import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolve
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.IntPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.LongPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.OptionPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
@@ -166,6 +167,7 @@ public final class CarbonCommonModule extends AbstractModule {
         final UUIDPlaceholderResolver<Audience> uuidPlaceholderResolver,
         final StringPlaceholderResolver<Audience> stringPlaceholderResolver,
         final IntPlaceholderResolver<Audience> intPlaceholderResolver,
+        final LongPlaceholderResolver<Audience> longPlaceholderResolver,
         final KeyPlaceholderResolver<Audience> keyPlaceholderResolver,
         final BooleanPlaceholderResolver<Audience> booleanPlaceholderResolver,
         final CarbonMessageSource carbonMessageSource,
@@ -182,6 +184,7 @@ public final class CarbonCommonModule extends AbstractModule {
             .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
             .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Integer.class, intPlaceholderResolver, 0)
+            .weightedPlaceholderResolver(Long.class, longPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
             .weightedPlaceholderResolver(Option.class, new OptionPlaceholderResolver<>(), 0)
@@ -196,7 +199,7 @@ public final class CarbonCommonModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        this.install(new FactoryModuleBuilder().build(ArgumentFactory.class));
+        this.install(new FactoryModuleBuilder().build(ParserFactory.class));
         this.install(factoryModule(PacketFactory.class));
         this.bind(ServerId.KEY).toInstance(UUID.randomUUID());
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);

@@ -19,8 +19,6 @@
  */
 package net.draycia.carbon.fabric;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.fabric.FabricServerCommandManager;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -35,6 +33,7 @@ import net.draycia.carbon.common.CarbonCommonModule;
 import net.draycia.carbon.common.CarbonPlatformModule;
 import net.draycia.carbon.common.DataDirectory;
 import net.draycia.carbon.common.PlatformScheduler;
+import net.draycia.carbon.common.RawChat;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
@@ -46,6 +45,7 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.fabric.command.FabricCommander;
 import net.draycia.carbon.fabric.command.FabricPlayerCommander;
+import net.draycia.carbon.fabric.listeners.FabricChatHandler;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.draycia.carbon.fabric.users.FabricProfileResolver;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -58,6 +58,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.fabric.FabricServerCommandManager;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatFabricModule extends CarbonPlatformModule {
@@ -94,18 +97,18 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
 
         final FabricServerCommandManager<Commander> commandManager = new FabricServerCommandManager<>(
             executionCoordinatorHolder.executionCoordinator(),
-            commandSourceStack -> {
-                if (commandSourceStack.getEntity() instanceof ServerPlayer) {
-                    return new FabricPlayerCommander(carbonChat.get(), commandSourceStack);
-                }
-                return FabricCommander.from(commandSourceStack);
-            },
-            commander -> ((FabricCommander) commander).commandSourceStack()
+            SenderMapper.create(
+                commandSourceStack -> {
+                    if (commandSourceStack.getEntity() instanceof ServerPlayer) {
+                        return new FabricPlayerCommander(carbonChat.get(), commandSourceStack);
+                    }
+                    return FabricCommander.from(commandSourceStack);
+                },
+                commander -> ((FabricCommander) commander).commandSourceStack()
+            )
         );
 
-        CloudUtils.decorateCommandManager(commandManager, carbonMessages);
-
-        commandManager.brigadierManager().setNativeNumberSuggestions(false);
+        CloudUtils.decorateCommandManager(commandManager, carbonMessages, this.logger);
 
         return commandManager;
     }
@@ -123,6 +126,7 @@ public final class CarbonChatFabricModule extends CarbonPlatformModule {
         this.bind(PlatformScheduler.class).to(FabricScheduler.class);
         this.install(PlatformUserManager.PlayerFactory.moduleFor(CarbonPlayerFabric.class));
         this.bind(CarbonMessageRenderer.class).to(FabricMessageRenderer.class);
+        this.bind(Key.class).annotatedWith(RawChat.class).toProvider(() -> FabricChatHandler.CHAT_TYPE_KEY);
     }
 
 }

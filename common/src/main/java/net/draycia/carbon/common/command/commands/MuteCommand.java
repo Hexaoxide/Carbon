@@ -19,23 +19,23 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.UUIDArgument;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.parser.standard.UUIDParser.uuidParser;
 
 @DefaultQualifier(NonNull.class)
 public final class MuteCommand extends CarbonCommand {
@@ -44,7 +44,7 @@ public final class MuteCommand extends CarbonCommand {
     private final UserManager<?> users;
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages carbonMessages;
-    private final ArgumentFactory argumentFactory;
+    private final ParserFactory parserFactory;
 
     @Inject
     public MuteCommand(
@@ -52,13 +52,13 @@ public final class MuteCommand extends CarbonCommand {
         final CarbonServer server,
         final CommandManager<Commander> commandManager,
         final CarbonMessages carbonMessages,
-        final ArgumentFactory argumentFactory
+        final ParserFactory parserFactory
     ) {
         this.server = server;
         this.users = userManager;
         this.commandManager = commandManager;
         this.carbonMessages = carbonMessages;
-        this.argumentFactory = argumentFactory;
+        this.parserFactory = parserFactory;
     }
 
     @Override
@@ -74,18 +74,18 @@ public final class MuteCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
-                RichDescription.of(this.carbonMessages.commandMuteArgumentPlayer()))
+            .optional("player", this.parserFactory.carbonPlayer(),
+                richDescription(this.carbonMessages.commandMuteArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.carbonMessages.commandMuteArgumentUUID()))
-                .withArgument(UUIDArgument.optional("uuid"))
+                .withDescription(richDescription(this.carbonMessages.commandMuteArgumentUUID()))
+                .withComponent(uuidParser())
             )
             .permission("carbon.mute")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandMuteDescription())
+            .commandDescription(richDescription(this.carbonMessages.commandMuteDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = handler.sender().carbonPlayer();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {

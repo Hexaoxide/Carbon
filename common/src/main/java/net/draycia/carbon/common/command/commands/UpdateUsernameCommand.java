@@ -19,18 +19,14 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.UUIDArgument;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.command.ArgumentFactory;
 import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
+import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -39,6 +35,10 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.parser.standard.UUIDParser.uuidParser;
 
 @DefaultQualifier(NonNull.class)
 public final class UpdateUsernameCommand extends CarbonCommand {
@@ -46,7 +46,7 @@ public final class UpdateUsernameCommand extends CarbonCommand {
     private final UserManager<?> userManager;
     private final CommandManager<Commander> commandManager;
     private final CarbonMessages messageService;
-    private final ArgumentFactory argumentFactory;
+    private final ParserFactory parserFactory;
     private final ProfileResolver profileResolver;
 
     @Inject
@@ -54,13 +54,13 @@ public final class UpdateUsernameCommand extends CarbonCommand {
         final UserManager<?> userManager,
         final CommandManager<Commander> commandManager,
         final CarbonMessages messageService,
-        final ArgumentFactory argumentFactory,
+        final ParserFactory parserFactory,
         final ProfileResolver profileResolver
     ) {
         this.userManager = userManager;
         this.commandManager = commandManager;
         this.messageService = messageService;
-        this.argumentFactory = argumentFactory;
+        this.parserFactory = parserFactory;
         this.profileResolver = profileResolver;
     }
 
@@ -77,18 +77,18 @@ public final class UpdateUsernameCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(this.argumentFactory.carbonPlayer("player").asOptional(),
-                RichDescription.of(this.messageService.commandUpdateUsernameArgumentPlayer()))
+            .optional("player", this.parserFactory.carbonPlayer(),
+                richDescription(this.messageService.commandUpdateUsernameArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")
                 .withAliases("u")
-                .withDescription(RichDescription.of(this.messageService.commandUpdateUsernameArgumentUUID()))
-                .withArgument(UUIDArgument.optional("uuid"))
+                .withDescription(richDescription(this.messageService.commandUpdateUsernameArgumentUUID()))
+                .withComponent(uuidParser())
             )
             .permission("carbon.updateusername")
             .senderType(Commander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.messageService.commandUpdateUsernameDescription())
+            .commandDescription(richDescription(this.messageService.commandUpdateUsernameDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = ((PlayerCommander) handler.sender()).carbonPlayer();
                 CarbonPlayer target;
 
                 if (handler.contains("player")) {

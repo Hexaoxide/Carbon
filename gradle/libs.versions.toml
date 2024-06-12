@@ -2,7 +2,7 @@
 sponge-gradle = { id = "org.spongepowered.gradle.plugin", version = "2.2.0" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.2" }
 indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
-javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.13" }
+javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.15" }
 
 [versions]
 indra = "3.1.3"
@@ -10,13 +10,15 @@ shadow = "8.1.1"
 pluginYml = "0.5.3"
 mod-publish-plugin = "0.5.1"
 gremlin = "0.0.6"
-runTask = "2.2.3"
+runTask = "2.3.0"
 
-adventure = "4.15.0"
-cloud = "1.8.4"
-cloudSponge = "1.8.0-SNAPSHOT"
+adventure = "4.16.0"
+cloud = "2.0.0-beta.5"
+cloudMinecraft = "2.0.0-beta.6"
+cloudModded = "2.0.0-beta.5"
+cloudSponge = "2.0.0-beta.6"
 configurate = "4.2.0-SNAPSHOT"
-checkerQual = "3.42.0"
+checkerQual = "3.43.0"
 stylecheck = "0.2.1"
 bstats = "3.0.2"
 paperApi = "1.19.4-R0.1-SNAPSHOT"
@@ -28,31 +30,31 @@ kyoriMoonshine = "2.0.4"
 guice = "7.0.0"
 velocityApi = "3.3.0-SNAPSHOT"
 minecraft = "1.20.4"
-fabricLoader = "0.15.4"
-fabricApi = "0.94.0+1.20.4"
-fabricPermissionsApi = "0.2-SNAPSHOT"
-adventurePlatformFabric = "5.11.0"
+fabricLoader = "0.15.11"
+fabricApi = "0.97.1+1.20.4"
+fabricPermissionsApi = "0.3.1"
+adventurePlatformFabric = "5.12.0"
 luckPermsApi = "5.4"
 essentialsx = "2.20.1"
-discordsrv = "1.26.0"
-placeholderapi = "2.11.5"
+discordsrv = "1.27.0"
+placeholderapi = "2.11.6"
 miniplaceholders = "2.2.3"
-jdbi = "3.45.0"
+jdbi = "3.45.1"
 hikari = "5.1.0"
-mysql = "8.3.0"
-flyway = "10.9.1"
+mysql = "8.4.0"
+flyway = "10.12.0"
 caffeine = "3.1.8"
 mariadb = "3.3.3"
 messenger = "1.1.0-SNAPSHOT"
-zstdjni = "1.5.5-11"
+zstdjni = "1.5.6-3"
 jedis = "5.1.2"
-postgresql = "42.7.2"
-rabbitmq = "5.20.0"
-nats = "2.17.3"
+postgresql = "42.7.3"
+rabbitmq = "5.21.0"
+nats = "2.17.6"
 h2 = "2.2.224"
-towny = "0.100.0.9"
-mcmmo = "2.1.225"
-fuuid = "1.6.9.5-U0.6.33"
+towny = "0.100.3.0"
+mcmmo = "2.1.227"
+fuuid = "1.6.9.5-U0.6.35"
 
 # synced with version used by lowest supported mc (currently 1.20.4 on paper)
 gson = "2.10.1"
@@ -64,7 +66,6 @@ netty = "4.1.97.Final"
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
 indraLicenseHeader = { group = "net.kyori", name = "indra-licenser-spotless", version.ref = "indra" }
 shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
-pluginYml = { group = "net.minecrell", name = "plugin-yml", version.ref = "pluginYml" }
 mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 gremlin-gradle = { group = "xyz.jpenilla", name = "gremlin-gradle", version.ref = "gremlin" }
 run-task = { module = "xyz.jpenilla:run-task", version.ref = "runTask" }
@@ -84,16 +85,23 @@ registry = { group = "com.seiama", name = "registry", version.ref = "registry" }
 kyoriMoonshine = { group = "net.kyori.moonshine", name = "moonshine", version.ref = "kyoriMoonshine" }
 kyoriMoonshineCore = { group = "net.kyori.moonshine", name = "moonshine-core", version.ref = "kyoriMoonshine" }
 kyoriMoonshineStandard = { group = "net.kyori.moonshine", name = "moonshine-standard", version.ref = "kyoriMoonshine" }
-cloudBom = { group = "cloud.commandframework", name = "cloud-bom", version.ref = "cloud" }
-cloudCore = { group = "cloud.commandframework", name = "cloud-core" }
-cloudMinecraftExtras = { group = "cloud.commandframework", name = "cloud-minecraft-extras" }
-cloudPaper = { group = "cloud.commandframework", name = "cloud-paper" }
-cloudSponge = { group = "cloud.commandframework", name = "cloud-sponge", version.ref = "cloudSponge" }
-cloudVelocity = { group = "cloud.commandframework", name = "cloud-velocity" }
-cloudFabric = { group = "cloud.commandframework", name = "cloud-fabric", version.ref = "cloud" }
+
+cloudBom = { module = "org.incendo:cloud-bom", version.ref = "cloud" }
+cloudCore = { group = "org.incendo", name = "cloud-core", version.ref = "cloud" }
+brigadier = "com.mojang:brigadier:1.0.18"
+cloudMinecraftBom = { module = "org.incendo:cloud-minecraft-bom", version.ref = "cloudMinecraft" }
+cloudMinecraftExtras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloudMinecraft" }
+cloudPaper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloudMinecraft" }
+cloudSigned = { group = "org.incendo", name = "cloud-minecraft-signed-arguments", version.ref = "cloudMinecraft" }
+cloudPaperSigned = { group = "org.incendo", name = "cloud-paper-signed-arguments", version.ref = "cloudMinecraft" }
+cloudSponge = { group = "org.incendo", name = "cloud-sponge", version.ref = "cloudSponge" }
+cloudVelocity = { group = "org.incendo", name = "cloud-velocity", version.ref = "cloudMinecraft" }
+cloudFabric = { group = "org.incendo", name = "cloud-fabric", version.ref = "cloudModded"}
+
 configurateCore = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
 configurateHocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
 configurateYaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
+
 checkerQual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerQual" }
 stylecheck = { group = "ca.stellardrift", name = "stylecheck", version.ref = "stylecheck" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }

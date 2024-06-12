@@ -123,13 +123,13 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
 
         if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {
             tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
-                senderBukkitPlayer,
-                recipientBukkitPlayer
+                recipientBukkitPlayer,
+                senderBukkitPlayer
             ));
         }
         if (this.hasPlaceholderAPI()) {
-            return this.placeholderApiProcessor.get().parseRelational(senderBukkitPlayer,
-                recipientBukkitPlayer, placeholderResolvedMessage, tagResolver.build());
+            return this.placeholderApiProcessor.get().parseRelational(recipientBukkitPlayer,
+                senderBukkitPlayer, placeholderResolvedMessage, tagResolver.build());
         }
 
         return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());

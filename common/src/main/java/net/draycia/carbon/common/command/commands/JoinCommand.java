@@ -19,10 +19,6 @@
  */
 package net.draycia.carbon.common.command.commands;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.standard.StringArgument;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -37,6 +33,12 @@ import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.suggestion.Suggestion;
+import org.incendo.cloud.suggestion.SuggestionProvider;
+
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
 @DefaultQualifier(NonNull.class)
 public final class JoinCommand extends CarbonCommand {
@@ -69,21 +71,23 @@ public final class JoinCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .argument(StringArgument.<Commander>builder("channel").greedy().withSuggestionsProvider((context, s) -> {
-                final CarbonPlayer sender = ((PlayerCommander) context.getSender()).carbonPlayer();
-                return sender.leftChannels().stream().map(Key::value).toList();
-            }), RichDescription.of(this.carbonMessages.commandJoinDescription()))
+            .required("channel", greedyStringParser(), SuggestionProvider.blocking(
+                (context, s) -> {
+                    final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
+                    return sender.leftChannels().stream().map(Key::value).map(Suggestion::suggestion).toList();
+                }
+            ))
             .permission("carbon.join")
             .senderType(PlayerCommander.class)
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, this.carbonMessages.commandJoinDescription())
+            .commandDescription(richDescription(this.carbonMessages.commandJoinDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = ((PlayerCommander) handler.getSender()).carbonPlayer();
+                final CarbonPlayer sender = handler.sender().carbonPlayer();
                 final @Nullable ChatChannel channel = this.channelRegistry.channelByValue(handler.get("channel"));
                 if (channel == null) {
                     this.carbonMessages.channelNotFound(sender);
                     return;
                 }
-                final ChannelPermissionResult permitted = channel.speechPermitted(sender);
+                final ChannelPermissionResult permitted = channel.hearingPermitted(sender);
                 if (!permitted.permitted()) {
                     sender.sendMessage(permitted.reason());
                     return;
