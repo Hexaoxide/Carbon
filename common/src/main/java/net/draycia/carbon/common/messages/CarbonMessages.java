@@ -177,6 +177,12 @@ public interface CarbonMessages {
     @Message("whisper.toggled.off")
     void whispersToggledOff(final Audience audience);
 
+    @Message("whisper.no_permission.send")
+    void whisperNoPermissionSend(final Audience audience);
+
+    @Message("whisper.no_permission.receive")
+    void whisperNoPermissionReceive(final Audience audience);
+
     /*
      * =============================================================
      * ========================= Nicknames =========================
