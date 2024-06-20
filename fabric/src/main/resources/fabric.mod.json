@@ -28,7 +28,7 @@
         "fabric": "*",
         "cloud": "*",
         "adventure-platform-fabric": "*",
-        "minecraft": "~1.20.4",
+        "minecraft": "~1.21",
         "luckperms": ">=5.0.0"
     },
     "suggests": {
