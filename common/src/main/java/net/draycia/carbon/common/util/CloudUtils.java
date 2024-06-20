@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -106,8 +107,13 @@ public final class CloudUtils {
         commandManager.exceptionController()
             .registerHandler(ArgumentParseException.class, ctx ->
                 carbonMessages.errorCommandArgumentParsing(ctx.context().sender(), CloudUtils.message(ctx.exception().getCause())))
-            .registerHandler(InvalidCommandSenderException.class, ctx ->
-                carbonMessages.errorCommandInvalidSender(ctx.context().sender(), TypeUtils.simpleName(ctx.exception().requiredSender())))
+            .registerHandler(InvalidCommandSenderException.class, ctx -> {
+                final Set<Type> types = ctx.exception().requiredSenderTypes();
+                if (types.size() != 1) {
+                    throw new IllegalStateException();
+                }
+                carbonMessages.errorCommandInvalidSender(ctx.context().sender(), TypeUtils.simpleName(types.iterator().next()));
+            })
             .registerHandler(InvalidSyntaxException.class, ctx ->
                 carbonMessages.errorCommandInvalidSyntax(ctx.context().sender(), Component.text(ctx.exception().correctSyntax()).replaceText(
                     config -> config.match(SPECIAL_CHARACTERS_PATTERN)
