@@ -6,7 +6,7 @@ javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = 
 
 [versions]
 indra = "3.1.3"
-shadow = "8.1.1"
+shadow = "8.1.7"
 pluginYml = "0.5.3"
 mod-publish-plugin = "0.5.1"
 gremlin = "0.0.6"
@@ -65,7 +65,7 @@ netty = "4.1.97.Final"
 [libraries]
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
 indraLicenseHeader = { group = "net.kyori", name = "indra-licenser-spotless", version.ref = "indra" }
-shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
+shadow = { group = "io.github.goooler.shadow", name = "shadow-gradle-plugin", version.ref = "shadow" }
 mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 gremlin-gradle = { group = "xyz.jpenilla", name = "gremlin-gradle", version.ref = "gremlin" }
 run-task = { module = "xyz.jpenilla:run-task", version.ref = "runTask" }

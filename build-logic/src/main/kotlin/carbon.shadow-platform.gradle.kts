@@ -1,6 +1,6 @@
 plugins {
   id("carbon.platform-conventions")
-  id("com.github.johnrengelman.shadow")
+  id("io.github.goooler.shadow")
 }
 
 tasks {
