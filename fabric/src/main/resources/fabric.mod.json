@@ -24,7 +24,7 @@
         "carbonchat.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.15.4",
+        "fabricloader": ">=0.15.11",
         "fabric": "*",
         "cloud": "*",
         "adventure-platform-fabric": "*",
