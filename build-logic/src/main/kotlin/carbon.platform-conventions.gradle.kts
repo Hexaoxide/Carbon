@@ -80,6 +80,8 @@ publishMods.modrinth {
   optional("miniplaceholders")
   minecraftVersions.addAll(
     "1.20.4",
+    "1.20.5",
+    "1.20.6"
   )
 }
 
