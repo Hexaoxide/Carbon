@@ -194,11 +194,15 @@ public class PrimaryConfig {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
 
-        builder.addVersion(0, insertAddition("use-carbon-nicknames", "nickname-settings", "use-carbon-nicknames"));
-        builder.addVersion(1, insertAddition("party-chat", "party-chat", "enabled"));
-        builder.addVersion(2, insertAddition("nickname-settings", "filter", ".*"));
-        builder.addVersion(3, insertAddition("return-to-default-channel", "return-to-default-channel", false));
-        builder.addVersion(4, insertAddition("nickname-settings", "update-tab-list", true));
+        final ConfigurationTransformation initial = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
+            .build();
+        builder.addVersion(0, initial);
+
+        final ConfigurationTransformation one = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
+            .build();
+        builder.addVersion(1, one);
 
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
@@ -209,12 +213,6 @@ public class PrimaryConfig {
         }
 
         ConfigManager.configVersionComment(node, upgrader);
-    }
-
-    private static ConfigurationTransformation insertAddition(final String path, final Object key, final Object value) {
-        return ConfigurationTransformation.builder()
-            .addAction(NodePath.path(path), ($, $$) -> new Object[]{key, value})
-            .build();
     }
 
     @ConfigSerializable
