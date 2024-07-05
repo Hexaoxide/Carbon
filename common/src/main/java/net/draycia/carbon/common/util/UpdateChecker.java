@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public record UpdateChecker(Logger logger) {
 
     private Releases fetchReleases() throws IOException {
         final JsonArray result;
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://api.github.com/repos/%s/releases".formatted(GITHUB_REPO)).openStream(), StandardCharsets.UTF_8))) {
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(URI.create("https://api.github.com/repos/%s/releases".formatted(GITHUB_REPO)).toURL().openStream(), StandardCharsets.UTF_8))) {
             result = GSON.fromJson(reader, JsonArray.class);
         }
 
@@ -117,7 +118,7 @@ public record UpdateChecker(Logger logger) {
         }
         final String classFilePath = resource.toString().replace("\\", "/");
         final String archivePath = classFilePath.substring(0, classFilePath.length() - classLocation.length());
-        try (final InputStream stream = new URL(archivePath + "/META-INF/MANIFEST.MF").openStream()) {
+        try (final InputStream stream = URI.create(archivePath + "/META-INF/MANIFEST.MF").toURL().openStream()) {
             return new Manifest(stream);
         } catch (final IOException ex) {
             return null;
