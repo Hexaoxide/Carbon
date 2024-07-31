@@ -23,7 +23,9 @@ import com.google.inject.Inject;
 import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
@@ -41,6 +43,7 @@ import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolve
 import net.draycia.carbon.common.messages.placeholders.ComponentPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.IntPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.KeyPlaceholderResolver;
+import net.draycia.carbon.common.messages.placeholders.LongPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.StringPlaceholderResolver;
 import net.draycia.carbon.common.messages.placeholders.UUIDPlaceholderResolver;
 import net.draycia.carbon.common.util.Exceptions;
@@ -110,6 +113,10 @@ public class ConfigChatChannel implements ChatChannel {
         If true, players will be able to see if they're not sending messages to anyone
         because they're out of range from the radius.""")
     private boolean emptyRadiusRecipientsMessage = true;
+
+    private Map<UUID, Long> cooldowns = new HashMap<>();
+
+    private long cooldown = -1;
 
     @Override
     public @Nullable String quickPrefix() {
@@ -186,6 +193,25 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
+    public long cooldown() {
+        return this.cooldown * 1000; // Seconds to millis
+    }
+
+    @Override
+    public long playerCooldown(final CarbonPlayer player) {
+        if (this.cooldown() <= 0) {
+            return 0;
+        }
+
+        return Objects.requireNonNullElse(this.cooldowns.get(player.uuid()), 0L);
+    }
+
+    public long startCooldown(final CarbonPlayer player) {
+        final long expiresAt = System.currentTimeMillis() + this.cooldown();
+        return Objects.requireNonNullElse(this.cooldowns.put(player.uuid(), expiresAt), 0L);
+    }
+
+    @Override
     public @NonNull Key key() {
         return Objects.requireNonNull(this.key);
     }
@@ -214,6 +240,7 @@ public class ConfigChatChannel implements ChatChannel {
                 .weightedPlaceholderResolver(UUID.class, uuidPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(String.class, stringPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(Integer.class, new IntPlaceholderResolver<>(), 0)
+                .weightedPlaceholderResolver(Long.class, new LongPlaceholderResolver<>(), 0)
                 .weightedPlaceholderResolver(Key.class, keyPlaceholderResolver, 0)
                 .weightedPlaceholderResolver(Boolean.class, booleanPlaceholderResolver, 0)
                 .create(this.getClass().getClassLoader());

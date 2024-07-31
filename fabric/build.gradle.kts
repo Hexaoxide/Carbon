@@ -45,9 +45,6 @@ dependencies {
   runtimeOnly(libs.jarRelocator) {
     isTransitive = false
   }
-  runtimeDownload(libs.guice) {
-    exclude("com.google.guava")
-  }
   runtimeDownload(libs.checkerQual)
 }
 

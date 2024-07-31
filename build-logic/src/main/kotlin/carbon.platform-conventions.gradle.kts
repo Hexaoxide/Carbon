@@ -30,6 +30,9 @@ dependencies {
   }
   runtimeDownload(libs.rabbitmq)
   runtimeDownload(libs.nats)
+  runtimeDownload(libs.guice) {
+    exclude("com.google.guava")
+  }
   runtimeDownload(libs.assistedInject) {
     isTransitive = false
   }
@@ -77,6 +80,9 @@ publishMods.modrinth {
   optional("miniplaceholders")
   minecraftVersions.addAll(
     "1.20.4",
+    "1.20.5",
+    "1.20.6",
+    "1.21",
   )
 }
 

@@ -60,7 +60,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
-import org.incendo.cloud.paper.PaperCommandManager;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonChatPaperModule extends CarbonPlatformModule {
@@ -76,7 +76,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
     @Singleton
     @SuppressWarnings("unused")
     public CommandManager<Commander> commandManager(final UserManager<?> userManager, final CarbonMessages messages, final ExecutionCoordinatorHolder executionCoordinatorHolder) {
-        final PaperCommandManager<Commander> commandManager = new PaperCommandManager<>(
+        final LegacyPaperCommandManager<Commander> commandManager = new LegacyPaperCommandManager<>(
             this.bootstrap,
             executionCoordinatorHolder.executionCoordinator(),
             SenderMapper.create(

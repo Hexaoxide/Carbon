@@ -408,7 +408,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                     // TODO: trigger platform events related to chat
                     this.sendMessageInChannel(player, chatChannel, message);
                 } else {
-                    if (this.config.primaryConfig().returnToDefaultChannel() && player.selectedChannel().key().equals(channelKey)) {
+                    final @Nullable ChatChannel fromChannel = player.selectedChannel();
+                    if (this.config.primaryConfig().returnToDefaultChannel() && fromChannel != null && fromChannel.key().equals(channelKey)) {
                         chatChannel = this.defaultChannel();
                     }
 

@@ -11,7 +11,7 @@ indra {
   gpl3OnlyLicense()
 
   javaVersions {
-    target(17)
+    target(21)
   }
 
   github(GITHUB_ORGANIZATION, GITHUB_REPO)

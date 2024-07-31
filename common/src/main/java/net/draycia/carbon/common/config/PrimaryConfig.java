@@ -194,10 +194,15 @@ public class PrimaryConfig {
         final ConfigurationTransformation.VersionedBuilder builder = ConfigurationTransformation.versionedBuilder()
             .versionKey(ConfigManager.CONFIG_VERSION_KEY);
 
-        builder.addVersion(0, insertAddition("use-carbon-nicknames", "nickname-settings", "use-carbon-nicknames"));
-        builder.addVersion(1, insertAddition("party-chat", "party-chat", "enabled"));
-        builder.addVersion(2, insertAddition("nickname-settings", "filter", ".*"));
-        builder.addVersion(3, insertAddition("return-to-default-channel", "return-to-default-channel", false));
+        final ConfigurationTransformation initial = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("use-carbon-nicknames"), (path, value) -> new Object[]{"nickname-settings", "use-carbon-nicknames"})
+            .build();
+        builder.addVersion(0, initial);
+
+        final ConfigurationTransformation one = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("party-chat"), (path, value) -> new Object[]{"party-chat", "enabled"})
+            .build();
+        builder.addVersion(1, one);
 
         final ConfigurationTransformation.Versioned upgrader = builder.build();
         final int from = upgrader.version(node);
@@ -210,17 +215,14 @@ public class PrimaryConfig {
         ConfigManager.configVersionComment(node, upgrader);
     }
 
-    private static ConfigurationTransformation insertAddition(final String path, final Object key, final Object value) {
-        return ConfigurationTransformation.builder()
-            .addAction(NodePath.path(path), ($, $$) -> new Object[]{key, value})
-            .build();
-    }
-
     @ConfigSerializable
     public static final class NicknameSettings {
 
         @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
         private boolean useCarbonNicknames = true;
+
+        @Comment("Paper only. Updates the player's display name in the tab list to match their nickname.")
+        private boolean updateTabList = true;
 
         @Comment("Minimum number of characters in nickname (excluding formatting).")
         private int minLength = 3;
@@ -241,6 +243,10 @@ public class PrimaryConfig {
 
         public boolean useCarbonNicknames() {
             return this.useCarbonNicknames;
+        }
+
+        public boolean updateTabList() {
+            return this.updateTabList;
         }
 
         public List<String> blackList() {

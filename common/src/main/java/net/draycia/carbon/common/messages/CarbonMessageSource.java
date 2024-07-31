@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -98,7 +99,7 @@ public final class CarbonMessageSource implements IMessageSource<Audience, Strin
             if (sourceUrl.getProtocol().equals("jar")) {
                 final int exclamationIdx = sourceUrl.getPath().lastIndexOf('!');
                 if (exclamationIdx != -1) {
-                    sourceUrl = new URL(sourceUrl.getPath().substring(0, exclamationIdx));
+                    sourceUrl = URI.create(sourceUrl.getPath().substring(0, exclamationIdx)).toURL();
                 }
             }
             return Paths.get(sourceUrl.toURI());
