@@ -101,6 +101,7 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * of on execute. If it's dynamic, we must send the command regardless in case they gain permission later.</p>
      *
      * @return whether the permissions are dynamic
+     * @since 3.0.0
      */
     default boolean dynamicPermission() {
         return true;
