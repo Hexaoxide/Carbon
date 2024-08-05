@@ -65,6 +65,14 @@ public class TruceChannel extends AbstractFactionsChannel {
     }
 
     @Override
+    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            this.hasRelations(player, Relation.TRUCE),
+            () -> this.messages.cannotUseTruceChannel(player)
+        );
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             this.hasRelations(player, Relation.TRUCE),

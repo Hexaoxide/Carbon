@@ -39,6 +39,15 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public interface ChatChannel extends Keyed, ChatComponentRenderer {
 
     /**
+     * Checks if the player may join this channel.
+     *
+     * @param carbonPlayer the player attempting to join
+     * @return if the player may join
+     * @since 3.0.0
+     */
+    ChannelPermissionResult joinPermitted(CarbonPlayer carbonPlayer);
+
+    /**
      * Checks if the player may send messages in this channel.
      *
      * @param carbonPlayer the player attempting to speak

@@ -161,6 +161,14 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
+    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            player.hasPermission(this.permission()),
+            () -> this.messages.channelNoPermission(player)
+        );
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             player.hasPermission(this.permission() + ".speak"),

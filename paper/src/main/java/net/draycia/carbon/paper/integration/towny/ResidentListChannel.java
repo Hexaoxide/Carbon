@@ -53,6 +53,14 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
     protected abstract @Nullable T residentList(CarbonPlayer player);
 
     @Override
+    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            this.residentList(player) != null,
+            () -> this.cannotUseChannel(player)
+        );
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             this.residentList(player) != null,

@@ -65,6 +65,14 @@ public class AllianceChannel extends AbstractFactionsChannel {
     }
 
     @Override
+    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            this.hasRelations(player, Relation.ALLY),
+            () -> this.messages.cannotUseFactionAllianceChannel(player)
+        );
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             this.hasRelations(player, Relation.ALLY),
