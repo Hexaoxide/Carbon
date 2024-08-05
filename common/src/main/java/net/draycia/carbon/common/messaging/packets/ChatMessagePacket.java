@@ -67,14 +67,12 @@ public final class ChatMessagePacket extends CarbonPacket {
     public ChatMessagePacket(
         final @NotNull UUID serverId,
         final UUID userId,
-        final String channelPermission,
         final Key channelKey,
         final String username,
         final Component message
     ) {
         super(serverId);
         this.userId = userId;
-        this.channelPermission = channelPermission;
         this.channelKey = channelKey;
         this.username = username;
         this.message = message;
@@ -83,7 +81,6 @@ public final class ChatMessagePacket extends CarbonPacket {
     @Override
     public void read(final io.netty.buffer.@NotNull ByteBuf buffer) {
         this.userId = this.readUUID(buffer);
-        this.channelPermission = this.readString(buffer);
         this.channelKey = this.readKey(buffer);
         this.username = this.readString(buffer);
         this.message = this.readComponent(buffer);
@@ -92,7 +89,6 @@ public final class ChatMessagePacket extends CarbonPacket {
     @Override
     public void write(final io.netty.buffer.@NotNull ByteBuf buffer) {
         this.writeUUID(this.userId, buffer);
-        this.writeString(this.channelPermission, buffer);
         this.writeKey(this.channelKey, buffer);
         this.writeString(this.username, buffer);
         this.writeComponent(this.message, buffer);

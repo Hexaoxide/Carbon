@@ -56,7 +56,7 @@ public class MessagePacketHandler implements Listener {
                 final Component networkMessage = e.renderFor(sender);
 
                 return new ChatMessagePacket(serverId, sender.uuid(),
-                    event.chatChannel().permission(), event.chatChannel().key(), sender.username(), networkMessage);
+                    event.chatChannel().key(), sender.username(), networkMessage);
             });
         });
     }

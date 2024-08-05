@@ -364,20 +364,13 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .optional("message", signedGreedyStringParser());
 
-        if (channel.permission() != null) {
+        if (!channel.dynamicPermission()) {
             builder = builder.permission(PredicatePermission.of(sender -> {
                 if (!(sender instanceof CarbonPlayer player)) {
                     return true;
                 }
                 return channel.joinPermitted(player).permitted();
             }));
-
-            // Add to LuckPerms permission suggestions... lol
-            //this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
-            //    checker.test(channel.permission());
-            //    checker.test(channel.permission() + ".see");
-            //    checker.test(channel.permission() + ".speak");
-            //});
         }
 
         final Key channelKey = channel.key();

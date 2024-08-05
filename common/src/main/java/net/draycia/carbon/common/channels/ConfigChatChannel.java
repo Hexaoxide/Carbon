@@ -185,6 +185,11 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
+    public boolean dynamicPermission() {
+        return false;
+    }
+
+    @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
         final List<Audience> recipients = new ArrayList<>();
 
@@ -265,8 +270,7 @@ public class ConfigChatChannel implements ChatChannel {
         return requireNonNull(this.carbonMessages, "Channel message service must not be null!");
     }
 
-    @Override
-    public String permission() {
+    private String permission() {
         if (this.permission == null) {
             return "carbon.channel." + this.key().value();
         }

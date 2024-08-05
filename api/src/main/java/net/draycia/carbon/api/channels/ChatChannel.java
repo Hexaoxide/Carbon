@@ -24,7 +24,6 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -91,6 +90,23 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     boolean shouldRegisterCommands();
 
     /**
+     * Returns whether the result of {@link #joinPermitted(CarbonPlayer)} is dynamic.
+     *
+     * <p>An example of a dynamic permissions is the built-in party channel that only allows players in a party to join.</p>
+     *
+     * <p>An example of static permissions is the built-in config channels that simply check permission strings. The fact that a player's
+     * permissions may change during gameplay does not make the permission dynamic, as the server will resend commands on permission changes.</p>
+     *
+     * <p>If the result is static, then we can avoid sending commands to the player that they will just get denied use
+     * of on execute. If it's dynamic, we must send the command regardless in case they gain permission later.</p>
+     *
+     * @return whether the permissions are dynamic
+     */
+    default boolean dynamicPermission() {
+        return true;
+    }
+
+    /**
      * The text that can be used to refer to this channel in commands.
      *
      * @return this channel's name when used in commands
@@ -105,15 +121,6 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     List<String> commandAliases();
-
-    /**
-     * The base permission players must have in order to use the channel.<br>
-     * Null return means players do not need any permission.
-     *
-     * @return the permission required to use the channel, or null
-     * @since 2.0.7
-     */
-    @MonotonicNonNull String permission();
 
     /**
      * The distance from the sender players must be to receive chat messages.<br>
