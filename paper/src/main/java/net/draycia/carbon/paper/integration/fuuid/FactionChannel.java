@@ -25,11 +25,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.draycia.carbon.api.channels.ChannelPermissionResult;
+import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
-import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
@@ -47,7 +46,6 @@ public class FactionChannel extends AbstractFactionsChannel {
 
     public static final String FILE_NAME = "factionsuuid-factionchat.conf";
 
-    private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private transient @MonotonicNonNull @Inject UserManager<?> users;
 
     public FactionChannel() {
@@ -62,27 +60,11 @@ public class FactionChannel extends AbstractFactionsChannel {
     }
 
     @Override
-    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
+    public ChannelPermissions permissions() {
+        return ChannelPermissions.uniformDynamic(player -> channelPermissionResult(
             this.faction(player) != null,
             () -> this.messages.cannotUseFactionChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.faction(player) != null,
-            () -> this.messages.cannotUseFactionChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.faction(player) != null,
-            () -> this.messages.cannotUseFactionChannel(player)
-        );
+        ));
     }
 
     @Override

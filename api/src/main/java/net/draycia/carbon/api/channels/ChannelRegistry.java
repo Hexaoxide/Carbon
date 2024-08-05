@@ -109,4 +109,18 @@ public interface ChannelRegistry {
      */
     void allKeys(Consumer<Key> action);
 
+    /**
+     * Create a {@link ChannelPermissions channel permissions handler} for the provided base permission string.
+     *
+     * <p>The handler will check the base permission for joins, {@literal <base>.see} for receiving/seeing messages,
+     * and {@literal <base>.speak} for speaking/sending messages.</p>
+     *
+     * <p>The built-in deny messages are used, same as user-configured config channels.</p>
+     *
+     * @param permission permission string
+     * @return permission handler
+     * @since 3.0.0
+     */
+    ChannelPermissions permission(String permission);
+
 }

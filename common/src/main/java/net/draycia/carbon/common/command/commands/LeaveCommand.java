@@ -75,7 +75,7 @@ public final class LeaveCommand extends CarbonCommand {
                 final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
                 return this.channelRegistry.keys().stream()
                     .map(this.channelRegistry::channel)
-                    .filter(x -> !sender.leftChannels().contains(x.key()) && x.speechPermitted(sender).permitted())
+                    .filter(x -> !sender.leftChannels().contains(x.key()) && x.permissions().speechPermitted(sender).permitted())
                     .map(x -> x.key().value())
                     .map(Suggestion::suggestion)
                     .toList();
@@ -90,7 +90,7 @@ public final class LeaveCommand extends CarbonCommand {
                     this.carbonMessages.channelNotFound(sender);
                     return;
                 }
-                final ChannelPermissionResult permitted = channel.joinPermitted(sender);
+                final ChannelPermissionResult permitted = channel.permissions().joinPermitted(sender);
                 if (!permitted.permitted()) {
                     sender.sendMessage(permitted.reason());
                     return;

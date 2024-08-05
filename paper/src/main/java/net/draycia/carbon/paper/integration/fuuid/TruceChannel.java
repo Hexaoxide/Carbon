@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.draycia.carbon.api.channels.ChannelPermissionResult;
+import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
@@ -65,27 +65,11 @@ public class TruceChannel extends AbstractFactionsChannel {
     }
 
     @Override
-    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
+    public ChannelPermissions permissions() {
+        return ChannelPermissions.uniformDynamic(player -> channelPermissionResult(
             this.hasRelations(player, Relation.TRUCE),
             () -> this.messages.cannotUseTruceChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.hasRelations(player, Relation.TRUCE),
-            () -> this.messages.cannotUseTruceChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.hasRelations(player, Relation.TRUCE),
-            () -> this.messages.cannotUseTruceChannel(player)
-        );
+        ));
     }
 
     @Override

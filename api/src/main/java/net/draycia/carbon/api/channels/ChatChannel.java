@@ -38,31 +38,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public interface ChatChannel extends Keyed, ChatComponentRenderer {
 
     /**
-     * Checks if the player may join this channel.
+     * Returns the permissions handler for the channel.
      *
-     * @param carbonPlayer the player attempting to join
-     * @return if the player may join
+     * @return the permissions handler
      * @since 3.0.0
      */
-    ChannelPermissionResult joinPermitted(CarbonPlayer carbonPlayer);
-
-    /**
-     * Checks if the player may send messages in this channel.
-     *
-     * @param carbonPlayer the player attempting to speak
-     * @return if the player may speak
-     * @since 3.0.0
-     */
-    ChannelPermissionResult speechPermitted(CarbonPlayer carbonPlayer);
-
-    /**
-     * Checks if the player may receive messages from this channel.
-     *
-     * @param player the player that's receiving messages
-     * @return if the player may receive messages
-     * @since 3.0.0
-     */
-    ChannelPermissionResult hearingPermitted(CarbonPlayer player);
+    ChannelPermissions permissions();
 
     /**
      * Returns a list of all recipients that will receive messages from the sender.
@@ -88,24 +69,6 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 2.0.0
      */
     boolean shouldRegisterCommands();
-
-    /**
-     * Returns whether the result of {@link #joinPermitted(CarbonPlayer)} is dynamic.
-     *
-     * <p>An example of a dynamic permissions is the built-in party channel that only allows players in a party to join.</p>
-     *
-     * <p>An example of static permissions is the built-in config channels that simply check permission strings. The fact that a player's
-     * permissions may change during gameplay does not make the permission dynamic, as the server will resend commands on permission changes.</p>
-     *
-     * <p>If the result is static, then we can avoid sending commands to the player that they will just get denied use
-     * of on execute. If it's dynamic, we must send the command regardless in case they gain permission later.</p>
-     *
-     * @return whether the permissions are dynamic
-     * @since 3.0.0
-     */
-    default boolean dynamicPermission() {
-        return true;
-    }
 
     /**
      * The text that can be used to refer to this channel in commands.

@@ -19,23 +19,20 @@
  */
 package net.draycia.carbon.common.channels;
 
-import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import net.draycia.carbon.api.channels.ChannelPermissionResult;
+import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
-import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -50,8 +47,6 @@ public class PartyChatChannel extends ConfigChatChannel {
 
     public static final String FILE_NAME = "partychat.conf";
 
-    private transient @MonotonicNonNull @Inject CarbonMessages messages;
-
     public PartyChatChannel() {
         this.key = Key.key("carbon", "partychat");
         this.commandAliases = List.of("pc");
@@ -63,27 +58,11 @@ public class PartyChatChannel extends ConfigChatChannel {
     }
 
     @Override
-    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
+    public ChannelPermissions permissions() {
+        return ChannelPermissions.uniformDynamic(player -> channelPermissionResult(
             player.party().join() != null,
             () -> this.messages.cannotUsePartyChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            player.party().join() != null,
-            () -> this.messages.cannotUsePartyChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            player.party().join() != null,
-            () -> this.messages.cannotUsePartyChannel(player)
-        );
+        ));
     }
 
     @Override

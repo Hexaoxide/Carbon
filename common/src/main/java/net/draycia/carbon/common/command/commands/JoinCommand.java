@@ -87,7 +87,7 @@ public final class JoinCommand extends CarbonCommand {
                     this.carbonMessages.channelNotFound(sender);
                     return;
                 }
-                final ChannelPermissionResult permitted = channel.joinPermitted(sender);
+                final ChannelPermissionResult permitted = channel.permissions().joinPermitted(sender);
                 if (!permitted.permitted()) {
                     sender.sendMessage(permitted.reason());
                     return;

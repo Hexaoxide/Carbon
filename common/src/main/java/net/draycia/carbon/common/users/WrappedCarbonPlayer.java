@@ -248,7 +248,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
                 continue;
             }
 
-            if (text.startsWith(prefix) && chatChannel.speechPermitted(this).permitted()) {
+            if (text.startsWith(prefix) && chatChannel.permissions().speechPermitted(this).permitted()) {
                 channel = chatChannel;
                 formattedMessage = formattedMessage.replaceText(TextReplacementConfig.builder()
                     .once()
