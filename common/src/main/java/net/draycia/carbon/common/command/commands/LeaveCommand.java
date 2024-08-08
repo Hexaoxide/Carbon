@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.command.commands;
 
 import com.google.inject.Inject;
+import java.util.Objects;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
@@ -74,7 +75,9 @@ public final class LeaveCommand extends CarbonCommand {
                 final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
                 return this.channelRegistry.keys().stream()
                     .map(this.channelRegistry::channel)
-                    .filter(x -> !sender.leftChannels().contains(x.key()) && x.permissions().speechPermitted(sender).permitted())
+                    .filter(Objects::nonNull)
+                    .filter(x -> !sender.leftChannels().contains(x.key())
+                        && (x.permissions().joinPermitted(sender).permitted() || x.permissions().hearingPermitted(sender).permitted() || x.permissions().speechPermitted(sender).permitted()))
                     .map(x -> x.key().value())
                     .map(Suggestion::suggestion)
                     .toList();
