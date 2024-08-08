@@ -20,7 +20,6 @@
 package net.draycia.carbon.common.command.commands;
 
 import com.google.inject.Inject;
-import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
@@ -88,11 +87,6 @@ public final class LeaveCommand extends CarbonCommand {
                 final @Nullable ChatChannel channel = this.channelRegistry.channelByValue(handler.get("channel"));
                 if (channel == null) {
                     this.carbonMessages.channelNotFound(sender);
-                    return;
-                }
-                final ChannelPermissionResult permitted = channel.permissions().joinPermitted(sender);
-                if (!permitted.permitted()) {
-                    sender.sendMessage(permitted.reason());
                     return;
                 }
                 if (sender.leftChannels().contains(channel.key())) {
