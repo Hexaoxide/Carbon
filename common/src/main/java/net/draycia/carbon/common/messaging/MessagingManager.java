@@ -81,7 +81,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public class MessagingManager {
 
-    private static final byte protocolVersion = 0;
+    private static final byte protocolVersion = 1;
 
     private final Logger logger;
     private final UUID serverId;

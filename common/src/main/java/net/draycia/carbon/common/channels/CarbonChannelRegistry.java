@@ -72,6 +72,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.minecraft.signed.SignedString;
+import org.incendo.cloud.permission.PredicatePermission;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
@@ -363,15 +364,13 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .optional("message", signedGreedyStringParser());
 
-        if (channel.permission() != null) {
-            builder = builder.permission(channel.permission());
-
-            // Add to LuckPerms permission suggestions... lol
-            //this.carbonChat.server().console().get(PermissionChecker.POINTER).ifPresent(checker -> {
-            //    checker.test(channel.permission());
-            //    checker.test(channel.permission() + ".see");
-            //    checker.test(channel.permission() + ".speak");
-            //});
+        if (!channel.dynamicPermission()) {
+            builder = builder.permission(PredicatePermission.of(sender -> {
+                if (!(sender instanceof CarbonPlayer player)) {
+                    return true;
+                }
+                return channel.joinPermitted(player).permitted();
+            }));
         }
 
         final Key channelKey = channel.key();

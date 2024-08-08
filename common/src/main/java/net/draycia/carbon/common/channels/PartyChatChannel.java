@@ -63,6 +63,14 @@ public class PartyChatChannel extends ConfigChatChannel {
     }
 
     @Override
+    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            player.party().join() != null,
+            () -> this.messages.cannotUsePartyChannel(player)
+        );
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             player.party().join() != null,

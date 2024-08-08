@@ -80,7 +80,7 @@ public final class LeaveCommand extends CarbonCommand {
                     .map(Suggestion::suggestion)
                     .toList();
             }))
-            .permission("carbon.join")
+            .permission("carbon.leave")
             .senderType(PlayerCommander.class)
             .commandDescription(richDescription(this.carbonMessages.commandLeaveDescription()))
             .handler(handler -> {
@@ -90,7 +90,7 @@ public final class LeaveCommand extends CarbonCommand {
                     this.carbonMessages.channelNotFound(sender);
                     return;
                 }
-                final ChannelPermissionResult permitted = channel.speechPermitted(sender);
+                final ChannelPermissionResult permitted = channel.joinPermitted(sender);
                 if (!permitted.permitted()) {
                     sender.sendMessage(permitted.reason());
                     return;

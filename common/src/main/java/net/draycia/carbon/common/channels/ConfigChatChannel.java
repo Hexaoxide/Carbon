@@ -161,6 +161,14 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
+    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            player.hasPermission(this.permission()),
+            () -> this.messages.channelNoPermission(player)
+        );
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             player.hasPermission(this.permission() + ".speak"),
@@ -174,6 +182,11 @@ public class ConfigChatChannel implements ChatChannel {
             player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this.key),
             () -> this.messages.channelNoPermission(player)
         );
+    }
+
+    @Override
+    public boolean dynamicPermission() {
+        return false;
     }
 
     @Override
@@ -257,8 +270,7 @@ public class ConfigChatChannel implements ChatChannel {
         return requireNonNull(this.carbonMessages, "Channel message service must not be null!");
     }
 
-    @Override
-    public String permission() {
+    private String permission() {
         if (this.permission == null) {
             return "carbon.channel." + this.key().value();
         }

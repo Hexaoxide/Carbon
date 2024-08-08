@@ -65,6 +65,14 @@ public class McmmoPartyChannel extends ConfigChatChannel {
     }
 
     @Override
+    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
+        return channelPermissionResult(
+            this.party(player) != null,
+            () -> this.messages.cannotUseMcmmoPartyChannel(player)
+        );
+    }
+
+    @Override
     public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
         return channelPermissionResult(
             this.party(player) != null,
