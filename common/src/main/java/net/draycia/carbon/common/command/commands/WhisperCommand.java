@@ -175,6 +175,11 @@ public final class WhisperCommand extends CarbonCommand {
                 return;
             }
 
+            if (!sender.hasPermission("carbon.whisper.send")) {
+                this.messages.whisperNoPermissionSend(sender);
+                return;
+            }
+
             final String recipientUsername = recipient.username();
             if (!this.network.online(recipient) || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                 final var exception = new CarbonPlayerParser.ParseException(
@@ -220,6 +225,11 @@ public final class WhisperCommand extends CarbonCommand {
                 this.messages.whisperSender(SourcedAudience.of(sender, sender), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message())
             );
             if (localRecipient) {
+                if (!recipient.hasPermission("carbon.whisper.receive")) {
+                    this.messages.whisperNoPermissionReceive(sender);
+                    return;
+                }
+
                 message.sendMessage(
                     recipient,
                     ChatType.chatType(this.rawChatKey),
@@ -258,6 +268,11 @@ public final class WhisperCommand extends CarbonCommand {
                 final Component senderDisplayName = sender.displayName();
                 final String recipientUsername = recipient.username();
                 final Component recipientDisplayName = recipient.displayName();
+
+                if (!recipient.hasPermission("carbon.whisper.receive")) {
+                    this.messages.whisperNoPermissionReceive(sender);
+                    return;
+                }
 
                 recipient.whisperReplyTarget(sender.uuid());
                 SourcedAudience.of(sender, recipient).sendMessage(
