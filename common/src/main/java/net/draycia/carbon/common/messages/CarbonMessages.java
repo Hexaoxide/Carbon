@@ -38,6 +38,9 @@ public interface CarbonMessages {
     @Message("channel.radius.empty_recipients")
     void emptyRecipients(final Audience audience);
 
+    @Message("channel.radius.spy")
+    void radiusSpy(Audience audience, Component message);
+
     @Message("channel.not_found")
     void channelNotFound(final Audience audience);
 
@@ -123,6 +126,16 @@ public interface CarbonMessages {
     @Message("whisper.from")
     Component whisperRecipient(
         @NotPlaceholder SourcedAudience audience,
+        String senderUsername,
+        Component senderDisplayName,
+        String recipientUsername,
+        Component recipientDisplayName,
+        Component message
+    );
+
+    @Message("whisper.from.spy")
+    void whisperRecipientSpy(
+        Audience audience,
         String senderUsername,
         Component senderDisplayName,
         String recipientUsername,
@@ -256,6 +269,21 @@ public interface CarbonMessages {
 
     @Message("config.reload.failed")
     void configReloadFailed(final Audience audience);
+
+    /*
+     * =============================================================
+     * ========================== Spying ===========================
+     * =============================================================
+     */
+
+    @Message("command.spy.enabled")
+    void commandSpyEnabled(final Audience audience);
+
+    @Message("command.spy.disabled")
+    void commandSpyDisabled(final Audience audience);
+
+    @Message("command.spy.description")
+    Component commandSpyDescription();
 
     /*
      * =============================================================
@@ -524,6 +552,9 @@ public interface CarbonMessages {
 
     @Message("party.cannot_use_channel")
     Component cannotUsePartyChannel(Audience audience);
+
+    @Message("party.spy")
+    void partySpy(Audience audience, Component message);
 
     @Message("deletemessage.prefix")
     Component deleteMessagePrefix();

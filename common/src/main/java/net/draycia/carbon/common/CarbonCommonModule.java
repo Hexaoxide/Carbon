@@ -58,6 +58,7 @@ import net.draycia.carbon.common.command.commands.NicknameCommand;
 import net.draycia.carbon.common.command.commands.PartyCommands;
 import net.draycia.carbon.common.command.commands.ReloadCommand;
 import net.draycia.carbon.common.command.commands.ReplyCommand;
+import net.draycia.carbon.common.command.commands.SpyCommand;
 import net.draycia.carbon.common.command.commands.ToggleMessagesCommand;
 import net.draycia.carbon.common.command.commands.UnignoreCommand;
 import net.draycia.carbon.common.command.commands.UnmuteCommand;
@@ -73,6 +74,7 @@ import net.draycia.carbon.common.listeners.ItemLinkHandler;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.listeners.MessagePacketHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
+import net.draycia.carbon.common.listeners.PartyChatSpyHandler;
 import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
@@ -220,6 +222,7 @@ public final class CarbonCommonModule extends AbstractModule {
         listeners.addBinding().to(ItemLinkHandler.class);
         listeners.addBinding().to(MessagePacketHandler.class);
         listeners.addBinding().to(MuteHandler.class);
+        listeners.addBinding().to(PartyChatSpyHandler.class);
         listeners.addBinding().to(PingHandler.class);
         listeners.addBinding().to(RadiusListener.class);
     }
@@ -238,6 +241,7 @@ public final class CarbonCommonModule extends AbstractModule {
         commands.addBinding().to(NicknameCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(ReloadCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(ReplyCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(SpyCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(ToggleMessagesCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(UnignoreCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(UnmuteCommand.class).in(Scopes.SINGLETON);
