@@ -82,6 +82,7 @@ import net.draycia.carbon.common.messages.CarbonMessageSender;
 import net.draycia.carbon.common.messages.CarbonMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.Option;
+import net.draycia.carbon.common.messages.RenderForTagResolver;
 import net.draycia.carbon.common.messages.SourcedReceiverResolver;
 import net.draycia.carbon.common.messages.StandardPlaceholderResolverStrategyButDifferent;
 import net.draycia.carbon.common.messages.placeholders.BooleanPlaceholderResolver;
@@ -202,6 +203,7 @@ public final class CarbonCommonModule extends AbstractModule {
     @Override
     protected void configure() {
         this.install(new FactoryModuleBuilder().build(ParserFactory.class));
+        this.install(new FactoryModuleBuilder().build(RenderForTagResolver.Factory.class));
         this.install(factoryModule(PacketFactory.class));
         this.bind(ServerId.KEY).toInstance(UUID.randomUUID());
         this.bind(ChannelRegistry.class).to(CarbonChannelRegistry.class);

@@ -23,14 +23,12 @@ import com.google.common.base.Suppliers;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.miniplaceholders.api.MiniPlaceholders;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersExpansion;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.RenderForTagResolver;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.paper.CarbonChatPaper;
@@ -49,7 +47,7 @@ import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class PaperMessageRenderer implements CarbonMessageRenderer {
+public class PaperMessageRenderer extends CarbonMessageRenderer {
 
     private final Supplier<@MonotonicNonNull PlaceholderAPIMiniMessageParser> placeholderApiProcessor = Suppliers.memoize(() -> {
         if (CarbonChatPaper.papiLoaded()) {
@@ -57,12 +55,12 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
         }
         return null;
     });
-
-    private final MiniMessage miniMessage;
     private final ConfigManager configManager;
+    private final MiniMessage miniMessage;
 
     @Inject
-    public PaperMessageRenderer(final ConfigManager configManager) {
+    public PaperMessageRenderer(final ConfigManager configManager, final RenderForTagResolver.Factory renderForTagResolver) {
+        super(renderForTagResolver);
         this.miniMessage = MiniMessage.miniMessage();
         this.configManager = configManager;
     }
@@ -71,14 +69,8 @@ public class PaperMessageRenderer implements CarbonMessageRenderer {
     public Component render(
         final Audience receiver,
         final String intermediateMessage,
-        final Map<String, ?> resolvedPlaceholders,
-        final Method method,
-        final Type owner
+        final TagResolver.Builder tagResolver
     ) {
-        final TagResolver.Builder tagResolver = TagResolver.builder();
-
-        CarbonMessageRenderer.addResolved(tagResolver, resolvedPlaceholders);
-
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {

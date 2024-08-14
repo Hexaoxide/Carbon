@@ -23,11 +23,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginManager;
 import io.github.miniplaceholders.api.MiniPlaceholders;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Map;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.RenderForTagResolver;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
@@ -40,13 +38,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
-public class VelocityMessageRenderer implements CarbonMessageRenderer {
+public class VelocityMessageRenderer extends CarbonMessageRenderer {
 
     private final ConfigManager configManager;
     private final PluginManager pluginManager;
 
     @Inject
-    public VelocityMessageRenderer(final ConfigManager configManager, final PluginManager pluginManager) {
+    public VelocityMessageRenderer(final ConfigManager configManager, final PluginManager pluginManager, final RenderForTagResolver.Factory renderForTagResolver) {
+        super(renderForTagResolver);
         this.configManager = configManager;
         this.pluginManager = pluginManager;
     }
@@ -55,14 +54,8 @@ public class VelocityMessageRenderer implements CarbonMessageRenderer {
     public Component render(
         final Audience receiver,
         final String intermediateMessage,
-        final Map<String, ?> resolvedPlaceholders,
-        final Method method,
-        final Type owner
+        final TagResolver.Builder tagResolver
     ) {
-        final TagResolver.Builder tagResolver = TagResolver.builder();
-
-        CarbonMessageRenderer.addResolved(tagResolver, resolvedPlaceholders);
-
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (this.pluginManager.isLoaded("miniplaceholders")) {
