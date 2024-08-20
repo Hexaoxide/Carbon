@@ -36,6 +36,7 @@ import net.draycia.carbon.fabric.MinecraftServerHolder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -156,7 +157,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return null;
         }
 
-        return item.getDisplayName().asComponent();
+        return FabricServerAudiences.of(player.server).toAdventure(item.getDisplayName());
     }
 
     @Override
