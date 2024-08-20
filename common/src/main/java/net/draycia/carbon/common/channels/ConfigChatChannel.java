@@ -21,7 +21,6 @@ package net.draycia.carbon.common.channels;
 
 import com.google.inject.Inject;
 import io.leangen.geantyref.TypeToken;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +30,7 @@ import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.channels.ChatChannel;
+import net.draycia.carbon.api.channels.RecipientsResolver;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessages;
@@ -165,19 +165,11 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public List<Audience> recipients(final CarbonPlayer sender) {
-        final List<Audience> recipients = new ArrayList<>();
-
-        for (final CarbonPlayer player : this.server.players()) {
-            if (this.permissions().hearingPermitted(player).permitted() && !player.leftChannels().contains(this.key)) {
-                recipients.add(player);
-            }
-        }
-
-        // console too!
-        recipients.add(this.server.console());
-
-        return recipients;
+    public RecipientsResolver recipientsResolver() {
+        return RecipientsResolver.builder(this.server)
+            .permittedPlayersInChannel(this)
+            .console()
+            .build();
     }
 
     @Override

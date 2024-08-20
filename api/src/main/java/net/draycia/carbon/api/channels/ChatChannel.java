@@ -52,7 +52,18 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @return the recipients
      * @since 2.0.0
      */
-    List<Audience> recipients(CarbonPlayer sender);
+    @Deprecated(forRemoval = true)
+    default List<Audience> recipients(final CarbonPlayer sender) {
+        return this.recipientsResolver().recipients(sender);
+    }
+
+    /**
+     * Returns a list of all recipients that will receive messages from the sender.
+     *
+     * @return the recipients resolver
+     * @since 3.0.0
+     */
+    RecipientsResolver recipientsResolver();
 
     /**
      * Messages will be sent in this channel if they start with this prefix.
