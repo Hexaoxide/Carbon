@@ -20,6 +20,7 @@
 package net.draycia.carbon.common.command.commands;
 
 import com.google.inject.Inject;
+import java.util.Objects;
 import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -71,12 +72,18 @@ public final class JoinCommand extends CarbonCommand {
     @Override
     public void init() {
         final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
-            .required("channel", greedyStringParser(), SuggestionProvider.blocking(
-                (context, s) -> {
-                    final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
-                    return sender.leftChannels().stream().map(Key::value).map(Suggestion::suggestion).toList();
-                }
-            ))
+            .required("channel", greedyStringParser(), SuggestionProvider.blocking((context, s) -> {
+                final CarbonPlayer sender = ((PlayerCommander) context.sender()).carbonPlayer();
+                return sender.leftChannels().stream()
+                    .map(this.channelRegistry::channel)
+                    .filter(Objects::nonNull)
+                    .filter(channel -> channel.permissions().joinPermitted(sender).permitted()
+                        || channel.permissions().hearingPermitted(sender).permitted()
+                        || channel.permissions().speechPermitted(sender).permitted())
+                    .map(channel -> channel.key().value())
+                    .map(Suggestion::suggestion)
+                    .toList();
+            }))
             .permission("carbon.join")
             .senderType(PlayerCommander.class)
             .commandDescription(richDescription(this.carbonMessages.commandJoinDescription()))
@@ -87,7 +94,7 @@ public final class JoinCommand extends CarbonCommand {
                     this.carbonMessages.channelNotFound(sender);
                     return;
                 }
-                final ChannelPermissionResult permitted = channel.joinPermitted(sender);
+                final ChannelPermissionResult permitted = channel.permissions().joinPermitted(sender);
                 if (!permitted.permitted()) {
                     sender.sendMessage(permitted.reason());
                     return;

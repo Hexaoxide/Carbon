@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.CarbonServer;
-import net.draycia.carbon.api.channels.ChannelPermissionResult;
+import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
@@ -64,7 +64,6 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import static java.util.Objects.requireNonNull;
-import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @ConfigSerializable
 @DefaultQualifier(NonNull.class)
@@ -161,32 +160,8 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            player.hasPermission(this.permission()),
-            () -> this.messages.channelNoPermission(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            player.hasPermission(this.permission() + ".speak"),
-            () -> this.messages.channelNoPermission(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            player.hasPermission(this.permission() + ".see") && !player.leftChannels().contains(this.key),
-            () -> this.messages.channelNoPermission(player)
-        );
-    }
-
-    @Override
-    public boolean dynamicPermission() {
-        return false;
+    public ChannelPermissions permissions() {
+        return new ChannelPermissionsImpl(this.permission(), this.messages);
     }
 
     @Override
@@ -194,7 +169,7 @@ public class ConfigChatChannel implements ChatChannel {
         final List<Audience> recipients = new ArrayList<>();
 
         for (final CarbonPlayer player : this.server.players()) {
-            if (this.hearingPermitted(player).permitted()) {
+            if (this.permissions().hearingPermitted(player).permitted() && !player.leftChannels().contains(this.key)) {
                 recipients.add(player);
             }
         }

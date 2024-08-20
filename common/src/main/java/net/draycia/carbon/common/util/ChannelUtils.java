@@ -35,7 +35,7 @@ public final class ChannelUtils {
         // TODO: Emit events
 
         for (final CarbonPlayer recipient : CarbonChatProvider.carbonChat().server().players()) {
-            if (channel.hearingPermitted(recipient).permitted()) {
+            if (channel.permissions().hearingPermitted(recipient).permitted() && !recipient.leftChannels().contains(channel.key())) {
                 recipient.sendMessage(msg);
             }
         }

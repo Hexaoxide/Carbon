@@ -28,11 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.draycia.carbon.api.channels.ChannelPermissionResult;
+import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
-import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
@@ -50,7 +49,6 @@ public class AllianceChannel extends AbstractFactionsChannel {
 
     public static final String FILE_NAME = "factionsuuid-alliancechat.conf";
 
-    private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private transient @MonotonicNonNull @Inject UserManager<?> users;
 
     public AllianceChannel() {
@@ -65,27 +63,11 @@ public class AllianceChannel extends AbstractFactionsChannel {
     }
 
     @Override
-    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
+    public ChannelPermissions permissions() {
+        return ChannelPermissions.uniformDynamic(player -> channelPermissionResult(
             this.hasRelations(player, Relation.ALLY),
             () -> this.messages.cannotUseFactionAllianceChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.hasRelations(player, Relation.ALLY),
-            () -> this.messages.cannotUseFactionAllianceChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.hasRelations(player, Relation.ALLY),
-            () -> this.messages.cannotUseFactionAllianceChannel(player)
-        );
+        ));
     }
 
     @Override

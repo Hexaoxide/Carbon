@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -364,12 +365,12 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
                 channel.commandAliases(), commandManager.createDefaultCommandMeta())
             .optional("message", signedGreedyStringParser());
 
-        if (!channel.dynamicPermission()) {
+        if (!channel.permissions().dynamic()) {
             builder = builder.permission(PredicatePermission.of(sender -> {
                 if (!(sender instanceof CarbonPlayer player)) {
                     return true;
                 }
-                return channel.joinPermitted(player).permitted();
+                return channel.permissions().joinPermitted(player).permitted();
             }));
         }
 
@@ -516,4 +517,8 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         );
     }
 
+    @Override
+    public ChannelPermissions permission(final String permission) {
+        return new ChannelPermissionsImpl(permission, this.carbonMessages);
+    }
 }

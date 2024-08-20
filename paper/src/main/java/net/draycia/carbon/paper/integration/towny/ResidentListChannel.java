@@ -25,7 +25,7 @@ import com.palmergames.bukkit.towny.object.ResidentList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.draycia.carbon.api.channels.ChannelPermissionResult;
+import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
@@ -53,27 +53,11 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
     protected abstract @Nullable T residentList(CarbonPlayer player);
 
     @Override
-    public ChannelPermissionResult joinPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
+    public ChannelPermissions permissions() {
+        return ChannelPermissions.uniformDynamic(player -> channelPermissionResult(
             this.residentList(player) != null,
             () -> this.cannotUseChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult speechPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.residentList(player) != null,
-            () -> this.cannotUseChannel(player)
-        );
-    }
-
-    @Override
-    public ChannelPermissionResult hearingPermitted(final CarbonPlayer player) {
-        return channelPermissionResult(
-            this.residentList(player) != null,
-            () -> this.cannotUseChannel(player)
-        );
+        ));
     }
 
     @Override

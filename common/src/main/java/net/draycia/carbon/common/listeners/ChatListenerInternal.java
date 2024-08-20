@@ -70,7 +70,7 @@ public abstract class ChatListenerInternal {
     }
 
     protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
-        final ChannelPermissionResult permitted = channel.speechPermitted(sender);
+        final ChannelPermissionResult permitted = channel.permissions().speechPermitted(sender);
         if (!permitted.permitted()) {
             sender.sendMessage(permitted.reason());
             return null;
