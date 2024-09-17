@@ -23,7 +23,9 @@ import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.events.discord.DiscordRelayEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
@@ -62,7 +64,7 @@ public final class DiscordMessageListener implements Listener {
 
         final CarbonPlayer result = this.carbonChat.userManager().user(event.getUUID()).join();
 
-        var channel = result.selectedChannel();
+        final ChatChannel channel = result.selectedChannel();
 
         if (channel == null) {
             return;
