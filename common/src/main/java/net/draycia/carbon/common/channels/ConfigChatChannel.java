@@ -117,6 +117,8 @@ public class ConfigChatChannel implements ChatChannel {
 
     private long cooldown = -1;
 
+    private Key broadcastCrossServer = true;
+
     @Override
     public @Nullable String quickPrefix() {
         if (this.quickPrefix == null || this.quickPrefix.isBlank()) {
@@ -261,6 +263,10 @@ public class ConfigChatChannel implements ChatChannel {
     @Override
     public boolean emptyRadiusRecipientsMessage() {
         return this.emptyRadiusRecipientsMessage;
+    }
+
+    public boolean broadcastCrossServer() {
+        return this.broadcastCrossServer;
     }
 
     @Override

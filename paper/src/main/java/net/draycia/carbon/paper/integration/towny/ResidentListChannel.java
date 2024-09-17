@@ -91,4 +91,9 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
 
     protected abstract Component cannotUseChannel(CarbonPlayer player);
 
+    @Override
+    public boolean broadcastCrossServer() {
+        return false;
+    }
+
 }

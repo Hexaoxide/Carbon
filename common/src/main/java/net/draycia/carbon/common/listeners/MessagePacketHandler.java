@@ -50,6 +50,11 @@ public class MessagePacketHandler implements Listener {
             if (event.sender() instanceof ConsoleCarbonPlayer) {
                 return;
             }
+            if (event.channel() instanceof ConfigChatChannel configChannel) {
+                if (!configChannel.broadcastCrossServer()) {
+                    return;
+                }
+            }
 
             messaging.get().queuePacket(() -> {
                 final CarbonPlayer sender = event.sender();
