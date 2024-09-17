@@ -64,7 +64,7 @@ public final class DiscordMessageListener implements Listener {
         var channel = result.selectedChannel();
 
         if (channel == null) {
-            channel = this.carbonChat.channelRegistry().defaultChannel();
+            return;
         }
 
         final var messageType = this.channelMessageTypes.get(channel.key());
