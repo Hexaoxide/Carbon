@@ -117,7 +117,7 @@ public class ConfigChatChannel implements ChatChannel {
 
     private long cooldown = -1;
 
-    private Key broadcastCrossServer = true;
+    private boolean broadcastCrossServer = true;
 
     @Override
     public @Nullable String quickPrefix() {

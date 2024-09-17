@@ -25,6 +25,7 @@ import java.util.UUID;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.ServerId;
@@ -50,7 +51,7 @@ public class MessagePacketHandler implements Listener {
             if (event.sender() instanceof ConsoleCarbonPlayer) {
                 return;
             }
-            if (event.channel() instanceof ConfigChatChannel configChannel) {
+            if (event.chatChannel() instanceof ConfigChatChannel configChannel) {
                 if (!configChannel.broadcastCrossServer()) {
                     return;
                 }
