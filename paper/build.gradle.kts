@@ -3,9 +3,9 @@ import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
   id("carbon.shadow-platform")
-  id("xyz.jpenilla.resource-factory") version "1.1.1"
-  id("xyz.jpenilla.resource-factory-paper-convention") version "1.1.1"
-  id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.1.1"
+  id("xyz.jpenilla.resource-factory") version "1.2.0"
+  id("xyz.jpenilla.resource-factory-paper-convention") version "1.2.0"
+  id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.2.0"
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
   id("carbon.configurable-plugins")
