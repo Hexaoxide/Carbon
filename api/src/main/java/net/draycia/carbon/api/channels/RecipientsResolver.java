@@ -122,7 +122,7 @@ public interface RecipientsResolver {
 
         /**
          * Includes online players matching the predicate in the resolved recipients. Adding multiple predicates
-         * will include players matching any one of the predicate.
+         * will include players matching any one of the predicates.
          *
          * @param filter player filter
          * @return this builder

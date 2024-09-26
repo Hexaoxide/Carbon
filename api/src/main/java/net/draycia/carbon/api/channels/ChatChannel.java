@@ -58,7 +58,9 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
     }
 
     /**
-     * Returns a list of all recipients that will receive messages from the sender.
+     * Returns the {@link RecipientsResolver} for this channel. The return value is not cached,
+     * and {@link ChannelPermissions#speechPermitted(CarbonPlayer)} is checked before
+     * invoking this method.
      *
      * @return the recipients resolver
      * @since 3.0.0
