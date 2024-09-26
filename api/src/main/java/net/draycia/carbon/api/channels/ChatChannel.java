@@ -22,7 +22,6 @@ package net.draycia.carbon.api.channels;
 import java.util.List;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -44,18 +43,6 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      * @since 3.0.0
      */
     ChannelPermissions permissions();
-
-    /**
-     * Returns a list of all recipients that will receive messages from the sender.
-     *
-     * @param sender the sender of messages
-     * @return the recipients
-     * @since 2.0.0
-     */
-    @Deprecated(forRemoval = true)
-    default List<Audience> recipients(final CarbonPlayer sender) {
-        return this.recipientsResolver().recipients(sender);
-    }
 
     /**
      * Returns the {@link RecipientsResolver} for this channel. The return value is not cached,
