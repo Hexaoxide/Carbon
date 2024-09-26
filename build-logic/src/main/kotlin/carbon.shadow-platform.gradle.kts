@@ -1,6 +1,6 @@
 plugins {
   id("carbon.platform-conventions")
-  id("io.github.goooler.shadow")
+  id("com.gradleup.shadow")
 }
 
 tasks {
