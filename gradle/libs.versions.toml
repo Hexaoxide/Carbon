@@ -29,9 +29,9 @@ registry = "1.0.0-SNAPSHOT"
 kyoriMoonshine = "2.0.4"
 guice = "7.0.0"
 velocityApi = "3.3.0-SNAPSHOT"
-minecraft = "1.21"
+minecraft = "1.21.1"
 fabricLoader = "0.16.5"
-fabricApi = "0.102.0+1.21"
+fabricApi = "0.105.0+1.21.1"
 fabricPermissionsApi = "0.3.1"
 adventurePlatformFabric = "5.14.1"
 luckPermsApi = "5.4"
@@ -56,10 +56,10 @@ towny = "0.100.3.0"
 mcmmo = "2.1.227"
 fuuid = "1.6.9.5-U0.6.35"
 
-# synced with version used by lowest supported mc (currently 1.20.4 on paper)
+# synced with version used by lowest supported mc (currently 1.20.6 on paper)
 gson = "2.10.1"
 guava = "32.1.2-jre"
-log4j = "2.19.0"
+log4j = "2.22.1"
 netty = "4.1.97.Final"
 
 [libraries]

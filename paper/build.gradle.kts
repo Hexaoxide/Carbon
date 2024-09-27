@@ -58,7 +58,7 @@ tasks {
   withType(RunServer::class).configureEach {
     version.set(libs.versions.minecraft)
     downloadPlugins {
-      url("https://download.luckperms.net/1543/bukkit/loader/LuckPerms-Bukkit-5.4.130.jar")
+      url("https://download.luckperms.net/1556/bukkit/loader/LuckPerms-Bukkit-5.4.141.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())

@@ -61,7 +61,7 @@ tasks {
     velocityVersion(libs.versions.velocityApi.get())
     pluginJars.from(prod)
     downloadPlugins {
-      url("https://download.luckperms.net/1533/velocity/LuckPerms-Velocity-5.4.120.jar")
+      url("https://download.luckperms.net/1556/velocity/LuckPerms-Velocity-5.4.141.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Velocity-${libs.versions.miniplaceholders.get()}.jar")
     }
   }
