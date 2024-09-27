@@ -25,6 +25,7 @@ import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.paper.integration.IntegrationChannel;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.events.discord.DiscordRelayEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
@@ -63,13 +64,21 @@ public final class DiscordMessageListener implements Listener {
 
         final CarbonPlayer result = this.carbonChat.userManager().user(event.getUUID()).join();
 
+        // TODO: Trigger this logic ourselves, so we don't have to assume which channel the player is currently using?
         final ChatChannel channel = result.selectedChannel();
 
         if (channel == null) {
+            event.setCancelled(true);
             return;
         }
 
         final MessageType messageType = this.channelMessageTypes.get(channel.key());
+
+        // Don't send messages from integration channels
+        if (messageType == null) {
+            event.setCancelled(true);
+            return;
+        }
 
         event.setType(messageType);
     }
@@ -83,9 +92,19 @@ public final class DiscordMessageListener implements Listener {
 
         if (discord != null) {
             this.carbonChat.channelRegistry().allKeys(key -> {
+                final ChatChannel channel = this.carbonChat.channelRegistry().channel(key);
+
+                if (channel == null) {
+                    return;
+                }
+
+                if (channel instanceof IntegrationChannel) {
+                    return;
+                }
+
                 final MessageType channelMessageType = new MessageType(key.value());
-                discord.registerMessageType(this.plugin, channelMessageType);
                 this.channelMessageTypes.put(key, channelMessageType);
+                discord.registerMessageType(this.plugin, channelMessageType);
             });
         }
     }

@@ -28,7 +28,7 @@ import java.util.List;
 import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.paper.integration.IntegrationChannel;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -40,7 +40,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @DefaultQualifier(NonNull.class)
-abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatChannel {
+abstract class ResidentListChannel<T extends ResidentList> extends IntegrationChannel {
 
     protected static final String TOWNY_CHANNEL_HEADER = """
         See the Towny Wiki at https://github.com/TownyAdvanced/Towny/wiki/Placeholders

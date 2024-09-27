@@ -24,13 +24,13 @@ import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.perms.Relation;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
+import net.draycia.carbon.paper.integration.IntegrationChannel;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jspecify.annotations.NonNull;
 
 @DefaultQualifier(NonNull.class)
-abstract class AbstractFactionsChannel extends ConfigChatChannel {
+abstract class AbstractFactionsChannel extends IntegrationChannel {
 
     protected final @Nullable Faction faction(final CarbonPlayer player) {
         final FPlayer fPlayer = FPlayers.getInstance().getById(player.uuid().toString());

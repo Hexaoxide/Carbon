@@ -29,9 +29,9 @@ import java.util.Map;
 import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.paper.integration.IntegrationChannel;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
@@ -46,7 +46,7 @@ import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPer
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class McmmoPartyChannel extends ConfigChatChannel {
+public class McmmoPartyChannel extends IntegrationChannel {
 
     public static final String FILE_NAME = "mcmmo-party.conf";
 
