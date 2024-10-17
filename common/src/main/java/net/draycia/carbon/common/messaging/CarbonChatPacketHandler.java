@@ -124,7 +124,7 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
         final List<KeyedRenderer> renderers = new ArrayList<>();
 
-        final List<Audience> recipients = channel.recipients(sender);
+        final List<Audience> recipients = channel.recipientsResolver().recipients(sender);
         final CarbonChatEventImpl chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null, false);
         this.events.emit(chatEvent);
 

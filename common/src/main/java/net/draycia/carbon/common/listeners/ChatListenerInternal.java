@@ -117,7 +117,7 @@ public abstract class ChatListenerInternal {
         final List<KeyedRenderer> renderers = new ArrayList<>();
         renderers.add(KeyedRenderer.keyedRenderer(Key.key("carbon", "default"), channel));
 
-        final List<Audience> recipients = channel.recipients(sender);
+        final List<Audience> recipients = channel.recipientsResolver().recipients(sender);
 
         final var chatEvent = new CarbonChatEventImpl(sender, message, recipients, renderers, channel, signedMessage);
 
