@@ -386,4 +386,14 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
         this.carbonPlayerCommon.party(party);
     }
 
+    @Override
+    public boolean applyOptionalChatFilters() {
+        return this.carbonPlayerCommon.applyOptionalChatFilters();
+    }
+
+    @Override
+    public void applyOptionalChatFilters(final boolean applyOptionalChatFilters) {
+        this.carbonPlayerCommon.applyOptionalChatFilters(applyOptionalChatFilters);
+    }
+
 }

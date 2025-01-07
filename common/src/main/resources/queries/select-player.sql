@@ -8,5 +8,6 @@ SELECT
     whisperreplytarget,
     spying,
     ignoringdms,
-    party
+    party,
+    applycustomfilters
 FROM carbon_users WHERE (id = :id);

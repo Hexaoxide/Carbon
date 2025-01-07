@@ -302,6 +302,21 @@ public interface CarbonMessages {
 
     /*
      * =============================================================
+     * ========================== Filters ==========================
+     * =============================================================
+     */
+
+    @Message("command.filter.optional.enabled")
+    void commandOptionalFilterEnabled(final Audience audience);
+
+    @Message("command.filter.optional.disabled")
+    void commandOptionalFilterDisabled(final Audience audience);
+
+    @Message("command.filter.optional.description")
+    Component commandOptionalFilterDescription();
+
+    /*
+     * =============================================================
      * ====================== Cloud Messages =======================
      * =============================================================
      */

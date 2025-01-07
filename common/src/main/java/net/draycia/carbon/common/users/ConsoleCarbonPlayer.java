@@ -254,6 +254,16 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
+    public boolean applyOptionalChatFilters() {
+        return false;
+    }
+
+    @Override
+    public void applyOptionalChatFilters(final boolean applyOptionalChatFilters) {
+
+    }
+
+    @Override
     public @NotNull Identity identity() {
         return Identity.nil();
     }

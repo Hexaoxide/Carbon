@@ -413,4 +413,20 @@ public interface CarbonPlayer extends Audience, Identified {
      */
     CompletableFuture<@Nullable Party> party();
 
+    /**
+     * Whether the optional chat filters apply to messages send to this player or not.
+     *
+     * @return if this player's using the optional chat filters
+     * @since 3.0.0
+     */
+    boolean applyOptionalChatFilters();
+
+    /**
+     * Whether the optional chat filters apply to messages send to this player or not.
+     *
+     * @param applyOptionalChatFilters if this player's using the optional chat filters
+     * @since 3.0.0
+     */
+    void applyOptionalChatFilters(boolean applyOptionalChatFilters);
+
 }

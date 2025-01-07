@@ -79,6 +79,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     // Administrative
     protected final PersistentUserProperty<Boolean> spying;
+    protected final PersistentUserProperty<Boolean> applyOptionalChatFilters;
 
     // Punishments
     protected final PersistentUserProperty<Set<UUID>> ignoredPlayers;
@@ -98,7 +99,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final @Nullable UUID whisperReplyTarget,
         final boolean spying,
         final boolean ignoreDirectMessages,
-        final @Nullable UUID party
+        final @Nullable UUID party,
+        final boolean applyOptionalChatFilters
     ) {
         this.muted = PersistentUserProperty.of(muted);
         this.deafened = PersistentUserProperty.of(deafened);
@@ -113,6 +115,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(ignoreDirectMessages);
         this.party = PersistentUserProperty.of(party);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(applyOptionalChatFilters);
     }
 
     public CarbonPlayerCommon(
@@ -130,6 +133,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.uuid = uuid;
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
         this.party = PersistentUserProperty.empty();
+        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
     }
 
     public CarbonPlayerCommon() {
@@ -138,6 +142,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.selectedChannel = PersistentUserProperty.empty();
         this.displayName = PersistentUserProperty.empty();
         this.spying = PersistentUserProperty.of(false);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
@@ -155,6 +160,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             this.selectedChannel,
             this.displayName,
             this.spying,
+            this.applyOptionalChatFilters,
             this.ignoredPlayers,
             this.leftChannels,
             this.ignoringDirectMessages,
@@ -501,6 +507,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     public void party(final @Nullable Party party) {
         this.party.set(party == null ? null : party.id());
+    }
+
+    @Override
+    public boolean applyOptionalChatFilters() {
+        return this.applyOptionalChatFilters.get();
+    }
+
+    @Override
+    public void applyOptionalChatFilters(final boolean applyOptionalChatFilters) {
+        this.applyOptionalChatFilters.set(applyOptionalChatFilters);
     }
 
 }

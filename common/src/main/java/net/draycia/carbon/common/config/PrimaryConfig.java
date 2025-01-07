@@ -25,6 +25,8 @@ import java.util.Map;
 import net.draycia.carbon.common.util.Exceptions;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -82,6 +84,9 @@ public class PrimaryConfig {
 
     @Comment("Basic regex based chat filter.")
     private Map<String, String> chatFilter = Map.of();
+
+    @Comment("Player toggled chat filter. Useful for more mild profanity.")
+    private Map<String, String> optionalChatFilter = Map.of();
 
     @Comment("Various settings related to pinging players in channels.")
     private PingSettings pingSettings = new PingSettings();
@@ -160,6 +165,17 @@ public class PrimaryConfig {
 
         for (final Map.Entry<String, String> entry : this.chatFilter.entrySet()) {
             filteredMessage = filteredMessage.replaceAll(entry.getKey(), entry.getValue());
+        }
+
+        return filteredMessage;
+    }
+
+    public Component applyOptionalChatFilters(final Component message) {
+        Component filteredMessage = message;
+
+        for (final Map.Entry<String, String> entry : this.optionalChatFilter.entrySet()) {
+            filteredMessage = filteredMessage.replaceText(TextReplacementConfig.builder()
+                .match(entry.getKey()).replacement(entry.getValue()).build());
         }
 
         return filteredMessage;

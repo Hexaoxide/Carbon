@@ -8,7 +8,8 @@ INSERT{!PSQL: IGNORE} INTO carbon_users(
     whisperreplytarget,
     spying,
     ignoringdms,
-    party
+    party,
+    applycustomfilters
 ) VALUES (
     :id,
     :muted,
@@ -19,5 +20,6 @@ INSERT{!PSQL: IGNORE} INTO carbon_users(
     :whisperreplytarget,
     :spying,
     :ignoringdms,
-    :party
+    :party,
+    :applycustomfilters
 ){PSQL: ON CONFLICT DO NOTHING};

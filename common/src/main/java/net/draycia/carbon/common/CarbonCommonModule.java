@@ -47,6 +47,7 @@ import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.command.commands.ClearChatCommand;
 import net.draycia.carbon.common.command.commands.ContinueCommand;
 import net.draycia.carbon.common.command.commands.DebugCommand;
+import net.draycia.carbon.common.command.commands.FilterCommand;
 import net.draycia.carbon.common.command.commands.HelpCommand;
 import net.draycia.carbon.common.command.commands.IgnoreCommand;
 import net.draycia.carbon.common.command.commands.IgnoreListCommand;
@@ -68,6 +69,7 @@ import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.listeners.DeafenHandler;
+import net.draycia.carbon.common.listeners.FilterHandler;
 import net.draycia.carbon.common.listeners.HyperlinkHandler;
 import net.draycia.carbon.common.listeners.IgnoreHandler;
 import net.draycia.carbon.common.listeners.ItemLinkHandler;
@@ -219,6 +221,7 @@ public final class CarbonCommonModule extends AbstractModule {
     private void configureListeners() {
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(DeafenHandler.class);
+        listeners.addBinding().to(FilterHandler.class);
         listeners.addBinding().to(HyperlinkHandler.class);
         listeners.addBinding().to(IgnoreHandler.class);
         listeners.addBinding().to(ItemLinkHandler.class);
@@ -236,6 +239,7 @@ public final class CarbonCommonModule extends AbstractModule {
         commands.addBinding().to(ClearChatCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(ContinueCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(DebugCommand.class).in(Scopes.SINGLETON);
+        commands.addBinding().to(FilterCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(HelpCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(IgnoreCommand.class).in(Scopes.SINGLETON);
         commands.addBinding().to(MuteCommand.class).in(Scopes.SINGLETON);
