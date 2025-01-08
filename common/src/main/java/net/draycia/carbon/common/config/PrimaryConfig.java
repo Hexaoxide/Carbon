@@ -273,6 +273,16 @@ public class PrimaryConfig {
         public boolean enabled = true;
 
         public int expireInvitesAfterSeconds = 45;
+
+        public boolean playSound = false;
+
+        @Comment("Sound for receiving a party message")
+        public @Nullable Sound messageSound = Sound.sound(
+            Key.key("entity.experience_orb.pickup"),
+            Sound.Source.MASTER,
+            1.0F,
+            1.0F
+        );
     }
 
     public enum StorageType {

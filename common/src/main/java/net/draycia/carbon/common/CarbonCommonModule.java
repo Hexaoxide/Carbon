@@ -75,6 +75,7 @@ import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.listeners.MessagePacketHandler;
 import net.draycia.carbon.common.listeners.MuteHandler;
 import net.draycia.carbon.common.listeners.PartyChatSpyHandler;
+import net.draycia.carbon.common.listeners.PartyPingHandler;
 import net.draycia.carbon.common.listeners.PingHandler;
 import net.draycia.carbon.common.listeners.RadiusListener;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
@@ -225,6 +226,7 @@ public final class CarbonCommonModule extends AbstractModule {
         listeners.addBinding().to(MessagePacketHandler.class);
         listeners.addBinding().to(MuteHandler.class);
         listeners.addBinding().to(PartyChatSpyHandler.class);
+        listeners.addBinding().to(PartyPingHandler.class);
         listeners.addBinding().to(PingHandler.class);
         listeners.addBinding().to(RadiusListener.class);
     }
