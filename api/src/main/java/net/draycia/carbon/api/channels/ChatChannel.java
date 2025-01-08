@@ -132,4 +132,12 @@ public interface ChatChannel extends Keyed, ChatComponentRenderer {
      */
     long startCooldown(CarbonPlayer player);
 
+    /**
+     * Whether messages from this channel should be broadcast and sent to other servers.
+     *
+     * @return if this channel's messages should be sent cross-server
+     * @since 3.0.0
+     */
+    boolean shouldCrossServer();
+
 }
