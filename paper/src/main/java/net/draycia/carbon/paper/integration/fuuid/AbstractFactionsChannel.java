@@ -23,6 +23,7 @@ import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.perms.Relation;
+import com.massivecraft.factions.perms.Role;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -33,13 +34,27 @@ import org.jspecify.annotations.NonNull;
 abstract class AbstractFactionsChannel extends ConfigChatChannel {
 
     protected final @Nullable Faction faction(final CarbonPlayer player) {
-        final FPlayer fPlayer = FPlayers.getInstance().getById(player.uuid().toString());
+        final @Nullable FPlayer fPlayer = this.factionPlayer(player);
 
         if (fPlayer == null || !fPlayer.hasFaction()) {
             return null;
         }
 
         return fPlayer.getFaction();
+    }
+
+    protected final @Nullable FPlayer factionPlayer(final CarbonPlayer player) {
+        return FPlayers.getInstance().getById(player.uuid().toString());
+    }
+
+    protected final @Nullable Role factionRole(final CarbonPlayer player) {
+        final @Nullable FPlayer fPlayer = this.factionPlayer(player);
+
+        if (fPlayer == null || !fPlayer.hasFaction()) {
+            return null;
+        }
+
+        return fPlayer.getRole();
     }
 
     protected final boolean hasRelations(final CarbonPlayer player, final Relation relation) {
