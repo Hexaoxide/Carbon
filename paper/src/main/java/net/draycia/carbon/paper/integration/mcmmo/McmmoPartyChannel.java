@@ -101,4 +101,9 @@ public class McmmoPartyChannel extends ConfigChatChannel {
         return PartyManager.getParty(Bukkit.getPlayer(player.uuid()));
     }
 
+    @Override
+    public boolean shouldCrossServer() {
+        return false;
+    }
+
 }

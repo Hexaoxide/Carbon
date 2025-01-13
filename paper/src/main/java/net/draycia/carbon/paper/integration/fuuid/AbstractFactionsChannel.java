@@ -63,4 +63,9 @@ abstract class AbstractFactionsChannel extends ConfigChatChannel {
         return faction != null && faction.getRelationCount(relation) > 0;
     }
 
+    @Override
+    public boolean shouldCrossServer() {
+        return false;
+    }
+
 }

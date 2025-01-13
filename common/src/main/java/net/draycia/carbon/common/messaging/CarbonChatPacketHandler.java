@@ -122,6 +122,10 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             return false;
         }
 
+        if (!channel.shouldCrossServer()) {
+            return false;
+        }
+
         final List<KeyedRenderer> renderers = new ArrayList<>();
 
         final List<Audience> recipients = channel.recipients(sender);
