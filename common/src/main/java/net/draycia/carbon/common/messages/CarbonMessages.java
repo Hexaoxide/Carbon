@@ -634,4 +634,8 @@ public interface CarbonMessages {
 
     @Message("integrations.fuuid.cannot_use_truce_channel")
     Component cannotUseTruceChannel(Audience audience);
+
+    @Message("integrations.fuuid.cannot_use_mod_channel")
+    Component cannotUseFactionModChannel(Audience audience);
+
 }

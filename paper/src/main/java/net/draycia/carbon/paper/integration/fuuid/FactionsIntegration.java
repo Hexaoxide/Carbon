@@ -59,6 +59,9 @@ public final class FactionsIntegration implements Integration {
         if (this.config.truceChannel) {
             this.channelRegistry.registerSpecialConfigChannel(TruceChannel.FILE_NAME, TruceChannel.class);
         }
+        if (this.config.factionModChannel) {
+            this.channelRegistry.registerSpecialConfigChannel(FactionModChannel.FILE_NAME, FactionModChannel.class);
+        }
     }
 
     public static ConfigMeta configMeta() {
@@ -73,6 +76,7 @@ public final class FactionsIntegration implements Integration {
         boolean factionChannel = true;
         boolean allianceChannel = true;
         boolean truceChannel = true;
+        boolean factionModChannel = false;
 
     }
 
