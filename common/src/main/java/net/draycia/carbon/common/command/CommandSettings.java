@@ -25,6 +25,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 public class CommandSettings {
 
     private boolean enabled = true;
+    private boolean alternateRegistration = false;
     private String name = "";
     private String[] aliases = new String[0];
 
@@ -32,18 +33,23 @@ public class CommandSettings {
 
     }
 
-    public CommandSettings(final boolean enabled, final String name, final String... aliases) {
+    public CommandSettings(final boolean enabled, final boolean alternateRegistration, final String name, final String... aliases) {
         this.enabled = enabled;
+        this.alternateRegistration = alternateRegistration;
         this.name = name;
         this.aliases = aliases;
     }
 
     public CommandSettings(final String name, final String... aliases) {
-        this(true, name, aliases);
+        this(true, false, name, aliases);
     }
 
     public boolean enabled() {
         return this.enabled;
+    }
+
+    public boolean alternateRegistration() {
+        return this.alternateRegistration;
     }
 
     public String name() {

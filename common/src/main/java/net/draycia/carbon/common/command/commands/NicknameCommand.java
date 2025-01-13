@@ -73,13 +73,13 @@ public final class NicknameCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
+    public void registerCommand(final String commandName, final String[] aliases) {
         if (!this.config.primaryConfig().nickname().useCarbonNicknames()) {
             return;
         }
 
         // TODO: Allow UUID input for target player
-        final var selfRoot = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases());
+        final var selfRoot = this.commandManager.commandBuilder(commandName, aliases);
         final var othersRoot = selfRoot.literal("player")
             .required("player", this.parserFactory.carbonPlayer(), richDescription(this.carbonMessages.commandNicknameArgumentPlayer()));
 

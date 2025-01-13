@@ -72,8 +72,8 @@ public final class UnmuteCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .optional("player", this.parserFactory.carbonPlayer(),
                 richDescription(this.carbonMessages.commandUnmuteArgumentPlayer()))
             .flag(this.commandManager.flagBuilder("uuid")

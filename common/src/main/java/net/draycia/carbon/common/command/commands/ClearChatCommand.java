@@ -67,8 +67,8 @@ public final class ClearChatCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .permission("carbon.clearchat.clear")
             .commandDescription(richDescription(this.carbonMessages.commandClearChatDescription()))
             .handler(handler -> {
