@@ -20,11 +20,15 @@
 package net.draycia.carbon.common.messaging.packets;
 
 import io.netty.buffer.ByteBuf;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import net.draycia.carbon.common.messaging.SignedMessageCarbon;
+import net.kyori.adventure.chat.SignedMessage;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -93,6 +97,44 @@ public abstract class CarbonPacket extends AbstractPacket {
 
     protected final <E extends Enum<E>> E readEnum(final ByteBuf buf, final Class<E> cls) {
         return cls.getEnumConstants()[this.readVarInt(buf)];
+    }
+
+    protected final SignedMessage readSignedMessage(final @NotNull ByteBuf buffer) {
+        final Instant timestamp = Instant.ofEpochMilli(buffer.readLong());
+        final long salt = buffer.readLong();
+        final Component unsignedContent = this.readComponent(buffer);
+        final String msg = this.readString(buffer);
+        final Identity identity = Identity.identity(this.readUUID(buffer));
+        final SignedMessage.Signature signature;
+
+        if (buffer.readableBytes() > 0) {
+            signature = this.readSignature(buffer);
+        } else {
+            signature = null;
+        }
+
+        return new SignedMessageCarbon(timestamp, salt, unsignedContent, msg, identity, signature);
+    }
+
+    protected final void writeSignedMessage(final @NotNull SignedMessage signedMessage, final @NotNull ByteBuf buffer) {
+        buffer.writeLong(signedMessage.timestamp().getEpochSecond());
+        buffer.writeLong(signedMessage.salt());
+        this.writeComponent(signedMessage.unsignedContent(), buffer);
+        this.writeString(signedMessage.message(), buffer);
+        this.writeUUID(signedMessage.identity().uuid(), buffer);
+
+        if (signedMessage.signature() != null) {
+            this.writeSignature(signedMessage.signature(), buffer);
+        }
+    }
+
+    protected final SignedMessage.Signature readSignature(final @NotNull ByteBuf buffer) {
+        return SignedMessage.signature(buffer.readBytes(buffer.readByte()).array());
+    }
+
+    protected final void writeSignature(final @NotNull SignedMessage.Signature signature, final @NotNull ByteBuf buffer) {
+        buffer.writeByte(signature.bytes().length);
+        buffer.writeBytes(signature.bytes());
     }
 
 }

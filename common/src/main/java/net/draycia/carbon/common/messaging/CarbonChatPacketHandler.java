@@ -43,6 +43,7 @@ import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.text.Component;
 import ninja.egg82.messenger.handler.AbstractMessagingHandler;
 import ninja.egg82.messenger.packets.Packet;
@@ -129,7 +130,9 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
         final List<KeyedRenderer> renderers = new ArrayList<>();
 
         final List<Audience> recipients = channel.recipients(sender);
-        final CarbonChatEventImpl chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null, false);
+
+        final CarbonChatEventImpl chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers,
+            channel, messagePacket.signedMessage(), false);
         this.events.emit(chatEvent);
 
         for (final Audience recipient : recipients) {
@@ -138,7 +141,11 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
                 continue;
             }
 
-            recipient.sendMessage(chatEvent.renderFor(recipient));
+            if (messagePacket.signedMessage() != null) {
+                recipient.sendMessage(messagePacket.signedMessage(), ChatType.CHAT.bind(chatEvent.renderFor(recipient)));
+            } else {
+                recipient.sendMessage(chatEvent.renderFor(recipient));
+            }
         }
 
         this.server.console().sendMessage(Component.text("[Cross-Server] ").append(chatEvent.message()));

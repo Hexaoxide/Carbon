@@ -21,10 +21,12 @@ package net.draycia.carbon.common.messaging.packets;
 
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import ninja.egg82.messenger.utils.UUIDUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class ChatMessagePacket extends CarbonPacket {
 
@@ -34,6 +36,7 @@ public final class ChatMessagePacket extends CarbonPacket {
     private Key channelKey;
     private String username;
     private Component message;
+    private @Nullable SignedMessage signedMessage;
 
     public UUID userId() {
         return this.userId;
@@ -55,6 +58,10 @@ public final class ChatMessagePacket extends CarbonPacket {
         return this.message;
     }
 
+    public @Nullable SignedMessage signedMessage() {
+        return this.signedMessage;
+    }
+
     public ChatMessagePacket(final @NotNull UUID sender, final @NotNull ByteBuf data) {
         super(sender);
         this.read(data);
@@ -69,29 +76,40 @@ public final class ChatMessagePacket extends CarbonPacket {
         final UUID userId,
         final Key channelKey,
         final String username,
-        final Component message
+        final Component message,
+        final @Nullable SignedMessage signedMessage
     ) {
         super(serverId);
         this.userId = userId;
         this.channelKey = channelKey;
         this.username = username;
         this.message = message;
+        this.signedMessage = signedMessage;
     }
 
     @Override
-    public void read(final io.netty.buffer.@NotNull ByteBuf buffer) {
+    public void read(final @NotNull ByteBuf buffer) {
         this.userId = this.readUUID(buffer);
         this.channelKey = this.readKey(buffer);
         this.username = this.readString(buffer);
         this.message = this.readComponent(buffer);
+
+        if (buffer.readableBytes() > 0) {
+            this.signedMessage = this.readSignedMessage(buffer);
+        } else {
+            this.signedMessage = null;
+        }
     }
 
     @Override
-    public void write(final io.netty.buffer.@NotNull ByteBuf buffer) {
+    public void write(final @NotNull ByteBuf buffer) {
         this.writeUUID(this.userId, buffer);
         this.writeKey(this.channelKey, buffer);
         this.writeString(this.username, buffer);
         this.writeComponent(this.message, buffer);
+        if (this.signedMessage != null) {
+            this.writeSignedMessage(this.signedMessage, buffer);
+        }
     }
 
 }
