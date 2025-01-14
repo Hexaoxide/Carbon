@@ -27,7 +27,6 @@ import net.draycia.carbon.common.command.CarbonCommand;
 import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ParserFactory;
-import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -82,10 +81,10 @@ public final class UnmuteCommand extends CarbonCommand {
                 .withComponent(uuidParser())
             )
             .permission("carbon.mute.unmute")
-            .senderType(PlayerCommander.class)
+            .senderType(Commander.class)
             .commandDescription(richDescription(this.carbonMessages.commandUnmuteDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final Commander sender = handler.sender();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {
@@ -99,13 +98,10 @@ public final class UnmuteCommand extends CarbonCommand {
                 }
 
                 this.carbonMessages.unmuteAlertRecipient(target);
-
-                if (!sender.equals(target)) {
-                    this.carbonMessages.unmuteAlertPlayers(sender, target.displayName());
-                }
+                this.carbonMessages.unmuteAlertPlayers(this.server.console(), target.displayName());
 
                 for (final var player : this.server.players()) {
-                    if (player.equals(target) || player.equals(sender)) {
+                    if (player.equals(target)) {
                         continue;
                     }
 

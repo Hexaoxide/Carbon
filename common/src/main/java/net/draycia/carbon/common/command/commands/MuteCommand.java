@@ -82,10 +82,10 @@ public final class MuteCommand extends CarbonCommand {
                 .withComponent(uuidParser())
             )
             .permission("carbon.mute")
-            .senderType(PlayerCommander.class)
+            .senderType(Commander.class)
             .commandDescription(richDescription(this.carbonMessages.commandMuteDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final Commander sender = handler.sender();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {
@@ -103,14 +103,15 @@ public final class MuteCommand extends CarbonCommand {
                     return;
                 }
 
-                this.carbonMessages.muteAlertRecipient(target);
-
-                if (!sender.equals(target)) {
-                    this.carbonMessages.muteAlertPlayers(sender, target.displayName());
+                if (sender instanceof PlayerCommander playerCommander && playerCommander.carbonPlayer().equals(target)) {
+                    this.carbonMessages.muteExempt(playerCommander);
                 }
 
+                this.carbonMessages.muteAlertRecipient(target);
+                this.carbonMessages.muteAlertRecipient(this.server.console());
+
                 for (final var player : this.server.players()) {
-                    if (player.equals(target) || player.equals(sender)) {
+                    if (player.equals(target)) {
                         continue;
                     }
 
