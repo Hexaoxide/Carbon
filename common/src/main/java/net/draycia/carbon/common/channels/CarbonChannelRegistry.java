@@ -367,10 +367,10 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         if (!channel.permissions().dynamic()) {
             builder = builder.permission(PredicatePermission.of(sender -> {
-                if (!(sender instanceof CarbonPlayer player)) {
+                if (!(sender instanceof PlayerCommander player)) {
                     return true;
                 }
-                return channel.permissions().joinPermitted(player).permitted();
+                return channel.permissions().joinPermitted(player.carbonPlayer()).permitted();
             }));
         }
 
