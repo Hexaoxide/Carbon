@@ -90,7 +90,7 @@ public final class UnmuteCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    target = this.users.user(handler.get("uuid")).join();
+                    target = this.users.user(handler.flags().get("uuid")).join();
                 } else {
                     this.carbonMessages.unmuteNoTarget(sender);
                     // TODO: send command syntax
