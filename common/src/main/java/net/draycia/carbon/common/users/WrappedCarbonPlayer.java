@@ -283,6 +283,16 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
+    public long muteExpiration() {
+        return this.carbonPlayerCommon.muteExpiration();
+    }
+
+    @Override
+    public void muteExpiration(final long epochMillis) {
+        this.carbonPlayerCommon.muteExpiration(epochMillis);
+    }
+
+    @Override
     public boolean deafened() {
         return this.carbonPlayerCommon.deafened();
     }

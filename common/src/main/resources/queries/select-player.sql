@@ -1,6 +1,7 @@
 SELECT
     id,
     muted,
+    muteexpiration,
     deafened,
     selectedchannel,
     displayname,

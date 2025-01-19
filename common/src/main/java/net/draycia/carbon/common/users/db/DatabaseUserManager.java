@@ -258,6 +258,7 @@ public final class DatabaseUserManager extends CachingUserManager {
         }
         return update.bind("id", player.uuid())
             .bind("muted", player.muted())
+            .bind("muteexpiration", player.muteExpiration())
             .bind("deafened", player.deafened())
             .bind("selectedchannel", player.selectedChannelKey())
             .bind("displayname", nicknameJson)
