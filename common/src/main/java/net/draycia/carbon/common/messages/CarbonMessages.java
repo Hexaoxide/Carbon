@@ -638,4 +638,7 @@ public interface CarbonMessages {
     @Message("integrations.fuuid.cannot_use_mod_channel")
     Component cannotUseFactionModChannel(Audience audience);
 
+    @Message("integrations.towny.cannot_use_plot_channel")
+    Component cannotUsePlotChannel(Audience audience);
+
 }

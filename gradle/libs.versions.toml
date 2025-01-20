@@ -53,6 +53,8 @@ rabbitmq = "5.24.0"
 nats = "2.20.5"
 h2 = "2.3.232"
 towny = "0.100.3.0"
+plotsquared_bom = "1.52"
+plotsquared_core = "7.4.1"
 mcmmo = "2.1.227"
 fuuid = "1.6.9.5-U0.6.35"
 
@@ -96,7 +98,7 @@ cloudSigned = { group = "org.incendo", name = "cloud-minecraft-signed-arguments"
 cloudPaperSigned = { group = "org.incendo", name = "cloud-paper-signed-arguments", version.ref = "cloudMinecraft" }
 cloudSponge = { group = "org.incendo", name = "cloud-sponge", version.ref = "cloudSponge" }
 cloudVelocity = { group = "org.incendo", name = "cloud-velocity", version.ref = "cloudMinecraft" }
-cloudFabric = { group = "org.incendo", name = "cloud-fabric", version.ref = "cloudModded"}
+cloudFabric = { group = "org.incendo", name = "cloud-fabric", version.ref = "cloudModded" }
 
 configurateCore = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
 configurateHocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
@@ -149,5 +151,7 @@ discordsrv = { group = "com.discordsrv", name = "discordsrv", version.ref = "dis
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
 miniplaceholders = { group = "io.github.miniplaceholders", name = "miniplaceholders-api", version.ref = "miniplaceholders" }
 towny = { group = "com.palmergames.bukkit.towny", name = "towny", version.ref = "towny" }
+plotsquared_core = { group = "com.intellectualsites.plotsquared", name = "plotsquared-core", version.ref = "plotsquared_core" }
+plotsquared_bom = { group = "com.intellectualsites.bom", name = "bom-newest", version.ref = "plotsquared_bom" }
 mcmmo = { group = "com.gmail.nossr50.mcMMO", name = "mcMMO", version.ref = "mcmmo" }
 factionsUuid = { group = "com.massivecraft", name = "Factions", version.ref = "fuuid" }
