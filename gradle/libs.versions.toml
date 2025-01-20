@@ -151,7 +151,7 @@ discordsrv = { group = "com.discordsrv", name = "discordsrv", version.ref = "dis
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
 miniplaceholders = { group = "io.github.miniplaceholders", name = "miniplaceholders-api", version.ref = "miniplaceholders" }
 towny = { group = "com.palmergames.bukkit.towny", name = "towny", version.ref = "towny" }
-plotsquared_core = { group = "com.intellectualsites.plotsquared", name = "plotsquared-core", version.ref = "plotsquared_core" }
-plotsquared_bom = { group = "com.intellectualsites.bom", name = "bom-newest", version.ref = "plotsquared_bom" }
+plotsquaredbom = { group = "com.intellectualsites.bom", name = "bom-newest", version.ref = "plotsquared_bom" }
+plotsquaredcore = { group = "com.intellectualsites.plotsquared", name = "plotsquared-core", version.ref = "plotsquared_core" }
 mcmmo = { group = "com.gmail.nossr50.mcMMO", name = "mcMMO", version.ref = "mcmmo" }
 factionsUuid = { group = "com.massivecraft", name = "Factions", version.ref = "fuuid" }

@@ -39,16 +39,16 @@ dependencies {
     isTransitive = false
   }
   compileOnly(libs.factionsUuid)
-  implementation(libs.plotsquared_bom)
-  compileOnly(libs.plotsquared_core)
+  implementation(libs.plotsquaredbom)
+  compileOnly(libs.plotsquaredcore)
 }
 
 configurablePlugins {
   dependency(libs.towny)
   dependency(libs.mcmmo)
   dependency(libs.factionsUuid)
-  dependency(libs.plotsquared_bom)
-  dependency(libs.plotsquared_core)
+  dependency(libs.plotsquaredbom)
+  dependency(libs.plotsquaredcore)
 }
 
 tasks {
