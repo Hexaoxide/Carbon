@@ -26,6 +26,7 @@ import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
@@ -53,7 +54,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
 
     @Override
     public Audience console() {
-        return this.serverHolder.requireServer().createCommandSourceStack();
+        return new ConsoleCarbonPlayer(this.serverHolder.requireServer().createCommandSourceStack());
     }
 
     @Override
