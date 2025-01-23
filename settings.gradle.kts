@@ -77,6 +77,7 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+  id("net.neoforged.moddev.repositories") version "2.0.82"
   id("quiet-fabric-loom") version "1.10-SNAPSHOT"
 }
 
@@ -87,7 +88,9 @@ listOf(
   "common",
   "paper",
   // "sponge", // TODO API 10
+  "mod-common",
   "fabric",
+  "neoforge",
   "velocity"
 ).forEach {
   include("carbonchat-$it")

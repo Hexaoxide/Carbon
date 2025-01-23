@@ -30,10 +30,13 @@ kyoriMoonshine = "2.0.4"
 guice = "7.0.0"
 velocityApi = "3.4.0-SNAPSHOT"
 minecraft = "1.21.1"
+neoform = "1.21.1-20240808.144430"
+neoforge = "21.1.97"
 fabricLoader = "0.16.14"
 fabricApi = "0.115.6+1.21.1"
 fabricPermissionsApi = "0.3.1"
 adventurePlatformFabric = "5.14.2"
+adventurePlatformNeoforge = "6.0.1"
 luckPermsApi = "5.4"
 essentialsx = "2.20.1"
 discordsrv = "1.28.1"
@@ -80,6 +83,7 @@ adventureTextSerializerLegacy = { group = "net.kyori", name = "adventure-text-se
 adventureSerializerConfigurate4 = { group = "net.kyori", name = "adventure-serializer-configurate4", version.ref = "adventure" }
 minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
 adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformFabric" }
+adventurePlatformNeoforge = { group = "net.kyori", name = "adventure-platform-neoforge", version.ref = "adventurePlatformNeoforge" }
 log4jBom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j" }
 log4jApi = { group = "org.apache.logging.log4j", name = "log4j-api" }
 event = { group = "com.seiama", name = "event-api", version.ref = "event" }
@@ -99,6 +103,7 @@ cloudPaperSigned = { group = "org.incendo", name = "cloud-paper-signed-arguments
 cloudSponge = { group = "org.incendo", name = "cloud-sponge", version.ref = "cloudSponge" }
 cloudVelocity = { group = "org.incendo", name = "cloud-velocity", version.ref = "cloudMinecraft" }
 cloudFabric = { group = "org.incendo", name = "cloud-fabric", version.ref = "cloudModded" }
+cloudNeoforge = { group = "org.incendo", name = "cloud-neoforge", version.ref = "cloudModded" }
 
 configurateCore = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
 configurateHocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
