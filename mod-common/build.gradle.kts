@@ -14,3 +14,10 @@ dependencies {
     exclude("org.slf4j")
   }
 }
+
+tasks.jar {
+  manifest.attributes(
+    "FMLModType" to "GAMELIBRARY",
+    "Automatic-Module-Name" to "de.hexaoxi.carbonchat.mod.common",
+  )
+}

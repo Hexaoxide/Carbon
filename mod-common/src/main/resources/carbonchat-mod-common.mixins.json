@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "net.draycia.carbon.modcommon.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "conformVisibility": true
+    }
+}

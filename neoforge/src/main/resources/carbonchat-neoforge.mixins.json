@@ -1,0 +1,5 @@
+{
+    "parent": "carbonchat-mod-common.mixins.json",
+    "package": "net.draycia.carbon.neoforge.mixin",
+    "mixins": []
+}
