@@ -17,7 +17,7 @@ dependencies {
   mappings(loom.officialMojangMappings())
   modImplementation(libs.fabricLoader)
   modImplementation(libs.fabricApi)
-  modImplementation(libs.fabricApiDeprecated) // LuckPerms needs to work at dev time
+  modRuntimeOnly(libs.fabricApiDeprecated) // LuckPerms needs to work at dev time
 
   shade(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
