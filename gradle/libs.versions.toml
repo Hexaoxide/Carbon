@@ -3,6 +3,7 @@ sponge-gradle = { id = "org.spongepowered.gradle.plugin", version = "2.3.0" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.3" }
 indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
 javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.16" }
+blossom = { id = "net.kyori.blossom", version = "2.1.0" }
 
 [versions]
 indra = "3.1.3"

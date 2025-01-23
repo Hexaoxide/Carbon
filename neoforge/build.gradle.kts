@@ -1,6 +1,7 @@
 plugins {
   id("carbon.shadow-platform")
   id("net.neoforged.moddev")
+  alias(libs.plugins.blossom)
 }
 
 neoForge {
@@ -66,6 +67,22 @@ carbonPlatform {
   productionJar = prodJar.flatMap { it.archiveFile }
 }
 
+sourceSets.main {
+  blossom {
+    resources {
+      properties.putAll(
+        mapOf(
+          "modId" to rootProject.name.lowercase(),
+          "name" to rootProject.name,
+          "version" to project.version,
+          "description" to project.description,
+          "githubUrl" to GITHUB_REPO_URL,
+        )
+      )
+    }
+  }
+}
+
 tasks {
   shadowJar {
     archiveClassifier = "dev-all"
@@ -79,15 +96,6 @@ tasks {
     standardRuntimeRelocations()
     relocateGuice()
     relocateDependency("org.checkerframework")
-  }
-  processResources {
-    replace("META-INF/neoforge.mods.toml", mapOf(
-      "modId" to rootProject.name.lowercase(),
-      "name" to rootProject.name,
-      "version" to project.version,
-      "description" to project.description,
-      "github_url" to GITHUB_REPO_URL
-    ))
   }
   jar {
     archiveClassifier = "dev"

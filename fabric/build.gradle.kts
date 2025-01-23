@@ -4,6 +4,7 @@ import kotlin.io.path.invariantSeparatorsPathString
 plugins {
   id("carbon.shadow-platform")
   id("quiet-fabric-loom")
+  alias(libs.plugins.blossom)
 }
 
 val shade: Configuration by configurations.creating
@@ -63,6 +64,22 @@ carbonPlatform {
   productionJar = tasks.remapJar.flatMap { it.archiveFile }
 }
 
+sourceSets.main {
+  blossom {
+    resources {
+      properties.putAll(
+        mapOf(
+          "modId" to rootProject.name.lowercase(),
+          "name" to rootProject.name,
+          "version" to project.version,
+          "description" to project.description,
+          "githubUrl" to GITHUB_REPO_URL,
+        )
+      )
+    }
+  }
+}
+
 tasks {
   shadowJar {
     configurations = listOf(shade)
@@ -75,15 +92,6 @@ tasks {
     standardRuntimeRelocations()
     relocateGuice()
     relocateDependency("org.checkerframework")
-  }
-  processResources {
-    replace("fabric.mod.json", mapOf(
-      "modId" to rootProject.name.lowercase(),
-      "name" to rootProject.name,
-      "version" to project.version,
-      "description" to project.description,
-      "github_url" to GITHUB_REPO_URL
-    ))
   }
 
   runServer {
