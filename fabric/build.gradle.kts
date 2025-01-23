@@ -19,6 +19,9 @@ dependencies {
   modImplementation(libs.fabricApi)
   modRuntimeOnly(libs.fabricApiDeprecated) // LuckPerms needs to work at dev time
 
+  shade(projects.carbonchatModCommon) {
+    isTransitive = false
+  }
   shade(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
     exclude("net.kyori", "adventure-text-serializer-gson")
