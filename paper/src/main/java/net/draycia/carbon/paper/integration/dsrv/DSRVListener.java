@@ -37,6 +37,7 @@ import net.draycia.carbon.common.messages.TagPermissions;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.draycia.carbon.common.util.ChannelUtils;
+import net.draycia.carbon.common.util.DiscordRecipient;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -92,13 +93,15 @@ public final class DSRVListener implements ChatHook {
             }
 
             final String messageContents = PlainTextComponentSerializer.plainText().serialize(messageComponent);
-            final Component eventMessage;
+            Component eventMessage;
 
             if (carbonPlayer instanceof WrappedCarbonPlayer wrapped) {
                 eventMessage = wrapped.parseMessageTags(messageContents);
             } else {
                 eventMessage = TagPermissions.parseTags(TagPermissions.MESSAGE, messageContents, carbonPlayer::hasPermission);
             }
+
+            eventMessage = chatChannel.render(carbonPlayer, DiscordRecipient.INSTANCE, eventMessage, event.originalMessage());
 
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");
 
