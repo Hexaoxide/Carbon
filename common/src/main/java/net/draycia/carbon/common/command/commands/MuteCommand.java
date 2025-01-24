@@ -131,7 +131,9 @@ public final class MuteCommand extends CarbonCommand {
                         continue;
                     }
 
-                    this.carbonMessages.muteAlertPlayers(player, target.displayName());
+                    if (player.hasPermission("carbon.mute.alert")) {
+                        this.carbonMessages.muteAlertPlayers(player, target.displayName());
+                    }
                 }
 
                 target.muted(true);
@@ -160,7 +162,9 @@ public final class MuteCommand extends CarbonCommand {
                 continue;
             }
 
-            this.carbonMessages.tempMuteAlertPlayers(player, target.displayName(), formattedDuration);
+            if (player.hasPermission("carbon.mute.alert")) {
+                this.carbonMessages.tempMuteAlertPlayers(player, target.displayName(), formattedDuration);
+            }
         }
 
         target.muted(true);
