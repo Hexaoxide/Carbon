@@ -1,5 +1,6 @@
 UPDATE carbon_users SET
     muted = :muted,
+    muteexpiration = :muteexpiration,
     deafened = :deafened,
     selectedchannel = :selectedchannel,
     displayname = :displayname,

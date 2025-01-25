@@ -39,6 +39,7 @@ public final class PlayerRowMapper implements RowMapper<CarbonPlayerCommon> {
         final ColumnMapper<UUID> uuid = ctx.findColumnMapperFor(UUID.class).orElseThrow();
         return new CarbonPlayerCommon(
             rs.getBoolean("muted"),
+            rs.getLong("muteexpiration"),
             rs.getBoolean("deafened"),
             ctx.findColumnMapperFor(Key.class).orElseThrow().map(rs, "selectedchannel", ctx),
             null,
