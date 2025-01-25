@@ -1,3 +1,4 @@
+import java.util.function.Predicate
 import kotlin.io.path.invariantSeparatorsPathString
 
 plugins {
@@ -16,7 +17,7 @@ dependencies {
   mappings(loom.officialMojangMappings())
   modImplementation(libs.fabricLoader)
   modImplementation(libs.fabricApi)
-  modImplementation(libs.fabricApiDeprecated) // LuckPerms needs to work at dev time
+  modRuntimeOnly(libs.fabricApiDeprecated) // LuckPerms needs to work at dev time
 
   shade(projects.carbonchatCommon) {
     exclude("net.kyori", "adventure-api")
@@ -29,11 +30,14 @@ dependencies {
     exclude("io.leangen.geantyref")
   }
 
-  modImplementation(libs.cloudFabric)
+  modImplementation(libs.cloudFabric) {
+    exclude("net.fabricmc.fabric-api")
+  }
   include(libs.cloudFabric)
   implementation(libs.cloudSigned)
   include(libs.cloudSigned)
   modImplementation(libs.fabricPermissionsApi)
+  include(libs.fabricPermissionsApi)
 
   modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
@@ -77,16 +81,15 @@ tasks {
 
   runServer {
     dependsOn(shadowJar)
+    classpathFilter = Predicate {
+      val s = it.toPath().toAbsolutePath().invariantSeparatorsPathString
+      !s.contains("build/libs") && !s.contains("build/classes") && !s.contains("build/resources")
+    }
     doFirst {
       val jar = shadowJar.get().archiveFile.get().asFile
       val mods = file("run/mods")
       mods.mkdirs()
       jar.copyTo(mods.resolve("carbonchat-dev.jar"), overwrite = true)
-      val newClasspath = classpath.filter {
-        val s = it.toPath().toAbsolutePath().invariantSeparatorsPathString
-        !s.contains("build/libs") && !s.contains("build/classes") && !s.contains("build/resources")
-      }.files
-      classpath = files(newClasspath)
     }
   }
 }

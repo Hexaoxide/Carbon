@@ -26,6 +26,7 @@ import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Server;
@@ -52,7 +53,7 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
 
     @Override
     public Audience console() {
-        return this.server.getConsoleSender();
+        return new ConsoleCarbonPlayer(this.server.getConsoleSender());
     }
 
     @Override
