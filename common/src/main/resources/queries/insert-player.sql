@@ -14,7 +14,7 @@ INSERT{!PSQL: IGNORE} INTO carbon_users(
 ) VALUES (
     :id,
     :muted,
-    :muteexpiration
+    :muteexpiration,
     :deafened,
     :selectedchannel,
     :displayname,
