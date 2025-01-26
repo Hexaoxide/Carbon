@@ -21,6 +21,7 @@ package net.draycia.carbon.common.users;
 
 import com.google.inject.Inject;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +63,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
+    protected final PersistentUserProperty<Long> muteExpiration;
     protected final PersistentUserProperty<Boolean> deafened;
     protected final PersistentUserProperty<Key> selectedChannel;
 
@@ -79,6 +81,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     // Administrative
     protected final PersistentUserProperty<Boolean> spying;
+    protected final PersistentUserProperty<Boolean> applyOptionalChatFilters;
 
     // Punishments
     protected final PersistentUserProperty<Set<UUID>> ignoredPlayers;
@@ -89,6 +92,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     public CarbonPlayerCommon(
         final boolean muted,
+        final long muteExpiration,
         final boolean deafened,
         final @Nullable Key selectedChannel,
         final @Nullable String username, // will be resolved when requested
@@ -98,9 +102,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final @Nullable UUID whisperReplyTarget,
         final boolean spying,
         final boolean ignoreDirectMessages,
-        final @Nullable UUID party
+        final @Nullable UUID party,
+        final boolean applyOptionalChatFilters
     ) {
         this.muted = PersistentUserProperty.of(muted);
+        this.muteExpiration = PersistentUserProperty.of(muteExpiration);
         this.deafened = PersistentUserProperty.of(deafened);
         this.selectedChannel = PersistentUserProperty.of(selectedChannel);
         this.username = username;
@@ -113,6 +119,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(ignoreDirectMessages);
         this.party = PersistentUserProperty.of(party);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(applyOptionalChatFilters);
     }
 
     public CarbonPlayerCommon(
@@ -120,6 +127,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final UUID uuid
     ) {
         this.muted = PersistentUserProperty.of(false);
+        this.muteExpiration = PersistentUserProperty.of(0L);
         this.deafened = PersistentUserProperty.of(false);
         this.selectedChannel = PersistentUserProperty.empty();
         this.displayName = PersistentUserProperty.empty();
@@ -130,14 +138,17 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.uuid = uuid;
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
         this.party = PersistentUserProperty.empty();
+        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
     }
 
     public CarbonPlayerCommon() {
         this.muted = PersistentUserProperty.of(false);
+        this.muteExpiration = PersistentUserProperty.of(0L);
         this.deafened = PersistentUserProperty.of(false);
         this.selectedChannel = PersistentUserProperty.empty();
         this.displayName = PersistentUserProperty.empty();
         this.spying = PersistentUserProperty.of(false);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
@@ -151,10 +162,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private Stream<PersistentUserProperty<?>> properties() {
         return Stream.of(
             this.muted,
+            this.muteExpiration,
             this.deafened,
             this.selectedChannel,
             this.displayName,
             this.spying,
+            this.applyOptionalChatFilters,
             this.ignoredPlayers,
             this.leftChannels,
             this.ignoringDirectMessages,
@@ -214,12 +227,30 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean muted() {
-        return this.muted.get();
+        if (this.muted.get()) {
+            if (this.muteExpiration() > 0) {
+                return Instant.now().toEpochMilli() < this.muteExpiration();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public void muted(final boolean muted) {
         this.muted.set(muted);
+    }
+
+    @Override
+    public long muteExpiration() {
+        return this.muteExpiration.get();
+    }
+
+    @Override
+    public void muteExpiration(final long epochMillis) {
+        this.muteExpiration.set(epochMillis);
     }
 
     @Override
@@ -501,6 +532,16 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     public void party(final @Nullable Party party) {
         this.party.set(party == null ? null : party.id());
+    }
+
+    @Override
+    public boolean applyOptionalChatFilters() {
+        return this.applyOptionalChatFilters.get();
+    }
+
+    @Override
+    public void applyOptionalChatFilters(final boolean applyOptionalChatFilters) {
+        this.applyOptionalChatFilters.set(applyOptionalChatFilters);
     }
 
 }

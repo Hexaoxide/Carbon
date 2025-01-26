@@ -213,12 +213,28 @@ public interface CarbonPlayer extends Audience, Identified {
     boolean muted();
 
     /**
+     * The time the mute will expire, in epoch millis.
+     *
+     * @return the mute expiration time
+     * @since 3.0.0
+     */
+    long muteExpiration();
+
+    /**
      * Mutes and unmutes the player.
      *
      * @param muted if the player is now muted
      * @since 2.0.0
      */
     void muted(boolean muted);
+
+    /**
+     * Sets the epoch time the player's mute will expire.
+     *
+     * @param epochMillis the expiration time
+     * @since 3.0.0
+     */
+    void muteExpiration(long epochMillis);
 
     /**
      * Gets the ids of the players this player is currently ignoring.
@@ -412,5 +428,21 @@ public interface CarbonPlayer extends Audience, Identified {
      * @since 3.0.0
      */
     CompletableFuture<@Nullable Party> party();
+
+    /**
+     * Whether the optional chat filters apply to messages send to this player or not.
+     *
+     * @return if this player's using the optional chat filters
+     * @since 3.0.0
+     */
+    boolean applyOptionalChatFilters();
+
+    /**
+     * Whether the optional chat filters apply to messages send to this player or not.
+     *
+     * @param applyOptionalChatFilters if this player's using the optional chat filters
+     * @since 3.0.0
+     */
+    void applyOptionalChatFilters(boolean applyOptionalChatFilters);
 
 }

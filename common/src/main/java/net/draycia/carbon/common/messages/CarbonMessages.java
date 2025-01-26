@@ -116,6 +116,18 @@ public interface CarbonMessages {
     @Message("mute.spy.prefix")
     Component muteSpyPrefix(final Audience audience);
 
+    @Message("mute.alert.target.temp")
+    void tempMuteAlertRecipient(final Audience audience, final Component duration);
+
+    @Message("mute.alert.players.temp")
+    void tempMuteAlertPlayers(final Audience audience, final Component target, final Component duration);
+
+    @Message("duration.hours")
+    Component durationHours(final int hours, final int minutes, final int seconds);
+
+    @Message("duration.days")
+    Component durationDays(final long days, final int hours, final int minutes, final int seconds);
+
     /*
      * =============================================================
      * ====================== Direct Messages ======================
@@ -302,6 +314,21 @@ public interface CarbonMessages {
 
     /*
      * =============================================================
+     * ========================== Filters ==========================
+     * =============================================================
+     */
+
+    @Message("command.filter.optional.enabled")
+    void commandOptionalFilterEnabled(final Audience audience);
+
+    @Message("command.filter.optional.disabled")
+    void commandOptionalFilterDisabled(final Audience audience);
+
+    @Message("command.filter.optional.description")
+    Component commandOptionalFilterDescription();
+
+    /*
+     * =============================================================
      * ====================== Cloud Messages =======================
      * =============================================================
      */
@@ -387,6 +414,9 @@ public interface CarbonMessages {
 
     @Message("command.mute.argument.player")
     Component commandMuteArgumentPlayer();
+
+    @Message("command.mute.argument.duration")
+    Component commandMuteArgumentDuration();
 
     @Message("command.mute.argument.uuid")
     Component commandMuteArgumentUUID();
@@ -619,4 +649,8 @@ public interface CarbonMessages {
 
     @Message("integrations.fuuid.cannot_use_truce_channel")
     Component cannotUseTruceChannel(Audience audience);
+
+    @Message("integrations.fuuid.cannot_use_mod_channel")
+    Component cannotUseFactionModChannel(Audience audience);
+
 }

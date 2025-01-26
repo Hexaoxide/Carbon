@@ -91,7 +91,6 @@ public abstract class ChatListenerInternal {
         }
         
         String content = this.configManager.primaryConfig().applyChatPlaceholders(messageContent);
-        content = this.configManager.primaryConfig().applyChatFilters(content);
 
         final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
         this.carbonEventHandler.emit(earlyChatEvent);

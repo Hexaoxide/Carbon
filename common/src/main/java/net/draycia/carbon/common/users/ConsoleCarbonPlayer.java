@@ -139,6 +139,16 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
+    public long muteExpiration() {
+        return 0;
+    }
+
+    @Override
+    public void muteExpiration(final long epochMillis) {
+
+    }
+
+    @Override
     public Set<UUID> ignoring() {
         return Collections.emptySet();
     }
@@ -251,6 +261,16 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     @Override
     public CompletableFuture<@Nullable Party> party() {
         return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public boolean applyOptionalChatFilters() {
+        return false;
+    }
+
+    @Override
+    public void applyOptionalChatFilters(final boolean applyOptionalChatFilters) {
+
     }
 
     @Override

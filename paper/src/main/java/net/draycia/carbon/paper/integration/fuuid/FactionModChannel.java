@@ -17,11 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.draycia.carbon.paper.integration.mcmmo;
+package net.draycia.carbon.paper.integration.fuuid;
 
-import com.gmail.nossr50.datatypes.party.Party;
-import com.gmail.nossr50.party.PartyManager;
 import com.google.inject.Inject;
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.perms.Role;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,12 +30,9 @@ import java.util.Map;
 import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
-import net.draycia.carbon.common.channels.ConfigChatChannel;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
-import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -46,46 +44,46 @@ import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPer
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class McmmoPartyChannel extends ConfigChatChannel {
+public class FactionModChannel extends AbstractFactionsChannel {
 
-    public static final String FILE_NAME = "mcmmo-party.conf";
+    public static final String FILE_NAME = "factionsuuid-factionmodchat.conf";
 
-    private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private transient @MonotonicNonNull @Inject UserManager<?> users;
 
-    public McmmoPartyChannel() {
-        this.key = Key.key("carbon", "partychat");
-        this.commandAliases = List.of("pc");
+    // We could check if the player doesn't have the normal role, but this list may be configurable in the future?
+    private transient final List<Role> validRoles = List.of(Role.ADMIN, Role.MODERATOR, Role.COLEADER);
+
+    public FactionModChannel() {
+        this.key = Key.key("carbon", "factionmodchat");
+        this.commandAliases = List.of("mc");
 
         this.messageSource = new ConfigChannelMessageSource();
         this.messageSource.defaults = Map.of(
-            "default_format", "(party: %mcmmo_party_name%) <display_name>: <message>",
-            "console", "[party: %mcmmo_party_name%] <username>: <message>"
+            "default_format", "(fmod: %factionsuuid_faction_name%) <display_name>: <message>",
+            "console", "[fmod: %factionsuuid_faction_name%] <username>: <message>"
         );
     }
 
     @Override
     public ChannelPermissions permissions() {
         return ChannelPermissions.uniformDynamic(player -> channelPermissionResult(
-            this.party(player) != null,
-            () -> this.messages.cannotUseMcmmoPartyChannel(player)
+            this.validRoles.contains(this.factionRole(player)),
+            () -> this.messages.cannotUseFactionModChannel(player)
         ));
     }
 
     @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
-        final @Nullable Party party = this.party(sender);
-
-        if (party == null) {
+        if (!this.validRoles.contains(this.factionRole(sender))) {
             if (sender.online()) {
-                sender.sendMessage(this.messages.cannotUseMcmmoPartyChannel(sender));
+                sender.sendMessage(this.messages.cannotUseFactionModChannel(sender));
             }
 
             return Collections.emptyList();
         }
 
         final List<Audience> recipients = new ArrayList<>();
-        for (final Player player : party.getOnlineMembers()) {
+        for (final Player player : this.factionMods(sender)) {
             final @Nullable CarbonPlayer carbon = this.users.user(player.getUniqueId()).getNow(null);
             if (carbon != null) {
                 recipients.add(carbon);
@@ -97,13 +95,22 @@ public class McmmoPartyChannel extends ConfigChatChannel {
         return recipients;
     }
 
-    private @Nullable Party party(final CarbonPlayer player) {
-        return PartyManager.getParty(Bukkit.getPlayer(player.uuid()));
-    }
+    private List<Player> factionMods(final CarbonPlayer player) {
+        final @Nullable Faction faction = this.faction(player);
 
-    @Override
-    public boolean shouldCrossServer() {
-        return false;
+        if (faction == null) {
+            return List.of();
+        }
+
+        final List<Player> factionMods = new ArrayList<>();
+
+        for (final FPlayer onlinePlayer : faction.getFPlayersWhereOnline(true)) {
+            if (this.validRoles.contains(onlinePlayer.getRole())) {
+                factionMods.add(onlinePlayer.getPlayer());
+            }
+        }
+
+        return factionMods;
     }
 
 }

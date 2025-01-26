@@ -117,6 +117,9 @@ public class ConfigChatChannel implements ChatChannel {
 
     private long cooldown = -1;
 
+    @Comment("Whether this channel's messages should be sent cross-server.")
+    private boolean crossServer = true;
+
     @Override
     public @Nullable String quickPrefix() {
         if (this.quickPrefix == null || this.quickPrefix.isBlank()) {
@@ -261,6 +264,11 @@ public class ConfigChatChannel implements ChatChannel {
     @Override
     public boolean emptyRadiusRecipientsMessage() {
         return this.emptyRadiusRecipientsMessage;
+    }
+
+    @Override
+    public boolean shouldCrossServer() {
+        return this.crossServer;
     }
 
     @Override

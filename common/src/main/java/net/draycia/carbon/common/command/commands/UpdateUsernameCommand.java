@@ -94,7 +94,7 @@ public final class UpdateUsernameCommand extends CarbonCommand {
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    target = this.userManager.user(handler.get("uuid")).join();
+                    target = this.userManager.user(handler.flags().get("uuid")).join();
                 } else {
                     target = sender;
                 }

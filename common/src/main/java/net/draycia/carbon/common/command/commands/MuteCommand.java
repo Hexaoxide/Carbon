@@ -20,6 +20,8 @@
 package net.draycia.carbon.common.command.commands;
 
 import com.google.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
@@ -30,9 +32,12 @@ import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.parser.standard.DurationParser;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.UUIDParser.uuidParser;
@@ -81,17 +86,22 @@ public final class MuteCommand extends CarbonCommand {
                 .withDescription(richDescription(this.carbonMessages.commandMuteArgumentUUID()))
                 .withComponent(uuidParser())
             )
+            .flag(this.commandManager.flagBuilder("duration")
+                .withAliases("d")
+                .withDescription(richDescription(this.carbonMessages.commandMuteArgumentDuration()))
+                .withComponent(DurationParser.durationParser())
+            )
             .permission("carbon.mute")
-            .senderType(PlayerCommander.class)
+            .senderType(Commander.class)
             .commandDescription(richDescription(this.carbonMessages.commandMuteDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final Commander sender = handler.sender();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {
                     target = handler.get("player");
                 } else if (handler.flags().contains("uuid")) {
-                    target = this.users.user(handler.get("uuid")).join();
+                    target = this.users.user(handler.flags().get("uuid")).join();
                 } else {
                     this.carbonMessages.muteNoTarget(sender);
                     // TODO: send command syntax
@@ -103,18 +113,27 @@ public final class MuteCommand extends CarbonCommand {
                     return;
                 }
 
-                this.carbonMessages.muteAlertRecipient(target);
-
-                if (!sender.equals(target)) {
-                    this.carbonMessages.muteAlertPlayers(sender, target.displayName());
+                if (sender instanceof PlayerCommander playerCommander && playerCommander.carbonPlayer().equals(target)) {
+                    this.carbonMessages.muteExempt(playerCommander);
+                    return;
                 }
 
+                if (handler.flags().contains("duration")) {
+                    this.handleTempMute(handler.flags().get("duration"), target);
+                    return;
+                }
+
+                this.carbonMessages.muteAlertRecipient(target);
+                this.carbonMessages.muteAlertRecipient(this.server.console());
+
                 for (final var player : this.server.players()) {
-                    if (player.equals(target) || player.equals(sender)) {
+                    if (player.equals(target)) {
                         continue;
                     }
 
-                    this.carbonMessages.muteAlertPlayers(player, target.displayName());
+                    if (player.hasPermission("carbon.mute.alert")) {
+                        this.carbonMessages.muteAlertPlayers(player, target.displayName());
+                    }
                 }
 
                 target.muted(true);
@@ -122,6 +141,34 @@ public final class MuteCommand extends CarbonCommand {
             .build();
 
         this.commandManager.command(command);
+    }
+
+    private void handleTempMute(final Duration duration, final CarbonPlayer target) {
+        final @Nullable Component formattedDuration;
+
+        if (duration.toDaysPart() > 0) {
+            formattedDuration = this.carbonMessages.durationDays(duration.toDaysPart(), duration.toHoursPart(),
+                duration.toMinutesPart(), duration.toSecondsPart());
+        } else {
+            formattedDuration = this.carbonMessages.durationHours(duration.toHoursPart(), duration.toMinutesPart(),
+                duration.toSecondsPart());
+        }
+
+        this.carbonMessages.tempMuteAlertRecipient(target, formattedDuration);
+        this.carbonMessages.tempMuteAlertRecipient(this.server.console(), formattedDuration);
+
+        for (final var player : this.server.players()) {
+            if (player.equals(target)) {
+                continue;
+            }
+
+            if (player.hasPermission("carbon.mute.alert")) {
+                this.carbonMessages.tempMuteAlertPlayers(player, target.displayName(), formattedDuration);
+            }
+        }
+
+        target.muted(true);
+        target.muteExpiration(Instant.now().plus(duration).toEpochMilli());
     }
 
 }

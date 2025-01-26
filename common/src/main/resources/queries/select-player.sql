@@ -1,6 +1,7 @@
 SELECT
     id,
     muted,
+    muteexpiration,
     deafened,
     selectedchannel,
     displayname,
@@ -8,5 +9,6 @@ SELECT
     whisperreplytarget,
     spying,
     ignoringdms,
-    party
+    party,
+    applycustomfilters
 FROM carbon_users WHERE (id = :id);

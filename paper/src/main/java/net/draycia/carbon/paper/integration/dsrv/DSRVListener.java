@@ -79,6 +79,10 @@ public final class DSRVListener implements ChatHook {
                 return;
             }
 
+            if (carbonPlayer.muted()) {
+                return;
+            }
+
             final ImmutablePair<CarbonPlayer, ChatChannel> pair = new ImmutablePair<>(carbonPlayer, chatChannel);
             Component messageComponent = awaitingEvent.getIfPresent(pair);
             awaitingEvent.invalidate(pair);
@@ -142,7 +146,7 @@ public final class DSRVListener implements ChatHook {
 
     @Override
     public Plugin getPlugin() {
-        return null;
+        return this.plugin;
     }
 
 }

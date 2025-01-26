@@ -39,10 +39,12 @@ import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.messaging.packets.WhisperPacket;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import ninja.egg82.messenger.handler.AbstractMessagingHandler;
 import ninja.egg82.messenger.packets.Packet;
@@ -122,11 +124,23 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
             return false;
         }
 
+        if (!channel.shouldCrossServer()) {
+            return false;
+        }
+
         final List<KeyedRenderer> renderers = new ArrayList<>();
 
         final List<Audience> recipients = channel.recipients(sender);
         final CarbonChatEventImpl chatEvent = new CarbonChatEventImpl(sender, messagePacket.message(), recipients, renderers, channel, null, false);
         this.events.emit(chatEvent);
+
+        renderers.add(KeyedRenderer.keyedRenderer(Key.key("carbon", "console_cs"), ($, recipient, message, original) -> {
+            if (recipient instanceof ConsoleCarbonPlayer) {
+                return Component.textOfChildren(Component.text("[Cross-Server] "), message);
+            }
+
+            return message;
+        }));
 
         for (final Audience recipient : recipients) {
             if (recipient instanceof CarbonPlayer carbonRecipient
@@ -136,8 +150,6 @@ public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
             recipient.sendMessage(chatEvent.renderFor(recipient));
         }
-
-        this.server.console().sendMessage(Component.text("[Cross-Server] ").append(chatEvent.message()));
 
         return true;
     }

@@ -72,16 +72,18 @@ public final class DebugCommand extends CarbonCommand {
             .optional("player", this.parserFactory.carbonPlayer(),
                 richDescription(this.carbonMessages.commandDebugArgumentPlayer()))
             .permission("carbon.debug")
-            .senderType(PlayerCommander.class)
+            .senderType(Commander.class)
             .commandDescription(richDescription(this.carbonMessages.commandDebugDescription()))
             .handler(handler -> {
-                final CarbonPlayer sender = handler.sender().carbonPlayer();
+                final Commander sender = handler.sender();
                 final CarbonPlayer target;
 
                 if (handler.contains("player")) {
                     target = handler.get("player");
+                } else if (sender instanceof PlayerCommander playerCommander) {
+                    target = playerCommander.carbonPlayer();
                 } else {
-                    target = sender;
+                    return;
                 }
 
                 sender.sendMessage(

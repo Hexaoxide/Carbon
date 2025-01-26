@@ -1,5 +1,6 @@
 UPDATE carbon_users SET
     muted = :muted,
+    muteexpiration = :muteexpiration,
     deafened = :deafened,
     selectedchannel = :selectedchannel,
     displayname = :displayname,
@@ -7,5 +8,6 @@ UPDATE carbon_users SET
     whisperreplytarget = :whisperreplytarget,
     spying = :spying,
     ignoringdms = :ignoringdms,
-    party = :party
+    party = :party,
+    applycustomfilters = :applycustomfilters
 WHERE (id = :id);
