@@ -20,7 +20,6 @@
 package net.draycia.carbon.paper.integration.mcmmo;
 
 import com.gmail.nossr50.datatypes.party.Party;
-import com.gmail.nossr50.party.PartyManager;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,7 +97,7 @@ public class McmmoPartyChannel extends ConfigChatChannel {
     }
 
     private @Nullable Party party(final CarbonPlayer player) {
-        return PartyManager.getParty(Bukkit.getPlayer(player.uuid()));
+        return com.gmail.nossr50.util.player.UserManager.getPlayer(Bukkit.getPlayer(player.uuid())).getParty();
     }
 
     @Override

@@ -37,12 +37,6 @@ dependencyResolutionManagement {
         includeGroup("net.essentialsx")
       }
     }
-    // CodeMC (Minecraft Open Source)
-    maven("https://repo.codemc.io/repository/maven-public/") {
-      mavenContent {
-        includeGroup("com.gmail.nossr50.mcMMO")
-      }
-    }
     // DiscordSRV
     maven("https://nexus.scarsz.me/content/groups/public/") {
       mavenContent {
@@ -56,6 +50,12 @@ dependencyResolutionManagement {
     // FactionsUUID
     maven("https://ci.ender.zone/plugin/repository/everything/") {
       content { includeGroup("com.massivecraft") }
+    }
+    // mcMMO
+    maven("https://nexus.neetgames.com/repository/maven-releases/") {
+      content {
+        includeGroup("com.gmail.nossr50.mcMMO")
+      }
     }
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
