@@ -9,7 +9,7 @@ indra = "3.1.3"
 shadow = "8.3.5"
 pluginYml = "0.5.3"
 mod-publish-plugin = "0.8.4"
-gremlin = "0.0.6"
+gremlin = "0.0.7"
 runTask = "2.3.1"
 
 adventure = "4.17.0"
@@ -55,7 +55,7 @@ h2 = "2.3.232"
 towny = "0.100.3.0"
 plotsquared_bom = "1.52"
 plotsquared_core = "7.4.1"
-mcmmo = "2.1.227"
+mcmmo = "2.2.004"
 fuuid = "1.6.9.5-U0.6.35"
 
 # synced with version used by lowest supported mc (currently 1.20.6 on paper)

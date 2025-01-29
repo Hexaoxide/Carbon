@@ -21,6 +21,7 @@ package net.draycia.carbon.common.users;
 
 import com.google.inject.Inject;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +63,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
+    protected final PersistentUserProperty<Long> muteExpiration;
     protected final PersistentUserProperty<Boolean> deafened;
     protected final PersistentUserProperty<Key> selectedChannel;
 
@@ -90,6 +92,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     public CarbonPlayerCommon(
         final boolean muted,
+        final long muteExpiration,
         final boolean deafened,
         final @Nullable Key selectedChannel,
         final @Nullable String username, // will be resolved when requested
@@ -103,6 +106,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final boolean applyOptionalChatFilters
     ) {
         this.muted = PersistentUserProperty.of(muted);
+        this.muteExpiration = PersistentUserProperty.of(muteExpiration);
         this.deafened = PersistentUserProperty.of(deafened);
         this.selectedChannel = PersistentUserProperty.of(selectedChannel);
         this.username = username;
@@ -123,6 +127,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         final UUID uuid
     ) {
         this.muted = PersistentUserProperty.of(false);
+        this.muteExpiration = PersistentUserProperty.of(0L);
         this.deafened = PersistentUserProperty.of(false);
         this.selectedChannel = PersistentUserProperty.empty();
         this.displayName = PersistentUserProperty.empty();
@@ -138,6 +143,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     public CarbonPlayerCommon() {
         this.muted = PersistentUserProperty.of(false);
+        this.muteExpiration = PersistentUserProperty.of(0L);
         this.deafened = PersistentUserProperty.of(false);
         this.selectedChannel = PersistentUserProperty.empty();
         this.displayName = PersistentUserProperty.empty();
@@ -156,6 +162,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private Stream<PersistentUserProperty<?>> properties() {
         return Stream.of(
             this.muted,
+            this.muteExpiration,
             this.deafened,
             this.selectedChannel,
             this.displayName,
@@ -220,12 +227,30 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public boolean muted() {
-        return this.muted.get();
+        if (this.muted.get()) {
+            if (this.muteExpiration() > 0) {
+                return Instant.now().toEpochMilli() < this.muteExpiration();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public void muted(final boolean muted) {
         this.muted.set(muted);
+    }
+
+    @Override
+    public long muteExpiration() {
+        return this.muteExpiration.get();
+    }
+
+    @Override
+    public void muteExpiration(final long epochMillis) {
+        this.muteExpiration.set(epochMillis);
     }
 
     @Override

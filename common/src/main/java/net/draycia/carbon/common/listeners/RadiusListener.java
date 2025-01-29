@@ -26,6 +26,7 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -52,7 +53,7 @@ public class RadiusListener implements Listener {
 
             if (radius == 0) {
                 event.recipients().removeIf(audience -> {
-                    if (audience.equals(event.sender())) {
+                    if (audience.equals(event.sender()) || audience instanceof ConsoleCarbonPlayer) {
                         return false;
                     }
 
@@ -70,7 +71,7 @@ public class RadiusListener implements Listener {
                 });
             } else {
                 event.recipients().removeIf(audience -> {
-                    if (audience.equals(event.sender())) {
+                    if (audience.equals(event.sender()) || audience instanceof ConsoleCarbonPlayer) {
                         return false;
                     }
 
