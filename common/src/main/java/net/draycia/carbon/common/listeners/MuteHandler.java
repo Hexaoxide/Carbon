@@ -25,6 +25,7 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -58,7 +59,7 @@ public class MuteHandler implements Listener {
             event.renderers().add(this.renderer);
 
             event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
-                !carbonPlayer.spying());
+                !carbonPlayer.spying() && !(entry instanceof ConsoleCarbonPlayer));
         });
     }
 
