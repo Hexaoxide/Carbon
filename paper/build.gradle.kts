@@ -39,12 +39,16 @@ dependencies {
     isTransitive = false
   }
   compileOnly(libs.factionsUuid)
+  implementation(libs.plotsquaredbom)
+  compileOnly(libs.plotsquaredcore)
 }
 
 configurablePlugins {
   dependency(libs.towny)
   dependency(libs.mcmmo)
   dependency(libs.factionsUuid)
+  dependency(libs.plotsquaredbom)
+  dependency(libs.plotsquaredcore)
 }
 
 tasks {
@@ -92,6 +96,7 @@ paperPluginYaml {
     server("Towny", Load.BEFORE, false)
     server("mcMMO", Load.BEFORE, false)
     server("Factions", Load.BEFORE, false)
+    server("PlotSquared", Load.BEFORE, false)
   }
 }
 
