@@ -185,7 +185,7 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
 
     @Override
     public boolean spying() {
-        return true;
+        return false;
     }
 
     @Override
