@@ -21,6 +21,7 @@ dependencies {
   // Commands
   implementation(libs.cloudPaper)
   implementation(libs.cloudPaperSigned)
+  compileOnly(libs.brigadier)
 
   // Misc
   implementation(libs.bstatsBukkit)
@@ -29,6 +30,9 @@ dependencies {
   compileOnly(libs.placeholderapi)
   compileOnly(libs.miniplaceholders)
   compileOnly(libs.essentialsXDiscord) {
+    exclude("org.spigotmc", "spigot-api")
+  }
+  compileOnly(libs.essentialsX) {
     exclude("org.spigotmc", "spigot-api")
   }
   compileOnly(libs.discordsrv) {
@@ -80,7 +84,7 @@ paperPluginYaml {
   name = rootProject.name
   loader = "net.draycia.carbon.paper.CarbonPaperLoader"
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
-  apiVersion = "1.20"
+  apiVersion = "1.21"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
   foliaSupported = true
@@ -103,7 +107,7 @@ paperPluginYaml {
 bukkitPluginYaml {
   name = rootProject.name
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
-  apiVersion = "1.20"
+  apiVersion = "1.21"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
 }

@@ -20,26 +20,25 @@
 package net.draycia.carbon.paper.integration.essxd;
 
 import com.google.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 import net.draycia.carbon.api.CarbonChat;
 import net.essentialsx.api.v2.events.discord.DiscordMessageEvent;
 import net.essentialsx.api.v2.services.discord.DiscordService;
 import net.essentialsx.api.v2.services.discord.MessageType;
-import net.kyori.adventure.key.Key;
+import net.essentialsx.discord.JDADiscordService;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class EssXDListener implements Listener {
 
     private final CarbonChat carbonChat;
     private final JavaPlugin plugin;
-    private final Map<Key, MessageType> channelMessageTypes = new HashMap<>();
     private final Logger logger;
+    private @MonotonicNonNull DiscordService discord;
 
     @Inject
     private EssXDListener(
@@ -67,25 +66,32 @@ public final class EssXDListener implements Listener {
             channel = this.carbonChat.channelRegistry().defaultChannel();
         }
 
-        final var messageType = this.channelMessageTypes.get(channel.key());
+        if (this.discord instanceof JDADiscordService jda) {
+            final @Nullable String messageChannel = jda.getPlugin().getSettings().getMessageChannel(channel.key().value());
 
-        event.setType(messageType);
+            if (messageChannel == null || messageChannel.equalsIgnoreCase("none")) {
+                event.setCancelled(true);
+                return;
+            }
+        } else if (!this.discord.isRegistered(channel.key().value())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        event.setType(new MessageType(channel.key().value()));
     }
 
     public void register() {
         Bukkit.getPluginManager().registerEvents(this, this.plugin);
+        this.discord = Bukkit.getServicesManager().load(DiscordService.class);
 
-        final @Nullable DiscordService discord = Bukkit.getServicesManager().load(DiscordService.class);
-
-        if (discord != null) {
+        if (this.discord != null) {
             this.carbonChat.channelRegistry().allKeys(key -> {
-                final MessageType channelMessageType = new MessageType(key.value());
-                try {
-                    discord.registerMessageType(this.plugin, channelMessageType);
-                } catch (final IllegalArgumentException exception) {
-                    this.logger.info("Skipping registration of message type [{}]", channelMessageType);
+                if (this.discord.isRegistered(key.value())) {
+                    return;
                 }
-                this.channelMessageTypes.put(key, channelMessageType);
+
+                this.discord.registerMessageType(this.plugin, new MessageType(key.value()));
             });
         }
     }
