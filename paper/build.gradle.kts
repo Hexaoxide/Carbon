@@ -21,7 +21,6 @@ dependencies {
   // Commands
   implementation(libs.cloudPaper)
   implementation(libs.cloudPaperSigned)
-  compileOnly(libs.brigadier)
 
   // Misc
   implementation(libs.bstatsBukkit)
