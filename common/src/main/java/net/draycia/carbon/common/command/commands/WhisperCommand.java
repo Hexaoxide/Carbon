@@ -222,7 +222,7 @@ public final class WhisperCommand extends CarbonCommand {
             message.sendMessage(
                 sender,
                 ChatType.chatType(this.rawChatKey),
-                this.messages.whisperSender(SourcedAudience.of(sender, sender), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message())
+                this.messages.whisperSender(SourcedAudience.of(sender, sender), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, recipient.uuid(), privateChatEvent.message())
             );
             if (localRecipient) {
                 if (!recipient.hasPermission("carbon.whisper.receive")) {
@@ -233,7 +233,7 @@ public final class WhisperCommand extends CarbonCommand {
                 message.sendMessage(
                     recipient,
                     ChatType.chatType(this.rawChatKey),
-                    this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message())
+                    this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, recipient.uuid(), privateChatEvent.message())
                 );
             }
             WhisperCommand.broadcastWhisperSpy(this.server, this.messages, senderUsername, senderDisplayName,
@@ -276,7 +276,7 @@ public final class WhisperCommand extends CarbonCommand {
 
                 recipient.whisperReplyTarget(sender.uuid());
                 SourcedAudience.of(sender, recipient).sendMessage(
-                    this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message())
+                    this.messages.whisperRecipient(SourcedAudience.of(sender, recipient), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, recipient.uuid(), packet.message())
                 );
                 WhisperCommand.broadcastWhisperSpy(this.server, this.messages, senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());
                 this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, packet.message());

@@ -100,14 +100,14 @@ public final class RenderForTagResolver implements TagResolver {
         final String value = arguments.popOr("Missing message value").value();
         if (value.equalsIgnoreCase("inserting")) {
             return Tag.inserting(
-                this.messageRenderer.get().render(player, arguments.popOr("Missing message value").value(), this.resolvedPlaceholders, null, null)
+                this.messageRenderer.get().render(SourcedAudience.of(player, player), arguments.popOr("Missing message value").value(), this.resolvedPlaceholders, null, null)
             );
         } else if (value.equalsIgnoreCase("self_closing_inserting")) {
             return Tag.selfClosingInserting(
-                this.messageRenderer.get().render(player, arguments.popOr("Missing message value").value(), this.resolvedPlaceholders, null, null)
+                this.messageRenderer.get().render(SourcedAudience.of(player, player), arguments.popOr("Missing message value").value(), this.resolvedPlaceholders, null, null)
             );
         } else {
-            return Tag.selfClosingInserting(this.messageRenderer.get().render(player, value, this.resolvedPlaceholders, null, null));
+            return Tag.selfClosingInserting(this.messageRenderer.get().render(SourcedAudience.of(player, player), value, this.resolvedPlaceholders, null, null));
         }
     }
 

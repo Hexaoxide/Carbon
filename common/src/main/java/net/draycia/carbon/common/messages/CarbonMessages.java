@@ -141,6 +141,7 @@ public interface CarbonMessages {
         Component senderDisplayName,
         String recipientUsername,
         Component recipientDisplayName,
+        UUID recipientUuid,
         Component message
     );
 
@@ -151,6 +152,7 @@ public interface CarbonMessages {
         Component senderDisplayName,
         String recipientUsername,
         Component recipientDisplayName,
+        UUID recipientUuid,
         Component message
     );
 
