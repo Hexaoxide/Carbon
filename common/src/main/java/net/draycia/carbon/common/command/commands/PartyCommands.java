@@ -220,6 +220,16 @@ public final class PartyCommands extends CarbonCommand {
             return;
         }
 
+        if (player.ignoring(recipient)) {
+            this.messages.partyTargetIgnoring(player, recipient.displayName());
+            return;
+        }
+
+        if (recipient.ignoring(player)) {
+            this.messages.partyIgnoringTarget(player, recipient.displayName());
+            return;
+        }
+
         final @Nullable Party recipientParty = recipient.party().join();
         if (recipientParty != null && recipientParty.id().equals(party.id())) {
             this.messages.alreadyInParty(player, recipient.displayName());

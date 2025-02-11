@@ -573,6 +573,12 @@ public interface CarbonMessages {
     @Message("command.party.already_in_party")
     void alreadyInParty(Audience audience, Component displayName);
 
+    @Message("command.party.ignoring_target")
+    void partyTargetIgnoring(Audience audience, Component target);
+
+    @Message("command.party.ignored_by_target")
+    void partyIgnoringTarget(Audience audience, Component target);
+
     @Message("command.party.description")
     Component partyDesc();
 
