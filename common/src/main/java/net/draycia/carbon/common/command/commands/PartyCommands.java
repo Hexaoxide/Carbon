@@ -33,6 +33,7 @@ import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
+import net.draycia.carbon.common.command.argument.CarbonPlayerParser;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messages.Option;
@@ -40,6 +41,7 @@ import net.draycia.carbon.common.messages.TagPermissions;
 import net.draycia.carbon.common.users.NetworkUsers;
 import net.draycia.carbon.common.users.PartyInvites;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.Pagination;
 import net.draycia.carbon.common.util.PaginationHelper;
 import net.kyori.adventure.key.Key;
@@ -199,20 +201,31 @@ public final class PartyCommands extends CarbonCommand {
     private void invitePlayer(final CommandContext<PlayerCommander> ctx) {
         final CarbonPlayer player = ctx.sender().carbonPlayer();
         final CarbonPlayer recipient = ctx.get("player");
+
+        final @Nullable String recipientInputString = ctx.parsingContext("player").consumedInput();
+        if (!this.network.online(recipient) || !player.awareOf(recipient) && !player.hasPermission("carbon.whisper.vanished")) {
+            final var exception = new CarbonPlayerParser.ParseException(recipientInputString, this.messages);
+            this.messages.errorCommandArgumentParsing(player, CloudUtils.message(exception));
+            return;
+        }
+
         if (recipient.uuid().equals(player.uuid())) {
             this.messages.cannotInviteSelf(player);
             return;
         }
+
         final @Nullable Party party = player.party().join();
         if (party == null) {
             this.messages.mustBeInParty(player);
             return;
         }
+
         final @Nullable Party recipientParty = recipient.party().join();
         if (recipientParty != null && recipientParty.id().equals(party.id())) {
             this.messages.alreadyInParty(player, recipient.displayName());
             return;
         }
+
         this.partyInvites.sendInvite(player.uuid(), recipient.uuid(), party.id());
         this.messages.receivedPartyInvite(recipient, player.displayName(), player.username(), party.name());
         this.messages.sentPartyInvite(player, recipient.displayName(), party.name());
