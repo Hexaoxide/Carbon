@@ -29,7 +29,8 @@ carbon.whisper.reply: "Sends a message to the last player who messaged you."
 carbon.whisper.vanished: "Allows the player to send messages to vanished players."
 
 # Nickname tag permissions
-carbon.nickname.tags.color: "Allows the use of colors in nicknames."
+carbon.nickname.tags.hex: "Allows the use of hex and named colors in nicknames."
+carbon.nickname.tags.named.name: "Allows the use of named colors in nicknames."
 carbon.nickname.tags.gradient: "Allows the use of gradients in nicknames."
 carbon.nickname.tags.rainbow: "Allows the use of the rainbow tag in nicknames."
 carbon.nickname.tags.decorations: "Allows the use of obfuscated, bold, strikethrough, underlined, and italic in nicknames. If a player has this permission, the specific decoration permissions won't be checked."
@@ -48,7 +49,8 @@ carbon.nickname.tags.reset: "Allows the use of the reset tag in nicknames."
 carbon.nickname.tags.newline: "Allows the use of the newline tag in nicknames."
 
 # Party name tag permissions
-carbon.parties.name.tags.color: "Allows the use of colors in party names."
+carbon.parties.name.tags.hex: "Allows the use of hex and named colors in party names."
+carbon.parties.name.tags.named.name: "Allows the use of named colors in party names."
 carbon.parties.name.tags.gradient: "Allows the use of gradients in party names."
 carbon.parties.name.tags.rainbow: "Allows the use of the rainbow tag in party names."
 carbon.parties.name.tags.decorations: "Allows the use of obfuscated, bold, strikethrough, underlined, and italic in party names. If a player has this permission, the specific decoration permissions won't be checked."
@@ -67,7 +69,8 @@ carbon.parties.name.tags.reset: "Allows the use of the reset tag in party names.
 carbon.parties.name.tags.newline: "Allows the use of the newline tag in party names."
 
 # Message tag permissions
-carbon.messagetags.color: "Allows the use of colors in messages."
+carbon.messagetags.hex: "Allows the use of hex and named colors in messages."
+carbon.messagetags.named.name: "Allows the use of named colors in messages."
 carbon.messagetags.gradient: "Allows the use of gradients in messages."
 carbon.messagetags.rainbow: "Allows the use of the rainbow tag in messages."
 carbon.messagetags.decorations: "Allows the use of obfuscated, bold, strikethrough, underlined, and italic in messages. If a player has this permission, the specific decoration permissions won't be checked."
