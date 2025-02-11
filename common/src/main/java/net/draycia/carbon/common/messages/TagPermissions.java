@@ -22,8 +22,10 @@ package net.draycia.carbon.common.messages;
 import java.util.Map;
 import java.util.function.Predicate;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -38,7 +40,7 @@ public final class TagPermissions {
     private static final Map<String, TagResolver> DEFAULT_TAGS = Map.ofEntries(
         Map.entry("hover", StandardTags.hoverEvent()),
         Map.entry("click", StandardTags.clickEvent()),
-        Map.entry("color", StandardTags.color()),
+        Map.entry("hex", StandardTags.color()),
         Map.entry("keybind", StandardTags.keybind()),
         Map.entry("translatable", StandardTags.translatable()),
         Map.entry("insertion", StandardTags.insertion()),
@@ -55,11 +57,16 @@ public final class TagPermissions {
 
     public static Component parseTags(final String basePermission, final String message, final Predicate<String> permission, final TagResolver.Builder resolver) {
         boolean hasAllDecorations = false;
+        boolean hasAllColors = false;
+
         for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
             if (permission.test(basePermission + '.' + entry.getKey())) {
                 resolver.resolver(entry.getValue());
                 if (entry.getKey().equals("decorations")) {
                     hasAllDecorations = true;
+                }
+                if (entry.getKey().equals("hex")) {
+                    hasAllColors = true;
                 }
             }
         }
@@ -71,6 +78,16 @@ public final class TagPermissions {
                 }
 
                 resolver.resolver(StandardTags.decorations(decoration));
+            }
+        }
+
+        if (!hasAllColors) {
+            for (final NamedTextColor textColor : NamedTextColor.NAMES.values()) {
+                if (!permission.test(basePermission + ".named." + textColor)) {
+                    continue;
+                }
+
+                resolver.resolver(TagResolver.resolver(textColor.toString(), Tag.styling(msg -> msg.color(textColor))));
             }
         }
 
