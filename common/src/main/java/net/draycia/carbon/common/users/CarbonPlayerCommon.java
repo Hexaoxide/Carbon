@@ -75,8 +75,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     protected final PersistentUserProperty<Component> displayName;
 
     // Whispers
-    protected transient @Nullable UUID lastWhisperTarget = null;
-    protected transient @Nullable UUID whisperReplyTarget = null;
+    protected final PersistentUserProperty<UUID> lastWhisperTarget;
+    protected final PersistentUserProperty<UUID> whisperReplyTarget;
     protected final PersistentUserProperty<Boolean> ignoringDirectMessages;
 
     // Administrative
@@ -112,8 +112,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.username = username;
         this.uuid = uuid;
         this.displayName = PersistentUserProperty.of(displayName);
-        this.lastWhisperTarget = lastWhisperTarget;
-        this.whisperReplyTarget = whisperReplyTarget;
+        this.lastWhisperTarget = PersistentUserProperty.of(lastWhisperTarget);
+        this.whisperReplyTarget = PersistentUserProperty.of(whisperReplyTarget);
         this.spying = PersistentUserProperty.of(spying);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
@@ -131,6 +131,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.deafened = PersistentUserProperty.of(false);
         this.selectedChannel = PersistentUserProperty.empty();
         this.displayName = PersistentUserProperty.empty();
+        this.lastWhisperTarget = PersistentUserProperty.empty();
+        this.whisperReplyTarget = PersistentUserProperty.empty();
         this.spying = PersistentUserProperty.of(false);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
@@ -147,6 +149,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.deafened = PersistentUserProperty.of(false);
         this.selectedChannel = PersistentUserProperty.empty();
         this.displayName = PersistentUserProperty.empty();
+        this.lastWhisperTarget = PersistentUserProperty.empty();
+        this.whisperReplyTarget = PersistentUserProperty.empty();
         this.spying = PersistentUserProperty.of(false);
         this.applyOptionalChatFilters = PersistentUserProperty.of(false);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
@@ -166,6 +170,8 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
             this.deafened,
             this.selectedChannel,
             this.displayName,
+            this.lastWhisperTarget,
+            this.whisperReplyTarget,
             this.spying,
             this.applyOptionalChatFilters,
             this.ignoredPlayers,
@@ -334,22 +340,22 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     @Override
     public @Nullable UUID whisperReplyTarget() {
-        return this.whisperReplyTarget;
+        return this.whisperReplyTarget.orNull();
     }
 
     @Override
     public void whisperReplyTarget(final @Nullable UUID whisperReplyTarget) {
-        this.whisperReplyTarget = whisperReplyTarget;
+        this.whisperReplyTarget.set(whisperReplyTarget);
     }
 
     @Override
     public @Nullable UUID lastWhisperTarget() {
-        return this.lastWhisperTarget;
+        return this.lastWhisperTarget.orNull();
     }
 
     @Override
     public void lastWhisperTarget(final @Nullable UUID lastWhisperTarget) {
-        this.lastWhisperTarget = lastWhisperTarget;
+        this.lastWhisperTarget.set(lastWhisperTarget);
     }
 
     @Override
