@@ -18,7 +18,7 @@ hangarPublish.publications.register("plugin") {
   apiKey = providers.environmentVariable("HANGAR_UPLOAD_KEY")
   platforms.paper {
     jar = project(":carbonchat-paper").platformJar()
-    platformVersions.add("1.20.6-1.21.1")
+    platformVersions.add("1.20.6-1.21.5")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
       hangar("Essentials") {
@@ -37,7 +37,7 @@ hangarPublish.publications.register("plugin") {
   }
   platforms.velocity {
     jar = project(":carbonchat-velocity").platformJar()
-    platformVersions.add("3.3")
+    platformVersions.add("3.4")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
       hangar("MiniPlaceholders") {
