@@ -9,10 +9,7 @@ dependencies {
   compileOnlyApi(libs.log4jApi)
 
   // Configs
-  api(libs.configurateHocon) {
-    // Provided by the adventure platform
-    exclude("net.kyori", "option")
-  }
+  api(libs.configurateHocon)
   api(libs.adventureSerializerConfigurate4) {
     isTransitive = false
   }

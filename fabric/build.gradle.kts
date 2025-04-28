@@ -23,6 +23,7 @@ dependencies {
     exclude("net.kyori", "adventure-api")
     exclude("net.kyori", "adventure-text-serializer-gson")
     exclude("net.kyori", "adventure-text-serializer-plain")
+    exclude("net.kyori", "option")
     exclude("org.incendo", "cloud-core")
     exclude("org.incendo", "cloud-services")
     exclude("org.incendo", "cloud-brigadier")
@@ -41,6 +42,10 @@ dependencies {
 
   modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
+
+  // Until we upgrade adventure-platform-fabric
+  implementation("net.kyori:option:1.1.0")
+  include("net.kyori:option:1.1.0")
 
   modImplementation(libs.miniplaceholders)
 

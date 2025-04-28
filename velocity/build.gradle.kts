@@ -41,6 +41,7 @@ tasks {
     relocateCloud()
     standardRuntimeRelocations()
     relocateDependency("io.leangen.geantyref")
+    relocateDependency("net.kyori.option") // TODO: remove once Velocity updates adventure
     relocateGuice()
   }
   val prod = register<Zip>("productionJar") {
@@ -61,7 +62,7 @@ tasks {
     velocityVersion(libs.versions.velocityApi.get())
     pluginJars.from(prod)
     downloadPlugins {
-      url("https://download.luckperms.net/1556/velocity/LuckPerms-Velocity-5.4.141.jar")
+      url("https://download.luckperms.net/1575/velocity/LuckPerms-Velocity-5.4.158.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Velocity-${libs.versions.miniplaceholders.get()}.jar")
     }
   }

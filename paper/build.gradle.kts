@@ -12,7 +12,10 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.carbonchatCommon)
+  implementation(projects.carbonchatCommon) {
+    // This is provided by Paper 1.21.1+
+    exclude("net.kyori", "option")
+  }
 
   // Server
   compileOnly(libs.foliaApi)
@@ -62,7 +65,7 @@ tasks {
   withType(RunServer::class).configureEach {
     version.set(libs.versions.minecraft)
     downloadPlugins {
-      url("https://download.luckperms.net/1556/bukkit/loader/LuckPerms-Bukkit-5.4.141.jar")
+      url("https://download.luckperms.net/1575/bukkit/loader/LuckPerms-Bukkit-5.4.158.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
