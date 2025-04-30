@@ -1,6 +1,9 @@
 # Compiled class file
 *.class
 
+# Kotlin temp files
+.kotlin/
+
 # Log file
 *.log
 

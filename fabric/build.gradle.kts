@@ -1,9 +1,11 @@
+import xyz.jpenilla.resourcefactory.fabric.Environment
 import java.util.function.Predicate
 import kotlin.io.path.invariantSeparatorsPathString
 
 plugins {
   id("carbon.shadow-platform")
   id("quiet-fabric-loom")
+  alias(libs.plugins.resource.factory.fabric.convention)
 }
 
 val shade: Configuration by configurations.creating
@@ -56,6 +58,31 @@ dependencies {
   runtimeDownload(libs.checkerQual)
 }
 
+fabricModJson {
+  id = rootProject.name.lowercase()
+  name = rootProject.name
+  version = project.version.toString()
+  description = project.description
+  author("Draycia")
+  author("jmp")
+  contact {
+    homepage = GITHUB_REPO_URL
+    sources = GITHUB_REPO_URL
+    issues = "$GITHUB_REPO_URL/issues"
+  }
+  license("GPLv3")
+  environment = Environment.ANY
+  mainEntrypoint("net.draycia.carbon.fabric.CarbonFabricBootstrap")
+  mixin("carbonchat.mixins.json")
+  depends("fabricloader", ">=" + libs.versions.fabricLoader.get())
+  depends("fabric-api", "*")
+  depends("cloud", "*")
+  depends("adventure-platform-fabric", "*")
+  depends("minecraft", libs.versions.minecraft.get())
+  depends("luckperms", ">=5.0.0")
+  suggests("miniplaceholders", "*")
+}
+
 carbonPlatform {
   productionJar = tasks.remapJar.flatMap { it.archiveFile }
 }
@@ -72,15 +99,6 @@ tasks {
     standardRuntimeRelocations()
     relocateGuice()
     relocateDependency("org.checkerframework")
-  }
-  processResources {
-    replace("fabric.mod.json", mapOf(
-      "modId" to rootProject.name.lowercase(),
-      "name" to rootProject.name,
-      "version" to project.version,
-      "description" to project.description,
-      "github_url" to GITHUB_REPO_URL
-    ))
   }
 
   runServer {

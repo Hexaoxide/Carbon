@@ -3,6 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
   id("carbon.shadow-platform")
   id("xyz.jpenilla.run-velocity")
+  alias(libs.plugins.resource.factory.velocity.convention)
 }
 
 val bstats: Configuration by configurations.creating
@@ -22,6 +23,19 @@ dependencies {
   runtimeDownload(libs.mysql)
 
   compileOnly("javax.inject:javax.inject:1")
+}
+
+velocityPluginJson {
+  id = rootProject.name.lowercase()
+  main = "net.draycia.carbon.velocity.CarbonVelocityBootstrap"
+  name = rootProject.name
+  version = project.version.toString()
+  description = project.description
+  url = GITHUB_REPO_URL
+  authors = listOf("Draycia", "jmp")
+  dependency("luckperms", false)
+  dependency("miniplaceholders", true)
+  dependency("signedvelocity", true)
 }
 
 gremlin {
@@ -64,15 +78,6 @@ tasks {
       url("https://download.luckperms.net/1575/velocity/LuckPerms-Velocity-5.4.158.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Velocity-${libs.versions.miniplaceholders.get()}.jar")
     }
-  }
-  processResources {
-    replace("velocity-plugin.json", mapOf(
-      "id" to rootProject.name.lowercase(),
-      "name" to rootProject.name,
-      "version" to project.version,
-      "description" to project.description,
-      "url" to GITHUB_REPO_URL
-    ))
   }
 }
 

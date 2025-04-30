@@ -3,9 +3,8 @@ import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
   id("carbon.shadow-platform")
-  id("xyz.jpenilla.resource-factory") version "1.2.1"
-  id("xyz.jpenilla.resource-factory-paper-convention") version "1.2.1"
-  id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.2.1"
+  alias(libs.plugins.resource.factory.paper.convention)
+  alias(libs.plugins.resource.factory.bukkit.convention)
   id("xyz.jpenilla.run-paper")
   id("carbon.permissions")
   id("carbon.configurable-plugins")

@@ -3,6 +3,10 @@ sponge-gradle = { id = "org.spongepowered.gradle.plugin", version = "2.3.0" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.3" }
 indra-publishing-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
 javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.16" }
+resource-factory-paper-convention = { id = "xyz.jpenilla.resource-factory-paper-convention", version.ref = "resource-factory" }
+resource-factory-bukkit-convention = { id = "xyz.jpenilla.resource-factory-bukkit-convention", version.ref = "resource-factory" }
+resource-factory-velocity-convention = { id = "xyz.jpenilla.resource-factory-velocity-convention", version.ref = "resource-factory" }
+resource-factory-fabric-convention = { id = "xyz.jpenilla.resource-factory-fabric-convention", version.ref = "resource-factory" }
 
 [versions]
 indra = "3.1.3"
@@ -11,6 +15,7 @@ pluginYml = "0.5.3"
 mod-publish-plugin = "0.8.4"
 gremlin = "0.0.7"
 runTask = "2.3.1"
+resource-factory = "1.2.1"
 
 adventure = "4.17.0"
 cloud = "2.0.0"
