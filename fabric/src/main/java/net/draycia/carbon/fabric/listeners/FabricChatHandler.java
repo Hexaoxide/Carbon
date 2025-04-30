@@ -20,7 +20,6 @@
 package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
-import java.util.Optional;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
@@ -29,10 +28,10 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.kyori.adventure.platform.fabric.FabricAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.Registry;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
@@ -80,12 +79,14 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
         for (final var recipient : chatEvent.recipients()) {
             final Component finishedMessage = chatEvent.renderFor(recipient);
 
-            final net.minecraft.network.chat.Component nativeMessage = FabricAudiences.nonWrappingSerializer().serialize(finishedMessage);
+            final net.minecraft.network.chat.Component nativeMessage = MinecraftServerAudiences.of(serverPlayer.server).nonWrappingSerializer().serialize(finishedMessage);
             final PlayerChatMessage customChatMessage = new PlayerChatMessage(chatMessage.link(), chatMessage.signature(), chatMessage.signedBody(), nativeMessage, FilterMask.FULLY_FILTERED);
             final RegistryAccess registryAccess = serverPlayer.level().registryAccess();
             if (this.chatTypeResourceKey == null) {
-                final Registry<ChatType> reg = registryAccess.registryOrThrow(Registries.CHAT_TYPE);
-                this.chatTypeResourceKey = Optional.ofNullable(reg.get(CHAT_TYPE_KEY)).flatMap(reg::getResourceKey).orElseThrow();
+                this.chatTypeResourceKey = registryAccess.lookupOrThrow(Registries.CHAT_TYPE)
+                    .get(CHAT_TYPE_KEY)
+                    .flatMap(Holder.Reference::unwrapKey)
+                    .orElseThrow();
             }
             final ChatType.Bound customBound = ChatType.bind(this.chatTypeResourceKey, registryAccess, nativeMessage);
 

@@ -44,10 +44,6 @@ dependencies {
   modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
 
-  // Until we upgrade adventure-platform-fabric
-  implementation("net.kyori:option:1.1.0")
-  include("net.kyori:option:1.1.0")
-
   modImplementation(libs.miniplaceholders)
 
   runtimeDownload(libs.mysql)
