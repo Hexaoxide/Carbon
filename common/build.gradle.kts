@@ -9,7 +9,12 @@ dependencies {
   compileOnlyApi(libs.log4jApi)
 
   // Configs
-  api(libs.configurateHocon)
+  api(libs.configurateHocon) {
+    // Provided at platform level (usually through adventure)
+    exclude("net.kyori", "option")
+  }
+  // Bring in option for -common compile
+  compileOnly(libs.configurateHocon)
   api(libs.adventureSerializerConfigurate4) {
     isTransitive = false
   }

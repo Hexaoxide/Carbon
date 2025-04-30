@@ -41,7 +41,6 @@ tasks {
     relocateCloud()
     standardRuntimeRelocations()
     relocateDependency("io.leangen.geantyref")
-    relocateDependency("net.kyori.option") // TODO: remove & exclude above once Velocity updates adventure
     relocateGuice()
   }
   val prod = register<Zip>("productionJar") {

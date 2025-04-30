@@ -12,10 +12,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.carbonchatCommon) {
-    // This is provided by Paper 1.21.1+
-    exclude("net.kyori", "option")
-  }
+  implementation(projects.carbonchatCommon)
 
   // Server
   compileOnly(libs.foliaApi)

@@ -23,7 +23,6 @@ dependencies {
     exclude("net.kyori", "adventure-api")
     exclude("net.kyori", "adventure-text-serializer-gson")
     exclude("net.kyori", "adventure-text-serializer-plain")
-    exclude("net.kyori", "option")
     exclude("org.incendo", "cloud-core")
     exclude("org.incendo", "cloud-services")
     exclude("org.incendo", "cloud-brigadier")
