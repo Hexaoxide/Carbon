@@ -640,6 +640,16 @@ public interface CarbonMessages {
     @Message("integrations.towny.cannot_use_town_channel")
     Component cannotUseTownChannel(Audience audience);
 
+    @Message("integrations.towny.spy")
+    void townySpy(
+        Audience audience,
+        @Placeholder UUID uuid,
+        @Placeholder("display_name") Component displayName,
+        @Placeholder String username,
+        @Placeholder Component message,
+        @Placeholder("towny_name") Component townyName
+    );
+
     @Message("integrations.mcmmo.cannot_use_party_channel")
     Component cannotUseMcmmoPartyChannel(Audience audience);
 

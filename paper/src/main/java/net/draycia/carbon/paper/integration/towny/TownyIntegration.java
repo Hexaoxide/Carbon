@@ -33,14 +33,17 @@ public final class TownyIntegration implements Integration {
 
     private final CarbonChannelRegistry channelRegistry;
     private final Config config;
+    private final TownySpyHandler townySpyHandler;
 
     @Inject
     public TownyIntegration(
         final CarbonChannelRegistry channelRegistry,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final TownySpyHandler townySpyHandler
     ) {
         this.channelRegistry = channelRegistry;
         this.config = this.config(configManager, configMeta());
+        this.townySpyHandler = townySpyHandler;
     }
 
     @Override
@@ -61,6 +64,8 @@ public final class TownyIntegration implements Integration {
         if (this.config.allianceChannel) {
             this.channelRegistry.registerSpecialConfigChannel(AllianceChannel.FILE_NAME, AllianceChannel.class);
         }
+
+        this.townySpyHandler.register();
     }
 
     public static ConfigMeta configMeta() {
