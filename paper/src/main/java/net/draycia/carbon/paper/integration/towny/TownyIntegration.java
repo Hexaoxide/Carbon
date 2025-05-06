@@ -20,6 +20,7 @@
 package net.draycia.carbon.paper.integration.towny;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.integration.Integration;
@@ -33,17 +34,17 @@ public final class TownyIntegration implements Integration {
 
     private final CarbonChannelRegistry channelRegistry;
     private final Config config;
-    private final TownySpyHandler townySpyHandler;
+    private final Injector injector;
 
     @Inject
     public TownyIntegration(
         final CarbonChannelRegistry channelRegistry,
         final ConfigManager configManager,
-        final TownySpyHandler townySpyHandler
+        final Injector injector
     ) {
         this.channelRegistry = channelRegistry;
         this.config = this.config(configManager, configMeta());
-        this.townySpyHandler = townySpyHandler;
+        this.injector = injector;
     }
 
     @Override
@@ -65,7 +66,7 @@ public final class TownyIntegration implements Integration {
             this.channelRegistry.registerSpecialConfigChannel(AllianceChannel.FILE_NAME, AllianceChannel.class);
         }
 
-        this.townySpyHandler.register();
+        this.injector.getInstance(TownySpyHandler.class);
     }
 
     public static ConfigMeta configMeta() {
