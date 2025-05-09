@@ -66,7 +66,7 @@ public final class TownyIntegration implements Integration {
             this.channelRegistry.registerSpecialConfigChannel(AllianceChannel.FILE_NAME, AllianceChannel.class);
         }
 
-        this.injector.getInstance(TownySpyHandler.class);
+        this.injector.getInstance(TownySpyHandler.class).register();
     }
 
     public static ConfigMeta configMeta() {
