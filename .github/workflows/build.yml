@@ -9,6 +9,7 @@ on:
 
 concurrency:
   group: ${{ github.ref }}-actions
+  cancel-in-progress: false
 
 jobs:
   build:

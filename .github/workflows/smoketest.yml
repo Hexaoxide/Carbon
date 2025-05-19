@@ -2,13 +2,11 @@ name: Smoke test
 on:
   push:
     branches: [ "**" ]
-    tags: [ "v**" ]
   pull_request:
-  release:
-    types: [ published ]
 
 concurrency:
   group: ${{ github.ref }}-actions
+  cancel-in-progress: false
 
 jobs:
   check:
