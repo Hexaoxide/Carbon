@@ -75,6 +75,6 @@ jobs:
       - name: Smoke test (Paper, MariaDB)
         run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=mariadb
         timeout-minutes: 5
-      #- name: Smoke test (Paper, Postgres)
-      #  run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=postgres
-      #  timeout-minutes: 5
+      - name: Smoke test (Paper, Postgres)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=postgres
+        timeout-minutes: 5
