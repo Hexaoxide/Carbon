@@ -63,6 +63,9 @@ jobs:
             .gradle/loom-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
+        # Don't count build time for smoke test timeout in case smoke test workflow runs first
+      - name: Build
+        run: ./gradlew build --stacktrace
       - name: Smoke test (Paper, JSON)
         run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=json
         timeout-minutes: 5
