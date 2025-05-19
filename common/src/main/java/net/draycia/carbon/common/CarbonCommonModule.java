@@ -145,8 +145,14 @@ public final class CarbonCommonModule extends AbstractModule {
             switch (smokeTestMode) {
                 case "h2" -> storageType = PrimaryConfig.StorageType.H2;
                 case "json" -> storageType = PrimaryConfig.StorageType.JSON;
-                case "postgres" -> storageType = PrimaryConfig.StorageType.PSQL;
-                case "mariadb" -> storageType = PrimaryConfig.StorageType.MYSQL;
+                case "postgres" -> {
+                    storageType = PrimaryConfig.StorageType.PSQL;
+                    configManager.primaryConfig().databaseSettings().url("jdbc:postgresql://localhost:5432/carbon");
+                }
+                case "mariadb" -> {
+                    storageType = PrimaryConfig.StorageType.MYSQL;
+                    configManager.primaryConfig().databaseSettings().url("jdbc:mariadb://localhost:3306/carbon");
+                }
                 default -> throw new IllegalArgumentException("Unknown smoke test mode: " + smokeTestMode);
             }
         }

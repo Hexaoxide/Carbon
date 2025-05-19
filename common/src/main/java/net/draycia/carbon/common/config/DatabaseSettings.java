@@ -58,6 +58,10 @@ public class DatabaseSettings {
         return this.url;
     }
 
+    public String url(final String url) {
+        return this.url = url;
+    }
+
     public String username() {
         return this.username;
     }

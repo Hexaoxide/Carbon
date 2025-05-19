@@ -5,6 +5,9 @@ on:
     types:
       - completed
 
+concurrency:
+  group: smoke-test-${{ github.event.workflow_run.id }}
+
 jobs:
   check:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -58,11 +61,15 @@ jobs:
             .gradle/loom-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
-      - name: Smoke test (Paper, Postgres)
-        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=postgres
-      - name: Smoke test (Paper, MariaDB)
-        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=mariadb
-      - name: Smoke test (Paper, H2)
-        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=h2
       - name: Smoke test (Paper, JSON)
         run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=json
+        timeout-minutes: 5
+      - name: Smoke test (Paper, H2)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=h2
+        timeout-minutes: 5
+      - name: Smoke test (Paper, MariaDB)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=mariadb
+        timeout-minutes: 5
+      - name: Smoke test (Paper, Postgres)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=postgres
+        timeout-minutes: 5
