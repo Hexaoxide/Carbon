@@ -67,6 +67,7 @@ import net.draycia.carbon.common.command.commands.UpdateUsernameCommand;
 import net.draycia.carbon.common.command.commands.WhisperCommand;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.DatabaseSettings;
+import net.draycia.carbon.common.config.PrimaryConfig;
 import net.draycia.carbon.common.event.CarbonEventHandlerImpl;
 import net.draycia.carbon.common.listeners.DeafenHandler;
 import net.draycia.carbon.common.listeners.FilterHandler;
@@ -136,9 +137,23 @@ public final class CarbonCommonModule extends AbstractModule {
         final Logger logger,
         final Injector injector
     ) throws IOException {
-        logger.info("Initializing " + configManager.primaryConfig().storageType() + " storage manager...");
+        PrimaryConfig.StorageType storageType = configManager.primaryConfig().storageType();
 
-        return switch (configManager.primaryConfig().storageType()) {
+        final String smokeTestMode = System.getProperty("carbonchat.smokeTestMode");
+        if (smokeTestMode != null) {
+            logger.info("Smoke test: Overriding storage manager.");
+            switch (smokeTestMode) {
+                case "h2" -> storageType = PrimaryConfig.StorageType.H2;
+                case "json" -> storageType = PrimaryConfig.StorageType.JSON;
+                case "postgres" -> storageType = PrimaryConfig.StorageType.PSQL;
+                case "mariadb" -> storageType = PrimaryConfig.StorageType.MYSQL;
+                default -> throw new IllegalArgumentException("Unknown smoke test mode: " + smokeTestMode);
+            }
+        }
+
+        logger.info("Initializing {} storage manager...", storageType);
+
+        return switch (storageType) {
             case MYSQL -> injector.getInstance(DatabaseUserManager.Factory.class).create(
                 "queries/migrations/mysql",
                 jdbi -> jdbi.registerArgument(new BinaryUUIDArgumentFactory())

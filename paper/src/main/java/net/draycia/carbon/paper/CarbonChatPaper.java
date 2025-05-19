@@ -25,6 +25,8 @@ import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import net.draycia.carbon.api.CarbonServer;
@@ -116,6 +118,19 @@ public final class CarbonChatPaper extends CarbonChatInternal {
         }));
 
         this.checkVersion();
+
+        if (Boolean.getBoolean("carbonchat.smokeTest")) {
+            this.logger().info("Smoke test: CarbonChat successfully enabled.");
+            try {
+                new File("carbonchat-smoketest").createNewFile();
+            } catch (final IOException e) {
+                this.logger().error("Smoke test: Failed to create file.", e);
+            }
+            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
+                this.logger().info("Smoke test: Shutting down server.");
+                Bukkit.getServer().shutdown();
+            }, 20L);
+        }
     }
 
     private void registerPlaceholders() {
