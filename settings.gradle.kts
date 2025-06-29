@@ -10,6 +10,9 @@ dependencyResolutionManagement {
         includeModule("org.incendo", "cloud-sponge")
       }
     }
+    maven("https://central.sonatype.com/repository/maven-snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
       mavenContent { snapshotsOnly() }
     }
@@ -64,6 +67,12 @@ dependencyResolutionManagement {
 pluginManagement {
   repositories {
     gradlePluginPortal()
+    maven("https://central.sonatype.com/repository/maven-snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
     maven("https://oss.sonatype.org/content/repositories/snapshots/") {
       mavenContent { snapshotsOnly() }
     }

@@ -12,6 +12,7 @@ repositories {
 dependencies {
   implementation(libs.shadow)
   implementation(libs.indraCommon)
+  implementation(libs.cloud.build.logic)
   implementation(libs.indraLicenseHeader)
   implementation(libs.mod.publish.plugin)
   implementation(libs.configurateYaml)

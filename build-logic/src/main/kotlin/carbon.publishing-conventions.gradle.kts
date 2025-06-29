@@ -1,8 +1,8 @@
 plugins {
   id("carbon.base-conventions")
   id("net.kyori.indra.publishing")
+  id("org.incendo.cloud-build-logic.publishing")
 }
-
 
 signing {
   val signingKey: String? by project

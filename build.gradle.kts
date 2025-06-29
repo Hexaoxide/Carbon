@@ -1,7 +1,7 @@
 plugins {
   id("carbon.build-logic")
   alias(libs.plugins.hangar.publish)
-  alias(libs.plugins.indra.publishing.sonatype)
+  alias(libs.plugins.cloud.buildLogic.rootProject.publishing)
 }
 
 val projectVersion: String by project // get from gradle.properties
@@ -48,8 +48,4 @@ hangarPublish.publications.register("plugin") {
       }
     }
   }
-}
-
-indraSonatype {
-  useAlternateSonatypeOSSHost("s01")
 }
