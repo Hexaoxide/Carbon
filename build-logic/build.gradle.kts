@@ -18,6 +18,7 @@ dependencies {
   implementation(libs.configurateYaml)
   implementation(libs.gremlin.gradle)
   implementation(libs.run.task)
+  implementation(libs.gson)
 
   // https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
   implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))

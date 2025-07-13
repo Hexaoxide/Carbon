@@ -71,11 +71,12 @@ tasks {
     relocateDependency("io.leangen.geantyref")
     relocateGuice()
   }
+  val luckperms = FetchLuckPermsJar.setup(project, "velocity")
   runVelocity {
     velocityVersion(libs.versions.velocityApi.get())
     pluginJars.from(prod)
+    pluginJars.from(luckperms.flatMap { it.outputFile })
     downloadPlugins {
-      url("https://download.luckperms.net/1575/velocity/LuckPerms-Velocity-5.4.158.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Velocity-${libs.versions.miniplaceholders.get()}.jar")
     }
   }

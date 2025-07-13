@@ -2,21 +2,19 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
   repositories {
-    mavenCentral()
+    mavenCentral {
+      mavenContent { releasesOnly() }
+    }
     maven("https://repo.jpenilla.xyz/snapshots/") {
       mavenContent {
         snapshotsOnly()
         includeModuleByRegex("de\\.hexaoxi", "messenger-.*")
         includeModule("org.incendo", "cloud-sponge")
+        includeModule("com.seiama", "registry")
+        includeModule("com.seiama", "event-api")
       }
     }
     maven("https://central.sonatype.com/repository/maven-snapshots/") {
-      mavenContent { snapshotsOnly() }
-    }
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-      mavenContent { snapshotsOnly() }
-    }
-    maven("https://oss.sonatype.org/content/repositories/snapshots/") {
       mavenContent { snapshotsOnly() }
     }
     // PaperMC
@@ -68,12 +66,6 @@ pluginManagement {
   repositories {
     gradlePluginPortal()
     maven("https://central.sonatype.com/repository/maven-snapshots/") {
-      mavenContent { snapshotsOnly() }
-    }
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-      mavenContent { snapshotsOnly() }
-    }
-    maven("https://oss.sonatype.org/content/repositories/snapshots/") {
       mavenContent { snapshotsOnly() }
     }
     maven("https://maven.fabricmc.net/")

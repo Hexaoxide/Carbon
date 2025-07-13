@@ -58,14 +58,15 @@ tasks {
     relocateDependency("net.fabricmc.mappingio")
     relocateCloud()
   }
+  val luckperms = FetchLuckPermsJar.setup(project, "bukkit")
   withType(RunServer::class).configureEach {
     version.set(libs.versions.minecraft)
     downloadPlugins {
-      url("https://download.luckperms.net/1575/bukkit/loader/LuckPerms-Bukkit-5.4.158.jar")
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
     }
+    pluginJars.from(luckperms.flatMap { it.outputFile })
     providers.gradleProperty("smokeTest").map { it.toBoolean() }.getOrElse(false).let { smokeTest ->
       if (smokeTest) {
         runDirectory.set(layout.buildDirectory.dir("tmp/smokeTest"))
