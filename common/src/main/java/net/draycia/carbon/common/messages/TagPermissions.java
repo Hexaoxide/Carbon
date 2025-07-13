@@ -47,7 +47,11 @@ public final class TagPermissions {
         Map.entry("gradient", StandardTags.gradient()),
         Map.entry("rainbow", StandardTags.rainbow()),
         Map.entry("reset", StandardTags.reset()),
-        Map.entry("newline", StandardTags.newline())
+        Map.entry("newline", StandardTags.newline()),
+        Map.entry("pride", StandardTags.pride()),
+        Map.entry("selector", StandardTags.selector()),
+        Map.entry("shadow", StandardTags.shadowColor()),
+        Map.entry("transition", StandardTags.transition())
     );
 
     private TagPermissions() {
