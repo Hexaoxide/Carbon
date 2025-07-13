@@ -79,7 +79,7 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
         for (final var recipient : chatEvent.recipients()) {
             final Component finishedMessage = chatEvent.renderFor(recipient);
 
-            final net.minecraft.network.chat.Component nativeMessage = MinecraftServerAudiences.of(serverPlayer.server).nonWrappingSerializer().serialize(finishedMessage);
+            final net.minecraft.network.chat.Component nativeMessage = MinecraftServerAudiences.of(serverPlayer.getServer()).nonWrappingSerializer().serialize(finishedMessage);
             final PlayerChatMessage customChatMessage = new PlayerChatMessage(chatMessage.link(), chatMessage.signature(), chatMessage.signedBody(), nativeMessage, FilterMask.FULLY_FILTERED);
             final RegistryAccess registryAccess = serverPlayer.level().registryAccess();
             if (this.chatTypeResourceKey == null) {

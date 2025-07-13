@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         includeModule("org.incendo", "cloud-sponge")
         includeModule("com.seiama", "registry")
         includeModule("com.seiama", "event-api")
-        includeGroup("net.kyori") // adventure-platform-mod 6.4.0-SNAPSHOT
+        includeGroup("net.kyori") // adventure-platform-mod 6.5.0-SNAPSHOT
       }
     }
     maven("https://central.sonatype.com/repository/maven-snapshots/") {
@@ -79,7 +79,7 @@ pluginManagement {
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
-  id("quiet-fabric-loom") version "1.10-SNAPSHOT"
+  id("quiet-fabric-loom") version "1.11-SNAPSHOT"
 }
 
 rootProject.name = "CarbonChat"

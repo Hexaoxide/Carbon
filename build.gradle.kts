@@ -18,7 +18,7 @@ hangarPublish.publications.register("plugin") {
   apiKey = providers.environmentVariable("HANGAR_UPLOAD_KEY")
   platforms.paper {
     jar = project(":carbonchat-paper").platformJar()
-    platformVersions.add("1.21.1-1.21.5")
+    platformVersions.add("1.21.1-1.21.7")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
       hangar("Essentials") {
