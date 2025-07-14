@@ -60,7 +60,7 @@ tasks {
   }
   val luckperms = FetchLuckPermsJar.setup(project, "bukkit")
   withType(RunServer::class).configureEach {
-    version.set(libs.versions.minecraft)
+    version.set("1.21.4")
     downloadPlugins {
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
@@ -97,7 +97,7 @@ paperPluginYaml {
   name = rootProject.name
   loader = "net.draycia.carbon.paper.CarbonPaperLoader"
   main = "net.draycia.carbon.paper.CarbonPaperBootstrap"
-  apiVersion = "1.20"
+  apiVersion = "1.21.4"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
   foliaSupported = true
@@ -120,7 +120,7 @@ paperPluginYaml {
 bukkitPluginYaml {
   name = rootProject.name
   main = "carbonchat.libs.io.papermc.papertrail.RequiresPaperPlugins"
-  apiVersion = "1.20"
+  apiVersion = "1.21.4"
   authors = listOf("Draycia", "jmp")
   website = GITHUB_REPO_URL
 }
