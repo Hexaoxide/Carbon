@@ -36,7 +36,7 @@ import net.draycia.carbon.fabric.MinecraftServerHolder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -157,13 +157,13 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return null;
         }
 
-        return FabricServerAudiences.of(player.server).toAdventure(item.getDisplayName());
+        return MinecraftServerAudiences.of(player.getServer()).asAdventure(item.getDisplayName());
     }
 
     @Override
     public boolean hasPermission(final String permission) {
         return this.player()
-            .map(player -> Permissions.check(player, permission, player.server.getOperatorUserPermissionLevel()))
+            .map(player -> Permissions.check(player, permission, player.getServer().getOperatorUserPermissionLevel()))
             .orElse(false);
     }
 
