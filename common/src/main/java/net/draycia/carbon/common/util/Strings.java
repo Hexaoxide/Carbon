@@ -32,10 +32,17 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class Strings {
 
     private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
+    private static final Pattern URL_SCHEME_PATTERN = Pattern.compile("^[a-z][a-z0-9+\\-.]*:");
     public static final Supplier<TextReplacementConfig> URL_REPLACEMENT_CONFIG = Suppliers.memoize(
         () -> TextReplacementConfig.builder()
             .match(DEFAULT_URL_PATTERN)
-            .replacement(builder -> builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, builder.content())))
+            .replacement(url -> {
+                String clickUrl = url.content();
+                if (!URL_SCHEME_PATTERN.matcher(clickUrl).find()) {
+                    clickUrl = "http://" + clickUrl;
+                }
+                return url.clickEvent(ClickEvent.openUrl(clickUrl));
+            })
             .build()
     );
 
