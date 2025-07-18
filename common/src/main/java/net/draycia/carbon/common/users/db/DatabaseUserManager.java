@@ -302,6 +302,60 @@ public final class DatabaseUserManager extends CachingUserManager {
             this.server = server;
         }
 
+        /**
+         * Migrates the existing flyway_schema_history table to use the carbon_ table prefix.
+         *
+         * @param dataSource the HikariDataSource to use for the migration
+         */
+        private void migrateFlywaySchemaHistory(final HikariDataSource dataSource) {
+            try (final var connection = dataSource.getConnection()) {
+                final var metaData = connection.getMetaData();
+
+                try (
+                    final var oldTableCheck = metaData.getTables(null, null, "flyway_schema_history", null);
+                    final var newTableCheck = metaData.getTables(null, null, "carbon_flyway_schema_history", null)
+                ) {
+                    final boolean oldTableExists = oldTableCheck.next();
+                    if (!oldTableExists) {
+                        return;
+                    }
+
+                    final boolean newTableExists = newTableCheck.next();
+                    if (newTableExists) {
+                        this.logger.debug("carbon_flyway_schema_history already exists, skipping migration");
+                        return;
+                    }
+                }
+
+                try (final var stmt = connection.createStatement()) {
+                    final String databaseType = metaData.getDatabaseProductName().toLowerCase();
+
+                    if (databaseType.contains("h2")) {
+                        stmt.execute("CREATE TABLE \"carbon_flyway_schema_history\" AS SELECT * FROM \"flyway_schema_history\"");
+                        stmt.execute("CREATE INDEX \"carbon_flyway_schema_history_s_idx\" ON \"carbon_flyway_schema_history\" (\"success\")");
+                        stmt.execute("DROP TABLE \"flyway_schema_history\"");
+                        this.logger.info("Successfully migrated flyway_schema_history to carbon_flyway_schema_history");
+                    } else if (databaseType.contains("mysql") || databaseType.contains("mariadb")) {
+                        stmt.execute("CREATE TABLE carbon_flyway_schema_history LIKE flyway_schema_history");
+                        stmt.execute("INSERT INTO carbon_flyway_schema_history SELECT * FROM flyway_schema_history");
+                        stmt.execute("CREATE INDEX carbon_flyway_schema_history_s_idx ON carbon_flyway_schema_history (success)");
+                        stmt.execute("DROP TABLE flyway_schema_history");
+                        this.logger.info("Successfully migrated flyway_schema_history to carbon_flyway_schema_history");
+                    } else if (databaseType.contains("postgresql")) {
+                        stmt.execute("CREATE TABLE carbon_flyway_schema_history AS SELECT * FROM flyway_schema_history");
+                        stmt.execute("CREATE INDEX carbon_flyway_schema_history_s_idx ON carbon_flyway_schema_history (success)");
+                        stmt.execute("DROP TABLE flyway_schema_history");
+                        this.logger.info("Successfully migrated flyway_schema_history to carbon_flyway_schema_history");
+                    } else {
+                        this.logger.warn("Unknown database type: {}. Skipping flyway schema history migration.", databaseType);
+                    }
+                }
+            } catch (final Exception e) {
+                this.logger.error("Failed to migrate flyway schema history", e);
+                throw new RuntimeException("Database migration failed", e);
+            }
+        }
+
         public DatabaseUserManager create(final String migrationsLocation, final Consumer<Jdbi> configureJdbi) {
             return this.create(migrationsLocation, configureJdbi, this.configManager.primaryConfig().databaseSettings());
         }
@@ -325,6 +379,8 @@ public final class DatabaseUserManager extends CachingUserManager {
 
             final HikariDataSource dataSource = new HikariDataSource(hikariConfig);
 
+            this.migrateFlywaySchemaHistory(dataSource);
+
             final Flyway flyway = Flyway.configure(CarbonChat.class.getClassLoader())
                 .baselineVersion("0")
                 .baselineOnMigrate(true)
@@ -332,6 +388,7 @@ public final class DatabaseUserManager extends CachingUserManager {
                 .dataSource(dataSource)
                 .validateMigrationNaming(true)
                 .validateOnMigrate(true)
+                .table("carbon_flyway_schema_history")
                 .load();
 
             LogFactory.setLogCreator(new CarbonLogCreator(this.logger));
