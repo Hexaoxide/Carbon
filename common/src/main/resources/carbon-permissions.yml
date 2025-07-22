@@ -68,7 +68,7 @@ carbon.parties.name.tags.insertion: "Allows the use of insertions in party names
 carbon.parties.name.tags.font: "Allows the use of fonts in party names."
 carbon.parties.name.tags.reset: "Allows the use of the reset tag in party names."
 carbon.parties.name.tags.newline: "Allows the use of the newline tag in party names."
-carbon.parties.name.tags.pride: "Allows the use of the pride tag in nicknames."
+carbon.parties.name.tags.pride: "Allows the use of the pride tag in party names."
 carbon.parties.name.tags.shadow_color: "Allows the use of the shadow tag in nicknames."
 carbon.parties.name.tags.transition: "Allows the use of the transition tag in nicknames."
 
