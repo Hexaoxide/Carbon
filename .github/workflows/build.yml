@@ -28,6 +28,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         # gradle build action can't handle project dir local caches
       - uses: actions/cache@v4
+        name: Cache Loom Files
         with:
           path: |
             .gradle/loom-cache
@@ -135,11 +136,24 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         # gradle build action can't handle project dir local caches
       - uses: actions/cache@v4
+        name: Cache Loom Files
         with:
           path: |
             .gradle/loom-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
+      - uses: actions/cache@v4
+        name: Cache Smoke Test Files
+        with:
+          path: |
+            paper/build/tmp/smokeTest/cache
+            paper/build/tmp/smokeTest/libraries
+            paper/build/tmp/smokeTest/plugins/CarbonChat/libraries
+            paper/build/tmp/smokeTest/world
+            paper/build/tmp/smokeTest/world_nether
+            paper/build/tmp/smokeTest/world_the_end
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-smoketest-
       - name: Smoke test (Paper, JSON)
         run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=json
         timeout-minutes: 5
