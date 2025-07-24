@@ -82,6 +82,7 @@ tasks {
         }
         systemProperty("carbonchat.smokeTest", true)
         systemProperty("carbonchat.smokeTestMode", providers.gradleProperty("smokeTestMode").getOrElse("h2"))
+        systemProperty("paper.disablePluginRemapping", true)
       }
     }
   }
