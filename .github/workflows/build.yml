@@ -152,6 +152,8 @@ jobs:
             paper/build/tmp/smokeTest/world_the_end
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-smoketest-
+      - name: Prime Build
+        run: ./gradlew build --stacktrace
       - name: Smoke test (Paper, JSON)
         run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=json
         timeout-minutes: 5
