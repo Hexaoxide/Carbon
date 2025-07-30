@@ -12,7 +12,6 @@ dependencyResolutionManagement {
         includeModule("org.incendo", "cloud-sponge")
         includeModule("com.seiama", "registry")
         includeModule("com.seiama", "event-api")
-        includeGroup("net.kyori") // adventure-platform-mod 6.5.0-SNAPSHOT
       }
     }
     maven("https://central.sonatype.com/repository/maven-snapshots/") {
