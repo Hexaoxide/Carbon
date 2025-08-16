@@ -32,7 +32,7 @@ val Project.releaseNotes: Provider<String>
  * Relocate a package into the `carbonchat.libs.` namespace.
  */
 fun Task.relocateDependency(pkg: String) {
-  ShadowGremlin.relocate(this, pkg, "carbonchat.libs.$pkg")
+  ShadowGremlin.relocateWithPrefix(this, "carbonchat.libs", pkg)
 }
 
 fun Task.standardRuntimeRelocations() {

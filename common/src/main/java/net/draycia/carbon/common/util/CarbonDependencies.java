@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import xyz.jpenilla.gremlin.runtime.DependencyCache;
 import xyz.jpenilla.gremlin.runtime.DependencyResolver;
 import xyz.jpenilla.gremlin.runtime.DependencySet;
+import xyz.jpenilla.gremlin.runtime.logging.Slf4jGremlinLogger;
 
 @DefaultQualifier(NonNull.class)
 public final class CarbonDependencies {
@@ -41,7 +42,7 @@ public final class CarbonDependencies {
         final DependencyCache cache = new DependencyCache(cacheDir);
         final Logger logger = LoggerFactory.getLogger(CarbonDependencies.class.getSimpleName());
         final Set<Path> files;
-        try (final DependencyResolver downloader = new DependencyResolver(logger)) {
+        try (final DependencyResolver downloader = new DependencyResolver(new Slf4jGremlinLogger(logger))) {
             files = downloader.resolve(deps, cache).jarFiles();
         }
         cache.cleanup();

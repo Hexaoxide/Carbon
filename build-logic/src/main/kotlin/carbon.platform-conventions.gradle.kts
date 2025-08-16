@@ -66,6 +66,9 @@ tasks {
   build {
     dependsOn(copyJar)
   }
+  javadoc {
+    enabled = false
+  }
 }
 
 val projectVersion = project.version as String
@@ -97,10 +100,3 @@ gremlin {
   defaultJarRelocatorDependencies = false
   defaultGremlinRuntimeDependency = false
 }
-
-//val projectVersion = version as String
-//if (projectVersion.endsWith("-SNAPSHOT")) {
-//  // Add git commit hash to version for platforms
-//  val gitHash = latestGitHash() ?: error("Failed to retrieve git commit hash")
-//  version = "$projectVersion+$gitHash"
-//}
