@@ -26,7 +26,7 @@ import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
-import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersExpansion;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUtil;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.RenderForTagResolver;
 import net.draycia.carbon.common.messages.SourcedAudience;
@@ -73,8 +73,8 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
     ) {
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
-        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {
-            tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
+        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
+            tagResolver.resolver(MiniPlaceholders.globalPlaceholders());
         }
 
         if (!(receiver instanceof SourcedAudience sourced)) {
@@ -92,8 +92,8 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
 
         final Player senderBukkitPlayer = requireNonNull(Bukkit.getPlayer(sender.uuid()));
 
-        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {
-            tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(senderBukkitPlayer));
+        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
+            tagResolver.resolver(MiniPlaceholders.audiencePlaceholders());
         }
 
         if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
@@ -101,7 +101,7 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
                 return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
                     placeholderResolvedMessage, tagResolver.build());
             }
-            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+            return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(sourced.recipient(), senderBukkitPlayer), tagResolver.build());
         }
 
         final @Nullable Player recipientBukkitPlayer = Bukkit.getPlayer(recipient.uuid());
@@ -110,21 +110,18 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
                 return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
                     placeholderResolvedMessage, tagResolver.build());
             }
-            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+            return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(sourced.recipient(), senderBukkitPlayer), tagResolver.build());
         }
 
-        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded()) {
-            tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(
-                recipientBukkitPlayer,
-                senderBukkitPlayer
-            ));
+        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
+            tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
         }
         if (this.hasPlaceholderAPI()) {
             return this.placeholderApiProcessor.get().parseRelational(recipientBukkitPlayer,
                 senderBukkitPlayer, placeholderResolvedMessage, tagResolver.build());
         }
 
-        return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
+        return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(recipientBukkitPlayer, senderBukkitPlayer), tagResolver.build());
     }
 
     private boolean hasPlaceholderAPI() {

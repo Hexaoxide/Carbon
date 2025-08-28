@@ -22,8 +22,6 @@ package net.draycia.carbon.common.integration.miniplaceholders;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import io.github.miniplaceholders.api.Expansion;
-import io.github.miniplaceholders.api.MiniPlaceholders;
-import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -44,8 +42,6 @@ public final class MiniPlaceholdersExpansion {
     private final UserManager<?> userManager;
     private final ChannelRegistry channels;
 
-    private static byte miniPlaceholdersLoaded = -1;
-
     @Inject
     private MiniPlaceholdersExpansion(
         final UserManager<?> userManager,
@@ -56,37 +52,43 @@ public final class MiniPlaceholdersExpansion {
     }
 
     public static void register(final Injector injector) {
-        if (miniPlaceholdersLoaded()) {
+        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
             injector.getInstance(MiniPlaceholdersExpansion.class).registerExpansion();
         }
     }
 
-    public static boolean miniPlaceholdersLoaded() {
-        if (miniPlaceholdersLoaded == -1) {
-            try {
-                final String name = MiniPlaceholders.class.getName();
-                Objects.requireNonNull(name);
-                miniPlaceholdersLoaded = 1;
-            } catch (final NoClassDefFoundError error) {
-                miniPlaceholdersLoaded = 0;
-            }
-        }
-        return miniPlaceholdersLoaded == 1;
-    }
-
     private void registerExpansion() {
         final Expansion expansion = Expansion.builder("carbonchat")
-            .filter(audience -> audience.get(Identity.UUID).isPresent())
-            .audiencePlaceholder("party", (audience, queue, ctx) ->
-                Tag.selfClosingInserting(this.partyName(id(audience))))
-            .audiencePlaceholder("nickname", (audience, queue, ctx) ->
-                Tag.selfClosingInserting(this.nickname(id(audience))))
-            .audiencePlaceholder("displayname", (audience, queue, ctx) ->
-                Tag.selfClosingInserting(this.displayName(id(audience))))
-            .audiencePlaceholder("channel_key", (audience, queue, ctx) ->
-                Tag.preProcessParsed(this.selectedChannelKey(id(audience))))
+            .audiencePlaceholder("party", (audience, queue, ctx) -> {
+                if (!hasId(audience)) {
+                    return null;
+                }
+                return Tag.selfClosingInserting(this.partyName(id(audience)));
+            })
+            .audiencePlaceholder("nickname", (audience, queue, ctx) -> {
+                if (!hasId(audience)) {
+                    return null;
+                }
+                return Tag.selfClosingInserting(this.nickname(id(audience)));
+            })
+            .audiencePlaceholder("displayname", (audience, queue, ctx) -> {
+                if (!hasId(audience)) {
+                    return null;
+                }
+                return Tag.selfClosingInserting(this.displayName(id(audience)));
+            })
+            .audiencePlaceholder("channel_key", (audience, queue, ctx) -> {
+                if (!hasId(audience)) {
+                    return null;
+                }
+                return Tag.preProcessParsed(this.selectedChannelKey(id(audience)));
+            })
             .build();
         expansion.register();
+    }
+
+    private static boolean hasId(final Audience audience) {
+        return audience.get(Identity.UUID).isPresent();
     }
 
     private static UUID id(final Audience audience) {

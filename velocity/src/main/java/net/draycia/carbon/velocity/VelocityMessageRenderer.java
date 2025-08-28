@@ -24,11 +24,10 @@ import com.google.inject.Singleton;
 import com.velocitypowered.api.plugin.PluginManager;
 import io.github.miniplaceholders.api.MiniPlaceholders;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUtil;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.RenderForTagResolver;
 import net.draycia.carbon.common.messages.SourcedAudience;
-import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
-import net.draycia.carbon.velocity.users.CarbonPlayerVelocity;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -59,22 +58,19 @@ public class VelocityMessageRenderer extends CarbonMessageRenderer {
         final String placeholderResolvedMessage = this.configManager.primaryConfig().applyCustomPlaceholders(intermediateMessage);
 
         if (this.pluginManager.isLoaded("miniplaceholders")) {
-            tagResolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
+            tagResolver.resolver(MiniPlaceholders.globalPlaceholders());
 
-            if (receiver instanceof SourcedAudience sourced) {
-                if (sourced.sender() instanceof CarbonPlayerVelocity sender) {
-                    tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(sender));
-                    if (sourced.recipient() instanceof CarbonPlayerVelocity recipient) {
-                        tagResolver.resolver(MiniPlaceholders.getRelationalPlaceholders(recipient, sender));
-                    }
-                } else if (sourced.sender() instanceof ConsoleCarbonPlayer console) {
-                    // I don't know if this will ever actually resolve anything, or if anything supports console audience
-                    tagResolver.resolver(MiniPlaceholders.getAudiencePlaceholders(console));
-                }
+            if (receiver instanceof SourcedAudience) {
+                tagResolver.resolver(MiniPlaceholders.audiencePlaceholders());
+                tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
             }
         }
 
-        return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, tagResolver.build());
+        final Audience parseAudience = receiver instanceof SourcedAudience sourced
+            ? MiniPlaceholdersUtil.wrapAudiences(sourced.recipient(), sourced.sender())
+            : receiver;
+
+        return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, parseAudience, tagResolver.build());
     }
 
 }
