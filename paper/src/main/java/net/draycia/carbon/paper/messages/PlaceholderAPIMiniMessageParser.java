@@ -23,14 +23,16 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUtil;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -57,8 +59,10 @@ public final class PlaceholderAPIMiniMessageParser {
         return false;
     }
 
-    public Component parse(final OfflinePlayer player, final String input, final TagResolver tagResolver) {
+    public Component parse(final Player player, final String input, final TagResolver tagResolver) {
         return this.parse(
+            null,
+            player,
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(player, match),
             input,
@@ -66,12 +70,14 @@ public final class PlaceholderAPIMiniMessageParser {
         );
     }
 
-    public Component parse(final OfflinePlayer player, final String input) {
+    public Component parse(final Player player, final String input) {
         return this.parse(player, input, TagResolver.empty());
     }
 
     public Component parseRelational(final Player recipient, final Player sender, final String input, final TagResolver tagResolver) {
         return this.parse(
+            recipient,
+            sender,
             PlaceholderAPI.getPlaceholderPattern(),
             match -> PlaceholderAPI.setPlaceholders(sender, PlaceholderAPI.setRelationalPlaceholders(recipient, sender, match)),
             input,
@@ -84,6 +90,8 @@ public final class PlaceholderAPIMiniMessageParser {
     }
 
     private Component parse(
+        final @Nullable Audience recipient,
+        final Audience sender,
         final Pattern pattern,
         final UnaryOperator<String> placeholderResolver,
         final String input,
@@ -110,7 +118,7 @@ public final class PlaceholderAPIMiniMessageParser {
 
         matcher.appendTail(builder);
 
-        return this.miniMessage.deserialize(builder.toString(), tagResolver.build());
+        return this.miniMessage.deserialize(builder.toString(), MiniPlaceholdersUtil.wrapAudiences(recipient, sender), tagResolver.build());
     }
 
 }

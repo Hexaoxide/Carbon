@@ -21,12 +21,14 @@ package net.draycia.carbon.common.messages;
 
 import java.util.Map;
 import java.util.function.Predicate;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -56,7 +58,13 @@ public final class TagPermissions {
     private TagPermissions() {
     }
 
-    public static Component parseTags(final String basePermission, final String message, final Predicate<String> permission, final TagResolver.Builder resolver) {
+    public static Component parseTags(
+        final @Nullable Audience audience,
+        final String basePermission,
+        final String message,
+        final Predicate<String> permission,
+        final TagResolver.Builder resolver
+    ) {
         boolean hasAllDecorations = false;
         for (final Map.Entry<String, TagResolver> entry : DEFAULT_TAGS.entrySet()) {
             if (permission.test(basePermission + '.' + entry.getKey())) {
@@ -79,11 +87,19 @@ public final class TagPermissions {
 
         final MiniMessage miniMessage = MiniMessage.builder().tags(resolver.build()).build();
 
+        if (audience != null) {
+            return miniMessage.deserialize(message, audience);
+        }
         return miniMessage.deserialize(message);
     }
 
-    public static Component parseTags(final String basePermission, final String message, final Predicate<String> permission) {
-        return parseTags(basePermission, message, permission, TagResolver.builder());
+    public static Component parseTags(
+        final @Nullable Audience audience,
+        final String basePermission,
+        final String message,
+        final Predicate<String> permission
+    ) {
+        return parseTags(audience, basePermission, message, permission, TagResolver.builder());
     }
 
 }

@@ -33,7 +33,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.config.PrimaryConfig;
-import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersExpansion;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUtil;
 import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.messages.TagPermissions;
 import net.kyori.adventure.identity.Identity;
@@ -73,12 +73,12 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     public Component parseMessageTags(final String message) {
         final TagResolver.Builder resolver = TagResolver.builder();
 
-        if (MiniPlaceholdersExpansion.miniPlaceholdersLoaded() && this.hasPermission("carbon.chatplaceholders")) {
-            resolver.resolver(MiniPlaceholders.getGlobalPlaceholders());
-            resolver.resolver(MiniPlaceholders.getAudiencePlaceholders(this));
+        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded() && this.hasPermission("carbon.chatplaceholders")) {
+            resolver.resolver(MiniPlaceholders.globalPlaceholders());
+            resolver.resolver(MiniPlaceholders.audiencePlaceholders());
         }
 
-        return TagPermissions.parseTags(TagPermissions.MESSAGE, message, this::hasPermission, resolver);
+        return TagPermissions.parseTags(this, TagPermissions.MESSAGE, message, this::hasPermission, resolver);
     }
 
     @Override

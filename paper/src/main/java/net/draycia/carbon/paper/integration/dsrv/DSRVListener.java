@@ -97,7 +97,7 @@ public final class DSRVListener implements ChatHook {
             if (carbonPlayer instanceof WrappedCarbonPlayer wrapped) {
                 eventMessage = wrapped.parseMessageTags(messageContents);
             } else {
-                eventMessage = TagPermissions.parseTags(TagPermissions.MESSAGE, messageContents, carbonPlayer::hasPermission);
+                eventMessage = TagPermissions.parseTags(carbonPlayer, TagPermissions.MESSAGE, messageContents, carbonPlayer::hasPermission);
             }
 
             DiscordSRV.debug(Debug.MINECRAFT_TO_DISCORD, "Received a CarbonChatEvent (player: " + carbonPlayer.username() + ")");

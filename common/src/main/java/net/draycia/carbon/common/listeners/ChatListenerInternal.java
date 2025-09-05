@@ -102,7 +102,7 @@ public abstract class ChatListenerInternal {
         if (sender instanceof WrappedCarbonPlayer wrapped) {
             message = wrapped.parseMessageTags(content);
         } else {
-            message = TagPermissions.parseTags(TagPermissions.MESSAGE, content, sender::hasPermission);
+            message = TagPermissions.parseTags(sender, TagPermissions.MESSAGE, content, sender::hasPermission);
         }
         if (probablyBlank(message)) {
             return null;
