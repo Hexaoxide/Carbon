@@ -60,7 +60,7 @@ nats = "2.21.4"
 h2 = "2.3.232"
 towny = "0.100.3.0"
 plotsquared_bom = "1.52"
-plotsquared_core = "7.4.1"
+plotsquared_core = "7.5.8"
 mcmmo = "2.2.004"
 fuuid = "1.6.9.5-U0.6.35"
 
