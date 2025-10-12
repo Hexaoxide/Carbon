@@ -26,3 +26,7 @@ indra {
     }
   }
 }
+
+javadocLinks {
+  defaultJavadocProvider = "https://www.javadocs.dev/{group}/{name}/{version}"
+}
