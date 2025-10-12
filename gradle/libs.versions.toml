@@ -61,7 +61,7 @@ h2 = "2.4.240"
 towny = "0.101.2.5"
 plotsquared_bom = "1.52"
 plotsquared_core = "7.5.8"
-mcmmo = "2.2.004"
+mcmmo = "2.2.043"
 fuuid = "1.6.9.5-U0.6.35"
 
 # synced with version used by lowest supported mc (currently 1.21.4 on paper)
