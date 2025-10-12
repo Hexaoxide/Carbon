@@ -157,13 +157,13 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return null;
         }
 
-        return MinecraftServerAudiences.of(player.getServer()).asAdventure(item.getDisplayName());
+        return MinecraftServerAudiences.of(player.level().getServer()).asAdventure(item.getDisplayName());
     }
 
     @Override
     public boolean hasPermission(final String permission) {
         return this.player()
-            .map(player -> Permissions.check(player, permission, player.getServer().getOperatorUserPermissionLevel()))
+            .map(player -> Permissions.check(player, permission, player.level().getServer().operatorUserPermissionLevel()))
             .orElse(false);
     }
 

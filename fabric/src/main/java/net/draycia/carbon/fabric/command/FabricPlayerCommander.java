@@ -55,7 +55,7 @@ public record FabricPlayerCommander(
 
     @Override
     public boolean hasPermission(final String permission) {
-        return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().getOperatorUserPermissionLevel());
+        return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().operatorUserPermissionLevel());
     }
 
 }

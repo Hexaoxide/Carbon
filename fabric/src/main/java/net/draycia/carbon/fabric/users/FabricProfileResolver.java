@@ -58,7 +58,7 @@ public final class FabricProfileResolver implements ProfileResolver {
     public CompletableFuture<@Nullable String> resolveName(final UUID uuid, final boolean cacheOnly) {
         final @Nullable ServerPlayer online = this.serverHolder.requireServer().getPlayerList().getPlayer(uuid);
         if (online != null) {
-            return CompletableFuture.completedFuture(online.getGameProfile().getName());
+            return CompletableFuture.completedFuture(online.getGameProfile().name());
         }
 
         return this.mojang.resolveName(uuid, cacheOnly);
