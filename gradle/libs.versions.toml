@@ -10,7 +10,7 @@ resource-factory-velocity-convention = { id = "xyz.jpenilla.resource-factory-vel
 resource-factory-fabric-convention = { id = "xyz.jpenilla.resource-factory-fabric-convention", version.ref = "resource-factory" }
 
 [versions]
-indra = "3.2.0"
+indra = "4.0.0"
 cloud-build-logic = "0.0.17"
 shadow = "9.2.2"
 mod-publish-plugin = "1.0.0"

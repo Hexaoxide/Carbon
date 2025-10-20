@@ -110,6 +110,7 @@ public interface CarbonPlayer extends Audience, Identified {
      * Sets the player's nickname.
      *
      * <p>Setting {@code null} will remove any current nickname.</p>
+     *
      * <p>Won't have any visible effect when Carbon's nickname management is disabled.</p>
      *
      * @param nickname the new nickname
