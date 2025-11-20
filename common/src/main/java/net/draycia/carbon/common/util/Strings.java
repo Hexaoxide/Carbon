@@ -20,6 +20,8 @@
 package net.draycia.carbon.common.util;
 
 import com.google.common.base.Suppliers;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -31,7 +33,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class Strings {
 
-    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?");
+    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/([A-Za-z0-9\\-._~!$&'()*+,;=:@/]|%[0-9A-Fa-f]{2})*)?");
     private static final Pattern URL_SCHEME_PATTERN = Pattern.compile("^[a-z][a-z0-9+\\-.]*:");
     public static final Supplier<TextReplacementConfig> URL_REPLACEMENT_CONFIG = Suppliers.memoize(
         () -> TextReplacementConfig.builder()
@@ -41,7 +43,13 @@ public final class Strings {
                 if (!URL_SCHEME_PATTERN.matcher(clickUrl).find()) {
                     clickUrl = "http://" + clickUrl;
                 }
-                return url.clickEvent(ClickEvent.openUrl(clickUrl));
+
+                try {
+                    final URI ignored = new URI(clickUrl); // just to validate that the uri is valid
+                    return url.clickEvent(ClickEvent.openUrl(clickUrl));
+                } catch (final URISyntaxException ignored) {
+                    return url;
+                }
             })
             .build()
     );
