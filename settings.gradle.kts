@@ -69,16 +69,14 @@ pluginManagement {
       mavenContent { snapshotsOnly() }
     }
     maven("https://maven.fabricmc.net/")
-    maven("https://repo.jpenilla.xyz/snapshots/") {
-      mavenContent { snapshotsOnly() }
-    }
+    maven("https://repo.jpenilla.xyz/snapshots/")
   }
   includeBuild("build-logic")
 }
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("quiet-fabric-loom") version "1.11-SNAPSHOT"
+  id("quiet-fabric-loom") version "1.13-SNAPSHOT"
 }
 
 rootProject.name = "CarbonChat"
