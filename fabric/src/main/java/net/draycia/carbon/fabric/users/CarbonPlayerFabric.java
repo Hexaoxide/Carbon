@@ -163,7 +163,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     @Override
     public boolean hasPermission(final String permission) {
         return this.player()
-            .map(player -> Permissions.check(player, permission, player.level().getServer().operatorUserPermissionLevel()))
+            .map(player -> Permissions.check(player, permission, player.level().getServer().operatorUserPermissions().level()))
             .orElse(false);
     }
 

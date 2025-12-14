@@ -38,15 +38,15 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.FilterMask;
 import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FabricChatHandler extends ChatListenerInternal implements ServerMessageEvents.AllowChatMessage {
 
-    public static final ResourceLocation CHAT_TYPE_KEY = ResourceLocation.fromNamespaceAndPath("carbonchat", "chat");
+    public static final Identifier CHAT_TYPE_KEY = Identifier.fromNamespaceAndPath("carbonchat", "chat");
 
     private final CarbonChatFabric carbonChat;
     private @MonotonicNonNull ResourceKey<ChatType> chatTypeResourceKey;
