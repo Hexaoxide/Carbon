@@ -1,9 +1,32 @@
-package net.draycia.carbon.paper.integration.parties;
+/*
+ * CarbonChat
+ *
+ * Copyright (c) 2024 Josua Parks (Vicarious)
+ *                    Contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package net.draycia.carbon.paper.integration.alessiodp_parties;
 
 import com.alessiodp.parties.api.Parties;
 import com.alessiodp.parties.api.interfaces.Party;
 import com.alessiodp.parties.api.interfaces.PartyPlayer;
 import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
@@ -12,31 +35,25 @@ import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @DefaultQualifier(NonNull.class)
 @ConfigSerializable
-public class PartiesPartyChannel extends ConfigChatChannel {
+public class AlessiodpPartiesPartyChannel extends ConfigChatChannel {
 
-    public static final String FILE_NAME = "parties-party.conf";
+    public static final String FILE_NAME = "alessiodp-parties-party.conf";
 
     private transient @MonotonicNonNull
     @Inject CarbonMessages messages;
     private transient @MonotonicNonNull @Inject UserManager<?> users;
 
-    public PartiesPartyChannel() {
+    public AlessiodpPartiesPartyChannel() {
         this.key = Key.key("carbon", "partychat");
         this.commandAliases = List.of("pc");
 

@@ -67,6 +67,7 @@ tasks {
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
+      modrinth("parties", libs.versions.parties.get())
     }
     pluginJars.from(luckperms.flatMap { it.outputFile })
     providers.gradleProperty("smokeTest").map { it.toBoolean() }.getOrElse(false).let { smokeTest ->
