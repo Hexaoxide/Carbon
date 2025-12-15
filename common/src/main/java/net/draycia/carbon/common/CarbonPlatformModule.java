@@ -22,6 +22,7 @@ package net.draycia.carbon.common;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import net.draycia.carbon.common.integration.Integration;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersIntegration;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -44,6 +45,8 @@ public abstract class CarbonPlatformModule extends AbstractModule {
         final Multibinder<Integration> integrations,
         final Multibinder<Integration.ConfigMeta> configs
     ) {
+        integrations.addBinding().to(MiniPlaceholdersIntegration.class);
+        configs.addBinding().toInstance(MiniPlaceholdersIntegration.configMeta());
     }
 
 }

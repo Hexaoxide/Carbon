@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.github.miniplaceholders.api.MiniPlaceholders;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersIntegration;
 import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUtil;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.RenderForTagResolver;
@@ -60,7 +61,10 @@ public class FabricMessageRenderer extends CarbonMessageRenderer {
 
             if (receiver instanceof SourcedAudience) {
                 tagResolver.resolver(MiniPlaceholders.audiencePlaceholders());
-                tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
+                final MiniPlaceholdersIntegration.Config miniplaceholdersConfig = this.configManager.primaryConfig().integrations().config(MiniPlaceholdersIntegration.configMeta());
+                if (miniplaceholdersConfig.relationalPlaceholders) {
+                    tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
+                }
             }
         }
 

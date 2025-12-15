@@ -26,6 +26,7 @@ import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.util.function.Supplier;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersIntegration;
 import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUtil;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.RenderForTagResolver;
@@ -114,7 +115,10 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
         }
 
         if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
-            tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
+            final MiniPlaceholdersIntegration.Config miniplaceholdersConfig = this.configManager.primaryConfig().integrations().config(MiniPlaceholdersIntegration.configMeta());
+            if (miniplaceholdersConfig.relationalPlaceholders) {
+                tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
+            }
         }
         if (this.hasPlaceholderAPI()) {
             return this.placeholderApiProcessor.get().parseRelational(recipientBukkitPlayer,

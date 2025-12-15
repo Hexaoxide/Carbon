@@ -20,7 +20,6 @@
 package net.draycia.carbon.common.integration.miniplaceholders;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import io.github.miniplaceholders.api.Expansion;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelRegistry;
@@ -51,13 +50,7 @@ public final class MiniPlaceholdersExpansion {
         this.channels = channels;
     }
 
-    public static void register(final Injector injector) {
-        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
-            injector.getInstance(MiniPlaceholdersExpansion.class).registerExpansion();
-        }
-    }
-
-    private void registerExpansion() {
+    public void registerExpansion() {
         final Expansion expansion = Expansion.builder("carbonchat")
             .audiencePlaceholder("party", (audience, queue, ctx) -> {
                 if (!hasId(audience)) {

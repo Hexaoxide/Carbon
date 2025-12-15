@@ -37,7 +37,6 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.MessagingSettings;
-import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersExpansion;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -96,6 +95,7 @@ public final class CarbonChatPaper extends CarbonChatInternal {
 
     void onEnable() {
         this.init();
+        this.initIntegrations();
 
         final Set<Listener> listeners = this.injector().getInstance(Key.get(new TypeLiteral<Set<Listener>>() {}));
         for (final Listener listener : listeners) {
@@ -134,8 +134,6 @@ public final class CarbonChatPaper extends CarbonChatInternal {
     }
 
     private void registerPlaceholders() {
-        MiniPlaceholdersExpansion.register(this.injector());
-
         if (papiLoaded()) {
             this.injector().getInstance(PAPIChatHook.class);
             this.injector().getInstance(CarbonPAPIPlaceholders.class);
