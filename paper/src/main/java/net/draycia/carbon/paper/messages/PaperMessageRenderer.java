@@ -93,39 +93,40 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
 
         final Player senderBukkitPlayer = requireNonNull(Bukkit.getPlayer(sender.uuid()));
 
-        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
+        final MiniPlaceholdersIntegration.@Nullable Config miniplaceholdersConfig = MiniPlaceholdersUtil.miniPlaceholdersLoaded()
+            ? this.configManager.primaryConfig().integrations().config(MiniPlaceholdersIntegration.configMeta())
+            : null;
+
+        if (miniplaceholdersConfig != null) {
             tagResolver.resolver(MiniPlaceholders.audiencePlaceholders());
         }
 
         if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
             if (this.hasPlaceholderAPI()) {
                 return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
-                    placeholderResolvedMessage, tagResolver.build());
+                    placeholderResolvedMessage, tagResolver.build(), miniplaceholdersConfig);
             }
-            return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(sourced.recipient(), senderBukkitPlayer), tagResolver.build());
+            return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, sourced.recipient(), senderBukkitPlayer), tagResolver.build());
         }
 
         final @Nullable Player recipientBukkitPlayer = Bukkit.getPlayer(recipient.uuid());
         if (recipientBukkitPlayer == null) {
             if (this.hasPlaceholderAPI()) {
                 return this.placeholderApiProcessor.get().parse(senderBukkitPlayer,
-                    placeholderResolvedMessage, tagResolver.build());
+                    placeholderResolvedMessage, tagResolver.build(), miniplaceholdersConfig);
             }
-            return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(sourced.recipient(), senderBukkitPlayer), tagResolver.build());
+            return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, sourced.recipient(), senderBukkitPlayer), tagResolver.build());
         }
 
-        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
-            final MiniPlaceholdersIntegration.Config miniplaceholdersConfig = this.configManager.primaryConfig().integrations().config(MiniPlaceholdersIntegration.configMeta());
-            if (miniplaceholdersConfig.relationalPlaceholders) {
-                tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
-            }
+        if (miniplaceholdersConfig != null && miniplaceholdersConfig.relationalPlaceholders) {
+            tagResolver.resolver(MiniPlaceholders.relationalPlaceholders());
         }
         if (this.hasPlaceholderAPI()) {
             return this.placeholderApiProcessor.get().parseRelational(recipientBukkitPlayer,
-                senderBukkitPlayer, placeholderResolvedMessage, tagResolver.build());
+                senderBukkitPlayer, placeholderResolvedMessage, tagResolver.build(), miniplaceholdersConfig);
         }
 
-        return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(recipientBukkitPlayer, senderBukkitPlayer), tagResolver.build());
+        return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, recipientBukkitPlayer, senderBukkitPlayer), tagResolver.build());
     }
 
     private boolean hasPlaceholderAPI() {

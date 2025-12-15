@@ -45,8 +45,8 @@ public final class MiniPlaceholdersUtil {
         return miniPlaceholdersLoaded == 1;
     }
 
-    public static Audience wrapAudiences(final @Nullable Audience recipient, final Audience sender) {
-        if (!miniPlaceholdersLoaded()) {
+    public static Audience wrapAudiences(final MiniPlaceholdersIntegration.@Nullable Config config, final @Nullable Audience recipient, final Audience sender) {
+        if (!miniPlaceholdersLoaded() || config == null || !config.relationalPlaceholders) {
             return sender;
         }
         return wrapAudiences_(recipient, sender);
