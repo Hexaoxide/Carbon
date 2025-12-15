@@ -45,6 +45,7 @@ import net.draycia.carbon.paper.integration.dsrv.DSRVIntegration;
 import net.draycia.carbon.paper.integration.essxd.EssXDIntegration;
 import net.draycia.carbon.paper.integration.fuuid.FactionsIntegration;
 import net.draycia.carbon.paper.integration.mcmmo.McmmoIntegration;
+import net.draycia.carbon.paper.integration.parties.PartiesIntegration;
 import net.draycia.carbon.paper.integration.plotsquared.PlotSquaredIntegration;
 import net.draycia.carbon.paper.integration.towny.TownyIntegration;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
@@ -126,6 +127,9 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
 
         integrations.addBinding().to(McmmoIntegration.class);
         configs.addBinding().toInstance(McmmoIntegration.configMeta());
+
+        integrations.addBinding().to(PartiesIntegration.class);
+        configs.addBinding().toInstance(PartiesIntegration.configMeta());
 
         integrations.addBinding().to(FactionsIntegration.class);
         configs.addBinding().toInstance(FactionsIntegration.configMeta());

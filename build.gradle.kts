@@ -30,6 +30,9 @@ hangarPublish.publications.register("plugin") {
       url("PlaceholderAPI", "https://www.spigotmc.org/resources/placeholderapi.6245/") {
         required = false
       }
+      url("Parties", "https://modrinth.com/plugin/parties") {
+        required = false
+      }
       hangar("MiniPlaceholders") {
         required = false
       }

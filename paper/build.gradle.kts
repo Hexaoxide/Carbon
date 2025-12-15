@@ -37,6 +37,7 @@ dependencies {
   compileOnly(libs.mcmmo) {
     isTransitive = false
   }
+  compileOnly(libs.parties)
   compileOnly(libs.factionsUuid)
   implementation(libs.plotsquaredbom)
   compileOnly(libs.plotsquaredcore)
@@ -45,6 +46,7 @@ dependencies {
 configurablePlugins {
   dependency(libs.towny)
   dependency(libs.mcmmo)
+  dependency(libs.parties)
   dependency(libs.factionsUuid)
   dependency(libs.plotsquaredbom)
   dependency(libs.plotsquaredcore)
@@ -113,6 +115,7 @@ paperPluginYaml {
     // Integrations
     server("Towny", Load.BEFORE, false)
     server("mcMMO", Load.BEFORE, false)
+    server("Parties", Load.BEFORE, false)
     server("Factions", Load.BEFORE, false)
     server("PlotSquared", Load.BEFORE, false)
   }

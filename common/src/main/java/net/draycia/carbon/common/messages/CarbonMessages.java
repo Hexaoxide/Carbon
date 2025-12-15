@@ -643,6 +643,9 @@ public interface CarbonMessages {
     @Message("integrations.mcmmo.cannot_use_party_channel")
     Component cannotUseMcmmoPartyChannel(Audience audience);
 
+    @Message("integrations.parties.cannot_use_party_channel")
+    Component cannotUsePartiesPartyChannel(Audience audience);
+
     @Message("integrations.fuuid.cannot_use_faction_channel")
     Component cannotUseFactionChannel(Audience audience);
 

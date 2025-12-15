@@ -58,6 +58,12 @@ dependencyResolutionManagement {
         includeGroup("com.gmail.nossr50.mcMMO")
       }
     }
+    // Parties
+    maven("https://repo.alessiodp.com/releases/") {
+      content {
+        includeGroup("com.alessiodp.parties")
+      }
+    }
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
