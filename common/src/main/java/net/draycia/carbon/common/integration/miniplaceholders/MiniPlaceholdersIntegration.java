@@ -62,4 +62,5 @@ public final class MiniPlaceholdersIntegration implements Integration {
         @Comment("Enabling relational placeholders may require reworking your format configs due to the way MiniPlaceholders v3 works.")
         public boolean relationalPlaceholders = false;
     }
+
 }
