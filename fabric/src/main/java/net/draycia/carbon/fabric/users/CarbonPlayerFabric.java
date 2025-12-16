@@ -25,7 +25,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
@@ -38,6 +37,10 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.Component;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.QueryOptions;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -162,9 +165,29 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
 
     @Override
     public boolean hasPermission(final String permission) {
-        return this.player()
-            .map(player -> Permissions.check(player, permission, player.level().getServer().operatorUserPermissions().level()))
-            .orElse(false);
+        final Optional<ServerPlayer> playerOptional = this.player();
+        if (playerOptional.isEmpty()) {
+            return false;
+        }
+
+        final ServerPlayer player = playerOptional.get();
+
+        if (!this.carbonChatFabric.get().luckPermsLoaded()) {
+            return player.hasPermissions(4);
+        }
+
+        try {
+            final LuckPerms luckPerms = LuckPermsProvider.get();
+            final @Nullable User user = luckPerms.getUserManager().getUser(player.getUUID());
+            if (user == null) {
+                return player.hasPermissions(4);
+            }
+            final QueryOptions options = luckPerms.getContextManager().getQueryOptions(player);
+            return user.getCachedData().getPermissionData(options).checkPermission(permission).asBoolean();
+        } catch (final IllegalStateException ignored) {
+            // LuckPermsProvider.get() throws if LuckPerms isn't ready yet
+            return player.hasPermissions(4);
+        }
     }
 
     @Override

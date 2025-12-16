@@ -19,7 +19,6 @@
  */
 package net.draycia.carbon.fabric.command;
 
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -45,7 +44,7 @@ public interface FabricCommander extends Commander, ForwardingAudience.Single {
 
         @Override
         public boolean hasPermission(final String permission) {
-            return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().operatorUserPermissions().level());
+            return this.commandSourceStack.hasPermission(4);
         }
 
     }

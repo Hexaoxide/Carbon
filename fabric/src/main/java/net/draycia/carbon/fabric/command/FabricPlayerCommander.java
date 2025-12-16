@@ -20,7 +20,6 @@
 package net.draycia.carbon.fabric.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.PlayerCommander;
@@ -55,7 +54,7 @@ public record FabricPlayerCommander(
 
     @Override
     public boolean hasPermission(final String permission) {
-        return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().operatorUserPermissions().level());
+        return this.commandSourceStack.hasPermission(4);
     }
 
 }
