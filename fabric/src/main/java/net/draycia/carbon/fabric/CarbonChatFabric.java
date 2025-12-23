@@ -115,7 +115,6 @@ public final class CarbonChatFabric extends CarbonChatInternal {
     }
 
     private void registerServerLifecycleListeners() {
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.initIntegrations());
         ServerLifecycleEvents.SERVER_STARTED.register(server -> this.checkVersion());
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> this.shutdown());
     }

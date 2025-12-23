@@ -95,7 +95,6 @@ public final class CarbonChatPaper extends CarbonChatInternal {
 
     void onEnable() {
         this.init();
-        this.initIntegrations();
 
         final Set<Listener> listeners = this.injector().getInstance(Key.get(new TypeLiteral<Set<Listener>>() {}));
         for (final Listener listener : listeners) {

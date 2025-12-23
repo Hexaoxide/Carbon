@@ -123,6 +123,8 @@ public abstract class CarbonChatInternal implements CarbonChat {
             TimeUnit.SECONDS
         );
 
+        this.initIntegrations();
+
         // Load channels
         this.channelRegistry().loadConfigChannels(this.carbonMessages);
 

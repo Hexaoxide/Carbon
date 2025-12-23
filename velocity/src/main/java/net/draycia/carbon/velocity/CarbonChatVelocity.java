@@ -88,7 +88,6 @@ public class CarbonChatVelocity extends CarbonChatInternal {
 
     public void onInitialization(final CarbonVelocityBootstrap carbonVelocityBootstrap) {
         this.init();
-        this.initIntegrations();
 
         final Set<VelocityListener<?>> listeners = this.injector().getInstance(Key.get(new TypeLiteral<Set<VelocityListener<?>>>() {}));
         for (final VelocityListener<?> listener : listeners) {
