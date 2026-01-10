@@ -19,15 +19,18 @@
  */
 package net.draycia.carbon.common.config;
 
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUtil;
 import net.draycia.carbon.common.util.Exceptions;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -161,9 +164,15 @@ public class PrimaryConfig {
     }
 
     private Component applyFilters(Component message, final Map<String, String> filters) {
+        final TagResolver.Builder resolver = TagResolver.builder();
+
+        if (MiniPlaceholdersUtil.miniPlaceholdersLoaded()) {
+            resolver.resolver(MiniPlaceholders.globalPlaceholders());
+        }
+
         for (final Map.Entry<String, String> entry : filters.entrySet()) {
             message = message.replaceText(TextReplacementConfig.builder()
-                .match(entry.getKey()).replacement(MiniMessage.miniMessage().deserialize(entry.getValue())).build());
+                .match(entry.getKey()).replacement(MiniMessage.miniMessage().deserialize(entry.getValue(), resolver.build())).build());
         }
 
         return message;
