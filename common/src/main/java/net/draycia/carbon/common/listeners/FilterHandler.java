@@ -22,10 +22,12 @@ package net.draycia.carbon.common.listeners;
 import com.google.inject.Inject;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
+import net.draycia.carbon.api.event.events.CarbonPrivateChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 
 public class FilterHandler implements Listener {
 
@@ -38,11 +40,19 @@ public class FilterHandler implements Listener {
     ) {
         this.configManager = configManager;
 
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
-            event.message(this.configManager.primaryConfig().applyChatFilters(event.message()));
+        events.subscribe(CarbonPrivateChatEvent.class, 0, false, event -> {
+            Component message = this.configManager.primaryConfig().applyChatFilters(event.message());
+
+            if (event.recipient().applyOptionalChatFilters()) {
+                message = this.configManager.primaryConfig().applyOptionalChatFilters(message);
+            }
+
+            event.message(message);
         });
 
-        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
+        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+            event.message(this.configManager.primaryConfig().applyChatFilters(event.message()));
+
             event.renderers().add(KeyedRenderer.keyedRenderer(Key.key("carbon", "filter"), ($, recipient, message, $$$) -> {
                 if (recipient instanceof CarbonPlayer carbonPlayer) {
                     if (carbonPlayer.applyOptionalChatFilters()) {
