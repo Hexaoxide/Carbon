@@ -27,6 +27,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -138,47 +139,42 @@ public class PrimaryConfig {
         return this.messagingSettings;
     }
 
-    public String applyCustomPlaceholders(final String string) {
-        String placeholderResolvedMessage = string;
-        for (final var entry : this.customPlaceholders.entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
+    private String applyPlaceholders(String message, final Map<String, String> placeholders) {
+        for (final var entry : placeholders.entrySet()) {
+            message = message.replace("<" + entry.getKey() + ">",
                 entry.getValue());
         }
-        return placeholderResolvedMessage;
+        return message;
+    }
+
+    public String applyCustomPlaceholders(final String message) {
+        return this.applyPlaceholders(message, this.customPlaceholders);
     }
 
     public @Nullable List<String> customChatSuggestions() {
         return this.customChatSuggestions;
     }
 
-    public String applyChatPlaceholders(final String string) {
-        String placeholderResolvedMessage = string;
-        for (final var entry : this.chatPlaceholders.entrySet()) {
-            placeholderResolvedMessage = placeholderResolvedMessage.replace("<" + entry.getKey() + ">",
-                entry.getValue());
-        }
-        return placeholderResolvedMessage;
+    // Maybe we only need the two chat filters? Having 4 placeholder systems seems excessive.
+    public String applyChatPlaceholders(final String message) {
+        return this.applyPlaceholders(message, this.chatPlaceholders);
     }
 
-    public String applyChatFilters(final String string) {
-        String filteredMessage = string;
-
-        for (final Map.Entry<String, String> entry : this.chatFilter.entrySet()) {
-            filteredMessage = filteredMessage.replaceAll(entry.getKey(), entry.getValue());
+    private Component applyFilters(Component message, final Map<String, String> filters) {
+        for (final Map.Entry<String, String> entry : filters.entrySet()) {
+            message = message.replaceText(TextReplacementConfig.builder()
+                .match(entry.getKey()).replacement(MiniMessage.miniMessage().deserialize(entry.getValue())).build());
         }
 
-        return filteredMessage;
+        return message;
+    }
+
+    public Component applyChatFilters(final Component message) {
+        return this.applyFilters(message, this.chatFilter);
     }
 
     public Component applyOptionalChatFilters(final Component message) {
-        Component filteredMessage = message;
-
-        for (final Map.Entry<String, String> entry : this.optionalChatFilter.entrySet()) {
-            filteredMessage = filteredMessage.replaceText(TextReplacementConfig.builder()
-                .match(entry.getKey()).replacement(entry.getValue()).build());
-        }
-
-        return filteredMessage;
+        return this.applyFilters(message, this.optionalChatFilter);
     }
 
     public PingSettings pings() {

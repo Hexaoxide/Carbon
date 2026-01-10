@@ -25,7 +25,6 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigManager;
-import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.kyori.adventure.key.Key;
 
 public class FilterHandler implements Listener {
@@ -39,11 +38,11 @@ public class FilterHandler implements Listener {
     ) {
         this.configManager = configManager;
 
-        events.subscribe(CarbonEarlyChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
             event.message(this.configManager.primaryConfig().applyChatFilters(event.message()));
         });
 
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
             event.renderers().add(KeyedRenderer.keyedRenderer(Key.key("carbon", "filter"), ($, recipient, message, $$$) -> {
                 if (recipient instanceof CarbonPlayer carbonPlayer) {
                     if (carbonPlayer.applyOptionalChatFilters()) {
