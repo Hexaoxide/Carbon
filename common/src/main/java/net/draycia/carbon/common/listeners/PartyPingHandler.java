@@ -36,7 +36,7 @@ public class PartyPingHandler implements Listener {
 
     @Inject
     public PartyPingHandler(final CarbonEventHandler events, final ConfigManager configManager) {
-        events.subscribe(CarbonChatEvent.class, 100, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -6, false, event -> {
             if (!(event.chatChannel() instanceof PartyChatChannel)) {
                 return;
             }

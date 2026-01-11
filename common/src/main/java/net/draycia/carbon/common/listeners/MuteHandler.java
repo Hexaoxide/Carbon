@@ -51,7 +51,7 @@ public class MuteHandler implements Listener {
     public MuteHandler(final CarbonEventHandler events, final CarbonMessages carbonMessages) {
         this.carbonMessages = carbonMessages;
 
-        events.subscribe(CarbonChatEvent.class, 100, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -10, false, event -> {
             if (!event.sender().muted()) {
                 return;
             }

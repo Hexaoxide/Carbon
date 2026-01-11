@@ -39,11 +39,11 @@ public class FilterHandler implements Listener {
     ) {
         this.configManager = configManager;
 
-        events.subscribe(CarbonEarlyChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonEarlyChatEvent.class, -9, false, event -> {
             event.message(this.configManager.primaryConfig().applyChatFilters(event.message()));
         });
 
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -9, false, event -> {
             event.renderers().add(KeyedRenderer.keyedRenderer(Key.key("carbon", "filter"), ($, recipient, message, $$$) -> {
                 if (recipient instanceof CarbonPlayer carbonPlayer) {
                     if (carbonPlayer.applyOptionalChatFilters()) {

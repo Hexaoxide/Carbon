@@ -38,7 +38,7 @@ public class RadiusListener implements Listener {
         final CarbonEventHandler events,
         final CarbonMessages carbonMessages
     ) {
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -5, false, event -> {
             if (event.chatChannel() == null) {
                 return;
             }

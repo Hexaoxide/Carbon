@@ -43,7 +43,7 @@ public class MessagePacketHandler implements Listener {
         final @ServerId UUID serverId,
         final Provider<MessagingManager> messaging
     ) {
-        events.subscribe(CarbonChatEvent.class, 100, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -1, false, event -> {
             if (!(event instanceof CarbonChatEventImpl e) || !e.origin) {
                 return;
             }

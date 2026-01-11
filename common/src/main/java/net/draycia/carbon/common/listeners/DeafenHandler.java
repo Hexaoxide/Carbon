@@ -31,7 +31,7 @@ public class DeafenHandler implements Listener {
 
     @Inject
     public DeafenHandler(final CarbonEventHandler events) {
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -10, false, event -> {
             if (!event.sender().deafened()) {
                 return;
             }
