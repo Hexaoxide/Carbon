@@ -64,6 +64,11 @@ public class RadiusListener implements Listener {
                             spyingPlayers.add(carbonPlayer);
                         }
 
+                        if (sameWorld && carbonPlayer.vanished()) {
+                            spyingPlayers.add(carbonPlayer);
+                            return true;
+                        }
+
                         return !sameWorld;
                     }
 
@@ -88,6 +93,11 @@ public class RadiusListener implements Listener {
 
                         if (outOfRange && carbonPlayer.spying()) {
                             spyingPlayers.add(carbonPlayer);
+                        }
+
+                        if (!outOfRange && carbonPlayer.vanished()) {
+                            spyingPlayers.add(carbonPlayer);
+                            return true;
                         }
 
                         return outOfRange;
