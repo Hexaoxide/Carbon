@@ -20,6 +20,8 @@
 package net.draycia.carbon.common.command.commands;
 
 import com.google.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.command.CarbonCommand;
@@ -29,7 +31,9 @@ import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 
@@ -100,6 +104,19 @@ public final class MuteInfoCommand extends CarbonCommand {
                 } else {
                     if (sender.equals(target)) {
                         this.carbonMessages.muteInfoSelfMuted(sender);
+                    } else if (target.muteExpiration() > Instant.now().toEpochMilli()) {
+                        final Duration duration = Duration.ofMillis(target.muteExpiration() - System.currentTimeMillis());
+                        final @Nullable Component formattedDuration;
+
+                        if (duration.toDaysPart() > 0) {
+                            formattedDuration = this.carbonMessages.durationDays(duration.toDaysPart(), duration.toHoursPart(),
+                                duration.toMinutesPart(), duration.toSecondsPart());
+                        } else {
+                            formattedDuration = this.carbonMessages.durationHours(duration.toHoursPart(), duration.toMinutesPart(),
+                                duration.toSecondsPart());
+                        }
+
+                        this.carbonMessages.muteInfoMutedDuration(sender, target.displayName(), formattedDuration);
                     } else {
                         this.carbonMessages.muteInfoMuted(sender, target.displayName(), target.muted());
                     }
