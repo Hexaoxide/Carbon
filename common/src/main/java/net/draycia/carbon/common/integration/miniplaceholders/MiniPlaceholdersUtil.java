@@ -58,4 +58,5 @@ public final class MiniPlaceholdersUtil {
         }
         return RelationalAudience.from(recipient, sender);
     }
+
 }
