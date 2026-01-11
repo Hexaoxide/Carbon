@@ -21,6 +21,7 @@ package net.draycia.carbon.paper.users;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
@@ -38,6 +39,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -161,7 +163,17 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
             return null;
         }
 
-        return itemStack.displayName();
+        final int amount = Math.min(itemStack.getAmount(), 99);
+        final Component quantity = amount <= 1 ? Component.empty() : Component.text(" x" + amount);
+
+        return Component.empty().append(
+            Component.text("["),
+            itemStack.effectiveName(),
+            quantity,
+            Component.text("]")
+        )
+            .hoverEvent(itemStack)
+            .colorIfAbsent(itemStack.getDataOrDefault(DataComponentTypes.RARITY, ItemRarity.COMMON).color());
     }
 
     @Override
