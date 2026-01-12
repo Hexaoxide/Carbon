@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.common.users.MojangProfileResolver;
 import net.draycia.carbon.common.users.ProfileResolver;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -63,6 +64,17 @@ public final class PaperProfileResolver implements ProfileResolver {
         final @Nullable Player online = this.server.getPlayer(uuid);
         if (online != null) {
             return CompletableFuture.completedFuture(online.getName());
+        }
+
+        // Attempt to resolve server-cached IDs
+        final @Nullable OfflinePlayer offline = this.server.getOfflinePlayer(uuid);
+        if (offline.hasPlayedBefore()) {
+            return CompletableFuture.completedFuture(offline.getName());
+        }
+
+        // Filter out bedrock IDs, stolen from floodgate-api isFloodgateId
+        if (uuid.getMostSignificantBits() == 0) {
+            return CompletableFuture.completedFuture(null);
         }
 
         return this.mojang.resolveName(uuid, cacheOnly);
