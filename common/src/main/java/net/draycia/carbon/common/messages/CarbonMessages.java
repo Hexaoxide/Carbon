@@ -86,6 +86,9 @@ public interface CarbonMessages {
     @Message("mute.info.not_muted")
     void muteInfoNotMuted(final Audience audience, final Component target);
 
+    @Message("mute.info.muted.duration")
+    void muteInfoMutedDuration(final Audience audience, final Component target, final Component duration);
+
     @Message("mute.info.muted")
     void muteInfoMuted(final Audience audience, final Component target, final boolean muted);
 

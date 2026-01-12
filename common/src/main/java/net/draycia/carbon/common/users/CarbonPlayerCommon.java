@@ -140,7 +140,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.uuid = uuid;
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
         this.party = PersistentUserProperty.empty();
-        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(true);
     }
 
     public CarbonPlayerCommon() {
@@ -152,7 +152,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.lastWhisperTarget = PersistentUserProperty.empty();
         this.whisperReplyTarget = PersistentUserProperty.empty();
         this.spying = PersistentUserProperty.of(false);
-        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(true);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
