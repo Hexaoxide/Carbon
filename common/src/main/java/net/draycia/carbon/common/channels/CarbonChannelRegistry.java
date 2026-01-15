@@ -73,6 +73,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.minecraft.signed.SignedString;
+import org.incendo.cloud.permission.Permission;
 import org.incendo.cloud.permission.PredicatePermission;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -424,12 +425,13 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         commandManager.command(command);
 
-        final Command<Commander> channelCommand = commandManager.commandBuilder("channel", "ch")
-            .literal(channelKey.value())
-            .proxies(command)
-            .build();
+        Command.Builder<Commander> proxyBuilder = commandManager.commandBuilder("channel", "ch");
 
-        commandManager.command(channelCommand);
+        if (!channel.permissions().dynamic() && channel.permissions() instanceof ChannelPermissionsImpl permissions) {
+            proxyBuilder = proxyBuilder.permission(Permission.allOf(Permission.of("carbon.channel"), Permission.of(permissions.permission())));
+        }
+
+        commandManager.command(proxyBuilder.literal(channelKey.value()).proxies(command).build());
     }
 
     @Override
