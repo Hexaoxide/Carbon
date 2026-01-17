@@ -266,6 +266,12 @@ public interface CarbonMessages {
     @Message("nickname.reset.others")
     void nicknameResetOthers(final Audience audience, final String target);
 
+    @Message("nickname.realname")
+    void realName(final Audience audience, final Component target, final String username);
+
+    @Message("nickname.realname.target_invalid")
+    void realNameTargetInvalid(final Audience audience, final String input);
+
     /*
      * =============================================================
      * ========================== Ignore ===========================
@@ -500,6 +506,12 @@ public interface CarbonMessages {
 
     @Message("command.whisper.description")
     Component commandWhisperDescription();
+
+    @Message("command.realname.description")
+    Component commandRealNameDescription();
+
+    @Message("command.realname.argument.player")
+    Component commandRealNameArgumentPlayer();
 
     @Message("command.updateusername.description")
     Component commandUpdateUsernameDescription();
