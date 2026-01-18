@@ -52,9 +52,7 @@ public final class TagPermissions {
         Map.entry("newline", StandardTags.newline()),
         Map.entry("pride", StandardTags.pride()),
         Map.entry("shadow_color", StandardTags.shadowColor()),
-        Map.entry("transition", StandardTags.transition()),
-        Map.entry("head", StandardTags.sequentialHead()),
-        Map.entry("sprite", StandardTags.sprite())
+        Map.entry("transition", StandardTags.transition())
     );
 
     private TagPermissions() {
