@@ -61,21 +61,14 @@ public abstract class ChatListenerInternal {
         this.carbonEventHandler = carbonEventHandler;
     }
 
-    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage) {
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(Component.text(messageContent));
+    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component originalMessage, final @Nullable SignedMessage signedMessage) {
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(originalMessage);
         final ChatChannel channel = channelMessage.channel();
-        final String message = PlainTextComponentSerializer.plainText().serialize(channelMessage.message());
 
-        return this.prepareAndEmitChatEvent(sender, message, signedMessage, channel);
+        return this.prepareAndEmitChatEvent(sender, channelMessage.message(), signedMessage, channel);
     }
 
-    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final String messageContent, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
-        final ChannelPermissionResult permitted = channel.permissions().speechPermitted(sender);
-        if (!permitted.permitted()) {
-            sender.sendMessage(permitted.reason());
-            return null;
-        }
-
+    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component message, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
         if (!sender.hasPermission("carbon.cooldown.exempt") && channel.cooldown() > 0) {
             final long currentMillis = System.currentTimeMillis();
             final long expiresAt = channel.playerCooldown(sender);
@@ -88,24 +81,6 @@ public abstract class ChatListenerInternal {
             }
 
             channel.startCooldown(sender);
-        }
-        
-        String content = this.configManager.primaryConfig().applyChatPlaceholders(messageContent);
-
-        final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
-        this.carbonEventHandler.emit(earlyChatEvent);
-
-        content = earlyChatEvent.message();
-
-        final Component message;
-
-        if (sender instanceof WrappedCarbonPlayer wrapped) {
-            message = wrapped.parseMessageTags(content);
-        } else {
-            message = TagPermissions.parseTags(sender, TagPermissions.MESSAGE, content, sender::hasPermission);
-        }
-        if (probablyBlank(message)) {
-            return null;
         }
 
         if (sender.leftChannels().contains(channel.key())) {
@@ -123,6 +98,41 @@ public abstract class ChatListenerInternal {
         this.carbonEventHandler.emit(chatEvent);
 
         return chatEvent;
+    }
+
+    protected @Nullable CarbonEarlyChatEvent prepareAndEmitPreChatEvent(final CarbonPlayer sender, final Component originalMessage) {
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(originalMessage);
+        final ChatChannel channel = channelMessage.channel();
+
+        final ChannelPermissionResult permitted = channel.permissions().speechPermitted(sender);
+        if (!permitted.permitted()) {
+            sender.sendMessage(permitted.reason());
+            return null;
+        }
+
+        final String plainContent = PlainTextComponentSerializer.plainText().serialize(channelMessage.message());
+        final String content = this.configManager.primaryConfig().applyChatPlaceholders(plainContent);
+
+        final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
+        this.carbonEventHandler.emit(earlyChatEvent);
+
+        return earlyChatEvent;
+    }
+
+    protected @Nullable Component parseTags(final CarbonPlayer sender, final String format) {
+        final Component message;
+
+        if (sender instanceof WrappedCarbonPlayer wrapped) {
+            message = wrapped.parseMessageTags(format);
+        } else {
+            message = TagPermissions.parseTags(sender, TagPermissions.MESSAGE, format, sender::hasPermission);
+        }
+
+        if (probablyBlank(message)) {
+            return null;
+        }
+
+        return message;
     }
 
     private static boolean probablyBlank(final Component component) {

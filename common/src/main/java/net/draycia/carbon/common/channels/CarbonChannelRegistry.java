@@ -54,6 +54,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
+import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.event.events.ChannelSwitchEventImpl;
@@ -65,6 +66,7 @@ import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -344,7 +346,15 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final ChatChannel channel,
         final SignedString message
     ) {
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message.string(), message.signedMessage(), channel);
+        final Component originalMessage = Objects.requireNonNullElse(message.signedMessage().unsignedContent(), Component.text(message.signedMessage().message()));
+        final @Nullable CarbonEarlyChatEvent earlyChatEvent = this.prepareAndEmitPreChatEvent(sender, originalMessage);
+
+        if (earlyChatEvent == null || earlyChatEvent.cancelled()) {
+            return;
+        }
+
+        final @Nullable Component parsedMessage = this.parseTags(sender, earlyChatEvent.message());
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, parsedMessage, message.signedMessage(), channel);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return;

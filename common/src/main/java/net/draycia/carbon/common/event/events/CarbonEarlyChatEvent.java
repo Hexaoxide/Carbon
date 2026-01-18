@@ -19,13 +19,15 @@
  */
 package net.draycia.carbon.common.event.events;
 
+import net.draycia.carbon.api.event.Cancellable;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 
-public class CarbonEarlyChatEvent implements CarbonEvent {
+public class CarbonEarlyChatEvent implements CarbonEvent, Cancellable {
 
-    public final CarbonPlayer sender;
-    public String message;
+    private final CarbonPlayer sender;
+    private String message;
+    private boolean cancelled = false;
 
     public CarbonEarlyChatEvent(final CarbonPlayer sender, final String message) {
         this.sender = sender;
@@ -42,6 +44,16 @@ public class CarbonEarlyChatEvent implements CarbonEvent {
 
     public void message(final String message) {
         this.message = message;
+    }
+
+    @Override
+    public boolean cancelled() {
+        return this.cancelled;
+    }
+
+    @Override
+    public void cancelled(final boolean cancelled) {
+        this.cancelled = cancelled;
     }
 
 }

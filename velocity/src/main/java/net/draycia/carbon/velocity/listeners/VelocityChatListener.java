@@ -35,10 +35,12 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
+import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -111,9 +113,14 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         event.setResult(PlayerChatEvent.ChatResult.denied());
 
         final CarbonPlayer sender = this.userManager.user(event.getPlayer().getUniqueId()).join();
+        final @Nullable CarbonEarlyChatEvent earlyChatEvent = this.prepareAndEmitPreChatEvent(sender, Component.text(event.getMessage()));
 
-        final String content = event.getResult().getMessage().orElse(event.getMessage());
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
+        if (earlyChatEvent == null || earlyChatEvent.cancelled()) {
+            return;
+        }
+
+        final @Nullable Component message = this.parseTags(sender, earlyChatEvent.message());
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message, null);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return;
