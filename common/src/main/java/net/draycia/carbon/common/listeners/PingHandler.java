@@ -56,7 +56,7 @@ public class PingHandler implements Listener {
             return this.convertPings(recipientPlayer, message);
         });
 
-        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -9, false, event -> {
             event.renderers().add(0, this.renderer);
         });
     }

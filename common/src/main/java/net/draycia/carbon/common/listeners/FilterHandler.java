@@ -40,7 +40,7 @@ public class FilterHandler implements Listener {
     ) {
         this.configManager = configManager;
 
-        events.subscribe(CarbonPrivateChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonPrivateChatEvent.class, -9, false, event -> {
             Component message = this.configManager.primaryConfig().applyChatFilters(event.message());
 
             if (event.recipient().applyOptionalChatFilters()) {
@@ -50,7 +50,7 @@ public class FilterHandler implements Listener {
             event.message(message);
         });
 
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -9, false, event -> {
             event.message(this.configManager.primaryConfig().applyChatFilters(event.message()));
 
             event.renderers().add(KeyedRenderer.keyedRenderer(Key.key("carbon", "filter"), ($, recipient, message, $$$) -> {
