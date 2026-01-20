@@ -49,6 +49,8 @@ carbon.nickname.tags.newline: "Allows the use of the newline tag in nicknames."
 carbon.nickname.tags.pride: "Allows the use of the pride tag in nicknames."
 carbon.nickname.tags.shadow_color: "Allows the use of the shadow tag in nicknames."
 carbon.nickname.tags.transition: "Allows the use of the transition tag in nicknames."
+carbon.nickname.tags.head: "Allows the use of the head tag in nicknames."
+carbon.nickname.tags.sprite: "Allows the use of the sprite tag in nicknames."
 
 # Party name tag permissions
 carbon.parties.name.tags.color: "Allows the use of colors in party names."
@@ -71,6 +73,8 @@ carbon.parties.name.tags.newline: "Allows the use of the newline tag in party na
 carbon.parties.name.tags.pride: "Allows the use of the pride tag in party names."
 carbon.parties.name.tags.shadow_color: "Allows the use of the shadow tag in party names."
 carbon.parties.name.tags.transition: "Allows the use of the transition tag in party names."
+carbon.parties.name.tags.head: "Allows the use of the head tag in party names."
+carbon.parties.name.tags.sprite: "Allows the use of the sprite tag in party names."
 
 # Message tag permissions
 carbon.messagetags.color: "Allows the use of colors in messages."
@@ -93,3 +97,5 @@ carbon.messagetags.newline: "Allows the use of the newline tag in messages."
 carbon.messagetags.pride: "Allows the use of the pride tag in messages."
 carbon.messagetags.shadow_color: "Allows the use of the shadow tag in messages."
 carbon.messagetags.transition: "Allows the use of the transition tag in messages."
+carbon.messagetags.head: "Allows the use of the head tag in messages."
+carbon.messagetags.sprite: "Allows the use of the sprite tag in messages."
