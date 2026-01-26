@@ -69,7 +69,7 @@ public final class FilterCommand extends CarbonCommand {
             .handler(handler -> {
                 final CarbonPlayer sender = handler.sender().carbonPlayer();
 
-                boolean enabled = !sender.spying();
+                boolean enabled = !sender.applyOptionalChatFilters();
 
                 if (handler.contains("enabled")) {
                     enabled = handler.get("enabled");
