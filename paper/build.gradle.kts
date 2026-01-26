@@ -37,6 +37,7 @@ dependencies {
   compileOnly(libs.mcmmo) {
     isTransitive = false
   }
+  compileOnly(libs.adpParties)
   compileOnly(libs.factionsUuid)
   implementation(libs.plotsquaredbom)
   compileOnly(libs.plotsquaredcore)
@@ -45,6 +46,7 @@ dependencies {
 configurablePlugins {
   dependency(libs.towny)
   dependency(libs.mcmmo)
+  dependency(libs.adpParties)
   dependency(libs.factionsUuid)
   dependency(libs.plotsquaredbom)
   dependency(libs.plotsquaredcore)
@@ -65,6 +67,7 @@ tasks {
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
+      modrinth("parties", libs.versions.adpParties.get())
     }
     pluginJars.from(luckperms.flatMap { it.outputFile })
     providers.gradleProperty("smokeTest").map { it.toBoolean() }.getOrElse(false).let { smokeTest ->
@@ -113,6 +116,7 @@ paperPluginYaml {
     // Integrations
     server("Towny", Load.BEFORE, false)
     server("mcMMO", Load.BEFORE, false)
+    server("Parties", Load.BEFORE, false)
     server("Factions", Load.BEFORE, false)
     server("PlotSquared", Load.BEFORE, false)
   }
