@@ -304,6 +304,10 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     @Override
     public boolean spying() {
+        if (this.online() && !this.hasPermission("carbon.spy")) {
+            return false;
+        }
+
         return this.carbonPlayerCommon.spying();
     }
 
