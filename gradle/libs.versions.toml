@@ -62,7 +62,7 @@ towny = "0.101.2.5"
 plotsquared_bom = "1.55"
 plotsquared_core = "7.5.8"
 mcmmo = "2.2.043"
-parties = "3.2.9"
+adpParties = "3.2.9"
 fuuid = "1.6.9.5-U0.6.35"
 
 # synced with version used by lowest supported mc (currently 1.21.4 on paper)
@@ -162,5 +162,5 @@ towny = { group = "com.palmergames.bukkit.towny", name = "towny", version.ref = 
 plotsquaredbom = { group = "com.intellectualsites.bom", name = "bom-newest", version.ref = "plotsquared_bom" }
 plotsquaredcore = { group = "com.intellectualsites.plotsquared", name = "plotsquared-core", version.ref = "plotsquared_core" }
 mcmmo = { group = "com.gmail.nossr50.mcMMO", name = "mcMMO", version.ref = "mcmmo" }
-parties = { group = "com.alessiodp.parties", name = "parties-api", version.ref = "parties" }
+adpParties = { group = "com.alessiodp.parties", name = "parties-api", version.ref = "adpParties" }
 factionsUuid = { group = "com.massivecraft", name = "Factions", version.ref = "fuuid" }

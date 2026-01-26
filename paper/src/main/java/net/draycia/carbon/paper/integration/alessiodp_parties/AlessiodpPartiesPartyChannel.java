@@ -68,7 +68,7 @@ public class AlessiodpPartiesPartyChannel extends ConfigChatChannel {
     public ChannelPermissions permissions() {
         return ChannelPermissions.uniformDynamic(player -> channelPermissionResult(
             this.party(player) != null,
-            () -> this.messages.cannotUsePartiesPartyChannel(player)
+            () -> this.messages.cannotUseADPPartiesPartyChannel(player)
         ));
     }
 
@@ -78,7 +78,7 @@ public class AlessiodpPartiesPartyChannel extends ConfigChatChannel {
 
         if (party == null) {
             if (sender.online()) {
-                sender.sendMessage(this.messages.cannotUsePartiesPartyChannel(sender));
+                sender.sendMessage(this.messages.cannotUseADPPartiesPartyChannel(sender));
             }
 
             return Collections.emptyList();
