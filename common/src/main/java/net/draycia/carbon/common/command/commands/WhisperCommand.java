@@ -242,8 +242,8 @@ public final class WhisperCommand extends CarbonCommand {
                 recipientUsername, recipientDisplayName, privateChatEvent.message());
 
             final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
-            if (localRecipient && messageSound != null) {
-                recipient.playSound(messageSound);
+            if (localRecipient && messageSound != null && recipient.hasPermission("carbon.whisper.ping_sounds")) {
+                recipient.playSound(messageSound, Sound.Emitter.self());
             }
 
             sender.lastWhisperTarget(recipient.uuid());
@@ -289,8 +289,8 @@ public final class WhisperCommand extends CarbonCommand {
                 WhisperCommand.broadcastWhisperSpy(this.server, this.messages, senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
                 this.messages.whisperConsoleLog(this.server.console(), senderUsername, senderDisplayName, recipientUsername, recipientDisplayName, privateChatEvent.message());
                 final @Nullable Sound messageSound = this.configManager.primaryConfig().messageSound();
-                if (messageSound != null) {
-                    recipient.playSound(messageSound);
+                if (messageSound != null && recipient.hasPermission("carbon.whisper.ping_sounds")) {
+                    recipient.playSound(messageSound, Sound.Emitter.self());
                 }
             }).exceptionally(ex -> {
                 this.logger.warn("Failed to handle whisper packet {}", packet, ex);
