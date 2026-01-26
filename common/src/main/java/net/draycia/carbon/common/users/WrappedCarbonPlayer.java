@@ -304,7 +304,13 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     @Override
     public boolean spying() {
-        if (this.online() && !this.hasPermission("carbon.spy")) {
+        if (this.carbonPlayerCommon.configManager().primaryConfig().spyPermissionRequired() &&
+            this.online() && !this.hasPermission("carbon.spy")) {
+
+            this.spying(false);
+            if (this.carbonPlayerCommon.configManager().primaryConfig().spyDisabledMessage()) {
+                this.carbonPlayerCommon.carbonMessages().commandSpyDisabled(this);
+            }
             return false;
         }
 

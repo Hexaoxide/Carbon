@@ -108,6 +108,12 @@ public class PrimaryConfig {
     @Comment("Settings for the clear chat command")
     private ClearChatSettings clearChatSettings = new ClearChatSettings();
 
+    @Comment("Disables spying when the user doesn't have spy permissions")
+    private boolean spyPermissionRequired = true;
+
+    @Comment("Alerts the user when they can no longer spy due to lacking permissions")
+    private boolean spyDisabledMessage = false;
+
     @Comment("Settings for integrations with other plugins/mods. Settings only apply when the relevant plugin/mod is present.")
     private IntegrationConfigContainer integrations;
 
@@ -200,6 +206,14 @@ public class PrimaryConfig {
 
     public ClearChatSettings clearChatSettings() {
         return this.clearChatSettings;
+    }
+
+    public boolean spyPermissionRequired() {
+        return this.spyPermissionRequired;
+    }
+
+    public boolean spyDisabledMessage() {
+        return this.spyDisabledMessage;
     }
 
     public IntegrationConfigContainer integrations() {
