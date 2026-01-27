@@ -11,7 +11,6 @@ dependencyResolutionManagement {
         includeModuleByRegex("de\\.hexaoxi", "messenger-.*")
         includeModule("org.incendo", "cloud-sponge")
         includeModule("com.seiama", "registry")
-        includeModule("com.seiama", "event-api")
       }
     }
     maven("https://central.sonatype.com/repository/maven-snapshots/") {

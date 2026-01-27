@@ -59,7 +59,7 @@ fun Task.standardRuntimeRelocations() {
 fun Task.standardRelocations() {
   relocateDependency("org.bstats")
   relocateDependency("net.kyori.adventure.serializer.configurate4")
-  relocateDependency("com.seiama.event")
+  relocateDependency("com.sasorio.event")
   relocateDependency("net.kyori.moonshine")
   relocateDependency("com.seiama.registry")
   relocateDependency("org.spongepowered.configurate")

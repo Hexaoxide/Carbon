@@ -30,7 +30,7 @@ bstats = "3.1.0"
 paperApi = "1.21.4-R0.1-SNAPSHOT"
 paperTrail = "1.0.1"
 foliaApi = "1.21.4-R0.1-SNAPSHOT"
-event = "1.0.0-SNAPSHOT"
+event = "1.0.0"
 registry = "1.0.0-SNAPSHOT"
 kyoriMoonshine = "2.0.4"
 guice = "7.0.0"
@@ -90,7 +90,7 @@ minimessage = { group = "net.kyori", name = "adventure-text-minimessage", versio
 adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformFabric" }
 log4jBom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j" }
 log4jApi = { group = "org.apache.logging.log4j", name = "log4j-api" }
-event = { group = "com.seiama", name = "event-api", version.ref = "event" }
+event = { group = "com.sasorio", name = "event-api", version.ref = "event" }
 registry = { group = "com.seiama", name = "registry", version.ref = "registry" }
 kyoriMoonshine = { group = "net.kyori.moonshine", name = "moonshine", version.ref = "kyoriMoonshine" }
 kyoriMoonshineCore = { group = "net.kyori.moonshine", name = "moonshine-core", version.ref = "kyoriMoonshine" }
