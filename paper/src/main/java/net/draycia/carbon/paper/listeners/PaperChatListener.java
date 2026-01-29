@@ -20,16 +20,19 @@
 package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
+import io.papermc.paper.event.player.AsyncChatCommandDecorateEvent;
+import io.papermc.paper.event.player.AsyncChatDecorateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
+import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -54,6 +57,34 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         this.configManager = configManager;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPaperChatDecorate(final @NonNull AsyncChatDecorateEvent event) {
+        if (event.player() == null) {
+            return;
+        }
+
+        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.player().getUniqueId()).join();
+        final @Nullable CarbonEarlyChatEvent earlyChatEvent = this.prepareAndEmitPreChatEvent(sender, event.result());
+
+        if (earlyChatEvent == null || earlyChatEvent.cancelled()) {
+            event.setCancelled(true);
+            return;
+        }
+
+        final @Nullable Component message = this.parseTags(sender, earlyChatEvent.message());
+
+        if (message != null) {
+            event.result(message);
+        }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPaperCommandDecorate(final @NonNull AsyncChatCommandDecorateEvent event) {
+        this.onPaperChatDecorate(event);
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPaperChat(final @NonNull AsyncChatEvent event) {
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.getPlayer().getUniqueId()).join();
@@ -62,8 +93,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             return;
         }
 
-        final String content = PlainTextComponentSerializer.plainText().serialize(event.message());
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, content, event.signedMessage());
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, event.message(), event.signedMessage());
 
         if (chatEvent == null || chatEvent.cancelled()) {
             event.setCancelled(true);
