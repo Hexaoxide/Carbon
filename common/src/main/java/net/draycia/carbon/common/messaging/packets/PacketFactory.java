@@ -45,9 +45,7 @@ public interface PacketFactory {
         return this.localPlayerChangePacket(id, name, LocalPlayerChangePacket.ChangeType.ADD);
     }
 
-    default LocalPlayerChangePacket removeLocalPlayerPacket(final UUID id) {
-        return this.localPlayerChangePacket(id, null, LocalPlayerChangePacket.ChangeType.REMOVE);
-    }
+    LocalPlayerChangePacket removeLocalPlayerPacket(final UUID id);
 
     WhisperPacket whisperPacket(@Assisted("from") UUID from, @Assisted("to") UUID to, Component msg);
 
