@@ -120,6 +120,10 @@ public final class VelocityChatListener extends ChatListenerInternal implements 
         }
 
         final @Nullable Component message = this.parseTags(sender, earlyChatEvent.message());
+        if (message == null) {
+            return;
+        }
+
         final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message, null);
 
         if (chatEvent == null || chatEvent.cancelled()) {
