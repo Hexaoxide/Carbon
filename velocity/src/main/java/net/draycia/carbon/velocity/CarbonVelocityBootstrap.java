@@ -20,6 +20,7 @@
 package net.draycia.carbon.velocity;
 
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -28,7 +29,6 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import java.nio.file.Path;
-import javax.inject.Inject;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.config.MessagingSettings;
 import net.draycia.carbon.common.util.CarbonDependencies;
@@ -47,7 +47,7 @@ public final class CarbonVelocityBootstrap {
     private final Metrics.Factory metricsFactory;
     private final Inner inner;
 
-    @Inject // use javax.inject, so it doesn't get relocated - we use Guice 7 and Velocity uses Guice 6.
+    @Inject
     public CarbonVelocityBootstrap(
         final ProxyServer proxyServer,
         final PluginContainer pluginContainer,

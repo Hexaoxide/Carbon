@@ -23,6 +23,7 @@ dependencies {
   runtimeDownload(libs.mysql)
 
   compileOnly("javax.inject:javax.inject:1")
+  implementation(libs.assistedInject)
 }
 
 velocityPluginJson {
@@ -55,7 +56,6 @@ tasks {
     relocateCloud()
     standardRuntimeRelocations()
     relocateDependency("io.leangen.geantyref")
-    relocateGuice()
   }
   val prod = register<Zip>("productionJar") {
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
