@@ -112,6 +112,7 @@ public final class UnmuteCommand extends CarbonCommand {
                     this.carbonMessages.unmuteAlertPlayers(player, target.displayName());
                 }
 
+                target.muteExpiration(0);
                 target.muted(false);
             })
             .build();
