@@ -65,7 +65,8 @@ tasks {
     version.set("1.21.4")
     downloadPlugins {
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
-      github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
+      // TODO: install MP extensions to its folder
+      // github("MiniPlaceholders", "PlaceholderAPI-Expansion", "2.1.0", "PlaceholderAPI-Expansion-2.1.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
       modrinth("parties", libs.versions.adpParties.get())
     }
