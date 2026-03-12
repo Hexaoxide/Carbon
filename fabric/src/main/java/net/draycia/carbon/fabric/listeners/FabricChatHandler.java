@@ -20,14 +20,17 @@
 package net.draycia.carbon.fabric.listeners;
 
 import com.google.inject.Inject;
+import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
+import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.fabric.CarbonChatFabric;
 import net.draycia.carbon.fabric.users.CarbonPlayerFabric;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -38,15 +41,15 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.FilterMask;
 import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FabricChatHandler extends ChatListenerInternal implements ServerMessageEvents.AllowChatMessage {
 
-    public static final ResourceLocation CHAT_TYPE_KEY = ResourceLocation.fromNamespaceAndPath("carbonchat", "chat");
+    public static final Identifier CHAT_TYPE_KEY = Identifier.fromNamespaceAndPath("carbonchat", "chat");
 
     private final CarbonChatFabric carbonChat;
     private @MonotonicNonNull ResourceKey<ChatType> chatTypeResourceKey;
@@ -69,8 +72,18 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
 
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(serverPlayer.getUUID()).join();
 
-        final String content = chatMessage.decoratedContent().getString();
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, content, null);
+        final MinecraftServerAudiences audiences = MinecraftServerAudiences.of(serverPlayer.level().getServer());
+        final SignedMessage signedMessage = audiences.asAdventure(chatMessage);
+        final Component originalMessage = Objects.requireNonNullElse(signedMessage.unsignedContent(), Component.text(signedMessage.message()));
+
+        final @Nullable CarbonEarlyChatEvent earlyChatEvent = this.prepareAndEmitPreChatEvent(sender, originalMessage);
+
+        if (earlyChatEvent == null || earlyChatEvent.cancelled()) {
+            return false;
+        }
+
+        final @Nullable Component message = this.parseTags(sender, earlyChatEvent.message());
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message, audiences.asAdventure(chatMessage));
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return false;
@@ -79,7 +92,7 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
         for (final var recipient : chatEvent.recipients()) {
             final Component finishedMessage = chatEvent.renderFor(recipient);
 
-            final net.minecraft.network.chat.Component nativeMessage = MinecraftServerAudiences.of(serverPlayer.getServer()).nonWrappingSerializer().serialize(finishedMessage);
+            final net.minecraft.network.chat.Component nativeMessage = audiences.nonWrappingSerializer().serialize(finishedMessage);
             final PlayerChatMessage customChatMessage = new PlayerChatMessage(chatMessage.link(), chatMessage.signature(), chatMessage.signedBody(), nativeMessage, FilterMask.FULLY_FILTERED);
             final RegistryAccess registryAccess = serverPlayer.level().registryAccess();
             if (this.chatTypeResourceKey == null) {

@@ -35,7 +35,6 @@ import net.draycia.carbon.common.CarbonChatInternal;
 import net.draycia.carbon.common.PeriodicTasks;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.command.ExecutionCoordinatorHolder;
-import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersExpansion;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.users.PlatformUserManager;
@@ -94,8 +93,6 @@ public class CarbonChatVelocity extends CarbonChatInternal {
         for (final VelocityListener<?> listener : listeners) {
             listener.register(this.proxyServer.getEventManager(), carbonVelocityBootstrap);
         }
-
-        MiniPlaceholdersExpansion.register(this.injector());
 
         this.checkVersion();
     }

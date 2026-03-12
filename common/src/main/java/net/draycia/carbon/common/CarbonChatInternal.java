@@ -123,6 +123,15 @@ public abstract class CarbonChatInternal implements CarbonChat {
             TimeUnit.SECONDS
         );
 
+        this.initIntegrations();
+
+        // Load channels
+        this.channelRegistry().loadConfigChannels(this.carbonMessages);
+
+        this.messagingManager.get();
+    }
+
+    protected void initIntegrations() {
         // Integration
         final Set<Integration> integrations = this.injector().getInstance(Key.get(new TypeLiteral<>() {}));
 
@@ -133,11 +142,6 @@ public abstract class CarbonChatInternal implements CarbonChat {
 
             integration.register();
         }
-
-        // Load channels
-        this.channelRegistry().loadConfigChannels(this.carbonMessages);
-
-        this.messagingManager.get();
     }
 
     protected final void checkVersion() {

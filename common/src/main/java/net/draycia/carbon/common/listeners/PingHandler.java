@@ -28,6 +28,7 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -56,7 +57,7 @@ public class PingHandler implements Listener {
             return this.convertPings(recipientPlayer, message);
         });
 
-        events.subscribe(CarbonChatEvent.class, 1, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -9, false, event -> {
             event.renderers().add(0, this.renderer);
         });
     }
@@ -75,8 +76,8 @@ public class PingHandler implements Listener {
                     Pattern.quote(plainDisplayName)),
                 Pattern.CASE_INSENSITIVE))
             .replacement(matchedText -> {
-                if (this.configManager.primaryConfig().pings().playSound()) {
-                    recipient.playSound(this.configManager.primaryConfig().pings().sound());
+                if (this.configManager.primaryConfig().pings().playSound() && recipient.hasPermission("carbon.ping_sounds")) {
+                    recipient.playSound(this.configManager.primaryConfig().pings().sound(), Sound.Emitter.self());
                 }
 
                 return Component.text(matchedText.content()).color(this.configManager.primaryConfig().pings().highlightTextColor());

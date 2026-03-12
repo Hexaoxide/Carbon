@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.messages.SourcedAudience;
+import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.util.DiscordRecipient;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.message.IMessageSource;
@@ -75,7 +76,7 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
     // TODO: Remove DiscordRecipient and use key instead (Couldn't figure out how to do it)
     @Override
     public String messageOf(final SourcedAudience sourcedAudience, final String ignored) {
-        if (sourcedAudience.recipient() instanceof CarbonPlayer) {
+        if (sourcedAudience.recipient() instanceof CarbonPlayer && !(sourcedAudience.recipient() instanceof ConsoleCarbonPlayer)) {
             return this.forPlayer(sourcedAudience);
         } else if (sourcedAudience.recipient() instanceof DiscordRecipient) {
             return this.defaults.getOrDefault("discord", FALLBACK_FORMAT);

@@ -11,8 +11,6 @@ dependencyResolutionManagement {
         includeModuleByRegex("de\\.hexaoxi", "messenger-.*")
         includeModule("org.incendo", "cloud-sponge")
         includeModule("com.seiama", "registry")
-        includeModule("com.seiama", "event-api")
-        includeGroup("net.kyori") // adventure-platform-mod 6.5.0-SNAPSHOT
       }
     }
     maven("https://central.sonatype.com/repository/maven-snapshots/") {
@@ -59,6 +57,12 @@ dependencyResolutionManagement {
         includeGroup("com.gmail.nossr50.mcMMO")
       }
     }
+    // Parties
+    maven("https://repo.alessiodp.com/releases/") {
+      content {
+        includeGroup("com.alessiodp.parties")
+      }
+    }
   }
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -70,16 +74,14 @@ pluginManagement {
       mavenContent { snapshotsOnly() }
     }
     maven("https://maven.fabricmc.net/")
-    maven("https://repo.jpenilla.xyz/snapshots/") {
-      mavenContent { snapshotsOnly() }
-    }
+    maven("https://repo.jpenilla.xyz/snapshots/")
   }
   includeBuild("build-logic")
 }
 
 plugins {
-  id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
-  id("quiet-fabric-loom") version "1.11-SNAPSHOT"
+  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+  id("quiet-fabric-loom") version "1.14-SNAPSHOT"
 }
 
 rootProject.name = "CarbonChat"

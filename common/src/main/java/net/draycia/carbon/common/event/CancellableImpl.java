@@ -21,7 +21,7 @@ package net.draycia.carbon.common.event;
 
 import net.draycia.carbon.api.event.Cancellable;
 
-public class CancellableImpl implements Cancellable, com.seiama.event.Cancellable {
+public class CancellableImpl implements Cancellable, com.sasorio.event.Cancellable {
 
     private boolean cancelled = false;
 

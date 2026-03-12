@@ -54,6 +54,7 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
+import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.event.events.ChannelRegisterEventImpl;
 import net.draycia.carbon.common.event.events.ChannelSwitchEventImpl;
@@ -64,7 +65,9 @@ import net.draycia.carbon.common.util.Exceptions;
 import net.draycia.carbon.common.util.FileUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.ChatType;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -73,6 +76,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.minecraft.signed.SignedString;
+import org.incendo.cloud.permission.Permission;
 import org.incendo.cloud.permission.PredicatePermission;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -343,7 +347,30 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
         final ChatChannel channel,
         final SignedString message
     ) {
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message.string(), message.signedMessage(), channel);
+        final @Nullable SignedMessage signedMessage = message.signedMessage();
+        final Component originalMessage;
+
+        if (signedMessage == null) {
+            originalMessage = Component.text(message.string());
+        } else {
+            originalMessage = Objects.requireNonNullElse(
+                signedMessage.unsignedContent(),
+                Component.text(signedMessage.message())
+            );
+        }
+
+        final @Nullable CarbonEarlyChatEvent earlyChatEvent = this.prepareAndEmitPreChatEvent(sender, originalMessage);
+
+        if (earlyChatEvent == null || earlyChatEvent.cancelled()) {
+            return;
+        }
+
+        final Component parsedMessage = this.parseTags(sender, earlyChatEvent.message());
+        if (parsedMessage == null) {
+            return;
+        }
+
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, parsedMessage, signedMessage, channel);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return;
@@ -424,12 +451,13 @@ public class CarbonChannelRegistry extends ChatListenerInternal implements Chann
 
         commandManager.command(command);
 
-        final Command<Commander> channelCommand = commandManager.commandBuilder("channel", "ch")
-            .literal(channelKey.value())
-            .proxies(command)
-            .build();
+        Command.Builder<Commander> proxyBuilder = commandManager.commandBuilder("channel", "ch");
 
-        commandManager.command(channelCommand);
+        if (!channel.permissions().dynamic() && channel.permissions() instanceof ChannelPermissionsImpl permissions) {
+            proxyBuilder = proxyBuilder.permission(Permission.allOf(Permission.of("carbon.channel"), Permission.of(permissions.permission())));
+        }
+
+        commandManager.command(proxyBuilder.literal(channelKey.value()).proxies(command).build());
     }
 
     @Override

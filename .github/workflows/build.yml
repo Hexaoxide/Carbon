@@ -7,10 +7,6 @@ on:
   release:
     types: [ published ]
 
-concurrency:
-  group: ${{ github.ref }}-actions
-  cancel-in-progress: false
-
 jobs:
   build:
     # Only run on PRs if the source branch is on someone else's repo
@@ -21,17 +17,17 @@ jobs:
         java: [ 21 ]
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/checkout@v5
       - name: JDK ${{ matrix.java }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         # gradle build action can't handle project dir local caches
       - uses: actions/cache@v4
+        name: Cache Loom Files
         with:
           path: |
             .gradle/loom-cache
@@ -92,3 +88,81 @@ jobs:
         with:
           name: Jars
           path: build/libs/*.jar
+  smoketest:
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: username
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: carbon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_USER: username
+          MARIADB_PASSWORD: password
+          MARIADB_ROOT_PASSWORD: rootpassword
+          MARIADB_DATABASE: carbon
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    strategy:
+      matrix:
+        java: [ 21 ]
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        # gradle build action can't handle project dir local caches
+      - uses: actions/cache@v4
+        name: Cache Loom Files
+        with:
+          path: |
+            .gradle/loom-cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - uses: actions/cache@v4
+        name: Cache Smoke Test Files
+        with:
+          path: |
+            paper/build/tmp/smokeTest/cache
+            paper/build/tmp/smokeTest/libraries
+            paper/build/tmp/smokeTest/plugins/CarbonChat/libraries
+            paper/build/tmp/smokeTest/world
+            paper/build/tmp/smokeTest/world_nether
+            paper/build/tmp/smokeTest/world_the_end
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-smoketest-
+      - name: Prime Build
+        run: ./gradlew build --stacktrace
+      - name: Smoke test (Paper, JSON)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=json
+        timeout-minutes: 5
+      - name: Smoke test (Paper, H2)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=h2
+        timeout-minutes: 5
+      - name: Smoke test (Paper, MariaDB)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=mariadb
+        timeout-minutes: 5
+      - name: Smoke test (Paper, Postgres)
+        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=postgres
+        timeout-minutes: 5

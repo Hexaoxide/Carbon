@@ -30,8 +30,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * The {@link CarbonChat} interface is the gateway to interacting with the majority of the CarbonChat API.
  *
  * <p>Instances may be obtained through {@link CarbonChatProvider#carbonChat()} once Carbon is loaded.</p>
+ *
  * <p>On most platforms, you should use the provided load order mechanism to ensure your addon loads after
  * Carbon.</p>
+ *
  * <p>On Fabric, use the {@code carbonchat} entrypoint (type: {@code Consumer<CarbonChat>}) to have a callback
  * when Carbon is loaded.</p>
  *

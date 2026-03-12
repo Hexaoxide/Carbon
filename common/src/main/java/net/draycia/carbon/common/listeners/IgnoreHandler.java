@@ -31,7 +31,7 @@ public class IgnoreHandler implements Listener {
 
     @Inject
     public IgnoreHandler(final CarbonEventHandler events) {
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -8, false, event -> {
             event.recipients().removeIf(entry -> entry instanceof CarbonPlayer carbonPlayer &&
                 carbonPlayer.ignoring(event.sender()));
         });

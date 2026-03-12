@@ -177,7 +177,7 @@ public final class NicknameCommand extends CarbonCommand {
 
     private static Component parseNickname(final Commander sender, final String nick) {
         // trim one level of quotes, to allow for nicknames which collide with command literals
-        return TagPermissions.parseTags(TagPermissions.NICKNAME, trimQuotes(nick), sender::hasPermission);
+        return TagPermissions.parseTags(sender, TagPermissions.NICKNAME, trimQuotes(nick), sender::hasPermission);
     }
 
     private static String trimQuotes(final String string) {

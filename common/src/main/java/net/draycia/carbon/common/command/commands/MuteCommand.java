@@ -136,6 +136,7 @@ public final class MuteCommand extends CarbonCommand {
                     }
                 }
 
+                target.muteExpiration(0);
                 target.muted(true);
             })
             .build();

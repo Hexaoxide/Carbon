@@ -54,6 +54,7 @@ public final class FileUtil {
      * Lists directory entries in {@code path}.
      *
      * <p>If {@code path} does not exist, returns an empty list.</p>
+     *
      * <p>If {@code path} exists, but is not a directory, throws {@link IllegalArgumentException}</p>
      *
      * @param path directory
@@ -69,6 +70,7 @@ public final class FileUtil {
      * Lists directory entries in {@code path} matching {@code glob}.
      *
      * <p>If {@code path} does not exist, returns an empty list.</p>
+     *
      * <p>If {@code path} exists, but is not a directory, throws {@link IllegalArgumentException}</p>
      *
      * @param path directory

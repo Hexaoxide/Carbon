@@ -27,6 +27,7 @@ import com.google.inject.Singleton;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -42,6 +43,7 @@ import net.draycia.carbon.common.util.FileUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.loader.AtomicFiles;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -179,7 +181,7 @@ public final class ProfileCache {
 
     public synchronized void save() {
         this.cleanup();
-        try (final BufferedWriter writer = Files.newBufferedWriter(FileUtil.mkParentDirs(this.cacheFile))) {
+        try (final BufferedWriter writer = AtomicFiles.atomicBufferedWriter(FileUtil.mkParentDirs(this.cacheFile), StandardCharsets.UTF_8)) {
             this.gson.toJson(this.entries, writer);
         } catch (final IOException ex) {
             throw new RuntimeException("Failed to save cache", ex);

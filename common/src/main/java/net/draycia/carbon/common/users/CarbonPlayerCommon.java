@@ -39,6 +39,7 @@ import net.draycia.carbon.api.util.InventorySlot;
 import net.draycia.carbon.common.PlatformScheduler;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
+import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
@@ -60,6 +61,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     private transient @MonotonicNonNull @Inject ConfigManager config;
     private transient @MonotonicNonNull @Inject CarbonMessageRenderer messageRenderer;
     private transient @MonotonicNonNull @Inject UserManagerInternal<?> users;
+    private transient @MonotonicNonNull @Inject CarbonMessages messages;
     private volatile transient long transientLoadedSince = -1;
 
     protected final PersistentUserProperty<Boolean> muted;
@@ -140,7 +142,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.uuid = uuid;
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
         this.party = PersistentUserProperty.empty();
-        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(true);
     }
 
     public CarbonPlayerCommon() {
@@ -152,7 +154,7 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         this.lastWhisperTarget = PersistentUserProperty.empty();
         this.whisperReplyTarget = PersistentUserProperty.empty();
         this.spying = PersistentUserProperty.of(false);
-        this.applyOptionalChatFilters = PersistentUserProperty.of(false);
+        this.applyOptionalChatFilters = PersistentUserProperty.of(true);
         this.ignoredPlayers = PersistentUserProperty.of(Collections.emptySet());
         this.leftChannels = PersistentUserProperty.of(Collections.emptySet());
         this.ignoringDirectMessages = PersistentUserProperty.of(false);
@@ -498,6 +500,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
 
     public CarbonMessageRenderer messageRenderer() {
         return this.messageRenderer;
+    }
+
+    public CarbonMessages carbonMessages() {
+        return this.messages;
     }
 
     @Override

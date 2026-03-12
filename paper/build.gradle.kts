@@ -37,6 +37,7 @@ dependencies {
   compileOnly(libs.mcmmo) {
     isTransitive = false
   }
+  compileOnly(libs.adpParties)
   compileOnly(libs.factionsUuid)
   implementation(libs.plotsquaredbom)
   compileOnly(libs.plotsquaredcore)
@@ -45,6 +46,7 @@ dependencies {
 configurablePlugins {
   dependency(libs.towny)
   dependency(libs.mcmmo)
+  dependency(libs.adpParties)
   dependency(libs.factionsUuid)
   dependency(libs.plotsquaredbom)
   dependency(libs.plotsquaredcore)
@@ -63,8 +65,10 @@ tasks {
     version.set("1.21.4")
     downloadPlugins {
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
-      github("MiniPlaceholders", "PlaceholderAPI-Expansion", "1.2.0", "PlaceholderAPI-Expansion-1.2.0.jar")
+      // TODO: install MP extensions to its folder
+      // github("MiniPlaceholders", "PlaceholderAPI-Expansion", "2.1.0", "PlaceholderAPI-Expansion-2.1.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
+      modrinth("parties", libs.versions.adpParties.get())
     }
     pluginJars.from(luckperms.flatMap { it.outputFile })
     providers.gradleProperty("smokeTest").map { it.toBoolean() }.getOrElse(false).let { smokeTest ->
@@ -82,6 +86,7 @@ tasks {
         }
         systemProperty("carbonchat.smokeTest", true)
         systemProperty("carbonchat.smokeTestMode", providers.gradleProperty("smokeTestMode").getOrElse("h2"))
+        systemProperty("paper.disablePluginRemapping", true)
       }
     }
   }
@@ -112,6 +117,7 @@ paperPluginYaml {
     // Integrations
     server("Towny", Load.BEFORE, false)
     server("mcMMO", Load.BEFORE, false)
+    server("Parties", Load.BEFORE, false)
     server("Factions", Load.BEFORE, false)
     server("PlotSquared", Load.BEFORE, false)
   }

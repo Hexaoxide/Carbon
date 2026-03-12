@@ -38,7 +38,7 @@ public class RadiusListener implements Listener {
         final CarbonEventHandler events,
         final CarbonMessages carbonMessages
     ) {
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -5, false, event -> {
             if (event.chatChannel() == null) {
                 return;
             }
@@ -62,6 +62,11 @@ public class RadiusListener implements Listener {
 
                         if (!sameWorld && carbonPlayer.spying()) {
                             spyingPlayers.add(carbonPlayer);
+                        }
+
+                        if (sameWorld && carbonPlayer.vanished()) {
+                            spyingPlayers.add(carbonPlayer);
+                            return true;
                         }
 
                         return !sameWorld;
@@ -88,6 +93,11 @@ public class RadiusListener implements Listener {
 
                         if (outOfRange && carbonPlayer.spying()) {
                             spyingPlayers.add(carbonPlayer);
+                        }
+
+                        if (!outOfRange && carbonPlayer.vanished()) {
+                            spyingPlayers.add(carbonPlayer);
+                            return true;
                         }
 
                         return outOfRange;

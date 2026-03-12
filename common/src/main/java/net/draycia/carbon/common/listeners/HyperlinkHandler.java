@@ -32,7 +32,7 @@ public class HyperlinkHandler implements Listener {
 
     @Inject
     public HyperlinkHandler(final CarbonEventHandler events) {
-        events.subscribe(CarbonChatEvent.class, 0, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -7, false, event -> {
             if (event.sender().hasPermission("carbon.chatlinks")) {
                 event.message(event.message().replaceText(URL_REPLACEMENT_CONFIG.get()));
             }

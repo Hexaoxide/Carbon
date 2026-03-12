@@ -39,7 +39,7 @@ public class PartyChatSpyHandler implements Listener {
 
     @Inject
     public PartyChatSpyHandler(final CarbonEventHandler events, final CarbonMessages messages, final CarbonServer server) {
-        events.subscribe(CarbonChatEvent.class, 100, false, event -> {
+        events.subscribe(CarbonChatEvent.class, -1, false, event -> {
             if (!(event.chatChannel() instanceof PartyChatChannel)) {
                 return;
             }

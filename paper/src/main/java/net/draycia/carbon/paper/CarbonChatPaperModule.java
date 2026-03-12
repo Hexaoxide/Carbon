@@ -41,6 +41,7 @@ import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.paper.command.PaperCommander;
 import net.draycia.carbon.paper.command.PaperPlayerCommander;
+import net.draycia.carbon.paper.integration.alessiodp_parties.AlessiodpPartiesIntegration;
 import net.draycia.carbon.paper.integration.dsrv.DSRVIntegration;
 import net.draycia.carbon.paper.integration.essxd.EssXDIntegration;
 import net.draycia.carbon.paper.integration.fuuid.FactionsIntegration;
@@ -121,11 +122,16 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
 
     @Override
     protected void configureIntegrations(final Multibinder<Integration> integrations, final Multibinder<Integration.ConfigMeta> configs) {
+        super.configureIntegrations(integrations, configs);
+
         integrations.addBinding().to(TownyIntegration.class);
         configs.addBinding().toInstance(TownyIntegration.configMeta());
 
         integrations.addBinding().to(McmmoIntegration.class);
         configs.addBinding().toInstance(McmmoIntegration.configMeta());
+
+        integrations.addBinding().to(AlessiodpPartiesIntegration.class);
+        configs.addBinding().toInstance(AlessiodpPartiesIntegration.configMeta());
 
         integrations.addBinding().to(FactionsIntegration.class);
         configs.addBinding().toInstance(FactionsIntegration.configMeta());

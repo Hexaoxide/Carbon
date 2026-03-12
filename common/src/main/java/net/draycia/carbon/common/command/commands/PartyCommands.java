@@ -184,7 +184,7 @@ public final class PartyCommands extends CarbonCommand {
             return;
         }
         final String name = ctx.getOrDefault("name", player.username() + "'s party");
-        final Component component = TagPermissions.parseTags(TagPermissions.PARTY_NAME, name, player::hasPermission);
+        final Component component = TagPermissions.parseTags(player, TagPermissions.PARTY_NAME, name, player::hasPermission);
         final Party party;
         try {
             party = this.userManager.createParty(component);

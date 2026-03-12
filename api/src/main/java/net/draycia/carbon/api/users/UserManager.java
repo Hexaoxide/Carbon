@@ -51,6 +51,7 @@ public interface UserManager<C extends CarbonPlayer> {
      * Create a new {@link Party} with the specified name.
      *
      * <p>Parties with no users will not be saved. Use {@link Party#disband()} to discard.</p>
+     *
      * <p>The returned reference will expire after one minute, store {@link Party#id()} rather than the instance and use {@link #party(UUID)} to retrieve.</p>
      *
      * @param name party name
@@ -63,6 +64,7 @@ public interface UserManager<C extends CarbonPlayer> {
      * Look up an existing party by its id.
      *
      * <p>As parties that have never had a user are not saved, they are not retrievable here.</p>
+     *
      * <p>The returned reference will expire after one minute, do not cache it. The implementation handles caching as is appropriate.</p>
      *
      * @param id party id

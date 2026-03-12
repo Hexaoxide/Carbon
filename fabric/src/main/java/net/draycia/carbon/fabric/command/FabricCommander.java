@@ -45,7 +45,7 @@ public interface FabricCommander extends Commander, ForwardingAudience.Single {
 
         @Override
         public boolean hasPermission(final String permission) {
-            return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().getOperatorUserPermissionLevel());
+            return Permissions.check(this.commandSourceStack, permission, this.commandSourceStack.getServer().operatorUserPermissions().level());
         }
 
     }

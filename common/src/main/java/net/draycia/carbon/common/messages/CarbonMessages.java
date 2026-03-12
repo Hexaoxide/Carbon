@@ -86,6 +86,9 @@ public interface CarbonMessages {
     @Message("mute.info.not_muted")
     void muteInfoNotMuted(final Audience audience, final Component target);
 
+    @Message("mute.info.muted.duration")
+    void muteInfoMutedDuration(final Audience audience, final Component target, final Component duration);
+
     @Message("mute.info.muted")
     void muteInfoMuted(final Audience audience, final Component target, final boolean muted);
 
@@ -262,6 +265,12 @@ public interface CarbonMessages {
 
     @Message("nickname.reset.others")
     void nicknameResetOthers(final Audience audience, final String target);
+
+    @Message("nickname.realname")
+    void realName(final Audience audience, final Component target, final String username);
+
+    @Message("nickname.realname.target_invalid")
+    void realNameTargetInvalid(final Audience audience, final String input);
 
     /*
      * =============================================================
@@ -498,6 +507,12 @@ public interface CarbonMessages {
     @Message("command.whisper.description")
     Component commandWhisperDescription();
 
+    @Message("command.realname.description")
+    Component commandRealNameDescription();
+
+    @Message("command.realname.argument.player")
+    Component commandRealNameArgumentPlayer();
+
     @Message("command.updateusername.description")
     Component commandUpdateUsernameDescription();
 
@@ -642,6 +657,9 @@ public interface CarbonMessages {
 
     @Message("integrations.mcmmo.cannot_use_party_channel")
     Component cannotUseMcmmoPartyChannel(Audience audience);
+
+    @Message("integrations.adp_parties.cannot_use_party_channel")
+    Component cannotUseADPPartiesPartyChannel(Audience audience);
 
     @Message("integrations.fuuid.cannot_use_faction_channel")
     Component cannotUseFactionChannel(Audience audience);

@@ -19,7 +19,7 @@
  */
 package net.draycia.carbon.common.event;
 
-import com.seiama.event.EventSubscription;
+import com.sasorio.event.EventSubscription;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventSubscriber;
 import net.draycia.carbon.api.event.CarbonEventSubscription;

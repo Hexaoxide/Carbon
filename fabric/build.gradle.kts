@@ -42,7 +42,6 @@ dependencies {
   include(libs.fabricPermissionsApi)
 
   modImplementation(libs.adventurePlatformFabric)
-  include(libs.adventurePlatformFabric)
 
   modImplementation(libs.miniplaceholders)
 
@@ -74,7 +73,7 @@ fabricModJson {
   depends("fabric-api", "*")
   depends("cloud", "*")
   depends("adventure-platform-fabric", "*")
-  depends("minecraft", libs.versions.minecraft.get())
+  depends("minecraft", ">=${libs.versions.minecraft.get()}")
   depends("luckperms", ">=5.0.0")
   suggests("miniplaceholders", "*")
 }
@@ -115,4 +114,6 @@ tasks {
 publishMods.modrinth {
   minecraftVersions.set(listOf(libs.versions.minecraft.get()))
   modLoaders.addAll("fabric")
+  requires("fabric-api")
+  requires("adventure-platform-mod")
 }

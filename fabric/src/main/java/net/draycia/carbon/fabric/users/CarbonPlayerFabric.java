@@ -38,6 +38,7 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -157,13 +158,24 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
             return null;
         }
 
-        return MinecraftServerAudiences.of(player.getServer()).asAdventure(item.getDisplayName());
+        final int amount = Math.min(item.getCount(), 99);
+        final Component quantity = amount <= 1 ? Component.empty() : Component.text(" x" + amount);
+        final Component interim = MinecraftServerAudiences.of(player.level().getServer()).asAdventure(item.getDisplayName());
+
+        return Component.empty().append(
+                Component.text("["),
+                interim,
+                quantity,
+                Component.text("]")
+            )
+            .hoverEvent(item)
+            .colorIfAbsent(TextColor.color(item.getRarity().color().getColor()));
     }
 
     @Override
     public boolean hasPermission(final String permission) {
         return this.player()
-            .map(player -> Permissions.check(player, permission, player.getServer().getOperatorUserPermissionLevel()))
+            .map(player -> Permissions.check(player, permission, player.level().getServer().operatorUserPermissions().level()))
             .orElse(false);
     }
 
