@@ -81,7 +81,7 @@ public class PingHandler implements Listener {
         }
 
         return message.replaceText(TextReplacementConfig.builder()
-            // \\B(@Username|@Displayname)\\b
+            // pingPattern: either \b(username|displayName)\b (no prefix) or \B<prefix>(username|displayName)\b (with configurable prefix)
             .match(Pattern.compile(pingPattern, Pattern.CASE_INSENSITIVE))
             .replacement(matchedText -> {
                 if (this.configManager.primaryConfig().pings().playSound() && recipient.hasPermission("carbon.ping_sounds")) {
