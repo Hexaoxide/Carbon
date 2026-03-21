@@ -104,9 +104,14 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         }
 
         final Key channelKey = this.quickPrefixChannels.remove(event.getPlayer().getUniqueId());
-        final ChatChannel channel = channelKey != null
-            ? this.carbonChat.channelRegistry().channelOrDefault(channelKey)
-            : this.carbonChat.channelRegistry().defaultChannel();
+        final ChatChannel channel;
+        if (channelKey != null) {
+            channel = this.carbonChat.channelRegistry().channelOrDefault(channelKey);
+        } else if (sender != null) {
+            channel = sender.channelForMessage(event.originalMessage()).channel();
+        } else {
+            channel = this.carbonChat.channelRegistry().defaultChannel();
+        }
         final Component decoratedMessage = event.message();
         final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, decoratedMessage, event.signedMessage(), channel);
 
