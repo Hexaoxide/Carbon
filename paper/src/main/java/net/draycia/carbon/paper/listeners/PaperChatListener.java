@@ -42,6 +42,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -53,6 +54,13 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     final ConfigManager configManager;
     private final Map<UUID, Key> quickPrefixChannels = new ConcurrentHashMap<>();
     private final Map<UUID, Boolean> usedQuickPrefix = new ConcurrentHashMap<>();
+    // Stores the resolved CarbonPlayer sender from onPaperChatDecorate so that
+    // onPaperChat can reuse it without any additional user-manager lookup.  This
+    // prevents a second (potentially blocking or null-returning) cache access
+    // between the onPaperChatDecorate (LOWEST) and onPaperChat (HIGHEST) events,
+    // which is one of the root causes of the
+    // "Checksum mismatch on last seen update" Paper disconnect.
+    private final Map<UUID, CarbonPlayer> pendingSenders = new ConcurrentHashMap<>();
 
     @Inject
     public PaperChatListener(
@@ -73,11 +81,21 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         }
 
         final UUID playerId = event.player().getUniqueId();
-        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(playerId).join();
+
+        // Use getNow(null) instead of join() to avoid blocking the async chat thread.
+        // Blocking here delays message serialization, which desynchronizes Paper's
+        // signed-message acknowledgement tracking and causes
+        // "Checksum mismatch on last seen update" disconnects.
+        // The user is pre-warmed by PaperPlayerJoinListener, so it is virtually
+        // always present for online players.  If it is not ready yet (first-ever
+        // message after a very quick login), we skip Carbon's early decoration for
+        // this single message; onPaperChat at HIGHEST will still handle it or
+        // cancel cleanly.
+        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(playerId).getNow(null);
         if (sender == null) {
-            event.setCancelled(true);
             return;
         }
+
         final @Nullable CarbonEarlyChatEvent earlyChatEvent = this.prepareAndEmitPreChatEvent(sender, event.result());
 
         if (earlyChatEvent == null || earlyChatEvent.cancelled()) {
@@ -96,6 +114,9 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         this.quickPrefixChannels.put(playerId, channel.key());
         final boolean prefixUsed = channelMessage.message() != event.originalMessage();
         this.usedQuickPrefix.put(playerId, prefixUsed);
+
+        // Snapshot the resolved sender so onPaperChat can use it directly.
+        this.pendingSenders.put(playerId, sender);
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -106,11 +127,18 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPaperChat(final @NonNull AsyncChatEvent event) {
-        // The sender should already be cached from onPaperChatDecorate (LOWEST priority).
-        // Using getNow(null) avoids any blocking join() in this high-priority handler,
-        // which could otherwise delay message serialization and desync Paper's
-        // chat acknowledgement tracking ("Checksum mismatch on last seen update").
-        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.getPlayer().getUniqueId()).getNow(null);
+        final UUID playerId = event.getPlayer().getUniqueId();
+
+        // Prefer the sender that was already resolved (and validated) by
+        // onPaperChatDecorate at LOWEST priority.  This avoids any user-manager
+        // lookup in this hot path and guarantees we use a consistent player
+        // snapshot throughout the entire chat pipeline.
+        // Fall back to a non-blocking cache peek for the rare case where the
+        // decoration event was skipped (user not yet loaded at decorate time).
+        @Nullable CarbonPlayer sender = this.pendingSenders.remove(playerId);
+        if (sender == null) {
+            sender = this.carbonChat.userManager().user(playerId).getNow(null);
+        }
         if (sender == null) {
             event.setCancelled(true);
             return;
@@ -120,7 +148,6 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             return;
         }
 
-        final UUID playerId = event.getPlayer().getUniqueId();
         final Key channelKey = this.quickPrefixChannels.remove(playerId);
         final ChatChannel channel = channelKey != null
             ? this.carbonChat.channelRegistry().channelOrDefault(channelKey)
@@ -167,6 +194,22 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
 
             return rendered;
         });
+    }
+
+    /**
+     * Clean up per-player state when a player disconnects.
+     *
+     * <p>The three maps are populated in onPaperChatDecorate and consumed in
+     * onPaperChat.  If a player disconnects between those two events (edge case)
+     * or if a disconnect occurs before the chat pipeline completes, the entries
+     * must be removed to prevent memory leaks.</p>
+     */
+    @EventHandler
+    public void onPlayerQuit(final @NonNull PlayerQuitEvent event) {
+        final UUID playerId = event.getPlayer().getUniqueId();
+        this.pendingSenders.remove(playerId);
+        this.quickPrefixChannels.remove(playerId);
+        this.usedQuickPrefix.remove(playerId);
     }
 
 }
