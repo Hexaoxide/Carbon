@@ -26,16 +26,21 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.messaging.packets.DisbandPartyPacket;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public interface UserManagerInternal<C extends CarbonPlayer> extends UserManager<C> {
+
+    void playerJoined(UUID uuid);
 
     void shutdown();
 
     CompletableFuture<Void> saveIfNeeded(C player);
 
     CompletableFuture<Void> loggedOut(UUID uuid);
+
+    @Nullable C cachedUser(UUID uuid);
 
     void saveCompleteMessageReceived(UUID playerId);
 

@@ -75,6 +75,7 @@ public class PaperPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoinEarly(final PlayerJoinEvent event) {
+        this.userManager.playerJoined(event.getPlayer().getUniqueId());
         this.messaging.get().queuePacket(() -> this.packetFactory.addLocalPlayerPacket(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
     }
 

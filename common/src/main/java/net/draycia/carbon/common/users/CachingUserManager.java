@@ -26,8 +26,10 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -70,6 +72,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     private final CarbonServer server;
     private final ReentrantLock cacheLock;
     private final Map<UUID, CompletableFuture<CarbonPlayerCommon>> cache;
+    private final Set<UUID> onlinePlayers;
     private final AsyncCache<UUID, Party> partyCache;
     private final List<Runnable> queuedDisbands = new CopyOnWriteArrayList<>();
     private final Cache<UUID, Object> recentDisbands = Caffeine.newBuilder()
@@ -96,6 +99,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         this.server = server;
         this.cacheLock = new ReentrantLock();
         this.cache = new HashMap<>();
+        this.onlinePlayers = new HashSet<>();
     }
 
     protected abstract CarbonPlayerCommon loadOrCreate(UUID uuid);
@@ -122,9 +126,29 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     }
 
     @Override
+    public void playerJoined(final UUID uuid) {
+        this.cacheLock.lock();
+        try {
+            this.onlinePlayers.add(uuid);
+            final @Nullable CompletableFuture<CarbonPlayerCommon> future = this.cache.get(uuid);
+            if (future != null) {
+                final @Nullable CarbonPlayerCommon player = future.getNow(null);
+                if (player != null) {
+                    player.markTransientLoaded(false);
+                }
+            }
+        } finally {
+            this.cacheLock.unlock();
+        }
+    }
+
+    @Override
     public void saveCompleteMessageReceived(final UUID playerId) {
         this.cacheLock.lock();
         try {
+            if (this.onlinePlayers.contains(playerId)) {
+                return;
+            }
             final @Nullable CompletableFuture<CarbonPlayerCommon> future = this.cache.get(playerId);
             if (future == null) {
                 return;
@@ -161,6 +185,9 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 final CompletableFuture<CarbonPlayerCommon> future = CompletableFuture.supplyAsync(() -> {
                     final CarbonPlayerCommon player = this.loadOrCreate(uuid);
                     this.injector.injectMembers(player);
+                    if (this.onlinePlayers.contains(uuid)) {
+                        player.markTransientLoaded(false);
+                    }
                     if (this instanceof DatabaseUserManager) {
                         player.registerPropertyUpdateListener(() ->
                             this.save(player).exceptionally(saveExceptionHandler(this.logger, player.username, uuid)));
@@ -170,6 +197,20 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
                 this.attachPostLoad(uuid, future);
                 return future;
             });
+        } finally {
+            this.cacheLock.unlock();
+        }
+    }
+
+    @Override
+    public @Nullable CarbonPlayerCommon cachedUser(final UUID uuid) {
+        this.cacheLock.lock();
+        try {
+            final @Nullable CompletableFuture<CarbonPlayerCommon> future = this.cache.get(uuid);
+            if (future == null) {
+                return null;
+            }
+            return future.getNow(null);
         } finally {
             this.cacheLock.unlock();
         }
@@ -202,6 +243,7 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         this.messagingManager.get().queuePacket(() -> this.packetFactory.removeLocalPlayerPacket(uuid));
         this.cacheLock.lock();
         try {
+            this.onlinePlayers.remove(uuid);
             final @Nullable CompletableFuture<CarbonPlayerCommon> remove = this.cache.remove(uuid);
             if (remove != null && remove.isDone()) { // don't need to save if it never finished loading
                 final @Nullable CarbonPlayerCommon join = remove.join();
@@ -220,6 +262,9 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
         this.cacheLock.lock();
         try {
             for (final Map.Entry<UUID, CompletableFuture<CarbonPlayerCommon>> entry : Map.copyOf(this.cache).entrySet()) {
+                if (this.onlinePlayers.contains(entry.getKey())) {
+                    continue;
+                }
                 final @Nullable CarbonPlayerCommon getNow = entry.getValue().getNow(null);
                 if (getNow == null || !getNow.transientLoadedNeedsUnload()) {
                     continue;
