@@ -106,7 +106,11 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPaperChat(final @NonNull AsyncChatEvent event) {
-        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.getPlayer().getUniqueId()).join();
+        // The sender should already be cached from onPaperChatDecorate (LOWEST priority).
+        // Using getNow(null) avoids any blocking join() in this high-priority handler,
+        // which could otherwise delay message serialization and desync Paper's
+        // chat acknowledgement tracking ("Checksum mismatch on last seen update").
+        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.getPlayer().getUniqueId()).getNow(null);
         if (sender == null) {
             event.setCancelled(true);
             return;

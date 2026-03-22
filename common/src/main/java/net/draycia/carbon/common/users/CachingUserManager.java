@@ -125,7 +125,21 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     public void saveCompleteMessageReceived(final UUID playerId) {
         this.cacheLock.lock();
         try {
-            this.cache.remove(playerId);
+            final @Nullable CompletableFuture<CarbonPlayerCommon> future = this.cache.get(playerId);
+            if (future == null) {
+                return;
+            }
+            final @Nullable CarbonPlayerCommon player = future.getNow(null);
+            // Only evict transient loads (offline players cached for lookup purposes).
+            // Online players must NOT be evicted: this server holds the authoritative copy of
+            // their data, and evicting them would cause a blocking DB reload on the next
+            // user() call, which can desync Paper's chat acknowledgement tracking and cause
+            // "Checksum mismatch on last seen update" disconnects.
+            // If the future hasn't completed yet (player == null), the online status cannot be
+            // determined, so we skip eviction to be safe.
+            if (player != null && player.isTransientLoaded()) {
+                this.cache.remove(playerId);
+            }
         } finally {
             this.cacheLock.unlock();
         }
