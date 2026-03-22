@@ -482,6 +482,10 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
         }
     }
 
+    public boolean isTransientLoaded() {
+        return this.transientLoadedSince != -1;
+    }
+
     public boolean transientLoadedNeedsUnload() {
         return this.transientLoadedSince != -1 && System.currentTimeMillis() - this.transientLoadedSince > KEEP_TRANSIENT_LOADS_FOR;
     }
