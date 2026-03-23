@@ -27,6 +27,8 @@ import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.config.ConfigManager;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -50,7 +52,13 @@ public class PingHandler implements Listener {
     public PingHandler(final CarbonEventHandler events, final ConfigManager configManager) {
         this.configManager = configManager;
         this.renderer = keyedRenderer(this.pingKey, (sender, recipient, message, originalMessage) -> {
-            if (!(recipient instanceof CarbonPlayer recipientPlayer)) {
+            // Unwrap any ForwardingAudience.Single layers (e.g. SnapshotAwareAudience used to
+            // carry a PlaceholderResolutionSnapshot) so we reach the underlying CarbonPlayer.
+            Audience unwrapped = recipient;
+            while (unwrapped instanceof ForwardingAudience.Single forwarding && !(unwrapped instanceof CarbonPlayer)) {
+                unwrapped = forwarding.audience();
+            }
+            if (!(unwrapped instanceof CarbonPlayer recipientPlayer)) {
                 return message;
             }
 
