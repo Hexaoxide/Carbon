@@ -24,8 +24,11 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.chat.PlaceholderResolutionSnapshot;
 import net.draycia.carbon.common.event.CancellableImpl;
+import net.draycia.carbon.common.messages.PlaceholderResolutionCarrier;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -48,6 +51,7 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
     private final @MonotonicNonNull ChatChannel chatChannel;
     private final @MonotonicNonNull SignedMessage signedMessage;
     public final boolean origin;
+    private final @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot;
     private Component message;
 
     public CarbonChatEventImpl(
@@ -58,7 +62,7 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
         final @Nullable ChatChannel chatChannel,
         final @Nullable SignedMessage signedMessage
     ) {
-        this(sender, originalMessage, recipients, renderers, chatChannel, signedMessage, true);
+        this(sender, originalMessage, recipients, renderers, chatChannel, signedMessage, null, true);
     }
 
     public CarbonChatEventImpl(
@@ -68,6 +72,19 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
         final List<KeyedRenderer> renderers,
         final @Nullable ChatChannel chatChannel,
         final @Nullable SignedMessage signedMessage,
+        final @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot
+    ) {
+        this(sender, originalMessage, recipients, renderers, chatChannel, signedMessage, placeholderResolutionSnapshot, true);
+    }
+
+    public CarbonChatEventImpl(
+        final CarbonPlayer sender,
+        final Component originalMessage,
+        final List<? extends Audience> recipients,
+        final List<KeyedRenderer> renderers,
+        final @Nullable ChatChannel chatChannel,
+        final @Nullable SignedMessage signedMessage,
+        final @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot,
         final boolean origin
     ) {
         this.sender = sender;
@@ -78,6 +95,7 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
         this.chatChannel = chatChannel;
         this.signedMessage = signedMessage;
         this.origin = origin;
+        this.placeholderResolutionSnapshot = placeholderResolutionSnapshot;
     }
 
     @Override
@@ -121,11 +139,18 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
     }
 
     public Component renderFor(final Audience viewer) {
+        final Audience renderViewer = this.placeholderResolutionSnapshot == null ? viewer : new SnapshotAwareAudience(viewer, this.placeholderResolutionSnapshot);
         Component renderedMessage = this.message();
         for (final var renderer : this.renderers()) {
-            renderedMessage = renderer.render(this.sender, viewer, renderedMessage, this.message());
+            renderedMessage = renderer.render(this.sender, renderViewer, renderedMessage, this.message());
         }
         return renderedMessage;
+    }
+
+    private record SnapshotAwareAudience(
+        Audience audience,
+        PlaceholderResolutionSnapshot placeholderResolutionSnapshot
+    ) implements ForwardingAudience.Single, PlaceholderResolutionCarrier {
     }
 
 }

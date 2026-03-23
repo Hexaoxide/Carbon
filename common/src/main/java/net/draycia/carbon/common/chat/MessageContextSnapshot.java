@@ -41,13 +41,15 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @param sender        the resolved sender, captured once at decoration time
  * @param channelKey    the chat channel key selected for this message
  * @param usedQuickPrefix whether a quick-prefix channel switch was used
+ * @param placeholderResolutionSnapshot sender/recipient placeholder substitutions captured for this message
  * @since 2.1.0
  */
 @DefaultQualifier(NonNull.class)
 public record MessageContextSnapshot(
     CarbonPlayer sender,
     Key channelKey,
-    boolean usedQuickPrefix
+    boolean usedQuickPrefix,
+    PlaceholderResolutionSnapshot placeholderResolutionSnapshot
 ) {
 
 }

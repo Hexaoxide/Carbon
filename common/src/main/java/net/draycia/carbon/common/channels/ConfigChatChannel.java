@@ -208,7 +208,11 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     public String messageFormat(final CarbonPlayer sender) {
-        return this.messageSource.messageOf(SourcedAudience.of(sender, sender), "");
+        return this.messageFormat(sender, sender);
+    }
+
+    public String messageFormat(final CarbonPlayer sender, final Audience recipient) {
+        return this.messageSource.messageOf(SourcedAudience.of(sender, recipient), "");
     }
 
     private ConfigChannelMessages loadMessages() {

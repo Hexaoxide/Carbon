@@ -30,6 +30,7 @@ import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.chat.MessageContextSnapshot;
+import net.draycia.carbon.common.chat.PlaceholderResolutionSnapshot;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
@@ -41,6 +42,7 @@ import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.draycia.carbon.paper.messages.PlaceholderResolutionSnapshotFactory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,6 +57,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     private final CarbonChat carbonChat;
     private final UserManagerInternal<?> userManager;
     final ConfigManager configManager;
+    private final PlaceholderResolutionSnapshotFactory placeholderResolutionSnapshotFactory;
     // Stores an immutable snapshot of all state captured at decoration time
     // (LOWEST priority).  Using a single map eliminates partial-state races
     // where one of the old three maps (pendingSenders / quickPrefixChannels /
@@ -71,12 +74,14 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final CarbonChat carbonChat,
         final UserManagerInternal<?> userManager,
         final CarbonMessages carbonMessages,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final PlaceholderResolutionSnapshotFactory placeholderResolutionSnapshotFactory
     ) {
         super(carbonChat.eventHandler(), carbonMessages, configManager);
         this.carbonChat = carbonChat;
         this.userManager = userManager;
         this.configManager = configManager;
+        this.placeholderResolutionSnapshotFactory = placeholderResolutionSnapshotFactory;
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -119,11 +124,19 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final ChatChannel channel = channelMessage.channel();
         final boolean prefixUsed = channelMessage.message() != event.originalMessage();
 
-        // Freeze sender reference, channel key, and quick-prefix flag into an
-        // immutable snapshot.  Any permission update, cache invalidation, or
+        final PlaceholderResolutionSnapshot placeholderResolutionSnapshot = this.placeholderResolutionSnapshotFactory.create(
+            sender,
+            channel,
+            channel.recipients(sender),
+            earlyChatEvent.message()
+        );
+
+        // Freeze sender reference, channel key, quick-prefix flag, and the
+        // PlaceholderAPI substitutions for this single message into an
+        // immutable snapshot. Any permission update, cache invalidation, or
         // network change that fires after this point cannot affect the values
         // used by the rendering phase (onPaperChat at HIGHEST priority).
-        this.pendingContexts.put(playerId, new MessageContextSnapshot(sender, channel.key(), prefixUsed));
+        this.pendingContexts.put(playerId, new MessageContextSnapshot(sender, channel.key(), prefixUsed, placeholderResolutionSnapshot));
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -143,10 +156,12 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final CarbonPlayer sender;
         final Key channelKey;
         final boolean prefixUsed;
+        final PlaceholderResolutionSnapshot placeholderResolutionSnapshot;
         if (snapshot != null) {
             sender = snapshot.sender();
             channelKey = snapshot.channelKey();
             prefixUsed = snapshot.usedQuickPrefix();
+            placeholderResolutionSnapshot = snapshot.placeholderResolutionSnapshot();
         } else {
             final @Nullable CarbonPlayer lookedUpSender = this.userManager.cachedUser(playerId);
             if (lookedUpSender == null) {
@@ -156,6 +171,9 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             sender = lookedUpSender;
             channelKey = this.carbonChat.channelRegistry().defaultChannel().key();
             prefixUsed = false;
+            placeholderResolutionSnapshot = PlaceholderResolutionSnapshot.empty(
+                net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(event.message())
+            );
         }
 
         if (event.viewers().isEmpty()) {
@@ -170,7 +188,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         }
         final SignedMessage renderSignedMessage = signedMessage;
         final Component messageForEvent = renderSignedMessage != null ? event.originalMessage() : decoratedMessage;
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, messageForEvent, renderSignedMessage, channel);
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, messageForEvent, renderSignedMessage, channel, placeholderResolutionSnapshot);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             event.setCancelled(true);
