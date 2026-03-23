@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -38,10 +38,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class CarbonServerPaper implements CarbonServer, ForwardingAudience.Single {
 
     private final Server server;
-    private final UserManager<?> userManager;
+    private final UserManagerInternal<?> userManager;
 
     @Inject
-    private CarbonServerPaper(final Server server, final UserManager<?> userManager) {
+    private CarbonServerPaper(final Server server, final UserManagerInternal<?> userManager) {
         this.server = server;
         this.userManager = userManager;
     }
@@ -59,7 +59,7 @@ public final class CarbonServerPaper implements CarbonServer, ForwardingAudience
     @Override
     public List<? extends CarbonPlayer> players() {
         return this.server.getOnlinePlayers().stream()
-            .map(bukkit -> this.userManager.user(bukkit.getUniqueId()).getNow(null))
+            .map(bukkit -> this.userManager.cachedUser(bukkit.getUniqueId()))
             .filter(Objects::nonNull)
             .toList();
     }

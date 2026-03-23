@@ -54,12 +54,29 @@ public final class PlatformUserManager implements UserManagerInternal<WrappedCar
     }
 
     @Override
+    public void playerJoined(final UUID uuid) {
+        this.backingManager.playerJoined(uuid);
+    }
+
+    @Override
     public CompletableFuture<WrappedCarbonPlayer> user(final UUID uuid) {
         return this.backingManager.user(uuid).thenApply(common -> {
             final WrappedCarbonPlayer wrapped = this.playerFactory.wrap(common);
             common.markTransientLoaded(!wrapped.online());
             return wrapped;
         });
+    }
+
+    @Override
+    public @Nullable WrappedCarbonPlayer cachedUser(final UUID uuid) {
+        final @Nullable CarbonPlayerCommon common = this.backingManager.cachedUser(uuid);
+        if (common == null) {
+            return null;
+        }
+
+        final WrappedCarbonPlayer wrapped = this.playerFactory.wrap(common);
+        common.markTransientLoaded(!wrapped.online());
+        return wrapped;
     }
 
     @Override

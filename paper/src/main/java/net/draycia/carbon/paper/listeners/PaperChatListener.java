@@ -34,9 +34,9 @@ import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
@@ -51,6 +51,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class PaperChatListener extends ChatListenerInternal implements Listener {
 
     private final CarbonChat carbonChat;
+    private final UserManagerInternal<?> userManager;
     final ConfigManager configManager;
     private final Map<UUID, Key> quickPrefixChannels = new ConcurrentHashMap<>();
     private final Map<UUID, Boolean> usedQuickPrefix = new ConcurrentHashMap<>();
@@ -65,11 +66,13 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     @Inject
     public PaperChatListener(
         final CarbonChat carbonChat,
+        final UserManagerInternal<?> userManager,
         final CarbonMessages carbonMessages,
         final ConfigManager configManager
     ) {
         super(carbonChat.eventHandler(), carbonMessages, configManager);
         this.carbonChat = carbonChat;
+        this.userManager = userManager;
         this.configManager = configManager;
     }
 
@@ -91,7 +94,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         // message after a very quick login), we skip Carbon's early decoration for
         // this single message; onPaperChat at HIGHEST will still handle it or
         // cancel cleanly.
-        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(playerId).getNow(null);
+        final @Nullable CarbonPlayer sender = this.userManager.cachedUser(playerId);
         if (sender == null) {
             return;
         }
@@ -137,7 +140,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         // decoration event was skipped (user not yet loaded at decorate time).
         @Nullable CarbonPlayer sender = this.pendingSenders.remove(playerId);
         if (sender == null) {
-            sender = this.carbonChat.userManager().user(playerId).getNow(null);
+            sender = this.userManager.cachedUser(playerId);
         }
         if (sender == null) {
             event.setCancelled(true);
@@ -177,17 +180,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final boolean hasSignedMessage = renderSignedMessage != null;
 
         event.renderer(($, $$, $$$, recipient) -> {
-            final var recipientUUID = recipient.get(Identity.UUID);
-            final Audience recipientViewer;
-
-            if (recipientUUID.isPresent()) {
-                final Audience cached = this.carbonChat.userManager().user(recipientUUID.get()).getNow(null);
-                recipientViewer = cached != null ? cached : recipient;
-            } else {
-                recipientViewer = recipient;
-            }
-
-            final Component rendered = chatEvent.renderFor(recipientViewer);
+            final Component rendered = chatEvent.renderFor(recipient);
             if (hasSignedMessage) {
                 return rendered;
             }
