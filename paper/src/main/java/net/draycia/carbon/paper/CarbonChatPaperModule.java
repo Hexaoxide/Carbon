@@ -50,6 +50,7 @@ import net.draycia.carbon.paper.integration.plotsquared.PlotSquaredIntegration;
 import net.draycia.carbon.paper.integration.towny.TownyIntegration;
 import net.draycia.carbon.paper.listeners.PaperChatListener;
 import net.draycia.carbon.paper.listeners.PaperPlayerJoinListener;
+import net.draycia.carbon.paper.listeners.PlaceholderCacheLuckPermsListener;
 import net.draycia.carbon.paper.messages.PaperMessageRenderer;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
 import net.draycia.carbon.paper.users.PaperProfileResolver;
@@ -150,6 +151,7 @@ public final class CarbonChatPaperModule extends CarbonPlatformModule {
         final Multibinder<Listener> listeners = Multibinder.newSetBinder(this.binder(), Listener.class);
         listeners.addBinding().to(PaperChatListener.class);
         listeners.addBinding().to(PaperPlayerJoinListener.class);
+        listeners.addBinding().to(PlaceholderCacheLuckPermsListener.class);
     }
 
 }

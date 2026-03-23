@@ -27,6 +27,7 @@ import net.draycia.carbon.common.messaging.MessagingManager;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.paper.messages.PlaceholderValueCache;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,6 +51,7 @@ public class PaperPlayerJoinListener implements Listener {
     private final UserManagerInternal<?> userManager;
     private final Provider<MessagingManager> messaging;
     private final PacketFactory packetFactory;
+    private final PlaceholderValueCache placeholderValueCache;
 
     @Inject
     public PaperPlayerJoinListener(
@@ -58,7 +60,8 @@ public class PaperPlayerJoinListener implements Listener {
         final ProfileCache profileCache,
         final UserManagerInternal<?> userManager,
         final Provider<MessagingManager> messaging,
-        final PacketFactory packetFactory
+        final PacketFactory packetFactory,
+        final PlaceholderValueCache placeholderValueCache
     ) {
         this.configManager = configManager;
         this.logger = logger;
@@ -66,6 +69,7 @@ public class PaperPlayerJoinListener implements Listener {
         this.userManager = userManager;
         this.messaging = messaging;
         this.packetFactory = packetFactory;
+        this.placeholderValueCache = placeholderValueCache;
     }
 
     @EventHandler
@@ -76,6 +80,7 @@ public class PaperPlayerJoinListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoinEarly(final PlayerJoinEvent event) {
         this.userManager.playerJoined(event.getPlayer().getUniqueId());
+        this.placeholderValueCache.warm(event.getPlayer().getUniqueId());
         this.messaging.get().queuePacket(() -> this.packetFactory.addLocalPlayerPacket(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
     }
 
@@ -94,6 +99,7 @@ public class PaperPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(final PlayerQuitEvent event) {
+        this.placeholderValueCache.remove(event.getPlayer().getUniqueId());
         this.userManager.loggedOut(event.getPlayer().getUniqueId())
             .exceptionally(saveExceptionHandler(this.logger, event.getPlayer().getName(), event.getPlayer().getUniqueId()));
     }

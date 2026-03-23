@@ -45,6 +45,13 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public final class PlaceholderResolutionSnapshotFactory {
 
+    private final PlaceholderValueCache placeholderValueCache;
+
+    @com.google.inject.Inject
+    private PlaceholderResolutionSnapshotFactory(final PlaceholderValueCache placeholderValueCache) {
+        this.placeholderValueCache = placeholderValueCache;
+    }
+
     public PlaceholderResolutionSnapshot create(
         final CarbonPlayer sender,
         final ChatChannel channel,
@@ -71,7 +78,7 @@ public final class PlaceholderResolutionSnapshotFactory {
 
         final Map<String, String> senderFormatPlaceholders = new LinkedHashMap<>();
         for (final String token : formatTokens) {
-            senderFormatPlaceholders.put(token, PlaceholderAPI.setPlaceholders(senderBukkitPlayer, token));
+            senderFormatPlaceholders.put(token, this.placeholderValueCache.placeholder(senderBukkitPlayer, token));
         }
 
         final Map<UUID, Map<String, String>> recipientRelationalPlaceholders = new HashMap<>();
