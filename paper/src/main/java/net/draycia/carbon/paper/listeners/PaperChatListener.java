@@ -29,14 +29,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
+import net.draycia.carbon.common.chat.MessageContextSnapshot;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.UserManagerInternal;
-import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.chat.SignedMessage;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
@@ -53,15 +55,16 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     private final CarbonChat carbonChat;
     private final UserManagerInternal<?> userManager;
     final ConfigManager configManager;
-    private final Map<UUID, Key> quickPrefixChannels = new ConcurrentHashMap<>();
-    private final Map<UUID, Boolean> usedQuickPrefix = new ConcurrentHashMap<>();
-    // Stores the resolved CarbonPlayer sender from onPaperChatDecorate so that
-    // onPaperChat can reuse it without any additional user-manager lookup.  This
-    // prevents a second (potentially blocking or null-returning) cache access
-    // between the onPaperChatDecorate (LOWEST) and onPaperChat (HIGHEST) events,
-    // which is one of the root causes of the
+    // Stores an immutable snapshot of all state captured at decoration time
+    // (LOWEST priority).  Using a single map eliminates partial-state races
+    // where one of the old three maps (pendingSenders / quickPrefixChannels /
+    // usedQuickPrefix) could be present while another was missing, and ensures
+    // the rendering phase (HIGHEST priority) always sees a consistent,
+    // atomic view of the sender, channel, and quick-prefix flag regardless of
+    // any permission updates, cache invalidations, or network changes that
+    // occur between the two events.  This is the primary fix for the
     // "Checksum mismatch on last seen update" Paper disconnect.
-    private final Map<UUID, CarbonPlayer> pendingSenders = new ConcurrentHashMap<>();
+    private final Map<UUID, MessageContextSnapshot> pendingContexts = new ConcurrentHashMap<>();
 
     @Inject
     public PaperChatListener(
@@ -114,12 +117,13 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
 
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(event.originalMessage());
         final ChatChannel channel = channelMessage.channel();
-        this.quickPrefixChannels.put(playerId, channel.key());
         final boolean prefixUsed = channelMessage.message() != event.originalMessage();
-        this.usedQuickPrefix.put(playerId, prefixUsed);
 
-        // Snapshot the resolved sender so onPaperChat can use it directly.
-        this.pendingSenders.put(playerId, sender);
+        // Freeze sender reference, channel key, and quick-prefix flag into an
+        // immutable snapshot.  Any permission update, cache invalidation, or
+        // network change that fires after this point cannot affect the values
+        // used by the rendering phase (onPaperChat at HIGHEST priority).
+        this.pendingContexts.put(playerId, new MessageContextSnapshot(sender, channel.key(), prefixUsed));
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -132,30 +136,33 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     public void onPaperChat(final @NonNull AsyncChatEvent event) {
         final UUID playerId = event.getPlayer().getUniqueId();
 
-        // Prefer the sender that was already resolved (and validated) by
-        // onPaperChatDecorate at LOWEST priority.  This avoids any user-manager
-        // lookup in this hot path and guarantees we use a consistent player
-        // snapshot throughout the entire chat pipeline.
-        // Fall back to a non-blocking cache peek for the rare case where the
-        // decoration event was skipped (user not yet loaded at decorate time).
-        @Nullable CarbonPlayer sender = this.pendingSenders.remove(playerId);
-        if (sender == null) {
-            sender = this.userManager.cachedUser(playerId);
-        }
-        if (sender == null) {
-            event.setCancelled(true);
-            return;
+        // Retrieve the immutable snapshot captured at decoration time (LOWEST).
+        // Falling back to a live cache peek is kept for the rare case where
+        // decoration was skipped (user not yet loaded at decorate time).
+        final @Nullable MessageContextSnapshot snapshot = this.pendingContexts.remove(playerId);
+        final CarbonPlayer sender;
+        final Key channelKey;
+        final boolean prefixUsed;
+        if (snapshot != null) {
+            sender = snapshot.sender();
+            channelKey = snapshot.channelKey();
+            prefixUsed = snapshot.usedQuickPrefix();
+        } else {
+            final @Nullable CarbonPlayer lookedUpSender = this.userManager.cachedUser(playerId);
+            if (lookedUpSender == null) {
+                event.setCancelled(true);
+                return;
+            }
+            sender = lookedUpSender;
+            channelKey = this.carbonChat.channelRegistry().defaultChannel().key();
+            prefixUsed = false;
         }
 
         if (event.viewers().isEmpty()) {
             return;
         }
 
-        final Key channelKey = this.quickPrefixChannels.remove(playerId);
-        final ChatChannel channel = channelKey != null
-            ? this.carbonChat.channelRegistry().channelOrDefault(channelKey)
-            : this.carbonChat.channelRegistry().defaultChannel();
-        final boolean prefixUsed = Boolean.TRUE.equals(this.usedQuickPrefix.remove(playerId));
+        final ChatChannel channel = this.carbonChat.channelRegistry().channelOrDefault(channelKey);
         SignedMessage signedMessage = event.signedMessage();
         final Component decoratedMessage = event.message();
         if (prefixUsed) {
@@ -180,7 +187,12 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final boolean hasSignedMessage = renderSignedMessage != null;
 
         event.renderer(($, $$, $$$, recipient) -> {
-            final Component rendered = chatEvent.renderFor(recipient);
+            final Audience recipientViewer = recipient.get(Identity.UUID)
+                .map(this.userManager::cachedUser)
+                .map(Audience.class::cast)
+                .orElse(recipient);
+
+            final Component rendered = chatEvent.renderFor(recipientViewer);
             if (hasSignedMessage) {
                 return rendered;
             }
@@ -192,17 +204,14 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     /**
      * Clean up per-player state when a player disconnects.
      *
-     * <p>The three maps are populated in onPaperChatDecorate and consumed in
+     * <p>The snapshot map is populated in onPaperChatDecorate and consumed in
      * onPaperChat.  If a player disconnects between those two events (edge case)
-     * or if a disconnect occurs before the chat pipeline completes, the entries
+     * or if a disconnect occurs before the chat pipeline completes, the entry
      * must be removed to prevent memory leaks.</p>
      */
     @EventHandler
     public void onPlayerQuit(final @NonNull PlayerQuitEvent event) {
-        final UUID playerId = event.getPlayer().getUniqueId();
-        this.pendingSenders.remove(playerId);
-        this.quickPrefixChannels.remove(playerId);
-        this.usedQuickPrefix.remove(playerId);
+        this.pendingContexts.remove(event.getPlayer().getUniqueId());
     }
 
 }
