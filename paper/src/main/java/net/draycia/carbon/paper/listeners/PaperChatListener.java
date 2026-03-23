@@ -43,6 +43,8 @@ import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -194,7 +196,21 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
 
         try {
             event.viewers().clear();
-            event.viewers().addAll(chatEvent.recipients());
+            // Paper's signed-chat delivery path requires actual Bukkit Player instances in
+            // viewers() to route messages via ClientboundPlayerChatPacket, which is tracked
+            // by LastSeenMessages.  CarbonPlayerPaper is a ForwardingAudience.Single wrapping
+            // a Player — not itself instanceof Player — so we unwrap online CarbonPlayers to
+            // their underlying Bukkit Player before populating the set.  Non-player audiences
+            // (console, Discord bridges, etc.) are added as-is; they receive system chat and
+            // are not involved in LastSeenMessages acknowledgement tracking.
+            for (final Audience recipient : chatEvent.recipients()) {
+                if (recipient instanceof CarbonPlayer cp) {
+                    final @Nullable Player p = Bukkit.getPlayer(cp.uuid());
+                    event.viewers().add(p != null ? p : recipient);
+                } else {
+                    event.viewers().add(recipient);
+                }
+            }
         } catch (final UnsupportedOperationException exception) {
             exception.printStackTrace();
         }

@@ -27,6 +27,7 @@ import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.util.DiscordRecipient;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.moonshine.message.IMessageSource;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -76,18 +77,25 @@ public class ConfigChannelMessageSource implements IMessageSource<SourcedAudienc
     // TODO: Remove DiscordRecipient and use key instead (Couldn't figure out how to do it)
     @Override
     public String messageOf(final SourcedAudience sourcedAudience, final String ignored) {
-        if (sourcedAudience.recipient() instanceof CarbonPlayer && !(sourcedAudience.recipient() instanceof ConsoleCarbonPlayer)) {
-            return this.forPlayer(sourcedAudience);
-        } else if (sourcedAudience.recipient() instanceof DiscordRecipient) {
+        // Unwrap ForwardingAudience.Single layers (e.g. SnapshotAwareAudience carrying a
+        // PlaceholderResolutionSnapshot) to reach the underlying audience type for format selection.
+        Audience recipient = sourcedAudience.recipient();
+        while (recipient instanceof ForwardingAudience.Single fwd
+            && !(recipient instanceof CarbonPlayer)
+            && !(recipient instanceof DiscordRecipient)) {
+            recipient = fwd.audience();
+        }
+        if (recipient instanceof CarbonPlayer carbonRecipient && !(recipient instanceof ConsoleCarbonPlayer)) {
+            return this.forPlayer(sourcedAudience, carbonRecipient);
+        } else if (recipient instanceof DiscordRecipient) {
             return this.defaults.getOrDefault("discord", FALLBACK_FORMAT);
         } else {
             return this.defaults.getOrDefault("console", FALLBACK_FORMAT);
         }
     }
 
-    private String forPlayer(final SourcedAudience sourcedAudience) {
+    private String forPlayer(final SourcedAudience sourcedAudience, final CarbonPlayer recipient) {
         final var sender = (CarbonPlayer) sourcedAudience.sender();
-        final var recipient = (CarbonPlayer) sourcedAudience.recipient();
 
         if (recipient.locale() != null) {
             final var formats = this.locales.get(recipient.locale());

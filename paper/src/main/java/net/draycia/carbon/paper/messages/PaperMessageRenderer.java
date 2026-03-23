@@ -37,6 +37,7 @@ import net.draycia.carbon.common.messages.SourcedAudience;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -106,7 +107,13 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
 
         final @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot = sourced.placeholderResolutionSnapshot();
 
-        if (!(sourced.recipient() instanceof CarbonPlayer recipient && recipient.online())) {
+        // Unwrap any ForwardingAudience.Single layers (e.g. SnapshotAwareAudience) so that
+        // recipient-specific rendering paths (relational PAPI, per-recipient Bukkit player) are reached.
+        Audience recipientAudience = sourced.recipient();
+        while (recipientAudience instanceof ForwardingAudience.Single fwd && !(recipientAudience instanceof CarbonPlayer)) {
+            recipientAudience = fwd.audience();
+        }
+        if (!(recipientAudience instanceof CarbonPlayer recipient && recipient.online())) {
             return this.renderWithoutRecipient(
                 sourced,
                 senderBukkitPlayer,
