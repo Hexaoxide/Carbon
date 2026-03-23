@@ -44,6 +44,7 @@ import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.paper.hooks.CarbonPAPIPlaceholders;
 import net.draycia.carbon.paper.hooks.PAPIChatHook;
+import net.draycia.carbon.paper.listeners.PlaceholderCacheLuckPermsListener;
 import org.apache.logging.log4j.LogManager;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -102,6 +103,11 @@ public final class CarbonChatPaper extends CarbonChatInternal {
                 listener,
                 this.plugin
             );
+        }
+
+        final PlaceholderCacheLuckPermsListener placeholderCacheLuckPermsListener = this.injector().getInstance(PlaceholderCacheLuckPermsListener.class);
+        if (!placeholderCacheLuckPermsListener.register()) {
+            this.plugin.getServer().getScheduler().runTask(this.plugin, placeholderCacheLuckPermsListener::register);
         }
 
         this.registerPlaceholders();

@@ -19,7 +19,10 @@
  */
 package net.draycia.carbon.paper.messages;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.inject.Singleton;
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,10 +36,18 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @Singleton
 public final class PlaceholderValueCache {
 
-    private final Map<UUID, Map<String, String>> valuesByPlayer = new ConcurrentHashMap<>();
+    private static final Duration ENTRY_TTL = Duration.ofSeconds(30);
+
+    private final Map<UUID, Cache<String, String>> valuesByPlayer = new ConcurrentHashMap<>();
+
+    private static Cache<String, String> newPlayerCache() {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(ENTRY_TTL)
+            .build();
+    }
 
     public void warm(final UUID playerId) {
-        this.valuesByPlayer.computeIfAbsent(playerId, ignored -> new ConcurrentHashMap<>());
+        this.valuesByPlayer.computeIfAbsent(playerId, ignored -> newPlayerCache());
     }
 
     public void remove(final UUID playerId) {
@@ -44,15 +55,17 @@ public final class PlaceholderValueCache {
     }
 
     public void invalidate(final UUID playerId) {
-        final @Nullable Map<String, String> playerValues = this.valuesByPlayer.get(playerId);
-        if (playerValues != null) {
-            playerValues.clear();
+        final @Nullable Cache<String, String> playerCache = this.valuesByPlayer.get(playerId);
+        if (playerCache != null) {
+            playerCache.invalidateAll();
         }
     }
 
     public String placeholder(final Player player, final String token) {
-        final Map<String, String> playerValues = this.valuesByPlayer.computeIfAbsent(player.getUniqueId(), ignored -> new ConcurrentHashMap<>());
-        return playerValues.computeIfAbsent(token, ignored -> PlaceholderAPI.setPlaceholders(player, token));
+        final Cache<String, String> playerCache = this.valuesByPlayer.computeIfAbsent(
+            player.getUniqueId(), ignored -> newPlayerCache());
+        final @Nullable String value = playerCache.get(token, t -> PlaceholderAPI.setPlaceholders(player, t));
+        return value != null ? value : token;
     }
 
 }

@@ -37,12 +37,12 @@ import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.draycia.carbon.paper.messages.PlaceholderResolutionSnapshotFactory;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.draycia.carbon.paper.messages.PlaceholderResolutionSnapshotFactory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -127,8 +127,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final PlaceholderResolutionSnapshot placeholderResolutionSnapshot = this.placeholderResolutionSnapshotFactory.create(
             sender,
             channel,
-            channel.recipients(sender),
-            earlyChatEvent.message()
+            channel.recipients(sender)
         );
 
         // Freeze sender reference, channel key, quick-prefix flag, and the
@@ -171,9 +170,7 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             sender = lookedUpSender;
             channelKey = this.carbonChat.channelRegistry().defaultChannel().key();
             prefixUsed = false;
-            placeholderResolutionSnapshot = PlaceholderResolutionSnapshot.empty(
-                net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(event.message())
-            );
+            placeholderResolutionSnapshot = PlaceholderResolutionSnapshot.empty();
         }
 
         if (event.viewers().isEmpty()) {
@@ -202,20 +199,13 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             exception.printStackTrace();
         }
 
-        final boolean hasSignedMessage = renderSignedMessage != null;
-
         event.renderer(($, $$, $$$, recipient) -> {
             final Audience recipientViewer = recipient.get(Identity.UUID)
                 .map(this.userManager::cachedUser)
                 .map(Audience.class::cast)
                 .orElse(recipient);
 
-            final Component rendered = chatEvent.renderFor(recipientViewer);
-            if (hasSignedMessage) {
-                return rendered;
-            }
-
-            return rendered;
+            return chatEvent.renderFor(recipientViewer);
         });
     }
 

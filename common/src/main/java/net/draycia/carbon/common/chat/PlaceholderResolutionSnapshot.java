@@ -27,15 +27,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public record PlaceholderResolutionSnapshot(
-    String senderMessagePlaceholderOutput,
     Map<String, String> senderFormatPlaceholders,
     Map<UUID, Map<String, String>> recipientRelationalPlaceholders,
     Set<String> resolvedTokens,
     Set<String> relationalTokens
 ) {
 
-    public static PlaceholderResolutionSnapshot empty(final String senderMessagePlaceholderOutput) {
-        return new PlaceholderResolutionSnapshot(senderMessagePlaceholderOutput, Map.of(), Map.of(), Set.of(), Set.of());
+    public static PlaceholderResolutionSnapshot empty() {
+        return new PlaceholderResolutionSnapshot(Map.of(), Map.of(), Set.of(), Set.of());
     }
 
     public PlaceholderResolutionSnapshot {

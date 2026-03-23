@@ -21,9 +21,9 @@ package net.draycia.carbon.common.messages;
 
 import net.draycia.carbon.common.chat.PlaceholderResolutionSnapshot;
 import net.kyori.adventure.audience.Audience;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
@@ -45,7 +45,6 @@ public interface SourcedAudience extends ForwardingAudience.Single, PlaceholderR
      * @return recipient
      */
     Audience recipient();
-
 
     @Override
     default @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot() {

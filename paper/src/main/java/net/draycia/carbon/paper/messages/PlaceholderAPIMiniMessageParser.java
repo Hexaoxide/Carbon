@@ -63,7 +63,6 @@ public final class PlaceholderAPIMiniMessageParser {
         return false;
     }
 
-
     public static Set<String> collectPlaceholderTokens(final String input) {
         final Matcher matcher = PlaceholderAPI.getPlaceholderPattern().matcher(input);
         final Set<String> tokens = new LinkedHashSet<>();

@@ -55,16 +55,15 @@ public final class PlaceholderResolutionSnapshotFactory {
     public PlaceholderResolutionSnapshot create(
         final CarbonPlayer sender,
         final ChatChannel channel,
-        final Collection<? extends Audience> recipients,
-        final String senderMessagePlaceholderOutput
+        final Collection<? extends Audience> recipients
     ) {
         if (!CarbonChatPaper.papiLoaded() || !sender.online()) {
-            return PlaceholderResolutionSnapshot.empty(senderMessagePlaceholderOutput);
+            return PlaceholderResolutionSnapshot.empty();
         }
 
         final @Nullable Player senderBukkitPlayer = Bukkit.getPlayer(sender.uuid());
         if (senderBukkitPlayer == null || !(channel instanceof ConfigChatChannel configChannel)) {
-            return PlaceholderResolutionSnapshot.empty(senderMessagePlaceholderOutput);
+            return PlaceholderResolutionSnapshot.empty();
         }
 
         final Set<String> formatTokens = new LinkedHashSet<>();
@@ -73,7 +72,7 @@ public final class PlaceholderResolutionSnapshotFactory {
         }
 
         if (formatTokens.isEmpty()) {
-            return PlaceholderResolutionSnapshot.empty(senderMessagePlaceholderOutput);
+            return PlaceholderResolutionSnapshot.empty();
         }
 
         final Map<String, String> senderFormatPlaceholders = new LinkedHashMap<>();
@@ -111,7 +110,6 @@ public final class PlaceholderResolutionSnapshotFactory {
         }
 
         return new PlaceholderResolutionSnapshot(
-            senderMessagePlaceholderOutput,
             senderFormatPlaceholders,
             recipientRelationalPlaceholders,
             formatTokens,

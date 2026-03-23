@@ -20,21 +20,45 @@
 package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import net.draycia.carbon.paper.messages.PlaceholderValueCache;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
-import org.bukkit.event.Listener;
+import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public final class PlaceholderCacheLuckPermsListener implements Listener {
+@Singleton
+public final class PlaceholderCacheLuckPermsListener {
+
+    private final PlaceholderValueCache placeholderValueCache;
+    private volatile boolean registered;
 
     @Inject
     private PlaceholderCacheLuckPermsListener(final PlaceholderValueCache placeholderValueCache) {
-        LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
-            placeholderValueCache.invalidate(event.getUser().getUniqueId());
-        });
+        this.placeholderValueCache = placeholderValueCache;
+    }
+
+    public boolean register() {
+        if (this.registered) {
+            return true;
+        }
+
+        if (!Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+            return false;
+        }
+
+        try {
+            LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
+                this.placeholderValueCache.invalidate(event.getUser().getUniqueId());
+            });
+            this.registered = true;
+            return true;
+        } catch (final IllegalStateException ignored) {
+            // LuckPerms is enabled but not ready yet; skip hook for now.
+            return false;
+        }
     }
 
 }

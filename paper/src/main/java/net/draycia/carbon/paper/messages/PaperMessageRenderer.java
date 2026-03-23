@@ -136,14 +136,16 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
         if (placeholderResolutionSnapshot != null && this.hasPlaceholderAPI()) {
             final Map<String, String> placeholderValues = new LinkedHashMap<>(placeholderResolutionSnapshot.senderFormatPlaceholders());
             placeholderValues.putAll(placeholderResolutionSnapshot.relationalPlaceholdersFor(recipient.uuid()));
-            return this.placeholderApiProcessor.get().parseResolved(
-                recipientBukkitPlayer,
-                senderBukkitPlayer,
-                placeholderResolvedMessage,
-                placeholderValues,
-                tagResolver.build(),
-                miniplaceholdersConfig
-            );
+            if (!placeholderValues.isEmpty()) {
+                return this.placeholderApiProcessor.get().parseResolved(
+                    recipientBukkitPlayer,
+                    senderBukkitPlayer,
+                    placeholderResolvedMessage,
+                    placeholderValues,
+                    tagResolver.build(),
+                    miniplaceholdersConfig
+                );
+            }
         }
 
         if (this.hasPlaceholderAPI()) {
@@ -154,7 +156,6 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
         return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, recipientBukkitPlayer, senderBukkitPlayer), tagResolver.build());
     }
 
-
     private Component renderWithoutRecipient(
         final SourcedAudience sourced,
         final Player senderBukkitPlayer,
@@ -164,14 +165,16 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
         final @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot
     ) {
         if (placeholderResolutionSnapshot != null && this.hasPlaceholderAPI()) {
-            return this.placeholderApiProcessor.get().parseResolved(
-                sourced.recipient(),
-                senderBukkitPlayer,
-                placeholderResolvedMessage,
-                placeholderResolutionSnapshot.senderFormatPlaceholders(),
-                tagResolver.build(),
-                miniplaceholdersConfig
-            );
+            if (!placeholderResolutionSnapshot.senderFormatPlaceholders().isEmpty()) {
+                return this.placeholderApiProcessor.get().parseResolved(
+                    sourced.recipient(),
+                    senderBukkitPlayer,
+                    placeholderResolvedMessage,
+                    placeholderResolutionSnapshot.senderFormatPlaceholders(),
+                    tagResolver.build(),
+                    miniplaceholdersConfig
+                );
+            }
         }
 
         if (this.hasPlaceholderAPI()) {
