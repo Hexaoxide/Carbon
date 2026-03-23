@@ -36,7 +36,9 @@ import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.UserManagerInternal;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
@@ -185,7 +187,12 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         final boolean hasSignedMessage = renderSignedMessage != null;
 
         event.renderer(($, $$, $$$, recipient) -> {
-            final Component rendered = chatEvent.renderFor(recipient);
+            final Audience recipientViewer = recipient.get(Identity.UUID)
+                .map(this.userManager::cachedUser)
+                .map(Audience.class::cast)
+                .orElse(recipient);
+
+            final Component rendered = chatEvent.renderFor(recipientViewer);
             if (hasSignedMessage) {
                 return rendered;
             }
