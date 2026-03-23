@@ -19,7 +19,9 @@
  */
 package net.draycia.carbon.common.messages;
 
+import net.draycia.carbon.common.chat.PlaceholderResolutionSnapshot;
 import net.kyori.adventure.audience.Audience;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -28,7 +30,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * An audience, where messages are sent from another Audience.
  */
 @DefaultQualifier(NonNull.class)
-public interface SourcedAudience extends ForwardingAudience.Single {
+public interface SourcedAudience extends ForwardingAudience.Single, PlaceholderResolutionCarrier {
 
     /**
      * The source audience.
@@ -44,6 +46,12 @@ public interface SourcedAudience extends ForwardingAudience.Single {
      */
     Audience recipient();
 
+
+    @Override
+    default @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot() {
+        return null;
+    }
+
     @Override
     default Audience audience() {
         return this.recipient();
@@ -57,7 +65,18 @@ public interface SourcedAudience extends ForwardingAudience.Single {
      * @return sourced audience
      */
     static SourcedAudience of(final Audience sender, final Audience recipient) {
-        return new SourcedAudienceImpl(sender, recipient);
+        final @Nullable PlaceholderResolutionSnapshot snapshot = recipient instanceof PlaceholderResolutionCarrier carrier
+            ? carrier.placeholderResolutionSnapshot()
+            : null;
+        return of(sender, recipient, snapshot);
+    }
+
+    static SourcedAudience of(
+        final Audience sender,
+        final Audience recipient,
+        final @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot
+    ) {
+        return new SourcedAudienceImpl(sender, recipient, placeholderResolutionSnapshot);
     }
 
     /**

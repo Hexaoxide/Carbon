@@ -20,15 +20,13 @@
 package net.draycia.carbon.common.messages;
 
 import net.draycia.carbon.common.chat.PlaceholderResolutionSnapshot;
-import net.kyori.adventure.audience.Audience;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
-record SourcedAudienceImpl(
-    Audience sender,
-    Audience recipient,
-    @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot
-) implements SourcedAudience {
+@DefaultQualifier(NonNull.class)
+public interface PlaceholderResolutionCarrier {
 
-    static final SourcedAudience EMPTY = new SourcedAudienceImpl(Audience.empty(), Audience.empty(), null);
+    @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot();
 
 }

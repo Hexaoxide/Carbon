@@ -27,6 +27,7 @@ import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.KeyedRenderer;
+import net.draycia.carbon.common.chat.PlaceholderResolutionSnapshot;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
 import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
@@ -65,10 +66,20 @@ public abstract class ChatListenerInternal {
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(originalMessage);
         final ChatChannel channel = channelMessage.channel();
 
-        return this.prepareAndEmitChatEvent(sender, channelMessage.message(), signedMessage, channel);
+        return this.prepareAndEmitChatEvent(sender, channelMessage.message(), signedMessage, channel, null);
     }
 
     protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component message, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
+        return this.prepareAndEmitChatEvent(sender, message, signedMessage, channel, null);
+    }
+
+    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(
+        final CarbonPlayer sender,
+        final Component message,
+        final @Nullable SignedMessage signedMessage,
+        final ChatChannel channel,
+        final @Nullable PlaceholderResolutionSnapshot placeholderResolutionSnapshot
+    ) {
         if (!sender.hasPermission("carbon.cooldown.exempt") && channel.cooldown() > 0) {
             final long currentMillis = System.currentTimeMillis();
             final long expiresAt = channel.playerCooldown(sender);
@@ -93,7 +104,7 @@ public abstract class ChatListenerInternal {
 
         final List<Audience> recipients = channel.recipients(sender);
 
-        final var chatEvent = new CarbonChatEventImpl(sender, message, recipients, renderers, channel, signedMessage);
+        final var chatEvent = new CarbonChatEventImpl(sender, message, recipients, renderers, channel, signedMessage, placeholderResolutionSnapshot);
 
         this.carbonEventHandler.emit(chatEvent);
 

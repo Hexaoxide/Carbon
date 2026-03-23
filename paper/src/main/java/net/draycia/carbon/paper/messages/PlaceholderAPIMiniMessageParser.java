@@ -19,6 +19,9 @@
  */
 package net.draycia.carbon.paper.messages;
 
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +61,29 @@ public final class PlaceholderAPIMiniMessageParser {
             }
         }
         return false;
+    }
+
+
+    public static Set<String> collectPlaceholderTokens(final String input) {
+        final Matcher matcher = PlaceholderAPI.getPlaceholderPattern().matcher(input);
+        final Set<String> tokens = new LinkedHashSet<>();
+
+        while (matcher.find()) {
+            tokens.add(matcher.group());
+        }
+
+        return tokens;
+    }
+
+    public Component parseResolved(
+        final @Nullable Audience recipient,
+        final Audience sender,
+        final String input,
+        final Map<String, String> placeholderValues,
+        final TagResolver tagResolver,
+        final MiniPlaceholdersIntegration.@Nullable Config miniplaceholdersConfig
+    ) {
+        return this.parse(recipient, sender, PlaceholderAPI.getPlaceholderPattern(), match -> placeholderValues.getOrDefault(match, match), input, tagResolver, miniplaceholdersConfig);
     }
 
     public Component parse(final Player player, final String input, final TagResolver tagResolver, final MiniPlaceholdersIntegration.@Nullable Config miniplaceholdersConfig) {
