@@ -26,7 +26,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
-import net.draycia.carbon.api.users.UserManager;
+import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -38,12 +38,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class MiniPlaceholdersExpansion {
 
-    private final UserManager<?> userManager;
+    private final UserManagerInternal<?> userManager;
     private final ChannelRegistry channels;
 
     @Inject
     private MiniPlaceholdersExpansion(
-        final UserManager<?> userManager,
+        final UserManagerInternal<?> userManager,
         final ChannelRegistry channels
     ) {
         this.userManager = userManager;
@@ -89,28 +89,35 @@ public final class MiniPlaceholdersExpansion {
     }
 
     private Component partyName(final UUID id) {
-        final @Nullable Party party = this.userManager.user(id).thenCompose(CarbonPlayer::party).join();
+        final @Nullable CarbonPlayer player = this.userManager.cachedUser(id);
+        if (player == null) {
+            return Component.empty();
+        }
+        final @Nullable Party party = player.party().getNow(null);
         return party == null ? Component.empty() : party.name();
     }
 
     private Component displayName(final UUID id) {
-        final CarbonPlayer carbonPlayer = this.userManager.user(id).join();
-        return carbonPlayer.displayName();
+        final @Nullable CarbonPlayer player = this.userManager.cachedUser(id);
+        return player != null ? player.displayName() : Component.empty();
     }
 
     private Component nickname(final UUID id) {
-        final CarbonPlayer carbonPlayer = this.userManager.user(id).join();
-        final @Nullable Component nickname = carbonPlayer.nickname();
-        return nickname == null ? Component.text(carbonPlayer.username()) : nickname;
+        final @Nullable CarbonPlayer player = this.userManager.cachedUser(id);
+        if (player == null) {
+            return Component.empty();
+        }
+        final @Nullable Component nickname = player.nickname();
+        return nickname == null ? Component.text(player.username()) : nickname;
     }
 
     private String selectedChannelKey(final UUID id) {
-        final CarbonPlayer carbonPlayer = this.userManager.user(id).join();
-        final @Nullable ChatChannel selected = carbonPlayer.selectedChannel();
-        if (selected != null) {
-            return selected.key().asString();
+        final @Nullable CarbonPlayer player = this.userManager.cachedUser(id);
+        if (player == null) {
+            return this.channels.defaultKey().asString();
         }
-        return this.channels.defaultKey().asString();
+        final @Nullable ChatChannel selected = player.selectedChannel();
+        return selected != null ? selected.key().asString() : this.channels.defaultKey().asString();
     }
 
 }

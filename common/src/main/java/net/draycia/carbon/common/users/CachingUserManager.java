@@ -219,10 +219,10 @@ public abstract class CachingUserManager implements UserManagerInternal<CarbonPl
     @Override
     public void shutdown() {
         this.cacheLock.lock();
-        for (final Runnable task : this.queuedDisbands) {
-            task.run();
-        }
         try {
+            for (final Runnable task : this.queuedDisbands) {
+                task.run();
+            }
             final Map<UUID, CompletableFuture<Void>> collect = List.copyOf(this.cache.keySet()).stream()
                 .collect(Collectors.toMap(Function.identity(), this::loggedOut));
             for (final Map.Entry<UUID, CompletableFuture<Void>> entry : collect.entrySet()) {

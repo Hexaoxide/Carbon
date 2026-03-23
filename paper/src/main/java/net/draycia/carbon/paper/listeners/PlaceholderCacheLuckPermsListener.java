@@ -21,6 +21,7 @@ package net.draycia.carbon.paper.listeners;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.draycia.carbon.paper.messages.PlaceholderValueCache;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
@@ -33,7 +34,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public final class PlaceholderCacheLuckPermsListener {
 
     private final PlaceholderValueCache placeholderValueCache;
-    private volatile boolean registered;
+    private final AtomicBoolean registered = new AtomicBoolean(false);
 
     @Inject
     private PlaceholderCacheLuckPermsListener(final PlaceholderValueCache placeholderValueCache) {
@@ -41,7 +42,7 @@ public final class PlaceholderCacheLuckPermsListener {
     }
 
     public boolean register() {
-        if (this.registered) {
+        if (this.registered.get()) {
             return true;
         }
 
@@ -50,13 +51,18 @@ public final class PlaceholderCacheLuckPermsListener {
         }
 
         try {
+            // compareAndSet ensures only one thread ever subscribes, even if register() is
+            // called concurrently from the startup path and a retry scheduler.
+            if (!this.registered.compareAndSet(false, true)) {
+                return true;
+            }
             LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
                 this.placeholderValueCache.invalidate(event.getUser().getUniqueId());
             });
-            this.registered = true;
             return true;
         } catch (final IllegalStateException ignored) {
-            // LuckPerms is enabled but not ready yet; skip hook for now.
+            // LuckPerms is enabled but not ready yet; reset so we can retry.
+            this.registered.set(false);
             return false;
         }
     }
