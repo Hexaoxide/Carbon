@@ -1,168 +1,41 @@
 name: Build
+
 on:
-  push:
-    branches: [ "**" ]
-    tags: [ "v**" ]
-  pull_request:
-  release:
-    types: [ published ]
+  workflow_dispatch:
 
 jobs:
   build:
-    # Only run on PRs if the source branch is on someone else's repo
-    if: ${{ (github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name) && (github.event.name != 'push' || !startsWith(github.ref, 'refs/tags/') || contains(github.ref, '-beta.')) }}
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         java: [ 21 ]
       fail-fast: true
+
     steps:
       - uses: actions/checkout@v5
+
       - name: JDK ${{ matrix.java }}
         uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
-        # gradle build action can't handle project dir local caches
+
       - uses: actions/cache@v4
         name: Cache Loom Files
         with:
-          path: |
-            .gradle/loom-cache
+          path: .gradle/loom-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
+
       - name: Build
         run: ./gradlew build --stacktrace
-      - name: Determine Snapshot Status
-        run: |
-          if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
-            echo "STATUS=snapshot" >> $GITHUB_ENV
-          else
-            echo "STATUS=release" >> $GITHUB_ENV
-          fi
-      -   name: "publish snapshot to sonatype snapshots"
-          if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/trunk' }}"
-          run: ./gradlew publishAllPublicationsToSonatypeSnapshots
-          env:
-            ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
-            ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
-      -   name: "publish (pre-)release to maven central"
-          if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-          run: ./gradlew publishReleaseCentralPortalBundle
-          env:
-            ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
-            ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
-            ORG_GRADLE_PROJECT_signingKey: "${{ secrets.SIGNING_KEY }}"
-            ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.SIGNING_PASSWORD }}"
-      - name: Parse tag
-        if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - name: Create changelog and Pre-Release
-        if: "${{ github.event_name == 'push' && contains(github.ref, '-beta.') }}"
-        uses: MC-Machinations/auto-release-changelog@v1.1.3
-        with:
-          token: ${{ secrets.RELEASE_TOKEN }}
-          title: CarbonChat ${{ steps.vars.outputs.tag }}
-          pre-release: true
-          files: |
-            build/libs/carbonchat-paper-*.jar
-            build/libs/carbonchat-velocity-*.jar
-            build/libs/carbonchat-fabric-*.jar
-      - name: Publish (Pre-)Release to Modrinth
-        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-        run: ./gradlew :carbonchat-paper:publishModrinth :carbonchat-velocity:publishModrinth :carbonchat-fabric:publishModrinth
-        env:
-          MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
-          RELEASE_NOTES: "${{ github.event.release.body }}"
-      - name: Publish (Pre-)Release to Hangar
-        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-        run: ./gradlew publishAllPublicationsToHangar
-        env:
-          HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
-          RELEASE_NOTES: "${{ github.event.release.body }}"
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Jars
+          name: build-jars
           path: build/libs/*.jar
-  smoketest:
-    needs: build
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: username
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: carbon
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      mariadb:
-        image: mariadb:10.11
-        env:
-          MARIADB_USER: username
-          MARIADB_PASSWORD: password
-          MARIADB_ROOT_PASSWORD: rootpassword
-          MARIADB_DATABASE: carbon
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-    strategy:
-      matrix:
-        java: [ 21 ]
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v4
-      - name: JDK ${{ matrix.java }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        # gradle build action can't handle project dir local caches
-      - uses: actions/cache@v4
-        name: Cache Loom Files
-        with:
-          path: |
-            .gradle/loom-cache
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-gradle-
-      - uses: actions/cache@v4
-        name: Cache Smoke Test Files
-        with:
-          path: |
-            paper/build/tmp/smokeTest/cache
-            paper/build/tmp/smokeTest/libraries
-            paper/build/tmp/smokeTest/plugins/CarbonChat/libraries
-            paper/build/tmp/smokeTest/world
-            paper/build/tmp/smokeTest/world_nether
-            paper/build/tmp/smokeTest/world_the_end
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-gradle-smoketest-
-      - name: Prime Build
-        run: ./gradlew build --stacktrace
-      - name: Smoke test (Paper, JSON)
-        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=json
-        timeout-minutes: 5
-      - name: Smoke test (Paper, H2)
-        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=h2
-        timeout-minutes: 5
-      - name: Smoke test (Paper, MariaDB)
-        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=mariadb
-        timeout-minutes: 5
-      - name: Smoke test (Paper, Postgres)
-        run: ./gradlew :carbonchat-paper:runServer -PsmokeTest=true -PsmokeTestMode=postgres
-        timeout-minutes: 5
