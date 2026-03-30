@@ -124,8 +124,10 @@ public class ConfigChatChannel implements ChatChannel {
         Restrict this channel to specific world groups. Players only receive messages from
         others in the same group. Leave empty to allow all worlds.
         Example:
-          - ["world", "world_nether", "world_the_end"]
-          - ["hub"]""")
+        worlds:[
+            ["world", "world_nether", "world_the_end"],
+            ["hub"]
+        ]""")
     private @Nullable List<List<String>> worlds = Collections.emptyList();
 
     /**
