@@ -129,7 +129,7 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     @Override
     public @Nullable String worldName() {
         return this.player()
-            .map(p -> p.level().dimension().location().toString())
+            .map(p -> p.level().dimension().toString())
             .orElse(null);
     }
 
