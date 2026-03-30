@@ -127,6 +127,13 @@ public class CarbonPlayerFabric extends WrappedCarbonPlayer implements Forwardin
     }
 
     @Override
+    public @Nullable String worldName() {
+        return this.player()
+            .map(p -> p.level().dimension().location().toString())
+            .orElse(null);
+    }
+
+    @Override
     public @Nullable Component createItemHoverComponent(final InventorySlot slot) {
         final Optional<ServerPlayer> playerOptional = this.player();
         if (playerOptional.isEmpty()) {
