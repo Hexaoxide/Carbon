@@ -61,6 +61,14 @@ public interface CarbonPlayer extends Audience, Identified {
     boolean sameWorldAs(CarbonPlayer other);
 
     /**
+     * Returns the name of the world the player is currently in, or {@code null} if unavailable.
+     *
+     * @return the world name, or {@code null}
+     * @since 3.0.0
+     */
+    @Nullable String worldName();
+
+    /**
      * Gets the player's username.
      *
      * @return the player's username
