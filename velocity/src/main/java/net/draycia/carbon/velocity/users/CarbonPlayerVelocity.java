@@ -91,6 +91,14 @@ public final class CarbonPlayerVelocity extends WrappedCarbonPlayer implements F
     }
 
     @Override
+    public @Nullable String worldName() {
+        return this.player()
+            .flatMap(Player::getCurrentServer)
+            .map(connection -> connection.getServerInfo().getName())
+            .orElse(null);
+    }
+
+    @Override
     protected Optional<Component> platformDisplayName() {
         return this.player().flatMap(p -> p.get(Identity.DISPLAY_NAME));
     }
