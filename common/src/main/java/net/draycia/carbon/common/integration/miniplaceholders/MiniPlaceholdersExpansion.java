@@ -31,6 +31,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -62,11 +63,17 @@ public final class MiniPlaceholdersExpansion {
                 if (!hasId(audience)) {
                     return null;
                 }
+                if (queue.hasNext() && queue.pop().lowerValue().equals("plain")) {
+                    return Tag.selfClosingInserting(this.toPlain(this.nickname(id(audience))));
+                }
                 return Tag.selfClosingInserting(this.nickname(id(audience)));
             })
             .audiencePlaceholder("displayname", (audience, queue, ctx) -> {
                 if (!hasId(audience)) {
                     return null;
+                }
+                if (queue.hasNext() && queue.pop().lowerValue().equals("plain")) {
+                    return Tag.selfClosingInserting(this.toPlain(this.displayName(id(audience))));
                 }
                 return Tag.selfClosingInserting(this.displayName(id(audience)));
             })
@@ -111,6 +118,10 @@ public final class MiniPlaceholdersExpansion {
             return selected.key().asString();
         }
         return this.channels.defaultKey().asString();
+    }
+
+    private Component toPlain(final Component input) {
+        return Component.text(PlainTextComponentSerializer.plainText().serialize(input));
     }
 
 }

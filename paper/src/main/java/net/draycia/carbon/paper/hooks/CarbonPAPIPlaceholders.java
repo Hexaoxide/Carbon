@@ -32,6 +32,7 @@ import net.draycia.carbon.api.users.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -94,6 +95,8 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
                 return mm(entry.getValue().apply(player));
             } else if (params.endsWith(entry.getKey() + "_l")) {
                 return legacy(entry.getValue().apply(player));
+            } else if (params.endsWith(entry.getKey() + "_p")) {
+                return plain(entry.getValue().apply(player));
             }
         }
 
@@ -112,6 +115,10 @@ public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     private static String legacy(final Component in) {
         return LegacyComponentSerializer.legacySection().serialize(in);
+    }
+
+    private static String plain(final Component in) {
+        return PlainTextComponentSerializer.plainText().serialize(in);
     }
 
     private Component partyName(final OfflinePlayer player) {
