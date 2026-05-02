@@ -27,7 +27,7 @@ configurate = "4.2.0"
 checkerQual = "3.49.2"
 stylecheck = "0.2.1"
 bstats = "3.1.0"
-paperApi = "1.21.5-R0.1-SNAPSHOT"
+paperApi = "1.21.4-R0.1-SNAPSHOT"
 paperTrail = "1.0.1"
 foliaApi = "1.21.4-R0.1-SNAPSHOT"
 event = "1.0.0"
@@ -65,7 +65,7 @@ mcmmo = "2.2.043"
 adpParties = "3.2.9"
 fuuid = "1.6.9.5-U0.6.35"
 
-# synced with version used by lowest supported mc (currently 1.21.5 on paper)
+# synced with version used by lowest supported mc (currently 1.21.4 on paper)
 gson = "2.11.0"
 guava = "33.3.1-jre"
 log4j = "2.24.1"
