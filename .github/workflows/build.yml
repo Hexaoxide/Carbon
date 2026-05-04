@@ -17,16 +17,16 @@ jobs:
         java: [ 21 ]
       fail-fast: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: JDK ${{ matrix.java }}
         uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
         # gradle build action can't handle project dir local caches
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         name: Cache Loom Files
         with:
           path: |
@@ -84,7 +84,7 @@ jobs:
           HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Jars
           path: build/libs/*.jar
@@ -124,23 +124,23 @@ jobs:
         java: [ 21 ]
       fail-fast: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: JDK ${{ matrix.java }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
         # gradle build action can't handle project dir local caches
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         name: Cache Loom Files
         with:
           path: |
             .gradle/loom-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         name: Cache Smoke Test Files
         with:
           path: |
