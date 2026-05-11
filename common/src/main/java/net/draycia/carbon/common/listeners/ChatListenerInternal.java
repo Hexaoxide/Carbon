@@ -113,7 +113,7 @@ public abstract class ChatListenerInternal {
         final String plainContent = PlainTextComponentSerializer.plainText().serialize(channelMessage.message());
         final String content = this.configManager.primaryConfig().applyChatPlaceholders(plainContent);
 
-        final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
+        final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content, channel);
         this.carbonEventHandler.emit(earlyChatEvent);
 
         return earlyChatEvent;

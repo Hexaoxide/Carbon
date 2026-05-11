@@ -19,6 +19,7 @@
  */
 package net.draycia.carbon.common.event.events;
 
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.Cancellable;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
@@ -27,11 +28,13 @@ public class CarbonEarlyChatEvent implements CarbonEvent, Cancellable {
 
     private final CarbonPlayer sender;
     private String message;
+    private final ChatChannel channel;
     private boolean cancelled = false;
 
-    public CarbonEarlyChatEvent(final CarbonPlayer sender, final String message) {
+    public CarbonEarlyChatEvent(final CarbonPlayer sender, final String message, final ChatChannel channel) {
         this.sender = sender;
         this.message = message;
+        this.channel = channel;
     }
 
     public CarbonPlayer sender() {
@@ -44,6 +47,10 @@ public class CarbonEarlyChatEvent implements CarbonEvent, Cancellable {
 
     public void message(final String message) {
         this.message = message;
+    }
+
+    public ChatChannel channel() {
+        return this.channel;
     }
 
     @Override

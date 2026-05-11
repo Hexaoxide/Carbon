@@ -83,7 +83,7 @@ public class FabricChatHandler extends ChatListenerInternal implements ServerMes
         }
 
         final @Nullable Component message = this.parseTags(sender, earlyChatEvent.message());
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message, audiences.asAdventure(chatMessage));
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, message, audiences.asAdventure(chatMessage), earlyChatEvent.channel());
 
         if (chatEvent == null || chatEvent.cancelled()) {
             return false;

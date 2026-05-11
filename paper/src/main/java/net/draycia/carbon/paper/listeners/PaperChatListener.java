@@ -93,7 +93,13 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             return;
         }
 
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, event.message(), event.signedMessage());
+        // Resolve the channel from the player's raw typed text (signed message body),
+        // because event.originalMessage() in newer Paper reflects the decorator's result, not the original input.
+        final Component rawMessage = event.signedMessage() != null
+            ? Component.text(event.signedMessage().message())
+            : event.originalMessage();
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(rawMessage);
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, event.message(), event.signedMessage(), channelMessage.channel());
 
         if (chatEvent == null || chatEvent.cancelled()) {
             event.setCancelled(true);
