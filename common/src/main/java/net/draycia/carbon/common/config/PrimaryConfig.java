@@ -256,6 +256,9 @@ public class PrimaryConfig {
         @Comment("Whether Carbon's nickname management should be used. Disable this if you wish to have another plugin manage nicknames.")
         private boolean useCarbonNicknames = true;
 
+        @Comment("Paper only. Updates the player's display name to match their nickname.")
+        private boolean updateDisplayName = true;
+
         @Comment("Paper only. Updates the player's display name in the tab list to match their nickname.")
         private boolean updateTabList = true;
 
@@ -278,6 +281,10 @@ public class PrimaryConfig {
 
         public boolean useCarbonNicknames() {
             return this.useCarbonNicknames;
+        }
+
+        public boolean updateDisplayName() {
+            return this.updateDisplayName;
         }
 
         public boolean updateTabList() {
