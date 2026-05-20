@@ -78,34 +78,35 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     @Override
     public double distanceSquaredFrom(final CarbonPlayer other) {
-        if (this.player().isEmpty()) {
-            return -1;
-        }
-
-        final @Nullable Player player = this.player().orElse(null);
+        final @Nullable Player player = Bukkit.getPlayer(this.uuid());
         final @Nullable Player otherPlayer = Bukkit.getPlayer(other.uuid());
 
         if (player == null || otherPlayer == null) {
             return -1;
         }
 
-        return player.getLocation().distanceSquared(otherPlayer.getLocation());
+        try {
+            return player.getLocation().distanceSquared(otherPlayer.getLocation());
+        } catch (final Exception e) {
+            // On Folia, getLocation() throws if called from outside the player's region
+            return -1;
+        }
     }
 
     @Override
     public boolean sameWorldAs(final CarbonPlayer other) {
-        if (this.player().isEmpty()) {
-            return false;
-        }
-
-        final Optional<Player> player = this.player();
+        final @Nullable Player player = Bukkit.getPlayer(this.uuid());
         final @Nullable Player otherPlayer = Bukkit.getPlayer(other.uuid());
 
-        if (player.isEmpty() || otherPlayer == null) {
+        if (player == null || otherPlayer == null) {
             return false;
         }
 
-        return player.get().getWorld().equals(otherPlayer.getWorld());
+        try {
+            return player.getWorld().equals(otherPlayer.getWorld());
+        } catch (final Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -183,9 +184,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     @Override
     public void sendMessageAsPlayer(final String message) {
-        // TODO: ensure method is not executed from main thread
-        // bukkit doesn't like that
-        this.player().ifPresent(player -> player.chat(message));
+        this.player().ifPresent(player -> this.carbonPlayerCommon.schedule(() -> player.chat(message)));
     }
 
     @Override

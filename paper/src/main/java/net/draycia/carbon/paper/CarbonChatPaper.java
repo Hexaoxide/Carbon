@@ -125,10 +125,16 @@ public final class CarbonChatPaper extends CarbonChatInternal {
             } catch (final IOException e) {
                 this.logger().error("Smoke test: Failed to create file.", e);
             }
-            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
+            final Runnable shutdownTask = () -> {
                 this.logger().info("Smoke test: Shutting down server.");
                 Bukkit.getServer().shutdown();
-            }, 20L);
+            };
+            try {
+                Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+                this.plugin.getServer().getGlobalRegionScheduler().runDelayed(this.plugin, $ -> shutdownTask.run(), 20L);
+            } catch (final ClassNotFoundException e) {
+                this.plugin.getServer().getScheduler().runTaskLater(this.plugin, shutdownTask, 20L);
+            }
         }
     }
 

@@ -97,7 +97,15 @@ public class McmmoPartyChannel extends ConfigChatChannel {
     }
 
     private @Nullable Party party(final CarbonPlayer player) {
-        return com.gmail.nossr50.util.player.UserManager.getPlayer(Bukkit.getPlayer(player.uuid())).getParty();
+        final @Nullable Player bukkit = Bukkit.getPlayer(player.uuid());
+        if (bukkit == null) {
+            return null;
+        }
+        final var mcmmoPlayer = com.gmail.nossr50.util.player.UserManager.getPlayer(bukkit);
+        if (mcmmoPlayer == null) {
+            return null;
+        }
+        return mcmmoPlayer.getParty();
     }
 
     @Override

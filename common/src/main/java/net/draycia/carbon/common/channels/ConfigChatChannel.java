@@ -23,11 +23,11 @@ import com.google.inject.Inject;
 import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonServer;
 import net.draycia.carbon.api.channels.ChannelPermissions;
 import net.draycia.carbon.api.channels.ChatChannel;
@@ -113,7 +113,7 @@ public class ConfigChatChannel implements ChatChannel {
         because they're out of range from the radius.""")
     private boolean emptyRadiusRecipientsMessage = true;
 
-    private Map<UUID, Long> cooldowns = new HashMap<>();
+    private Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
 
     private long cooldown = -1;
 

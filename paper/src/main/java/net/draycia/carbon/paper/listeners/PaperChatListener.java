@@ -118,7 +118,8 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             final Audience recipientViewer;
 
             if (recipientUUID.isPresent()) {
-                recipientViewer = this.carbonChat.userManager().user(recipientUUID.get()).join();
+                final @Nullable CarbonPlayer cached = this.carbonChat.userManager().user(recipientUUID.get()).getNow(null);
+                recipientViewer = cached != null ? cached : recipient;
             } else {
                 recipientViewer = recipient;
             }
