@@ -11,7 +11,7 @@ resource-factory-fabric-convention = { id = "xyz.jpenilla.resource-factory-fabri
 
 [versions]
 indra = "4.0.0"
-cloud-build-logic = "0.0.17"
+cloud-build-logic = "0.0.22"
 shadow = "9.4.1"
 mod-publish-plugin = "1.1.0"
 gremlin = "0.0.9"
