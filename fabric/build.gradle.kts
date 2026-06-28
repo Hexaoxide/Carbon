@@ -1,3 +1,4 @@
+import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
 import xyz.jpenilla.resourcefactory.fabric.Environment
 import java.util.function.Predicate
 import kotlin.io.path.invariantSeparatorsPathString
@@ -112,6 +113,7 @@ tasks {
 }
 
 publishMods.modrinth {
+  environment = ModrinthEnvironment.SERVER_ONLY
   minecraftVersions.set(listOf(libs.versions.minecraft.get()))
   modLoaders.addAll("fabric")
   requires("fabric-api")
