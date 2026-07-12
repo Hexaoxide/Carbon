@@ -39,6 +39,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentIteratorType;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -65,7 +66,18 @@ public abstract class ChatListenerInternal {
         final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(originalMessage);
         final ChatChannel channel = channelMessage.channel();
 
-        return this.prepareAndEmitChatEvent(sender, channelMessage.message(), signedMessage, channel);
+        Component message = originalMessage;
+
+        final String prefix = channel.quickPrefix();
+        if (prefix != null) {
+            message = originalMessage.replaceText(TextReplacementConfig.builder()
+                .once()
+                .matchLiteral(prefix)
+                .replacement(Component.empty())
+                .build());
+        }
+
+        return this.prepareAndEmitChatEvent(sender, message, signedMessage, channel);
     }
 
     protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component message, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
