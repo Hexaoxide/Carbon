@@ -439,7 +439,12 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
-    public ChannelMessage channelForMessage(final Component message) {
+    public ChatChannel channelForMessage(final String originalMessage) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ChannelMessage resolveChannelMessage(final Component message) {
         throw new UnsupportedOperationException();
     }
 

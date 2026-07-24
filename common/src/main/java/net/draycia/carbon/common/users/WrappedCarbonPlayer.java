@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -50,8 +51,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
-
-import static java.util.Objects.requireNonNullElse;
 
 @DefaultQualifier(NonNull.class)
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
@@ -234,32 +233,60 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public ChannelMessage channelForMessage(final Component message) {
-        final String text = PlainTextComponentSerializer.plainText().serialize(message);
-        Component formattedMessage = message;
+    public ChatChannel channelForMessage(final String originalMessage) {
+        return this.resolveChannel(originalMessage).channel();
+    }
 
-        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon.channelRegistry().defaultChannel());
+    @Override
+    public ChannelMessage resolveChannelMessage(
+        final Component message
+    ) {
+        final String text = PlainTextComponentSerializer.plainText().serialize(message);
+        final ChannelResolution resolution = this.resolveChannel(text);
+
+        if (!resolution.matchedPrefix()) {
+            return new ChannelMessage(message, resolution.channel());
+        }
+
+        final String prefix = Objects.requireNonNull(resolution.channel().quickPrefix());
+
+        final Component formattedMessage = message.replaceText(
+            TextReplacementConfig.builder()
+                .once()
+                .matchLiteral(prefix)
+                .replacement(Component.empty())
+                .build()
+        );
+
+        return new ChannelMessage(formattedMessage, resolution.channel());
+    }
+
+    private ChannelResolution resolveChannel(final String originalMessage) {
+        final ChatChannel fallbackChannel = Objects.requireNonNullElse(
+            this.selectedChannel(),
+            this.carbonPlayerCommon.channelRegistry().defaultChannel()
+        );
 
         for (final Key channelKey : this.carbonPlayerCommon.channelRegistry().keys()) {
-            final ChatChannel chatChannel = this.carbonPlayerCommon.channelRegistry().channelOrThrow(channelKey);
+            final ChatChannel chatChannel =
+                this.carbonPlayerCommon.channelRegistry().channelOrThrow(channelKey);
+
             final @Nullable String prefix = chatChannel.quickPrefix();
 
-            if (prefix == null) {
-                continue;
-            }
-
-            if (text.startsWith(prefix) && chatChannel.permissions().speechPermitted(this).permitted()) {
-                channel = chatChannel;
-                formattedMessage = formattedMessage.replaceText(TextReplacementConfig.builder()
-                    .once()
-                    .matchLiteral(channel.quickPrefix())
-                    .replacement(Component.empty())
-                    .build());
-                break;
+            if (prefix != null
+                && originalMessage.startsWith(prefix)
+                && chatChannel.permissions().speechPermitted(this).permitted()) {
+                return new ChannelResolution(chatChannel, true);
             }
         }
 
-        return new ChannelMessage(formattedMessage, channel);
+        return new ChannelResolution(fallbackChannel, false);
+    }
+
+    private record ChannelResolution(
+        ChatChannel channel,
+        boolean matchedPrefix
+    ) {
     }
 
     @Override
