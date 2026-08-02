@@ -94,7 +94,7 @@ public final class PlaceholderAPIMiniMessageParser {
 
     private Component parse(
         final @Nullable Audience recipient,
-        final Audience sender,
+        final @Nullable Audience sender,
         final Pattern pattern,
         final UnaryOperator<String> placeholderResolver,
         final String input,
@@ -121,6 +121,10 @@ public final class PlaceholderAPIMiniMessageParser {
         }
 
         matcher.appendTail(builder);
+
+        if (sender == null) {
+            return this.miniMessage.deserialize(builder.toString(), tagResolver.build());
+        }
 
         return this.miniMessage.deserialize(builder.toString(), MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, recipient, sender), tagResolver.build());
     }
