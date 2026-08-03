@@ -279,7 +279,12 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
-    public ChannelMessage channelForMessage(final Component message) {
+    public @Nullable ChatChannel channelForMessage(final String originalMessage) {
+        return null;
+    }
+
+    @Override
+    public ChannelMessage resolveChannelMessage(final Component message) {
         return new ChannelMessage(message, null);
     }
 

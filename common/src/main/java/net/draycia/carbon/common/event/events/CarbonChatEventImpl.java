@@ -55,8 +55,8 @@ public class CarbonChatEventImpl extends CancellableImpl implements CarbonChatEv
         final Component originalMessage,
         final List<? extends Audience> recipients,
         final List<KeyedRenderer> renderers,
-        final @Nullable ChatChannel chatChannel,
-        final @Nullable SignedMessage signedMessage
+        final ChatChannel chatChannel,
+        final SignedMessage signedMessage
     ) {
         this(sender, originalMessage, recipients, renderers, chatChannel, signedMessage, true);
     }
