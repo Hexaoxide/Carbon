@@ -22,12 +22,11 @@ package net.draycia.carbon.sponge.command;
 import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.api.command.CommandCause;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface SpongeCommander extends Commander, ForwardingAudience.Single {
 
     static SpongeCommander from(final CommandCause commandCause) {
@@ -39,7 +38,7 @@ public interface SpongeCommander extends Commander, ForwardingAudience.Single {
     record SpongeCommanderImpl(CommandCause commandCause) implements SpongeCommander {
 
         @Override
-        public @NotNull Audience audience() {
+        public @NonNull Audience audience() {
             return this.commandCause.audience();
         }
 

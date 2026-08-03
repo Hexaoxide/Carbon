@@ -22,11 +22,10 @@ package net.draycia.carbon.paper;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import net.draycia.carbon.common.util.CarbonDependencies;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 import xyz.jpenilla.gremlin.runtime.platformsupport.PaperClasspathAppender;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class CarbonPaperLoader implements PluginLoader {
 
     @Override

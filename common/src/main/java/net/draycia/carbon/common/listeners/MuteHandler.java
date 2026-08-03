@@ -27,13 +27,12 @@ import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class MuteHandler implements Listener {
 
     private final Key muteKey = key("carbon", "mute");

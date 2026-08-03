@@ -30,11 +30,10 @@ import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonServerVelocity implements CarbonServer, ForwardingAudience.Single {
 
     private final ProxyServer server;
@@ -47,7 +46,7 @@ public final class CarbonServerVelocity implements CarbonServer, ForwardingAudie
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public @NonNull Audience audience() {
         return this.server;
     }
 

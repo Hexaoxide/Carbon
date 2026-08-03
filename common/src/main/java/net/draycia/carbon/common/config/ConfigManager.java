@@ -39,9 +39,8 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.serializer.configurate4.ConfigurateComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.CommentedConfigurationNodeIntermediary;
 import org.spongepowered.configurate.ConfigurateException;
@@ -53,7 +52,7 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Processor;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public final class ConfigManager {
 

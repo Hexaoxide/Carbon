@@ -34,14 +34,13 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
+import org.jspecify.annotations.NullMarked;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class NicknameCommand extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;

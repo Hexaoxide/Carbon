@@ -50,13 +50,12 @@ import net.draycia.carbon.common.users.db.DatabaseUserManager;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public abstract class CachingUserManager implements UserManagerInternal<CarbonPlayerCommon> {
 
     private static final int DISBAND_DELAY = 10;

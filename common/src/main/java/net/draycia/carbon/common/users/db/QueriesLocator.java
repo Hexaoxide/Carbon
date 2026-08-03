@@ -26,12 +26,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import net.draycia.carbon.api.CarbonChat;
 import net.draycia.carbon.common.config.PrimaryConfig;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.locator.ClasspathSqlLocator;
 import org.jdbi.v3.core.locator.internal.ClasspathBuilder;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class QueriesLocator {
 
     private static final String PREFIX = "queries/";

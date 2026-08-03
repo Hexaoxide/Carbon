@@ -21,10 +21,9 @@ package net.draycia.carbon.api.channels;
 
 import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 record ChannelPermissionResultImpl(
     boolean permitted,
     Supplier<Component> reasonSupplier

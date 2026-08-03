@@ -23,10 +23,9 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 record KeyedRendererImpl(Key key, ChatComponentRenderer renderer) implements KeyedRenderer {
 
     @Override

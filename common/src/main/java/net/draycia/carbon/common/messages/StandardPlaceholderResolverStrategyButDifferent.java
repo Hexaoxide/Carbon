@@ -36,7 +36,7 @@ import net.kyori.moonshine.placeholder.IPlaceholderResolver;
 import net.kyori.moonshine.strategy.IPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.ISupertypeStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.util.NamingScheme;
 
 import static java.util.Collections.emptyNavigableSet;

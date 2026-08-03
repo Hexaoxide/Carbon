@@ -27,12 +27,11 @@ import net.draycia.carbon.common.users.MojangProfileResolver;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.fabric.MinecraftServerHolder;
 import net.minecraft.server.level.ServerPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class FabricProfileResolver implements ProfileResolver {
 
     private final MinecraftServerHolder serverHolder;

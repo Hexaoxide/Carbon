@@ -23,10 +23,9 @@ import com.sasorio.event.EventSubscription;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventSubscriber;
 import net.draycia.carbon.api.event.CarbonEventSubscription;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 record CarbonEventSubscriptionImpl<T extends CarbonEvent>(
     Class<T> event,
     CarbonEventSubscriber<T> subscriber,

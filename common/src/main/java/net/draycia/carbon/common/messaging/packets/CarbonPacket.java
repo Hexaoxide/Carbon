@@ -30,13 +30,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import ninja.egg82.messenger.packets.AbstractPacket;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public abstract class CarbonPacket extends AbstractPacket {
 
     private final GsonComponentSerializer componentSerializer = GsonComponentSerializer.gson();
 
-    protected CarbonPacket(final @NotNull UUID sender) {
+    protected CarbonPacket(final @NonNull UUID sender) {
         super(sender);
     }
 

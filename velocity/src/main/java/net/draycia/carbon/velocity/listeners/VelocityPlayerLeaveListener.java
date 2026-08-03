@@ -26,12 +26,11 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class VelocityPlayerLeaveListener implements VelocityListener<DisconnectEvent> {
 
     private final UserManagerInternal<?> userManager;

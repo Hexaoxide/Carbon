@@ -34,14 +34,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static net.draycia.carbon.common.users.PlayerUtils.joinExceptionHandler;
 import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class PaperPlayerJoinListener implements Listener {
 
     private final ConfigManager configManager;

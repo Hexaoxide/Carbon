@@ -23,8 +23,7 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.users.UserManager;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * The {@link CarbonChat} interface is the gateway to interacting with the majority of the CarbonChat API.
@@ -39,7 +38,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  *
  * @since 1.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface CarbonChat {
 
     /**

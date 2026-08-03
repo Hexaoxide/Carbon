@@ -25,12 +25,11 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 import static java.util.Objects.requireNonNull;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public record PaperPlayerCommander(
     UserManager<?> userManager,
     Player player

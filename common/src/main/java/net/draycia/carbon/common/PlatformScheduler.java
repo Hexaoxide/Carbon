@@ -22,10 +22,9 @@ package net.draycia.carbon.common;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface PlatformScheduler {
 
     void scheduleForPlayer(CarbonPlayer carbonPlayer, Runnable runnable);

@@ -31,16 +31,15 @@ import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.util.Pagination;
 import net.draycia.carbon.common.util.PaginationHelper;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.component.DefaultValue;
 import org.incendo.cloud.context.CommandContext;
+import org.jspecify.annotations.NullMarked;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.IntegerParser.integerParser;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class IgnoreListCommand extends CarbonCommand {
 
     private final UserManager<?> users;

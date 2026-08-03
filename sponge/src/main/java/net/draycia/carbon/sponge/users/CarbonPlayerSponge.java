@@ -28,10 +28,9 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -44,7 +43,7 @@ import org.spongepowered.api.util.locale.LocaleSource;
 import static net.kyori.adventure.text.Component.translatable;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
     private final CarbonPlayerCommon carbonPlayerCommon;
@@ -54,7 +53,7 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public @NonNull Audience audience() {
         return this.player()
             .map(player -> (Audience) player)
             .orElseGet(Audience::empty);

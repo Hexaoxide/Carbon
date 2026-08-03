@@ -24,24 +24,28 @@ import net.draycia.carbon.common.command.CommandSettings;
 import net.draycia.carbon.common.util.CloudUtils;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @ConfigSerializable
-@DefaultQualifier(MonotonicNonNull.class)
+@NullMarked
 public class CommandConfig {
 
-    private Map<Key, CommandSettings> settings = CloudUtils.defaultCommandSettings();
+    private @MonotonicNonNull @Nullable Map<@MonotonicNonNull @Nullable Key, @MonotonicNonNull @Nullable CommandSettings> settings =
+        CloudUtils.defaultCommandSettings();
 
     public CommandConfig() {
 
     }
 
-    public CommandConfig(final Map<Key, CommandSettings> settings) {
+    public CommandConfig(
+        final @MonotonicNonNull @Nullable Map<@MonotonicNonNull @Nullable Key, @MonotonicNonNull @Nullable CommandSettings> settings
+    ) {
         this.settings = settings;
     }
 
-    public Map<Key, CommandSettings> settings() {
+    public @MonotonicNonNull @Nullable Map<@MonotonicNonNull @Nullable Key, @MonotonicNonNull @Nullable CommandSettings> settings() {
         return this.settings;
     }
 

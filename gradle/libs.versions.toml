@@ -25,6 +25,8 @@ cloudModded = "2.0.0-beta.15"
 cloudSponge = "2.0.0-SNAPSHOT"
 configurate = "4.2.0"
 checkerQual = "3.49.2"
+jspecify = "1.0.0"
+jetbrainsAnnotations = "26.0.2"
 stylecheck = "0.2.1"
 bstats = "3.2.1"
 paperApi = "1.21.4-R0.1-SNAPSHOT"
@@ -34,7 +36,7 @@ event = "1.0.0"
 registry = "1.0.0-SNAPSHOT"
 kyoriMoonshine = "2.0.4"
 guice = "7.0.0"
-velocityApi = "3.5.0-SNAPSHOT"
+velocityApi = "4.0.0-SNAPSHOT"
 minecraft = "1.21.11"
 fabricLoader = "0.19.3"
 fabricApi = "0.141.4+1.21.11"
@@ -113,6 +115,8 @@ configurateHocon = { group = "org.spongepowered", name = "configurate-hocon", ve
 configurateYaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
 
 checkerQual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerQual" }
+jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }
+jetbrainsAnnotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrainsAnnotations" }
 stylecheck = { group = "ca.stellardrift", name = "stylecheck", version.ref = "stylecheck" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }

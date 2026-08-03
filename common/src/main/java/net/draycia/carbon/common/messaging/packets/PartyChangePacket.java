@@ -27,10 +27,9 @@ import java.util.UUID;
 import net.draycia.carbon.common.messaging.ServerId;
 import net.draycia.carbon.common.users.PartyImpl;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class PartyChangePacket extends CarbonPacket {
 
     private @MonotonicNonNull UUID partyId;

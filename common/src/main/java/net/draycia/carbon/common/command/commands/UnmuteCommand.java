@@ -29,14 +29,13 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.ParserFactory;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
+import org.jspecify.annotations.NullMarked;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.UUIDParser.uuidParser;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class UnmuteCommand extends CarbonCommand {
 
     private final UserManager<?> users;

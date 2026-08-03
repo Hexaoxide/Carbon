@@ -51,7 +51,6 @@ dependencies {
   runtimeOnly(libs.jarRelocator) {
     isTransitive = false
   }
-  runtimeDownload(libs.checkerQual)
 }
 
 fabricModJson {
@@ -89,12 +88,10 @@ tasks {
     relocateDependency("org.incendo.cloud.minecraft.extras")
     standardRuntimeRelocations()
     relocateGuice()
-    relocateDependency("org.checkerframework")
   }
   writeDependencies {
     standardRuntimeRelocations()
     relocateGuice()
-    relocateDependency("org.checkerframework")
   }
 
   runServer {

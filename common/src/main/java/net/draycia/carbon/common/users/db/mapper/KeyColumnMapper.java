@@ -23,10 +23,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import net.draycia.carbon.common.util.Strings;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.intellij.lang.annotations.Subst;
 import org.jdbi.v3.core.mapper.ColumnMapper;
 import org.jdbi.v3.core.statement.StatementContext;
+import org.jspecify.annotations.Nullable;
 
 public final class KeyColumnMapper implements ColumnMapper<Key> {
 

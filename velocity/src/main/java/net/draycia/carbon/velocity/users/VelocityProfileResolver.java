@@ -26,12 +26,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.draycia.carbon.common.users.MojangProfileResolver;
 import net.draycia.carbon.common.users.ProfileResolver;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class VelocityProfileResolver implements ProfileResolver {
 
     private final ProxyServer proxyServer;

@@ -20,10 +20,9 @@
 package net.draycia.carbon.common.command;
 
 import net.draycia.carbon.common.command.argument.CarbonPlayerParser;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface ParserFactory {
 
     CarbonPlayerParser carbonPlayer();

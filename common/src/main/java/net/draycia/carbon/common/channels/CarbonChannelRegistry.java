@@ -70,14 +70,14 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.minecraft.signed.SignedString;
 import org.incendo.cloud.permission.Permission;
 import org.incendo.cloud.permission.PredicatePermission;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
@@ -86,7 +86,7 @@ import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import static org.incendo.cloud.minecraft.signed.SignedGreedyStringParser.signedGreedyStringParser;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class CarbonChannelRegistry extends ChatListenerInternal implements ChannelRegistry {
 
     private final Path configChannelDir;

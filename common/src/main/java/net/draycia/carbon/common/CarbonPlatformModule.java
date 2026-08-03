@@ -23,10 +23,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersIntegration;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public abstract class CarbonPlatformModule extends AbstractModule {
 
     @Override

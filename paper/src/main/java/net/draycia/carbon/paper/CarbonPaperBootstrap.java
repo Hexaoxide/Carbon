@@ -23,10 +23,9 @@ import com.google.inject.Guice;
 import net.draycia.carbon.api.CarbonChatProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonPaperBootstrap extends JavaPlugin {
 
     private @MonotonicNonNull CarbonChatPaper carbonChat;

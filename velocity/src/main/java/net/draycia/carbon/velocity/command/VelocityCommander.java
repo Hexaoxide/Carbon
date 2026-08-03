@@ -23,11 +23,10 @@ import com.velocitypowered.api.command.CommandSource;
 import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface VelocityCommander extends Commander, ForwardingAudience.Single {
 
     static VelocityCommander from(final CommandSource source) {
@@ -39,7 +38,7 @@ public interface VelocityCommander extends Commander, ForwardingAudience.Single 
     record VelocityCommanderImpl(CommandSource commandSource) implements VelocityCommander {
 
         @Override
-        public @NotNull Audience audience() {
+        public @NonNull Audience audience() {
             return this.commandSource;
         }
 

@@ -28,15 +28,14 @@ import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.draycia.carbon.common.util.DiscordRecipient;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.moonshine.message.IMessageSource;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @ConfigSerializable
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class ConfigChannelMessageSource implements IMessageSource<SourcedAudience, String> {
 
     // Map<String, String> -> Map<Group, Format>

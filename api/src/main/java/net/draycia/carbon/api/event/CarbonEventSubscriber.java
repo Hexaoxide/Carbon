@@ -19,8 +19,7 @@
  */
 package net.draycia.carbon.api.event;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * An EventSubscriber.
@@ -28,7 +27,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @param <T> CarbonEvent implementations
  * @since 3.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface CarbonEventSubscriber<T extends CarbonEvent> {
 
     /**

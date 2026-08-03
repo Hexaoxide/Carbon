@@ -36,14 +36,13 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @ConfigSerializable
 public class McmmoPartyChannel extends ConfigChatChannel {
 

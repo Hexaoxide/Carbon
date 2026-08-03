@@ -26,14 +26,13 @@ import com.google.inject.Inject;
 import java.io.IOException;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.channels.ChatChannel;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.intellij.lang.annotations.Subst;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static net.kyori.adventure.key.Key.key;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class ChatChannelSerializerGson extends TypeAdapter<ChatChannel> {
 
     private final ChannelRegistry registry;

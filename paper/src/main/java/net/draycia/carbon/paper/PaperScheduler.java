@@ -26,12 +26,11 @@ import net.draycia.carbon.common.PlatformScheduler;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class PaperScheduler implements PlatformScheduler {
 
     private static final boolean FOLIA;

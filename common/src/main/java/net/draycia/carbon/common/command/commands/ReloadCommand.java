@@ -27,13 +27,12 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.event.events.CarbonReloadEvent;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
+import org.jspecify.annotations.NullMarked;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class ReloadCommand extends CarbonCommand {
 
     private final CarbonEventHandler events;

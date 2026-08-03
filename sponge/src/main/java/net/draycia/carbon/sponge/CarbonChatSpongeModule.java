@@ -19,10 +19,6 @@
  */
 package net.draycia.carbon.sponge;
 
-import org.incendo.cloud.CommandManager;
-import org.incendo.cloud.execution.AsynchronousCommandExecutionCoordinator;
-import org.incendo.cloud.sponge.SpongeCommandManager;
-import org.incendo.cloud.sponge.argument.SinglePlayerSelectorArgument;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
@@ -42,12 +38,15 @@ import net.draycia.carbon.sponge.command.SpongePlayerCommander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageRenderer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.execution.AsynchronousCommandExecutionCoordinator;
+import org.incendo.cloud.sponge.SpongeCommandManager;
+import org.incendo.cloud.sponge.argument.SinglePlayerSelectorArgument;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.plugin.PluginContainer;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonChatSpongeModule extends AbstractModule {
 
     private final CarbonChatSponge carbonChat;

@@ -23,15 +23,14 @@ import java.util.UUID;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called when a player is removed from a {@link Party}.
  *
  * @since 3.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface PartyLeaveEvent extends CarbonEvent {
 
     /**

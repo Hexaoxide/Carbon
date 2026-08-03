@@ -33,13 +33,12 @@ import net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacke
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static net.draycia.carbon.common.users.PlayerUtils.saveExceptionHandler;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, ServerPlayConnectionEvents.Disconnect {
 
     private final ProfileCache profileCache;

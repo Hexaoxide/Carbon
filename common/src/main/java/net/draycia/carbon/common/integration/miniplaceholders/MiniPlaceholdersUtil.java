@@ -23,7 +23,7 @@ import io.github.miniplaceholders.api.MiniPlaceholders;
 import io.github.miniplaceholders.api.types.RelationalAudience;
 import java.util.Objects;
 import net.kyori.adventure.audience.Audience;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class MiniPlaceholdersUtil {
 

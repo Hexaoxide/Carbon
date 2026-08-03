@@ -21,15 +21,14 @@ package net.draycia.carbon.api.util;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A {@link ChatComponentRenderer chat renderer} that's identifiable by key.
  *
  * @since 2.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface KeyedRenderer extends Keyed, ChatComponentRenderer {
 
     /**

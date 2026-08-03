@@ -6,6 +6,12 @@ plugins {
   alias(libs.plugins.resource.factory.velocity.convention)
 }
 
+indra {
+  javaVersions {
+    target(25)
+  }
+}
+
 val bstats: Configuration by configurations.creating
 configurations.compileOnly {
   extendsFrom(bstats)
@@ -87,8 +93,4 @@ publishMods.modrinth {
   optional {
     slug = "signedvelocity"
   }
-}
-
-configurations.runtimeDownload {
-  exclude("org.checkerframework", "checker-qual")
 }

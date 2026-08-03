@@ -28,13 +28,12 @@ import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import net.draycia.carbon.velocity.CarbonVelocityBootstrap;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static net.draycia.carbon.common.users.PlayerUtils.joinExceptionHandler;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class VelocityPlayerJoinListener implements VelocityListener<LoginEvent> {
 
     private final ConfigManager configManager;
