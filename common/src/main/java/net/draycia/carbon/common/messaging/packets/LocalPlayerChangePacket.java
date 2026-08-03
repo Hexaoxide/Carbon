@@ -51,14 +51,6 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
         this.changeType = changeType;
     }
 
-    @AssistedInject
-    public LocalPlayerChangePacket(final @ServerId UUID serverId, final @Assisted UUID playerId) {
-        super(serverId);
-        this.playerId = playerId;
-        this.playerName = null;
-        this.changeType = ChangeType.REMOVE;
-    }
-
     public LocalPlayerChangePacket(final UUID sender, final ByteBuf data) {
         super(sender);
         this.read(data);
