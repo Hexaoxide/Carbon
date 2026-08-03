@@ -143,7 +143,3 @@ carbonPermission.permissions.get().forEach {
 publishMods.modrinth {
   modLoaders.addAll("paper", "folia")
 }
-
-configurations.runtimeDownload {
-  exclude("org.checkerframework", "checker-qual")
-}

@@ -39,19 +39,18 @@ import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
 import net.draycia.carbon.common.util.Exceptions;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.suggestion.Suggestion;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Eventually consistent store of who is on each server in the network (besides self).
  *
  * <p>Currently used for username suggestions and whispers.</p>
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public final class NetworkUsers implements PlayerSuggestions {
 

@@ -30,11 +30,10 @@ import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Server;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonServerPaper implements CarbonServer, ForwardingAudience.Single {
 
     private final Server server;

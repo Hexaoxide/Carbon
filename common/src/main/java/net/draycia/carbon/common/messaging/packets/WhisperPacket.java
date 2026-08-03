@@ -26,10 +26,9 @@ import java.util.UUID;
 import net.draycia.carbon.common.messaging.ServerId;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class WhisperPacket extends CarbonPacket {
 
     private @MonotonicNonNull UUID from;

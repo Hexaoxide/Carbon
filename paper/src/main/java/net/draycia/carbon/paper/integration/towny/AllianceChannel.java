@@ -28,11 +28,10 @@ import net.draycia.carbon.common.config.ConfigHeader;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @ConfigSerializable
 @ConfigHeader(ResidentListChannel.TOWNY_CHANNEL_HEADER)
 public class AllianceChannel extends NationChannel {

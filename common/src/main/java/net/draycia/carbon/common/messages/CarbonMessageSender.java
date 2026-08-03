@@ -22,10 +22,9 @@ package net.draycia.carbon.common.messages;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.message.IMessageSender;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class CarbonMessageSender implements IMessageSender<Audience, Component> {
 
     @Override

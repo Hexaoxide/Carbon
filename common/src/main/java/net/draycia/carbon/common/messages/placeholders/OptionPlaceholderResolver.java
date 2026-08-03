@@ -29,7 +29,7 @@ import net.kyori.moonshine.placeholder.ConclusionValue;
 import net.kyori.moonshine.placeholder.ContinuanceValue;
 import net.kyori.moonshine.placeholder.IPlaceholderResolver;
 import net.kyori.moonshine.util.Either;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class OptionPlaceholderResolver<R> implements IPlaceholderResolver<R, Option, TagResolver> {
 

@@ -32,13 +32,12 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 import static net.draycia.carbon.api.util.KeyedRenderer.keyedRenderer;
 import static net.kyori.adventure.key.Key.key;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public class PingHandler implements Listener {
 

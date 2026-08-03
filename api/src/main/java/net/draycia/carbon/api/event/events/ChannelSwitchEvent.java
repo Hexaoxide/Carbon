@@ -22,15 +22,14 @@ package net.draycia.carbon.api.event.events;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called when a player switches channels.
  *
  * @since 3.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface ChannelSwitchEvent extends CarbonEvent {
 
     /**

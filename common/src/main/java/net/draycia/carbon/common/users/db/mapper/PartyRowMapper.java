@@ -24,13 +24,12 @@ import java.sql.SQLException;
 import java.util.UUID;
 import net.draycia.carbon.common.users.PartyImpl;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.mapper.ColumnMapper;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class PartyRowMapper implements RowMapper<PartyImpl> {
 
     @Override

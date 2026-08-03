@@ -33,16 +33,15 @@ import net.draycia.carbon.common.users.WrappedCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
 @ConfigSerializable
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class PartyChatChannel extends ConfigChatChannel {
 
     public static final String FILE_NAME = "partychat.conf";
@@ -81,7 +80,7 @@ public class PartyChatChannel extends ConfigChatChannel {
     }
 
     @Override
-    public @NotNull Component render(
+    public @NonNull Component render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,

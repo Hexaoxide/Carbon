@@ -21,11 +21,10 @@ package net.draycia.carbon.common.users;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface ProfileResolver {
 
     CompletableFuture<@Nullable UUID> resolveUUID(String username, boolean cacheOnly);

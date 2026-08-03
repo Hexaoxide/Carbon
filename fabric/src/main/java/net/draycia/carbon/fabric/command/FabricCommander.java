@@ -24,10 +24,9 @@ import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.minecraft.commands.CommandSourceStack;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface FabricCommander extends Commander, ForwardingAudience.Single {
 
     static FabricCommander from(final CommandSourceStack commandSourceStack) {

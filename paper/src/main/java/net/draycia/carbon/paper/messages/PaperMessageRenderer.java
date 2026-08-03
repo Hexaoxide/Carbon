@@ -40,13 +40,12 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public class PaperMessageRenderer extends CarbonMessageRenderer {
 

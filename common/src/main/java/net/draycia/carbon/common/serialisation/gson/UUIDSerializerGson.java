@@ -24,11 +24,10 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.UUID;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class UUIDSerializerGson extends TypeAdapter<UUID> {
 
     @Override

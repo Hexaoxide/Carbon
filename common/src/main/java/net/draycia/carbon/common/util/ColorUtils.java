@@ -25,16 +25,15 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyFormat;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Basic color related utilities.
  *
  * @since 1.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class ColorUtils {
 
     private static final Pattern spigotLegacyRGB =

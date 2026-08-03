@@ -34,11 +34,10 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public class VelocityMessageRenderer extends CarbonMessageRenderer {
 

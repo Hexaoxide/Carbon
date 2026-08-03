@@ -28,13 +28,12 @@ import java.util.RandomAccess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.Component.empty;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface Pagination<T> {
 
     ComponentLike header(int page, int pages);

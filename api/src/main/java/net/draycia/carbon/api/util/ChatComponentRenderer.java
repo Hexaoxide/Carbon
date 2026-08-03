@@ -22,8 +22,7 @@ package net.draycia.carbon.api.util;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Renderer used to construct chat components on a per-player basis.
@@ -31,7 +30,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @since 2.0.0
  */
 @FunctionalInterface
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface ChatComponentRenderer {
 
     /**

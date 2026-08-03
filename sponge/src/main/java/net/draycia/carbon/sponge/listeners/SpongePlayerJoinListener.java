@@ -25,12 +25,11 @@ import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.common.util.PlayerUtils;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class SpongePlayerJoinListener {
 
     private final CarbonChat carbonChat;

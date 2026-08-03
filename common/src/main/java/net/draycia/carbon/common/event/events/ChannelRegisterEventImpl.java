@@ -23,10 +23,9 @@ import java.util.Set;
 import net.draycia.carbon.api.event.events.CarbonChannelRegisterEvent;
 import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public record ChannelRegisterEventImpl(
     CarbonChannelRegistry channelRegistry,
     Set<Key> registered

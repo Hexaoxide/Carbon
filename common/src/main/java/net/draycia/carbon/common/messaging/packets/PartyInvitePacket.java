@@ -25,10 +25,9 @@ import io.netty.buffer.ByteBuf;
 import java.util.UUID;
 import net.draycia.carbon.common.messaging.ServerId;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class PartyInvitePacket extends CarbonPacket {
 
     private @MonotonicNonNull UUID from;

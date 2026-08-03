@@ -22,15 +22,14 @@ package net.draycia.carbon.api;
 import java.util.List;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.audience.Audience;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * The server that carbon is running on.
  *
  * @since 2.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface CarbonServer extends Audience {
 
     /**

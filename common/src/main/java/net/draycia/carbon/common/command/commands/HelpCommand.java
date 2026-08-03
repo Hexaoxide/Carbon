@@ -31,8 +31,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
@@ -41,6 +39,7 @@ import org.incendo.cloud.minecraft.extras.AudienceProvider;
 import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.intellij.lang.annotations.Subst;
+import org.jspecify.annotations.NullMarked;
 
 import static net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
@@ -50,7 +49,7 @@ import static org.incendo.cloud.minecraft.extras.MinecraftHelp.helpColors;
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class HelpCommand extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;

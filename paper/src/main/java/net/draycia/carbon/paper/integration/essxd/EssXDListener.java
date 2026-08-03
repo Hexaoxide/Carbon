@@ -32,7 +32,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class EssXDListener implements Listener {
 

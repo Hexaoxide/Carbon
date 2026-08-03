@@ -55,10 +55,9 @@ import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import net.kyori.moonshine.strategy.StandardPlaceholderResolverStrategy;
 import net.kyori.moonshine.strategy.supertype.StandardSupertypeThenInterfaceSupertypeStrategy;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
@@ -66,7 +65,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 import static java.util.Objects.requireNonNull;
 
 @ConfigSerializable
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class ConfigChatChannel implements ChatChannel {
 
     protected transient @MonotonicNonNull @Inject CarbonServer server;
@@ -145,7 +144,7 @@ public class ConfigChatChannel implements ChatChannel {
     }
 
     @Override
-    public @NotNull Component render(
+    public @NonNull Component render(
         final CarbonPlayer sender,
         final Audience recipient,
         final Component message,

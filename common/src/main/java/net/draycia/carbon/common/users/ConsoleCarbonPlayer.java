@@ -34,12 +34,11 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Single {
 
     private final Audience audience;
@@ -49,7 +48,7 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public @NonNull Audience audience() {
         return this.audience;
     }
 
@@ -274,7 +273,7 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
-    public @NotNull Identity identity() {
+    public @NonNull Identity identity() {
         return Identity.nil();
     }
 

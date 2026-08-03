@@ -29,8 +29,8 @@ import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.events.CarbonChatEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.ComponentPlayerResult;
-import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.api.util.Component;
+import net.draycia.carbon.api.util.KeyedRenderer;
 import net.draycia.carbon.sponge.CarbonChatSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -40,9 +40,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
@@ -57,7 +56,7 @@ import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class SpongeChatListener {
 
     private final CarbonChatSponge carbonChat;

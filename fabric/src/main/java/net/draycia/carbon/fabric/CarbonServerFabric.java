@@ -30,12 +30,11 @@ import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonServerFabric implements CarbonServer, ForwardingAudience.Single {
 
     private final MinecraftServerHolder serverHolder;
@@ -48,7 +47,7 @@ public final class CarbonServerFabric implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public @NonNull Audience audience() {
         return MinecraftServerAudiences.of(this.serverHolder.requireServer()).all();
     }
 

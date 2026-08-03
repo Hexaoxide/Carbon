@@ -42,10 +42,9 @@ import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.ProfileResolver;
 import net.draycia.carbon.velocity.listeners.VelocityListener;
 import org.apache.logging.log4j.LogManager;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public class CarbonChatVelocity extends CarbonChatInternal {
 

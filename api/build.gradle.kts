@@ -19,6 +19,8 @@ dependencies {
   compileOnlyApi(libs.minimessage)
 
   compileOnlyApi(libs.checkerQual)
+  compileOnlyApi(libs.jetbrainsAnnotations)
+  api(libs.jspecify)
 
   // Provided by Minecraft
   compileOnlyApi(libs.gson)

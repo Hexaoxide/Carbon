@@ -23,12 +23,11 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.integration.Integration;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class MiniPlaceholdersIntegration implements Integration {
 
     private final Provider<MiniPlaceholdersExpansion> expansionProvider;

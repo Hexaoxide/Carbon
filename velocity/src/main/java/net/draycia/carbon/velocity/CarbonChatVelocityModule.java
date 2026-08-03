@@ -54,13 +54,12 @@ import net.draycia.carbon.velocity.users.VelocityProfileResolver;
 import net.kyori.adventure.key.Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
 import org.incendo.cloud.velocity.VelocityCommandManager;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonChatVelocityModule extends CarbonPlatformModule {
 
     private final Logger logger = LogManager.getLogger("carbonchat");

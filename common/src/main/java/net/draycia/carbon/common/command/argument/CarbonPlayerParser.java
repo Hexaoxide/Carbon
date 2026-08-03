@@ -28,16 +28,16 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.exception.ComponentException;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.users.ProfileResolver;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.SuggestionProvider;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonPlayerParser implements ArgumentParser.FutureArgumentParser<Commander, CarbonPlayer>, ParserDescriptor<Commander, CarbonPlayer> {
 
     private final PlayerSuggestions suggestions;

@@ -120,13 +120,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.moonshine.Moonshine;
 import net.kyori.moonshine.exception.scan.UnscannableMethodException;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jdbi.v3.core.h2.H2DatabasePlugin;
 import org.jdbi.v3.postgres.PostgresPlugin;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.configurate.util.NamingSchemes;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonCommonModule extends AbstractModule {
 
     @Provides

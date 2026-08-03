@@ -20,10 +20,9 @@
 package net.draycia.carbon.common.util;
 
 import java.util.function.Consumer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class Exceptions {
 
     private Exceptions() {

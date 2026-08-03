@@ -46,14 +46,13 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.util.Tristate;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNullElse;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public abstract class WrappedCarbonPlayer implements CarbonPlayer {
 
     protected final CarbonPlayerCommon carbonPlayerCommon;
@@ -353,7 +352,7 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     }
 
     @Override
-    public @NotNull Identity identity() {
+    public @NonNull Identity identity() {
         return this.carbonPlayerCommon.identity();
     }
 

@@ -24,11 +24,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public record ExecutionCoordinatorHolder(
     ExecutionCoordinator<Commander> executionCoordinator,
     ExecutorService executorService

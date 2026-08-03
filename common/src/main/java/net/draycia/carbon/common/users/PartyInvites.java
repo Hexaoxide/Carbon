@@ -38,11 +38,10 @@ import net.draycia.carbon.common.messaging.packets.InvalidatePartyInvitePacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public final class PartyInvites {
 

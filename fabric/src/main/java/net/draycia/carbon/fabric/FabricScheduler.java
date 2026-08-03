@@ -23,10 +23,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.PlatformScheduler;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public final class FabricScheduler implements PlatformScheduler {
 

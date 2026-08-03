@@ -30,17 +30,16 @@ import net.draycia.carbon.common.command.Commander;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class LeaveCommand extends CarbonCommand {
 
     private final CarbonChannelRegistry channelRegistry;

@@ -35,11 +35,10 @@ import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class RenderForTagResolver implements TagResolver {
 
     private static final String TAG_NAME = "render_for";

@@ -94,6 +94,7 @@ fun ShadowJar.configureShadowJar() {
     exclude(dependency("io.netty:netty-buffer"))
     exclude(dependency("it.unimi.dsi:fastutil"))
     exclude(dependency("org.checkerframework:checker-qual"))
+    exclude(dependency("org.jspecify:jspecify"))
     exclude(dependency("org.slf4j:slf4j-api"))
   }
 }

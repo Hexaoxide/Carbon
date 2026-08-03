@@ -24,9 +24,8 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.util.ChatComponentRenderer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Keyed;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * ChatChannel interface, supplies a formatter and filters recipients.<br>
@@ -34,7 +33,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  *
  * @since 2.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface ChatChannel extends Keyed, ChatComponentRenderer {
 
     /**

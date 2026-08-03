@@ -24,16 +24,15 @@ import java.lang.reflect.Type;
 import java.util.Locale;
 import net.kyori.adventure.translation.Translator;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import static java.util.Objects.requireNonNull;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class LocaleSerializerConfigurate implements TypeSerializer<Locale> {
 
     private final Logger logger;

@@ -28,16 +28,15 @@ import java.util.Objects;
 import java.util.Set;
 import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.util.Exceptions;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.BasicConfigurationNode;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class IntegrationConfigContainer {
 
     private final Map<String, Object> map = new HashMap<>();

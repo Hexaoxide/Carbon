@@ -45,7 +45,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class DSRVListener implements ChatHook {
 

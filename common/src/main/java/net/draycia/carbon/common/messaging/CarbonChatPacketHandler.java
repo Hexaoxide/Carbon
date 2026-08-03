@@ -48,11 +48,10 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import ninja.egg82.messenger.handler.AbstractMessagingHandler;
 import ninja.egg82.messenger.packets.Packet;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonChatPacketHandler extends AbstractMessagingHandler {
 
     private final CarbonEventHandler events;

@@ -27,10 +27,9 @@ import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.util.ColorUtils;
 import net.draycia.carbon.paper.CarbonChatPaper;
 import net.draycia.carbon.paper.users.CarbonPlayerPaper;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class PAPIChatHook implements Listener {
 
     @Inject

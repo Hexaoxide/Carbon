@@ -54,9 +54,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.logging.LogCreator;
@@ -66,8 +63,10 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Update;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class DatabaseUserManager extends CachingUserManager {
 
     private final Jdbi jdbi;

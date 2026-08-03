@@ -21,11 +21,10 @@ package net.draycia.carbon.common.command.exception;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CommandCompleted extends ComponentException {
 
     private static final long serialVersionUID = 1352215898395889299L;

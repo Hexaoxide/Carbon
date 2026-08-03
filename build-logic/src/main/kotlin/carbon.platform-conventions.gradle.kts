@@ -12,6 +12,8 @@ configurations.runtimeDownload {
   exclude("org.slf4j", "slf4j-api")
   exclude("com.google.errorprone", "error_prone_annotations")
   exclude("io.leangen.geantyref", "geantyref")
+  exclude("org.checkerframework", "checker-qual")
+  exclude("org.jspecify", "jspecify")
 }
 
 val platformExtension = extensions.create<CarbonPlatformExtension>("carbonPlatform")

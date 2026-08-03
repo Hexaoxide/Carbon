@@ -24,9 +24,9 @@ import java.sql.SQLException;
 import java.util.UUID;
 import net.draycia.carbon.common.util.FastUuidSansHyphens;
 import net.draycia.carbon.common.util.Strings;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdbi.v3.core.mapper.ColumnMapper;
 import org.jdbi.v3.core.statement.StatementContext;
+import org.jspecify.annotations.Nullable;
 
 public final class BinaryUUIDColumnMapper implements ColumnMapper<UUID> {
 

@@ -23,15 +23,14 @@ import net.draycia.carbon.api.event.Cancellable;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Called whenever a player privately messages another player.
  *
  * @since 3.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface CarbonPrivateChatEvent extends CarbonEvent, Cancellable {
 
     /**

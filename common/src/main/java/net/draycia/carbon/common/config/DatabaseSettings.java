@@ -20,19 +20,19 @@
 package net.draycia.carbon.common.config;
 
 import java.util.concurrent.TimeUnit;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 
-@DefaultQualifier(Nullable.class)
+@NullMarked
 @ConfigSerializable
 public class DatabaseSettings {
 
     public DatabaseSettings() {
     }
 
-    public DatabaseSettings(final String url, final String username, final String password) {
+    public DatabaseSettings(final @Nullable String url, final @Nullable String username, final @Nullable String password) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -43,34 +43,34 @@ public class DatabaseSettings {
         MySQL: jdbc:mysql://host:3306/DB
         MariaDB: jdbc:mariadb://host:3306/DB
         PostgreSQL: jdbc:postgresql://host:5432/database""")
-    private String url = "jdbc:mysql://localhost:3306/carbon";
+    private @Nullable String url = "jdbc:mysql://localhost:3306/carbon";
 
     @Comment("The connection username.")
-    private String username = "username";
+    private @Nullable String username = "username";
 
     @Comment("The connection password.")
-    private String password = "password";
+    private @Nullable String password = "password";
 
     @Comment("Settings for the connection pool. This is an advanced configuration that most users won't need to touch.")
-    private ConnectionPool connectionPool = new ConnectionPool();
+    private @Nullable ConnectionPool connectionPool = new ConnectionPool();
 
-    public String url() {
+    public @Nullable String url() {
         return this.url;
     }
 
-    public String url(final String url) {
+    public @Nullable String url(final @Nullable String url) {
         return this.url = url;
     }
 
-    public String username() {
+    public @Nullable String username() {
         return this.username;
     }
 
-    public String password() {
+    public @Nullable String password() {
         return this.password;
     }
 
-    public ConnectionPool connectionPool() {
+    public @Nullable ConnectionPool connectionPool() {
         return this.connectionPool;
     }
 

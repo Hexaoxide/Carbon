@@ -29,13 +29,12 @@ import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
+import org.jspecify.annotations.NullMarked;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class ClearChatCommand extends CarbonCommand {
 
     private final CarbonServer server;

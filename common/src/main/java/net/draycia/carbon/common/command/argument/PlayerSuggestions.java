@@ -20,10 +20,9 @@
 package net.draycia.carbon.common.command.argument;
 
 import net.draycia.carbon.common.command.Commander;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.suggestion.SuggestionProvider;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface PlayerSuggestions extends SuggestionProvider<Commander> {
 }

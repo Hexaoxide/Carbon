@@ -19,17 +19,16 @@
  */
 package net.draycia.carbon.api;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Static accessor for the {@link CarbonChat} instance.
  *
  * @since 1.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonChatProvider {
 
     private static @Nullable CarbonChat instance;

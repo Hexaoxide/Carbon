@@ -24,8 +24,7 @@ import java.util.function.Consumer;
 import net.draycia.carbon.api.channels.ChannelRegistry;
 import net.draycia.carbon.api.event.CarbonEvent;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * {@link CarbonEvent} that's called after new channels are registered.
@@ -37,7 +36,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  *
  * @since 3.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface CarbonChannelRegisterEvent extends CarbonEvent {
 
     /**

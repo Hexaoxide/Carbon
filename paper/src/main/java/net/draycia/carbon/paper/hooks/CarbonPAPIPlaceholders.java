@@ -35,11 +35,10 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class CarbonPAPIPlaceholders extends PlaceholderExpansion {
 
     private final UserManager<?> userManager;

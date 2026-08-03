@@ -32,16 +32,15 @@ import net.draycia.carbon.common.users.CarbonPlayerCommon;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.profile.ProfileNotFoundException;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonServerSponge implements CarbonServer, ForwardingAudience.Single {
 
     private final Game game;
@@ -54,7 +53,7 @@ public final class CarbonServerSponge implements CarbonServer, ForwardingAudienc
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public @NonNull Audience audience() {
         return this.game.server();
     }
 

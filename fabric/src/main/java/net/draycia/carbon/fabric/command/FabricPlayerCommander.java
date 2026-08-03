@@ -26,12 +26,11 @@ import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.command.PlayerCommander;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 import static java.util.Objects.requireNonNull;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public record FabricPlayerCommander(
     CarbonChat carbon,
     CommandSourceStack commandSourceStack

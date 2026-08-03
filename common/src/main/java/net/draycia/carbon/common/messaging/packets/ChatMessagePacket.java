@@ -24,7 +24,7 @@ import java.util.UUID;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import ninja.egg82.messenger.utils.UUIDUtil;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public final class ChatMessagePacket extends CarbonPacket {
 
@@ -55,7 +55,7 @@ public final class ChatMessagePacket extends CarbonPacket {
         return this.message;
     }
 
-    public ChatMessagePacket(final @NotNull UUID sender, final @NotNull ByteBuf data) {
+    public ChatMessagePacket(final @NonNull UUID sender, final @NonNull ByteBuf data) {
         super(sender);
         this.read(data);
     }
@@ -65,7 +65,7 @@ public final class ChatMessagePacket extends CarbonPacket {
     }
 
     public ChatMessagePacket(
-        final @NotNull UUID serverId,
+        final @NonNull UUID serverId,
         final UUID userId,
         final Key channelKey,
         final String username,
@@ -79,7 +79,7 @@ public final class ChatMessagePacket extends CarbonPacket {
     }
 
     @Override
-    public void read(final io.netty.buffer.@NotNull ByteBuf buffer) {
+    public void read(final io.netty.buffer.@NonNull ByteBuf buffer) {
         this.userId = this.readUUID(buffer);
         this.channelKey = this.readKey(buffer);
         this.username = this.readString(buffer);
@@ -87,7 +87,7 @@ public final class ChatMessagePacket extends CarbonPacket {
     }
 
     @Override
-    public void write(final io.netty.buffer.@NotNull ByteBuf buffer) {
+    public void write(final io.netty.buffer.@NonNull ByteBuf buffer) {
         this.writeUUID(this.userId, buffer);
         this.writeKey(this.channelKey, buffer);
         this.writeString(this.username, buffer);

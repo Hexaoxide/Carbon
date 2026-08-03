@@ -37,7 +37,7 @@ hangarPublish.publications.register("plugin") {
   }
   platforms.velocity {
     jar = project(":carbonchat-velocity").platformJar()
-    platformVersions.add("3.5")
+    platformVersions.add("4.0")
     dependencies {
       url("LuckPerms", "https://luckperms.net/")
       hangar("MiniPlaceholders") {

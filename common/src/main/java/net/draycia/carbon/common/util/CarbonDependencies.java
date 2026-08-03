@@ -21,8 +21,7 @@ package net.draycia.carbon.common.util;
 
 import java.nio.file.Path;
 import java.util.Set;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.jpenilla.gremlin.runtime.DependencyCache;
@@ -30,7 +29,7 @@ import xyz.jpenilla.gremlin.runtime.DependencyResolver;
 import xyz.jpenilla.gremlin.runtime.DependencySet;
 import xyz.jpenilla.gremlin.runtime.logging.Slf4jGremlinLogger;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonDependencies {
 
     private CarbonDependencies() {

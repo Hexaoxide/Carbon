@@ -21,15 +21,14 @@ package net.draycia.carbon.api.channels;
 
 import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Represents the result of a channel permission check.
  *
  * @since 3.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface ChannelPermissionResult {
 
     /**

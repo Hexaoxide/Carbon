@@ -57,12 +57,12 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.translation.Translator;
 import net.kyori.moonshine.message.IMessageSource;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonMessageSource implements IMessageSource<Audience, String> {
 
     private final Locale defaultLocale;

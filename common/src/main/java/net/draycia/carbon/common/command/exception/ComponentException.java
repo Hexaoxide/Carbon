@@ -23,11 +23,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.util.ComponentMessageThrowable;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class ComponentException extends RuntimeException implements ComponentMessageThrowable {
 
     private static final long serialVersionUID = 132203031250316968L;

@@ -28,11 +28,10 @@ import net.draycia.carbon.common.users.SaveOnChange;
 import net.draycia.carbon.sponge.users.CarbonPlayerSponge;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class SpongeUserManager implements UserManager<CarbonPlayerSponge>, SaveOnChange {
 
     protected final UserManager<CarbonPlayerCommon> proxiedUserManager;

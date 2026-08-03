@@ -21,11 +21,11 @@ package net.draycia.carbon.common.command;
 
 import java.util.Objects;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public abstract class CarbonCommand {
 
     private @Nullable CommandSettings commandSettings = null;

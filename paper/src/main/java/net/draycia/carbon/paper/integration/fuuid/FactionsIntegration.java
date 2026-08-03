@@ -24,11 +24,10 @@ import net.draycia.carbon.common.channels.CarbonChannelRegistry;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.integration.Integration;
 import org.bukkit.Bukkit;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class FactionsIntegration implements Integration {
 
     private final CarbonChannelRegistry channelRegistry;

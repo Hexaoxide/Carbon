@@ -34,15 +34,14 @@ import net.draycia.carbon.api.event.CarbonEventHandler;
 import net.draycia.carbon.api.event.CarbonEventSubscriber;
 import net.draycia.carbon.api.event.CarbonEventSubscription;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Event handler for listening to and emitting carbon events.
  *
  * @since 1.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public final class CarbonEventHandlerImpl implements CarbonEventHandler {
 

@@ -25,11 +25,10 @@ import io.netty.buffer.ByteBuf;
 import java.util.UUID;
 import net.draycia.carbon.common.messaging.ServerId;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class LocalPlayerChangePacket extends CarbonPacket {
 
     private @MonotonicNonNull UUID playerId;
@@ -50,14 +49,6 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
         this.playerId = playerId;
         this.playerName = playerName;
         this.changeType = changeType;
-    }
-
-    @AssistedInject
-    public LocalPlayerChangePacket(final @ServerId UUID serverId, final @Assisted UUID playerId) {
-        super(serverId);
-        this.playerId = playerId;
-        this.playerName = null;
-        this.changeType = ChangeType.REMOVE;
     }
 
     public LocalPlayerChangePacket(final UUID sender, final ByteBuf data) {

@@ -42,12 +42,11 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements ForwardingAudience.Single {
 
     @AssistedInject
@@ -72,7 +71,7 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     }
 
     @Override
-    public @NotNull Audience audience() {
+    public @NonNull Audience audience() {
         return this.player().map(player -> (Audience) player).orElseGet(() -> EmptyAudienceWithPointers.forCarbonPlayer(this));
     }
 

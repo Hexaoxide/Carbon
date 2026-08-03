@@ -49,9 +49,9 @@ import net.kyori.moonshine.message.IMessageRenderer;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
@@ -66,7 +66,7 @@ import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 @Plugin("carbonchat")
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class CarbonChatSponge implements CarbonChat {
 
     private static final Set<Class<?>> LISTENER_CLASSES = Set.of(SpongeChatListener.class,

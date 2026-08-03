@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
 import net.kyori.adventure.key.Key;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;

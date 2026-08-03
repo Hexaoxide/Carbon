@@ -30,11 +30,10 @@ import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.channels.PartyChatChannel;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class PartyChatSpyHandler implements Listener {
 
     @Inject

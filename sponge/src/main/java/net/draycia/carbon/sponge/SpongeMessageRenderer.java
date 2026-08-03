@@ -33,11 +33,9 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.moonshine.message.IMessageRenderer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class SpongeMessageRenderer<T extends Audience> implements IMessageRenderer<T, String, Component, Component> {
 
     private final ConfigFactory configFactory;

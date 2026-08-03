@@ -33,13 +33,12 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static net.draycia.carbon.api.channels.ChannelPermissionResult.channelPermissionResult;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatChannel {
 
     protected static final String TOWNY_CHANNEL_HEADER = """

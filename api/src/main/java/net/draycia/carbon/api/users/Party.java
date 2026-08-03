@@ -22,8 +22,7 @@ package net.draycia.carbon.api.users;
 import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Reference to a chat party.
@@ -32,7 +31,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
  * @see UserManager#party(UUID)
  * @since 3.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface Party {
 
     /**

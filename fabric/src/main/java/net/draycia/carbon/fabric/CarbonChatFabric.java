@@ -46,10 +46,9 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 @Singleton
 public final class CarbonChatFabric extends CarbonChatInternal {
 

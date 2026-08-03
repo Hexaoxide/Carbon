@@ -30,12 +30,11 @@ import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.messaging.packets.DisbandPartyPacket;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class PlatformUserManager implements UserManagerInternal<WrappedCarbonPlayer> {
 
     private final UserManagerInternal<CarbonPlayerCommon> backingManager;

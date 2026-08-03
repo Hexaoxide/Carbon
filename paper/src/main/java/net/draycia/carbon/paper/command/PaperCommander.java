@@ -23,10 +23,9 @@ import net.draycia.carbon.common.command.Commander;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.command.CommandSender;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface PaperCommander extends Commander, ForwardingAudience.Single {
 
     static PaperCommander from(final CommandSender sender) {

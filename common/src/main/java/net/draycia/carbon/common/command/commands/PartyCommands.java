@@ -44,18 +44,17 @@ import net.draycia.carbon.common.util.Pagination;
 import net.draycia.carbon.common.util.PaginationHelper;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.component.DefaultValue;
 import org.incendo.cloud.context.CommandContext;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static org.incendo.cloud.parser.standard.IntegerParser.integerParser;
 import static org.incendo.cloud.parser.standard.StringParser.greedyStringParser;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public final class PartyCommands extends CarbonCommand {
 
     private final CommandManager<Commander> commandManager;

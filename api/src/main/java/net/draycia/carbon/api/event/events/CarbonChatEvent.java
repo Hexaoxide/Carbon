@@ -29,15 +29,14 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Event that's called when chat components are rendered for online players.
  *
  * @since 2.0.0
  */
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface CarbonChatEvent extends CarbonEvent, Cancellable {
 
     /**

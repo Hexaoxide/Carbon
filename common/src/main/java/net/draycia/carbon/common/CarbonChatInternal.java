@@ -48,10 +48,9 @@ import net.draycia.carbon.common.util.CloudUtils;
 import net.draycia.carbon.common.util.ConcurrentUtil;
 import net.draycia.carbon.common.util.UpdateChecker;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public abstract class CarbonChatInternal implements CarbonChat {
 
     private final Injector injector;

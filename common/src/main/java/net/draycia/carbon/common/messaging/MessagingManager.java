@@ -74,11 +74,11 @@ import ninja.egg82.messenger.packets.server.ShutdownPacket;
 import ninja.egg82.messenger.services.PacketService;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 @Singleton
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public class MessagingManager {
 
     private static final byte protocolVersion = 1;

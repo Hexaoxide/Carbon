@@ -24,13 +24,12 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 
 @ConfigSerializable
-@DefaultQualifier(NonNull.class)
+@NullMarked
 // TODO: Config versioning. This isn't automatically added to existing configs otherwise.
 public class ClearChatSettings {
 

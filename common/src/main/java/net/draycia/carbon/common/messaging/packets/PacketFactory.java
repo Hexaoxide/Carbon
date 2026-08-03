@@ -24,11 +24,10 @@ import java.util.Map;
 import java.util.UUID;
 import net.draycia.carbon.common.users.PartyImpl;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-@DefaultQualifier(NonNull.class)
+@NullMarked
 public interface PacketFactory {
 
     SaveCompletedPacket saveCompletedPacket(UUID playerId);
@@ -45,7 +44,9 @@ public interface PacketFactory {
         return this.localPlayerChangePacket(id, name, LocalPlayerChangePacket.ChangeType.ADD);
     }
 
-    LocalPlayerChangePacket removeLocalPlayerPacket(final UUID id);
+    default LocalPlayerChangePacket removeLocalPlayerPacket(final UUID id) {
+        return this.localPlayerChangePacket(id, null, LocalPlayerChangePacket.ChangeType.REMOVE);
+    }
 
     WhisperPacket whisperPacket(@Assisted("from") UUID from, @Assisted("to") UUID to, Component msg);
 
