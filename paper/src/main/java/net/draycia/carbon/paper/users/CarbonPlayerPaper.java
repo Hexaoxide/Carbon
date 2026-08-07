@@ -117,7 +117,9 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
 
     private Consumer<Player> applyDisplayNameToBukkit(final @Nullable Component displayName) {
         return bukkit -> this.carbonPlayerCommon.schedule(() -> {
-            bukkit.displayName(displayName);
+            if (this.carbonPlayerCommon.configManager().primaryConfig().nickname().updateDisplayName()) {
+                bukkit.displayName(displayName);
+            }
 
             if (this.carbonPlayerCommon.configManager().primaryConfig().nickname().updateTabList()) {
                 bukkit.playerListName(displayName);
