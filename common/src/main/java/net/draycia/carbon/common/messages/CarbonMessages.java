@@ -245,6 +245,9 @@ public interface CarbonMessages {
     @Message("nickname.error.blacklist")
     void nicknameErrorBlackList(final Audience audience, final Component nickname);
 
+    @Message("nickname.error.namechange")
+    void nicknameErrorNameChange(final Audience audience, final Component nickname);
+
     @Message("nickname.error.filter")
     void nicknameErrorFilter(final Audience audience, final Component nickname);
 

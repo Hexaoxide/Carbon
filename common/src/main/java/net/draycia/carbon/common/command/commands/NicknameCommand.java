@@ -128,6 +128,11 @@ public final class NicknameCommand extends CarbonCommand {
 
         final String plainNick = PlainTextComponentSerializer.plainText().serialize(parsedNick);
 
+        if (!sender.hasPermission("carbon.nickname.changename") && !this.config.primaryConfig().nickname().allowNameChanges() && !target.username().equals(plainNick)) {
+            this.carbonMessages.nicknameErrorNameChange(sender, parsedNick);
+            return;
+        }
+
         // If the nickname is caught in the character limit, return without setting a nickname.
         final int minLength = this.config.primaryConfig().nickname().minLength();
         final int maxLength = this.config.primaryConfig().nickname().maxLength();
