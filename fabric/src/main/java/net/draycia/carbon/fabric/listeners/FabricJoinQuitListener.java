@@ -69,7 +69,8 @@ public class FabricJoinQuitListener implements ServerPlayConnectionEvents.Join, 
     @Override
     public void onPlayReady(final ServerGamePacketListenerImpl handler, final PacketSender sender, final MinecraftServer server) {
         this.profileCache.cache(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().name());
-        this.messaging.get().queuePacket(() -> this.packetFactory.addLocalPlayerPacket(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().name()));
+        // Fabric has no vanish integration; vanish state is always false here.
+        this.messaging.get().queuePacket(() -> this.packetFactory.addLocalPlayerPacket(handler.getPlayer().getUUID(), handler.getPlayer().getGameProfile().name(), false));
 
         final @Nullable List<String> suggestions = this.configManager.primaryConfig().customChatSuggestions();
 

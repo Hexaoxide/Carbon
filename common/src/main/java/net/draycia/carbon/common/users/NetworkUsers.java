@@ -38,6 +38,7 @@ import net.draycia.carbon.common.command.PlayerCommander;
 import net.draycia.carbon.common.command.argument.PlayerSuggestions;
 import net.draycia.carbon.common.messaging.packets.LocalPlayerChangePacket;
 import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
+import net.draycia.carbon.common.messaging.packets.PlayerInfo;
 import net.draycia.carbon.common.util.Exceptions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -56,7 +57,7 @@ import org.incendo.cloud.suggestion.Suggestion;
 public final class NetworkUsers implements PlayerSuggestions {
 
     private final CarbonServer server;
-    private final Map<UUID, Map<UUID, String>> map = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<UUID, PlayerInfo>> map = new ConcurrentHashMap<>();
     private final UserManager<? extends CarbonPlayer> userManager;
     private final ProfileCache profileCache;
 
@@ -72,11 +73,11 @@ public final class NetworkUsers implements PlayerSuggestions {
     }
 
     public void handlePacket(final LocalPlayerChangePacket packet) {
-        final Map<UUID, String> serverMap = this.map.computeIfAbsent(packet.getSender(), $ -> new ConcurrentHashMap<>());
+        final Map<UUID, PlayerInfo> serverMap = this.map.computeIfAbsent(packet.getSender(), $ -> new ConcurrentHashMap<>());
 
         switch (packet.changeType()) {
             case ADD -> {
-                serverMap.put(packet.playerId(), packet.playerName());
+                serverMap.put(packet.playerId(), new PlayerInfo(packet.playerName(), packet.vanished()));
                 this.profileCache.cache(packet.playerId(), packet.playerName());
             }
             case REMOVE -> serverMap.remove(packet.playerId());
@@ -89,11 +90,11 @@ public final class NetworkUsers implements PlayerSuggestions {
         if (packet.players().isEmpty()) {
             this.map.remove(packet.getSender());
         } else {
-            final Map<UUID, String> serverMap = this.map.computeIfAbsent(packet.getSender(), $ -> new ConcurrentHashMap<>());
+            final Map<UUID, PlayerInfo> serverMap = this.map.computeIfAbsent(packet.getSender(), $ -> new ConcurrentHashMap<>());
             serverMap.clear();
             serverMap.putAll(packet.players());
 
-            packet.players().forEach(this.profileCache::cache);
+            packet.players().forEach((uuid, info) -> this.profileCache.cache(uuid, info.name()));
         }
     }
 
@@ -106,7 +107,7 @@ public final class NetworkUsers implements PlayerSuggestions {
 
         if (!(commander instanceof PlayerCommander player)) {
             return CompletableFuture.completedFuture(
-                Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()))
+                Stream.concat(local.stream().map(CarbonPlayer::username), this.map.values().stream().flatMap(m -> m.values().stream()).map(PlayerInfo::name))
                     .distinct()
                     .map(Suggestion::suggestion)
                     .toList()
@@ -132,12 +133,50 @@ public final class NetworkUsers implements PlayerSuggestions {
 
         return CompletableFuture.completedFuture(
             Stream.concat(local.stream(), remote)
-                .filter(carbonPlayer::awareOf)
+                .filter(other -> this.awareOf(carbonPlayer, other))
                 .map(CarbonPlayer::username)
                 .distinct()
                 .map(Suggestion::suggestion)
                 .toList()
         );
+    }
+
+    /**
+     * Whether {@code other} is vanished, either locally or on the remote server they're connected to.
+     *
+     * <p>{@link CarbonPlayer#vanished()} only reflects live state for players on the querying server;
+     * for players elsewhere on the network we consult the eventually consistent state synced here.</p>
+     *
+     * @param other the (potentially remote) player
+     * @return whether the player is vanished anywhere on the network
+     */
+    public boolean vanished(final CarbonPlayer other) {
+        if (other.vanished()) {
+            return true;
+        }
+        return this.vanished(other.uuid());
+    }
+
+    private boolean vanished(final UUID uuid) {
+        return this.map.values().stream()
+            .map(server -> server.get(uuid))
+            .filter(Objects::nonNull)
+            .anyMatch(PlayerInfo::vanished);
+    }
+
+    /**
+     * Network-aware variant of {@link CarbonPlayer#awareOf(CarbonPlayer)} that also honors the vanish
+     * state of players connected to other servers on the network.
+     *
+     * @param viewer the player attempting to see/message {@code other}
+     * @param other  the (potentially remote, potentially vanished) player
+     * @return whether {@code viewer} should be aware of {@code other}
+     */
+    public boolean awareOf(final CarbonPlayer viewer, final CarbonPlayer other) {
+        if (this.vanished(other)) {
+            return viewer.hasPermission("carbon.whisper.vanished");
+        }
+        return true;
     }
 
     public boolean online(final CarbonPlayer player) {

@@ -39,6 +39,7 @@ import net.draycia.carbon.common.integration.Integration;
 import net.draycia.carbon.common.listeners.Listener;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.draycia.carbon.common.messaging.MessagingManager;
+import net.draycia.carbon.common.messaging.VanishSync;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.PlayerUtils;
 import net.draycia.carbon.common.users.ProfileCache;
@@ -120,6 +121,14 @@ public abstract class CarbonChatInternal implements CarbonChat {
             this.userManager::cleanup,
             30,
             30,
+            TimeUnit.SECONDS
+        );
+
+        final VanishSync vanishSync = this.injector.getInstance(VanishSync.class);
+        this.periodicTasks.scheduleAtFixedRate(
+            vanishSync::pollAndBroadcast,
+            VanishSync.POLL_INTERVAL_SECONDS,
+            VanishSync.POLL_INTERVAL_SECONDS,
             TimeUnit.SECONDS
         );
 

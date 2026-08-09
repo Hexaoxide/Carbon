@@ -32,12 +32,12 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class LocalPlayersPacket extends CarbonPacket {
 
-    private @MonotonicNonNull Map<UUID, String> players;
+    private @MonotonicNonNull Map<UUID, PlayerInfo> players;
 
     @AssistedInject
     public LocalPlayersPacket(
         final @ServerId UUID serverId,
-        final @Assisted Map<UUID, String> players
+        final @Assisted Map<UUID, PlayerInfo> players
     ) {
         super(serverId);
         this.players = players;
@@ -48,18 +48,29 @@ public final class LocalPlayersPacket extends CarbonPacket {
         this.read(data);
     }
 
-    public Map<UUID, String> players() {
+    public Map<UUID, PlayerInfo> players() {
         return this.players;
     }
 
     @Override
     public void read(final ByteBuf buffer) {
-        this.players = this.readMap(buffer, this::readUUID, this::readString);
+        this.players = this.readMap(buffer, this::readUUID, this::readPlayerInfo);
     }
 
     @Override
     public void write(final ByteBuf buffer) {
-        this.writeMap(this.players, this::writeUUID, this::writeString, buffer);
+        this.writeMap(this.players, this::writeUUID, this::writePlayerInfo, buffer);
+    }
+
+    private PlayerInfo readPlayerInfo(final ByteBuf buffer) {
+        final String name = this.readString(buffer);
+        final boolean vanished = buffer.readBoolean();
+        return new PlayerInfo(name, vanished);
+    }
+
+    private void writePlayerInfo(final PlayerInfo info, final ByteBuf buffer) {
+        this.writeString(info.name(), buffer);
+        buffer.writeBoolean(info.vanished());
     }
 
 }
