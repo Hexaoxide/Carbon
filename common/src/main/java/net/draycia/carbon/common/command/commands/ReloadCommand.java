@@ -62,8 +62,8 @@ public final class ReloadCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .literal("reload")
             .permission("carbon.reload")
             .senderType(Commander.class)

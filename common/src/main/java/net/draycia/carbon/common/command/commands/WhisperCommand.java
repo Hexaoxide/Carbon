@@ -88,8 +88,8 @@ public final class WhisperCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .required("player", this.parserFactory.carbonPlayer(), richDescription(this.carbonMessages.commandWhisperArgumentPlayer()))
             .required("message", signedGreedyStringParser(), richDescription(this.carbonMessages.commandWhisperArgumentMessage()))
             .permission("carbon.whisper.message")

@@ -89,12 +89,12 @@ public final class PartyCommands extends CarbonCommand {
     }
 
     @Override
-    public void init() {
+    public void registerCommand(final String commandName, final String[] aliases) {
         if (!this.config.primaryConfig().partyChat().enabled) {
             return;
         }
 
-        final var root = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+        final var root = this.commandManager.commandBuilder(commandName, aliases)
             .senderType(PlayerCommander.class)
             .permission("carbon.parties");
         final var info = root.commandDescription(richDescription(this.messages.partyDesc())).handler(this::info);
