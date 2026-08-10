@@ -109,6 +109,11 @@ public final class CarbonPlayerPaper extends WrappedCarbonPlayer implements Forw
     }
 
     @Override
+    public @Nullable String worldName() {
+        return this.player().map(p -> p.getWorld().getName()).orElse(null);
+    }
+
+    @Override
     public void nickname(final @Nullable Component nickname) {
         super.nickname(nickname);
 
