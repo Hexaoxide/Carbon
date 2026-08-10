@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import net.draycia.carbon.api.channels.ChannelPermissions;
+import net.draycia.carbon.api.channels.RecipientsResolver;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
@@ -73,26 +74,28 @@ public class TruceChannel extends AbstractFactionsChannel {
     }
 
     @Override
-    public List<Audience> recipients(final CarbonPlayer sender) {
-        if (!this.hasRelations(sender, Relation.TRUCE)) {
-            if (sender.online()) {
-                sender.sendMessage(this.messages.cannotUseTruceChannel(sender));
+    public RecipientsResolver recipientsResolver() {
+        return sender -> {
+            if (!this.hasRelations(sender, Relation.TRUCE)) {
+                if (sender.online()) {
+                    sender.sendMessage(this.messages.cannotUseTruceChannel(sender));
+                }
+
+                return Collections.emptyList();
             }
 
-            return Collections.emptyList();
-        }
-
-        final List<Audience> recipients = new ArrayList<>();
-        for (final Player player : this.hasTruceWith(sender)) {
-            final @Nullable CarbonPlayer carbon = this.users.user(player.getUniqueId()).getNow(null);
-            if (carbon != null) {
-                recipients.add(carbon);
+            final List<Audience> recipients = new ArrayList<>();
+            for (final Player player : this.hasTruceWith(sender)) {
+                final @Nullable CarbonPlayer carbon = this.users.user(player.getUniqueId()).getNow(null);
+                if (carbon != null) {
+                    recipients.add(carbon);
+                }
             }
-        }
 
-        recipients.add(this.server.console());
+            recipients.add(this.server.console());
 
-        return recipients;
+            return recipients;
+        };
     }
 
     private List<Player> hasTruceWith(final CarbonPlayer player) {
