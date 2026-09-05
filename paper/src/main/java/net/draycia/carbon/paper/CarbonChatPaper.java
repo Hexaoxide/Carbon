@@ -125,7 +125,7 @@ public final class CarbonChatPaper extends CarbonChatInternal {
             } catch (final IOException e) {
                 this.logger().error("Smoke test: Failed to create file.", e);
             }
-            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
+            this.plugin.getServer().getGlobalRegionScheduler().runDelayed(this.plugin, task -> {
                 this.logger().info("Smoke test: Shutting down server.");
                 Bukkit.getServer().shutdown();
             }, 20L);

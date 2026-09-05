@@ -10,6 +10,12 @@ plugins {
   id("carbon.configurable-plugins")
 }
 
+indra {
+  javaVersions {
+    target(25)
+  }
+}
+
 dependencies {
   implementation(projects.carbonchatCommon)
 
@@ -62,18 +68,20 @@ tasks {
   }
   val luckperms = FetchLuckPermsJar.setup(project, "bukkit")
   withType(RunServer::class).configureEach {
-    version.set("1.21.4")
+    version.set(providers.gradleProperty("paperVersion").orElse("26.2"))
     downloadPlugins {
       github("MiniPlaceholders", "MiniPlaceholders", libs.versions.miniplaceholders.get(), "MiniPlaceholders-Paper-${libs.versions.miniplaceholders.get()}.jar")
       // TODO: install MP extensions to its folder
       // github("MiniPlaceholders", "PlaceholderAPI-Expansion", "2.1.0", "PlaceholderAPI-Expansion-2.1.0.jar")
       hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
-      modrinth("parties", libs.versions.adpParties.get())
+      if (this@configureEach.name != "runFolia") {
+        modrinth("parties", libs.versions.adpParties.get())
+      }
     }
     pluginJars.from(luckperms.flatMap { it.outputFile })
     providers.gradleProperty("smokeTest").map { it.toBoolean() }.getOrElse(false).let { smokeTest ->
       if (smokeTest) {
-        runDirectory.set(layout.buildDirectory.dir("tmp/smokeTest"))
+        runDirectory.set(layout.buildDirectory.dir(version.map { "tmp/smokeTest/$name-$it" }))
         doFirst {
           runDirectory.get().file("carbonchat-smoketest").asFile.takeIf { it.exists() }?.delete()
           runDirectory.get().file("eula.txt").asFile.also { it.parentFile.mkdirs() }.writeText("eula=true")
