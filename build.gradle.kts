@@ -4,7 +4,7 @@ plugins {
   alias(libs.plugins.cloud.buildLogic.rootProject.publishing)
 }
 
-val projectVersion: String by project // get from gradle.properties
+val projectVersion = project.property("projectVersion") as String // get from gradle.properties
 version = projectVersion
 
 fun Project.platformJar(): Provider<RegularFile> =
