@@ -9,7 +9,7 @@ plugins {
   alias(libs.plugins.resource.factory.fabric.convention)
 }
 
-val shade: Configuration by configurations.creating
+val shade: Configuration = configurations.create("shade")
 
 configurations.implementation {
   extendsFrom(shade)

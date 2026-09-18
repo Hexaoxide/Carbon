@@ -6,7 +6,7 @@ plugins {
   alias(libs.plugins.resource.factory.velocity.convention)
 }
 
-val bstats: Configuration by configurations.creating
+val bstats: Configuration = configurations.create("bstats")
 configurations.compileOnly {
   extendsFrom(bstats)
 }
