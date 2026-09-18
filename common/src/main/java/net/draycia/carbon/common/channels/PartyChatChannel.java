@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import net.draycia.carbon.api.channels.ChannelPermissions;
+import net.draycia.carbon.api.channels.RecipientsResolver;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.Party;
 import net.draycia.carbon.common.channels.messages.ConfigChannelMessageSource;
@@ -66,18 +67,20 @@ public class PartyChatChannel extends ConfigChatChannel {
     }
 
     @Override
-    public List<Audience> recipients(final CarbonPlayer sender) {
-        final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) sender;
-        final @Nullable UUID party = wrapped.partyId();
-        if (party == null) {
-            if (sender.online()) {
-                sender.sendMessage(this.messages.cannotUsePartyChannel(sender));
+    public RecipientsResolver recipientsResolver() {
+        return sender -> {
+            final WrappedCarbonPlayer wrapped = (WrappedCarbonPlayer) sender;
+            final @Nullable UUID party = wrapped.partyId();
+            if (party == null) {
+                if (sender.online()) {
+                    sender.sendMessage(this.messages.cannotUsePartyChannel(sender));
+                }
+                return new ArrayList<>();
             }
-            return new ArrayList<>();
-        }
-        final List<Audience> recipients = super.recipients(sender);
-        recipients.removeIf(r -> r instanceof WrappedCarbonPlayer p && !Objects.equals(p.partyId(), party));
-        return recipients;
+            final List<Audience> recipients = super.recipientsResolver().recipients(sender);
+            recipients.removeIf(r -> r instanceof WrappedCarbonPlayer p && !Objects.equals(p.partyId(), party));
+            return recipients;
+        };
     }
 
     @Override

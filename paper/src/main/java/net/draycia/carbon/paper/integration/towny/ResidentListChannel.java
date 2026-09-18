@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.draycia.carbon.api.channels.ChannelPermissions;
+import net.draycia.carbon.api.channels.RecipientsResolver;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.api.users.UserManager;
 import net.draycia.carbon.common.channels.ConfigChatChannel;
@@ -61,28 +62,30 @@ abstract class ResidentListChannel<T extends ResidentList> extends ConfigChatCha
     }
 
     @Override
-    public List<Audience> recipients(final CarbonPlayer sender) {
-        final @Nullable T residentList = this.residentList(sender);
+    public RecipientsResolver recipientsResolver() {
+        return sender -> {
+            final @Nullable T residentList = this.residentList(sender);
 
-        if (residentList == null) {
-            if (sender.online()) {
-                sender.sendMessage(this.cannotUseChannel(sender));
+            if (residentList == null) {
+                if (sender.online()) {
+                    sender.sendMessage(this.cannotUseChannel(sender));
+                }
+
+                return Collections.emptyList();
             }
 
-            return Collections.emptyList();
-        }
-
-        final List<Audience> recipients = new ArrayList<>();
-        for (final Player player : this.onlinePlayers(residentList)) {
-            final @Nullable CarbonPlayer carbon = this.users.user(player.getUniqueId()).getNow(null);
-            if (carbon != null) {
-                recipients.add(carbon);
+            final List<Audience> recipients = new ArrayList<>();
+            for (final Player player : this.onlinePlayers(residentList)) {
+                final @Nullable CarbonPlayer carbon = this.users.user(player.getUniqueId()).getNow(null);
+                if (carbon != null) {
+                    recipients.add(carbon);
+                }
             }
-        }
 
-        recipients.add(this.server.console());
+            recipients.add(this.server.console());
 
-        return recipients;
+            return recipients;
+        };
     }
 
     protected List<Player> onlinePlayers(final T residentList) {
