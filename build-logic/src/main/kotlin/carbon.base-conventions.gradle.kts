@@ -12,6 +12,7 @@ indra {
 
   javaVersions {
     target(21)
+    minimumToolchain(25)
   }
 
   github(GITHUB_ORGANIZATION, GITHUB_REPO)
