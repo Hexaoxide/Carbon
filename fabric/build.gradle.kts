@@ -118,7 +118,7 @@ tasks {
 
 publishMods.modrinth {
   environment = ModrinthEnvironment.SERVER_ONLY
-  minecraftVersions.set(listOf(libs.versions.minecraft.get()))
+  minecraftVersions.set(listOf("26.1.2", "26.2", "26.3"))
   modLoaders.addAll("fabric")
   requires("fabric-api")
   requires("adventure-platform-mod")
