@@ -64,6 +64,11 @@ public class ConsoleCarbonPlayer implements CarbonPlayer, ForwardingAudience.Sin
     }
 
     @Override
+    public @Nullable String worldName() {
+        return null;
+    }
+
+    @Override
     public String username() {
         return "Console";
     }

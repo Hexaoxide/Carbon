@@ -454,6 +454,11 @@ public class CarbonPlayerCommon implements CarbonPlayer, ForwardingAudience.Sing
     }
 
     @Override
+    public @Nullable String worldName() {
+        return null;
+    }
+
+    @Override
     public String username() {
         if (this.username == null) {
             this.username = Objects.requireNonNull(

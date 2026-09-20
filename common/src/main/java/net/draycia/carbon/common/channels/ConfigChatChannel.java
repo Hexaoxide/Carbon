@@ -120,6 +120,34 @@ public class ConfigChatChannel implements ChatChannel {
     @Comment("Whether this channel's messages should be sent cross-server.")
     private boolean crossServer = true;
 
+    @Comment("""
+        Restrict this channel to specific world groups. Players only receive messages from
+        others in the same group. Leave empty to allow all worlds.
+        Example:
+        worlds:[
+            ["world", "world_nether", "world_the_end"],
+            ["hub"]
+        ]""")
+    private @Nullable List<List<String>> worlds = Collections.emptyList();
+
+    /**
+     * Returns the world group the given world name belongs to, or {@code null} if no restriction applies.
+     *
+     * @param worldName the world name to look up
+     * @return the matching group, or {@code null}
+     */
+    private @Nullable List<String> worldGroupFor(final @Nullable String worldName) {
+        if (worldName == null || this.worlds == null || this.worlds.isEmpty()) {
+            return null;
+        }
+        for (final List<String> group : this.worlds) {
+            if (group.contains(worldName)) {
+                return group;
+            }
+        }
+        return null;
+    }
+
     @Override
     public @Nullable String quickPrefix() {
         if (this.quickPrefix == null || this.quickPrefix.isBlank()) {
@@ -170,16 +198,25 @@ public class ConfigChatChannel implements ChatChannel {
     @Override
     public List<Audience> recipients(final CarbonPlayer sender) {
         final List<Audience> recipients = new ArrayList<>();
-
+        final List<String> senderGroup = this.worldGroupFor(sender.worldName());
+    
         for (final CarbonPlayer player : this.server.players()) {
-            if (this.permissions().hearingPermitted(player).permitted() && !player.leftChannels().contains(this.key)) {
-                recipients.add(player);
+            if (!this.permissions().hearingPermitted(player).permitted()
+                || player.leftChannels().contains(this.key)) {
+                continue;
             }
+            if (senderGroup != null) {
+                final List<String> playerGroup = this.worldGroupFor(player.worldName());
+                if (!senderGroup.equals(playerGroup)) {
+                    continue;
+                }
+            }
+            recipients.add(player);
         }
-
+    
         // console too!
         recipients.add(this.server.console());
-
+    
         return recipients;
     }
 

@@ -121,6 +121,13 @@ public final class CarbonPlayerSponge extends WrappedCarbonPlayer implements For
     }
 
     @Override
+    public @Nullable String worldName() {
+        return this.player()
+            .map(p -> p.world().key().asString())
+            .orElse(null);
+    }
+
+    @Override
     public void displayName(final @Nullable Component displayName) {
         this.carbonPlayerCommon.displayName(displayName);
     }
