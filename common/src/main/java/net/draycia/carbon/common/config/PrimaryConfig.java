@@ -276,6 +276,9 @@ public class PrimaryConfig {
         @Comment("Whether to skip applying 'format' when a nickname matches a players username, only differing in decoration.")
         public boolean skipFormatWhenNameMatches = true;
 
+        @Comment("Whether to allow players to change their name, or only change the formatting while keeping their real username.")
+        public boolean allowNameChanges = true;
+
         public boolean useCarbonNicknames() {
             return this.useCarbonNicknames;
         }
@@ -298,6 +301,10 @@ public class PrimaryConfig {
 
         public int maxLength() {
             return this.maxLength;
+        }
+
+        public boolean allowNameChanges() {
+            return this.allowNameChanges;
         }
     }
 
