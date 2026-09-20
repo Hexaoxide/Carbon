@@ -176,9 +176,8 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     @Override
     public Component displayName() {
         final @Nullable Component nick = this.nickname();
-        if (nick != null) {
-            final PrimaryConfig.NicknameSettings nicknames = this.carbonPlayerCommon.configManager().primaryConfig().nickname();
-
+        final PrimaryConfig.NicknameSettings nicknames = this.carbonPlayerCommon.configManager().primaryConfig().nickname();
+        if (nicknames.updateDisplayName() && nick != null) {
             if (nicknames.skipFormatWhenNameMatches) {
                 final String plainNick = PlainTextComponentSerializer.plainText().serialize(nick);
                 if (plainNick.equals(this.username())) {
