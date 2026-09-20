@@ -65,16 +65,24 @@ public class PingHandler implements Listener {
     public Component convertPings(final CarbonPlayer recipient, final Component message) {
         final String prefix = this.configManager.primaryConfig().pings().prefix();
         final String plainDisplayName = PlainTextComponentSerializer.plainText().serialize(recipient.displayName());
+        final String pingPattern;
+
+        if (prefix.isEmpty()) {
+            pingPattern = String.format(
+                "\\b(%1$s|%2$s)\\b",
+                Pattern.quote(recipient.username()),
+                Pattern.quote(plainDisplayName));
+        } else {
+            pingPattern = String.format(
+                "\\B%1$s(%2$s|%3$s)\\b",
+                Pattern.quote(prefix),
+                Pattern.quote(recipient.username()),
+                Pattern.quote(plainDisplayName));
+        }
 
         return message.replaceText(TextReplacementConfig.builder()
-            // \B(@Username|@Displayname)\b
-            .match(Pattern.compile(
-                String.format(
-                    "\\B%1$s(%2$s|%3$s)\\b",
-                    Pattern.quote(prefix),
-                    Pattern.quote(recipient.username()),
-                    Pattern.quote(plainDisplayName)),
-                Pattern.CASE_INSENSITIVE))
+            // pingPattern: either \b(username|displayName)\b (no prefix) or \B<prefix>(username|displayName)\b (with configurable prefix)
+            .match(Pattern.compile(pingPattern, Pattern.CASE_INSENSITIVE))
             .replacement(matchedText -> {
                 if (this.configManager.primaryConfig().pings().playSound() && recipient.hasPermission("carbon.ping_sounds")) {
                     recipient.playSound(this.configManager.primaryConfig().pings().sound(), Sound.Emitter.self());

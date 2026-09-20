@@ -23,7 +23,11 @@ import com.google.inject.Inject;
 import io.papermc.paper.event.player.AsyncChatCommandDecorateEvent;
 import io.papermc.paper.event.player.AsyncChatDecorateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.draycia.carbon.api.CarbonChat;
+import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.users.CarbonPlayer;
 import net.draycia.carbon.common.config.ConfigManager;
 import net.draycia.carbon.common.event.events.CarbonChatEventImpl;
@@ -31,7 +35,9 @@ import net.draycia.carbon.common.event.events.CarbonEarlyChatEvent;
 import net.draycia.carbon.common.listeners.ChatListenerInternal;
 import net.draycia.carbon.common.messages.CarbonMessages;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -45,6 +51,8 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
 
     private final CarbonChat carbonChat;
     final ConfigManager configManager;
+    private final Map<UUID, Key> quickPrefixChannels = new ConcurrentHashMap<>();
+    private final Map<UUID, Boolean> usedQuickPrefix = new ConcurrentHashMap<>();
 
     @Inject
     public PaperChatListener(
@@ -64,7 +72,12 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             return;
         }
 
-        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.player().getUniqueId()).join();
+        final UUID playerId = event.player().getUniqueId();
+        final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(playerId).join();
+        if (sender == null) {
+            event.setCancelled(true);
+            return;
+        }
         final @Nullable CarbonEarlyChatEvent earlyChatEvent = this.prepareAndEmitPreChatEvent(sender, event.result());
 
         if (earlyChatEvent == null || earlyChatEvent.cancelled()) {
@@ -77,6 +90,12 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
         if (message != null) {
             event.result(message);
         }
+
+        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(event.originalMessage());
+        final ChatChannel channel = channelMessage.channel();
+        this.quickPrefixChannels.put(playerId, channel.key());
+        final boolean prefixUsed = channelMessage.message() != event.originalMessage();
+        this.usedQuickPrefix.put(playerId, prefixUsed);
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -88,12 +107,29 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPaperChat(final @NonNull AsyncChatEvent event) {
         final @Nullable CarbonPlayer sender = this.carbonChat.userManager().user(event.getPlayer().getUniqueId()).join();
+        if (sender == null) {
+            event.setCancelled(true);
+            return;
+        }
 
         if (event.viewers().isEmpty()) {
             return;
         }
 
-        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, event.message(), event.signedMessage());
+        final UUID playerId = event.getPlayer().getUniqueId();
+        final Key channelKey = this.quickPrefixChannels.remove(playerId);
+        final ChatChannel channel = channelKey != null
+            ? this.carbonChat.channelRegistry().channelOrDefault(channelKey)
+            : this.carbonChat.channelRegistry().defaultChannel();
+        final boolean prefixUsed = Boolean.TRUE.equals(this.usedQuickPrefix.remove(playerId));
+        SignedMessage signedMessage = event.signedMessage();
+        final Component decoratedMessage = event.message();
+        if (prefixUsed) {
+            signedMessage = null;
+        }
+        final SignedMessage renderSignedMessage = signedMessage;
+        final Component messageForEvent = renderSignedMessage != null ? event.originalMessage() : decoratedMessage;
+        final @Nullable CarbonChatEventImpl chatEvent = this.prepareAndEmitChatEvent(sender, messageForEvent, renderSignedMessage, channel);
 
         if (chatEvent == null || chatEvent.cancelled()) {
             event.setCancelled(true);
@@ -107,6 +143,8 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
             exception.printStackTrace();
         }
 
+        final boolean hasSignedMessage = renderSignedMessage != null;
+
         event.renderer(($, $$, $$$, recipient) -> {
             final var recipientUUID = recipient.get(Identity.UUID);
             final Audience recipientViewer;
@@ -117,7 +155,12 @@ public final class PaperChatListener extends ChatListenerInternal implements Lis
                 recipientViewer = recipient;
             }
 
-            return chatEvent.renderFor(recipientViewer);
+            final Component rendered = chatEvent.renderFor(recipientViewer);
+            if (hasSignedMessage) {
+                return rendered;
+            }
+
+            return rendered;
         });
     }
 
