@@ -29,7 +29,6 @@ import net.draycia.carbon.common.integration.miniplaceholders.MiniPlaceholdersUt
 import net.draycia.carbon.common.messages.CarbonMessageRenderer;
 import net.draycia.carbon.common.messages.RenderForTagResolver;
 import net.draycia.carbon.common.messages.SourcedAudience;
-import net.draycia.carbon.common.users.ConsoleCarbonPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -74,17 +73,10 @@ public class VelocityMessageRenderer extends CarbonMessageRenderer {
                 }
             }
         }
-        final Audience parseAudience;
 
-        if (receiver instanceof SourcedAudience sourced) {
-            if (sourced.recipient() instanceof ConsoleCarbonPlayer) {
-                parseAudience = MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, sourced.sender(), sourced.sender());
-            } else {
-                parseAudience = MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, sourced.recipient(), sourced.sender());
-            }
-        } else {
-            parseAudience = receiver;
-        }
+        final Audience parseAudience = receiver instanceof SourcedAudience sourced
+            ? MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, sourced.recipient(), sourced.sender())
+            : receiver;
 
         return MiniMessage.miniMessage().deserialize(placeholderResolvedMessage, parseAudience, tagResolver.build());
     }
