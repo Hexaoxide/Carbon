@@ -22,6 +22,7 @@ package net.draycia.carbon.common.listeners;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import net.draycia.carbon.api.channels.ChannelPermissionResult;
 import net.draycia.carbon.api.channels.ChatChannel;
 import net.draycia.carbon.api.event.CarbonEventHandler;
@@ -47,6 +48,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public abstract class ChatListenerInternal {
 
+    private static final String CONSOLE_SENDER_PASSED_ERROR = "Channel resolution is not supported for console senders";
     private final ConfigManager configManager;
     private final CarbonMessages carbonMessages;
     private final CarbonEventHandler carbonEventHandler;
@@ -61,14 +63,13 @@ public abstract class ChatListenerInternal {
         this.carbonEventHandler = carbonEventHandler;
     }
 
-    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component originalMessage, final @Nullable SignedMessage signedMessage) {
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(originalMessage);
-        final ChatChannel channel = channelMessage.channel();
+    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component originalMessage, final SignedMessage signedMessage) {
+        final @Nullable ChatChannel channel = sender.channelForMessage(signedMessage.message());
 
-        return this.prepareAndEmitChatEvent(sender, channelMessage.message(), signedMessage, channel);
+        return this.prepareAndEmitChatEvent(sender, originalMessage, signedMessage, Objects.requireNonNull(channel, CONSOLE_SENDER_PASSED_ERROR));
     }
 
-    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component message, final @Nullable SignedMessage signedMessage, final ChatChannel channel) {
+    protected @Nullable CarbonChatEventImpl prepareAndEmitChatEvent(final CarbonPlayer sender, final Component message, final SignedMessage signedMessage, final ChatChannel channel) {
         if (!sender.hasPermission("carbon.cooldown.exempt") && channel.cooldown() > 0) {
             final long currentMillis = System.currentTimeMillis();
             final long expiresAt = channel.playerCooldown(sender);
@@ -101,16 +102,19 @@ public abstract class ChatListenerInternal {
     }
 
     protected @Nullable CarbonEarlyChatEvent prepareAndEmitPreChatEvent(final CarbonPlayer sender, final Component originalMessage) {
-        final CarbonPlayer.ChannelMessage channelMessage = sender.channelForMessage(originalMessage);
-        final ChatChannel channel = channelMessage.channel();
+        final CarbonPlayer.ChannelMessage channelMessage = sender.resolveChannelMessage(originalMessage);
 
+        return prepareAndEmitPreChatEvent(sender, Objects.requireNonNull(channelMessage.message(), CONSOLE_SENDER_PASSED_ERROR), Objects.requireNonNull(channelMessage.channel(), CONSOLE_SENDER_PASSED_ERROR));
+    }
+
+    protected @Nullable CarbonEarlyChatEvent prepareAndEmitPreChatEvent(final CarbonPlayer sender, final Component message, final ChatChannel channel) {
         final ChannelPermissionResult permitted = channel.permissions().speechPermitted(sender);
         if (!permitted.permitted()) {
             sender.sendMessage(permitted.reason());
             return null;
         }
 
-        final String plainContent = PlainTextComponentSerializer.plainText().serialize(channelMessage.message());
+        final String plainContent = PlainTextComponentSerializer.plainText().serialize(message);
         final String content = this.configManager.primaryConfig().applyChatPlaceholders(plainContent);
 
         final CarbonEarlyChatEvent earlyChatEvent = new CarbonEarlyChatEvent(sender, content);
