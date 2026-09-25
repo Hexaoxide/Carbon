@@ -86,12 +86,7 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
             return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
         }
 
-        // We can't/shouldn't resolve placeholders for non-players
-        if (sender instanceof ConsoleCarbonPlayer) {
-            return this.miniMessage.deserialize(placeholderResolvedMessage, tagResolver.build());
-        }
-
-        final Player senderBukkitPlayer = requireNonNull(Bukkit.getPlayer(sender.uuid()));
+        final @Nullable Player senderBukkitPlayer = findBukkitPlayer(sender);
 
         final MiniPlaceholdersIntegration.@Nullable Config miniplaceholdersConfig = MiniPlaceholdersUtil.miniPlaceholdersLoaded()
             ? this.configManager.primaryConfig().integrations().config(MiniPlaceholdersIntegration.configMeta())
@@ -127,6 +122,13 @@ public class PaperMessageRenderer extends CarbonMessageRenderer {
         }
 
         return this.miniMessage.deserialize(placeholderResolvedMessage, MiniPlaceholdersUtil.wrapAudiences(miniplaceholdersConfig, recipientBukkitPlayer, senderBukkitPlayer), tagResolver.build());
+    }
+
+    private static @Nullable Player findBukkitPlayer(final CarbonPlayer sender) {
+        if (sender instanceof ConsoleCarbonPlayer) {
+            return null;
+        }
+        return requireNonNull(Bukkit.getPlayer(sender.uuid()));
     }
 
     private boolean hasPlaceholderAPI() {
