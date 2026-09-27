@@ -77,9 +77,7 @@ public final class JoinCommand extends CarbonCommand {
                 return sender.leftChannels().stream()
                     .map(this.channelRegistry::channel)
                     .filter(Objects::nonNull)
-                    .filter(channel -> channel.permissions().joinPermitted(sender).permitted()
-                        || channel.permissions().hearingPermitted(sender).permitted()
-                        || channel.permissions().speechPermitted(sender).permitted())
+                    .filter(channel -> channel.permissions().joinPermitted(sender).permitted())
                     .map(channel -> channel.key().value())
                     .map(Suggestion::suggestion)
                     .toList();
