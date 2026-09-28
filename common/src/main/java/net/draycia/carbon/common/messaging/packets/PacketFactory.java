@@ -33,16 +33,16 @@ public interface PacketFactory {
 
     SaveCompletedPacket saveCompletedPacket(UUID playerId);
 
-    LocalPlayersPacket localPlayersPacket(Map<UUID, String> players);
+    LocalPlayersPacket localPlayersPacket(Map<UUID, PlayerInfo> players);
 
     default LocalPlayersPacket clearLocalPlayersPacket() {
         return this.localPlayersPacket(Map.of());
     }
 
-    LocalPlayerChangePacket localPlayerChangePacket(UUID player, @Nullable String name, LocalPlayerChangePacket.ChangeType type);
+    LocalPlayerChangePacket localPlayerChangePacket(UUID player, @Nullable String name, LocalPlayerChangePacket.ChangeType type, boolean vanished);
 
-    default LocalPlayerChangePacket addLocalPlayerPacket(final UUID id, final String name) {
-        return this.localPlayerChangePacket(id, name, LocalPlayerChangePacket.ChangeType.ADD);
+    default LocalPlayerChangePacket addLocalPlayerPacket(final UUID id, final String name, final boolean vanished) {
+        return this.localPlayerChangePacket(id, name, LocalPlayerChangePacket.ChangeType.ADD, vanished);
     }
 
     LocalPlayerChangePacket removeLocalPlayerPacket(final UUID id);

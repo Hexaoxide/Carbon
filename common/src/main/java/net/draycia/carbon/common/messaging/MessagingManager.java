@@ -48,6 +48,7 @@ import net.draycia.carbon.common.messaging.packets.LocalPlayersPacket;
 import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.messaging.packets.PartyChangePacket;
 import net.draycia.carbon.common.messaging.packets.PartyInvitePacket;
+import net.draycia.carbon.common.messaging.packets.PlayerInfo;
 import net.draycia.carbon.common.messaging.packets.SaveCompletedPacket;
 import net.draycia.carbon.common.messaging.packets.WhisperPacket;
 import net.draycia.carbon.common.users.NetworkUsers;
@@ -289,9 +290,9 @@ public class MessagingManager {
         protected void handleInitialization(final @NonNull InitializationPacket packet) {
             super.handleInitialization(packet);
             final List<? extends CarbonPlayer> players = this.server.players();
-            final Map<UUID, String> map = new HashMap<>();
+            final Map<UUID, PlayerInfo> map = new HashMap<>();
             for (final CarbonPlayer player : players) {
-                map.put(player.uuid(), player.username());
+                map.put(player.uuid(), new PlayerInfo(player.username(), player.vanished()));
             }
             this.packetService.queuePacket(this.packetFactory.localPlayersPacket(map));
         }

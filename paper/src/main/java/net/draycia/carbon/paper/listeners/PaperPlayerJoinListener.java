@@ -28,12 +28,14 @@ import net.draycia.carbon.common.messaging.packets.PacketFactory;
 import net.draycia.carbon.common.users.ProfileCache;
 import net.draycia.carbon.common.users.UserManagerInternal;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.MetadataValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -75,7 +77,19 @@ public class PaperPlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoinEarly(final PlayerJoinEvent event) {
-        this.messaging.get().queuePacket(() -> this.packetFactory.addLocalPlayerPacket(event.getPlayer().getUniqueId(), event.getPlayer().getName()));
+        this.messaging.get().queuePacket(() -> this.packetFactory.addLocalPlayerPacket(
+            event.getPlayer().getUniqueId(),
+            event.getPlayer().getName(),
+            vanished(event.getPlayer())
+        ));
+    }
+
+    // Supported by PremiumVanish, SuperVanish, VanishNoPacket. Mirrors CarbonPlayerPaper#vanished.
+    // Runtime toggles are propagated by PaperVanishListener; this only seeds the state on join.
+    private static boolean vanished(final Player player) {
+        return player.getMetadata("vanished").stream()
+            .filter(value -> value.value() instanceof Boolean)
+            .anyMatch(MetadataValue::asBoolean);
     }
 
     @EventHandler(priority = EventPriority.HIGH)

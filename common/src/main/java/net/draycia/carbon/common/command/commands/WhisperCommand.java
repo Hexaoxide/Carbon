@@ -181,7 +181,7 @@ public final class WhisperCommand extends CarbonCommand {
             }
 
             final String recipientUsername = recipient.username();
-            if (!this.network.online(recipient) || !sender.awareOf(recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
+            if (!this.network.online(recipient) || !this.network.awareOf(sender, recipient) && !sender.hasPermission("carbon.whisper.vanished")) {
                 final var exception = new CarbonPlayerParser.ParseException(
                     recipientInputString == null ? recipientUsername : recipientInputString,
                     this.messages

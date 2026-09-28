@@ -35,13 +35,15 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
     private @MonotonicNonNull UUID playerId;
     private @MonotonicNonNull String playerName;
     private @MonotonicNonNull ChangeType changeType;
+    private boolean vanished;
 
     @AssistedInject
     public LocalPlayerChangePacket(
         final @ServerId UUID serverId,
         final @Assisted UUID playerId,
         final @Assisted @Nullable String playerName,
-        final @Assisted ChangeType changeType
+        final @Assisted ChangeType changeType,
+        final @Assisted boolean vanished
     ) {
         super(serverId);
         if (changeType == ChangeType.ADD && playerName == null) {
@@ -50,6 +52,7 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
         this.playerId = playerId;
         this.playerName = playerName;
         this.changeType = changeType;
+        this.vanished = vanished;
     }
 
     @AssistedInject
@@ -58,6 +61,7 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
         this.playerId = playerId;
         this.playerName = null;
         this.changeType = ChangeType.REMOVE;
+        this.vanished = false;
     }
 
     public LocalPlayerChangePacket(final UUID sender, final ByteBuf data) {
@@ -77,6 +81,10 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
         return this.changeType;
     }
 
+    public boolean vanished() {
+        return this.vanished;
+    }
+
     @Override
     public void read(final ByteBuf buffer) {
         this.playerId = this.readUUID(buffer);
@@ -84,6 +92,7 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
         this.changeType = ChangeType.valueOf(type);
         if (this.changeType == ChangeType.ADD) {
             this.playerName = this.readString(buffer);
+            this.vanished = buffer.readBoolean();
         }
     }
 
@@ -93,6 +102,7 @@ public final class LocalPlayerChangePacket extends CarbonPacket {
         this.writeString(this.changeType.name(), buffer);
         if (this.changeType == ChangeType.ADD) {
             this.writeString(this.playerName, buffer);
+            buffer.writeBoolean(this.vanished);
         }
     }
 
