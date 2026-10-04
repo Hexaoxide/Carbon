@@ -39,7 +39,6 @@ import net.draycia.carbon.common.messages.TagPermissions;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -236,9 +235,6 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
     @Override
     public ChannelMessage channelForMessage(final Component message) {
         final String text = PlainTextComponentSerializer.plainText().serialize(message);
-        Component formattedMessage = message;
-
-        ChatChannel channel = requireNonNullElse(this.selectedChannel(), this.carbonPlayerCommon.channelRegistry().defaultChannel());
 
         for (final Key channelKey : this.carbonPlayerCommon.channelRegistry().keys()) {
             final ChatChannel chatChannel = this.carbonPlayerCommon.channelRegistry().channelOrThrow(channelKey);
@@ -249,17 +245,16 @@ public abstract class WrappedCarbonPlayer implements CarbonPlayer {
             }
 
             if (text.startsWith(prefix) && chatChannel.permissions().speechPermitted(this).permitted()) {
-                channel = chatChannel;
-                formattedMessage = formattedMessage.replaceText(TextReplacementConfig.builder()
-                    .once()
-                    .matchLiteral(channel.quickPrefix())
-                    .replacement(Component.empty())
-                    .build());
-                break;
+                return new ChannelMessage(message, chatChannel);
             }
         }
 
-        return new ChannelMessage(formattedMessage, channel);
+        return new ChannelMessage(message,
+            requireNonNullElse(
+                this.selectedChannel(),
+                this.carbonPlayerCommon.channelRegistry().defaultChannel()
+            )
+        );
     }
 
     @Override
