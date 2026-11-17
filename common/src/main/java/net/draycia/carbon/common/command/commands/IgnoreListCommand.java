@@ -72,8 +72,8 @@ public final class IgnoreListCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .permission("carbon.ignore")
             .senderType(PlayerCommander.class)
             .optional("page", integerParser(1), DefaultValue.constant(1))

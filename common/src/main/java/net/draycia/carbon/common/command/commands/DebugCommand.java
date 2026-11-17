@@ -67,8 +67,8 @@ public final class DebugCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .optional("player", this.parserFactory.carbonPlayer(),
                 richDescription(this.carbonMessages.commandDebugArgumentPlayer()))
             .permission("carbon.debug")

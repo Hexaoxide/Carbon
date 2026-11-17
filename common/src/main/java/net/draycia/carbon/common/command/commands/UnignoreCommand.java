@@ -68,8 +68,8 @@ public final class UnignoreCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             // TODO: Filter, and only show muted players, but allow inputting any player name.
             .optional("player", this.parserFactory.carbonPlayer(),
                 richDescription(this.carbonMessages.commandUnignoreArgumentPlayer()))

@@ -56,8 +56,8 @@ public class ToggleMessagesCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .permission("carbon.togglemsg")
             .senderType(PlayerCommander.class)
             .commandDescription(richDescription(this.carbonMessages.commandToggleMsgDescription()))

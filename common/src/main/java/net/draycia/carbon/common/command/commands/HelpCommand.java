@@ -79,8 +79,8 @@ public final class HelpCommand extends CarbonCommand {
     }
 
     @Override
-    public void init() {
-        final var command = this.commandManager.commandBuilder(this.commandSettings().name(), this.commandSettings().aliases())
+    public void registerCommand(final String commandName, final String[] aliases) {
+        final var command = this.commandManager.commandBuilder(commandName, aliases)
             .literal("help")
             .optional("query", greedyStringParser(), richDescription(this.carbonMessages.commandHelpArgumentQuery()), this::suggestQueries)
             .permission("carbon.help")

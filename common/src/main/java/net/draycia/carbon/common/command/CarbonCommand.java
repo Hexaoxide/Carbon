@@ -28,6 +28,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public abstract class CarbonCommand {
 
+    private static final String[] emptyAliases = new String[] {};
+
     private @Nullable CommandSettings commandSettings = null;
 
     public CommandSettings commandSettings() {
@@ -38,7 +40,23 @@ public abstract class CarbonCommand {
         this.commandSettings = commandSettings;
     }
 
-    public abstract void init();
+    // TODO: Separate this from init so it's always called (when init's overridden)?
+    public void init() {
+        if (this.commandSettings().alternateRegistration()) {
+            this.registerCommand(this.commandSettings().name(), emptyAliases);
+
+            for (final String alias : this.commandSettings().aliases()) {
+                this.registerCommand(alias, emptyAliases);
+            }
+        } else {
+            this.registerCommand(this.commandSettings().name(), this.commandSettings().aliases());
+        }
+
+    }
+
+    public void registerCommand(final String commandName, final String[] aliases) {
+
+    }
 
     public abstract CommandSettings defaultCommandSettings();
 
